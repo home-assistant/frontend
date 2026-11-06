@@ -1,3 +1,4 @@
+import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -10,6 +11,7 @@ import "../../../components/ha-dialog";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon";
+import "../../../components/ha-icon-button";
 import type { HaFormSchema } from "../../../components/ha-form/types";
 import type { HomeFrontendSystemData } from "../../../data/frontend";
 import type { ShortcutItem } from "../../../data/home_shortcuts";
@@ -65,12 +67,9 @@ export class DialogEditHome
 
   @state() private _submitting = false;
 
-  // Distinguishes _dialogClosed() firing because _save() itself just
-  // closed a successfully, non-stale-or-now-clean session (no preview
-  // clear needed: the panel already has the truth via its own
-  // regeneration) from every other close path (Cancel/scrim/Esc, or a
-  // save still pending when one of those fires), which must still revert
-  // an edited session's preview.
+  // Set when _save() itself closes a successfully saved session: the panel
+  // already shows the saved config, so _dialogClosed() skips the preview
+  // revert that every other close path still needs.
   private _closedBySave = false;
 
   public showDialog(params: EditHomeDialogParams): void {
@@ -89,6 +88,11 @@ export class DialogEditHome
   }
 
   public closeDialog(): boolean {
+    // Keep the dialog open while a save is in flight, so it cannot be
+    // reopened and start a second, overlapping save.
+    if (this._submitting) {
+      return false;
+    }
     this._open = false;
     return true;
   }
@@ -114,14 +118,10 @@ export class DialogEditHome
     if (this._session && this._session.generation > 0 && !this._closedBySave) {
       // Revert whenever this session ever pushed a draft to the panel,
       // unless _save() itself already closed a session it just finished
-      // committing (see _closedBySave). Checking generation here rather
-      // than isDirtyState matters specifically when a save is still
-      // pending: an edit made during that await can make isDirtyState
-      // read false again (e.g. edited back to the original content)
-      // before the pending save resolves, but the panel's preview still
-      // needs reverting now — _save()'s own continuation is blocked from
-      // doing anything once this dialog is closed (see its params-identity
-      // guard), so this is the only chance to do it.
+      // committing (see _closedBySave). generation, not isDirtyState, is
+      // what tells whether the panel is showing a preview from this
+      // session: a draft edited back to its baseline is clean but was
+      // still previewed along the way.
       this._params?.previewConfig(undefined);
     }
     this._params = undefined;
@@ -144,14 +144,21 @@ export class DialogEditHome
         .headerSubtitle=${this.hass.localize(
           "ui.panel.home.editor.description"
         )}
-        .preventScrimClose=${this.isDirtyState}
+        .preventScrimClose=${this.isDirtyState || this._submitting}
         @closed=${this._dialogClosed}
       >
+        <ha-icon-button
+          slot="headerNavigationIcon"
+          .label=${this.hass.localize("ui.common.close")}
+          .path=${mdiClose}
+          .disabled=${this._submitting}
+          @click=${this.closeDialog}
+        ></ha-icon-button>
         <ha-alert alert-type="info">
           ${this.hass.localize("ui.panel.home.editor.areas_hint", {
             areas_page: html`<a
               href="/config/areas?historyBack=1"
-              @click=${this.closeDialog}
+              @click=${this._areasLinkClicked}
               >${this.hass.localize("ui.panel.home.editor.areas_page")}</a
             >`,
           })}
@@ -246,6 +253,13 @@ export class DialogEditHome
     `;
   }
 
+  private _areasLinkClicked(ev: MouseEvent): void {
+    // Don't navigate away from a dialog that refuses to close mid-save.
+    if (!this.closeDialog()) {
+      ev.preventDefault();
+    }
+  }
+
   private _suggestedSchema = memoizeOne(
     (disabled: boolean) =>
       [
@@ -330,11 +344,10 @@ export class DialogEditHome
       // and dirty with no editor left to act on it.
       const success = await paramsAtSave.saveConfig(config);
 
-      // The dialog may have been closed (and possibly reopened) while this
-      // save was in flight: preventScrimClose only blocks a scrim/Esc close
-      // while isDirtyState is true, and an edit made during the await can
-      // momentarily make it false again before this continuation resumes.
-      // Nothing here is still valid to apply in that case.
+      // closeDialog() refuses while submitting, so the session should still
+      // be the one this save started from. Defensive guard in case it was
+      // torn down some other way (e.g. _dialogClosed() called directly):
+      // nothing here would still be valid to apply then.
       if (this._params !== paramsAtSave) {
         return;
       }
@@ -374,8 +387,12 @@ export class DialogEditHome
       }
 
       this._closedBySave = true;
+      // closeDialog() refuses while submitting.
+      this._submitting = false;
       this.closeDialog();
     } finally {
+      // Failure and stay-open paths; don't touch a session this save
+      // didn't start from (see the guard above).
       if (this._params === paramsAtSave) {
         this._submitting = false;
       }
