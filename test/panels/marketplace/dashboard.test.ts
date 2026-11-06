@@ -278,7 +278,7 @@ it("browses the way the link says", async () => {
   window.history.replaceState(
     null,
     "",
-    "/marketplace/browse?sort=last_updated&direction=desc&status=new,installed&type=plugin"
+    "/marketplace/browse?sort=last_updated&direction=desc&status=new,default&type=plugin"
   );
   const dashboard = await openDashboard();
   window.history.replaceState(null, "", "/");
@@ -291,7 +291,7 @@ it("browses the way the link says", async () => {
 
   // A search left behind would hide part of what the link promised
   expect(table.filter).toBe("");
-  expect(statusFilter.value).toEqual(["new", "installed"]);
+  expect(statusFilter.value).toEqual(["new", "default"]);
   expect(typeFilter.value).toEqual(["plugin"]);
 });
 
@@ -338,7 +338,7 @@ it.each([
       window.history.back();
       await popped;
     },
-    statuses: ["installed"],
+    statuses: ["default"],
   },
 ])("$name", async ({ returnToLink, statuses }) => {
   window.history.pushState(null, "", LINK);
@@ -350,7 +350,7 @@ it.each([
     };
   statusFilter().dispatchEvent(
     new CustomEvent("data-table-filter-changed", {
-      detail: { value: ["installed"] },
+      detail: { value: ["default"] },
     })
   );
   await dashboard.updateComplete;
@@ -377,12 +377,12 @@ it("links to what is picked, so a My link shares it", async () => {
 
   statusFilter.dispatchEvent(
     new CustomEvent("data-table-filter-changed", {
-      detail: { value: ["installed"] },
+      detail: { value: ["default"] },
     })
   );
 
   // The table's own params are left to it
-  expect(window.location.search).toBe("?sort=name&status=installed");
+  expect(window.location.search).toBe("?sort=name&status=default");
 
   // Leaving the tab, the page that opens has its own link
   window.history.pushState(null, "", "/marketplace/repository/1");
