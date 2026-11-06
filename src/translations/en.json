@@ -8231,6 +8231,7 @@
             "custom_overwrites_core": "Custom integration that replaces a Core component",
             "depends_on_cloud": "Requires Internet",
             "yaml_only": "This integration cannot be set up from the UI",
+            "yaml_label": "YAML",
             "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
             "debug_logging_enabled": "Debug logging enabled",

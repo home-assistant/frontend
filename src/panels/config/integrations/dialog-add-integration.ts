@@ -94,7 +94,7 @@ import type { HaIntegrationListItem } from "./ha-integration-list-item";
 import type { AddIntegrationDialogParams } from "./show-add-integration-dialog";
 import { showYamlIntegrationDialog } from "./show-add-integration-dialog";
 import { showSingleConfigEntryWarning } from "./show-single-config-entry-warning";
-import { addIntegrationDemo, DEMO_INTEGRATIONS } from "./demo-add-integration"; // DEMO
+import { addIntegrationDemo } from "./demo-add-integration"; // DEMO
 
 export interface IntegrationListItem extends HaListVirtualizedItem {
   name: string;
@@ -716,9 +716,25 @@ class AddIntegrationDialog extends LitElement {
           .flatMap((item) => this._brandRows(item))
           .filter((row) => !brand || !row.is_header);
       }
-      // Browsing a category also shows the helpers in it
+      // Browsing a category also shows the helpers in it. A brand shows its
+      // integrations in it instead of itself, like the website's categories:
+      // Google is Google Gemini in AI models.
       if (category) {
-        return [...integrations, ...helpers].filter(ofCategory).sort(byName);
+        return [...integrations, ...helpers]
+          .filter(ofCategory)
+          .flatMap((item) =>
+            item.domains
+              ? this._brandRows(item)
+                  .filter((row) => !row.is_header && !row.is_add)
+                  .filter(ofCategory)
+                  .map((row) => ({ ...row, id: row.domain }))
+              : [item]
+          )
+          .filter(
+            (row, index, rows) =>
+              rows.findIndex((other) => other.domain === row.domain) === index
+          )
+          .sort(byName);
       }
       return [...integrations].sort(byName);
     }
@@ -833,8 +849,13 @@ class AddIntegrationDialog extends LitElement {
       const counts = new Map<string, number>();
       const add = (slug: string) =>
         counts.set(slug, (counts.get(slug) || 0) + 1);
-      [...integrations, ...helpers].forEach((item) => {
-        // A brand lists the categories of all its integrations, count it once
+      // A brand counts as its integrations, as a category lists those
+      const items = [...integrations, ...helpers].flatMap((item) =>
+        item.domains
+          ? this._brandRows(item).filter((row) => !row.is_header && !row.is_add)
+          : [item]
+      );
+      items.forEach((item) => {
         const slugs = new Set(item.categories);
         new Set([...slugs].map((slug) => slug.split(".")[0])).forEach(add);
         [...slugs].filter((slug) => slug.includes(".")).forEach(add);
@@ -2201,10 +2222,6 @@ class AddIntegrationDialog extends LitElement {
       ...descriptions.core.helper,
       ...descriptions.custom.helper,
     };
-    // DEMO: fake integrations with every icon a card can end with
-    if (Object.keys(addIntegrationDemo).length) {
-      this._integrations = { ...this._integrations, ...DEMO_INTEGRATIONS };
-    }
     if (integrationFilter) {
       this._integrations = filterIntegrationsByDomains(
         this._integrations,

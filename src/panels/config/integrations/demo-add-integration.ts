@@ -1,9 +1,8 @@
 // ponytail: TEMPORARY demo, do not commit. Delete this file and its hooks
 // (`git checkout src` + remove this file) when done.
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
-import type { Brands } from "../../../data/integrations";
 import type { HomeAssistant } from "../../../types";
 import type { AddIntegrationDialogParams } from "./show-add-integration-dialog";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
@@ -20,46 +19,6 @@ interface DemoState {
 }
 
 export const addIntegrationDemo: DemoState = {};
-
-// Fake integrations named to sort first, with every icon a card can end with
-export const DEMO_INTEGRATIONS: Brands = {
-  demo_all_icons_yaml: {
-    name: "1 Demo: cloud, custom, YAML only",
-    integration_type: "service",
-    iot_class: "cloud_polling",
-    config_flow: false,
-    is_built_in: false,
-  },
-  demo_all_icons_overwrites: {
-    name: "1 Demo: cloud, overwrites built-in, +",
-    integration_type: "hub",
-    iot_class: "cloud_push",
-    config_flow: true,
-    is_built_in: false,
-    overwrites_built_in: true,
-  },
-  demo_all_icons_brand: {
-    name: "1 Demo brand: custom, chevron",
-    is_built_in: false,
-    integrations: {
-      demo_all_icons_yaml: {
-        name: "1 Demo: cloud, custom, YAML only",
-        integration_type: "service",
-        iot_class: "cloud_polling",
-        config_flow: false,
-        is_built_in: false,
-      },
-      demo_all_icons_overwrites: {
-        name: "1 Demo: cloud, overwrites built-in, +",
-        integration_type: "hub",
-        iot_class: "cloud_push",
-        config_flow: true,
-        is_built_in: false,
-        overwrites_built_in: true,
-      },
-    },
-  },
-};
 
 const flow = (
   handler: string,
@@ -187,7 +146,29 @@ const SCENARIOS: {
 class DemoAddIntegrationPanel extends LitElement {
   @state() private _collapsed = false;
 
+  // Not about the Marketplace, so not on its pages
+  @state() private _path = location.pathname;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("location-changed", this._locationChanged);
+    window.addEventListener("popstate", this._locationChanged);
+  }
+
+  public disconnectedCallback() {
+    window.removeEventListener("location-changed", this._locationChanged);
+    window.removeEventListener("popstate", this._locationChanged);
+    super.disconnectedCallback();
+  }
+
+  private _locationChanged = () => {
+    this._path = location.pathname;
+  };
+
   protected render() {
+    if (this._path.startsWith("/marketplace")) {
+      return nothing;
+    }
     if (this._collapsed) {
       return html`<button class="toggle" @click=${this._toggle}>
         Add dialog demo

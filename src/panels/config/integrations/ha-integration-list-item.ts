@@ -1,9 +1,4 @@
-import {
-  mdiFileCodeOutline,
-  mdiPackageVariant,
-  mdiPlus,
-  mdiWeb,
-} from "@mdi/js";
+import { mdiPackageVariant, mdiPlus, mdiWeb } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -128,22 +123,26 @@ export class HaIntegrationListItem extends HaListItemButton {
         }
         ${
           yamlOnly
-            ? html`<ha-svg-icon
-                  id="icon-yaml"
-                  .path=${mdiFileCodeOutline}
-                  class="open-in-new action"
-                ></ha-svg-icon>
-                <ha-tooltip for="icon-yaml" placement="left">
+            ? html`<ha-label id="label-yaml" class="yaml" dense>
+                  ${this._localize(
+                    "ui.panel.config.integrations.config_entry.yaml_label"
+                  )}
+                </ha-label>
+                <ha-tooltip for="label-yaml" placement="left">
                   ${this._localize(
                     "ui.panel.config.integrations.config_entry.yaml_only"
                   )}
                 </ha-tooltip>`
-            : this.opensFlow
-              ? html`<ha-svg-icon
-                  class="add action"
-                  .path=${mdiPlus}
-                ></ha-svg-icon>`
-              : html`<ha-icon-next class="action"></ha-icon-next>`
+            : nothing
+        }
+        ${
+          // Its documentation is a next step too, YAML-only says the label
+          this.opensFlow && !yamlOnly
+            ? html`<ha-svg-icon
+                class="add action"
+                .path=${mdiPlus}
+              ></ha-svg-icon>`
+            : html`<ha-icon-next class="action"></ha-icon-next>`
         }
       </div>
     `;
@@ -204,9 +203,12 @@ export class HaIntegrationListItem extends HaListItemButton {
       .end .add {
         color: var(--primary-color);
       }
-      .open-in-new {
-        --mdc-icon-size: 22px;
-        padding: 1px;
+      /* A note on how it is set up, quieter than discovered */
+      .end ha-label.yaml {
+        --ha-label-background-color: var(
+          --ha-color-fill-neutral-normal-resting
+        );
+        --ha-label-text-color: var(--ha-color-on-neutral-normal);
       }
       .end .custom {
         color: var(--warning-color);
