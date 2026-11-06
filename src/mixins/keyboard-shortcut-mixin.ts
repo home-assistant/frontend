@@ -32,7 +32,11 @@ export const KeyboardShortcutMixin = <T extends Constructor<ReactiveElement>>(
       if ((event.ctrlKey || event.metaKey) && event.altKey && !event.shiftKey) {
         const altShortcuts = this.supportedAltShortcuts();
         const code = event.code.replace("Key", "");
-        if (code in altShortcuts && !getTopOpenDialogTag()) {
+        if (
+          code in altShortcuts &&
+          !getTopOpenDialogTag() &&
+          canOverrideAlphanumericInput(event.composedPath())
+        ) {
           event.preventDefault();
           altShortcuts[code]();
         }

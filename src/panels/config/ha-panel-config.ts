@@ -33,7 +33,6 @@ const EDITOR_SECTIONS = new Set(["automation", "script", "scene"]);
 
 const findFab = (root: ParentNode): HTMLElement | null => {
   const fab = root.querySelector<HTMLElement>('[slot="fab"]');
-  fab?.click();
   if (fab) {
     return fab.querySelector<HTMLElement>('[slot="trigger"]') ?? fab;
   }
@@ -408,11 +407,16 @@ class HaPanelConfig extends KeyboardShortcutMixin(HassRouterPage) {
   }
 
   protected supportedAltShortcuts(): SupportedShortcuts {
+    if (!this.hass?.enableShortcuts) {
+      return {};
+    }
     return {
       N: () => {
         const [, , section, page] = location.pathname.split("/");
-        if (EDITOR_SECTIONS.has(section) && (!page || page === "dashboard")) {
-          navigate(`/config/${section}/edit/new`);
+        if (EDITOR_SECTIONS.has(section)) {
+          if (!page || page === "dashboard") {
+            navigate(`/config/${section}/edit/new`);
+          }
           return;
         }
         findFab(this.shadowRoot ?? this)?.click();
