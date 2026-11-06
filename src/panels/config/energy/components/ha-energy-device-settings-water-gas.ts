@@ -2,6 +2,7 @@ import {
   mdiAlertCircle,
   mdiDelete,
   mdiDragHorizontalVariant,
+  mdiFire,
   mdiPlus,
   mdiWater,
 } from "@mdi/js";
@@ -13,6 +14,7 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import type { LocalizeKeys } from "../../../../common/translations/localize";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { getEntityAreaId } from "../../../../common/entity/context/get_entity_context";
 import "../../../../components/automation/ha-automation-row";
@@ -27,9 +29,13 @@ import type {
   EnergyPreferences,
   EnergyPreferencesValidation,
   EnergyValidationIssue,
+  WaterGasResource,
 } from "../../../../data/energy";
 import {
   computeEnergyLabel,
+  getEnergyGasUnitClass,
+  getWaterGasDevices,
+  getWaterGasDevicesKey,
   saveEnergyPreferences,
 } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
@@ -47,9 +53,16 @@ import type { EnergyEditorPageConfig } from "../ha-energy-editor-page";
 import "./ha-energy-validation-result";
 import { energyCardStyles } from "./styles";
 
-@customElement("ha-energy-device-settings-water")
-export class EnergyDeviceSettingsWater extends LitElement {
+const ICONS: Record<WaterGasResource, string> = {
+  water: mdiWater,
+  gas: mdiFire,
+};
+
+@customElement("ha-energy-device-settings-water-gas")
+export class EnergyDeviceSettingsWaterGas extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public resource!: WaterGasResource;
 
   @property({ attribute: false })
   public preferences!: EnergyPreferences;
@@ -68,6 +81,25 @@ export class EnergyDeviceSettingsWater extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  private get _devices(): DeviceConsumptionEnergyPreference[] {
+    return getWaterGasDevices(this.preferences, this.resource);
+  }
+
+  private _withDevices(
+    devices: DeviceConsumptionEnergyPreference[]
+  ): EnergyPreferences {
+    return {
+      ...this.preferences,
+      [getWaterGasDevicesKey(this.resource)]: devices,
+    } as EnergyPreferences;
+  }
+
+  private _t(key: string): string {
+    return this.hass.localize(
+      `ui.panel.config.energy.device_consumption_${this.resource}.${key}` as LocalizeKeys
+    );
+  }
+
   protected render(): TemplateResult {
     if (this.listPath && this.editKey !== undefined) {
       return html`<ha-energy-editor-page
@@ -78,33 +110,31 @@ export class EnergyDeviceSettingsWater extends LitElement {
       ></ha-energy-editor-page>`;
     }
 
+    const devices = this._devices;
+    const validation =
+      this.validationResult?.[getWaterGasDevicesKey(this.resource)];
+
     return html`
       <ha-card>
         <h1 class="card-header">
-          <ha-svg-icon .path=${mdiWater}></ha-svg-icon>
-          ${this.hass.localize(
-            "ui.panel.config.energy.device_consumption_water.title"
-          )}
+          <ha-svg-icon .path=${ICONS[this.resource]}></ha-svg-icon>
+          ${this._t("title")}
         </h1>
 
         <div class="card-content">
           <p>
-            ${this.hass.localize(
-              "ui.panel.config.energy.device_consumption_water.sub"
-            )}
+            ${this._t("sub")}
             <a
               target="_blank"
               rel="noopener noreferrer"
               href=${documentationUrl(
                 this.hass,
-                "/docs/energy/water/#individual-devices"
+                `/docs/energy/${this.resource}/#individual-${this.resource}-devices`
               )}
-              >${this.hass.localize(
-                "ui.panel.config.energy.device_consumption_water.learn_more"
-              )}</a
+              >${this._t("learn_more")}</a
             >
           </p>
-          ${this.validationResult?.device_consumption_water.map(
+          ${validation?.map(
             (result) => html`
               <ha-energy-validation-result
                 .hass=${this.hass}
@@ -113,7 +143,7 @@ export class EnergyDeviceSettingsWater extends LitElement {
             `
           )}
           ${
-            this.preferences.device_consumption_water.length > 0
+            devices.length > 0
               ? html`
                   <ha-sortable
                     handle-selector=".handle"
@@ -121,7 +151,7 @@ export class EnergyDeviceSettingsWater extends LitElement {
                   >
                     <div class="items">
                       ${repeat(
-                        this.preferences.device_consumption_water,
+                        devices,
                         (device) => device.stat_consumption,
                         (device, index) => this._renderDevice(device, index)
                       )}
@@ -132,9 +162,7 @@ export class EnergyDeviceSettingsWater extends LitElement {
           }
           <ha-button @click=${this._addDevice} appearance="filled" size="s">
             <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-            ${this.hass.localize(
-              "ui.panel.config.energy.device_consumption_water.add_device"
-            )}
+            ${this._t("add_device")}
           </ha-button>
         </div>
       </ha-card>
@@ -164,7 +192,7 @@ export class EnergyDeviceSettingsWater extends LitElement {
                 ></ha-icon>`
               : html`<ha-svg-icon
                   slot="leading-icon"
-                  .path=${mdiWater}
+                  .path=${ICONS[this.resource]}
                 ></ha-svg-icon>`
           }
           <div slot="header" class="row-header">
@@ -176,7 +204,9 @@ export class EnergyDeviceSettingsWater extends LitElement {
             }
           </div>
           ${this._renderIssueIndicator(
-            this.validationResult?.device_consumption_water[index],
+            this.validationResult?.[getWaterGasDevicesKey(this.resource)]?.[
+              index
+            ],
             index
           )}
           <ha-icon-button
@@ -234,14 +264,11 @@ export class EnergyDeviceSettingsWater extends LitElement {
   private _itemMoved(ev: CustomEvent): void {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
-    const devices = this.preferences.device_consumption_water.concat();
+    const devices = this._devices.concat();
     const device = devices.splice(oldIndex, 1)[0];
     devices.splice(newIndex, 0, device);
 
-    const newPrefs = {
-      ...this.preferences,
-      device_consumption_water: devices,
-    };
+    const newPrefs = this._withDevices(devices);
     fireEvent(this, "value-changed", { value: newPrefs });
     this._savePreferences(newPrefs);
   }
@@ -271,18 +298,31 @@ export class EnergyDeviceSettingsWater extends LitElement {
     device?: DeviceConsumptionEnergyPreference
   ): EnergyEditorConfig {
     return {
-      kind: "water_device",
+      kind: "water_gas_device",
       params: {
+        resource: this.resource,
+        allowedUnitClass: this._allowedUnitClass(device?.stat_consumption),
         statsMetadata: this.statsMetadata,
         device: device ? { ...device } : undefined,
-        device_consumptions: preferences.device_consumption_water,
+        device_consumptions: getWaterGasDevices(preferences, this.resource),
         saveCallback: (newDevice) => this._saveDevice(newDevice, device),
       },
     };
   }
 
+  private _allowedUnitClass(excludeSource?: string) {
+    return this.resource === "gas"
+      ? getEnergyGasUnitClass(
+          this.preferences,
+          excludeSource,
+          this.statsMetadata,
+          "device"
+        )
+      : undefined;
+  }
+
   private _deviceIndex(device: DeviceConsumptionEnergyPreference) {
-    const devices = this.preferences.device_consumption_water;
+    const devices = this._devices;
     const index = devices.indexOf(device);
     if (index !== -1) {
       return index;
@@ -299,7 +339,7 @@ export class EnergyDeviceSettingsWater extends LitElement {
       if (key === "new") {
         return this._pageConfig(this._editorConfig(this.preferences));
       }
-      const device = this.preferences.device_consumption_water.find(
+      const device = this._devices.find(
         (item) => item.stat_consumption === key
       );
       return (
@@ -316,9 +356,7 @@ export class EnergyDeviceSettingsWater extends LitElement {
     if (!device) {
       return {
         editor,
-        title: this.hass.localize(
-          "ui.panel.config.energy.device_consumption_water.add_device"
-        ),
+        title: this._t("add_device"),
       };
     }
     return {
@@ -335,27 +373,29 @@ export class EnergyDeviceSettingsWater extends LitElement {
     device: DeviceConsumptionEnergyPreference,
     original?: DeviceConsumptionEnergyPreference
   ) {
-    const devices = [...this.preferences.device_consumption_water];
+    const devices = [...this._devices];
     const index = original ? this._deviceIndex(original) : -1;
     if (index === -1) {
       devices.push(device);
     } else {
       devices[index] = device;
     }
-    const newPrefs = { ...this.preferences, device_consumption_water: devices };
-    this._sanitizeParents(newPrefs);
-    await this._savePreferences(newPrefs);
+    await this._savePreferences(
+      this._sanitizeParents(this._withDevices(devices))
+    );
   }
 
-  private _sanitizeParents(prefs: EnergyPreferences) {
-    const statIds = prefs.device_consumption_water.map(
-      (d) => d.stat_consumption
-    );
-    prefs.device_consumption_water.forEach((d) => {
-      if (d.included_in_stat && !statIds.includes(d.included_in_stat)) {
-        delete d.included_in_stat;
-      }
-    });
+  private _sanitizeParents(prefs: EnergyPreferences): EnergyPreferences {
+    const devices = getWaterGasDevices(prefs, this.resource);
+    const statIds = devices.map((d) => d.stat_consumption);
+    return {
+      ...prefs,
+      [getWaterGasDevicesKey(this.resource)]: devices.map((d) =>
+        d.included_in_stat && !statIds.includes(d.included_in_stat)
+          ? { ...d, included_in_stat: undefined }
+          : d
+      ),
+    } as EnergyPreferences;
   }
 
   private _deleteDeviceClicked(ev) {
@@ -379,15 +419,13 @@ export class EnergyDeviceSettingsWater extends LitElement {
       return false;
     }
     try {
-      const newPrefs = {
-        ...this.preferences,
-        device_consumption_water:
-          this.preferences.device_consumption_water.filter(
-            (_device, idx) => idx !== index
-          ),
-      };
-      this._sanitizeParents(newPrefs);
-      await this._savePreferences(newPrefs);
+      await this._savePreferences(
+        this._sanitizeParents(
+          this._withDevices(
+            this._devices.filter((_device, idx) => idx !== index)
+          )
+        )
+      );
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.config.energy.save_config_failed", {
@@ -420,6 +458,6 @@ export class EnergyDeviceSettingsWater extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-energy-device-settings-water": EnergyDeviceSettingsWater;
+    "ha-energy-device-settings-water-gas": EnergyDeviceSettingsWaterGas;
   }
 }

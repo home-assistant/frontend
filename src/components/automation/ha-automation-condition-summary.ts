@@ -1,4 +1,4 @@
-import type { ContextType } from "@lit/context";
+import { provide, type ContextType } from "@lit/context";
 import { mdiCommentTextOutline } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
@@ -17,9 +17,14 @@ import { getEntityTarget } from "../../panels/config/automation/target/get_entit
 import "../../panels/config/automation/target/ha-automation-row-targets";
 import "../ha-svg-icon";
 import "../ha-tooltip";
+import { targetExpandGroupContext } from "../target-picker/target-expand-group-context";
 
 @customElement("ha-automation-condition-summary")
 export class HaAutomationConditionSummary extends LitElement {
+  // Triggers and conditions don't expand the groups their targets name.
+  @provide({ context: targetExpandGroupContext })
+  protected _targetExpandGroup = false;
+
   @property() public label = "";
 
   @property({ attribute: false }) public condition?: Condition;

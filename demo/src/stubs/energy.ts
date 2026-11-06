@@ -114,6 +114,14 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
         stat_consumption: "sensor.water_garden",
       },
     ],
+    device_consumption_gas: [
+      {
+        stat_consumption: "sensor.gas_kitchen",
+      },
+      {
+        stat_consumption: "sensor.gas_heat_pump",
+      },
+    ],
   };
   hass.mockWS("energy/get_prefs", (): EnergyPreferences => prefs);
   hass.mockWS("energy/info", (): EnergyInfo => ({
@@ -124,6 +132,7 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
     energy_sources: prefs.energy_sources.map(() => []),
     device_consumption: prefs.device_consumption.map(() => []),
     device_consumption_water: prefs.device_consumption_water.map(() => []),
+    device_consumption_gas: prefs.device_consumption_gas.map(() => []),
   }));
   hass.mockWS(
     "energy/fossil_energy_consumption",

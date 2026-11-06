@@ -1300,6 +1300,7 @@ ${rejected
     if (isHelperDomain(domain)) {
       showHelperDetailDialog(this, {
         domain,
+        navigateToResult: true,
       });
       return;
     }
@@ -1343,6 +1344,7 @@ ${rejected
     showConfigFlowDialog(this, {
       startFlowHandler: domain,
       manifest: await fetchIntegrationManifest(this.hass, domain),
+      navigateToResult: true,
     });
   }
 
@@ -1568,11 +1570,12 @@ ${rejected
           { name: config.name }
         ),
       },
+      navigateToResult: true,
     });
   }
 
   private _createHelper() {
-    showHelperDetailDialog(this, {});
+    showHelperDetailDialog(this, { navigateToResult: true });
   }
 
   private _bulkCreateCategory = () => {

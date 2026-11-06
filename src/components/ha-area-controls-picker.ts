@@ -13,6 +13,7 @@ import {
 import {
   AREA_CONTROLS_BUTTONS,
   getAreaControlEntities,
+  getAreaEntityIds,
   type AreaControlDomain,
 } from "../data/area/area_controls";
 import {
@@ -148,15 +149,20 @@ export class HaAreaControlsPicker extends LitElement {
           currentValue === id ||
           (excludeValues !== undefined && excludeValues.includes(id));
 
+        const areaEntities = getAreaEntityIds(
+          registries.entities,
+          registries.devices,
+          areaId,
+          excludeEntities
+        );
         const controlEntities = getAreaControlEntities(
+          areaEntities,
           states,
           registries.entities,
           registries.devices,
           registries.areas,
           registries.floors,
-          AREA_CONTROL_DOMAINS,
-          areaId,
-          excludeEntities
+          AREA_CONTROL_DOMAINS
         );
 
         const items: (AreaControlPickerItem | string)[] = [];

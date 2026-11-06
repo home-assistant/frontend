@@ -117,6 +117,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 
 const defaultKeyData = {
   title: "",
@@ -545,6 +546,9 @@ export class HaMarketplaceDashboard extends LitElement {
         <ha-dropdown-item value="custom_repositories">
           ${this._i18n.localize("ui.panel.marketplace.menu.custom_repositories")}
         </ha-dropdown-item>
+        <ha-dropdown-item value="download_source">
+          ${this._i18n.localize("ui.panel.marketplace.menu.download_source")}
+        </ha-dropdown-item>
         ${
           repositoriesContainsNew
             ? html`<ha-dropdown-item value="dismiss_new">
@@ -911,6 +915,9 @@ export class HaMarketplaceDashboard extends LitElement {
       case "custom_repositories":
         navigate("/marketplace/repositories");
         break;
+      case "download_source":
+        this._openDownloadSource();
+        break;
       case "dismiss_new":
         this._dismissNew();
         break;
@@ -947,6 +954,23 @@ export class HaMarketplaceDashboard extends LitElement {
 
     this._repositoryOverflowMenu.anchorElement = undefined;
   };
+
+  private async _openDownloadSource() {
+    let entries: ConfigEntry[];
+    try {
+      entries = await getConfigEntries(this._api, { domain: "marketplace" });
+    } catch (err: unknown) {
+      showAlertDialog(this, {
+        title: this._i18n.localize("ui.panel.marketplace.dialog.error.title"),
+        text: marketplaceErrorMessage(err, this._i18n.localize),
+      });
+      return;
+    }
+
+    if (entries.length) {
+      showOptionsFlowDialog(this, entries[0]);
+    }
+  }
 
   private _openDocumentation() {
     window.open(

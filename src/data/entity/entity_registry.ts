@@ -390,3 +390,32 @@ export const getAutomaticEntityIds = (
     type: "config/entity_registry/get_automatic_entity_ids",
     entity_ids,
   });
+
+/**
+ * Set the area of entities and regenerate their entity IDs, which can include
+ * the area. Returns the entity ID of each entity after the change.
+ */
+export const updateEntitiesArea = async (
+  hass: HomeAssistant,
+  entityIds: string[],
+  areaId: string
+): Promise<Record<string, string>> => {
+  await Promise.all(
+    entityIds.map((entityId) =>
+      updateEntityRegistryEntry(hass, entityId, { area_id: areaId })
+    )
+  );
+  const newEntityIds = await getAutomaticEntityIds(hass, entityIds);
+  const result: Record<string, string> = {};
+  for (const entityId of entityIds) {
+    const newEntityId = newEntityIds[entityId];
+    if (newEntityId) {
+      // eslint-disable-next-line no-await-in-loop
+      await updateEntityRegistryEntry(hass, entityId, {
+        new_entity_id: newEntityId,
+      });
+    }
+    result[entityId] = newEntityId || entityId;
+  }
+  return result;
+};

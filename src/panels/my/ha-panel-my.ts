@@ -172,6 +172,7 @@ const entitiesTableParams = {
   floor: "string?",
   area: "string?",
   device: "string?",
+  device_class: "string?",
   domain: "string?",
   entity_domain: "string?",
   label: "string?",
