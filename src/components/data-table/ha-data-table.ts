@@ -17,6 +17,7 @@ import {
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { join } from "lit/directives/join";
+import { keyed } from "lit/directives/keyed";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { consume } from "../../common/decorators/consume";
@@ -777,12 +778,15 @@ export class HaDataTable extends LitElement {
                           .group=${this._stickyGroup}
                           @click=${this._collapseStickyGroup}
                         >
-                          ${this._renderGroupHeader(
+                          ${keyed(
                             this._stickyGroup,
-                            this._collapsedGroups.includes(this._stickyGroup),
-                            this._i18n?.localize,
-                            this.renderGroupActions,
-                            true
+                            this._renderGroupHeader(
+                              this._stickyGroup,
+                              this._collapsedGroups.includes(this._stickyGroup),
+                              this._i18n?.localize,
+                              this.renderGroupActions,
+                              true
+                            )
                           )}
                         </div>`
                       : nothing
@@ -806,7 +810,10 @@ export class HaDataTable extends LitElement {
     `;
   }
 
-  private _keyFunction = (row: DataTableRowData) => row?.[this.id] || row;
+  // Group headers are keyed by their group, so they keep their actions' state
+  // when the data changes
+  private _keyFunction = (row: DataTableRowData) =>
+    row?.[this.id] || row?.groupHeader || row;
 
   private _renderMainValue(value: unknown) {
     return this.clickable
