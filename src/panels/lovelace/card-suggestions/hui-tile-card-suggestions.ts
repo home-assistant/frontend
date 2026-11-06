@@ -103,6 +103,8 @@ const DOMAIN_VARIANTS: Record<string, TileVariant[]> = {
   scene: BUTTON_VARIANTS,
   script: BUTTON_VARIANTS,
   weather: [TILE_VARIANT, ["temperature-forecast"], ["precipitation-forecast"]],
+  calendar: [["calendar-forecast"]],
+  schedule: [TILE_VARIANT, ["calendar-forecast"]],
 };
 
 const DEFAULT_VARIANT: TileVariant = TILE_VARIANT;
@@ -125,7 +127,7 @@ const SENSOR_TREND_DEVICE_CLASSES = new Set<string>([
 
 // Domains with a dedicated card-suggestions provider; skip the tile
 // fallback so the dedicated card wins.
-const EXCLUDED_DOMAINS = new Set(["calendar", "todo", "camera"]);
+const EXCLUDED_DOMAINS = new Set(["todo", "camera"]);
 
 const getVariants = (
   states: HomeAssistant["states"],
