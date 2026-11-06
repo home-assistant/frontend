@@ -79,13 +79,25 @@ export const updateButtonIsDisabled = (entity: UpdateEntity): boolean =>
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>
   !!entity.attributes.in_progress;
 
+export interface UpdateReleaseNotesMessage {
+  severity: "info" | "warning" | "error";
+  message: string;
+}
+
+export interface UpdateReleaseNotes {
+  release_notes: string | null;
+  messages: UpdateReleaseNotesMessage[];
+}
+
 export const updateReleaseNotes = (
   hass: Pick<HomeAssistant, "callWS">,
-  entityId: string
+  entityId: string,
+  language: string
 ) =>
-  hass.callWS<string | null>({
+  hass.callWS<UpdateReleaseNotes>({
     type: "update/release_notes",
     entity_id: entityId,
+    language,
   });
 
 const HOME_ASSISTANT_CORE_TITLE = "Home Assistant Core";
