@@ -1,4 +1,5 @@
 import type { ZHADevice } from "../../../../../data/zha";
+import { ZHADeviceType } from "../../../../../data/zha";
 
 /** Link quality below which a device sits at the edge of its radio range. */
 export const WEAK_LQI = 30;
@@ -121,7 +122,7 @@ export const healthGroups = (
     key: "weak_signal",
     devices: devices
       .filter((device) => signalBand(device) === "weak")
-      .sort((a, b) => a.lqi - b.lqi),
+      .sort((a, b) => (a.lqi ?? 0) - (b.lqi ?? 0)),
   },
   {
     key: "unreachable",
@@ -145,7 +146,9 @@ export const healthGroups = (
   },
   {
     key: "routers",
-    devices: devices.filter((device) => device.device_type === "Router"),
+    devices: devices.filter(
+      (device) => device.device_type === ZHADeviceType.Router
+    ),
   },
 ];
 
