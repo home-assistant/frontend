@@ -132,7 +132,7 @@ export class HaIconPicker extends LitElement {
         no-sort
         .pinBlock=${
           this.value && this.suggestedIcons?.includes(this.value)
-            ? "nearest"
+            ? "end"
             : undefined
         }
         .getItems=${this._getIconPickerItems}
