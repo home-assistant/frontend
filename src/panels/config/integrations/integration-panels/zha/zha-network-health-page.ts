@@ -42,6 +42,7 @@ import {
   countBands,
   groupByArea,
   healthGroups,
+  lastSeenAt,
   managedDevices,
   parentByIeee,
   signalBand,
@@ -63,6 +64,9 @@ const GROUP_ICON: Record<HealthGroupKey, string> = {
   routers: mdiRouterWireless,
 };
 
+/** Same cadence as the device page, so availability and signal do not freeze while the page is open. */
+const DEVICE_REFRESH_INTERVAL = 60000;
+
 @customElement("zha-network-health-page")
 class ZHANetworkHealthPage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -77,6 +81,20 @@ class ZHANetworkHealthPage extends LitElement {
 
   @state() private _error?: string;
 
+  private _refreshInterval?: number;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this._devices) {
+      this._startRefresh();
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._stopRefresh();
+  }
+
   protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     if (this.hass) {
@@ -87,8 +105,32 @@ class ZHANetworkHealthPage extends LitElement {
   private async _fetchDevices(): Promise<void> {
     try {
       this._devices = await fetchDevices(this.hass);
+      this._startRefresh();
     } catch (err: any) {
       this._error = err.message || err;
+    }
+  }
+
+  private _startRefresh(): void {
+    this._stopRefresh();
+    this._refreshInterval = window.setInterval(
+      () => this._refreshDevices(),
+      DEVICE_REFRESH_INTERVAL
+    );
+  }
+
+  private _stopRefresh(): void {
+    if (this._refreshInterval) {
+      window.clearInterval(this._refreshInterval);
+      this._refreshInterval = undefined;
+    }
+  }
+
+  private async _refreshDevices(): Promise<void> {
+    try {
+      this._devices = await fetchDevices(this.hass);
+    } catch (_err: any) {
+      // Keep the last snapshot; the next refresh may succeed.
     }
   }
 
@@ -308,6 +350,7 @@ class ZHANetworkHealthPage extends LitElement {
     // Nothing is measured while a device is silent, so what is shown is the
     // reading from the last contact.
     const stale = device.available ? "" : " stale";
+    const seen = lastSeenAt(device);
     const details = [
       device.model,
       parent
@@ -315,7 +358,7 @@ class ZHANetworkHealthPage extends LitElement {
             router: parent,
           })
         : undefined,
-      relativeTime(new Date(device.last_seen), this.hass.locale),
+      seen ? relativeTime(seen, this.hass.locale) : undefined,
     ].filter(Boolean);
 
     return html`
