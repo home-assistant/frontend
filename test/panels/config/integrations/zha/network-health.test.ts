@@ -7,6 +7,7 @@ import {
   healthGroups,
   isIncomplete,
   managedDevices,
+  lastSeenAt,
   minutesSince,
   parentByIeee,
   signalBand,
@@ -121,7 +122,54 @@ describe("minutesSince", () => {
   });
 });
 
+describe("lastSeenAt", () => {
+  it("reads a valid stamp and drops an empty or malformed one", () => {
+    expect(lastSeenAt(device({ ieee: "a" }))?.getTime()).toBe(
+      new Date(minutesAgo(1)).getTime()
+    );
+    expect(lastSeenAt(device({ ieee: "b", last_seen: "" }))).toBeUndefined();
+    expect(
+      lastSeenAt(device({ ieee: "c", last_seen: "not a date" }))
+    ).toBeUndefined();
+  });
+});
+
 describe("parentByIeee", () => {
+  it("skips the neighbour table of an unavailable router", () => {
+    const parents = parentByIeee([
+      device({
+        ieee: "old-router",
+        available: false,
+        user_given_name: "Old plug",
+        neighbors: [
+          {
+            ieee: "child",
+            nwk: "1",
+            lqi: "60",
+            depth: "1",
+            relationship: "Child",
+          },
+        ],
+      }),
+      device({
+        ieee: "router",
+        user_given_name: "Hallway plug",
+        neighbors: [
+          {
+            ieee: "child",
+            nwk: "1",
+            lqi: "60",
+            depth: "1",
+            relationship: "Child",
+          },
+        ],
+      }),
+      device({ ieee: "child" }),
+    ]);
+
+    expect(parents).toEqual({ child: "Hallway plug" });
+  });
+
   it("names the router a device hangs off", () => {
     const parents = parentByIeee([
       device({

@@ -90,16 +90,30 @@ export const countBands = (devices: ZHADevice[]): BandCounts => {
 export const isIncomplete = (device: ZHADevice): boolean =>
   device.entities.length === 0;
 
+/** When the device was last heard from, or undefined for an empty or malformed stamp. */
+export const lastSeenAt = (device: ZHADevice): Date | undefined => {
+  if (!device.last_seen) {
+    return undefined;
+  }
+  const at = new Date(device.last_seen);
+  return isNaN(at.getTime()) ? undefined : at;
+};
+
 export const minutesSince = (lastSeen: string, now = Date.now()): number =>
   Math.round((now - new Date(lastSeen).getTime()) / 60000);
 
 /**
  * Map each device to the router that lists it as a child, so a weak device
- * can be traced to the neighbour it depends on.
+ * can be traced to the neighbour it depends on. An unavailable router's table
+ * is skipped, as in the network visualization: it may still list a child that
+ * has long since moved to another router.
  */
 export const parentByIeee = (devices: ZHADevice[]): Record<string, string> => {
   const parents: Record<string, string> = {};
   for (const device of devices) {
+    if (!device.available) {
+      continue;
+    }
     for (const neighbor of device.neighbors) {
       if (neighbor.relationship === "Child") {
         parents[neighbor.ieee] = device.user_given_name || device.name;
