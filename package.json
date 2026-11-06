@@ -144,7 +144,7 @@
     "@babel/plugin-transform-private-methods": "8.0.1",
     "@babel/plugin-transform-runtime": "8.0.6",
     "@babel/preset-env": "8.0.7",
-    "@bundle-stats/plugin-webpack-filter": "4.23.0",
+    "@bundle-stats/plugin-webpack-filter": "4.23.1",
     "@eslint/js": "10.0.1",
     "@gfx/zopfli": "1.0.15",
     "@html-eslint/eslint-plugin": "0.67.0",
