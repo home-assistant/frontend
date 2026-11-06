@@ -40,10 +40,9 @@ const initLoader = (browserslistEnv) => {
           // build (e.g. Shelly Wall Display) can't parse that, so any
           // var(--divider-color) border falls back to currentColor. Always
           // compile hex alpha colors to rgba() in legacy builds.
-          lightningcssInclude:
-            browserslistEnv === "legacy"
-              ? lightningcssModule.Features.HexAlphaColors
-              : 0,
+          lightningcssInclude: browserslistEnv.startsWith("legacy")
+            ? lightningcssModule.Features.HexAlphaColors
+            : 0,
         };
       })
     );
