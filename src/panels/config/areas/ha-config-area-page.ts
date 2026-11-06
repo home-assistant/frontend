@@ -366,23 +366,28 @@ class HaConfigAreaPage extends LitElement {
     const header = html`
       <ha-card outlined class="area-header">
         <div class="card-content area-header-content">
-          <div class="area-media">
-            ${
-              area.picture
-                ? html`<img alt=${area.name} src=${area.picture} />`
-                : html`<div class="area-media-placeholder">
-                    ${
-                      area.icon
-                        ? html`<ha-icon .icon=${area.icon}></ha-icon>`
-                        : html`<ha-svg-icon
-                            .path=${mdiTextureBox}
-                          ></ha-svg-icon>`
-                    }
-                  </div>`
-            }
-          </div>
+          ${
+            area.picture
+              ? html`<div class="area-media">
+                  <img alt=${area.name} src=${area.picture} />
+                </div>`
+              : nothing
+          }
           <div class="area-info">
-            <h1 class="area-name">${area.name}</h1>
+            <h1 class="area-name">
+              ${
+                area.icon
+                  ? html`<ha-icon
+                      class="area-icon"
+                      .icon=${area.icon}
+                    ></ha-icon>`
+                  : html`<ha-svg-icon
+                      class="area-icon"
+                      .path=${mdiTextureBox}
+                    ></ha-svg-icon>`
+              }
+              <span>${area.name}</span>
+            </h1>
             <div class="area-summary">
               ${this.hass.localize(
                 "ui.panel.config.areas.quick_links.devices",
@@ -740,14 +745,7 @@ class HaConfigAreaPage extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         back-path="/config/areas/dashboard"
-        .header=${html`${
-          area.icon
-            ? html`<ha-icon
-                .icon=${area.icon}
-                style="margin-inline-end: 8px;"
-              ></ha-icon>`
-            : nothing
-        }${area.name}`}
+        .header=${this.hass.localize("ui.panel.config.areas.caption")}
       >
         <ha-dropdown slot="toolbar-icon" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
@@ -1110,39 +1108,38 @@ class HaConfigAreaPage extends LitElement {
           align-items: center;
           gap: var(--ha-space-4);
         }
+        /* The picture is only shown when the area has one. The area icon
+           always sits next to the name, so it shows exactly once. */
         .area-media {
           flex: none;
           width: 160px;
           aspect-ratio: 16 / 10;
           border-radius: var(--ha-border-radius-lg);
           overflow: hidden;
-          background-color: var(--secondary-background-color);
         }
         .area-media img {
           display: block;
           width: 100%;
           height: 100%;
           object-fit: cover;
-        }
-        .area-media-placeholder {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 100%;
-          height: 100%;
-          color: var(--secondary-text-color);
-          --mdc-icon-size: 40px;
+          background-color: var(--secondary-background-color);
         }
         .area-info {
           flex: 1 1 200px;
           min-width: 0;
         }
         .area-name {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-2);
           margin: 0;
           font-size: var(--ha-font-size-2xl);
           font-weight: var(--ha-font-weight-normal);
           line-height: var(--ha-line-height-condensed);
           overflow-wrap: anywhere;
+        }
+        .area-icon {
+          flex: none;
         }
         .area-summary {
           margin-top: var(--ha-space-1);
