@@ -4879,6 +4879,26 @@
               "flow_rate_no_volume": "[%key:ui::panel::config::energy::water::dialog::flow_rate_no_volume%]"
             }
           },
+          "device_consumption_gas": {
+            "title": "Individual gas devices",
+            "sub": "Tracking the gas usage of individual devices allows Home Assistant to break down your gas usage by device.",
+            "learn_more": "More information on how to get started",
+            "devices": "Devices",
+            "add_device": "Add device",
+            "dialog": {
+              "header": "Add a gas device",
+              "display_name": "Display name",
+              "device_consumption_gas": "Device gas consumption",
+              "device_consumption_gas_flow_rate": "Device gas flow rate",
+              "selected_stat_intro": "Select the gas sensor that measures the device's gas consumption in either of {unit}.",
+              "included_in_device": "Upstream device",
+              "included_in_device_helper": "If this device is already counted by another device (such as a gas meter measured by the main gas supply), selecting the upstream device prevents duplicate gas tracking.",
+              "no_upstream_devices": "No eligible upstream devices",
+              "gas_sensor_needed": "To track this device, you need a gas sensor.",
+              "flow_rate_no_volume": "[%key:ui::panel::config::energy::gas::dialog::flow_rate_no_volume%]",
+              "flow_rate_energy_sources": "[%key:ui::panel::config::energy::gas::dialog::flow_rate_energy_sources%]"
+            }
+          },
           "integral": {
             "energy": {
               "create_title": "{count, plural,\n one {Create energy sensor?}\n other {Create energy sensors?}\n}",
@@ -11149,6 +11169,14 @@
               "name": "Water flow Sankey graph",
               "description": "This card shows the real-time flow of water in your home."
             },
+            "gas-sankey": {
+              "name": "Gas Sankey graph",
+              "description": "This card shows the distribution of gas consumption in your home on a Sankey graph."
+            },
+            "gas-flow-sankey": {
+              "name": "Gas flow Sankey graph",
+              "description": "This card shows the real-time flow of gas in your home."
+            },
             "energy-solar-consumed-gauge": {
               "name": "Solar consumed gauge",
               "description": "This card shows how much of the solar energy was used by your home and was not exported to the grid."
@@ -13015,9 +13043,11 @@
           "energy_devices_detail_graph_title": "Individual devices detail",
           "energy_sankey_title": "Energy flow",
           "water_sankey_title": "Water flow",
+          "gas_sankey_title": "Gas flow",
           "energy_top_consumers_title": "Top consumers",
           "power_sankey_title": "Current power flow",
           "water_flow_sankey_title": "Current water flow",
+          "gas_flow_sankey_title": "Current gas flow",
           "power_sources_graph_title": "Power sources",
           "energy_grid_balance_title": "Grid energy balance",
           "energy_grid_neutrality_gauge_title": "Grid neutrality gauge",
