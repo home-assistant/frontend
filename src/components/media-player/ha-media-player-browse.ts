@@ -1,6 +1,6 @@
-import type { ContextType } from "@lit/context";
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import { grid } from "@lit-labs/virtualizer/layouts/grid";
+import type { ContextType } from "@lit/context";
 
 import {
   mdiArrowUpRight,
@@ -55,7 +55,6 @@ import {
 } from "../../data/media_source";
 import { isTTSMediaSource } from "../../data/tts";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
-import { getWsErrorMessage } from "../../util/ws-error";
 import { panelIsReady } from "../../layouts/panel-ready";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
@@ -64,6 +63,7 @@ import type {
   HomeAssistantInternationalization,
 } from "../../types";
 import { documentationUrlForVersion } from "../../util/documentation-url";
+import { getWsErrorMessage } from "../../util/ws-error";
 import "../entity/ha-entity-picker";
 import "../ha-alert";
 import "../ha-button";
@@ -72,12 +72,11 @@ import "../ha-dropdown";
 import type { HaDropdownSelectEvent } from "../ha-dropdown";
 import "../ha-dropdown-item";
 import "../ha-icon-button";
-import "../input/ha-input-search";
-import type { HaInputSearch } from "../input/ha-input-search";
-import "./ha-media-browser-thumbnail";
 import "../ha-spinner";
 import "../ha-svg-icon";
 import "../ha-tooltip";
+import "../input/ha-input-search";
+import type { HaInputSearch } from "../input/ha-input-search";
 import { HaListItemButton } from "../item/ha-list-item-button";
 import "../list/ha-list-virtualized";
 import type {
@@ -88,6 +87,7 @@ import "./ha-browse-media-manual";
 import type { ManualMediaPickedEvent } from "./ha-browse-media-manual";
 import "./ha-browse-media-tts";
 import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
+import "./ha-media-browser-thumbnail";
 
 declare global {
   interface HASSDomEvents {
@@ -152,11 +152,12 @@ export class HaMediaPlayerBrowseListItem extends HaListItemButton {
     HaListItemButton.styles,
     css`
       :host {
+        direction: var(--direction);
         --ha-row-item-padding-block: 0;
         --ha-row-item-min-height: 48px;
       }
 
-      :host(.with-image) {
+      :host(.show-images) {
         --ha-row-item-padding-block: var(--ha-space-1);
         --ha-row-item-min-height: 64px;
       }
@@ -182,7 +183,7 @@ export class HaMediaPlayerBrowseListItem extends HaListItemButton {
         overflow: hidden;
       }
 
-      :host(.with-image) .graphic {
+      :host(.show-images) .graphic {
         width: 56px;
         height: 56px;
       }
@@ -1180,10 +1181,14 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _renderListItem = (row: HaListVirtualizedItem): TemplateResult => {
     const listRow = row as MediaBrowseListRow;
+    const mediaClass =
+      MediaClassBrowserSettings[this._currentItem!.media_class];
+    const showImages = mediaClass.show_list_images === true;
+
     if (listRow.type === "not-shown") {
       return html`
         <ha-media-player-browse-list-item
-          class="not-shown"
+          class=${classMap({ "not-shown": true, "show-images": showImages })}
           .interactive=${false}
         >
           <span slot="headline" class="title">
@@ -1196,15 +1201,13 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
 
     const child = listRow.item;
-    const currentItem = this._currentItem;
-    const mediaClass = MediaClassBrowserSettings[currentItem!.media_class];
-    const showImage = mediaClass.show_list_images && !!child.thumbnail;
+    const showImage = showImages && !!child.thumbnail;
 
     return html`
       <ha-media-player-browse-list-item
         @click=${this._childClicked}
         .item=${child}
-        class=${classMap({ "with-image": showImage })}
+        class=${classMap({ "show-images": showImages })}
         .thumbnail=${showImage ? child.thumbnail : undefined}
       >
         ${
