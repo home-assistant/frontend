@@ -18,6 +18,10 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
+    type: "date",
+    showElement: true,
+  },
+  {
     type: "entities",
     showElement: true,
   },
@@ -202,6 +206,14 @@ export const energyCards: Card[] = [
   },
   {
     type: "water-flow-sankey",
+    showElement: false,
+  },
+  {
+    type: "gas-sankey",
+    showElement: false,
+  },
+  {
+    type: "gas-flow-sankey",
     showElement: false,
   },
   {

@@ -73,6 +73,13 @@ class HuiSensorCard extends HuiEntityCard {
     super.setConfig(entityCardConfig);
   }
 
+  protected override _getStateColor(
+    _stateObj: HassEntity,
+    config: EntityCardConfig
+  ) {
+    return config.color ? true : (config.state_color ?? false);
+  }
+
   public getGridOptions(): LovelaceGridOptions {
     return {
       columns: 6,

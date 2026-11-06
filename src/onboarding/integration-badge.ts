@@ -1,6 +1,8 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
+import { brandsAccessTokenContext } from "../data/context";
 import { brandsUrl } from "../util/brands-url";
 
 @customElement("integration-badge")
@@ -15,6 +17,11 @@ class IntegrationBadge extends LitElement {
 
   @property({ attribute: false })
   public clickable = false;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  // @ts-ignore re-render trigger only, its value is never read
+  private _brandsAccessToken?: string;
 
   protected render(): TemplateResult {
     return html`

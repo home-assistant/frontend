@@ -65,11 +65,10 @@ export const describeAction = <T extends ActionType>(
   } catch (error: any) {
     // eslint-disable-next-line no-console
     console.error(error);
-    let msg = "Error in describing action";
-    if (error.message) {
-      msg += ": " + error.message;
-    }
-    return msg;
+    return hass.localize(
+      "ui.panel.config.automation.editor.actions.describe_error",
+      { error: error?.message || String(error) }
+    );
   }
 };
 

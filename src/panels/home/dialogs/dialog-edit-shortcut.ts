@@ -38,8 +38,8 @@ export class DialogEditShortcut
   }
 
   protected willUpdate(changedProps: PropertyValues): void {
-    if ((changedProps.has("_data") || changedProps.has("hass")) && this.hass) {
-      this._navInfo.update(this.hass, this._data?.path);
+    if (changedProps.has("_data")) {
+      this._navInfo.update(this._data?.path);
     }
   }
 

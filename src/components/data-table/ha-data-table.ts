@@ -17,6 +17,7 @@ import {
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { join } from "lit/directives/join";
+import { keyed } from "lit/directives/keyed";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { consume } from "../../common/decorators/consume";
@@ -124,7 +125,28 @@ export interface DataTableRowData {
 
 export type SortableColumnContainer = Record<string, ClonedDataTableColumnData>;
 
+// Renders the actions at the end of a group's header, they don't toggle the
+// group. Return `ha-icon-button`s with a label. They get the rows' icon
+// colour and size by default, which `--data-table-group-actions-color`,
+// `--data-table-group-actions-button-size` and
+// `--data-table-group-actions-icon-size` change for all of them; style a
+// button itself for its own colour or size. Not a slot per group, as WebKit
+// is slow to add and remove slots while the rows scroll.
+export type DataTableGroupActions = (
+  group: string
+) => TemplateResult | typeof nothing;
+
 const UNDEFINED_GROUP_KEY = "zzzzz_undefined";
+
+// The group a row's value of the group column puts it in. Rows without a value
+// share a reserved group, sorted to the bottom.
+const dataTableGroupKey = (
+  value: string | number | boolean | null | undefined
+) => {
+  const key = String(value);
+
+  return key === "undefined" ? UNDEFINED_GROUP_KEY : key;
+};
 const AUTO_FOCUS_ALLOWED_ACTIVE_TAGS = ["BODY", "HTML", "HOME-ASSISTANT"];
 
 // Default row height, used to fill the viewport with skeleton rows.
@@ -176,6 +198,9 @@ export class HaDataTable extends LitElement {
 
   @property({ attribute: false }) public groupOrder?: string[];
 
+  @property({ attribute: false })
+  public renderGroupActions?: DataTableGroupActions;
+
   @property({ attribute: false }) public sortColumn?: string;
 
   @property({ attribute: false }) public sortDirection: SortingDirection = null;
@@ -208,6 +233,9 @@ export class HaDataTable extends LitElement {
 
   @query(".sticky-group-header .group-header")
   private _stickyGroupHeaderCell?: HTMLElement;
+
+  @query(".sticky-group-header .group-actions")
+  private _stickyGroupActions?: HTMLElement;
 
   // Group pinned to the top of the scroller while its own header is scrolled out of view
   @state() private _stickyGroup?: string;
@@ -362,7 +390,13 @@ export class HaDataTable extends LitElement {
     }
 
     if (properties.has("filter")) {
-      this._debounceSearch(this.filter);
+      if (!this.hasUpdated) {
+        // A restored search must apply before the first filter pass, so the
+        // unfiltered rows are never shown
+        this._filter = this.filter;
+      } else {
+        this._debounceSearch(this.filter);
+      }
       this._lastSelectedRowId = null;
     }
 
@@ -476,9 +510,18 @@ export class HaDataTable extends LitElement {
           this.groupOrder,
           this._collapsedGroups,
           this.sortColumn,
-          this.sortDirection
+          this.sortDirection,
+          this.renderGroupActions
         )
       : [];
+
+    // The pinned group header is the same row as its group's header
+    const stickyGroupIndex =
+      this._stickyGroup === undefined
+        ? -1
+        : items.findIndex(
+            (item) => item.append && item.groupHeader === this._stickyGroup
+          );
 
     return html`
       <div class="mdc-data-table">
@@ -720,6 +763,34 @@ export class HaDataTable extends LitElement {
                       </div>
                     `
               : html`
+                  ${
+                    this.groupColumn &&
+                    !this.autoHeight &&
+                    this._stickyGroup !== undefined
+                      ? html`<div
+                          class="mdc-data-table__row sticky-group-header"
+                          role="row"
+                          aria-rowindex=${ifDefined(
+                            stickyGroupIndex === -1
+                              ? undefined
+                              : stickyGroupIndex + (this.loadError ? 3 : 2)
+                          )}
+                          .group=${this._stickyGroup}
+                          @click=${this._collapseStickyGroup}
+                        >
+                          ${keyed(
+                            this._stickyGroup,
+                            this._renderGroupHeader(
+                              this._stickyGroup,
+                              this._collapsedGroups.includes(this._stickyGroup),
+                              this._i18n?.localize,
+                              this.renderGroupActions,
+                              true
+                            )
+                          )}
+                        </div>`
+                      : nothing
+                  }
                   <lit-virtualizer
                     scroller
                     class="mdc-data-table__content scroller ha-scrollbar ${classMap(
@@ -732,25 +803,6 @@ export class HaDataTable extends LitElement {
                     .keyFunction=${this._keyFunction}
                     .renderItem=${renderRow}
                   ></lit-virtualizer>
-                  ${
-                    this.groupColumn &&
-                    !this.autoHeight &&
-                    this._stickyGroup !== undefined
-                      ? html`<div
-                          class="mdc-data-table__row sticky-group-header"
-                          aria-hidden="true"
-                          .group=${this._stickyGroup}
-                          @click=${this._collapseStickyGroup}
-                        >
-                          ${this._renderGroupHeader(
-                            this._stickyGroup,
-                            this._collapsedGroups.includes(this._stickyGroup),
-                            this._i18n?.localize,
-                            true
-                          )}
-                        </div>`
-                      : nothing
-                  }
                 `
           }
         </div>
@@ -758,7 +810,14 @@ export class HaDataTable extends LitElement {
     `;
   }
 
-  private _keyFunction = (row: DataTableRowData) => row?.[this.id] || row;
+  // Group headers are keyed by their group, so they keep their actions' state
+  // when the data changes. The prefixes keep them apart from row ids.
+  private _keyFunction = (row: DataTableRowData) =>
+    row?.[this.id]
+      ? `row-${row[this.id]}`
+      : row?.groupHeader !== undefined
+        ? `group-${row.groupHeader}`
+        : row;
 
   private _renderMainValue(value: unknown) {
     return this.clickable
@@ -1018,19 +1077,18 @@ export class HaDataTable extends LitElement {
       groupOrder: string[] | undefined,
       collapsedGroups: string[],
       sortColumn: string | undefined,
-      sortDirection: SortingDirection
+      sortDirection: SortingDirection,
+      renderGroupActions: DataTableGroupActions | undefined
     ) => {
       if (appendRow || groupColumn) {
         let items = [...data];
 
         if (groupColumn) {
           const isGroupSortColumn = sortColumn === groupColumn;
-          const grouped = groupBy(items, (item) => item[groupColumn]);
-          if (grouped.undefined) {
-            // make sure ungrouped items are at the bottom
-            grouped[UNDEFINED_GROUP_KEY] = grouped.undefined;
-            delete grouped.undefined;
-          }
+
+          const grouped = groupBy(items, (item) =>
+            dataTableGroupKey(item[groupColumn])
+          );
           const sortedEntries: [string, DataTableRowData[]][] = Object.keys(
             grouped
           )
@@ -1079,7 +1137,8 @@ export class HaDataTable extends LitElement {
               content: this._renderGroupHeader(
                 groupName,
                 collapsedGroups.includes(groupName),
-                localize
+                localize,
+                renderGroupActions
               ),
             });
             if (!collapsedGroups.includes(groupName)) {
@@ -1105,11 +1164,14 @@ export class HaDataTable extends LitElement {
     groupName: string,
     collapsed: boolean,
     localize: LocalizeFunc | undefined,
+    renderGroupActions: DataTableGroupActions | undefined,
     sticky = false
   ) {
-    // The sticky copy is hidden from assistive technology, so its button is
-    // made inert. It handles clicks on its whole row instead, as its cell
-    // shifts with horizontal scrolling.
+    // The sticky copy's button and name are hidden from assistive technology,
+    // and its button is made inert. It handles clicks on its whole row
+    // instead, as its cell shifts with horizontal scrolling. The group's
+    // actions show in the sticky copy while it is pinned, so they stay
+    // available there.
     return html`<div
       class="mdc-data-table__cell group-header"
       role="cell"
@@ -1127,12 +1189,25 @@ export class HaDataTable extends LitElement {
         ?inert=${sticky}
       >
       </ha-icon-button>
-      ${
-        groupName === UNDEFINED_GROUP_KEY
-          ? localize?.("ui.components.data-table.ungrouped") || "Ungrouped"
-          : groupName || ""
-      }
+      <span
+        class="group-name"
+        aria-hidden=${ifDefined(sticky ? "true" : undefined)}
+      >
+        ${
+          groupName === UNDEFINED_GROUP_KEY
+            ? localize?.("ui.components.data-table.ungrouped") || "Ungrouped"
+            : groupName || ""
+        }
+      </span>
+      <div class="group-actions" @click=${this._stopGroupToggle}>
+        ${renderGroupActions?.(groupName)}
+      </div>
     </div>`;
+  }
+
+  // Actions don't toggle the group their header belongs to
+  private _stopGroupToggle(ev: Event) {
+    ev.stopPropagation();
   }
 
   private _memFilterData = memoizeOne(
@@ -1206,7 +1281,8 @@ export class HaDataTable extends LitElement {
       this.groupOrder,
       this._collapsedGroups,
       this.sortColumn,
-      this.sortDirection
+      this.sortDirection,
+      this.renderGroupActions
     );
 
     if (
@@ -1436,6 +1512,11 @@ export class HaDataTable extends LitElement {
     if (this._stickyGroupHeaderCell) {
       this._stickyGroupHeaderCell.style.transform = `translateX(${-scrollLeft}px)`;
     }
+
+    // Its actions stay at the end of the visible row, like the rows' own
+    if (this._stickyGroupActions) {
+      this._stickyGroupActions.style.transform = `translateX(${scrollLeft}px)`;
+    }
   }
 
   @eventOptions({ passive: true })
@@ -1503,18 +1584,15 @@ export class HaDataTable extends LitElement {
   }
 
   public collapseAllGroups() {
-    if (
-      !this.groupColumn ||
-      !this.data.some((item) => item[this.groupColumn!])
-    ) {
+    const groupColumn = this.groupColumn;
+
+    if (!groupColumn || !this.data.some((item) => item[groupColumn])) {
       return;
     }
-    const grouped = groupBy(this.data, (item) => item[this.groupColumn!]);
-    if (grouped.undefined) {
-      // undefined is a reserved group name
-      grouped[UNDEFINED_GROUP_KEY] = grouped.undefined;
-      delete grouped.undefined;
-    }
+
+    const grouped = groupBy(this.data, (item) =>
+      dataTableGroupKey(item[groupColumn])
+    );
     this._collapsedGroups = Object.keys(grouped);
     this._lastSelectedRowId = null;
     fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
@@ -1873,6 +1951,16 @@ export class HaDataTable extends LitElement {
           display: flex;
           align-items: center;
           cursor: pointer;
+          /* Clipping would make the cell the actions' sticky scroll container,
+             and cut off the pinned header's actions */
+          overflow: visible;
+        }
+
+        .group-name {
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         .group-header ha-icon-button {
@@ -1881,6 +1969,36 @@ export class HaDataTable extends LitElement {
 
         .group-header ha-icon-button.collapsed {
           transform: rotate(180deg);
+        }
+
+        .group-actions {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+          /* Centre in the row, not below the header's top padding */
+          align-self: stretch;
+          margin-top: -12px;
+          margin-inline-start: auto;
+          /* The rows' icon button size, inherited by the actions */
+          --_button-size: var(--data-table-group-actions-button-size, 48px);
+          --ha-icon-button-size: var(--_button-size);
+          --mdc-icon-size: var(--data-table-group-actions-icon-size, 24px);
+          /* Centre the last action over the row's last cell, such as an
+             overflow menu, which is a 48px icon button */
+          padding-inline-end: calc(
+            var(--ha-space-4) + (48px - var(--_button-size)) / 2
+          );
+          /* Stay in view when the rows scroll horizontally */
+          position: sticky;
+          inset-inline-end: 0;
+          cursor: default;
+          /* Don't pass the group name's weight on to the actions */
+          font-weight: var(--ha-font-weight-normal);
+          /* Inherited by the actions, like the rows' icon cells */
+          color: var(
+            --data-table-group-actions-color,
+            var(--secondary-text-color)
+          );
         }
 
         .sticky-group-header {

@@ -13,8 +13,8 @@ import {
 import type { FanFavorite } from "../../data/entity/entity_registry";
 import type { FanEntity } from "../../data/fan";
 import {
+  computeDefaultFanSpeedStyle,
   computeFanSpeedIcon,
-  computeFanSpeeds,
   fanPercentageToSpeed,
   filterFanFavorite,
 } from "../../data/fan";
@@ -48,8 +48,8 @@ export class HaFanFavoriteButton extends LitElement {
   @property({ type: Boolean }) public active = false;
 
   private _renderSpeed(percentage: number): TemplateResult {
-    const speeds = computeFanSpeeds(this.stateObj);
-    if (speeds) {
+    // Match the speed control, which shows a slider above 6 speeds.
+    if (computeDefaultFanSpeedStyle(this.stateObj) === "buttons") {
       const speed = fanPercentageToSpeed(this.stateObj, percentage);
       const path = computeFanSpeedIcon(this.stateObj, speed);
       if (path) {

@@ -30,6 +30,7 @@ import "../components/chips/ha-assist-chip";
 import "../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
+  DataTableGroupActions,
   DataTableRowData,
   HaDataTable,
   SortingDirection,
@@ -215,6 +216,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public initialGroupColumn?: string;
 
   @property({ attribute: false }) public groupOrder?: string[];
+
+  @property({ attribute: false })
+  public renderGroupActions?: DataTableGroupActions;
 
   @property({ attribute: false }) public columnOrder?: string[];
 
@@ -627,6 +631,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   .sortDirection=${this._sortDirection}
                   .groupColumn=${this._groupColumn}
                   .groupOrder=${this.groupOrder}
+                  .renderGroupActions=${this.renderGroupActions}
                   .initialCollapsedGroups=${this.initialCollapsedGroups}
                   .columnOrder=${this.columnOrder}
                   .hiddenColumns=${this.hiddenColumns}
@@ -1020,6 +1025,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       display: flex;
       align-items: center;
       color: var(--secondary-text-color);
+    }
+    .search-toolbar ha-input-search {
+      min-width: 0;
     }
     .filters {
       --mdc-text-field-fill-color: var(--input-fill-color);

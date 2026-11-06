@@ -1,40 +1,34 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import { beforeEach, describe, expect, it } from "vitest";
 import { getStates } from "../../../src/common/entity/get_states";
-import type { HomeAssistant } from "../../../src/types";
 
 describe("getStates", () => {
-  let mockHass: HomeAssistant;
+  let mockStates: HassEntities;
 
   beforeEach(() => {
-    mockHass = {
-      states: {
-        "zone.home": {
-          entity_id: "zone.home",
-          state: "zoning",
-          attributes: {
-            friendly_name: "Home",
-          },
-        } as HassEntity,
-        "zone.work": {
-          entity_id: "zone.work",
-          state: "zoning",
-          attributes: {
-            friendly_name: "Work",
-          },
-        } as HassEntity,
-        "zone.office": {
-          entity_id: "zone.office",
-          state: "zoning",
-          attributes: {
-            friendly_name: "Office",
-          },
-        } as HassEntity,
-      },
-      locale: {
-        language: "en",
-      },
-    } as any;
+    mockStates = {
+      "zone.home": {
+        entity_id: "zone.home",
+        state: "zoning",
+        attributes: {
+          friendly_name: "Home",
+        },
+      } as HassEntity,
+      "zone.work": {
+        entity_id: "zone.work",
+        state: "zoning",
+        attributes: {
+          friendly_name: "Work",
+        },
+      } as HassEntity,
+      "zone.office": {
+        entity_id: "zone.office",
+        state: "zoning",
+        attributes: {
+          friendly_name: "Office",
+        },
+      } as HassEntity,
+    };
   });
 
   const createMockEntity = (
@@ -53,7 +47,7 @@ describe("getStates", () => {
   describe("Fixed domain states", () => {
     it("should return alarm control panel states", () => {
       const entity = createMockEntity("alarm_control_panel.test");
-      const result = getStates(mockHass, entity);
+      const result = getStates(mockStates, "en", entity);
 
       expect(result).toEqual(
         expect.arrayContaining([
@@ -76,7 +70,7 @@ describe("getStates", () => {
 
     it("should return light states", () => {
       const entity = createMockEntity("light.test");
-      const result = getStates(mockHass, entity);
+      const result = getStates(mockStates, "en", entity);
 
       expect(result).toContain("on");
       expect(result).toContain("off");
@@ -87,7 +81,7 @@ describe("getStates", () => {
 
     it("should return empty array plus unavailable states for button domain", () => {
       const entity = createMockEntity("button.test");
-      const result = getStates(mockHass, entity);
+      const result = getStates(mockStates, "en", entity);
 
       expect(result).toContain("unavailable");
       expect(result).toContain("unknown");
@@ -96,7 +90,7 @@ describe("getStates", () => {
 
     it("should return weather states", () => {
       const entity = createMockEntity("weather.test");
-      const result = getStates(mockHass, entity);
+      const result = getStates(mockStates, "en", entity);
 
       expect(result).toEqual(
         expect.arrayContaining([
@@ -126,7 +120,7 @@ describe("getStates", () => {
   describe("Fixed domain attribute states", () => {
     it("should return binary sensor device classes", () => {
       const entity = createMockEntity("binary_sensor.test");
-      const result = getStates(mockHass, entity, "device_class");
+      const result = getStates(mockStates, "en", entity, "device_class");
 
       expect(result).toEqual(
         expect.arrayContaining([
@@ -166,7 +160,7 @@ describe("getStates", () => {
 
     it("should return media player device classes", () => {
       const entity = createMockEntity("media_player.test");
-      const result = getStates(mockHass, entity, "device_class");
+      const result = getStates(mockStates, "en", entity, "device_class");
 
       expect(result).toContain("tv");
       expect(result).toContain("speaker");
@@ -176,7 +170,7 @@ describe("getStates", () => {
 
     it("should return sensor device classes", () => {
       const entity = createMockEntity("sensor.test");
-      const result = getStates(mockHass, entity, "device_class");
+      const result = getStates(mockStates, "en", entity, "device_class");
 
       expect(result).toEqual(
         expect.arrayContaining([
@@ -223,7 +217,7 @@ describe("getStates", () => {
 
     it("should return empty array for unknown attribute", () => {
       const entity = createMockEntity("light.test");
-      const result = getStates(mockHass, entity, "unknown_attribute");
+      const result = getStates(mockStates, "en", entity, "unknown_attribute");
 
       expect(result).toEqual([]);
     });
@@ -234,7 +228,7 @@ describe("getStates", () => {
       const entity = createMockEntity("climate.test", "off", {
         hvac_modes: ["heat", "cool", "auto", "off"],
       });
-      const result = getStates(mockHass, entity);
+      const result = getStates(mockStates, "en", entity);
 
       expect(result).toContain("heat");
       expect(result).toContain("cool");
@@ -249,7 +243,7 @@ describe("getStates", () => {
       const entity = createMockEntity("climate.test", "heat", {
         fan_modes: ["low", "medium", "high", "auto"],
       });
-      const result = getStates(mockHass, entity, "fan_mode");
+      const result = getStates(mockStates, "en", entity, "fan_mode");
 
       expect(result).toContain("low");
       expect(result).toContain("medium");
@@ -262,7 +256,7 @@ describe("getStates", () => {
       const entity = createMockEntity("climate.test", "heat", {
         preset_modes: ["eco", "comfort", "sleep"],
       });
-      const result = getStates(mockHass, entity, "preset_mode");
+      const result = getStates(mockStates, "en", entity, "preset_mode");
 
       expect(result).toContain("eco");
       expect(result).toContain("comfort");
@@ -274,7 +268,7 @@ describe("getStates", () => {
       const entity = createMockEntity("climate.test", "cool", {
         swing_modes: ["on", "off", "vertical", "horizontal"],
       });
-      const result = getStates(mockHass, entity, "swing_mode");
+      const result = getStates(mockStates, "en", entity, "swing_mode");
 
       expect(result).toContain("on");
       expect(result).toContain("off");
@@ -287,7 +281,7 @@ describe("getStates", () => {
   describe("Device tracker and person zones", () => {
     it("should return zones for device_tracker without attributes", () => {
       const entity = createMockEntity("device_tracker.test");
-      const result = getStates(mockHass, entity);
+      const result = getStates(mockStates, "en", entity);
 
       expect(result).toContain("home");
       expect(result).toContain("not_home");
@@ -300,7 +294,7 @@ describe("getStates", () => {
 
     it("should return zones for person without attributes", () => {
       const entity = createMockEntity("person.test");
-      const result = getStates(mockHass, entity);
+      const result = getStates(mockStates, "en", entity);
 
       expect(result).toContain("home");
       expect(result).toContain("not_home");
@@ -313,7 +307,7 @@ describe("getStates", () => {
 
     it("should not return zones for device_tracker with attributes", () => {
       const entity = createMockEntity("device_tracker.test");
-      const result = getStates(mockHass, entity, "source_type");
+      const result = getStates(mockStates, "en", entity, "source_type");
 
       expect(result).toContain("bluetooth");
       expect(result).toContain("bluetooth_le");
@@ -328,7 +322,7 @@ describe("getStates", () => {
       const entity = createMockEntity("input_select.test", "option1", {
         options: ["option1", "option2", "option3"],
       });
-      const result = getStates(mockHass, entity);
+      const result = getStates(mockStates, "en", entity);
 
       expect(result).toContain("option1");
       expect(result).toContain("option2");
@@ -342,7 +336,7 @@ describe("getStates", () => {
       const entity = createMockEntity("select.test", "mode1", {
         options: ["mode1", "mode2", "mode3"],
       });
-      const result = getStates(mockHass, entity);
+      const result = getStates(mockStates, "en", entity);
 
       expect(result).toContain("mode1");
       expect(result).toContain("mode2");
@@ -358,7 +352,7 @@ describe("getStates", () => {
       const entity = createMockEntity("light.test", "on", {
         effect_list: ["rainbow", "colorloop", "pulse"],
       });
-      const result = getStates(mockHass, entity, "effect");
+      const result = getStates(mockStates, "en", entity, "effect");
 
       expect(result).toContain("rainbow");
       expect(result).toContain("colorloop");
@@ -370,7 +364,7 @@ describe("getStates", () => {
       const entity = createMockEntity("light.test", "on", {
         supported_color_modes: ["rgb", "xy", "hs"],
       });
-      const result = getStates(mockHass, entity, "color_mode");
+      const result = getStates(mockStates, "en", entity, "color_mode");
 
       expect(result).toContain("rgb");
       expect(result).toContain("xy");
@@ -380,7 +374,7 @@ describe("getStates", () => {
 
     it("should return empty for light effect without effect_list", () => {
       const entity = createMockEntity("light.test", "on", {});
-      const result = getStates(mockHass, entity, "effect");
+      const result = getStates(mockStates, "en", entity, "effect");
 
       expect(result).toEqual([]);
     });
@@ -391,7 +385,7 @@ describe("getStates", () => {
       const entity = createMockEntity("media_player.test", "playing", {
         sound_mode_list: ["stereo", "surround", "music"],
       });
-      const result = getStates(mockHass, entity, "sound_mode");
+      const result = getStates(mockStates, "en", entity, "sound_mode");
 
       expect(result).toContain("stereo");
       expect(result).toContain("surround");
@@ -403,7 +397,7 @@ describe("getStates", () => {
       const entity = createMockEntity("media_player.test", "playing", {
         source_list: ["spotify", "radio", "cd"],
       });
-      const result = getStates(mockHass, entity, "source");
+      const result = getStates(mockStates, "en", entity, "source");
 
       expect(result).toContain("spotify");
       expect(result).toContain("radio");
@@ -418,7 +412,7 @@ describe("getStates", () => {
         device_class: "enum",
         options: ["low", "medium", "high"],
       });
-      const result = getStates(mockHass, entity);
+      const result = getStates(mockStates, "en", entity);
 
       expect(result).toContain("low");
       expect(result).toContain("medium");
@@ -433,7 +427,7 @@ describe("getStates", () => {
         device_class: "temperature",
         options: ["low", "medium", "high"], // This shouldn't be used
       });
-      const result = getStates(mockHass, entity);
+      const result = getStates(mockStates, "en", entity);
 
       expect(result).toContain("unavailable");
       expect(result).toContain("unknown");
@@ -446,7 +440,7 @@ describe("getStates", () => {
       const entity = createMockEntity("event.test", "triggered", {
         event_types: ["button_press", "motion", "door_open"],
       });
-      const result = getStates(mockHass, entity, "event_type");
+      const result = getStates(mockStates, "en", entity, "event_type");
 
       expect(result).toContain("button_press");
       expect(result).toContain("motion");
@@ -458,7 +452,7 @@ describe("getStates", () => {
       const entity = createMockEntity("fan.test", "on", {
         preset_modes: ["breeze", "sleep", "auto"],
       });
-      const result = getStates(mockHass, entity, "preset_mode");
+      const result = getStates(mockStates, "en", entity, "preset_mode");
 
       expect(result).toContain("breeze");
       expect(result).toContain("sleep");
@@ -470,7 +464,7 @@ describe("getStates", () => {
       const entity = createMockEntity("humidifier.test", "on", {
         available_modes: ["normal", "eco", "boost"],
       });
-      const result = getStates(mockHass, entity, "mode");
+      const result = getStates(mockStates, "en", entity, "mode");
 
       expect(result).toContain("normal");
       expect(result).toContain("eco");
@@ -482,7 +476,7 @@ describe("getStates", () => {
       const entity = createMockEntity("remote.test", "on", {
         activity_list: ["watch_tv", "listen_music", "gaming"],
       });
-      const result = getStates(mockHass, entity, "current_activity");
+      const result = getStates(mockStates, "en", entity, "current_activity");
 
       expect(result).toContain("watch_tv");
       expect(result).toContain("listen_music");
@@ -494,7 +488,7 @@ describe("getStates", () => {
       const entity = createMockEntity("vacuum.test", "cleaning", {
         fan_speed_list: ["quiet", "standard", "high"],
       });
-      const result = getStates(mockHass, entity, "fan_speed");
+      const result = getStates(mockStates, "en", entity, "fan_speed");
 
       expect(result).toContain("quiet");
       expect(result).toContain("standard");
@@ -506,7 +500,7 @@ describe("getStates", () => {
       const entity = createMockEntity("water_heater.test", "eco", {
         operation_list: ["eco", "electric", "gas"],
       });
-      const result = getStates(mockHass, entity);
+      const result = getStates(mockStates, "en", entity);
 
       expect(result).toContain("eco");
       expect(result).toContain("electric");
@@ -520,7 +514,7 @@ describe("getStates", () => {
       const entity = createMockEntity("water_heater.test", "eco", {
         operation_list: ["eco", "electric", "gas"],
       });
-      const result = getStates(mockHass, entity, "operation_mode");
+      const result = getStates(mockStates, "en", entity, "operation_mode");
 
       expect(result).toContain("eco");
       expect(result).toContain("electric");
@@ -532,7 +526,7 @@ describe("getStates", () => {
   describe("Edge cases and boundary conditions", () => {
     it("should handle missing attributes gracefully", () => {
       const entity = createMockEntity("light.test", "off", {});
-      const result = getStates(mockHass, entity);
+      const result = getStates(mockStates, "en", entity);
 
       // Should still return fixed states and unavailable states
       expect(result).toContain("on");
@@ -546,14 +540,14 @@ describe("getStates", () => {
       const entity = createMockEntity("light.test", "on", {
         effect_list: undefined,
       });
-      const result = getStates(mockHass, entity, "effect");
+      const result = getStates(mockStates, "en", entity, "effect");
 
       expect(result).toEqual([]);
     });
 
     it("should not include unavailable states when attribute is specified", () => {
       const entity = createMockEntity("binary_sensor.test");
-      const result = getStates(mockHass, entity, "device_class");
+      const result = getStates(mockStates, "en", entity, "device_class");
 
       expect(result).not.toContain("unavailable");
       expect(result).not.toContain("unknown");
@@ -563,20 +557,16 @@ describe("getStates", () => {
       const entity = createMockEntity("light.test", "on", {
         // Simulate case where fixed and dynamic states might overlap
       });
-      const result = getStates(mockHass, entity);
+      const result = getStates(mockStates, "en", entity);
 
       // Each state should only appear once
       const uniqueStates = [...new Set(result)];
       expect(result.length).toBe(uniqueStates.length);
     });
 
-    it("should handle empty hass.states object", () => {
-      const emptyHass = {
-        ...mockHass,
-        states: {},
-      };
+    it("should handle empty states object", () => {
       const entity = createMockEntity("device_tracker.test");
-      const result = getStates(emptyHass, entity);
+      const result = getStates({}, "en", entity);
 
       // Should still return fixed states
       expect(result).toContain("home");
@@ -587,19 +577,16 @@ describe("getStates", () => {
     });
 
     it("names zones without friendly_name after their object id", () => {
-      const hassWithoutFriendlyName = {
-        ...mockHass,
-        states: {
-          ...mockHass.states,
-          "zone.no_name": {
-            entity_id: "zone.no_name",
-            state: "zoning",
-            attributes: {}, // No friendly_name
-          } as HassEntity,
-        },
+      const statesWithoutFriendlyName = {
+        ...mockStates,
+        "zone.no_name": {
+          entity_id: "zone.no_name",
+          state: "zoning",
+          attributes: {}, // No friendly_name
+        } as HassEntity,
       };
       const entity = createMockEntity("device_tracker.test");
-      const result = getStates(hassWithoutFriendlyName, entity);
+      const result = getStates(statesWithoutFriendlyName, "en", entity);
 
       expect(result).toEqual(
         expect.arrayContaining([

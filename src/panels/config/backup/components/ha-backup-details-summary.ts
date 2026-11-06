@@ -135,7 +135,7 @@ class HaBackupDetailsSummary extends LitElement {
 
   static styles = css`
     :host {
-      max-width: 690px;
+      max-width: var(--ha-content-width-narrow);
       width: 100%;
       margin: 0 auto;
       gap: var(--ha-space-6);

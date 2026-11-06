@@ -85,6 +85,15 @@ export class HaFilterDevices extends LitElement {
     }
   }
 
+  protected updated(properties: PropertyValues<this>) {
+    super.updated(properties);
+
+    // The rows don't change with the value, so render the selection again
+    if (properties.has("value")) {
+      this._listElement?.requestRowsUpdate();
+    }
+  }
+
   protected render() {
     return html`
       <ha-expansion-panel
@@ -269,7 +278,6 @@ export class HaFilterDevices extends LitElement {
       value: undefined,
       items: undefined,
     });
-    this._listElement?.clearSelection();
   }
 
   static styles = [

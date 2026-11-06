@@ -127,9 +127,9 @@ export const supervisorMountDescription = (mount: SupervisorMount): string => {
 };
 
 export const fetchSupervisorMounts = async (
-  hass: HomeAssistant
+  callWS: HomeAssistant["callWS"]
 ): Promise<SupervisorMounts> =>
-  hass.callWS({
+  callWS({
     type: "supervisor/api",
     endpoint: `/mounts`,
     method: "get",

@@ -29,16 +29,14 @@ export class HaConfigSectionEntityIdFormat extends LitElement {
 
   static styles = css`
     .content {
-      padding: var(--ha-space-7) var(--ha-space-5) var(--ha-space-6);
-      max-width: 1040px;
+      padding: var(--ha-space-7) var(--ha-content-gutter) var(--ha-space-6);
+      max-width: var(--ha-content-width-narrow);
       margin: 0 auto;
       display: flex;
       flex-direction: column;
       gap: var(--ha-space-5);
     }
     ha-config-entity-id-format {
-      max-width: 600px;
-      margin: 0 auto;
       width: 100%;
     }
   `;

@@ -34,6 +34,7 @@ export interface RepositoryBase {
 
 export interface RepositoryInfo extends RepositoryBase {
   additional_info: string;
+  beta: boolean;
   default_branch: string;
   issues: number;
   releases: string[];
@@ -96,6 +97,18 @@ export const uninstallMarketplaceRepository = (
   hass.callWS<null>({
     type: "marketplace/repository/uninstall",
     repository: repositoryId,
+  });
+
+// The latest version and the updates include pre-releases when on
+export const setMarketplaceRepositoryBeta = (
+  hass: CallWS,
+  repositoryId: string,
+  showBeta: boolean
+) =>
+  hass.callWS<null>({
+    type: "marketplace/repository/beta",
+    repository: repositoryId,
+    show_beta: showBeta,
   });
 
 // Fetches the information of the repository from GitHub again

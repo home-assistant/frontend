@@ -36,6 +36,8 @@ export class HaEnergyPowerConfig extends LitElement {
 
   @property({ attribute: false }) public excludeList?: string[];
 
+  @property({ type: Boolean }) public disabled = false;
+
   /** Entity id of the power sensor generated for the saved config, if any. */
   @property({ attribute: false }) public helperEntityId?: string;
 
@@ -81,6 +83,7 @@ export class HaEnergyPowerConfig extends LitElement {
 
       <ha-radio-group
         .value=${this.powerType}
+        .disabled=${this.disabled}
         name="powerType"
         @change=${this._handlePowerTypeChanged}
       >
@@ -112,7 +115,7 @@ export class HaEnergyPowerConfig extends LitElement {
         this.powerType === "standard"
           ? html`
               <ha-statistic-picker
-                .hass=${this.hass}
+                .disabled=${this.disabled}
                 .includeUnitClass=${powerUnitClasses}
                 .value=${this.powerConfig.stat_rate}
                 .label=${this.hass.localize(
@@ -135,7 +138,7 @@ export class HaEnergyPowerConfig extends LitElement {
         this.powerType === "inverted"
           ? html`
               <ha-statistic-picker
-                .hass=${this.hass}
+                .disabled=${this.disabled}
                 .includeUnitClass=${powerUnitClasses}
                 .value=${this.powerConfig.stat_rate_inverted}
                 .label=${this.hass.localize(
@@ -159,7 +162,7 @@ export class HaEnergyPowerConfig extends LitElement {
         this.powerType === "two_sensors"
           ? html`
               <ha-statistic-picker
-                .hass=${this.hass}
+                .disabled=${this.disabled}
                 .includeUnitClass=${powerUnitClasses}
                 .value=${this.powerConfig.stat_rate_from}
                 .label=${this.hass.localize(
@@ -174,7 +177,7 @@ export class HaEnergyPowerConfig extends LitElement {
                 .errorMessage=${this._requiredError}
               ></ha-statistic-picker>
               <ha-statistic-picker
-                .hass=${this.hass}
+                .disabled=${this.disabled}
                 .includeUnitClass=${powerUnitClasses}
                 .value=${this.powerConfig.stat_rate_to}
                 .label=${this.hass.localize(

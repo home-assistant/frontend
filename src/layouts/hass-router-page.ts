@@ -104,6 +104,7 @@ export class HassRouterPage extends ReactiveElement {
       const queryParams = window.location.search;
       navigate(`${route.prefix}/${defaultPage}${queryParams}`, {
         replace: true,
+        keepDialogs: true,
       });
     }
 
@@ -134,6 +135,7 @@ export class HassRouterPage extends ReactiveElement {
         if (route) {
           navigate(`${route.prefix}/${result}${location.search}`, {
             replace: true,
+            keepDialogs: true,
           });
         }
       }

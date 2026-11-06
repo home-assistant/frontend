@@ -122,7 +122,10 @@ export class HaDeviceTrigger extends LitElement {
     try {
       // Resolve the candidates before exposing the split map, so the picker
       // never offers one that cannot host the automation.
-      const compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+      const compositeSplits = await fetchDeviceCompositeSplits(
+        this.hass.connection,
+        this.hass.callWS
+      );
       await this._resolveReplacements(compositeSplits);
       this._compositeSplits = compositeSplits;
     } catch (_err) {
@@ -140,7 +143,6 @@ export class HaDeviceTrigger extends LitElement {
         .value=${deviceId}
         .replacementDeviceIds=${this._replacementDeviceIds}
         @value-changed=${this._devicePicked}
-        .hass=${this.hass}
         .disabled=${this.disabled}
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.device.label"
@@ -150,7 +152,6 @@ export class HaDeviceTrigger extends LitElement {
         .value=${this.trigger}
         .deviceId=${deviceId}
         @value-changed=${this._deviceTriggerPicked}
-        .hass=${this.hass}
         .disabled=${this.disabled}
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.device.trigger"

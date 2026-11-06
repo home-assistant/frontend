@@ -33,16 +33,25 @@ const cardConfigStruct = assign(
           literal("grid"),
           literal("solar"),
           literal("battery"),
+          literal("home"),
           literal("gas"),
           literal("water"),
         ])
       )
     ),
     show_only_totals: optional(boolean()),
+    combine_sources: optional(boolean()),
   })
 );
 
-const sourceTypeOpts = ["grid", "solar", "battery", "gas", "water"] as const;
+const sourceTypeOpts = [
+  "grid",
+  "solar",
+  "battery",
+  "home",
+  "gas",
+  "water",
+] as const;
 
 @customElement("hui-energy-sources-table-card-editor")
 export class HuiEnergySourcesTableCardEditor
@@ -83,6 +92,11 @@ export class HuiEnergySourcesTableCardEditor
           },
           {
             name: "show_only_totals",
+            required: false,
+            selector: { boolean: {} },
+          },
+          {
+            name: "combine_sources",
             required: false,
             selector: { boolean: {} },
           },

@@ -6,8 +6,9 @@ import {
   mdiPlus,
   mdiTag,
 } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
+import type { ContextType } from "@lit/context";
+import type { Connection, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { createRef, ref } from "lit/directives/ref";
@@ -16,8 +17,12 @@ import {
   FilterPanelController,
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
+import { consume } from "../common/decorators/consume";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import { transform } from "../common/decorators/transform";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import type { LocalizeFunc } from "../common/translations/localize";
 import type { CategoryRegistryEntry } from "../data/category_registry";
 import {
   createCategoryRegistryEntry,
@@ -25,23 +30,34 @@ import {
   subscribeCategoryRegistry,
   updateCategoryRegistryEntry,
 } from "../data/category_registry";
+import { apiContext, connectionContext } from "../data/context";
 import { showConfirmationDialog } from "../dialogs/generic/show-dialog-box";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { showCategoryRegistryDetailDialog } from "../panels/config/category/show-dialog-category-registry-detail";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistantConnection } from "../types";
+import "./ha-button";
 import "./ha-dropdown";
 import type { HaDropdownSelectEvent } from "./ha-dropdown";
 import "./ha-dropdown-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
-import "./ha-list-item";
 import "./item/ha-list-item-option";
 import "./list/ha-list-selectable";
 
 @customElement("ha-filter-categories")
-export class HaFilterCategories extends SubscribeMixin(LitElement) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+export class HaFilterCategories extends LitElement {
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<HomeAssistantConnection, Connection>({
+    transformer: (value) => value?.connection,
+  })
+  private _connection?: Connection;
 
   @property({ attribute: false }) public value?: string[];
 
@@ -57,18 +73,66 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
 
   private _panel = new FilterPanelController(this, this._content);
 
-  protected hassSubscribeRequiredHostProps = ["scope"];
+  private _unsubCategories?: UnsubscribeFunc;
 
-  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeCategoryRegistry(
-        this.hass.connection,
-        this.scope!,
-        (categories) => {
+  private _categoriesConnection?: Connection;
+
+  private _categoriesScope?: string;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._subscribeCategories();
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribeCategories();
+  }
+
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (changedProps.get("scope") !== undefined) {
+      this._categories = [];
+    }
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.has("_connection") || changedProps.has("scope")) {
+      this._subscribeCategories();
+    }
+  }
+
+  private _subscribeCategories() {
+    if (
+      this._connection === this._categoriesConnection &&
+      this.scope === this._categoriesScope
+    ) {
+      return;
+    }
+    this._unsubscribeCategories();
+    if (!this._connection || !this.scope || !this.isConnected) {
+      return;
+    }
+    const scope = this.scope;
+    this._categoriesConnection = this._connection;
+    this._categoriesScope = scope;
+    this._unsubCategories = subscribeCategoryRegistry(
+      this._connection,
+      scope,
+      (categories) => {
+        if (this._categoriesScope === scope) {
           this._categories = categories;
         }
-      ),
-    ];
+      }
+    );
+  }
+
+  private _unsubscribeCategories() {
+    this._unsubCategories?.();
+    this._unsubCategories = undefined;
+    this._categoriesConnection = undefined;
+    this._categoriesScope = undefined;
   }
 
   protected render() {
@@ -79,7 +143,7 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this.hass.localize("ui.panel.config.category.caption")}
+          ${this._localize("ui.panel.config.category.caption")}
           ${
             this.value?.length
               ? html`<div class="badge">${this.value?.length}</div>
@@ -98,7 +162,7 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
                 <ha-list-selectable
                   class="ha-scrollbar"
                   multi
-                  aria-label=${this.hass.localize(
+                  aria-label=${this._localize(
                     "ui.panel.config.category.caption"
                   )}
                   @ha-list-item-selected=${this._categoryAdded}
@@ -138,14 +202,14 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
                           <ha-icon-button
                             .path=${mdiDotsVertical}
                             slot="trigger"
-                            .label=${this.hass.localize("ui.common.menu")}
+                            .label=${this._localize("ui.common.menu")}
                           ></ha-icon-button>
                           <ha-dropdown-item value="edit">
                             <ha-svg-icon
                               slot="icon"
                               .path=${mdiPencil}
                             ></ha-svg-icon>
-                            ${this.hass.localize(
+                            ${this._localize(
                               "ui.panel.config.category.editor.edit"
                             )}
                           </ha-dropdown-item>
@@ -154,7 +218,7 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
                               slot="icon"
                               .path=${mdiDelete}
                             ></ha-svg-icon>
-                            ${this.hass.localize(
+                            ${this._localize(
                               "ui.panel.config.category.editor.delete"
                             )}
                           </ha-dropdown-item>
@@ -162,10 +226,14 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
                       </ha-list-item-option>`
                   )}
                 </ha-list-selectable>
-                <ha-list-item graphic="icon" @click=${this._addCategory}>
-                  <ha-svg-icon slot="graphic" .path=${mdiPlus}></ha-svg-icon>
-                  ${this.hass.localize("ui.panel.config.category.editor.add")}
-                </ha-list-item>
+                <ha-button
+                  appearance="filled"
+                  size="s"
+                  @click=${this._addCategory}
+                >
+                  <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                  ${this._localize("ui.panel.config.category.editor.add")}
+                </ha-button>
               </div>
             `
           : nothing
@@ -191,26 +259,24 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
       scope: this.scope!,
       entry: this._categories.find((cat) => cat.category_id === id),
       updateEntry: (updates) =>
-        updateCategoryRegistryEntry(this.hass, this.scope!, id, updates),
+        updateCategoryRegistryEntry(this._api.callWS, this.scope!, id, updates),
     });
   }
 
   private async _deleteCategory(id: string) {
     const confirm = await showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.category.editor.confirm_delete"
-      ),
-      text: this.hass.localize(
+      title: this._localize("ui.panel.config.category.editor.confirm_delete"),
+      text: this._localize(
         "ui.panel.config.category.editor.confirm_delete_text"
       ),
-      confirmText: this.hass.localize("ui.common.delete"),
+      confirmText: this._localize("ui.common.delete"),
       destructive: true,
     });
     if (!confirm) {
       return;
     }
     try {
-      await deleteCategoryRegistryEntry(this.hass, this.scope!, id);
+      await deleteCategoryRegistryEntry(this._api.callWS, this.scope!, id);
 
       if (this.value?.includes(id)) {
         this._setValue(this.value.filter((categoryId) => categoryId !== id));
@@ -227,7 +293,7 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
     showCategoryRegistryDetailDialog(this, {
       scope: this.scope,
       createEntry: (values) =>
-        createCategoryRegistryEntry(this.hass, this.scope!, values),
+        createCategoryRegistryEntry(this._api.callWS, this.scope!, values),
     });
   }
 
@@ -324,11 +390,11 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
         ha-list-item-option {
           --ha-row-item-padding-block: var(--ha-space-2);
         }
+        ha-button {
+          margin: var(--ha-space-2) var(--ha-space-4);
+        }
         ha-list-item-option ha-icon-button {
           --ha-icon-button-size: 32px;
-        }
-        ha-list-item {
-          --mdc-list-item-graphic-margin: var(--ha-space-4);
         }
         ha-dropdown-item {
           font-size: var(--ha-font-size-m);

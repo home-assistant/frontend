@@ -6,7 +6,8 @@ import { computeDeviceNameDisplay } from "../../../../common/entity/compute_devi
 import { caseInsensitiveStringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-next";
-import "../../../../components/ha-list-item";
+import "../../../../components/item/ha-list-item-button";
+import "../../../../components/list/ha-list-nav";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../../data/device/device_registry";
 import { fetchLinkedDevices } from "../../../../data/device/device_registry";
@@ -80,22 +81,26 @@ export class HaDeviceLinkedDevicesCard extends LitElement {
             "ui.panel.config.devices.linked_devices.description"
           )}
         </div>
-        ${linkedDevices.map((linkedDevice) => {
-          const domain = this._deviceDomain(linkedDevice, entryLookup);
-          const integrationName = domain
-            ? domainToName(this.hass.localize, domain)
-            : undefined;
-          return html`
-            <a href=${`/config/devices/device/${linkedDevice.id}`}>
-              <ha-list-item
-                graphic=${domain ? "icon" : nothing}
-                hasMeta
-                .twoline=${!!integrationName}
+        <ha-list-nav
+          .ariaLabel=${this.hass.localize(
+            "ui.panel.config.devices.linked_devices.heading"
+          )}
+        >
+          ${linkedDevices.map((linkedDevice) => {
+            const domain = this._deviceDomain(linkedDevice, entryLookup);
+            const integrationName = domain
+              ? domainToName(this.hass.localize, domain)
+              : undefined;
+            return html`
+              <ha-list-item-button
+                .href=${`/config/devices/device/${linkedDevice.id}`}
+                .headline=${computeDeviceNameDisplay(linkedDevice, this.hass.localize)}
+                .supportingText=${integrationName}
               >
                 ${
                   domain
                     ? html`<img
-                        slot="graphic"
+                        slot="start"
                         loading="lazy"
                         alt=""
                         src=${brandsUrl(
@@ -111,17 +116,11 @@ export class HaDeviceLinkedDevicesCard extends LitElement {
                       />`
                     : nothing
                 }
-                ${computeDeviceNameDisplay(linkedDevice, this.hass.localize)}
-                ${
-                  integrationName
-                    ? html`<span slot="secondary">${integrationName}</span>`
-                    : nothing
-                }
-                <ha-icon-next slot="meta"></ha-icon-next>
-              </ha-list-item>
-            </a>
-          `;
-        })}
+                <ha-icon-next slot="end"></ha-icon-next>
+              </ha-list-item-button>
+            `;
+          })}
+        </ha-list-nav>
       </ha-card>
     `;
   }
@@ -169,12 +168,11 @@ export class HaDeviceLinkedDevicesCard extends LitElement {
       padding-bottom: var(--ha-space-2);
     }
 
-    a {
-      text-decoration: none;
-      color: var(--primary-text-color);
+    ha-list-item-button ha-icon-next {
+      color: var(--secondary-text-color);
     }
 
-    ha-list-item img {
+    ha-list-item-button img {
       width: 24px;
       height: 24px;
     }

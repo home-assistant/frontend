@@ -4,7 +4,11 @@ import { customElement, property, state } from "lit/decorators";
 import "../../../../../../components/ha-card";
 import "../../../../../../components/ha-spinner";
 import type { ZHADevice, ZHAGroup } from "../../../../../../data/zha";
-import { fetchBindableDevices, fetchGroups } from "../../../../../../data/zha";
+import {
+  fetchBindableDevices,
+  fetchGroups,
+  ZHADeviceType,
+} from "../../../../../../data/zha";
 import { haStyle } from "../../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../../types";
 import "../zha-device-binding";
@@ -129,7 +133,7 @@ export class ZHADeviceBindingsPane extends LitElement {
 
     try {
       const [bindableDevices, groups] = await Promise.all([
-        this.device.device_type !== "Coordinator"
+        this.device.device_type !== ZHADeviceType.Coordinator
           ? fetchBindableDevices(this.hass, ieee)
           : Promise.resolve([]),
         fetchGroups(this.hass),

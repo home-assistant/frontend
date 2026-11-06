@@ -1,18 +1,27 @@
+import type { ContextType } from "@lit/context";
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
+import { consume } from "../../common/decorators/consume";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../common/decorators/consume-context-entry";
+import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import { formattersContext, registriesContext } from "../../data/context";
 import {
   STATE_DISPLAY_SPECIAL_CONTENT,
   STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS,
 } from "../../state-display/state-display";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import type { HomeAssistantFormatters, ValueChangedEvent } from "../../types";
 import "../chips/ha-assist-chip";
 import "../chips/ha-chip-set";
 import "../chips/ha-input-chip";
@@ -79,10 +88,11 @@ const HIDDEN_ATTRIBUTES = [
   "wind_speed_unit",
 ];
 
+type FormatEntityAttributeName =
+  HomeAssistantFormatters["formatEntityAttributeName"];
+
 @customElement("ha-entity-state-content-picker")
 export class HaStateContentPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public entityId?: string;
 
   // eslint-disable-next-line lit/no-native-attributes
@@ -106,34 +116,48 @@ export class HaStateContentPicker extends LitElement {
 
   @query("ha-generic-picker", true) private _picker?: HaGenericPicker;
 
+  @state()
+  @consumeEntityState({ entityIdPath: ["entityId"] })
+  private _stateObj?: HassEntity;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<HomeAssistantFormatters, FormatEntityAttributeName>({
+    transformer: (formatters) => formatters?.formatEntityAttributeName,
+  })
+  private _formatEntityAttributeName!: FormatEntityAttributeName;
+
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
   private _editIndex?: number;
 
   private _getItems = memoizeOne(
     (
-      entityId?: string,
-      stateObj?: HassEntity,
-      allowName?: boolean,
-      allowContext?: boolean
+      entityId: string | undefined,
+      stateObj: HassEntity | undefined,
+      allowName: boolean,
+      allowContext: boolean,
+      localize: LocalizeFunc,
+      registries: ContextType<typeof registriesContext>,
+      formatEntityAttributeName: FormatEntityAttributeName
     ) => {
       const domain = entityId ? computeDomain(entityId) : undefined;
       const items: PickerComboBoxItem[] = [
         {
           id: "state",
-          primary: this.hass.localize(
-            "ui.components.state-content-picker.state"
-          ),
-          sorting_label: this.hass.localize(
-            "ui.components.state-content-picker.state"
-          ),
+          primary: localize("ui.components.state-content-picker.state"),
+          sorting_label: localize("ui.components.state-content-picker.state"),
         },
         ...(allowName
           ? [
               {
                 id: "name",
-                primary: this.hass.localize(
-                  "ui.components.state-content-picker.name"
-                ),
-                sorting_label: this.hass.localize(
+                primary: localize("ui.components.state-content-picker.name"),
+                sorting_label: localize(
                   "ui.components.state-content-picker.name"
                 ),
               } satisfies PickerComboBoxItem,
@@ -141,19 +165,15 @@ export class HaStateContentPicker extends LitElement {
           : []),
         {
           id: "last_changed",
-          primary: this.hass.localize(
-            "ui.components.state-content-picker.last_changed"
-          ),
-          sorting_label: this.hass.localize(
+          primary: localize("ui.components.state-content-picker.last_changed"),
+          sorting_label: localize(
             "ui.components.state-content-picker.last_changed"
           ),
         },
         {
           id: "last_updated",
-          primary: this.hass.localize(
-            "ui.components.state-content-picker.last_updated"
-          ),
-          sorting_label: this.hass.localize(
+          primary: localize("ui.components.state-content-picker.last_updated"),
+          sorting_label: localize(
             "ui.components.state-content-picker.last_updated"
           ),
         },
@@ -161,19 +181,19 @@ export class HaStateContentPicker extends LitElement {
           ? (() => {
               const context = getEntityContext(
                 stateObj,
-                this.hass.entities,
-                this.hass.devices,
-                this.hass.areas,
-                this.hass.floors
+                registries.entities,
+                registries.devices,
+                registries.areas,
+                registries.floors
               );
               const contextItems: PickerComboBoxItem[] = [];
               if (context.device) {
                 contextItems.push({
                   id: "device_name",
-                  primary: this.hass.localize(
+                  primary: localize(
                     "ui.components.state-content-picker.device_name"
                   ),
-                  sorting_label: this.hass.localize(
+                  sorting_label: localize(
                     "ui.components.state-content-picker.device_name"
                   ),
                 });
@@ -181,10 +201,10 @@ export class HaStateContentPicker extends LitElement {
               if (context.parentDevice) {
                 contextItems.push({
                   id: "parent_device_name",
-                  primary: this.hass.localize(
+                  primary: localize(
                     "ui.components.state-content-picker.parent_device_name"
                   ),
-                  sorting_label: this.hass.localize(
+                  sorting_label: localize(
                     "ui.components.state-content-picker.parent_device_name"
                   ),
                 });
@@ -192,10 +212,10 @@ export class HaStateContentPicker extends LitElement {
               if (context.area) {
                 contextItems.push({
                   id: "area_name",
-                  primary: this.hass.localize(
+                  primary: localize(
                     "ui.components.state-content-picker.area_name"
                   ),
-                  sorting_label: this.hass.localize(
+                  sorting_label: localize(
                     "ui.components.state-content-picker.area_name"
                   ),
                 });
@@ -203,10 +223,10 @@ export class HaStateContentPicker extends LitElement {
               if (context.floor) {
                 contextItems.push({
                   id: "floor_name",
-                  primary: this.hass.localize(
+                  primary: localize(
                     "ui.components.state-content-picker.floor_name"
                   ),
-                  sorting_label: this.hass.localize(
+                  sorting_label: localize(
                     "ui.components.state-content-picker.floor_name"
                   ),
                 });
@@ -221,10 +241,10 @@ export class HaStateContentPicker extends LitElement {
               (content) =>
                 ({
                   id: content,
-                  primary: this.hass.localize(
+                  primary: localize(
                     `ui.components.state-content-picker.${content}`
                   ),
-                  sorting_label: this.hass.localize(
+                  sorting_label: localize(
                     `ui.components.state-content-picker.${content}`
                   ),
                 }) satisfies PickerComboBoxItem
@@ -236,14 +256,8 @@ export class HaStateContentPicker extends LitElement {
             (attribute) =>
               ({
                 id: attribute,
-                primary: this.hass.formatEntityAttributeName(
-                  stateObj!,
-                  attribute
-                ),
-                sorting_label: this.hass.formatEntityAttributeName(
-                  stateObj!,
-                  attribute
-                ),
+                primary: formatEntityAttributeName(stateObj!, attribute),
+                sorting_label: formatEntityAttributeName(stateObj!, attribute),
               }) satisfies PickerComboBoxItem
           ),
       ];
@@ -251,12 +265,20 @@ export class HaStateContentPicker extends LitElement {
     }
   );
 
+  private _items() {
+    return this._getItems(
+      this.entityId,
+      this._stateObj,
+      this.allowName,
+      this.allowContext,
+      this._localize,
+      this._registries,
+      this._formatEntityAttributeName
+    );
+  }
+
   protected render() {
     const value = this._value;
-
-    const stateObj = this.entityId
-      ? this.hass.states[this.entityId]
-      : undefined;
 
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
@@ -282,7 +304,7 @@ export class HaStateContentPicker extends LitElement {
                 this._value,
                 (item) => item,
                 (item: string, idx) => {
-                  const label = this._getItemLabel(item, stateObj);
+                  const label = this._getItemLabel(item);
                   const isValid = !!label;
                   return html`
                     <ha-input-chip
@@ -309,7 +331,7 @@ export class HaStateContentPicker extends LitElement {
                       <ha-assist-chip
                         @click=${this._addItem}
                         .disabled=${this.disabled}
-                        label=${this.hass.localize(
+                        label=${this._localize(
                           "ui.components.entity.entity-state-content-picker.add"
                         )}
                         class="add"
@@ -354,20 +376,9 @@ export class HaStateContentPicker extends LitElement {
     return !this.value ? [] : ensureArray(this.value);
   }
 
-  private _getItemLabel = memoizeOne(
-    (value: string, stateObj?: HassEntity): string | undefined => {
-      const stateObjForItems = this.entityId
-        ? this.hass.states[this.entityId]
-        : stateObj;
-      const items = this._getItems(
-        this.entityId,
-        stateObjForItems,
-        this.allowName,
-        this.allowContext
-      );
-      return items.find((item) => item.id === value)?.primary;
-    }
-  );
+  private _getItemLabel(value: string): string | undefined {
+    return this._items().find((item) => item.id === value)?.primary;
+  }
 
   private _toValue = memoizeOne((value: string[]): typeof this.value => {
     if (value.length === 0) {
@@ -387,9 +398,9 @@ export class HaStateContentPicker extends LitElement {
   }
 
   private _customValueOption = memoizeOne(
-    (text: string): PickerComboBoxItem => ({
+    (text: string, localize: LocalizeFunc): PickerComboBoxItem => ({
       id: text,
-      primary: this.hass.localize(
+      primary: localize(
         "ui.components.entity.entity-state-content-picker.custom_attribute"
       ),
       secondary: `"${text}"`,
@@ -403,15 +414,7 @@ export class HaStateContentPicker extends LitElement {
   );
 
   private _getFilteredItems = (): PickerComboBoxItem[] => {
-    const stateObj = this.entityId
-      ? this.hass.states[this.entityId]
-      : undefined;
-    const items = this._getItems(
-      this.entityId,
-      stateObj,
-      this.allowName,
-      this.allowContext
-    );
+    const items = this._items();
     const currentValue =
       this._editIndex != null ? this._value[this._editIndex] : undefined;
 
@@ -423,7 +426,7 @@ export class HaStateContentPicker extends LitElement {
 
     // When editing an existing custom value, include it in the base items
     if (currentValue && !items.find((item) => item.id === currentValue)) {
-      filteredItems.push(this._customValueOption(currentValue));
+      filteredItems.push(this._customValueOption(currentValue, this._localize));
     }
 
     return filteredItems;
@@ -432,21 +435,13 @@ export class HaStateContentPicker extends LitElement {
   private _getAdditionalItems = (
     searchString?: string
   ): PickerComboBoxItem[] => {
-    const stateObj = this.entityId
-      ? this.hass.states[this.entityId]
-      : undefined;
-    const items = this._getItems(
-      this.entityId,
-      stateObj,
-      this.allowName,
-      this.allowContext
-    );
+    const items = this._items();
 
     // If the search string does not match with the id of any of the items,
     // offer to add it as a custom attribute
     const existingItem = items.find((item) => item.id === searchString);
     if (searchString && !existingItem) {
-      return [this._customValueOption(searchString)];
+      return [this._customValueOption(searchString, this._localize)];
     }
 
     return [];

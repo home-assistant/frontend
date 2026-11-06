@@ -2,7 +2,6 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-card";
-import "../../../components/ha-list";
 import "../../../components/item/ha-list-item-button";
 import "../../../components/list/ha-list-base";
 import type {

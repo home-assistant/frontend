@@ -2,7 +2,7 @@ import type { ConfigEntry, SubEntry } from "../../data/config_entries";
 import { getConfigEntry, getSubEntries } from "../../data/config_entries";
 import { getExtendedEntityRegistryEntry } from "../../data/entity/entity_registry";
 import { fetchIntegrationManifest } from "../../data/integration";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, HomeAssistantApi } from "../../types";
 import { showOptionsFlowDialog } from "./show-dialog-options-flow";
 import { showSubConfigFlowDialog } from "./show-dialog-sub-config-flow";
 
@@ -12,22 +12,23 @@ export interface EntityConfigFlow {
 }
 
 export const fetchEntityConfigFlow = async (
-  hass: HomeAssistant,
+  api: HomeAssistantApi,
+  entities: HomeAssistant["entities"] | undefined,
   entityId: string
 ): Promise<EntityConfigFlow | undefined> => {
-  if (!(entityId in hass.entities)) {
+  if (!entities || !(entityId in entities)) {
     return undefined;
   }
-  const regEntry = await getExtendedEntityRegistryEntry(hass, entityId);
+  const regEntry = await getExtendedEntityRegistryEntry(api, entityId);
   if (!regEntry.config_entry_id) {
     return undefined;
   }
   const { config_entry: entry } = await getConfigEntry(
-    hass,
+    api.callWS,
     regEntry.config_entry_id
   );
   if (regEntry.config_subentry_id) {
-    const subEntry = (await getSubEntries(hass, entry.entry_id)).find(
+    const subEntry = (await getSubEntries(api.callWS, entry.entry_id)).find(
       (sub) => sub.subentry_id === regEntry.config_subentry_id
     );
     if (
@@ -43,7 +44,7 @@ export const fetchEntityConfigFlow = async (
 
 export const showEntityConfigFlow = async (
   element: HTMLElement,
-  hass: HomeAssistant,
+  api: HomeAssistantApi,
   { entry, subEntry }: EntityConfigFlow
 ) => {
   if (subEntry) {
@@ -54,6 +55,6 @@ export const showEntityConfigFlow = async (
     return;
   }
   showOptionsFlowDialog(element, entry, {
-    manifest: await fetchIntegrationManifest(hass, entry.domain),
+    manifest: await fetchIntegrationManifest(api, entry.domain),
   });
 };

@@ -32,31 +32,31 @@ export const getProviderFromTTSMediaSource = (mediaContentId: string) =>
   mediaContentId.substring(TTS_MEDIA_SOURCE_PREFIX.length);
 
 export const listTTSEngines = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   language?: string,
   country?: string
 ): Promise<{ providers: TTSEngine[] }> =>
-  hass.callWS({
+  callWS({
     type: "tts/engine/list",
     language,
     country,
   });
 
 export const getTTSEngine = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   engine_id: string
 ): Promise<{ provider: TTSEngine }> =>
-  hass.callWS({
+  callWS({
     type: "tts/engine/get",
     engine_id,
   });
 
 export const listTTSVoices = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   engine_id: string,
   language: string
 ): Promise<{ voices: TTSVoice[] | null }> =>
-  hass.callWS({
+  callWS({
     type: "tts/engine/voices",
     engine_id,
     language,

@@ -17,7 +17,6 @@ import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/vie
 import { isStrategyView } from "../../../../data/lovelace/config/view";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../cards/hui-card";
 import "../../sections/hui-section";
 import { getViewType } from "../../views/get-view-type";
@@ -282,7 +281,6 @@ export class HuiDialogSuggestCard extends LitElement {
     );
     await this._params!.saveConfig(newConfig);
     this._saving = false;
-    showSaveSuccessToast(this, this.hass);
     this.closeDialog();
   }
 }

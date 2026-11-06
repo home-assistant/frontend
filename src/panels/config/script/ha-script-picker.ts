@@ -113,6 +113,7 @@ import { showToast } from "../../../util/toast";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { showNewAutomationDialog } from "../automation/show-dialog-new-automation";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { categoryGroupActions } from "../category/category-group-actions";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import {
   getAreaTableColumn,
@@ -452,6 +453,12 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         )}
         has-filters
         .initialGroupColumn=${this._tableSettings.grouping}
+        .renderGroupActions=${this._groupActions(
+          "script",
+          this._categories,
+          this._tableSettings.grouping,
+          this._categoryDeleted
+        )}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._tableSettings.sorting}
         .columnOrder=${this._activeColumnOrder}
@@ -532,7 +539,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
         <ha-filter-categories
-          .hass=${this.hass}
           scope="script"
           .value=${this._filters["ha-filter-categories"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -550,7 +556,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-voice-assistants>
         <ha-filter-blueprints
-          .hass=${this.hass}
           .type=${"script"}
           .value=${this._filters["ha-filter-blueprints"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -730,6 +735,23 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     const label = ev.detail.label;
     this._setFilter("ha-filter-labels", {
       value: [label.label_id],
+      items: undefined,
+    });
+  };
+
+  private _groupActions = memoizeOne(categoryGroupActions);
+
+  private _categoryDeleted = (categoryId: string) => {
+    const value = this._filters["ha-filter-categories"]?.value;
+
+    if (!Array.isArray(value) || !value.includes(categoryId)) {
+      return;
+    }
+
+    const remaining = value.filter((id) => id !== categoryId);
+
+    this._setFilter("ha-filter-categories", {
+      value: remaining.length ? remaining : undefined,
       items: undefined,
     });
   };
@@ -1001,7 +1023,7 @@ ${rejected
       return;
     }
 
-    if (hasScriptFields(this.hass, entry.unique_id)) {
+    if (hasScriptFields(this.hass.services, entry.unique_id)) {
       this._showInfo(script);
     } else {
       await triggerScript(this.hass, entry.unique_id);
@@ -1124,7 +1146,7 @@ ${rejected
       scope: "script",
       createEntry: async (values) => {
         const category = await createCategoryRegistryEntry(
-          this.hass,
+          this.hass.callWS,
           "script",
           values
         );
@@ -1137,7 +1159,7 @@ ${rejected
   private _bulkCreateLabel = () => {
     showLabelDetailDialog(this, {
       createEntry: async (values) => {
-        const label = await createLabelRegistryEntry(this.hass, values);
+        const label = await createLabelRegistryEntry(this.hass.callWS, values);
         this._bulkLabel(label.label_id, "add");
       },
     });

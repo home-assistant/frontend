@@ -11,6 +11,7 @@ import {
 import {
   FanEntityFeature,
   completeFanSceneState,
+  computeDefaultFanSpeedStyle,
   computeFanFavoriteFromState,
   computeFanFavoriteSaveBlocker,
   computeFanFavoriteSceneState,
@@ -23,7 +24,9 @@ import {
   filterFanFavorite,
   findFanFavoriteIndex,
   formatFanFavorite,
+  resolveFanSpeedStyle,
   snapFanPercentage,
+  supportsFanSpeedStyleChoice,
 } from "../../src/data/fan";
 
 const fan = (percentage_step?: number): FanEntity =>
@@ -48,11 +51,54 @@ describe("computeFanSpeeds", () => {
   it("uses numbered speeds for fans with more steps", () => {
     expect(computeFanSpeeds(fan(25))).toEqual(["off", "1", "2", "3", "4"]);
     expect(computeFanSpeeds(fan(20))).toEqual(["off", "1", "2", "3", "4", "5"]);
+    expect(computeFanSpeeds(fan(100 / 6))).toEqual([
+      "off",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+    ]);
+    expect(computeFanSpeeds(fan(10))).toHaveLength(11);
+    expect(computeFanSpeeds(fan(10))?.[10]).toBe("10");
   });
 
   it("returns undefined when there are too many steps for buttons", () => {
-    expect(computeFanSpeeds(fan(100 / 6))).toBeUndefined();
+    expect(computeFanSpeeds(fan(100 / 11))).toBeUndefined();
     expect(computeFanSpeeds(fan())).toBeUndefined();
+  });
+});
+
+describe("fan speed style", () => {
+  it("defaults to buttons up to 6 speeds and to a slider above", () => {
+    expect(computeDefaultFanSpeedStyle(fan(20))).toBe("buttons");
+    expect(computeDefaultFanSpeedStyle(fan(100 / 6))).toBe("slider");
+  });
+
+  it("resolves the requested style", () => {
+    expect(resolveFanSpeedStyle(fan(20))).toBe("buttons");
+    expect(resolveFanSpeedStyle(fan(100 / 6))).toBe("slider");
+    expect(resolveFanSpeedStyle(fan(20), "slider")).toBe("slider");
+    expect(resolveFanSpeedStyle(fan(100 / 6), "buttons")).toBe("buttons");
+    expect(resolveFanSpeedStyle(fan(10), "buttons")).toBe("buttons");
+  });
+
+  it("falls back to a slider when there are too many speeds for buttons", () => {
+    expect(resolveFanSpeedStyle(fan(100 / 11), "buttons")).toBe("slider");
+    expect(resolveFanSpeedStyle(fan(), "buttons")).toBe("slider");
+  });
+
+  it("keeps buttons for an off/on fan", () => {
+    expect(resolveFanSpeedStyle(fan(100))).toBe("buttons");
+    expect(resolveFanSpeedStyle(fan(100), "slider")).toBe("buttons");
+  });
+
+  it("offers a choice from 3 to 11 speeds", () => {
+    expect(supportsFanSpeedStyleChoice(fan(100))).toBe(false);
+    expect(supportsFanSpeedStyleChoice(fan(50))).toBe(true);
+    expect(supportsFanSpeedStyleChoice(fan(10))).toBe(true);
+    expect(supportsFanSpeedStyleChoice(fan(100 / 11))).toBe(false);
   });
 });
 
@@ -70,6 +116,17 @@ describe("fan speed and percentage conversion", () => {
     expect(fanPercentageToSpeed(stateObj, 75)).toBe("3");
     expect(fanSpeedToPercentage(stateObj, "4")).toBe(100);
   });
+
+  it.each([100 / 6, 100 / 7, 10])(
+    "round-trips every speed with a step of %s",
+    (step) => {
+      const stateObj = fan(step);
+      for (const speed of computeFanSpeeds(stateObj)!) {
+        const percentage = fanSpeedToPercentage(stateObj, speed);
+        expect(fanPercentageToSpeed(stateObj, percentage)).toBe(speed);
+      }
+    }
+  );
 });
 
 describe("computeFanSpeedIcon", () => {
@@ -369,6 +426,17 @@ describe("formatFanFavorite", () => {
         i18n
       )
     ).toBe("On");
+  });
+
+  it("shows a percentage when the fan has too many speeds for buttons", () => {
+    expect(
+      formatFanFavorite(
+        fullFan("on", { percentage_step: 10 }, FanEntityFeature.SET_SPEED),
+        { percentage: 60 },
+        formatters,
+        i18n
+      )
+    ).toBe("60%");
   });
 
   it("leaves out values of features the fan no longer supports", () => {

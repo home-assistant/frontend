@@ -8,8 +8,11 @@ import type {
   GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
   WaterSourceTypeEnergyPreference,
+  HomeSourceTypeEnergyPreference,
+  WaterGasResource,
 } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
+import type { HomeAssistant } from "../../../../types";
 
 export interface EnergySettingsGridDialogParams {
   source?: GridSourceTypeEnergyPreference;
@@ -24,6 +27,12 @@ export interface EnergySettingsSolarDialogParams {
   solar_sources: SolarSourceTypeEnergyPreference[];
   statsMetadata?: Record<string, StatisticsMetaData>;
   saveCallback: (source: SolarSourceTypeEnergyPreference) => Promise<void>;
+}
+
+export interface EnergySettingsHomeDialogParams {
+  hass: HomeAssistant;
+  source?: HomeSourceTypeEnergyPreference;
+  saveCallback: (source: HomeSourceTypeEnergyPreference) => Promise<void>;
 }
 
 export interface EnergySettingsBatteryDialogParams {
@@ -55,10 +64,12 @@ export interface EnergySettingsDeviceDialogParams {
   saveCallback: (device: DeviceConsumptionEnergyPreference) => Promise<void>;
 }
 
-export interface EnergySettingsDeviceWaterDialogParams {
+export interface EnergySettingsDeviceWaterGasDialogParams {
+  resource: WaterGasResource;
   device?: DeviceConsumptionEnergyPreference;
   device_consumptions: DeviceConsumptionEnergyPreference[];
   statsMetadata?: Record<string, StatisticsMetaData>;
+  allowedUnitClass?: EnergyGasUnitClass;
   saveCallback: (device: DeviceConsumptionEnergyPreference) => Promise<void>;
 }
 
@@ -95,6 +106,17 @@ export const showEnergySettingsSolarDialog = (
   });
 };
 
+export const showEnergySettingsHomeDialog = (
+  element: HTMLElement,
+  dialogParams: EnergySettingsHomeDialogParams
+): void => {
+  fireEvent(element, "show-dialog", {
+    dialogTag: "dialog-energy-home-settings",
+    dialogImport: () => import("./dialog-energy-home-settings"),
+    dialogParams: dialogParams,
+  });
+};
+
 export const showEnergySettingsGasDialog = (
   element: HTMLElement,
   dialogParams: EnergySettingsGasDialogParams
@@ -117,14 +139,14 @@ export const showEnergySettingsWaterDialog = (
   });
 };
 
-export const showEnergySettingsDeviceWaterDialog = (
+export const showEnergySettingsDeviceWaterGasDialog = (
   element: HTMLElement,
-  dialogParams: EnergySettingsDeviceWaterDialogParams
+  dialogParams: EnergySettingsDeviceWaterGasDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-energy-device-settings-water",
-    dialogImport: () => import("./dialog-energy-device-settings-water"),
-    dialogParams: dialogParams,
+    dialogTag: "dialog-energy-device-settings-water-gas",
+    dialogImport: () => import("./dialog-energy-device-settings-water-gas"),
+    dialogParams,
   });
 };
 

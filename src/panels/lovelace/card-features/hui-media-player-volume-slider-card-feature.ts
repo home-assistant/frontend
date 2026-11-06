@@ -12,7 +12,11 @@ import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-slider";
-import { apiContext, internationalizationContext } from "../../../data/context";
+import {
+  apiContext,
+  formattersContext,
+  internationalizationContext,
+} from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   MediaPlayerEntityFeature,
@@ -22,6 +26,7 @@ import type { FrontendLocaleData } from "../../../data/translation";
 import type {
   HomeAssistant,
   HomeAssistantApi,
+  HomeAssistantFormatters,
   HomeAssistantInternationalization,
 } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
@@ -76,6 +81,10 @@ class HuiMediaPlayerVolumeSliderCardFeature
   private _api!: HomeAssistantApi;
 
   @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state()
   @consume({ context: internationalizationContext, subscribe: true })
   @transform<HomeAssistantInternationalization, FrontendLocaleData>({
     transformer: ({ locale }) => locale,
@@ -124,6 +133,10 @@ class HuiMediaPlayerVolumeSliderCardFeature
 
     return html`
       <ha-control-slider
+        .label=${this._formatters.formatEntityAttributeName(
+          stateObj,
+          "volume_level"
+        )}
         .value=${position}
         min="0"
         max="100"

@@ -5,12 +5,11 @@ import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../../common/decorators/consume";
-import { computeCssColor } from "../../../common/color/compute-color";
 import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
   ALERT_DOMAINS,
-  DEFAULT_ALERT_COLOR,
+  computeAlertColor,
   isAlertActive,
 } from "../../../common/entity/alert_active";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -120,12 +119,14 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
 
     const active = isAlertActive(stateObj);
 
-    const color = active
-      ? (this._config.alert_color ?? DEFAULT_ALERT_COLOR)
-      : this._config.clear_color;
+    const color = computeAlertColor(
+      stateObj,
+      active
+        ? (this._config.alert_color ?? "state")
+        : (this._config.clear_color ?? "none")
+    );
 
     const pulse = active && this._config.pulse === true;
-    const hasColor = color !== undefined && color !== "none";
 
     const areaName = this._formatters.formatEntityName(stateObj, {
       type: "area",
@@ -133,10 +134,9 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
-        class=${classMap({ pulse, "no-color": !hasColor })}
+        class=${classMap({ pulse })}
         style=${styleMap({
-          "--ha-alert-color":
-            color && hasColor ? computeCssColor(color) : undefined,
+          "--ha-alert-color": color,
           "--ha-alert-static-opacity": pulse
             ? undefined
             : "var(--ha-alert-pulse-opacity)",
@@ -211,12 +211,7 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
         position: relative;
         overflow: hidden;
         height: 100%;
-      }
-      ha-card:not(.no-color) {
-        --tile-color: var(--ha-alert-color);
-      }
-      ha-card.no-color {
-        --tile-color: var(--secondary-text-color);
+        --tile-color: var(--ha-alert-color, var(--secondary-text-color));
       }
       ha-card::before {
         position: absolute;

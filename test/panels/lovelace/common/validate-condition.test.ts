@@ -4,6 +4,7 @@ import type { VisibilityCondition } from "../../../../src/panels/lovelace/common
 import {
   addEntityToCondition,
   checkConditionsMet,
+  extractConditionEntityIds,
   validateConditionalConfig,
 } from "../../../../src/panels/lovelace/common/validate-condition";
 import type { HomeAssistant } from "../../../../src/types";
@@ -674,5 +675,58 @@ describe("addEntityToCondition", () => {
         { condition: "user", users: ["u"] },
       ],
     });
+  });
+});
+
+describe("extractConditionEntityIds", () => {
+  it("collects lovelace entity and core entity_id references", () => {
+    const conditions = [
+      { condition: "state", entity: "light.a", state: "on" },
+      { condition: "state", entity_id: "binary_sensor.alert", state: "on" },
+      {
+        condition: "numeric_state",
+        entity_id: "sensor.temp",
+        above: "input_number.limit",
+      },
+    ] as any;
+    expect([...extractConditionEntityIds(conditions)]).toEqual([
+      "light.a",
+      "binary_sensor.alert",
+      "sensor.temp",
+      "input_number.limit",
+    ]);
+  });
+
+  it("collects legacy conditions without a condition key", () => {
+    const conditions = [{ entity: "switch.a", state_not: "off" }] as any;
+    expect([...extractConditionEntityIds(conditions)]).toEqual(["switch.a"]);
+  });
+
+  it("walks logical groups that hold a single child", () => {
+    const conditions = [
+      {
+        condition: "and",
+        conditions: { condition: "state", entity: "light.a", state: "on" },
+      },
+      {
+        condition: "or",
+        conditions: [
+          { condition: "not", conditions: { entity: "light.b", state: "on" } },
+        ],
+      },
+    ] as any;
+    expect([...extractConditionEntityIds(conditions)]).toEqual([
+      "light.a",
+      "light.b",
+    ]);
+  });
+
+  it("ignores conditions that read no entity", () => {
+    const conditions = [
+      { condition: "user", users: ["user1"] },
+      { condition: "screen", media_query: "(min-width: 600px)" },
+      { condition: "location", state: "home" },
+    ] as any;
+    expect(extractConditionEntityIds(conditions).size).toBe(0);
   });
 });

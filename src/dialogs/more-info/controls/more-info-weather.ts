@@ -275,11 +275,8 @@ class MoreInfoWeather extends LitElement {
             </div>
             <div class="attribute">
               ${getSecondaryWeatherAttribute(
-                {
-                  formatEntityAttributeValue:
-                    this._formatters.formatEntityAttributeValue,
-                  localize: this._i18n.localize,
-                },
+                this._formatters.formatEntityAttributeValue,
+                this._i18n.localize,
                 this.stateObj,
                 forecast!
               )}
