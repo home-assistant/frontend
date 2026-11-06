@@ -858,6 +858,7 @@ class HaConfigAreaPage extends LitElement {
         this.hass.auth.data.hassUrl
       )}
       @error=${this._onImageError}
+      @load=${this._onImageLoad}
     />`;
   }
 
@@ -875,6 +876,10 @@ class HaConfigAreaPage extends LitElement {
   // Keep the space of a brand icon that failed to load so the rows stay aligned
   private _onImageError(ev: HASSDomCurrentTargetEvent<HTMLImageElement>) {
     ev.currentTarget.style.visibility = "hidden";
+  }
+
+  private _onImageLoad(ev: HASSDomCurrentTargetEvent<HTMLImageElement>) {
+    ev.currentTarget.style.visibility = "";
   }
 
   private _renderScene(name: string, entityState: SceneEntity) {
