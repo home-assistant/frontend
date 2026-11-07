@@ -225,6 +225,8 @@ export const subscribeMarketplaceIntegrationDomains = (
     }
   };
 
+  callback(new Set());
+
   const entries = subscribeConfigEntries(hass, (updates) => {
     if (disposed) {
       return;
