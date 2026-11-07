@@ -181,6 +181,20 @@ const classify = (
     return undefined;
   }
 
+  // Home batteries (e.g. the HomeWizard Plug-In Battery) also name their
+  // meters import and export, so they go before the grid rules.
+  const deviceId = input.entities[meta.statistic_id]?.device_id;
+  const model = deviceId ? input.devices[deviceId]?.model : undefined;
+  if (
+    RE_BATTERY.test(text) ||
+    (model && RE_BATTERY.test(model.toLowerCase()))
+  ) {
+    return {
+      slot: "battery",
+      charge: !RE_DISCHARGE.test(text) && !RE_EXPORT.test(text),
+    };
+  }
+
   const platform = platformOf(meta, input);
   if (
     (platform && GRID_DOMAINS.includes(platform)) ||
@@ -193,7 +207,7 @@ const classify = (
     };
   }
 
-  if (RE_BATTERY.test(text) || RE_CHARGE.test(text)) {
+  if (RE_CHARGE.test(text)) {
     return { slot: "battery", charge: !RE_DISCHARGE.test(text) };
   }
 
@@ -322,6 +336,10 @@ export const computeEnergySuggestions = (
 
   const context: GroupContext = {
     gasUnitClass,
+    reading: (statisticId) => {
+      const value = Number(input.states[statisticId]?.state);
+      return Number.isFinite(value) ? value : undefined;
+    },
     hasDeviceMeter: (groupId) =>
       groups.has(groupKey({ slot: "device" }, groupId)),
   };
@@ -346,6 +364,7 @@ const preferTotals = (items: Classified[]) =>
 
 interface GroupContext {
   gasUnitClass?: string;
+  reading: (statisticId: string) => number | undefined;
   hasDeviceMeter: (groupId: string) => boolean;
 }
 
@@ -411,6 +430,26 @@ const suggestionsForGroup = (
       .flatMap((item) => toSuggestion(item, context));
   }
 
+  if (kind.slot === "device") {
+    // Channels of one device are separate meters; only counters with the same
+    // reading repeat each other.
+    const seen = new Set(
+      items
+        .filter((item) => item.configured)
+        .map((item) => context.reading(item.statisticId))
+    );
+    const suggestions: EnergyMeterSuggestion[] = [];
+    for (const item of preferTotals(open)) {
+      const reading = context.reading(item.statisticId);
+      if (reading !== undefined && seen.has(reading)) {
+        continue;
+      }
+      seen.add(reading);
+      suggestions.push(...toSuggestion(item, context));
+    }
+    return suggestions;
+  }
+
   if (items.some((item) => item.configured)) {
     return [];
   }
@@ -429,15 +468,15 @@ const suggestionsForGroup = (
       return [];
     }
     return preferTotals(items)
-      .slice(0, 1)
       .flatMap((item) =>
         toSuggestion({ ...item, kind: { slot: "device" } }, context)
-      );
+      )
+      .slice(0, 1);
   }
 
   return preferTotals(items)
-    .slice(0, 1)
-    .flatMap((item) => toSuggestion(item, context));
+    .flatMap((item) => toSuggestion(item, context))
+    .slice(0, 1);
 };
 
 const fillGridSide = (

@@ -25,6 +25,8 @@ interface TestSensor {
   deviceClass?: string;
   unitClass?: string;
   attributes?: Record<string, unknown>;
+  state?: string;
+  model?: string;
 }
 
 const buildInput = (
@@ -48,7 +50,7 @@ const buildInput = (
     });
     states[sensor.entityId] = {
       entity_id: sensor.entityId,
-      state: "1",
+      state: sensor.state ?? "1",
       attributes: {
         device_class:
           sensor.deviceClass ?? (unitClass === "energy" ? "energy" : undefined),
@@ -68,6 +70,7 @@ const buildInput = (
     if (sensor.deviceId) {
       devices[sensor.deviceId] = {
         id: sensor.deviceId,
+        model: sensor.model ?? null,
       } as DeviceRegistryEntry;
     }
   }
@@ -460,5 +463,101 @@ describe("computeEnergySuggestions review fixes", () => {
       }
     );
     expect(slots(input)).toEqual({});
+  });
+});
+
+describe("computeEnergySuggestions second review", () => {
+  it("picks the gas meter of a device that fits the configured gas unit", () => {
+    const input = buildInput(
+      [
+        {
+          entityId: "sensor.boiler_gas_energy",
+          deviceId: "b",
+          deviceClass: "gas",
+        },
+        {
+          entityId: "sensor.boiler_gas_volume",
+          deviceId: "b",
+          unitClass: "volume",
+          deviceClass: "gas",
+        },
+        {
+          entityId: "sensor.meter_gas",
+          deviceId: "g",
+          unitClass: "volume",
+          deviceClass: "gas",
+        },
+      ],
+      {
+        ...EMPTY_PREFERENCES,
+        energy_sources: [
+          {
+            ...emptyGasEnergyPreference(),
+            stat_energy_from: "sensor.meter_gas",
+          },
+        ],
+      }
+    );
+    expect(slots(input)).toEqual({ "sensor.boiler_gas_volume": "gas" });
+  });
+
+  it("pairs a home battery that names its meters import and export", () => {
+    const input = buildInput([
+      {
+        entityId: "sensor.hwe_bat_energy_import",
+        deviceId: "bat",
+        platform: "homewizard",
+        model: "Plug-In Battery",
+      },
+      {
+        entityId: "sensor.hwe_bat_energy_export",
+        deviceId: "bat",
+        platform: "homewizard",
+        model: "Plug-In Battery",
+      },
+    ]);
+    expect(computeEnergySuggestions(input)).toEqual([
+      {
+        statisticId: "sensor.hwe_bat_energy_export",
+        slot: "battery",
+        slots: ["battery"],
+        pairedStatisticId: "sensor.hwe_bat_energy_import",
+        deviceId: "bat",
+      },
+    ]);
+  });
+
+  it("suggests each channel of a device, but not a repeated counter", () => {
+    const sensors = [
+      {
+        entityId: "sensor.dual_plug_channel_1_energy",
+        deviceId: "d",
+        state: "12.5",
+      },
+      {
+        entityId: "sensor.dual_plug_channel_2_energy",
+        deviceId: "d",
+        state: "3.25",
+      },
+      {
+        entityId: "sensor.dual_plug_energy_consumed",
+        deviceId: "d",
+        state: "12.5",
+      },
+    ];
+    expect(slots(buildInput(sensors))).toEqual({
+      "sensor.dual_plug_channel_1_energy": "device",
+      "sensor.dual_plug_channel_2_energy": "device",
+    });
+    expect(
+      slots(
+        buildInput(sensors, {
+          ...EMPTY_PREFERENCES,
+          device_consumption: [
+            { stat_consumption: "sensor.dual_plug_channel_1_energy" },
+          ],
+        })
+      )
+    ).toEqual({ "sensor.dual_plug_channel_2_energy": "device" });
   });
 });

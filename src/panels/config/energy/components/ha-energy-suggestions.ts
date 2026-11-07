@@ -15,6 +15,7 @@ import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../../common/decorators/consume";
+import { consumeEntityStates } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { getEntityAreaId } from "../../../../common/entity/context/get_entity_context";
@@ -32,7 +33,6 @@ import {
   entitiesContext,
   formattersContext,
   internationalizationContext,
-  statesContext,
 } from "../../../../data/context";
 import type { EnergyPreferences } from "../../../../data/energy";
 import type {
@@ -88,7 +88,10 @@ export class EnergySuggestions extends LitElement {
 
   @state() private _busy = false;
 
-  @state() private _loadError?: string;
+  @state() private _loadFailed = false;
+
+  // Read by the @consumeEntityStates decorator below.
+  @state() protected _statisticIds: string[] = [];
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -100,9 +103,10 @@ export class EnergySuggestions extends LitElement {
   @consume({ context: connectionContext, subscribe: true })
   private _connection!: ContextType<typeof connectionContext>;
 
+  // Only the loaded statistics matter, so other state changes don't recompute.
   @state()
-  @consume({ context: statesContext, subscribe: true })
-  private _states!: ContextType<typeof statesContext>;
+  @consumeEntityStates({ entityIdPath: ["_statisticIds"] })
+  private _states: HomeAssistant["states"] = {};
 
   @state()
   @consume({ context: entitiesContext, subscribe: true })
@@ -148,21 +152,22 @@ export class EnergySuggestions extends LitElement {
   }
 
   private async _load() {
-    this._loadError = undefined;
+    this._loadFailed = false;
     try {
       const [statistics, userData] = await Promise.all([
         getStatisticIds(this._api, "sum"),
         fetchFrontendUserData(this._connection.connection, "energy"),
       ]);
       this._statistics = statistics;
+      this._statisticIds = statistics.map((meta) => meta.statistic_id);
       this._dismissed = userData?.dismissed_suggestions ?? [];
-    } catch (err: any) {
-      this._loadError = err.message;
+    } catch (_err) {
+      this._loadFailed = true;
     }
   }
 
   protected render(): TemplateResult | typeof nothing {
-    if (this._loadError) {
+    if (this._loadFailed) {
       return html`
         <ha-card>
           <div class="card-content">
@@ -219,7 +224,7 @@ export class EnergySuggestions extends LitElement {
   }
 
   private _renderSuggestion(suggestion: EnergyMeterSuggestion) {
-    const slot = this._slots[suggestion.statisticId] ?? suggestion.slot;
+    const slot = this._slotFor(suggestion);
     const label = suggestionStatisticIds(suggestion)
       .map((statisticId) =>
         getStatisticLabel(
@@ -291,6 +296,14 @@ export class EnergySuggestions extends LitElement {
     `;
   }
 
+  // A picked slot can stop fitting once the preferences change.
+  private _slotFor(suggestion: EnergyMeterSuggestion): EnergySuggestionSlot {
+    const picked = this._slots[suggestion.statisticId];
+    return picked && suggestion.slots.includes(picked)
+      ? picked
+      : suggestion.slot;
+  }
+
   private _slotSelected(ev: HaSelectSelectEvent<EnergySuggestionSlot>) {
     const suggestion: EnergyMeterSuggestion = (ev.currentTarget as any)
       .suggestion;
@@ -306,7 +319,7 @@ export class EnergySuggestions extends LitElement {
         addEnergySuggestion(
           this.preferences,
           suggestion,
-          this._slots[suggestion.statisticId]
+          this._slotFor(suggestion)
         )
       );
       fireEvent(this, "value-changed", { value: result });
