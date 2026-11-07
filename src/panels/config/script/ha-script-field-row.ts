@@ -116,7 +116,7 @@ export default class HaScriptFieldRow extends LitElement {
                   `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
                 )}
                 ${
-                  !this.narrow
+                  !this.narrow && this._selected
                     ? html`<span class="shortcut">
                         <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                         <span>+</span>
@@ -231,7 +231,7 @@ export default class HaScriptFieldRow extends LitElement {
                             `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
                           )}
                           ${
-                            !this.narrow
+                            !this.narrow && this._selectorRowSelected
                               ? html`<span class="shortcut">
                                   <span
                                     >${renderCtrlOrCmd(this.hass.localize)}</span

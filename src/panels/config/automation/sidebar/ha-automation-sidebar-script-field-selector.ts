@@ -10,7 +10,7 @@ import type { ScriptFieldSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import "../../script/ha-script-field-selector-editor";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
-import { sidebarEditorStyles } from "../styles";
+import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
@@ -197,7 +197,7 @@ export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
     }
   }
 
-  static styles = sidebarEditorStyles;
+  static styles = [sidebarEditorStyles, overflowStyles];
 }
 
 declare global {

@@ -640,13 +640,15 @@ export default class HaAutomationActionRow extends LitElement {
             this.hass.localize(
               `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
             ),
-            html`<span class="shortcut">
-              <span>${renderCtrlOrCmd(this.hass.localize)}</span>
-              <span>+</span>
-              <span>Shift</span>
-              <span>+</span>
-              <span>Y</span>
-            </span>`
+            this._selected
+              ? html`<span class="shortcut">
+                  <span>${renderCtrlOrCmd(this.hass.localize)}</span>
+                  <span>+</span>
+                  <span>Shift</span>
+                  <span>+</span>
+                  <span>Y</span>
+                </span>`
+              : undefined
           )}
         </ha-dropdown-item>
 
