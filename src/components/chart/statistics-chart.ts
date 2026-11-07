@@ -5,7 +5,7 @@ import type {
 import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -49,7 +49,13 @@ import type {
   HomeAssistantUI,
 } from "../../types";
 import { getPeriodicAxisLabelConfig } from "./axis-label";
-import type { CustomLegendOption } from "./ha-chart-base";
+import type {
+  ChartSelectMode,
+  ChartTimeRange,
+  CustomLegendOption,
+  HaChartBase,
+  ZoomSliderMode,
+} from "./ha-chart-base";
 import "./ha-chart-base";
 import { sideTooltipPosition } from "./chart-tooltip-position";
 import "./ha-chart-tooltip-marker";
@@ -127,6 +133,16 @@ export class StatisticsChart extends LitElement {
 
   @property({ attribute: "expand-legend", type: Boolean })
   public expandLegend?: boolean;
+
+  @property({ attribute: "select-mode" })
+  public selectMode: ChartSelectMode = "none";
+
+  @property({ attribute: "zoom-slider" })
+  public zoomSlider: ZoomSliderMode = "auto";
+
+  @property({ attribute: false }) public highlight?: ChartTimeRange;
+
+  @query("ha-chart-base") private _chartBase?: HaChartBase;
 
   @state() private _chartData: (LineSeriesOption | BarSeriesOption)[] = [];
 
@@ -244,8 +260,12 @@ export class StatisticsChart extends LitElement {
     return html`
       <ha-chart-base
         .data=${this._chartData}
+        .highlight=${this.highlight}
+        .snapSelection=${this._snapSelection}
         .options=${this._chartOptions}
         .height=${this.height}
+        .selectMode=${this.selectMode}
+        .zoomSlider=${this.zoomSlider}
         style=${styleMap({ height: this.height })}
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
@@ -258,6 +278,34 @@ export class StatisticsChart extends LitElement {
       ></ha-chart-base>
     `;
   }
+
+  public resetZoom() {
+    this._chartBase?.zoom(0, 100);
+  }
+
+  // A click selects the period that contains it, a drag every period it
+  // touches
+  private _snapSelection = (
+    range: ChartTimeRange
+  ): ChartTimeRange | undefined => {
+    let start: number | undefined;
+    let end: number | undefined;
+    Object.values(this.statisticsData ?? {}).forEach((values) =>
+      values.forEach((value) => {
+        const touched =
+          range.start === range.end
+            ? value.start <= range.start && range.start < value.end
+            : value.start < range.end && value.end > range.start;
+        if (touched) {
+          start = Math.min(start ?? value.start, value.start);
+          end = Math.max(end ?? value.end, value.end);
+        }
+      })
+    );
+    return start === undefined || end === undefined
+      ? undefined
+      : { start, end };
+  };
 
   private _datasetHidden(ev: HASSDomEvent<HASSDomEvents["dataset-hidden"]>) {
     this._hiddenStats.add(ev.detail.id);
