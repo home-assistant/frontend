@@ -5,10 +5,13 @@ import {
   mdiAlert,
 } from "@mdi/js";
 import type { ContextType } from "@lit/context";
+import type { HassEntities } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
+import { consumeEntityStates } from "../../../common/decorators/consume-context-entry";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
@@ -20,7 +23,6 @@ import {
   apiContext,
   connectionContext,
   internationalizationContext,
-  statesContext,
 } from "../../../data/context";
 import type {
   ConfigEntryHealth,
@@ -31,7 +33,11 @@ import {
   domainToName,
   fetchIntegrationSetups,
 } from "../../../data/integration";
+import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
+import type { IntegrationSetup } from "../../../data/integration";
+import type { RepairsIssue } from "../../../data/repairs";
 import { fetchRepairsIssues } from "../../../data/repairs";
+import type { LoggedError } from "../../../data/system_log";
 import { fetchSystemLog } from "../../../data/system_log";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { haStyleDialog } from "../../../resources/styles";
@@ -47,6 +53,13 @@ const STATUS_ICONS: Record<HealthStatus, string> = {
 
 const MAX_LISTED = 5;
 
+interface HealthData {
+  issues: RepairsIssue[];
+  log: LoggedError[];
+  flows: DataEntryFlowProgress[];
+  setups: IntegrationSetup[];
+}
+
 @customElement("dialog-config-entry-health")
 class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>(
   LitElement
@@ -61,20 +74,42 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
-  @consume({ context: statesContext, subscribe: true })
-  private _states!: ContextType<typeof statesContext>;
+  // Read by the @consumeEntityStates decorator below.
+  @state() protected _entityIds: string[] = [];
 
-  @state() private _health?: ConfigEntryHealth;
+  // Only this entry's entities, so availability stays live while open.
+  @state()
+  @consumeEntityStates({ entityIdPath: ["_entityIds"] })
+  private _states: HassEntities = {};
+
+  @state() private _data?: HealthData;
 
   @state() private _error?: string;
 
+  private _computeHealth = memoizeOne(
+    (
+      params: ConfigEntryHealthDialogParams,
+      states: HassEntities,
+      data: HealthData
+    ) =>
+      computeConfigEntryHealth(
+        params.entry,
+        params.entities,
+        states,
+        data.issues,
+        data.log,
+        data.flows,
+        data.setups
+      )
+  );
+
   connectedCallback() {
     super.connectedCallback();
+    this._entityIds = this.params!.entities.map((entity) => entity.entity_id);
     this._load();
   }
 
   private async _load(): Promise<void> {
-    const { entry, entities } = this.params!;
     try {
       const [{ issues }, log, flows, setups] = await Promise.all([
         fetchRepairsIssues(this._connection.connection),
@@ -82,17 +117,15 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
         fetchConfigFlowInProgress(this._connection.connection),
         fetchIntegrationSetups(this._api),
       ]);
-      this._health = computeConfigEntryHealth(
-        entry,
-        entities,
-        this._states,
-        issues,
-        log,
-        flows,
-        setups
-      );
+      this._data = { issues, log, flows, setups };
     } catch (err: any) {
-      this._error = err.message;
+      // WebSocket errors nest their message.
+      this._error =
+        err?.error?.message ||
+        err?.message ||
+        this._i18n.localize(
+          "ui.panel.config.integrations.config_entry.health.load_failed"
+        );
     }
   }
 
@@ -111,8 +144,10 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
         ${
           this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : this._health
-              ? this._renderHealth(this._health)
+            : this._data
+              ? this._renderHealth(
+                  this._computeHealth(this.params, this._states, this._data)
+                )
               : html`<ha-spinner></ha-spinner>`
         }
         <ha-dialog-footer slot="footer">
@@ -156,13 +191,19 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
         ${this._row(
           health.state,
           this._i18n.localize(
-            entry.disabled_by
+            entry.disabled_by && entry.state !== "failed_unload"
               ? `${key}.state.disabled`
               : `${key}.state.${entry.state}`
           ),
-          health.state === "warning" || health.state === "error"
-            ? html`<p>${renderConfigEntryError(this._i18n, entry)}</p>`
-            : nothing
+          entry.state === "failed_unload"
+            ? html`<p>
+                ${this._i18n.localize(
+                  "ui.panel.config.integrations.config_entry.disable_restart_confirm"
+                )}
+              </p>`
+            : health.state === "warning" || health.state === "error"
+              ? html`<p>${renderConfigEntryError(this._i18n, entry)}</p>`
+              : nothing
         )}
         ${
           health.flows.flows.length

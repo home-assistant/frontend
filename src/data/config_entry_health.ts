@@ -81,9 +81,11 @@ export const computeConfigEntryHealth = (
       ATTENTION_SOURCES.includes(flow.context.source)
   );
 
-  const state: HealthStatus = entry.disabled_by
-    ? "info"
-    : STATE_STATUS[entry.state];
+  // A disabled entry that failed to unload still needs a restart.
+  const state: HealthStatus =
+    entry.disabled_by && entry.state !== "failed_unload"
+      ? "info"
+      : STATE_STATUS[entry.state];
   const health: ConfigEntryHealth = {
     status: "ok",
     state,

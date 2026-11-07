@@ -102,6 +102,15 @@ describe("computeConfigEntryHealth", () => {
     expect(health({ entry: { state } }).status).toBe(status);
   });
 
+  it("keeps a failed unload of a disabled entry as an error", () => {
+    expect(
+      health({ entry: { disabled_by: "user", state: "failed_unload" } }).status
+    ).toBe("error");
+    expect(
+      health({ entry: { disabled_by: "user", state: "not_loaded" } }).status
+    ).toBe("ok");
+  });
+
   it("counts enabled entities without a usable state as unavailable", () => {
     const result = health({
       states: {

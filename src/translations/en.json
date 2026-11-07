@@ -7942,6 +7942,7 @@
             "health": {
               "menu": "Health",
               "title": "Health of {title}",
+              "load_failed": "Couldn't load the health of this integration.",
               "summary": {
                 "ok": "Everything looks fine.",
                 "warning": "Some things need a look.",
