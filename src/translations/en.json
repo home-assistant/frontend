@@ -7967,8 +7967,8 @@
               "repairs_link": "View repairs",
               "logs": "{errors, plural,\n  one {1 error}\n  other {# errors}\n} and {warnings, plural,\n  one {1 warning}\n  other {# warnings}\n} from {integration} in the recent log",
               "logs_link": "View logs",
-              "setup_time": "Took {seconds} s to start",
-              "setup_time_fast": "Took less than 0.1 s to start"
+              "setup_time": "{integration} took {seconds} s to start",
+              "setup_time_fast": "{integration} took less than 0.1 s to start"
             },
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "marketplace_uninstall": {

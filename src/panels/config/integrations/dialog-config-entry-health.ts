@@ -4,10 +4,11 @@ import {
   mdiInformation,
   mdiAlert,
 } from "@mdi/js";
+import type { ContextType } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { customElement, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
@@ -15,6 +16,12 @@ import "../../../components/ha-dialog-footer";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import { fetchConfigFlowInProgress } from "../../../data/config_flow";
+import {
+  apiContext,
+  connectionContext,
+  internationalizationContext,
+  statesContext,
+} from "../../../data/context";
 import type {
   ConfigEntryHealth,
   HealthStatus,
@@ -26,8 +33,8 @@ import {
 } from "../../../data/integration";
 import { fetchRepairsIssues } from "../../../data/repairs";
 import { fetchSystemLog } from "../../../data/system_log";
+import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { renderConfigEntryError } from "./ha-config-integration-page";
 import type { ConfigEntryHealthDialogParams } from "./show-dialog-config-entry-health";
 
@@ -41,47 +48,44 @@ const STATUS_ICONS: Record<HealthStatus, string> = {
 const MAX_LISTED = 5;
 
 @customElement("dialog-config-entry-health")
-class DialogConfigEntryHealth extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>(
+  LitElement
+) {
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
-  @state() private _params?: ConfigEntryHealthDialogParams;
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
 
-  @state() private _open = false;
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
 
   @state() private _health?: ConfigEntryHealth;
 
   @state() private _error?: string;
 
-  public showDialog(params: ConfigEntryHealthDialogParams): void {
-    this._params = params;
-    this._health = undefined;
-    this._error = undefined;
-    this._open = true;
+  connectedCallback() {
+    super.connectedCallback();
     this._load();
   }
 
-  public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
-    this._params = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
   private async _load(): Promise<void> {
-    const { entry, entities } = this._params!;
+    const { entry, entities } = this.params!;
     try {
       const [{ issues }, log, flows, setups] = await Promise.all([
-        fetchRepairsIssues(this.hass.connection),
-        fetchSystemLog(this.hass),
-        fetchConfigFlowInProgress(this.hass.connection),
-        fetchIntegrationSetups(this.hass),
+        fetchRepairsIssues(this._connection.connection),
+        fetchSystemLog(this._api),
+        fetchConfigFlowInProgress(this._connection.connection),
+        fetchIntegrationSetups(this._api),
       ]);
       this._health = computeConfigEntryHealth(
         entry,
         entities,
-        this.hass.states,
+        this._states,
         issues,
         log,
         flows,
@@ -93,17 +97,16 @@ class DialogConfigEntryHealth extends LitElement {
   }
 
   protected render() {
-    if (!this._params) {
+    if (!this.params) {
       return nothing;
     }
     return html`
       <ha-dialog
-        .open=${this._open}
-        header-title=${this.hass.localize(
+        open
+        header-title=${this._i18n.localize(
           "ui.panel.config.integrations.config_entry.health.title",
-          { title: this._params.entry.title }
+          { title: this.params.entry.title }
         )}
-        @closed=${this._dialogClosed}
       >
         ${
           this._error
@@ -114,7 +117,7 @@ class DialogConfigEntryHealth extends LitElement {
         }
         <ha-dialog-footer slot="footer">
           <ha-button slot="primaryAction" @click=${this.closeDialog}>
-            ${this.hass.localize("ui.common.close")}
+            ${this._i18n.localize("ui.common.close")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -122,16 +125,16 @@ class DialogConfigEntryHealth extends LitElement {
   }
 
   private _renderHealth(health: ConfigEntryHealth) {
-    const { entry } = this._params!;
+    const { entry } = this.params!;
     const key = "ui.panel.config.integrations.config_entry.health";
     // Repairs and log lines are only known per integration, not per entry.
-    const integration = domainToName(this.hass.localize, entry.domain);
+    const integration = domainToName(this._i18n.localize, entry.domain);
     const entityName = (entityId: string) =>
-      this.hass.states[entityId]?.attributes.friendly_name ?? entityId;
+      this._states[entityId]?.attributes.friendly_name ?? entityId;
     const more = (count: number) =>
       count > MAX_LISTED
         ? html`<li>
-            ${this.hass.localize(`${key}.and_more`, {
+            ${this._i18n.localize(`${key}.and_more`, {
               count: count - MAX_LISTED,
             })}
           </li>`
@@ -147,27 +150,27 @@ class DialogConfigEntryHealth extends LitElement {
               : "warning"
         }
       >
-        ${this.hass.localize(`${key}.summary.${health.status}`)}
+        ${this._i18n.localize(`${key}.summary.${health.status}`)}
       </ha-alert>
       <div class="rows">
         ${this._row(
           health.state,
-          this.hass.localize(
+          this._i18n.localize(
             entry.disabled_by
               ? `${key}.state.disabled`
               : `${key}.state.${entry.state}`
           ),
           health.state === "warning" || health.state === "error"
-            ? html`<p>${renderConfigEntryError(this.hass, entry)}</p>`
+            ? html`<p>${renderConfigEntryError(this._i18n, entry)}</p>`
             : nothing
         )}
         ${
           health.flows.flows.length
             ? this._row(
                 health.flows.status,
-                this.hass.localize(`${key}.flows`),
+                this._i18n.localize(`${key}.flows`),
                 html`<a href="/config/integrations/dashboard">
-                  ${this.hass.localize(`${key}.flows_link`)}
+                  ${this._i18n.localize(`${key}.flows_link`)}
                 </a>`
               )
             : nothing
@@ -176,7 +179,7 @@ class DialogConfigEntryHealth extends LitElement {
           health.entities.total
             ? this._row(
                 health.entities.status,
-                this.hass.localize(`${key}.entities`, {
+                this._i18n.localize(`${key}.entities`, {
                   available:
                     health.entities.total - health.entities.unavailable.length,
                   total: health.entities.total,
@@ -194,7 +197,7 @@ class DialogConfigEntryHealth extends LitElement {
                       <a
                         href=${`/config/entities?historyBack=1&config_entry=${entry.entry_id}`}
                       >
-                        ${this.hass.localize(`${key}.entities_link`)}
+                        ${this._i18n.localize(`${key}.entities_link`)}
                       </a>`
                   : nothing
               )
@@ -202,19 +205,19 @@ class DialogConfigEntryHealth extends LitElement {
         }
         ${this._row(
           health.repairs.status,
-          this.hass.localize(`${key}.repairs`, {
+          this._i18n.localize(`${key}.repairs`, {
             count: health.repairs.issues.length,
             integration,
           }),
           health.repairs.issues.length
             ? html`<a href="/config/repairs">
-                ${this.hass.localize(`${key}.repairs_link`)}
+                ${this._i18n.localize(`${key}.repairs_link`)}
               </a>`
             : nothing
         )}
         ${this._row(
           health.logs.status,
-          this.hass.localize(`${key}.logs`, {
+          this._i18n.localize(`${key}.logs`, {
             errors: health.logs.errors,
             warnings: health.logs.warnings,
             integration,
@@ -223,7 +226,7 @@ class DialogConfigEntryHealth extends LitElement {
             ? html`<a
                 href=${`/config/logs?search=${encodeURIComponent(entry.domain)}`}
               >
-                ${this.hass.localize(`${key}.logs_link`)}
+                ${this._i18n.localize(`${key}.logs_link`)}
               </a>`
             : nothing
         )}
@@ -232,8 +235,11 @@ class DialogConfigEntryHealth extends LitElement {
             ? this._row(
                 "info",
                 health.setupSeconds < 0.1
-                  ? this.hass.localize(`${key}.setup_time_fast`)
-                  : this.hass.localize(`${key}.setup_time`, {
+                  ? this._i18n.localize(`${key}.setup_time_fast`, {
+                      integration,
+                    })
+                  : this._i18n.localize(`${key}.setup_time`, {
+                      integration,
                       seconds: health.setupSeconds.toFixed(1),
                     })
               )
