@@ -40,6 +40,42 @@ test.describe("Home Assistant Demo", () => {
     });
   });
 
+  test("energy calendar applies a single picked day", async ({ page }) => {
+    await page.clock.setFixedTime(new Date("2026-11-20T12:00:00Z"));
+    await loadDemo(page, "/#/energy/overview");
+    const selector = page.locator("hui-energy-period-selector");
+    await expect(selector).toBeVisible({ timeout: PANEL_TIMEOUT });
+    await selector.locator(".date-range").click();
+    const picker = page.locator("date-range-picker");
+    await expect(picker).toBeVisible();
+    await picker
+      .locator("calendar-month")
+      .getByRole("button", { name: "November 15", exact: true })
+      .click();
+    await picker.getByRole("button", { name: "Select", exact: true }).click();
+    await expect(picker).toBeHidden();
+    await expect(selector.locator(".header-title")).toContainText("15");
+    await selector.locator(".date-range").click();
+    await expect(picker.locator("calendar-range")).toHaveJSProperty(
+      "value",
+      "2026-11-15/2026-11-15"
+    );
+    await picker
+      .getByRole("button", { name: "November 10", exact: true })
+      .click();
+    await picker
+      .getByRole("button", { name: "November 18", exact: true })
+      .click();
+    await picker.getByRole("button", { name: "Select", exact: true }).click();
+    await expect(picker).toBeHidden();
+    await selector.locator(".date-range").click();
+    await expect(picker.locator("calendar-range")).toHaveJSProperty(
+      "value",
+      "2026-11-10/2026-11-18"
+    );
+    expectNoPageErrors(pageErrors);
+  });
+
   test("sidebar navigation changes the active panel", async ({ page }) => {
     await loadDemo(page);
     await openDemoSidebar(page);
