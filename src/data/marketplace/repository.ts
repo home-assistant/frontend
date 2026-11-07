@@ -166,3 +166,14 @@ export const dismissNewMarketplaceRepository = (
     type: "marketplace/repositories/clear_new",
     repository: repositoryId,
   });
+
+export const fetchMarketplaceIntegrationDomains = async (
+  hass: CallWS
+): Promise<Set<string>> =>
+  new Set(
+    (await fetchMarketplaceRepositories(hass)).flatMap((repo) =>
+      repo.installed && repo.category === "integration" && repo.domain
+        ? [repo.domain]
+        : []
+    )
+  );

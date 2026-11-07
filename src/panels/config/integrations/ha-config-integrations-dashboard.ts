@@ -82,6 +82,7 @@ import type { HaIntegrationCard } from "./ha-integration-card";
 import "./ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import { showSingleConfigEntryWarning } from "./show-single-config-entry-warning";
+import { fetchMarketplaceIntegrationDomains } from "../../../data/marketplace/repository";
 
 export interface ConfigEntryExtended extends Omit<ConfigEntry, "entry_id"> {
   entry_id?: string;
@@ -160,6 +161,8 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   private _manifests: Record<string, IntegrationManifest> = {};
 
   @state() private _domainEntities: Record<string, string[]> = {};
+
+  @state() private _marketplaceDomains = new Set<string>();
 
   private _extraFetchedManifests?: Set<string>;
 
@@ -426,6 +429,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     this._handleRouteChanged();
     this._scanUSBDevices();
     this._scanImprovDevices();
+    this._fetchMarketplaceDomains();
   }
 
   protected updated(changed: PropertyValues<this>) {
@@ -728,6 +732,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                       .domain=${domain}
                       .items=${items}
                       .manifest=${this._manifests[domain]}
+                      .fromMarketplace=${this._marketplaceDomains.has(domain)}
                       .entityRegistryEntries=${this._entityRegistryEntries}
                       .domainEntities=${this._domainEntities[domain] || []}
                       .logInfo=${
@@ -872,6 +877,19 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     }
 
     this._domainEntities = entitiesByDomain;
+  }
+
+  private async _fetchMarketplaceDomains() {
+    if (!isComponentLoaded(this.hass.config, "marketplace")) {
+      return;
+    }
+    try {
+      this._marketplaceDomains = await fetchMarketplaceIntegrationDomains(
+        this.hass
+      );
+    } catch {
+      this._marketplaceDomains = new Set();
+    }
   }
 
   private async _fetchManifests(integrations?: string[]) {

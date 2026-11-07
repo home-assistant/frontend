@@ -2,6 +2,7 @@ import {
   mdiDevices,
   mdiFileCodeOutline,
   mdiPackageVariant,
+  mdiStore,
   mdiWeb,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
@@ -21,6 +22,8 @@ import type { IntegrationListItem } from "./dialog-add-integration";
 export class HaIntegrationListItem extends HaListItemButton {
   @property({ attribute: false }) public integration!: IntegrationListItem;
 
+  @property({ attribute: false }) public fromMarketplace = false;
+
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
@@ -31,6 +34,8 @@ export class HaIntegrationListItem extends HaListItemButton {
       !integration.config_flow &&
       !integration.integrations &&
       !integration.iot_standards;
+    const marketplace =
+      this.fromMarketplace && !integration.overwrites_built_in;
     return html`
       <div part="start" class="start">
         ${
@@ -73,15 +78,21 @@ export class HaIntegrationListItem extends HaListItemButton {
             ? html`<ha-svg-icon
                   id="icon-custom"
                   class=${
-                    integration.overwrites_built_in ? "overwrites" : "custom"
+                    integration.overwrites_built_in
+                      ? "overwrites"
+                      : marketplace
+                        ? "marketplace"
+                        : "custom"
                   }
-                  .path=${mdiPackageVariant}
+                  .path=${marketplace ? mdiStore : mdiPackageVariant}
                 ></ha-svg-icon>
                 <ha-tooltip for="icon-custom" placement="left">
                   ${this._localize(
                     integration.overwrites_built_in
                       ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
-                      : "ui.panel.config.integrations.config_entry.custom_integration"
+                      : marketplace
+                        ? "ui.panel.config.integrations.config_entry.marketplace_integration"
+                        : "ui.panel.config.integrations.config_entry.custom_integration"
                   )}
                 </ha-tooltip>`
             : nothing
@@ -123,6 +134,9 @@ export class HaIntegrationListItem extends HaListItemButton {
       .open-in-new {
         --mdc-icon-size: 22px;
         padding: 1px;
+      }
+      .end .marketplace {
+        color: #7c4dff;
       }
       .end .custom {
         color: var(--warning-color);
