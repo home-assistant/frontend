@@ -530,7 +530,7 @@ export class HaIntegrationCard extends LitElement {
           --mdc-icon-size: 16px;
         }
         .icon.marketplace {
-          color: #7c4dff;
+          color: var(--marketplace-color, #7c4dff);
         }
         .icon.custom {
           color: var(--warning-color);

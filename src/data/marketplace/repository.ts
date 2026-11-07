@@ -1,4 +1,8 @@
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../../types";
+import { subscribeConfigEntries } from "../config_entries";
+import { subscribeMarketplaceChanges } from "./websocket";
+import { MarketplaceDispatchEvent } from "./common";
 
 type CallWS = Pick<HomeAssistant, "callWS">;
 
@@ -177,3 +181,65 @@ export const fetchMarketplaceIntegrationDomains = async (
         : []
     )
   );
+
+export const subscribeMarketplaceIntegrationDomains = (
+  hass: HomeAssistant,
+  callback: (domains: Set<string>) => void
+): UnsubscribeFunc => {
+  let entryLoaded = false;
+  let signals: Promise<UnsubscribeFunc>[] = [];
+
+  const refresh = async () => {
+    try {
+      callback(await fetchMarketplaceIntegrationDomains(hass));
+    } catch {
+      callback(new Set());
+    }
+  };
+
+  const unsubscribeSignals = () => {
+    signals.forEach((unsub) =>
+      unsub.then((unsubscribe) => unsubscribe()).catch(() => undefined)
+    );
+    signals = [];
+  };
+
+  const handleReady = () => {
+    if (entryLoaded) {
+      refresh();
+    }
+  };
+
+  const entries = subscribeConfigEntries(hass, (updates) => {
+    const update = updates.find(({ entry }) => entry.domain === "marketplace");
+    if (!update) {
+      return;
+    }
+    const loaded = update.type !== "removed" && update.entry.state === "loaded";
+    if (loaded === entryLoaded) {
+      return;
+    }
+    entryLoaded = loaded;
+    unsubscribeSignals();
+    if (!loaded) {
+      callback(new Set());
+      return;
+    }
+    const unsub = subscribeMarketplaceChanges(
+      hass,
+      MarketplaceDispatchEvent.REPOSITORY,
+      refresh
+    );
+    unsub.catch(() => undefined);
+    signals = [unsub];
+    refresh();
+  });
+
+  hass.connection.addEventListener("ready", handleReady);
+
+  return () => {
+    hass.connection.removeEventListener("ready", handleReady);
+    entries.then((unsubscribe) => unsubscribe()).catch(() => undefined);
+    unsubscribeSignals();
+  };
+};

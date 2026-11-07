@@ -136,7 +136,7 @@ export class HaIntegrationListItem extends HaListItemButton {
         padding: 1px;
       }
       .end .marketplace {
-        color: #7c4dff;
+        color: var(--marketplace-color, #7c4dff);
       }
       .end .custom {
         color: var(--warning-color);

@@ -92,7 +92,7 @@ import type { HaConfigEntryRow } from "./ha-config-entry-row";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import { showPickConfigEntryDialog } from "./show-pick-config-entry-dialog";
-import { fetchMarketplaceIntegrationDomains } from "../../../data/marketplace/repository";
+import { subscribeMarketplaceIntegrationDomains } from "../../../data/marketplace/repository";
 
 export interface SubEntryData {
   subEntry: SubEntry;
@@ -169,7 +169,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @state() private _manifest?: IntegrationManifest;
 
-  @state() private _fromMarketplace = false;
+  @state() private _marketplaceDomains = new Set<string>();
 
   @state() private _extraConfigEntries?: ConfigEntry[];
 
@@ -258,6 +258,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           }
         }
       }),
+      subscribeMarketplaceIntegrationDomains(this.hass, (domains) => {
+        this._marketplaceDomains = domains;
+      }),
     ];
   }
 
@@ -273,8 +276,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this._fetchManifest();
       this._fetchDiagnostics();
       this._fetchEntitySources();
-      this._fromMarketplace = false;
-      this._fetchMarketplace();
     }
 
     if (!this.hasUpdated) {
@@ -310,23 +311,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     this._domainEntities = entitiesByDomain;
   }
 
-  private async _fetchMarketplace() {
-    if (!isComponentLoaded(this.hass.config, "marketplace")) {
-      return;
-    }
-    const domain = this.domain;
-    try {
-      const domains = await fetchMarketplaceIntegrationDomains(this.hass);
-      if (domain === this.domain) {
-        this._fromMarketplace = domains.has(domain);
-      }
-    } catch {
-      this._fromMarketplace = false;
-    }
-  }
-
   private get _showMarketplace(): boolean {
-    return this._fromMarketplace && !this._manifest?.overwrites_built_in;
+    return (
+      this._marketplaceDomains.has(this.domain) &&
+      !this._manifest?.overwrites_built_in
+    );
   }
 
   protected updated(changed: PropertyValues) {
@@ -1737,7 +1726,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           color: var(--mdc-theme-text-icon-on-background);
         }
         .integration-info.marketplace ha-svg-icon {
-          color: #7c4dff;
+          color: var(--marketplace-color, #7c4dff);
         }
         .integration-info.warn ha-svg-icon {
           color: var(--warning-color);

@@ -519,6 +519,7 @@ class AddIntegrationDialog extends LitElement {
       .flowsInProgress=${flowsInProgress}
       .navigateToResult=${this._navigateToResult}
       .showManageLink=${this._showDiscovered}
+      .marketplaceDomains=${this._marketplaceDomains}
       style=${styleMap({
         minWidth: `${this._width}px`,
         minHeight: `581px`,
