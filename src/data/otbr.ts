@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
 import type { ThreadDataSet } from "./thread";
 
 export interface OTBRInfo {
@@ -7,6 +7,8 @@ export interface OTBRInfo {
   channel: number | null;
   extended_address: string;
   extended_pan_id: string | null;
+  /** Missing on cores without credential sharing support */
+  ephemeral_key_supported?: boolean;
   url: string;
 }
 
@@ -33,6 +35,33 @@ export const findOTBRInfoForDataset = (
 export const getOTBRInfo = (hass: HomeAssistant): Promise<OTBRInfoDict> =>
   hass.callWS({
     type: "otbr/info",
+  });
+
+export interface OTBREphemeralKey {
+  ephemeral_key: string;
+  /** Seconds */
+  lifetime: number;
+  port: number;
+}
+
+export const OTBRCreateEphemeralKey = (
+  api: HomeAssistantApi,
+  extended_address: string
+): Promise<OTBREphemeralKey> =>
+  api.callWS({
+    type: "otbr/create_ephemeral_key",
+    extended_address,
+  });
+
+export const OTBRDeleteEphemeralKey = (
+  api: HomeAssistantApi,
+  extended_address: string,
+  ephemeral_key?: string
+): Promise<void> =>
+  api.callWS({
+    type: "otbr/delete_ephemeral_key",
+    extended_address,
+    ephemeral_key,
   });
 
 export const OTBRCreateNetwork = (
