@@ -33,6 +33,12 @@ const INSTALLED_STATUS_ORDER = [
   "installed",
 ] as const satisfies readonly RepositoryBase["status"][];
 
+// Browse no longer lists what is installed, so only these statuses apply there
+const BROWSE_STATUS_ORDER = [
+  "new",
+  "default",
+] as const satisfies readonly RepositoryBase["status"][];
+
 export const STATUS_FILTER = "status";
 export const TYPE_FILTER = "type";
 
@@ -125,7 +131,7 @@ export const applySkippedUpdates = (
 export const statusesOfTab = (
   tab: MarketplaceTab
 ): readonly (typeof STATUS_ORDER)[number][] =>
-  tab === "installed" ? INSTALLED_STATUS_ORDER : STATUS_ORDER;
+  tab === "installed" ? INSTALLED_STATUS_ORDER : BROWSE_STATUS_ORDER;
 
 // The filters are kept for every tab. A status picked on another tab that this
 // one can't list is left out here, instead of leaving the table empty.

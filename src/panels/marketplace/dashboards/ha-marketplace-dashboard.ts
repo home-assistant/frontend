@@ -154,14 +154,14 @@ const marketplaceTabs = (
   },
 ];
 
-// The installed tab lists what is installed, the others everything
+// The installed tab lists what is installed, browse everything else
 const repositoriesOfTab = (
   repositories: RepositoryBase[],
   tab: MarketplaceTab
 ): RepositoryBase[] =>
-  tab === "installed"
-    ? repositories.filter((repository) => repository.installed)
-    : repositories;
+  repositories.filter(
+    (repository) => repository.installed === (tab === "installed")
+  );
 
 @customElement("ha-marketplace-dashboard")
 export class HaMarketplaceDashboard extends LitElement {
