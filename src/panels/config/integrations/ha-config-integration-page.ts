@@ -9,6 +9,7 @@ import {
   mdiOpenInNew,
   mdiPackageVariant,
   mdiPlus,
+  mdiStore,
   mdiTextBoxOutline,
   mdiWeb,
 } from "@mdi/js";
@@ -91,6 +92,7 @@ import type { HaConfigEntryRow } from "./ha-config-entry-row";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import { showPickConfigEntryDialog } from "./show-pick-config-entry-dialog";
+import { subscribeMarketplaceIntegrationDomains } from "../../../data/marketplace/repository";
 
 export interface SubEntryData {
   subEntry: SubEntry;
@@ -166,6 +168,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   @state() private _entities: EntityRegistryEntry[] = [];
 
   @state() private _manifest?: IntegrationManifest;
+
+  @state() private _marketplaceDomains = new Set<string>();
 
   @state() private _extraConfigEntries?: ConfigEntry[];
 
@@ -254,6 +258,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           }
         }
       }),
+      subscribeMarketplaceIntegrationDomains(this.hass, (domains) => {
+        this._marketplaceDomains = domains;
+      }),
     ];
   }
 
@@ -302,6 +309,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     }
 
     this._domainEntities = entitiesByDomain;
+  }
+
+  private get _showMarketplace(): boolean {
+    return (
+      this._marketplaceDomains.has(this.domain) &&
+      !this._manifest?.overwrites_built_in
+    );
   }
 
   protected updated(changed: PropertyValues) {
@@ -581,10 +595,18 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           class=${`integration-info ${
                             this._manifest.overwrites_built_in
                               ? "error"
-                              : "warn"
+                              : this._showMarketplace
+                                ? "marketplace"
+                                : "warn"
                           }`}
                         >
-                          <ha-svg-icon path=${mdiPackageVariant}></ha-svg-icon>
+                          <ha-svg-icon
+                            .path=${
+                              this._showMarketplace
+                                ? mdiStore
+                                : mdiPackageVariant
+                            }
+                          ></ha-svg-icon>
                           <a
                             href=${documentationUrl(
                               this.hass,
@@ -596,7 +618,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                             ${this.hass.localize(
                               this._manifest.overwrites_built_in
                                 ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
-                                : "ui.panel.config.integrations.config_entry.custom_integration"
+                                : this._showMarketplace
+                                  ? "ui.panel.config.integrations.config_entry.marketplace_integration"
+                                  : "ui.panel.config.integrations.config_entry.custom_integration"
                             )}
                           </a>
                         </div>`
@@ -1700,6 +1724,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .integration-info ha-svg-icon {
           min-width: 24px;
           color: var(--mdc-theme-text-icon-on-background);
+        }
+        .integration-info.marketplace ha-svg-icon {
+          color: var(--marketplace-color, #7c4dff);
         }
         .integration-info.warn ha-svg-icon {
           color: var(--warning-color);

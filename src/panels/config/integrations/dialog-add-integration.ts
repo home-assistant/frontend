@@ -67,6 +67,7 @@ import type { HaIntegrationListItem } from "./ha-integration-list-item";
 import type { AddIntegrationDialogParams } from "./show-add-integration-dialog";
 import { showYamlIntegrationDialog } from "./show-add-integration-dialog";
 import { showSingleConfigEntryWarning } from "./show-single-config-entry-warning";
+import { fetchMarketplaceIntegrationDomains } from "../../../data/marketplace/repository";
 
 export interface IntegrationListItem extends HaListVirtualizedItem {
   name: string;
@@ -122,6 +123,8 @@ class AddIntegrationDialog extends LitElement {
   private _height?: number;
 
   private _loadId = 0;
+
+  private _marketplaceDomains = new Set<string>();
 
   public async showDialog(params?: AddIntegrationDialogParams): Promise<void> {
     this._navigateToResult = params?.navigateToResult ?? false;
@@ -516,6 +519,7 @@ class AddIntegrationDialog extends LitElement {
       .flowsInProgress=${flowsInProgress}
       .navigateToResult=${this._navigateToResult}
       .showManageLink=${this._showDiscovered}
+      .marketplaceDomains=${this._marketplaceDomains}
       style=${styleMap({
         minWidth: `${this._width}px`,
         minHeight: `581px`,
@@ -618,6 +622,7 @@ class AddIntegrationDialog extends LitElement {
       <ha-integration-list-item
         @click=${this._integrationPicked}
         .integration=${integration}
+        .fromMarketplace=${this._marketplaceDomains.has(integration.domain)}
       >
       </ha-integration-list-item>
     `;
@@ -625,10 +630,16 @@ class AddIntegrationDialog extends LitElement {
 
   private async _load(integrationFilter?: IntegrationFilter) {
     const loadId = ++this._loadId;
-    const [descriptions, flowsInProgress] = await Promise.all([
-      getIntegrationDescriptions(this.hass),
-      fetchConfigFlowInProgress(this.hass.connection),
-    ]);
+    const [descriptions, flowsInProgress, marketplaceDomains] =
+      await Promise.all([
+        getIntegrationDescriptions(this.hass),
+        fetchConfigFlowInProgress(this.hass.connection),
+        isComponentLoaded(this.hass.config, "marketplace")
+          ? fetchMarketplaceIntegrationDomains(this.hass).catch(
+              () => new Set<string>()
+            )
+          : new Set<string>(),
+      ]);
 
     // Filter discovered flows
     this._flowsInProgress = flowsInProgress.filter((flow) =>
@@ -646,6 +657,8 @@ class AddIntegrationDialog extends LitElement {
     if (loadId !== this._loadId) {
       return;
     }
+
+    this._marketplaceDomains = marketplaceDomains;
 
     for (const integration in descriptions.custom.integration) {
       if (

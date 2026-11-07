@@ -46,6 +46,9 @@ class HaDomainIntegrations extends LitElement {
   @property({ attribute: false })
   public showManageLink = false;
 
+  @property({ attribute: false })
+  public marketplaceDomains = new Set<string>();
+
   protected render() {
     return html`<ha-list-base>
       ${
@@ -160,6 +163,7 @@ class HaDomainIntegrations extends LitElement {
                 ([dom, val]) =>
                   html`<ha-integration-list-item
                     .domain=${dom}
+                    .fromMarketplace=${this.marketplaceDomains.has(dom)}
                     .integration=${{
                       ...val,
                       domain: dom,
@@ -238,6 +242,7 @@ class HaDomainIntegrations extends LitElement {
                   </ha-list-item-button>`
                 : html`<ha-integration-list-item
                     .domain=${this.domain}
+                    .fromMarketplace=${this.marketplaceDomains.has(this.domain)}
                     .integration=${{
                       ...this.integration,
                       domain: this.domain,

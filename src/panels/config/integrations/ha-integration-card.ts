@@ -4,6 +4,7 @@ import {
   mdiBugOutline,
   mdiFileCodeOutline,
   mdiPackageVariant,
+  mdiStore,
   mdiWeb,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
@@ -70,6 +71,8 @@ export class HaIntegrationCard extends LitElement {
   @property({ attribute: false }) public items!: ConfigEntryExtended[];
 
   @property({ attribute: false }) public manifest?: IntegrationManifest;
+
+  @property({ attribute: false }) public fromMarketplace = false;
 
   @property({ attribute: false })
   public entityRegistryEntries!: EntityRegistryEntry[];
@@ -278,15 +281,22 @@ export class HaIntegrationCard extends LitElement {
     const icons: IntegrationCardIcon[] = [];
 
     if (!manifest.is_built_in) {
+      const marketplace = this.fromMarketplace && !manifest.overwrites_built_in;
       icons.push({
         id: "icon-custom",
-        path: mdiPackageVariant,
+        path: marketplace ? mdiStore : mdiPackageVariant,
         label: this._localize(
           manifest.overwrites_built_in
             ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
-            : "ui.panel.config.integrations.config_entry.custom_integration"
+            : marketplace
+              ? "ui.panel.config.integrations.config_entry.marketplace_integration"
+              : "ui.panel.config.integrations.config_entry.custom_integration"
         ),
-        className: manifest.overwrites_built_in ? "overwrites" : "custom",
+        className: manifest.overwrites_built_in
+          ? "overwrites"
+          : marketplace
+            ? "marketplace"
+            : "custom",
       });
     }
     if (manifest.iot_class?.startsWith("cloud_")) {
@@ -518,6 +528,9 @@ export class HaIntegrationCard extends LitElement {
           margin-block: calc(var(--ha-space-1) * -1);
           color: var(--label-badge-grey);
           --mdc-icon-size: 16px;
+        }
+        .icon.marketplace {
+          color: var(--marketplace-color, #7c4dff);
         }
         .icon.custom {
           color: var(--warning-color);
