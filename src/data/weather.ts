@@ -332,16 +332,11 @@ export const getSecondaryWeatherAttribute = (
   const roundedValue = round(value, 1);
 
   return html`
-    ${
-      weatherAttrIcon
-        ? html`
-            <ha-svg-icon
-              class="attr-icon"
-              .path=${weatherAttrIcon}
-            ></ha-svg-icon>
-          `
-        : localize(`ui.card.weather.attributes.${attribute}`)
-    }
+    ${weatherAttrIcon
+      ? html`
+          <ha-svg-icon class="attr-icon" .path=${weatherAttrIcon}></ha-svg-icon>
+        `
+      : localize(`ui.card.weather.attributes.${attribute}`)}
     ${formatEntityAttributeValue(stateObj, attribute, roundedValue)}
   `;
 };
@@ -364,19 +359,32 @@ const getWeatherExtrema = (
     if (new Date(fc.datetime).getDate() !== today) {
       break;
     }
-    if (fc.temperature !== undefined && fc.temperature !== null && (tempHigh === undefined || fc.temperature > tempHigh)) {
+    if (
+      fc.temperature !== undefined &&
+      fc.temperature !== null &&
+      (tempHigh === undefined || fc.temperature > tempHigh)
+    ) {
       tempHigh =
         temperatureFractionDigits === undefined
           ? fc.temperature
           : round(fc.temperature, temperatureFractionDigits);
     }
-    if (fc.templow !== undefined && fc.templow !== null && (tempLow === undefined || fc.templow < tempLow)) {
+    if (
+      fc.templow !== undefined &&
+      fc.templow !== null &&
+      (tempLow === undefined || fc.templow < tempLow)
+    ) {
       tempLow =
         temperatureFractionDigits === undefined
           ? fc.templow
           : round(fc.templow, temperatureFractionDigits);
     }
-    if ((fc.templow === undefined || fc.templow === null) && fc.temperature !== undefined && fc.temperature !== null && (tempLow === undefined || fc.temperature < tempLow)) {
+    if (
+      (fc.templow === undefined || fc.templow === null) &&
+      fc.temperature !== undefined &&
+      fc.temperature !== null &&
+      (tempLow === undefined || fc.temperature < tempLow)
+    ) {
       tempLow =
         temperatureFractionDigits === undefined
           ? fc.temperature
@@ -389,17 +397,13 @@ const getWeatherExtrema = (
   }
 
   return html`
-    ${
-      tempHigh
-        ? formatEntityAttributeValue(stateObj, "temperature", tempHigh)
-        : ""
-    }
+    ${tempHigh
+      ? formatEntityAttributeValue(stateObj, "temperature", tempHigh)
+      : ""}
     ${tempLow && tempHigh ? " / " : ""}
-    ${
-      tempLow
-        ? formatEntityAttributeValue(stateObj, "temperature", tempLow)
-        : ""
-    }
+    ${tempLow
+      ? formatEntityAttributeValue(stateObj, "temperature", tempLow)
+      : ""}
   `;
 };
 
