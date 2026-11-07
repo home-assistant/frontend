@@ -1092,7 +1092,8 @@
         "no_areas": "No areas available",
         "no_match": "No areas found for {term}",
         "failed_create_area": "Failed to create area.",
-        "unknown": "Unknown area selected"
+        "unknown": "Unknown area selected",
+        "no_area": "[%key:ui::components::device-picker::no_area%]"
       },
       "floor-picker": {
         "clear": "Clear",
