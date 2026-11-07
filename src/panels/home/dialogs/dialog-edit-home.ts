@@ -1,4 +1,6 @@
+import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
+import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -9,6 +11,7 @@ import "../../../components/ha-dialog";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon";
+import "../../../components/ha-icon-button";
 import type { HaFormSchema } from "../../../components/ha-form/types";
 import type { HomeFrontendSystemData } from "../../../data/frontend";
 import type { ShortcutItem } from "../../../data/home_shortcuts";
@@ -18,14 +21,30 @@ import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import "../../../components/entity/ha-favorites-editor";
 import "../components/home-shortcuts-editor";
+import {
+  editorStatesEqual,
+  HomeConfigDraftSession,
+} from "./home-config-draft-session";
 import type { EditHomeDialogParams } from "./show-dialog-edit-home";
 
-interface EditorState {
+export interface EditorState {
   favorite_entities: string[];
   show_suggested_entities: boolean;
   show_welcome_message: boolean;
   shortcuts: ShortcutItem[];
 }
+
+export const buildHomeConfig = (
+  baseConfig: HomeFrontendSystemData,
+  draft: EditorState
+): HomeFrontendSystemData => ({
+  ...baseConfig,
+  favorite_entities:
+    draft.favorite_entities.length > 0 ? draft.favorite_entities : undefined,
+  hide_suggested_entities: draft.show_suggested_entities ? undefined : true,
+  hide_welcome_message: draft.show_welcome_message ? undefined : true,
+  shortcuts: draft.shortcuts.length > 0 ? draft.shortcuts : undefined,
+});
 
 // The common-controls strategy caps the section at 8 (or the favorites count,
 // whichever is larger); once favorites reach the cap, predictions never render
@@ -45,15 +64,20 @@ export class DialogEditHome
 
   @state() private _params?: EditHomeDialogParams;
 
-  @state() private _state?: EditorState;
+  @state() private _session?: HomeConfigDraftSession;
 
   @state() private _open = false;
 
   @state() private _submitting = false;
 
+  // Set when _save() itself closes a non-stale saved session: the panel
+  // already shows the saved config, so _dialogClosed() skips the preview
+  // revert that every other close path still needs.
+  private _closedBySave = false;
+
   public showDialog(params: EditHomeDialogParams): void {
     this._params = params;
-    this._state = {
+    const initial: EditorState = {
       favorite_entities: params.config.favorite_entities
         ? [...params.config.favorite_entities]
         : [],
@@ -61,26 +85,72 @@ export class DialogEditHome
       show_welcome_message: !params.config.hide_welcome_message,
       shortcuts: params.config.shortcuts ? [...params.config.shortcuts] : [],
     };
-    this._initDirtyTracking({ type: "shallow" }, this._state);
+    this._session = HomeConfigDraftSession.start(initial);
+    // Same comparison as the session's isDirty, so Save and the stale-save
+    // close decision can never disagree. The mixin doesn't clone baselines
+    // for custom compares; safe since drafts are never mutated in place.
+    this._initDirtyTracking(
+      { type: "custom", compare: editorStatesEqual },
+      initial
+    );
     this._open = true;
   }
 
   public closeDialog(): boolean {
+    // Keep the dialog open while a save is in flight, so it cannot be
+    // reopened and start a second, overlapping save.
+    if (this._submitting) {
+      return false;
+    }
     this._open = false;
     return true;
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    const previous = changedProps.get("_session") as
+      HomeConfigDraftSession | undefined;
+    if (
+      changedProps.has("_session") &&
+      this._session &&
+      this._params &&
+      // Skip the first _session assignment from showDialog(): it mirrors
+      // the already-rendered saved config, so previewing it would just
+      // trigger a redundant regeneration in the panel behind the dialog.
+      previous !== undefined &&
+      // The preview follows the draft: only withDraft() bumps generation.
+      // withSaved() only rebases the baseline, so re-pushing the same
+      // draft would invalidate the panel's post-save refresh for nothing.
+      previous.generation !== this._session.generation
+    ) {
+      this._params.previewConfig(
+        buildHomeConfig(this._params.config, this._session.draft)
+      );
+    }
+  }
+
   private _dialogClosed(): void {
+    if (this._session && this._session.generation > 0 && !this._closedBySave) {
+      // Revert whenever this session ever pushed a draft to the panel,
+      // unless _save() itself already closed a session it just finished
+      // committing (see _closedBySave). generation, not isDirtyState, is
+      // what tells whether the panel is showing a preview from this
+      // session: a draft edited back to its baseline is clean but was
+      // still previewed along the way.
+      this._params?.previewConfig(undefined);
+    }
     this._params = undefined;
-    this._state = undefined;
+    this._session = undefined;
     this._submitting = false;
+    this._closedBySave = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {
-    if (!this._params || !this._state) {
+    if (!this._params || !this._session) {
       return nothing;
     }
+    const draft = this._session.draft;
 
     return html`
       <ha-dialog
@@ -89,14 +159,21 @@ export class DialogEditHome
         .headerSubtitle=${this.hass.localize(
           "ui.panel.home.editor.description"
         )}
-        .preventScrimClose=${this.isDirtyState}
+        .preventScrimClose=${this.isDirtyState || this._submitting}
         @closed=${this._dialogClosed}
       >
+        <ha-icon-button
+          slot="headerNavigationIcon"
+          .label=${this.hass.localize("ui.common.close")}
+          .path=${mdiClose}
+          .disabled=${this._submitting}
+          @click=${this.closeDialog}
+        ></ha-icon-button>
         <ha-alert alert-type="info">
           ${this.hass.localize("ui.panel.home.editor.areas_hint", {
             areas_page: html`<a
               href="/config/areas?historyBack=1"
-              @click=${this.closeDialog}
+              @click=${this._areasLinkClicked}
               >${this.hass.localize("ui.panel.home.editor.areas_page")}</a
             >`,
           })}
@@ -115,7 +192,7 @@ export class DialogEditHome
             <ha-form
               .hass=${this.hass}
               .data=${{
-                show_welcome_message: this._state.show_welcome_message,
+                show_welcome_message: draft.show_welcome_message,
               }}
               .schema=${WELCOME_SCHEMA}
               .computeLabel=${this._computeWelcomeLabel}
@@ -124,7 +201,7 @@ export class DialogEditHome
             ></ha-form>
 
             <ha-favorites-editor
-              .favorites=${this._state.favorite_entities}
+              .favorites=${draft.favorite_entities}
               .label=${this.hass.localize(
                 "ui.panel.lovelace.editor.strategy.home.favorite_entities"
               )}
@@ -137,10 +214,10 @@ export class DialogEditHome
             <ha-form
               .hass=${this.hass}
               .data=${{
-                show_suggested_entities: this._state.show_suggested_entities,
+                show_suggested_entities: draft.show_suggested_entities,
               }}
               .schema=${this._suggestedSchema(
-                this._state.favorite_entities.length >= SUGGESTED_ENTITIES_CAP
+                draft.favorite_entities.length >= SUGGESTED_ENTITIES_CAP
               )}
               .computeLabel=${this._computeSuggestedLabel}
               .computeHelper=${this._computeSuggestedHelper}
@@ -164,7 +241,7 @@ export class DialogEditHome
           <div class="expansion-content">
             <home-shortcuts-editor
               .hass=${this.hass}
-              .shortcuts=${this._state.shortcuts}
+              .shortcuts=${draft.shortcuts}
               @value-changed=${this._shortcutsChanged}
             ></home-shortcuts-editor>
           </div>
@@ -191,6 +268,13 @@ export class DialogEditHome
     `;
   }
 
+  private _areasLinkClicked(ev: MouseEvent): void {
+    // Don't navigate away from a dialog that refuses to close mid-save.
+    if (!this.closeDialog()) {
+      ev.preventDefault();
+    }
+  }
+
   private _suggestedSchema = memoizeOne(
     (disabled: boolean) =>
       [
@@ -213,7 +297,8 @@ export class DialogEditHome
 
   private _computeSuggestedHelper = (): string => {
     const favoritesFull =
-      (this._state?.favorite_entities.length ?? 0) >= SUGGESTED_ENTITIES_CAP;
+      (this._session?.draft.favorite_entities.length ?? 0) >=
+      SUGGESTED_ENTITIES_CAP;
     return this.hass.localize(
       favoritesFull
         ? "ui.panel.home.editor.suggested_entities_disabled_description"
@@ -222,66 +307,112 @@ export class DialogEditHome
   };
 
   private _favoriteEntitiesChanged(ev: ValueChangedEvent<string[]>): void {
-    this._state = {
-      ...this._state!,
+    this._session = this._session!.withDraft({
+      ...this._session!.draft,
       favorite_entities: ev.detail.value,
-    };
-    this._updateDirtyState(this._state);
+    });
+    this._updateDirtyState(this._session.draft);
   }
 
   private _welcomeChanged(
     ev: ValueChangedEvent<{ show_welcome_message: boolean }>
   ): void {
-    this._state = {
-      ...this._state!,
+    this._session = this._session!.withDraft({
+      ...this._session!.draft,
       show_welcome_message: ev.detail.value.show_welcome_message,
-    };
-    this._updateDirtyState(this._state);
+    });
+    this._updateDirtyState(this._session.draft);
   }
 
   private _suggestedChanged(
     ev: ValueChangedEvent<{ show_suggested_entities: boolean }>
   ): void {
-    this._state = {
-      ...this._state!,
+    this._session = this._session!.withDraft({
+      ...this._session!.draft,
       show_suggested_entities: ev.detail.value.show_suggested_entities,
-    };
-    this._updateDirtyState(this._state);
+    });
+    this._updateDirtyState(this._session.draft);
   }
 
   private _shortcutsChanged(ev: ValueChangedEvent<ShortcutItem[]>): void {
-    this._state = {
-      ...this._state!,
+    this._session = this._session!.withDraft({
+      ...this._session!.draft,
       shortcuts: ev.detail.value,
-    };
-    this._updateDirtyState(this._state);
+    });
+    this._updateDirtyState(this._session.draft);
   }
 
   private async _save(): Promise<void> {
-    if (!this._params || !this._state) return;
+    if (!this._params || !this._session) return;
+    if (this._submitting) return;
+
+    const paramsAtSave = this._params;
+    const savedGeneration = this._session.generation;
+    const savedDraft = this._session.draft;
+    const config = buildHomeConfig(paramsAtSave.config, savedDraft);
 
     this._submitting = true;
-    const editor = this._state;
-
-    const config: HomeFrontendSystemData = {
-      ...this._params.config,
-      favorite_entities:
-        editor.favorite_entities.length > 0
-          ? editor.favorite_entities
-          : undefined,
-      hide_suggested_entities: editor.show_suggested_entities
-        ? undefined
-        : true,
-      hide_welcome_message: editor.show_welcome_message ? undefined : true,
-      shortcuts: editor.shortcuts.length > 0 ? editor.shortcuts : undefined,
-    };
-
     try {
-      await this._params.saveConfig(config);
-      this._markDirtyStateClean();
+      // On failure, stay open with the draft intact so the user can retry
+      // or explicitly discard it (matches dialog-edit-security's pattern);
+      // closing anyway would leave this legacy dialog instance connected
+      // and dirty with no editor left to act on it.
+      const success = await paramsAtSave.saveConfig(config);
+
+      // closeDialog() refuses while submitting, so the session should still
+      // be the one this save started from. Defensive guard in case it was
+      // torn down some other way (e.g. _dialogClosed() called directly):
+      // nothing here would still be valid to apply then.
+      if (this._params !== paramsAtSave) {
+        return;
+      }
+      if (!success) {
+        return;
+      }
+
+      // Use the *current* session (this._session), not the one captured at
+      // the top of this method: an edit during the await already advanced
+      // it, and that's the generation/draft withSaved() needs to compare
+      // against to correctly detect staleness.
+      const { session: updated, stale } = this._session.withSaved(
+        savedGeneration,
+        savedDraft
+      );
+
+      if (stale) {
+        // Rebase the clean baseline to what was actually persisted,
+        // keeping the live draft as current, so isDirtyState reflects the
+        // screen against what's now truly saved (not the session's
+        // original baseline).
+        this._updateDirtyState(savedDraft);
+        this._markDirtyStateClean();
+        this._updateDirtyState(updated.draft);
+
+        if (updated.isDirty) {
+          // A genuinely newer, unsaved draft exists: stay open on it.
+          this._session = updated;
+          return;
+        }
+        // The rebased draft matches what was just persisted (e.g. edited
+        // away and back to it): fall through and close normally below
+        // instead of leaving the dialog open with Save disabled.
+      } else {
+        this._markDirtyStateClean();
+      }
+
+      // A stale close keeps _closedBySave false: the last preview may differ
+      // in shape from what was saved (e.g. `hidden: undefined`), so the
+      // panel can't recognize and clear it; revert it on close instead.
+      this._closedBySave = !stale;
+      // closeDialog() refuses while submitting.
+      this._submitting = false;
       this.closeDialog();
     } finally {
-      this._submitting = false;
+      // Failure and stay-open paths; don't touch a session this save
+      // didn't start from (see the guard above).
+      if (this._params === paramsAtSave) {
+        this._submitting = false;
+      }
     }
   }
 
