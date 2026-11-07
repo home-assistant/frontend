@@ -62,6 +62,10 @@ export class HaControlSelect extends LitElement {
     });
   }
 
+  public override focus(): void {
+    this._focusOption(this._tabbableIndex);
+  }
+
   private _handleBlur(ev: FocusEvent) {
     // Only reset if focus is leaving the entire component
     if (!this.contains(ev.relatedTarget as Node)) {

@@ -230,6 +230,17 @@
       "logbook": {
         "device_not_found": "{count, plural,\n one {A device used by this card no longer exists.}\n other {# devices used by this card no longer exist.}\n}"
       },
+      "entity-visibility": {
+        "add_favorite": "Add {label} to favorites",
+        "remove_favorite": "Remove {label} from favorites",
+        "alert_level": "Alert level for {label}: {level}",
+        "alert_level_group": "Alert level for {label}",
+        "alert_levels": {
+          "none": "None",
+          "warning": "Warning",
+          "alert": "Alert"
+        }
+      },
       "home-summary": {
         "all_lights_off": "All off",
         "count_active_alerts": "{count} {count, plural,\n one {active alert}\n other {active alerts}\n}",
@@ -2918,19 +2929,7 @@
       },
       "security": {
         "editor": {
-          "title": "Edit security and safety page",
-          "description": "Configure your security and safety display preferences.",
-          "favorite_entities": "[%key:ui::panel::lovelace::editor::strategy::home::favorite_entities%]",
-          "favorite_entities_description": "Pin entities to the top of the page.",
-          "add_favorite_entity": "[%key:ui::panel::lovelace::editor::strategy::home::add_favorite_entity%]",
-          "active_alert_entities": "Active alert entities",
-          "active_alert_entities_description": "Display any entities that require attention.",
-          "add_alert_entity": "Add entity",
-          "severity": {
-            "label": "Severity",
-            "alert": "Alert",
-            "warning": "Warning"
-          },
+          "title": "Edit visible entities",
           "load_failed": "Failed to load security and safety page configuration",
           "save_failed": "Failed to save security and safety page configuration"
         }

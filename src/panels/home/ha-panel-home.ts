@@ -475,6 +475,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
       strategy: {
         type: "home",
         alert_entities: this._securityConfig.alert_entities,
+        security_hidden_entities: this._securityConfig.hidden_entities,
         maintenance_hidden_entities: this._maintenanceConfig.hidden_entities,
         climate_hidden_entities: this._climateConfig.hidden_entities,
         favorite_entities: this._config?.favorite_entities,
