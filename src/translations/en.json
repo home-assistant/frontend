@@ -3174,6 +3174,30 @@
             "breaks_in_version": "This stops working in version {version}. Please address before upgrading.",
             "ignored_in_version_short": "Ignored in version {version}",
             "ignored_in_version": "This issue was ignored in version {version}."
+          },
+          "update_report": {
+            "caption": "Changes since the last update",
+            "title": "Changes after updating to {version}",
+            "subtitle": "Compared with the last run of {version} on {date}",
+            "no_report": "There is no run from before an update to compare with. A report is available after the next Home Assistant update.",
+            "nothing_changed": "Nothing got worse since the update.",
+            "dismiss": "Dismiss report",
+            "sections": {
+              "integrations": "Integrations that no longer load",
+              "entities": "Entities",
+              "affected": "Automations and scripts using an old entity ID",
+              "issues": "New repairs",
+              "upcoming": "Upcoming breaking changes"
+            },
+            "unavailable": "Unavailable",
+            "unknown": "Unknown",
+            "no_state": "Not provided anymore",
+            "renamed": "Entity ID changed",
+            "removed": "Removed",
+            "uses_renamed": "Uses {old_entity_id}, probably update to {new_entity_id}",
+            "uses_removed": "Uses {old_entity_id}, which was removed",
+            "breaks_in_version": "Stops working in version {version}",
+            "ignored": "Ignored"
           }
         },
         "floors": {

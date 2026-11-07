@@ -14,6 +14,7 @@ import {
 import {
   fetchRepairsIssueData,
   type RepairsIssue,
+  UPDATE_REPORT_ISSUE_ID,
 } from "../../../data/repairs";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import type { HomeAssistant } from "../../../types";
@@ -22,6 +23,7 @@ import { fixStatisticsIssue } from "../tools/statistics/fix-statistics";
 import { showVacuumSegmentMappingDialog } from "../entities/dialogs/show-dialog-vacuum-segment-mapping";
 import { showRepairsFlowDialog } from "../../../dialogs/repairs-flow/show-dialog-repair-flow";
 import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
+import { showUpdateReportDialog } from "./show-update-report-dialog";
 
 @customElement("ha-config-repairs")
 class HaConfigRepairs extends LitElement {
@@ -133,7 +135,12 @@ class HaConfigRepairs extends LitElement {
 
   private async _openShowMoreDialog(ev): Promise<void> {
     const issue = ev.currentTarget.issue as RepairsIssue;
-    if (issue.is_fixable) {
+    if (
+      issue.domain === "repairs" &&
+      issue.translation_key === UPDATE_REPORT_ISSUE_ID
+    ) {
+      showUpdateReportDialog(this);
+    } else if (issue.is_fixable) {
       showRepairsFlowDialog(this, issue);
     } else if (
       issue.domain === "homeassistant" &&

@@ -2,8 +2,10 @@ import type { Connection } from "home-assistant-js-websocket";
 import { createCollection } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
 import { debounce } from "../common/util/debounce";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
+import type { ConfigEntry } from "./config_entries";
 import type { DataEntryFlowStep } from "./data_entry_flow";
+import type { RelatedResult } from "./search";
 
 export interface RepairsIssue {
   domain: string;
@@ -104,3 +106,101 @@ export const subscribeRepairsIssueRegistry = (
     conn,
     onChange
   );
+
+export interface UpdateReportConfigEntry {
+  entry_id: string;
+  domain: string;
+  title: string;
+  // null when the config entry was removed
+  state: ConfigEntry["state"] | null;
+  reason: string | null;
+}
+
+export interface UpdateReportEntity {
+  entity_id: string;
+  platform: string;
+}
+
+export interface UpdateReportUnavailableEntity extends UpdateReportEntity {
+  // null when the entity has no state
+  state: "unavailable" | "unknown" | null;
+}
+
+export interface UpdateReportRenamedEntity extends UpdateReportEntity {
+  old_entity_id: string;
+}
+
+export interface UpdateReportIssue {
+  domain: string;
+  issue_id: string;
+}
+
+export interface UpdateReportUpcomingIssue extends UpdateReportIssue {
+  issue_domain: string | null;
+  breaks_in_ha_version: string;
+  dismissed: boolean;
+}
+
+export interface UpdateReport {
+  from_version: string;
+  to_version: string;
+  created: string;
+  config_entries: UpdateReportConfigEntry[];
+  entities_unavailable: UpdateReportUnavailableEntity[];
+  entities_renamed: UpdateReportRenamedEntity[];
+  entities_removed: UpdateReportEntity[];
+  issues: UpdateReportIssue[];
+  upcoming: UpdateReportUpcomingIssue[];
+}
+
+export const UPDATE_REPORT_ISSUE_ID = "update_report";
+
+export const fetchUpdateReport = (api: HomeAssistantApi) =>
+  api.callWS<UpdateReport | null>({ type: "repairs/update_report" });
+
+export const dismissUpdateReport = (api: HomeAssistantApi) =>
+  api.callWS<null>({ type: "repairs/update_report/dismiss" });
+
+// Old entity_id of each removed or renamed entity, with its new entity_id
+// (null when removed).
+export const updateReportOldEntityIds = (
+  report: UpdateReport
+): Map<string, string | null> =>
+  new Map([
+    ...report.entities_removed.map((entity): [string, null] => [
+      entity.entity_id,
+      null,
+    ]),
+    ...report.entities_renamed.map((entity): [string, string] => [
+      entity.old_entity_id,
+      entity.entity_id,
+    ]),
+  ]);
+
+export interface UpdateReportAffected {
+  // automation or script that still references the old entity_id
+  entity_id: string;
+  old_entity_id: string;
+  new_entity_id: string | null;
+}
+
+export const updateReportAffected = (
+  oldEntityIds: Map<string, string | null>,
+  related: Record<string, RelatedResult>
+): UpdateReportAffected[] =>
+  [...oldEntityIds]
+    .flatMap(([oldEntityId, newEntityId]) =>
+      [
+        ...(related[oldEntityId]?.automation ?? []),
+        ...(related[oldEntityId]?.script ?? []),
+      ].map((entityId) => ({
+        entity_id: entityId,
+        old_entity_id: oldEntityId,
+        new_entity_id: newEntityId,
+      }))
+    )
+    .sort(
+      (a, b) =>
+        a.entity_id.localeCompare(b.entity_id) ||
+        a.old_entity_id.localeCompare(b.old_entity_id)
+    );

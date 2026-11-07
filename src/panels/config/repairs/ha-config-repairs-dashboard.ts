@@ -23,6 +23,7 @@ import type { HomeAssistant } from "../../../types";
 import "./ha-config-repairs";
 import { showIntegrationStartupDialog } from "./show-integration-startup-dialog";
 import { showSystemInformationDialog } from "./show-system-information-dialog";
+import { showUpdateReportDialog } from "./show-update-report-dialog";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-config-repairs-dashboard")
@@ -120,6 +121,11 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
                 "ui.panel.config.repairs.integration_startup_time"
               )}
             </ha-dropdown-item>
+            <ha-dropdown-item value="update_report">
+              ${this.hass.localize(
+                "ui.panel.config.repairs.update_report.caption"
+              )}
+            </ha-dropdown-item>
           </ha-dropdown>
         </div>
         <div class="content">
@@ -178,6 +184,9 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
         break;
       case "integration_startup_time":
         this._showIntegrationStartupDialog();
+        break;
+      case "update_report":
+        showUpdateReportDialog(this);
         break;
     }
   }
