@@ -1,7 +1,7 @@
 import type { Connection } from "home-assistant-js-websocket";
 import { DEFAULT_ENTITY_NAME } from "../common/entity/entity_name_config";
 import type { HaDurationData } from "../components/ha-duration-input";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
 import { firstWeekday } from "../common/datetime/first_weekday";
 
 export interface RecorderInfo {
@@ -161,6 +161,35 @@ export type StatisticsValidationResults = Record<
 export const getRecorderInfo = (conn: Connection) =>
   conn.sendMessagePromise<RecorderInfo>({
     type: "recorder/info",
+  });
+
+export interface RecorderTableUsage {
+  table: string;
+  bytes: number;
+}
+
+export interface RecorderEntityUsage {
+  entity_id: string;
+  states: number;
+  statistics: number;
+  statistics_short_term: number;
+  bytes: number;
+}
+
+export interface RecorderDatabaseUsage {
+  generated_at: string;
+  total_bytes: number;
+  tables: RecorderTableUsage[];
+  entities: RecorderEntityUsage[];
+}
+
+export const fetchRecorderDatabaseUsage = (
+  api: Pick<HomeAssistantApi, "callWS">,
+  refresh = false
+) =>
+  api.callWS<RecorderDatabaseUsage>({
+    type: "recorder/database_usage",
+    refresh,
   });
 
 export type EntityRecordingDisabler = "user";
