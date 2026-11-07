@@ -559,7 +559,6 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     expect(previewConfig).toHaveBeenCalledWith(undefined);
   });
 
-
   it("disables the header close button while a save is pending", async () => {
     const el = createDialog();
     const previewConfig = vi.fn();
