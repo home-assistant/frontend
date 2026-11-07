@@ -66,9 +66,11 @@ const renderProgress = (
   stage: PipelineRun["stage"],
   start_suffix = "-start"
 ) => {
-  const startEvent = pipelineRun.events.find(
-    (ev) => ev.type === `${stage}` + start_suffix
-  );
+  // Speech-to-text times from the end of voice activity, but core only sends
+  // stt-vad-end when it runs VAD itself. Fall back to the stage start then.
+  const startEvent =
+    pipelineRun.events.find((ev) => ev.type === `${stage}${start_suffix}`) ??
+    pipelineRun.events.find((ev) => ev.type === `${stage}-start`);
   const finishEvent = pipelineRun.events.find(
     (ev) => ev.type === `${stage}-end`
   );
@@ -588,7 +590,7 @@ export class AssistPipelineDebug extends LitElement {
     // Stop any existing audio first
     this._stopTTS();
 
-    const url = this.pipelineRun!.tts!.tts_output!.url;
+    const url = this.hass.hassUrl(this.pipelineRun!.tts!.tts_output!.url);
     this._audioElement = new Audio(url);
 
     this._audioElement.addEventListener("error", () => {

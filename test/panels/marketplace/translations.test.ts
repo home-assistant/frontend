@@ -26,8 +26,6 @@ describe("Marketplace strings", () => {
   });
 
   it.each([
-    ["warning.continue_in", { seconds: 1 }, "You can continue in 1 second"],
-    ["warning.continue_in", { seconds: 2 }, "You can continue in 2 seconds"],
     [
       "repository.community.downloads",
       { number: 1, count: "1" },

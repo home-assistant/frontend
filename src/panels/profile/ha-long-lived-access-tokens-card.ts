@@ -48,7 +48,7 @@ class HaLongLivedTokens extends LitElement {
           )}
 
           <a
-            href="https://developers.home-assistant.io/docs/auth_api/#making-authenticated-requests"
+            href="https://contributors.home-assistant.io/core/internals/auth-api/#make-authenticated-requests"
             target="_blank"
             rel="noreferrer"
           >

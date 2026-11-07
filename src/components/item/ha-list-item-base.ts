@@ -1,4 +1,4 @@
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -67,6 +67,20 @@ export class HaListItemBase extends HaRowItem {
     if (this._list) {
       fireEvent(this._list, "ha-list-item-unregister", { item: this });
       this._list = undefined;
+    }
+  }
+
+  protected updated(changed: PropertyValues<this>): void {
+    super.updated(changed);
+    // The list only reads focusability on (un)registration, so tell it when
+    // the row starts or stops taking focus later on
+    if (
+      this._list &&
+      ((changed.has("disabled") && changed.get("disabled") !== undefined) ||
+        (changed.has("interactive") &&
+          changed.get("interactive") !== undefined))
+    ) {
+      this._list.requestListItemsUpdate();
     }
   }
 

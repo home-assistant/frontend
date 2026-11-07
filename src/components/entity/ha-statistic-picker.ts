@@ -1,4 +1,5 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
+import type { ContextType } from "@lit/context";
 import {
   mdiChartLine,
   mdiHelpCircleOutline,
@@ -7,21 +8,31 @@ import {
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
+import { consume } from "../../common/decorators/consume";
+import { transform } from "../../common/decorators/transform";
 import { type HASSDomEvent, fireEvent } from "../../common/dom/fire_event";
 import {
   computeEntityPickerDisplay,
   computeEntitySearchLabels,
 } from "../../common/entity/compute_entity_name_display";
+import {
+  apiContext,
+  configContext,
+  formattersContext,
+  internationalizationContext,
+  registriesContext,
+  statesContext,
+} from "../../data/context";
 import { domainToName } from "../../data/integration";
 import {
   getStatisticLabel,
   type StatisticsMetaData,
 } from "../../data/recorder";
 import { getStatisticIds } from "../../data/recorder_statistic_ids";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import type { HomeAssistantFormatters, ValueChangedEvent } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import "../ha-combo-box-item";
 import "../ha-generic-picker";
@@ -72,7 +83,34 @@ declare global {
 
 @customElement("ha-statistic-picker")
 export class HaStatisticPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: (formatters) => formatters?.formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean }) public autofocus = false;
@@ -163,14 +201,17 @@ export class HaStatisticPicker extends LitElement {
   }
 
   private async _getStatisticIds() {
-    this.statisticIds = await getStatisticIds(this.hass, this.statisticTypes);
+    this.statisticIds = await getStatisticIds(this._api, this.statisticTypes);
     this._picker?.requestUpdate();
     this._valueRenderer = this._makeValueRenderer();
   }
 
   private _getItems = () =>
     this._getStatisticsItems(
-      this.hass,
+      this._states,
+      this._registries,
+      this._i18n,
+      this._formatEntityName,
       this.statisticIds,
       this.includeStatisticsUnitOfMeasurement,
       this.includeUnitClass,
@@ -183,7 +224,7 @@ export class HaStatisticPicker extends LitElement {
   private _getAdditionalItems = (): StatisticComboBoxItem[] => [
     {
       id: MISSING_ID,
-      primary: this.hass.localize(
+      primary: this._i18n.localize(
         "ui.components.statistic-picker.missing_entity"
       ),
       icon_path: mdiHelpCircleOutline,
@@ -192,7 +233,10 @@ export class HaStatisticPicker extends LitElement {
 
   private _getStatisticsItems = memoizeOne(
     (
-      hass: HomeAssistant,
+      states: ContextType<typeof statesContext>,
+      registries: ContextType<typeof registriesContext>,
+      i18n: ContextType<typeof internationalizationContext>,
+      formatEntityName: HomeAssistantFormatters["formatEntityName"],
       statisticIds?: StatisticsMetaData[],
       includeStatisticsUnitOfMeasurement?: string | string[],
       includeUnitClass?: string | string[],
@@ -201,7 +245,7 @@ export class HaStatisticPicker extends LitElement {
       excludeStatistics?: string[],
       value?: string
     ): StatisticComboBoxItem[] | undefined => {
-      if (!statisticIds) {
+      if (!statisticIds || !states || !registries) {
         return undefined;
       }
 
@@ -224,7 +268,7 @@ export class HaStatisticPicker extends LitElement {
         const includeDeviceClasses: (string | null)[] =
           ensureArray(includeDeviceClass);
         statisticIds = statisticIds.filter((meta) => {
-          const stateObj = this.hass.states[meta.statistic_id];
+          const stateObj = states[meta.statistic_id];
           if (!stateObj) {
             return true;
           }
@@ -244,12 +288,17 @@ export class HaStatisticPicker extends LitElement {
         ) {
           return;
         }
-        const stateObj = this.hass.states[meta.statistic_id];
+        const stateObj = states[meta.statistic_id];
 
         if (!stateObj) {
           if (!entitiesOnly) {
             const id = meta.statistic_id;
-            const label = getStatisticLabel(this.hass, meta.statistic_id, meta);
+            const label = getStatisticLabel(
+              states,
+              formatEntityName,
+              meta.statistic_id,
+              meta
+            );
             const type =
               meta.statistic_id.includes(":") &&
               !meta.statistic_id.includes(".")
@@ -261,7 +310,7 @@ export class HaStatisticPicker extends LitElement {
               output.push({
                 id,
                 primary: label,
-                secondary: this.hass.localize(
+                secondary: i18n.localize(
                   "ui.components.statistic-picker.no_state"
                 ),
                 type,
@@ -270,7 +319,7 @@ export class HaStatisticPicker extends LitElement {
               });
             } else if (type === "external") {
               const domain = id.split(":")[0];
-              const domainName = domainToName(this.hass.localize, domain);
+              const domainName = domainToName(i18n.localize, domain);
               output.push({
                 id,
                 statistic_id: id,
@@ -288,16 +337,17 @@ export class HaStatisticPicker extends LitElement {
         const id = meta.statistic_id;
 
         const { primary, secondary } = computeEntityPickerDisplay(
-          hass,
+          {
+            entities: registries.entities,
+            devices: registries.devices,
+            areas: registries.areas,
+            floors: registries.floors,
+            language: i18n.language,
+            translationMetadata: i18n.translationMetadata,
+          },
           stateObj
         );
-        const searchLabels = computeEntitySearchLabels(
-          stateObj,
-          hass.entities,
-          hass.devices,
-          hass.areas,
-          hass.floors
-        );
+        const searchLabels = computeEntitySearchLabels(stateObj, registries);
 
         const sortingPrefix = `${TYPE_ORDER.indexOf("entity")}`;
         output.push({
@@ -362,7 +412,7 @@ export class HaStatisticPicker extends LitElement {
           ? html`<ha-icon-button
               slot="end"
               .value=${statisticId}
-              .label=${this.hass.localize("ui.common.edit")}
+              .label=${this._i18n.localize("ui.common.edit")}
               .path=${mdiPencil}
               @click=${this._editItem}
             ></ha-icon-button>`
@@ -384,19 +434,23 @@ export class HaStatisticPicker extends LitElement {
   }
 
   private _computeItem(statisticId: string): StatisticComboBoxItem {
-    const stateObj = this.hass.states[statisticId];
+    const stateObj = this._states?.[statisticId];
 
-    if (stateObj) {
+    if (stateObj && this._registries) {
       const { primary, secondary } = computeEntityPickerDisplay(
-        this.hass,
+        {
+          entities: this._registries.entities,
+          devices: this._registries.devices,
+          areas: this._registries.areas,
+          floors: this._registries.floors,
+          language: this._i18n.language,
+          translationMetadata: this._i18n.translationMetadata,
+        },
         stateObj
       );
       const searchLabels = computeEntitySearchLabels(
         stateObj,
-        this.hass.entities,
-        this.hass.devices,
-        this.hass.areas,
-        this.hass.floors
+        this._registries
       );
 
       const sortingPrefix = `${TYPE_ORDER.indexOf("entity")}`;
@@ -428,9 +482,14 @@ export class HaStatisticPicker extends LitElement {
 
       if (type === "external") {
         const sortingPrefix = `${TYPE_ORDER.indexOf("external")}`;
-        const label = getStatisticLabel(this.hass, statisticId, statistic);
+        const label = getStatisticLabel(
+          this._states ?? {},
+          this._formatEntityName,
+          statisticId,
+          statistic
+        );
         const domain = statisticId.split(":")[0];
-        const domainName = domainToName(this.hass.localize, domain);
+        const domainName = domainToName(this._i18n.localize, domain);
 
         return {
           id: statisticId,
@@ -446,12 +505,17 @@ export class HaStatisticPicker extends LitElement {
     }
 
     const sortingPrefix = `${TYPE_ORDER.indexOf("external")}`;
-    const label = getStatisticLabel(this.hass, statisticId, statistic);
+    const label = getStatisticLabel(
+      this._states ?? {},
+      this._formatEntityName,
+      statisticId,
+      statistic
+    );
 
     return {
       id: statisticId,
       primary: label,
-      secondary: this.hass.localize("ui.components.statistic-picker.no_state"),
+      secondary: this._i18n.localize("ui.components.statistic-picker.no_state"),
       type: "no_state",
       sorting_label: [sortingPrefix, label].join("_"),
       search_labels: { label, statisticId },
@@ -463,7 +527,7 @@ export class HaStatisticPicker extends LitElement {
     item,
     index
   ) => {
-    const showEntityId = this.hass.userData?.showEntityIdPicker;
+    const showEntityId = this._config?.userData?.showEntityIdPicker;
     return html`
       <ha-combo-box-item .borderTop=${index !== 0}>
         ${
@@ -504,11 +568,10 @@ export class HaStatisticPicker extends LitElement {
   protected render() {
     const placeholder =
       this.placeholder ??
-      this.hass.localize("ui.components.statistic-picker.placeholder");
+      this._i18n.localize("ui.components.statistic-picker.placeholder");
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .allowCustomValue=${this.allowCustomEntity}
         .disabled=${this.disabled}
@@ -520,7 +583,7 @@ export class HaStatisticPicker extends LitElement {
         .placeholder=${placeholder}
         .value=${this.value}
         .notFoundLabel=${this._notFoundLabel}
-        .emptyLabel=${this.hass.localize(
+        .emptyLabel=${this._i18n.localize(
           "ui.components.statistic-picker.no_statistics"
         )}
         .rowRenderer=${this._rowRenderer}
@@ -531,7 +594,7 @@ export class HaStatisticPicker extends LitElement {
         .valueRenderer=${this._valueRenderer}
         .helper=${this.helper}
         .searchKeys=${SEARCH_KEYS}
-        .unknownItemText=${this.hass.localize(
+        .unknownItemText=${this._i18n.localize(
           "ui.components.statistic-picker.unknown"
         )}
         @value-changed=${this._valueChanged}
@@ -564,7 +627,7 @@ export class HaStatisticPicker extends LitElement {
 
     if (value === MISSING_ID) {
       window.open(
-        documentationUrl(this.hass, this.helpMissingEntityUrl),
+        documentationUrl(this._config, this.helpMissingEntityUrl),
         "_blank"
       );
       return;
@@ -580,7 +643,7 @@ export class HaStatisticPicker extends LitElement {
   }
 
   private _notFoundLabel = (search: string) =>
-    this.hass.localize("ui.components.statistic-picker.no_match", {
+    this._i18n.localize("ui.components.statistic-picker.no_match", {
       term: html`<b>‘${search}’</b>`,
     });
 }

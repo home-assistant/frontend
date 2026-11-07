@@ -1,7 +1,7 @@
 import { LitElement } from "lit";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { provideHass } from "../../src/fake_data/provide_hass";
 import type { HassTabsSubpage } from "../../src/layouts/hass-tabs-subpage";
-import type { HomeAssistant } from "../../src/types";
 
 // The real back button pulls in the localize context, which is not provided here.
 vi.mock("../../src/components/ha-icon-button-arrow-prev", () => ({}));
@@ -12,22 +12,16 @@ customElements.define("ha-menu-button", class extends LitElement {});
 customElements.define("ha-tab", class extends LitElement {});
 await import("../../src/layouts/hass-tabs-subpage");
 
-const hass = {
-  config: { components: [] },
-  language: "en",
-  localize: (key: string) => key,
-} as unknown as HomeAssistant;
-
 let host: HTMLDivElement | undefined;
 
 const mount = async (backPath: string) => {
   host = document.createElement("div");
+  provideHass(host, { localize: (key: string) => key });
   document.body.append(host);
   const element = document.createElement(
     "hass-tabs-subpage"
   ) as HassTabsSubpage;
   Object.assign(element, {
-    hass,
     route: { prefix: "", path: "" },
     tabs: [],
     backPath,

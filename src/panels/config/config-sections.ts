@@ -41,6 +41,7 @@ import {
   mdiZWave,
 } from "@mdi/js";
 import memoizeOne from "memoize-one";
+import { haLora } from "../../resources/ha-icons";
 import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../../types";
 import { mdiMqttLogo } from "../../resources/mqtt-logo-svg";
@@ -50,7 +51,9 @@ const getHasDomainCheck = (domain: string) => {
   const checkRegistry = memoizeOne((entries: HomeAssistant["entities"]) =>
     Object.values(entries).some((entry) => entry.entity_id.startsWith(prefix))
   );
-  return (hass: HomeAssistant) => checkRegistry(hass.entities);
+
+  return (hass: Pick<HomeAssistant, "entities">) =>
+    checkRegistry(hass.entities);
 };
 
 export const configSections: Record<string, PageNavigation[]> = {
@@ -163,6 +166,15 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#4EAA66",
       component: "knx",
       translationKey: "knx",
+      adminOnly: true,
+    },
+    {
+      path: "/config/lorawan",
+      iconPath: haLora,
+      iconViewBox: "0 0 250 166",
+      iconColor: "#009fe3",
+      component: "lorawan",
+      translationKey: "lorawan",
       adminOnly: true,
     },
     {

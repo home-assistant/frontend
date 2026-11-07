@@ -80,6 +80,22 @@ describe("ha-input password-manager autofill", () => {
     expect(el.syncFromNativeInput()).toBe(false);
     expect(listener).not.toHaveBeenCalled();
   });
+
+  // Clearing a field and focusing it again before it re-rendered used to copy
+  // the old text back in (#54256).
+  it("keeps a value set right before the sync", async () => {
+    const el = await mountInput({ label: "Item", value: "milk" });
+    const listener = vi.fn();
+    el.addEventListener("input", listener);
+
+    el.value = "";
+
+    expect(el.syncFromNativeInput()).toBe(false);
+    expect(listener).not.toHaveBeenCalled();
+    await el.updateComplete;
+    expect(el.value).toBe("");
+    expect(nativeInput(el).value).toBe("");
+  });
 });
 
 describe("ha-input native ids", () => {

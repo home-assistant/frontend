@@ -1,16 +1,19 @@
+import type { ContextType } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
+import { configContext } from "../data/context";
 import "./ha-icon-next";
 import "./ha-svg-icon";
 import "./item/ha-list-item-button";
 import "./list/ha-list-nav";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
-import type { HomeAssistant } from "../types";
 
 @customElement("ha-config-navigation-list")
 class HaConfigNavigationList extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -63,7 +66,7 @@ class HaConfigNavigationList extends LitElement {
   }
 
   private _handleExternalApp() {
-    this.hass.auth.external!.fireMessage({ type: "config_screen/show" });
+    this._config.auth.external!.fireMessage({ type: "config_screen/show" });
   }
 
   static styles: CSSResultGroup = css`

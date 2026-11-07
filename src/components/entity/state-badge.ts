@@ -18,7 +18,10 @@ import {
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
-import { connectionContext } from "../../data/context";
+import {
+  brandsAccessTokenContext,
+  connectionContext,
+} from "../../data/context";
 import { isBrandUrl } from "../../util/brands-url";
 import "../ha-state-icon";
 
@@ -47,6 +50,11 @@ export class StateBadge extends LitElement {
   @state()
   @consume({ context: connectionContext, subscribe: true })
   private _connection?: ContextType<typeof connectionContext>;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  // @ts-ignore read in willUpdate through changedProps only
+  private _brandsAccessToken?: string;
 
   @state() private _iconStyle: Record<string, string | undefined> = {};
 
@@ -132,7 +140,8 @@ export class StateBadge extends LitElement {
       !changedProps.has("overrideIcon") &&
       !changedProps.has("stateColor") &&
       !changedProps.has("color") &&
-      !changedProps.has("_connection")
+      !changedProps.has("_connection") &&
+      !changedProps.has("_brandsAccessToken")
     ) {
       return;
     }
@@ -230,7 +239,7 @@ export class StateBadge extends LitElement {
       const domain = computeDomain(this.stateObj.entity_id);
       if (domain === "update") {
         cls.set("has-no-radius", true);
-      } else if (domain === "media_player" || domain === "camera") {
+      } else if (domain === "media_player") {
         cls.set("has-media-image", true);
       } else if (this.style.backgroundImage !== "") {
         cls.set("has-image", true);
@@ -257,7 +266,10 @@ export class StateBadge extends LitElement {
           justify-content: center;
         }
         :host(.has-image) {
-          border-radius: var(--state-badge-with-image-border-radius, 50%);
+          border-radius: var(
+            --state-badge-with-image-border-radius,
+            var(--ha-picture-border-radius)
+          );
         }
         :host(.has-media-image) {
           border-radius: var(--state-badge-with-media-image-border-radius, 8%);

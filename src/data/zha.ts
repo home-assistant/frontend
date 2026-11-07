@@ -33,7 +33,7 @@ export interface ZHADevice {
   user_given_name?: string | null;
   power_source?: string;
   area_id?: string | null;
-  device_type: string;
+  device_type: ZHADeviceType;
   active_coordinator: boolean;
   signature: any;
   neighbors: Neighbor[];
@@ -56,6 +56,14 @@ export interface Route {
   many_to_one: boolean;
   route_record_required: boolean;
   next_hop: string;
+}
+
+export enum ZHADeviceType {
+  Coordinator = "Coordinator",
+  Router = "Router",
+  EndDevice = "EndDevice",
+  GreenPower = "GreenPower",
+  Unknown = "unknown",
 }
 
 export enum RouteStatus {
@@ -227,7 +235,10 @@ export const reconfigureNode = (
     {
       type: "zha/devices/reconfigure",
       ieee: ieeeAddress,
-    }
+    },
+    // Subscribing starts the reconfiguration, so a reconnect must not
+    // start it again.
+    { resubscribe: false }
   );
 
 export const refreshTopology = (hass: HomeAssistant): Promise<void> =>

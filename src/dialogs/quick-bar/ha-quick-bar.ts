@@ -282,11 +282,11 @@ export class QuickBar extends LitElement {
                 )}
                 .label=${this.hass.localize("ui.dialogs.quick-bar.title")}
                 .getItems=${this._getItems}
+                .isSearchResult=${this._isSearchResult}
                 .rowRenderer=${this._getRowRenderer(this._runningCommandId)}
                 mode="dialog"
                 .sections=${sections}
                 .selectedSection=${this._selectedSection}
-                .sectionTitleFunction=${this._sectionTitleFunction}
                 clearable
               ></ha-picker-combo-box>`
             : nothing
@@ -443,46 +443,13 @@ export class QuickBar extends LitElement {
     `;
   }
 
-  private _sectionTitleFunction = ({
-    firstIndex,
-    lastIndex,
-    firstItem,
-    secondItem,
-    itemsCount,
-  }: {
-    firstIndex: number;
-    lastIndex: number;
-    firstItem: QuickBarComboBoxItem | string;
-    secondItem: QuickBarComboBoxItem | string;
-    itemsCount: number;
-  }) => {
-    if (
-      firstItem === undefined ||
-      secondItem === undefined ||
-      typeof firstItem === "string" ||
-      (typeof secondItem === "string" && secondItem !== "padding") ||
-      (firstIndex === 0 && lastIndex === itemsCount - 1)
-    ) {
-      return undefined;
-    }
-
-    const type =
-      "action" in firstItem
-        ? this.hass.localize("ui.dialogs.quick-bar.commands_title")
-        : "path" in firstItem
-          ? this.hass.localize("ui.dialogs.quick-bar.navigate_title")
-          : "stateObj" in firstItem
-            ? this.hass.localize("ui.components.target-picker.type.entities")
-            : "domain" in firstItem
-              ? this.hass.localize("ui.components.target-picker.type.devices")
-              : this.hass.localize("ui.components.target-picker.type.areas");
-
-    return type;
-  };
-
   // #endregion render
 
   // #region data
+
+  // "Ask Assist" is offered for any search, so it isn't a search result.
+  private _isSearchResult = (item: PickerComboBoxItem) =>
+    !("assistPrompt" in item);
 
   private _getItems = (searchString: string, section: string) => {
     this._selectedSection = section as QuickBarSection | undefined;
@@ -680,7 +647,17 @@ export class QuickBar extends LitElement {
 
   private _getDevicesMemoized = memoizeOne(
     (hass: HomeAssistant, configEntryLookup: Record<string, ConfigEntry>) =>
-      getDevices(hass, configEntryLookup, { idPrefix: `device${SEPARATOR}` })
+      getDevices({
+        states: hass.states,
+        areas: hass.areas,
+        devices: hass.devices,
+        entities: hass.entities,
+        localize: hass.localize,
+        language: hass.locale.language,
+        translationMetadata: hass.translationMetadata,
+        configEntryLookup,
+        idPrefix: `device${SEPARATOR}`,
+      })
   );
 
   private _getAreasMemoized = memoizeOne((hass: HomeAssistant) =>

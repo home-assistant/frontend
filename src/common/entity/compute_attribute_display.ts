@@ -17,7 +17,7 @@ import { capitalizeFirstLetter } from "../string/capitalize-first-letter";
 import { isDate } from "../string/is_date";
 import { isTimestamp } from "../string/is_timestamp";
 import { blankBeforeUnit } from "../translations/blank_before_unit";
-import type { LocalizeFunc } from "../translations/localize";
+import type { LocalizeFunc, LocalizeKeys } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
 import { computeStateDomain } from "./compute_state_domain";
 
@@ -198,6 +198,8 @@ export const computeAttributeNameDisplay = (
     localize(
       `component.${domain}.entity_component._.state_attributes.${attribute}.name`
     ) ||
+    // Attributes every entity can have, which no integration translates
+    localize(`ui.components.attributes.names.${attribute}` as LocalizeKeys) ||
     capitalizeFirstLetter(
       attribute
         .replace(/_/g, " ")

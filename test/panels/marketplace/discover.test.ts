@@ -3,7 +3,7 @@ import type { MarketplaceData } from "../../../src/data/marketplace/marketplace"
 import type { RepositoryBase } from "../../../src/data/marketplace/repository";
 import "../../../src/panels/marketplace/components/ha-marketplace-discover";
 import type { HaMarketplaceDiscover } from "../../../src/panels/marketplace/components/ha-marketplace-discover";
-import type { HomeAssistant } from "../../../src/types";
+import { provideHass } from "../../../src/fake_data/provide_hass";
 
 const stubElement = vi.hoisted(() => (tag: string) => {
   if (!customElements.get(tag)) {
@@ -36,24 +36,15 @@ const repository = (
   }) as RepositoryBase;
 
 const openDiscover = async (repositories: RepositoryBase[]) => {
+  const host = document.createElement("div");
+  provideHass(host, { localize: (key: string) => key });
   const discover = document.createElement("ha-marketplace-discover");
-  discover.hass = {
-    localize: (key: string) => key,
-    locale: {
-      language: "en",
-      number_format: "language",
-      time_format: "language",
-      date_format: "language",
-      time_zone: "local",
-      first_weekday: "language",
-    },
-    auth: { data: { hassUrl: "http://localhost:8123" } },
-  } as unknown as HomeAssistant;
   discover.marketplace = {
     repositories,
     info: {},
   } as unknown as MarketplaceData;
-  document.body.append(discover);
+  document.body.append(host);
+  host.append(discover);
   await discover.updateComplete;
   return discover;
 };

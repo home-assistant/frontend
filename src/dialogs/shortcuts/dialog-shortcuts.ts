@@ -125,10 +125,19 @@ const _SHORTCUTS: Section[] = [
     items: [
       {
         shortcut: [
-          CTRL_CMD,
           { shortcutTranslationKey: "ui.dialogs.shortcuts.shortcuts.drag" },
         ],
         descriptionTranslationKey: "ui.dialogs.shortcuts.charts.drag_to_zoom",
+      },
+      {
+        shortcut: [
+          "Shift",
+          {
+            shortcutTranslationKey:
+              "ui.dialogs.shortcuts.shortcuts.scroll_wheel",
+          },
+        ],
+        descriptionTranslationKey: "ui.dialogs.shortcuts.charts.scroll_to_pan",
       },
       {
         shortcut: [
@@ -171,6 +180,10 @@ const _SHORTCUTS: Section[] = [
       {
         shortcut: ["Shift", "/"],
         descriptionTranslationKey: "ui.dialogs.shortcuts.other.show_shortcuts",
+      },
+      {
+        shortcut: [CTRL_CMD, "Shift", "Y"],
+        descriptionTranslationKey: "ui.dialogs.shortcuts.other.toggle_yaml",
       },
     ],
   },

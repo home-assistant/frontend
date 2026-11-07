@@ -121,11 +121,9 @@ describe("image_upload", () => {
 
   describe("deleteImage", () => {
     it("should delete an image", async () => {
-      const hass = {
-        callWS: vi.fn().mockResolvedValue({}),
-      } as unknown as HomeAssistant;
-      await deleteImage(hass, "12345");
-      expect(hass.callWS).toHaveBeenCalledWith({
+      const callWS = vi.fn().mockResolvedValue({});
+      await deleteImage(callWS, "12345");
+      expect(callWS).toHaveBeenCalledWith({
         type: "image/delete",
         image_id: "12345",
       });

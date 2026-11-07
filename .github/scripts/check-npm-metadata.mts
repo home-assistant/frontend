@@ -17,6 +17,7 @@ import type {
   GitHubScriptArgs,
   PullRequestPayload,
 } from "./github-script.d.ts";
+import { withRetry } from "./github-retry.mts";
 
 // Scheduled and manual runs have no pull request
 type Payload = Partial<PullRequestPayload>;
@@ -90,12 +91,14 @@ const readPackageJson = async (
   context: Context<Payload>,
   ref: string
 ): Promise<PackageJson> => {
-  const { data } = await github.rest.repos.getContent({
-    ...context.repo,
-    path: "package.json",
-    ref,
-    mediaType: { format: "raw" },
-  });
+  const { data } = await withRetry(`package.json lookup at ${ref}`, () =>
+    github.rest.repos.getContent({
+      ...context.repo,
+      path: "package.json",
+      ref,
+      mediaType: { format: "raw" },
+    })
+  );
 
   // The raw media type returns the file contents as a string, but Octokit
   // types the response as the JSON form

@@ -7,6 +7,47 @@ export const supportsServiceWorker = () =>
   "serviceWorker" in navigator &&
   (location.protocol === "https:" || location.hostname === "localhost");
 
+/**
+ * Reload once when a new worker takes over. The claim after a first install
+ * is skipped: that page already runs the build it registered. Returns a
+ * callback that marks the page as claimed for the cases the controller
+ * doesn't show, such as a hard reload that bypassed an active worker. A
+ * change skipped before that call was an update after all, so it reloads.
+ * `reload` returns false when it only deferred the reload, so a later change
+ * is still handled.
+ */
+export const reloadOnControllerChange = (
+  container: ServiceWorkerContainer,
+  reload: () => boolean = () => {
+    location.reload();
+    return true;
+  }
+) => {
+  let claimed = Boolean(container.controller);
+  let skipped = false;
+  let reloading = false;
+  const reloadOnce = () => {
+    if (reloading) {
+      return;
+    }
+    reloading = reload();
+  };
+  container.addEventListener("controllerchange", () => {
+    if (claimed) {
+      reloadOnce();
+      return;
+    }
+    claimed = true;
+    skipped = true;
+  });
+  return () => {
+    claimed = true;
+    if (skipped) {
+      reloadOnce();
+    }
+  };
+};
+
 export const registerServiceWorker = async (
   rootEl: HTMLElement,
   notifyUpdate = true
@@ -15,14 +56,37 @@ export const registerServiceWorker = async (
     return;
   }
 
-  // If the active service worker changes, refresh the page because the cache has changed
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
+  // Set when the active worker changed while this page could not reload.
+  let reloadPending = false;
+
+  // Another tab can activate the new worker, so wait until this page has no unsaved work.
+  // Until then this page runs the old build under the new worker, so its lazy imports can
+  // fail and go through stale build recovery instead.
+  const markClaimed = reloadOnControllerChange(navigator.serviceWorker, () => {
+    if (window.isDirtyState) {
+      reloadPending = true;
+      return false;
+    }
     location.reload();
+    return true;
   });
 
   const reg = await navigator.serviceWorker.register(`/sw-${__BUILD__}.js`);
 
+  if (reg?.active) {
+    markClaimed();
+  }
+
   if (!notifyUpdate || __DEV__ || __DEMO__) {
+    // No update toast here, so reload as soon as the page is clean.
+    const reloadWhenClean = () => {
+      if (reloadPending && !window.isDirtyState) {
+        location.reload();
+      }
+    };
+    window.addEventListener("dirty-state-changed", reloadWhenClean);
+    // The page may have become clean while registering.
+    reloadWhenClean();
     return;
   }
 
@@ -43,6 +107,12 @@ export const registerServiceWorker = async (
   };
 
   const activateUpdate = () => {
+    if (reloadPending) {
+      clearUpdateCountdown();
+      hideUpdateToast();
+      location.reload();
+      return;
+    }
     if (!pendingWorker) {
       return;
     }
@@ -78,6 +148,7 @@ export const registerServiceWorker = async (
       secondaryAction: {
         action: () => {
           pendingWorker = undefined;
+          reloadPending = false;
           clearUpdateCountdown();
         },
         text: { translationKey: "ui.common.cancel" },
@@ -93,7 +164,7 @@ export const registerServiceWorker = async (
   };
 
   window.addEventListener("dirty-state-changed", () => {
-    if (!pendingWorker) {
+    if (!pendingWorker && !reloadPending) {
       return;
     }
     if (window.isDirtyState) {
@@ -132,5 +203,8 @@ export const registerServiceWorker = async (
 
   if (reg.waiting && navigator.serviceWorker.controller) {
     updateReady(reg.waiting);
+  } else if (reloadPending && !window.isDirtyState) {
+    // The page became clean while registering, before the listener above.
+    startUpdateCountdown();
   }
 };

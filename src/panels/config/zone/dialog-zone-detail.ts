@@ -51,17 +51,19 @@ class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
       this._data = this._params.entry;
     } else {
       const initConfig = getZoneEditorInitData();
-      let movedHomeLocation;
-      if (!initConfig?.latitude || !initConfig?.longitude) {
-        movedHomeLocation = addDistanceToCoord(
-          [this.hass.config.latitude, this.hass.config.longitude],
-          Math.random() * 500 * (Math.random() < 0.5 ? -1 : 1),
-          Math.random() * 500 * (Math.random() < 0.5 ? -1 : 1)
-        );
-      }
+      const [latitude, longitude] =
+        initConfig?.latitude !== undefined &&
+        initConfig?.longitude !== undefined
+          ? [initConfig.latitude, initConfig.longitude]
+          : (this._params.location ??
+            addDistanceToCoord(
+              [this.hass.config.latitude, this.hass.config.longitude],
+              Math.random() * 500 * (Math.random() < 0.5 ? -1 : 1),
+              Math.random() * 500 * (Math.random() < 0.5 ? -1 : 1)
+            ));
       this._data = {
-        latitude: initConfig?.latitude || movedHomeLocation[0],
-        longitude: initConfig?.longitude || movedHomeLocation[1],
+        latitude,
+        longitude,
         name: initConfig?.name || "",
         icon: initConfig?.icon || "mdi:map-marker",
         passive: false,

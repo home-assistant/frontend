@@ -1,11 +1,18 @@
 import { customElement } from "lit/decorators";
+import type { LocalizeFunc } from "../../src/common/translations/localize";
 import { isNavigationClick } from "../../src/common/dom/is-navigation-click";
 import { navigate } from "../../src/common/navigate";
 import type { MockHomeAssistant } from "../../src/fake_data/provide_hass";
 import { provideHass } from "../../src/fake_data/provide_hass";
 import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
 import type { HomeAssistant } from "../../src/types";
-import { applyDemoTheme, selectedDemoConfig } from "./configs/demo-configs";
+import {
+  applyDemoTheme,
+  demoConfigEntities,
+  registerDemoAutomations,
+  selectedDemo,
+  selectedDemoConfig,
+} from "./configs/demo-configs";
 import { mockAreaRegistry, setDemoAreas } from "./stubs/area_registry";
 import {
   connectivityCommands,
@@ -18,7 +25,10 @@ import { demoDevices } from "./stubs/devices";
 import { mockDeviceRegistry } from "./stubs/device_registry";
 import { mockEnergy } from "./stubs/energy";
 import { energyEntities } from "./stubs/entities";
-import { mockEntityRegistry } from "./stubs/entity_registry";
+import {
+  mockEntityRegistry,
+  mockEntityRegistryDisplay,
+} from "./stubs/entity_registry";
 import { mockEvents } from "./stubs/events";
 import { mockFloorRegistry, setDemoFloors } from "./stubs/floor_registry";
 import { mockFrontend } from "./stubs/frontend";
@@ -26,6 +36,7 @@ import { mockHardware } from "./stubs/hardware";
 import { mockHassioSupervisor } from "./stubs/hassio_supervisor";
 import { mockIntegration } from "./stubs/integration";
 import { mockLabelRegistry } from "./stubs/label_registry";
+import { automationPlatformDomains } from "./stubs/automation_platform_domains";
 import { mockIcons } from "./stubs/icons";
 import { mockHistory } from "./stubs/history";
 import { mockLovelace } from "./stubs/lovelace";
@@ -58,6 +69,12 @@ const CONFIG_PANEL_COMMANDS = [
   "system_health/",
   "backup/",
   "automation/config",
+  "trigger_platforms/subscribe",
+  "condition_platforms/subscribe",
+  "get_triggers_for_target",
+  "get_conditions_for_target",
+  "get_services_for_target",
+  "extract_from_target",
   "script/config",
   "config/automation/config",
   "config/script/config",
@@ -67,6 +84,7 @@ const CONFIG_PANEL_COMMANDS = [
   "assist_pipeline/",
   "config/entity_registry/settings/",
   "slugify",
+  "marketplace/",
   ...connectivityCommands,
 ];
 
@@ -88,25 +106,81 @@ export class HaDemo extends HomeAssistantAppEl {
       config: {
         ...hass.config,
         components: [
-          ...(hass.config?.components ?? []),
-          "backup",
-          "webhook",
-          "usage_prediction",
-          "assist_pipeline",
-          "hassio",
-          "hardware",
-          ...connectivityComponents,
+          // Some automation platforms are loaded already
+          ...new Set([
+            ...(hass.config?.components ?? []),
+            "backup",
+            "webhook",
+            "usage_prediction",
+            "assist_pipeline",
+            "hassio",
+            "hardware",
+            "marketplace",
+            ...connectivityComponents,
+            ...automationPlatformDomains,
+          ]),
         ],
+      },
+      panels: {
+        ...hass.panels,
+        // Opened from the settings page, not listed in the sidebar
+        marketplace: {
+          component_name: "marketplace",
+          icon: null,
+          title: null,
+          config: null,
+          url_path: "marketplace",
+        },
       },
     });
 
     const localizePromise =
       // @ts-ignore
       this._loadFragmentTranslations(hass.language, "page-demo").then(
-        () => this.hass!.localize
+        // hass is not updated yet when another fragment started loading
+        // meanwhile, so use the localize with these translations directly
+        (localize?: LocalizeFunc) => localize ?? this.hass!.localize
       );
 
-    mockLovelace(hass, localizePromise);
+    mockLovelace(hass, localizePromise, [
+      {
+        id: "music",
+        url_path: "music",
+        require_admin: false,
+        show_in_sidebar: true,
+        icon: "mdi:music",
+        title: "Music",
+        mode: "storage",
+      },
+      {
+        id: "cameras",
+        url_path: "cameras",
+        require_admin: false,
+        show_in_sidebar: true,
+        icon: "mdi:cctv",
+        title: "Cameras",
+        mode: "storage",
+      },
+      {
+        id: "garden",
+        url_path: "garden",
+        require_admin: false,
+        show_in_sidebar: true,
+        icon: "mdi:flower",
+        title: "Garden",
+        mode: "storage",
+      },
+      {
+        id: "lovelace-advanced",
+        url_path: "lovelace-advanced",
+        require_admin: false,
+        show_in_sidebar: false,
+        icon: "mdi:cog",
+        title: "Advanced",
+        mode: "yaml",
+        filename: "lovelace-advanced.yaml",
+      },
+    ]);
     mockAuth(hass);
     mockTranslations(hass, localizePromise);
     mockHistory(hass);
@@ -136,8 +210,37 @@ export class HaDemo extends HomeAssistantAppEl {
     mockAreaRegistry(hass);
     mockDeviceRegistry(hass, demoDevices);
     mockFloorRegistry(hass);
-    mockLabelRegistry(hass);
+    mockLabelRegistry(hass, [
+      {
+        label_id: "kitchen",
+        name: "Kitchen",
+        icon: null,
+        color: "red",
+        description: "Everything in the kitchen",
+        created_at: 1735689600,
+        modified_at: 1735689600,
+      },
+      {
+        label_id: "garden",
+        name: "Garden",
+        icon: "mdi:flower",
+        color: "green",
+        description: null,
+        created_at: 1735689600,
+        modified_at: 1735689600,
+      },
+      {
+        label_id: "battery-powered",
+        name: "Battery powered",
+        icon: null,
+        color: "orange",
+        description: "Runs on batteries",
+        created_at: 1735689600,
+        modified_at: 1735689600,
+      },
+    ]);
     mockUsagePrediction(hass);
+    mockEntityRegistryDisplay(hass);
     mockEntityRegistry(hass, [
       {
         config_entry_id: "co2signal",
@@ -193,7 +296,8 @@ export class HaDemo extends HomeAssistantAppEl {
       ([conf, localize]) => {
         setDemoFloors(hass, conf.floors);
         setDemoAreas(hass, conf.areas);
-        hass.addEntities(conf.entities(localize));
+        hass.addEntities(demoConfigEntities(selectedDemo, conf, localize));
+        registerDemoAutomations(hass, selectedDemo, conf);
         applyDemoTheme(hass, conf.theme);
       }
     );

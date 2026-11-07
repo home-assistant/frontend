@@ -111,11 +111,7 @@ class HaConfigEntryDeviceRow extends LitElement {
         slot="start"
       ></ha-svg-icon>
       <div slot="headline">
-        ${computeDeviceNameDisplay(
-          device,
-          this.hass.localize,
-          this.hass.states
-        )}
+        ${computeDeviceNameDisplay(device, this.hass.localize)}
       </div>
       <span slot="supporting-text"
         >${supportingText.join(" • ")}
@@ -266,7 +262,7 @@ class HaConfigEntryDeviceRow extends LitElement {
   };
 
   private _handleNavigateToEntities = () => {
-    navigate(`/config/entities/?historyBack=1&device=${this.device.id}`);
+    navigate(`/config/entities?historyBack=1&device=${this.device.id}`);
   };
 
   private _doDisableDevice = async () => {
@@ -331,11 +327,7 @@ class HaConfigEntryDeviceRow extends LitElement {
         text: this.hass.localize(
           "ui.panel.config.integrations.config_entry.device.confirm_disable_message",
           {
-            name: computeDeviceNameDisplay(
-              this.device,
-              this.hass.localize,
-              this.hass.states
-            ),
+            name: computeDeviceNameDisplay(this.device, this.hass.localize),
           }
         ),
         destructive: true,
@@ -387,8 +379,8 @@ class HaConfigEntryDeviceRow extends LitElement {
         --ha-row-item-padding-inline: 56px 16px;
       }
       ha-icon-button,
-      ha-icon-next,
-      ha-svg-icon {
+      ha-list-item-button > ha-icon-next,
+      ha-list-item-button > ha-svg-icon {
         color: var(--ha-color-fill-neutral-loud-resting);
       }
       :host([is-child]) ha-list-item-button {

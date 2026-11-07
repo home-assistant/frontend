@@ -91,10 +91,14 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
             (a) => a !== "switch" // Exclude switches control for areas as we don't know what the switches control
           );
           const controlEntities = getAreaControlEntities(
+            hass.states,
+            hass.entities,
+            hass.devices,
+            hass.areas,
+            hass.floors,
             controls,
             area.area_id,
-            hiddenEntities,
-            hass
+            hiddenEntities
           );
 
           const filteredControls = controls.filter(

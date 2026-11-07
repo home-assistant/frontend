@@ -113,7 +113,7 @@ class HaConfigSubEntryRow extends LitElement {
                     href=${
                       devices.length === 1
                         ? `/config/devices/device/${devices[0].id}`
-                        : `/config/devices/dashboard?historyBack=1&config_entry=${configEntry.entry_id}&sub_entry=${subEntry.subentry_id}`
+                        : `/config/devices/dashboard?historyBack=1&config_entry=${configEntry.entry_id}&sub_entry=${subEntry.subentry_id}&status=disabled`
                     }
                   >
                     <ha-dropdown-item value="devices">
@@ -138,7 +138,7 @@ class HaConfigSubEntryRow extends LitElement {
                     href=${
                       services.length === 1
                         ? `/config/devices/device/${services[0].id}`
-                        : `/config/devices/dashboard?historyBack=1&config_entry=${configEntry.entry_id}&sub_entry=${subEntry.subentry_id}`
+                        : `/config/devices/dashboard?historyBack=1&config_entry=${configEntry.entry_id}&sub_entry=${subEntry.subentry_id}&status=disabled`
                     }
                   >
                     <ha-dropdown-item value="services">
@@ -313,9 +313,7 @@ class HaConfigSubEntryRow extends LitElement {
       margin: 16px;
       margin-top: 0;
     }
-    ha-icon-button,
-    ha-icon-next,
-    ha-svg-icon {
+    ha-icon-button {
       color: var(--ha-color-fill-neutral-loud-resting);
     }
     ha-list-item-base.has-subentries {

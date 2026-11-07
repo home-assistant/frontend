@@ -24,6 +24,7 @@ import {
 import { conditionDescriptionsContext } from "../../../../../data/context";
 import { domainToName } from "../../../../../data/integration";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
+import { checkElementUiSupport } from "../../ui-support";
 import "../../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../../condition/ha-automation-condition-editor";
 import "../../condition/types/ha-automation-condition-and";
@@ -64,6 +65,19 @@ export class HaConditionAction extends LitElement implements ActionElement {
     return { condition: "state" };
   }
 
+  public static checkUiSupport(
+    localize: LocalizeFunc,
+    action: Condition
+  ): Error | undefined {
+    return typeof action.condition === "string"
+      ? checkElementUiSupport(
+          localize,
+          `ha-automation-condition-${action.condition}`,
+          action
+        )
+      : undefined;
+  }
+
   protected render() {
     const buildingBlock = CONDITION_BUILDING_BLOCKS.includes(
       this.action.condition
@@ -79,7 +93,6 @@ export class HaConditionAction extends LitElement implements ActionElement {
         this.inSidebar || (!this.inSidebar && !this.indent)
           ? html`
               <ha-generic-picker
-                .hass=${this.hass}
                 .label=${this.hass.localize(
                   "ui.panel.config.automation.editor.conditions.type_select"
                 )}
@@ -142,7 +155,6 @@ export class HaConditionAction extends LitElement implements ActionElement {
 
     return html`<ha-condition-icon
         slot="start"
-        .hass=${this.hass}
         .condition=${condition}
       ></ha-condition-icon
       ><span slot="headline">${label}</span>`;
@@ -152,7 +164,6 @@ export class HaConditionAction extends LitElement implements ActionElement {
     <ha-combo-box-item>
       <ha-condition-icon
         slot="start"
-        .hass=${this.hass}
         .condition=${item.search_labels!.condition || undefined}
       ></ha-condition-icon>
       <span slot="headline">${item.primary}</span>

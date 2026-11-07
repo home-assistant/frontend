@@ -505,6 +505,12 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
     `;
   }
 
+  // A flow cannot be resumed after a page reload, so block reloads for as long
+  // as the dialog is open. This freezes and hides the frontend update prompt.
+  protected override get _blocksReload(): boolean {
+    return this.isDirtyState || this._params !== undefined;
+  }
+
   private get _preventScrimClose(): boolean {
     return (
       this.isDirtyState ||
@@ -721,9 +727,18 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
       return;
     }
     this._progress = undefined;
+    let catchingUp = true;
+    // Fetching re-runs the current step, which external steps can treat as the user returning,
+    // and only progress tasks can finish before the subscription is in place
+    let fetchPending = this._step?.type === "progress";
     const unsubs = [
       subscribeDataEntryFlowProgressed(this.hass.connection, (ev) => {
         if (ev.data.flow_id !== this._step?.flow_id) {
+          return;
+        }
+        if (catchingUp) {
+          // Two concurrent fetches can both advance the flow, so let the catch-up below fetch again
+          fetchPending = true;
           return;
         }
         this._processStep(
@@ -736,9 +751,54 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
         this._progress = Math.ceil(ev.data.progress * 100);
       }),
     ];
-    this._unsubDataEntryFlowProgress = async () => {
+    const unsubscribe = async () => {
       (await Promise.all(unsubs)).map((unsub) => unsub());
     };
+    this._unsubDataEntryFlowProgress = unsubscribe;
+
+    // The backend fires the progressed event even if we have not subscribed yet,
+    // so fetch the flow once in case its progress task already finished
+    try {
+      await Promise.all(unsubs);
+      while (fetchPending) {
+        fetchPending = false;
+        const step = this._step;
+        if (
+          this._unsubDataEntryFlowProgress !== unsubscribe ||
+          !step ||
+          (step.type !== "external" && step.type !== "progress")
+        ) {
+          break;
+        }
+        // A failed fetch only ends the loop if no progressed event arrived while it was in flight
+        // eslint-disable-next-line no-await-in-loop
+        const current = await this._params!.flowConfig.fetchFlow(
+          this.hass,
+          step.flow_id
+        ).catch(() => undefined);
+        if (
+          current &&
+          this._step === step &&
+          !(
+            current.type === step.type &&
+            "step_id" in current &&
+            current.step_id === step.step_id &&
+            // Progress steps can move on to another task without changing step_id
+            (current.type !== "progress" ||
+              (step.type === "progress" &&
+                current.progress_action === step.progress_action))
+          )
+        ) {
+          this._progress = undefined;
+          // eslint-disable-next-line no-await-in-loop
+          await this._processStep(current);
+        }
+      }
+    } catch (_err) {
+      // Keep waiting for the progressed event
+    } finally {
+      catchingUp = false;
+    }
   }
 
   private _focusFormStep = async (): Promise<void> => {

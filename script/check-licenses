@@ -29,7 +29,7 @@ const ALLOWED_LICENSES = new Set([
   "(MIT OR CC0-1.0)",
   "(MIT OR Apache-2.0)",
   "(MIT AND Zlib)",
-  "Python-2.0", // argparse - Python Software Foundation License (permissive)
+  "PSF-2.0", // argparse - Python Software Foundation License (permissive)
   "Public Domain",
   "W3C-20150513", // wicg-inert - W3C Software and Document License (permissive)
   "Unlicense",

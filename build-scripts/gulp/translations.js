@@ -10,7 +10,7 @@ import { finished } from "node:stream/promises";
 import env from "../env.cjs";
 import paths from "../paths.cjs";
 import { mergeTranslations } from "./merge-translations.js";
-import "./fetch-nightly-translations.js";
+import "./fetch-nightly-translations.mts";
 
 const inFrontendDir = "translations/frontend";
 const inBackendDir = "translations/backend";

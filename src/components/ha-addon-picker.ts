@@ -1,10 +1,15 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
+import type { ContextType } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { consume } from "../common/decorators/consume";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { apiContext, configContext } from "../data/context";
 import { fetchHassioAddonsInfo } from "../data/hassio/addon";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { ValueChangedEvent } from "../types";
 import "./ha-alert";
 import "./ha-app-icon";
 import "./ha-combo-box-item";
@@ -42,7 +47,13 @@ const rowRenderer: RenderItemFunction<AddonPickerItem> = (item) => html`
 
 @customElement("ha-addon-picker")
 class HaAddonPicker extends LitElement {
-  public hass!: HomeAssistant;
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
 
   @property() public label?: string;
 
@@ -73,10 +84,7 @@ class HaAddonPicker extends LitElement {
   }
 
   protected render() {
-    const label =
-      this.label === undefined && this.hass
-        ? this.hass.localize("ui.components.app-picker.app")
-        : this.label;
+    const label = this.label ?? this._localize("ui.components.app-picker.app");
 
     if (this._error) {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
@@ -87,7 +95,6 @@ class HaAddonPicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${label}
         .valueRenderer=${this._valueRenderer}
@@ -106,8 +113,8 @@ class HaAddonPicker extends LitElement {
 
   private async _getApps() {
     try {
-      if (isComponentLoaded(this.hass.config, "hassio")) {
-        const addonsInfo = await fetchHassioAddonsInfo(this.hass);
+      if (isComponentLoaded(this._config.config, "hassio")) {
+        const addonsInfo = await fetchHassioAddonsInfo(this._api);
         this._addons = addonsInfo.addons
           .filter((addon) => addon.version)
           .map((addon) => ({
@@ -123,14 +130,12 @@ class HaAddonPicker extends LitElement {
             sorting_label: [addon.name, addon.slug].filter(Boolean).join("_"),
           }));
       } else {
-        this._error = this.hass.localize(
+        this._error = this._localize(
           "ui.components.app-picker.error.no_supervisor"
         );
       }
     } catch (_err: any) {
-      this._error = this.hass.localize(
-        "ui.components.app-picker.error.fetch_apps"
-      );
+      this._error = this._localize("ui.components.app-picker.error.fetch_apps");
     }
   }
 

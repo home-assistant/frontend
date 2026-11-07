@@ -1,3 +1,4 @@
+import type { ContextType } from "@lit/context";
 import { mdiPlaylistPlus } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
@@ -8,11 +9,15 @@ import memoizeOne from "memoize-one";
 import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
-import { labelsContext } from "../data/context";
+import {
+  apiContext,
+  internationalizationContext,
+  labelsContext,
+} from "../data/context";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
 import { updateLabelRegistryEntry } from "../data/label/label_registry";
 import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { ValueChangedEvent } from "../types";
 import "./chips/ha-chip-set";
 import "./chips/ha-input-chip";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
@@ -23,8 +28,6 @@ import "./ha-tooltip";
 
 @customElement("ha-labels-picker")
 export class HaLabelsPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public label?: string;
 
   @property({ attribute: false }) public value?: string[];
@@ -82,6 +85,13 @@ export class HaLabelsPicker extends LitElement {
   @state()
   private _labels?: LabelRegistryEntry[];
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
   @query("ha-label-picker", true) public labelPicker!: HaLabelPicker;
 
   public async open() {
@@ -114,12 +124,11 @@ export class HaLabelsPicker extends LitElement {
     const labels = this._sortedLabels(
       this.value,
       this._labels,
-      this.hass.locale.language
+      this._i18n.locale.language
     );
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
       <ha-label-picker
-        .hass=${this.hass}
         .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
@@ -175,7 +184,7 @@ export class HaLabelsPicker extends LitElement {
             .disabled=${this.disabled}
           >
             <ha-svg-icon .path=${mdiPlaylistPlus} slot="start"></ha-svg-icon>
-            ${this.hass.localize("ui.components.label-picker.add")}
+            ${this._i18n.localize("ui.components.label-picker.add")}
           </ha-button>
         </ha-chip-set>
       </ha-label-picker>
@@ -196,7 +205,11 @@ export class HaLabelsPicker extends LitElement {
     showLabelDetailDialog(this, {
       entry: label,
       updateEntry: async (values) => {
-        await updateLabelRegistryEntry(this.hass, label.label_id, values);
+        await updateLabelRegistryEntry(
+          this._api.callWS,
+          label.label_id,
+          values
+        );
       },
     });
   }
@@ -239,11 +252,11 @@ export class HaLabelsPicker extends LitElement {
       height: var(--ha-space-8);
     }
     ha-input-chip {
-      --md-input-chip-selected-container-color: var(
+      --ha-input-chip-selected-container-color: var(
         --ha-label-background-color,
         var(--grey-color)
       );
-      --md-input-chip-selected-outline-width: 1px;
+      --ha-input-chip-selected-outline-width: 1px;
     }
     label {
       display: block;

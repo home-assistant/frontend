@@ -3,12 +3,19 @@ import {
   type CSSResultGroup,
   html,
   LitElement,
+  type PropertyValues,
   type TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { extractSearchParam } from "../../../../../common/url/search-params";
+import { QueryParamsController } from "../../../../../common/controllers/query-params-controller";
+import type { HASSDomTargetEvent } from "../../../../../common/dom/fire_event";
+import {
+  logSearchFromUrl,
+  logSearchQueryParamConfig,
+} from "../../../../../common/url/logs-query-params";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 import type { HassioAddonDetails } from "../../../../../data/hassio/addon";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
@@ -21,7 +28,24 @@ class SupervisorAppLogDashboard extends LitElement {
 
   @property({ attribute: false }) public addon?: HassioAddonDetails;
 
-  @state() private _filter = extractSearchParam("filter") || "";
+  @state() private _filter = "";
+
+  private _queryParams = new QueryParamsController(
+    this,
+    logSearchQueryParamConfig,
+    {
+      enabled: () => true,
+      navigated: () => this._applyUrl(),
+    }
+  );
+
+  protected willUpdate(changedProps: PropertyValues<this>): void {
+    super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      this._applyUrl();
+    }
+  }
 
   protected render(): TemplateResult {
     if (!this.addon) {
@@ -32,13 +56,13 @@ class SupervisorAppLogDashboard extends LitElement {
         <ha-input-search
           appearance="outlined"
           @input=${this._filterChanged}
+          @blur=${this._flushUrl}
           .value=${this._filter}
           .placeholder=${this.hass.localize("ui.panel.config.logs.search")}
         ></ha-input-search>
       </div>
       <div class="content">
         <error-log-card
-          .hass=${this.hass}
           .header=${this.addon.name}
           .provider=${this.addon.slug}
           .filter=${this._filter}
@@ -48,8 +72,25 @@ class SupervisorAppLogDashboard extends LitElement {
     `;
   }
 
-  private async _filterChanged(ev: InputEvent) {
-    this._filter = (ev.target as HTMLInputElement).value;
+  private _filterChanged(ev: HASSDomTargetEvent<HaInputSearch>) {
+    this._filter = ev.target.value ?? "";
+    this._queryParams.write({ search: this._filter }, true);
+  }
+
+  private _flushUrl() {
+    this._queryParams.flush();
+  }
+
+  // A link without a search clears it, like the logs page
+  private _applyUrl() {
+    const searchParams = this._queryParams.searchParams();
+
+    if (!searchParams) {
+      return;
+    }
+
+    this._filter = logSearchFromUrl(searchParams);
+    this._queryParams.write({ search: this._filter });
   }
 
   static get styles(): CSSResultGroup {

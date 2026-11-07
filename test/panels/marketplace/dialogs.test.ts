@@ -3,7 +3,6 @@ import type { MarketplaceData } from "../../../src/data/marketplace/marketplace"
 import type { RepositoryBase } from "../../../src/data/marketplace/repository";
 import "../../../src/panels/marketplace/dialogs/dialog-marketplace-custom-repositories";
 import type { DialogMarketplaceCustomRepositories } from "../../../src/panels/marketplace/dialogs/dialog-marketplace-custom-repositories";
-import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import { showConnectGitHubFlow } from "../../../src/panels/marketplace/tools/connect-github";
 import type * as ConnectGitHubModule from "../../../src/panels/marketplace/tools/connect-github";
 import type { SendMessage } from "./dialog-host";
@@ -35,23 +34,10 @@ vi.mock("../../../src/components/ha-dialog-footer", () =>
 vi.mock("../../../src/components/ha-form/ha-form", () =>
   stubElement("ha-form")
 );
-vi.mock("../../../src/components/ha-icon-button", () =>
-  stubElement("ha-icon-button")
-);
-vi.mock("../../../src/components/list/ha-list-base", () =>
-  stubElement("ha-list-base")
-);
-vi.mock("../../../src/components/item/ha-list-item-base", () =>
-  stubElement("ha-list-item-base")
-);
-vi.mock("../../../src/components/ha-tooltip", () => stubElement("ha-tooltip"));
 vi.mock("../../../src/dialogs/generic/show-dialog-box", () => ({
   showAlertDialog: vi.fn(),
   showConfirmationDialog: vi.fn(),
 }));
-vi.mock("../../../src/components/ha-svg-icon", () =>
-  stubElement("ha-svg-icon")
-);
 vi.mock("../../../src/components/progress/ha-progress-bar", () =>
   stubElement("ha-progress-bar")
 );
@@ -94,23 +80,6 @@ describe("dialog-marketplace-custom-repositories", () => {
     vi.clearAllMocks();
   });
 
-  it("leaves a dialog closed while removing a repository alone", async () => {
-    const repositories = deferred<RepositoryBase[]>();
-    const dialog = await openCustomRepositoriesDialog(async (message) =>
-      message.type === "marketplace/repositories/list"
-        ? repositories.promise
-        : null
-    );
-    const removing = getInternals(dialog)._removeRepository("1");
-    await dialog.closeDialog();
-    repositories.resolve([]);
-    await removing;
-
-    // The panel hears it from the backend, the closed dialog keeps its list.
-    expect(getInternals(dialog)._repositories).toEqual([REPOSITORY]);
-    expect(getInternals(dialog)._errors).toBeUndefined();
-  });
-
   it("explains adding from a GitHub link, and what each field wants", async () => {
     const dialog = await openCustomRepositoriesDialog(async () => null);
     await dialog.updateComplete;
@@ -139,108 +108,6 @@ describe("dialog-marketplace-custom-repositories", () => {
         "ui.panel.marketplace.dialog_custom_repositories.type_helper",
       ],
     ]);
-  });
-
-  it("names what was added from links above their list, only when any", async () => {
-    const dialog = await openCustomRepositoriesDialog(async () => null);
-    await dialog.updateComplete;
-
-    expect(dialog.shadowRoot!.querySelector("h3")!.textContent!.trim()).toBe(
-      "ui.panel.marketplace.dialog_custom_repositories.added"
-    );
-
-    getInternals(dialog)._repositories = [];
-    await dialog.updateComplete;
-    expect(dialog.shadowRoot!.querySelector("h3")).toBeNull();
-  });
-
-  it("names the category of a repository in the language of the user", async () => {
-    const dialog = await openCustomRepositoriesDialog(async () => null);
-    await dialog.updateComplete;
-
-    expect(
-      dialog.shadowRoot!.querySelector('span[slot="supporting-text"]')!
-        .textContent
-    ).toContain("ui.panel.marketplace.common.type.integration");
-  });
-
-  it("offers no removal for an installed repository, and says why", async () => {
-    const dialog = await openCustomRepositoriesDialog(async () => null);
-    getInternals(dialog)._repositories = [
-      REPOSITORY,
-      { ...REPOSITORY, id: "2", installed: true },
-    ];
-    await dialog.updateComplete;
-
-    expect(
-      [
-        ...dialog.shadowRoot!.querySelectorAll<
-          HTMLElement & { disabled: boolean }
-        >("ha-icon-button[data-repository-id]"),
-      ].map((button) => [button.dataset.repositoryId, button.disabled])
-    ).toEqual([
-      ["1", false],
-      ["2", true],
-    ]);
-    expect(
-      [...dialog.shadowRoot!.querySelectorAll("ha-tooltip")].map((tooltip) =>
-        tooltip.textContent!.trim()
-      )
-    ).toEqual([
-      "ui.common.remove",
-      "ui.panel.marketplace.dialog_custom_repositories.remove_installed",
-    ]);
-  });
-
-  it.each([
-    { name: "removes it once confirmed", confirmed: true, removed: true },
-    { name: "keeps it when declined", confirmed: false, removed: false },
-  ])(
-    "asks before removing a repository, $name",
-    async ({ confirmed, removed }) => {
-      vi.mocked(showConfirmationDialog).mockResolvedValueOnce(confirmed);
-      const sendMessagePromise = vi.fn<SendMessage>(async () => []);
-      const dialog = await openCustomRepositoriesDialog(sendMessagePromise);
-      await dialog.updateComplete;
-
-      dialog
-        .shadowRoot!.querySelector("ha-icon-button[data-repository-id]")!
-        .dispatchEvent(new Event("click"));
-      await vi.waitFor(() => expect(showConfirmationDialog).toHaveBeenCalled());
-      await new Promise((resolve) => {
-        setTimeout(resolve, 0);
-      });
-
-      const [, params] = vi.mocked(showConfirmationDialog).mock.lastCall!;
-      expect(params.destructive).toBe(true);
-      expect(
-        sendMessagePromise.mock.calls.some(
-          ([message]) => message.type === "marketplace/repositories/remove"
-        )
-      ).toBe(removed);
-    }
-  );
-
-  it("tells why a removal failed, once the question is closed", async () => {
-    vi.mocked(showConfirmationDialog).mockResolvedValueOnce(true);
-    const dialog = await openCustomRepositoriesDialog(async (message) => {
-      if (message.type === "marketplace/repositories/remove") {
-        throw { code: "repository_installed", message: "Uninstall it first" };
-      }
-      return [];
-    });
-
-    await getInternals(dialog)._handleRemoveClick({
-      preventDefault: () => undefined,
-      currentTarget: { dataset: { repositoryId: "1" } },
-    });
-
-    // Asked without an action, the error is not lost behind a closed question
-    const [, params] = vi.mocked(showConfirmationDialog).mock.lastCall!;
-    expect(params.action).toBeUndefined();
-    expect(getInternals(dialog)._errors).toEqual({
-      base: "Uninstall it first",
-    });
   });
 
   it("asks only for the link, the type is found out", async () => {
@@ -351,8 +218,8 @@ describe("dialog-marketplace-custom-repositories", () => {
       })
     );
     expect(sendMessagePromise).toHaveBeenCalledTimes(
-      // The detection, the add and the list it shows afterwards
-      3
+      // The detection and the add
+      2
     );
   });
 
@@ -423,13 +290,8 @@ describe("dialog-marketplace-custom-repositories", () => {
     expect(getInternals(dialog)._errors).toEqual({});
   });
 
-  it("shows the added repository once the backend has it", async () => {
-    const added = { ...REPOSITORY, id: "2", full_name: "owner/other" };
-    const sendMessagePromise = vi.fn<SendMessage>(async (message) =>
-      message.type === "marketplace/repositories/list"
-        ? [REPOSITORY, added]
-        : {}
-    );
+  it("closes once the repository is added", async () => {
+    const sendMessagePromise = vi.fn<SendMessage>(async () => null);
     const dialog = await openCustomRepositoriesDialog(sendMessagePromise);
     getInternals(dialog)._data = {
       repository: "owner/other",
@@ -438,8 +300,12 @@ describe("dialog-marketplace-custom-repositories", () => {
 
     await getInternals(dialog)._addRepository();
 
-    expect(getInternals(dialog)._repositories).toEqual([REPOSITORY, added]);
+    // The panel hears it from the backend and lists it on its page
+    expect(dialog.isConnected).toBe(false);
     expect(getInternals(dialog)._errors).toEqual({});
+    expect(sendMessagePromise).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: "marketplace/repositories/list" })
+    );
   });
 
   it("shows why the backend refused to add a repository", async () => {

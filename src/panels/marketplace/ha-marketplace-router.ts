@@ -8,7 +8,6 @@ import type { MarketplaceData } from "../../data/marketplace/marketplace";
 import type { MarketplaceTab } from "./dashboards/ha-marketplace-dashboard";
 
 interface MarketplacePageElement extends HTMLElement {
-  hass: HomeAssistant;
   marketplace: MarketplaceData;
   route: Route;
   narrow: boolean;
@@ -66,7 +65,6 @@ class HaMarketplaceRouter extends HassRouterPage {
   protected updatePageEl(el: MarketplacePageElement) {
     const isWide =
       this.hass.dockedSidebar === "docked" ? this._wideSidebar : this._wide;
-    el.hass = this.hass;
     el.marketplace = this.marketplace;
     el.route = this.routeTail;
     el.narrow = this.narrow;
@@ -80,7 +78,7 @@ class HaMarketplaceRouter extends HassRouterPage {
     defaultPage: "browse",
     showLoading: true,
     beforeRender: (page: string) =>
-      !["_my_redirect", "repository", ...TABS].includes(page)
+      !["_my_redirect", "repository", "repositories", ...TABS].includes(page)
         ? "browse"
         : undefined,
     routes: {
@@ -94,6 +92,10 @@ class HaMarketplaceRouter extends HassRouterPage {
       repository: {
         tag: "ha-marketplace-repository-dashboard",
         load: () => import("./dashboards/ha-marketplace-repository-dashboard"),
+      },
+      repositories: {
+        tag: "ha-marketplace-custom-repositories",
+        load: () => import("./dashboards/ha-marketplace-custom-repositories"),
       },
     },
   };

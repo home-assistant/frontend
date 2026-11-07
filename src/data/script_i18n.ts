@@ -1,7 +1,6 @@
 import { ensureArray } from "../common/array/ensure-array";
 import { formatNumericDuration } from "../common/datetime/format_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
-import { computeStateName } from "../common/entity/compute_state_name";
 import { formatListWithAnds } from "../common/string/format-list";
 import { isTemplate } from "../common/string/has-template";
 import type { HomeAssistant } from "../types";
@@ -66,11 +65,10 @@ export const describeAction = <T extends ActionType>(
   } catch (error: any) {
     // eslint-disable-next-line no-console
     console.error(error);
-    let msg = "Error in describing action";
-    if (error.message) {
-      msg += ": " + error.message;
-    }
-    return msg;
+    return hass.localize(
+      "ui.panel.config.automation.editor.actions.describe_error",
+      { error: error?.message || String(error) }
+    );
   }
 };
 
@@ -127,23 +125,10 @@ const tryDescribeAction = <T extends ActionType>(
           descriptionPlaceholders
         ) || hass.services[domain]?.[serviceName]?.name;
 
-      if (config.metadata) {
-        if (service && shouldShowDomainPrefix(domain, manifests)) {
-          return `${domainToName(hass.localize, domain)}: ${service}`;
-        }
-        return service || config.action;
+      if (service && shouldShowDomainPrefix(domain, manifests)) {
+        return `${domainToName(hass.localize, domain)}: ${service}`;
       }
-
-      return hass.localize(
-        `${actionTranslationBaseKey}.service.description.service_based_on_name_no_targets`,
-        {
-          name: service
-            ? shouldShowDomainPrefix(domain, manifests)
-              ? `${domainToName(hass.localize, domain)}: ${service}`
-              : service
-            : config.action,
-        }
-      );
+      return service || config.action;
     }
     return hass.localize(
       `${actionTranslationBaseKey}.service.description.service`
@@ -342,6 +327,7 @@ const tryDescribeAction = <T extends ActionType>(
     const localized = localizeDeviceAutomationAction(
       hass.localize,
       hass.states,
+      hass.formatEntityName,
       entityRegistry,
       config
     );
@@ -353,14 +339,11 @@ const tryDescribeAction = <T extends ActionType>(
       : undefined;
     if (config.type) {
       return `${config.type} ${
-        stateObj ? computeStateName(stateObj) : config.entity_id
+        stateObj ? hass.formatEntityName(stateObj) : config.entity_id
       }`;
     }
     return hass.localize(
-      `${actionTranslationBaseKey}.device_id.description.perform_device_action`,
-      {
-        device: stateObj ? computeStateName(stateObj) : config.entity_id,
-      }
+      `${actionTranslationBaseKey}.device_id.description.no_device`
     );
   }
 

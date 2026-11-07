@@ -23,6 +23,7 @@ import {
   computeBackupAgentName,
   generateBackup,
   generateBackupWithAutomaticSettings,
+  localizeBackupAgentError,
   saveBackupConfig,
 } from "../../../data/backup";
 import type { ManagerStateEvent } from "../../../data/backup_manager";
@@ -76,6 +77,16 @@ class HaConfigBackupOverview extends LitElement {
     super.willUpdate(changedProperties);
     if (changedProperties.has("config") && !this._config) {
       this._config = this.config;
+    }
+    if (changedProperties.has("info") && this.info) {
+      const domains = new Set(
+        Object.values(this.info.agent_error_translations).map(
+          (translation) => translation.translation_domain
+        )
+      );
+      if (domains.size) {
+        this.hass.loadBackendTranslation("exceptions", [...domains]);
+      }
     }
   }
 
@@ -228,8 +239,8 @@ class HaConfigBackupOverview extends LitElement {
           ${
             this.info && Object.keys(this.info.agent_errors).length
               ? html`
-                  ${Object.entries(this.info.agent_errors).map(
-                    ([agentId, error]) => html`
+                  ${Object.keys(this.info.agent_errors).map(
+                    (agentId) => html`
                       <ha-alert
                         alert-type="error"
                         .title=${this.hass.localize(
@@ -243,7 +254,11 @@ class HaConfigBackupOverview extends LitElement {
                           }
                         )}
                       >
-                        ${error}
+                        ${localizeBackupAgentError(
+                          this.hass.localize,
+                          this.info!,
+                          agentId
+                        )}
                       </ha-alert>
                     `
                   )}

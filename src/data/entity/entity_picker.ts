@@ -125,6 +125,14 @@ export const getEntities = (
   // These values are the same for every entity, so compute them once instead
   // of inside the map over (potentially thousands of) entities.
   const domainNames = new Map<string, string>();
+  const displayOptions = {
+    entities: hass.entities,
+    devices: hass.devices,
+    areas: hass.areas,
+    floors: hass.floors,
+    language: hass.language,
+    translationMetadata: hass.translationMetadata,
+  };
 
   items = entityIds.map<EntityComboBoxItem>((entityId) => {
     const stateObj = hass.states[entityId];
@@ -136,7 +144,10 @@ export const getEntities = (
       domainNames.set(domain, domainName);
     }
 
-    const { primary, secondary } = computeEntityPickerDisplay(hass, stateObj);
+    const { primary, secondary } = computeEntityPickerDisplay(
+      displayOptions,
+      stateObj
+    );
 
     return {
       id: `${idPrefix}${entityId}`,
@@ -145,13 +156,7 @@ export const getEntities = (
       domain_name: domainName,
       sorting_label: [primary, secondary].filter(Boolean).join("_"),
       search_labels: {
-        ...computeEntitySearchLabels(
-          stateObj,
-          hass.entities,
-          hass.devices,
-          hass.areas,
-          hass.floors
-        ),
+        ...computeEntitySearchLabels(stateObj, hass),
         domainName: domainName || null,
         entityId: entityId,
       },

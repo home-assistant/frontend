@@ -33,6 +33,7 @@ import type { HaMarketplaceRepositoryDashboard } from "../dashboards/ha-marketpl
 import { showMarketplaceInUseDialog } from "../dialogs/show-dialog-marketplace-in-use";
 import { showMarketplaceInstallDialog } from "../dialogs/show-dialog-marketplace-install";
 import { handleGitHubRateLimited } from "../tools/connect-github";
+import type { MarketplaceApi } from "../tools/connect-github";
 
 export interface MarketplaceRepositoryMenuItem {
   value: string;
@@ -75,9 +76,10 @@ const showError = (
 
 const uninstallRepository = async (
   element: MarketplaceDashboardElement,
+  api: MarketplaceApi,
   repository: RepositoryBase
 ) => {
-  await uninstallMarketplaceRepository(element.hass, repository.id);
+  await uninstallMarketplaceRepository(api, repository.id);
   if (element.nodeName === "HA-MARKETPLACE-REPOSITORY-DASHBOARD") {
     navigate("/marketplace", { replace: true });
   }
@@ -85,6 +87,7 @@ const uninstallRepository = async (
 
 const confirmUninstallRepository = async (
   element: MarketplaceDashboardElement,
+  api: MarketplaceApi,
   repository: RepositoryBase,
   localize: LocalizeFunc
 ) => {
@@ -92,7 +95,7 @@ const confirmUninstallRepository = async (
   if (repository.category === "integration" && repository.domain) {
     let entries: ConfigEntry[];
     try {
-      entries = await getConfigEntries(element.hass, {
+      entries = await getConfigEntries(api, {
         domain: repository.domain,
       });
     } catch (err: unknown) {
@@ -108,9 +111,10 @@ const confirmUninstallRepository = async (
           try {
             for (const entry of entries) {
               // eslint-disable-next-line no-await-in-loop
-              await deleteConfigEntry(element.hass, entry.entry_id);
+              await deleteConfigEntry(api, entry.entry_id);
             }
-            await uninstallRepository(element, repository);
+
+            await uninstallRepository(element, api, repository);
           } catch (err: unknown) {
             showError(element, localize, err);
             throw err;
@@ -130,7 +134,7 @@ const confirmUninstallRepository = async (
     destructive: true,
     action: async () => {
       try {
-        await uninstallRepository(element, repository);
+        await uninstallRepository(element, api, repository);
       } catch (err: unknown) {
         // Like removing an app repository, the dialog stays open to try again
         showError(element, localize, err);
@@ -142,6 +146,7 @@ const confirmUninstallRepository = async (
 
 export const repositoryMenuItems = (
   element: MarketplaceDashboardElement,
+  api: MarketplaceApi,
   repository: RepositoryBase,
   localize: LocalizeFunc
 ): MarketplaceRepositoryMenuEntry[] => {
@@ -176,9 +181,9 @@ export const repositoryMenuItems = (
       ),
       action: async () => {
         try {
-          await refreshMarketplaceRepository(element.hass, repository.id);
+          await refreshMarketplaceRepository(api, repository.id);
         } catch (err: unknown) {
-          if (!handleGitHubRateLimited(element, element.hass, localize, err)) {
+          if (!handleGitHubRateLimited(element, api, localize, err)) {
             showError(element, localize, err);
           }
           return;
@@ -230,7 +235,7 @@ export const repositoryMenuItems = (
       label: localize("ui.panel.marketplace.repository_menu.dismiss_new"),
       action: async () => {
         try {
-          await dismissNewMarketplaceRepository(element.hass, repository.id);
+          await dismissNewMarketplaceRepository(api, repository.id);
         } catch (err: unknown) {
           showError(element, localize, err);
         }
@@ -258,7 +263,8 @@ export const repositoryMenuItems = (
       value: "uninstall",
       path: mdiDelete,
       label: localize("ui.panel.marketplace.common.uninstall"),
-      action: () => confirmUninstallRepository(element, repository, localize),
+      action: () =>
+        confirmUninstallRepository(element, api, repository, localize),
       variant: "danger",
     });
   }

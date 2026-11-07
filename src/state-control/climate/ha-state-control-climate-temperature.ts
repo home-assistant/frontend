@@ -15,6 +15,7 @@ import { clamp } from "../../common/number/clamp";
 import { formatNumber } from "../../common/number/format_number";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
 import { debounce } from "../../common/util/debounce";
+import { PendingValueSync } from "../../common/util/pending-value-sync";
 import "../../components/ha-big-number";
 import "../../components/ha-control-circular-slider";
 import type { ControlCircularSliderMode } from "../../components/ha-control-circular-slider";
@@ -84,15 +85,28 @@ export class HaStateControlClimateTemperature extends LitElement {
 
   private _sizeController = createStateControlCircularSliderController(this);
 
+  private _pendingSync = new PendingValueSync();
+
   protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("stateObj")) {
-      this._targetTemperature = {
-        value: this.stateObj.attributes.temperature,
-        low: this.stateObj.attributes.target_temp_low,
-        high: this.stateObj.attributes.target_temp_high,
-      };
+    if (!changedProp.has("stateObj")) {
+      return;
     }
+    if (changedProp.get("stateObj")?.entity_id !== this.stateObj.entity_id) {
+      this._debouncedCallService.cancel();
+      this._pendingSync.reset();
+      this._syncTargetTemperature();
+    } else if (this._pendingSync.shouldSync()) {
+      this._syncTargetTemperature();
+    }
+  }
+
+  private _syncTargetTemperature() {
+    this._targetTemperature = {
+      value: this.stateObj.attributes.temperature,
+      low: this.stateObj.attributes.target_temp_low,
+      high: this.stateObj.attributes.target_temp_high,
+    };
   }
 
   private get _step() {
@@ -119,6 +133,7 @@ export class HaStateControlClimateTemperature extends LitElement {
       [target]: value,
     };
     this._selectTargetTemperature = target as Target;
+    this._debouncedCallService.cancel();
     this._callService(target);
   }
 
@@ -139,22 +154,25 @@ export class HaStateControlClimateTemperature extends LitElement {
   );
 
   private _callService(type: string) {
-    if (type === "high" || type === "low") {
-      this._api.callService("climate", "set_temperature", {
-        entity_id: this.stateObj!.entity_id,
-        target_temp_low: this._targetTemperature.low,
-        target_temp_high: this._targetTemperature.high,
-      });
-      return;
-    }
-    this._api.callService("climate", "set_temperature", {
-      entity_id: this.stateObj!.entity_id,
-      temperature: this._targetTemperature.value,
-    });
+    const data =
+      type === "high" || type === "low"
+        ? {
+            entity_id: this.stateObj!.entity_id,
+            target_temp_low: this._targetTemperature.low,
+            target_temp_high: this._targetTemperature.high,
+          }
+        : {
+            entity_id: this.stateObj!.entity_id,
+            temperature: this._targetTemperature.value,
+          };
+    return this._pendingSync.run(
+      () => this._api.callService("climate", "set_temperature", data),
+      () => this._syncTargetTemperature()
+    );
   }
 
   private _handleButton(ev) {
-    const target = ev.currentTarget.target as Target;
+    const target = ev.currentTarget.dataset.target as Target;
     const step = ev.currentTarget.step as number;
 
     const defaultValue = target === "high" ? this._max : this._min;
@@ -173,6 +191,7 @@ export class HaStateControlClimateTemperature extends LitElement {
       ...this._targetTemperature,
       [target]: temp,
     };
+    this._pendingSync.schedule();
     this._debouncedCallService(target);
   }
 
@@ -230,20 +249,34 @@ export class HaStateControlClimateTemperature extends LitElement {
       <div class="buttons">
         <ha-outlined-icon-button
           style=${styleMap({
-            "--md-sys-color-outline": color,
+            "--ha-outlined-icon-button-outline-color": color,
           })}
-          .target=${target}
+          data-target=${target}
           .step=${-this._step}
+          .label=${this._i18n.localize(
+            target === "low"
+              ? "ui.components.climate-control.lower_temperature_down"
+              : target === "high"
+                ? "ui.components.climate-control.upper_temperature_down"
+                : "ui.components.climate-control.temperature_down"
+          )}
           @click=${this._handleButton}
         >
           <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
         </ha-outlined-icon-button>
         <ha-outlined-icon-button
           style=${styleMap({
-            "--md-sys-color-outline": color,
+            "--ha-outlined-icon-button-outline-color": color,
           })}
-          .target=${target}
+          data-target=${target}
           .step=${this._step}
+          .label=${this._i18n.localize(
+            target === "low"
+              ? "ui.components.climate-control.lower_temperature_up"
+              : target === "high"
+                ? "ui.components.climate-control.upper_temperature_up"
+                : "ui.components.climate-control.temperature_up"
+          )}
           @click=${this._handleButton}
         >
           <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
@@ -251,6 +284,13 @@ export class HaStateControlClimateTemperature extends LitElement {
       </div>
     `;
   }
+
+  private _formatTarget = (temperature: number) =>
+    this._formatters.formatEntityAttributeValue(
+      this.stateObj,
+      "temperature",
+      temperature
+    );
 
   private _renderTarget(
     temperature: number,
@@ -326,7 +366,14 @@ export class HaStateControlClimateTemperature extends LitElement {
             class="target-button ${classMap({
               selected: this._selectTargetTemperature === "low",
             })}"
+            aria-pressed=${this._selectTargetTemperature === "low"}
           >
+            <span class="visually-hidden">
+              ${this._formatters.formatEntityAttributeName(
+                this.stateObj,
+                "target_temp_low"
+              )}
+            </span>
             ${this._renderTarget(this._targetTemperature.low!, "big")}
           </button>
           <button
@@ -335,7 +382,14 @@ export class HaStateControlClimateTemperature extends LitElement {
             class="target-button ${classMap({
               selected: this._selectTargetTemperature === "high",
             })}"
+            aria-pressed=${this._selectTargetTemperature === "high"}
           >
+            <span class="visually-hidden">
+              ${this._formatters.formatEntityAttributeName(
+                this.stateObj,
+                "target_temp_high"
+              )}
+            </span>
             ${this._renderTarget(this._targetTemperature.high!, "big")}
           </button>
         </div>
@@ -388,7 +442,14 @@ export class HaStateControlClimateTemperature extends LitElement {
             class="target-button ${classMap({
               selected: this._selectTargetTemperature === "low",
             })}"
+            aria-pressed=${this._selectTargetTemperature === "low"}
           >
+            <span class="visually-hidden">
+              ${this._formatters.formatEntityAttributeName(
+                this.stateObj,
+                "target_temp_low"
+              )}
+            </span>
             ${this._renderTarget(this._targetTemperature.low!, "normal", true)}
           </button>
           <span>·</span>
@@ -398,7 +459,14 @@ export class HaStateControlClimateTemperature extends LitElement {
             class="target-button ${classMap({
               selected: this._selectTargetTemperature === "high",
             })}"
+            aria-pressed=${this._selectTargetTemperature === "high"}
           >
+            <span class="visually-hidden">
+              ${this._formatters.formatEntityAttributeName(
+                this.stateObj,
+                "target_temp_high"
+              )}
+            </span>
             ${this._renderTarget(this._targetTemperature.high!, "normal", true)}
           </button>
         </p>
@@ -486,6 +554,11 @@ export class HaStateControlClimateTemperature extends LitElement {
             .max=${this._max}
             .step=${this._step}
             .current=${this.stateObj.attributes.current_temperature}
+            .formatValue=${this._formatTarget}
+            .label=${this._formatters.formatEntityAttributeName(
+              this.stateObj,
+              "temperature"
+            )}
             @value-changed=${this._valueChanged}
             @value-changing=${this._valueChanging}
           >
@@ -518,6 +591,15 @@ export class HaStateControlClimateTemperature extends LitElement {
             .max=${this._max}
             .step=${this._step}
             .current=${this.stateObj.attributes.current_temperature}
+            .formatValue=${this._formatTarget}
+            .lowLabel=${this._formatters.formatEntityAttributeName(
+              this.stateObj,
+              "target_temp_low"
+            )}
+            .highLabel=${this._formatters.formatEntityAttributeName(
+              this.stateObj,
+              "target_temp_high"
+            )}
             @low-changed=${this._valueChanged}
             @low-changing=${this._valueChanging}
             @high-changed=${this._valueChanged}
@@ -585,6 +667,16 @@ export class HaStateControlClimateTemperature extends LitElement {
         }
         .target-button.selected {
           opacity: 1;
+        }
+        .visually-hidden {
+          position: absolute;
+          overflow: hidden;
+          clip: rect(0 0 0 0);
+          height: 1px;
+          width: 1px;
+          margin: -1px;
+          padding: 0;
+          border: 0;
         }
         .container.md .dual {
           gap: var(--ha-space-4);

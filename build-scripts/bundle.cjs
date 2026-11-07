@@ -96,8 +96,9 @@ module.exports.htmlMinifierOptions = {
 module.exports.terserOptions = ({ latestBuild, isTestBuild }) => ({
   // Highest syntax the minifier may emit; it never downlevels. Every browser
   // in [modern] is well past ES2020 (universal since spring 2020); the
-  // [legacy] floors (Chrome 59 / Safari 12) top out at ES2017.
-  ecma: latestBuild ? 2020 : 2017,
+  // [legacy] floors (Chrome 67 / Safari 15) top out at ES2019: optional
+  // catch binding is in, `?.` and `??` (Chrome 80) are not.
+  ecma: latestBuild ? 2020 : 2019,
   module: latestBuild,
   format: { comments: false },
   sourceMap: !isTestBuild,
@@ -115,6 +116,16 @@ module.exports.swcOptions = () => ({
     },
   },
 });
+
+const corejsPolyfills = (exclude = []) => [
+  "babel-plugin-polyfill-corejs3",
+  {
+    method: "usage-global",
+    version: dependencies["core-js"],
+    shippedProposals: true,
+    exclude,
+  },
+];
 
 module.exports.babelOptions = ({ latestBuild, isTestBuild, sw, worker }) => ({
   babelrc: false,
@@ -137,14 +148,7 @@ module.exports.babelOptions = ({ latestBuild, isTestBuild, sw, worker }) => ({
     // Inject Core-JS polyfills on demand. Babel 8 removed preset-env's
     // `useBuiltIns`/`corejs` options, so the equivalent polyfill provider is
     // configured directly here (`usage-global` matches the old `useBuiltIns: "usage"`).
-    [
-      "babel-plugin-polyfill-corejs3",
-      {
-        method: "usage-global",
-        version: dependencies["core-js"],
-        shippedProposals: true,
-      },
-    ],
+    corejsPolyfills(),
     [
       path.join(BABEL_PLUGINS, "inline-constants-plugin.cjs"),
       {
@@ -185,10 +189,19 @@ module.exports.babelOptions = ({ latestBuild, isTestBuild, sw, worker }) => ({
         path.join(paths.root_dir, "src/resources/polyfills"),
         ...[
           "@formatjs/(?:ecma402-abstract|intl-\\w+)",
-          "@lit-labs/virtualizer/polyfills",
           "@webcomponents/scoped-custom-element-registry",
           "element-internals-polyfill",
         ].map((p) => new RegExp(`/node_modules/${p}/`)),
+      ],
+    },
+    {
+      // It only constructs `Uint8Array`s, but any reference to one pulls in
+      // every typed array polyfill, and this lands in the `core` entrypoint.
+      test: /[\\/]node_modules[\\/]home-assistant-js-websocket[\\/]/,
+      plugins: [
+        corejsPolyfills([
+          /^(es|esnext)\.(array-buffer|typed-array|uint8-array)\./,
+        ]),
       ],
     },
     {

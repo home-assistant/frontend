@@ -1,9 +1,9 @@
 import type {
-  HaFormBaseSchema,
   HaFormCondition,
   HaFormDataContainer,
   HaFormFieldCondition,
   HaFormSchema,
+  HaFormVisible,
 } from "./types";
 
 const isEmpty = (value: unknown): boolean =>
@@ -57,11 +57,10 @@ export const evaluateCondition = (
   return matchFieldCondition(condition, data);
 };
 
-export const isFieldVisible = (
-  schema: HaFormSchema,
+export const isVisible = (
+  visible: HaFormVisible | undefined,
   data: HaFormDataContainer | undefined
 ): boolean => {
-  const { visible } = schema as HaFormBaseSchema;
   if (visible === undefined || visible === true) {
     return true;
   }
@@ -72,10 +71,26 @@ export const isFieldVisible = (
   return conditions.every((condition) => evaluateCondition(condition, data));
 };
 
+export const combineVisible = (
+  ...options: (HaFormVisible | undefined)[]
+): HaFormVisible => {
+  const conditions: HaFormCondition[] = [];
+  for (const visible of options) {
+    if (visible === undefined || visible === true) {
+      continue;
+    }
+    if (visible === false) {
+      return false;
+    }
+    conditions.push(...(Array.isArray(visible) ? visible : [visible]));
+  }
+  return conditions;
+};
+
 // Hiding a field drops its value, which can flip another field's condition, so
-// resolve the set to a fixpoint.
+// resolve the set to a fixpoint. Fields are given in order as name and visible.
 export const getHiddenFields = (
-  schema: readonly HaFormSchema[],
+  fields: readonly (readonly [string, HaFormVisible | undefined])[],
   data: HaFormDataContainer | undefined
 ): Set<string> => {
   const hidden = new Set<string>();
@@ -83,14 +98,23 @@ export const getHiddenFields = (
   let changed = true;
   while (changed) {
     changed = false;
-    for (const field of schema) {
-      if (hidden.has(field.name) || isFieldVisible(field, evalData)) {
+    for (const [name, visible] of fields) {
+      if (hidden.has(name) || isVisible(visible, evalData)) {
         continue;
       }
-      hidden.add(field.name);
-      delete evalData[field.name];
+      hidden.add(name);
+      delete evalData[name];
       changed = true;
     }
   }
   return hidden;
 };
+
+export const getHiddenSchemaFields = (
+  schema: readonly HaFormSchema[],
+  data: HaFormDataContainer | undefined
+): Set<string> =>
+  getHiddenFields(
+    schema.map((field) => [field.name, field.visible] as const),
+    data
+  );

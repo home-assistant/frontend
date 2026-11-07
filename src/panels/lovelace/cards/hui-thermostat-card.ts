@@ -123,8 +123,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         </hui-warning>
       `;
     }
@@ -139,8 +139,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       : undefined;
 
     return html`
-      <ha-card>
-        <p class="title">${name}</p>
+      <ha-card role="group" aria-labelledby="title">
+        <p class="title" id="title">${name}</p>
         <div class="container">
           ${
             domain === "water_heater"

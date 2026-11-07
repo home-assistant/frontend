@@ -335,11 +335,10 @@ class HaHLSPlayer extends LitElement {
       lowLatencyMode: this._isLLHLSSupported(),
     });
     this._hlsPolyfillInstance = hls;
+    // Load the source once, before attaching. MEDIA_ATTACHED fires again on
+    // every recoverMediaError(), and loading there would restart the stream.
+    hls.loadSource(url);
     hls.attachMedia(videoEl);
-    hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-      this._resetError();
-      hls.loadSource(url);
-    });
     hls.on(Hls.Events.FRAG_LOADED, (_event, _data: any) => {
       this._resetError();
     });

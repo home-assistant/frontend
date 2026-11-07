@@ -59,7 +59,8 @@ export class DialogStatisticsFix extends LitElement {
             `ui.panel.config.tools.tabs.statistics.fix_issue.${issue.type}.info_text_1`,
             {
               name: getStatisticLabel(
-                this.hass,
+                this.hass.states,
+                this.hass.formatEntityName,
                 issue.data.statistic_id,
                 undefined
               ),
@@ -129,7 +130,7 @@ export class DialogStatisticsFix extends LitElement {
                               "ui.panel.config.tools.tabs.statistics.fix_issue.state_class_removed.info_text_4"
                             )}
                             <a
-                              href="https://developers.home-assistant.io/docs/core/entity/sensor/#long-term-statistics"
+                              href="https://contributors.home-assistant.io/core/entities/sensor/#long-term-statistics"
                               target="_blank"
                               rel="noreferrer noopener"
                             >

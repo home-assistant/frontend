@@ -8,8 +8,11 @@ import {
 
 // The window starts at t=1000s; samples are (state, seconds)
 const SINCE = 1000 * 1000;
-const sample = (s: string, seconds: number): EntityHistoryState =>
-  ({ s, lu: seconds, a: {} }) as EntityHistoryState;
+const sample = (
+  s: string,
+  seconds: number,
+  inZones?: string[]
+): EntityHistoryState => ({ s, lu: seconds, a: { in_zones: inZones } });
 
 describe("personActivity", () => {
   it("lists state changes inside the window, newest first", () => {
@@ -59,13 +62,16 @@ describe("zoneActivity", () => {
       {
         "person.anne": [
           sample("not_home", 900),
-          sample("Work", 1100),
+          sample("Work", 1100, ["zone.work"]),
           sample("not_home", 1300),
         ],
-        "person.bob": [sample("home", 900), sample("Work", 1200)],
+        "person.bob": [
+          sample("home", 900),
+          sample("Work", 1200, ["zone.work"]),
+        ],
       },
       ["person.anne", "person.bob"],
-      "Work",
+      "zone.work",
       SINCE
     );
     expect(
@@ -81,13 +87,13 @@ describe("zoneActivity", () => {
     const entries = zoneActivity(
       {
         "person.anne": [
-          sample("Work", 900),
+          sample("Work", 900, ["zone.work"]),
           sample("home", 950),
           sample("Gym", 1100),
         ],
       },
       ["person.anne"],
-      "Work",
+      "zone.work",
       SINCE
     );
     // Leaving Work happened before the window; Gym is not Work
@@ -98,9 +104,9 @@ describe("zoneActivity", () => {
     // A newly created person has no state at the window's start, so their
     // first sample inside the window is a real arrival
     const entries = zoneActivity(
-      { "person.anne": [sample("Work", 1100)] },
+      { "person.anne": [sample("Work", 1100, ["zone.work"])] },
       ["person.anne"],
-      "Work",
+      "zone.work",
       SINCE
     );
     expect(entries.map((e) => [e.arrived, e.when.getTime() / 1000])).toEqual([
@@ -112,17 +118,85 @@ describe("zoneActivity", () => {
     const entries = zoneActivity(
       {
         "person.anne": [
-          sample("Work", 900),
+          sample("Work", 900, ["zone.work"]),
           sample("unavailable", 1100),
-          sample("Work", 1150),
+          sample("Work", 1150, ["zone.work"]),
           sample("unknown", 1200),
-          sample("Work", 1250),
+          sample("Work", 1250, ["zone.work"]),
         ],
       },
       ["person.anne"],
-      "Work",
+      "zone.work",
       SINCE
     );
     expect(entries).toEqual([]);
+  });
+
+  it("keeps arrivals and departures in same-named zones separate", () => {
+    const history = {
+      "person.anne": [
+        sample("not_home", 900, []),
+        sample("Work", 1100, ["zone.work"]),
+        sample("not_home", 1300, []),
+      ],
+      "person.bob": [
+        sample("not_home", 900, []),
+        sample("Work", 1200, ["zone.other_work"]),
+        sample("not_home", 1400, []),
+      ],
+    };
+    const personIds = Object.keys(history);
+
+    expect(zoneActivity(history, personIds, "zone.work", SINCE)).toEqual([
+      {
+        state: "not_home",
+        personId: "person.anne",
+        arrived: false,
+        when: new Date(1300 * 1000),
+      },
+      {
+        state: "Work",
+        personId: "person.anne",
+        arrived: true,
+        when: new Date(1100 * 1000),
+      },
+    ]);
+    expect(zoneActivity(history, personIds, "zone.other_work", SINCE)).toEqual([
+      {
+        state: "not_home",
+        personId: "person.bob",
+        arrived: false,
+        when: new Date(1400 * 1000),
+      },
+      {
+        state: "Work",
+        personId: "person.bob",
+        arrived: true,
+        when: new Date(1200 * 1000),
+      },
+    ]);
+  });
+
+  it("includes membership in overlapping zones without counting active-zone changes", () => {
+    const entries = zoneActivity(
+      {
+        "person.anne": [
+          sample("not_home", 900, []),
+          sample("home", 1100, ["zone.home", "zone.work"]),
+          sample("Work", 1200, ["zone.work"]),
+          sample("not_home", 1300, []),
+        ],
+      },
+      ["person.anne"],
+      "zone.work",
+      SINCE
+    );
+
+    expect(
+      entries.map((entry) => [entry.arrived, entry.when.getTime() / 1000])
+    ).toEqual([
+      [false, 1300],
+      [true, 1100],
+    ]);
   });
 });

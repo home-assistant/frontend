@@ -27,6 +27,8 @@ export interface LogbookEntry {
   icon?: string;
   source?: string; // The trigger source (English phrase, parsed for the cause)
   domain?: string;
+  item_id?: string; // The automation or script of a run row, with run_id
+  run_id?: string; // The run of a run row, for its trace
   state?: string; // The state of the entity
   attributes?: { event_type?: string }; // Selected attributes the backend surfaces
   // Context data
@@ -41,6 +43,26 @@ export interface LogbookEntry {
   context_state?: string; // The state of the entity
   context_source?: string; // The trigger source
   context_message?: string;
+}
+
+// A recorded action call, with the context fields of the call that made it.
+export interface LogbookActionCall extends Pick<
+  LogbookEntry,
+  | "context_user_id"
+  | "context_event_type"
+  | "context_domain"
+  | "context_service"
+  | "context_entity_id"
+  | "context_name"
+  | "context_state"
+  | "context_source"
+  | "context_message"
+> {
+  when: number; // Python timestamp. Do *1000 to get JS timestamp.
+  domain: string;
+  service: string;
+  service_data: Record<string, unknown>;
+  context_id: string;
 }
 
 //
@@ -112,6 +134,17 @@ export const getLogbookDataFromServer = (
   }
   return hass.callWS<LogbookEntry[]>(params);
 };
+
+export const getLogbookActionCalls = (
+  hass: Pick<HomeAssistant, "callWS">,
+  startDate: string,
+  endDate: string
+): Promise<LogbookActionCall[]> =>
+  hass.callWS({
+    type: "logbook/get_action_calls",
+    start_time: startDate,
+    end_time: endDate,
+  });
 
 export const subscribeLogbook = (
   hass: HomeAssistant,
@@ -327,3 +360,15 @@ export const filterLogbookCompatibleEntities = (entity) => {
     (domain === "sensor" && isNumericEntity(domain, entity, undefined));
   return !continuous;
 };
+
+export type LogbookCauseGroup =
+  "automation" | "script" | "integration" | "other";
+
+export const LOGBOOK_CAUSE_GROUPS: LogbookCauseGroup[] = [
+  "automation",
+  "script",
+  "integration",
+  "other",
+];
+
+export const logbookUserCauseKey = (userId: string) => `user/${userId}`;

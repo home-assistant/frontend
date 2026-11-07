@@ -150,7 +150,8 @@ export class EnergyDeviceSettingsWater extends LitElement {
 
   private _renderName(device: DeviceConsumptionEnergyPreference) {
     const name = computeEnergyLabel(
-      this.hass,
+      this.hass.states,
+      this.hass.formatEntityName,
       device.stat_consumption,
       this.statsMetadata?.[device.stat_consumption],
       device.name

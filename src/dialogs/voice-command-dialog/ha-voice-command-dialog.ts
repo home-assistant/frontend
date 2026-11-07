@@ -190,7 +190,6 @@ export class HaVoiceCommandDialog extends LitElement {
             : this._pipeline
               ? html`
                   <ha-assist-chat
-                    .hass=${this.hass}
                     .pipeline=${this._pipeline}
                     .startListening=${this._startListening}
                     .initialPrompt=${this._prompt}
@@ -222,7 +221,7 @@ export class HaVoiceCommandDialog extends LitElement {
       return;
     }
     const { pipelines, preferred_pipeline } = await listAssistPipelines(
-      this.hass
+      this.hass.callWS
     );
     this._pipelines = pipelines;
     this._preferredPipeline = preferred_pipeline || undefined;

@@ -1,14 +1,17 @@
+import type { ContextType } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
   extractSearchParamsObject,
 } from "../../common/url/search-params";
+import { internationalizationContext } from "../../data/context";
 import "../../layouts/hass-error-screen";
 import type { Redirect, Redirects } from "../my/ha-panel-my";
-import type { HomeAssistant, Route } from "../../types";
+import type { Route } from "../../types";
 import type { MarketplaceData } from "../../data/marketplace/marketplace";
 
 const repositoryRedirect: Redirect = {
@@ -27,13 +30,14 @@ const REDIRECTS: Redirects = {
 
 @customElement("ha-marketplace-my-redirect")
 class HaMarketplaceMyRedirect extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public marketplace!: MarketplaceData;
 
   @property({ attribute: false }) public route!: Route;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state() private _error?: string;
 
@@ -44,7 +48,7 @@ class HaMarketplaceMyRedirect extends LitElement {
     const redirect = REDIRECTS[path];
 
     if (!redirect) {
-      this._error = this.hass.localize(
+      this._error = this._i18n.localize(
         "ui.panel.marketplace.my.not_supported",
         {
           link: html`<a
@@ -52,7 +56,7 @@ class HaMarketplaceMyRedirect extends LitElement {
             rel="noreferrer noopener"
             href="https://my.home-assistant.io/faq.html#supported-pages"
           >
-            ${this.hass.localize("ui.panel.marketplace.my.faq_link")}
+            ${this._i18n.localize("ui.panel.marketplace.my.faq_link")}
           </a>`,
         }
       );
@@ -63,7 +67,7 @@ class HaMarketplaceMyRedirect extends LitElement {
     try {
       url = this._createRedirectUrl(redirect);
     } catch {
-      this._error = this.hass.localize("ui.panel.marketplace.my.error");
+      this._error = this._i18n.localize("ui.panel.marketplace.my.error");
       return;
     }
 
@@ -73,7 +77,6 @@ class HaMarketplaceMyRedirect extends LitElement {
   protected render() {
     if (this._error) {
       return html`<hass-error-screen
-        .hass=${this.hass}
         .narrow=${this.narrow}
         .error=${this._error}
       ></hass-error-screen>`;

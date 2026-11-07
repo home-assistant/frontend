@@ -10,12 +10,13 @@ import type {
 } from "echarts/types/dist/shared";
 import { mdiFormatTextVariant, mdiGoogleCirclesGroup } from "@mdi/js";
 import memoizeOne from "memoize-one";
-import { listenMediaQuery } from "../../common/dom/media_query";
+import { consume } from "../../common/decorators/consume";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import { reducedMotionContext } from "../../data/context";
 import type { HaECOption } from "../../resources/echarts/echarts";
 import "./ha-chart-base";
 import type { HaChartBase } from "./ha-chart-base";
-import type { HomeAssistant } from "../../types";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { deepEqual } from "../../common/util/deep-equal";
 
 export interface NetworkNode {
@@ -31,6 +32,7 @@ export interface NetworkNode {
     borderColor?: string;
     borderWidth?: number;
   };
+  label?: { position: "left" | "right" | "top" | "bottom" };
   fixed?: boolean;
   /**
    * Distance from the center, where 0 is the center and 1 is the edge
@@ -67,11 +69,18 @@ export interface NetworkData {
 
 const PHYSICS_DISABLE_THRESHOLD = 512;
 
+const SELECTED_NODE_MAX_ZOOM = 2;
+
+// Keeps neighbors clear of the search field, buttons and legend
+const SELECTED_NODE_FIT_MARGIN = 72;
+
+const FOLLOW_ROAM = "follow-selected-node";
+
 // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/consistent-type-imports
 let GraphChart: typeof import("echarts/lib/chart/graph/install");
 
 @customElement("ha-network-graph")
-export class HaNetworkGraph extends SubscribeMixin(LitElement) {
+export class HaNetworkGraph extends LitElement {
   public chart?: EChartsType;
 
   @property({ attribute: false }) public data!: NetworkData;
@@ -90,17 +99,29 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public searchFilter = "";
 
-  public hass!: HomeAssistant;
+  /**
+   * Id of a node to highlight. The view centers on it, zoomed so its neighbors
+   * stay visible, and follows it until the user moves the view.
+   */
+  @property({ attribute: false }) public selectedNode?: string;
+
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
 
   @state() private _highlightedNodes?: Set<string>;
 
-  @state() private _reducedMotion = false;
+  @state()
+  @consume({ context: reducedMotionContext, subscribe: true })
+  private _reducedMotion = false;
 
   @state() private _physicsEnabled?: boolean;
 
   @state() private _showLabels = true;
 
   private _nodePositions: Record<string, { x: number; y: number }> = {};
+
+  private _followSelectedNode = false;
+
+  private _followedChart?: EChartsType;
 
   @query("ha-chart-base") private _baseChart?: HaChartBase;
 
@@ -112,16 +133,6 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
         this.requestUpdate();
       });
     }
-  }
-
-  protected hassSubscribe() {
-    return [
-      listenMediaQuery("(prefers-reduced-motion)", (matches) => {
-        if (this._reducedMotion !== matches) {
-          this._reducedMotion = matches;
-        }
-      }),
-    ];
   }
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {
@@ -145,18 +156,19 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
       this._highlightedNodes && this._highlightedNodes.size > 0;
 
     return html`<ha-chart-base
-      .hass=${this.hass}
       .data=${this._getSeries(
         this.data,
         this._physicsEnabled ?? false,
         this._reducedMotion,
         this._showLabels,
         isMobile,
-        hasHighlightedNodes
+        hasHighlightedNodes,
+        this.selectedNode
       )}
       .options=${this._createOptions(this.data?.categories)}
       height="100%"
       .extraComponents=${[GraphChart]}
+      @chart-setup=${this._updateFollowing}
     >
       <slot name="search" slot="search"></slot>
       <slot name="button" slot="button"></slot>
@@ -165,18 +177,14 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
         class=${this._physicsEnabled ? "active" : "inactive"}
         .path=${mdiGoogleCirclesGroup}
         @click=${this._togglePhysics}
-        label=${this.hass.localize(
-          "ui.panel.config.common.graph.toggle_physics"
-        )}
+        label=${this._localize("ui.panel.config.common.graph.toggle_physics")}
       ></ha-icon-button>
       <ha-icon-button
         slot="button"
         class=${this._showLabels ? "active" : "inactive"}
         .path=${mdiFormatTextVariant}
         @click=${this._toggleLabels}
-        label=${this.hass.localize(
-          "ui.panel.config.common.graph.toggle_labels"
-        )}
+        label=${this._localize("ui.panel.config.common.graph.toggle_labels")}
       ></ha-icon-button>
     </ha-chart-base>`;
   }
@@ -223,6 +231,10 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
       this._applyHighlighting();
       this._updateMouseoverHandler();
     }
+    if (changedProperties.has("selectedNode")) {
+      this._followSelectedNode = !!this.selectedNode;
+      this._updateFollowing();
+    }
   }
 
   private _nodeMatchesFilter(node: NetworkNode, lowerFilter: string): boolean {
@@ -253,7 +265,8 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
       reducedMotion: boolean,
       showLabels: boolean,
       isMobile: boolean,
-      hasHighlightedNodes?: boolean
+      hasHighlightedNodes?: boolean,
+      selectedNode?: string
     ) => ({
       id: "network",
       type: "graph",
@@ -296,7 +309,12 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
       },
       edgeSymbol: ["none", "arrow"],
       edgeSymbolSize: 10,
-      data: this._getSeriesData(data.nodes, data.links, this._nodePositions),
+      data: this._getSeriesData(
+        data.nodes,
+        data.links,
+        this._nodePositions,
+        selectedNode
+      ),
       links: data.links.map((link) => ({
         ...link,
         value: link.reverseValue
@@ -314,24 +332,28 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     (
       nodes: NetworkNode[],
       links: NetworkLink[],
-      nodePositions: Record<string, { x: number; y: number }>
+      nodePositions: Record<string, { x: number; y: number }>,
+      selectedNode?: string
     ) =>
-      this._getPositionedNodes(nodes, links, nodePositions).map(
-        (node) =>
-          ({
-            id: node.id,
-            name: node.name,
-            context: node.context,
-            category: node.category,
-            value: node.value,
-            symbolSize: node.symbolSize || 30,
-            symbol: node.symbol || "circle",
-            itemStyle: node.itemStyle || {},
-            fixed: node.fixed,
-            x: node.x,
-            y: node.y,
-          }) as NonNullable<GraphSeriesOption["data"]>[number]
-      ),
+      this._getPositionedNodes(nodes, links, nodePositions).map((node) => {
+        const selected = node.id === selectedNode;
+        return {
+          id: node.id,
+          name: node.name,
+          context: node.context,
+          category: node.category,
+          value: node.value,
+          symbolSize: node.symbolSize || 30,
+          symbol: node.symbol || "circle",
+          itemStyle: selected
+            ? { ...node.itemStyle, borderWidth: 3 }
+            : node.itemStyle || {},
+          label: selected ? { ...node.label, fontWeight: "bold" } : node.label,
+          fixed: node.fixed,
+          x: node.x,
+          y: node.y,
+        } as NonNullable<GraphSeriesOption["data"]>[number];
+      }),
     deepEqual
   );
 
@@ -487,6 +509,94 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     }
   }
 
+  private _updateFollowing() {
+    const chart = this._followSelectedNode ? this._baseChart?.chart : undefined;
+    if (chart !== this._followedChart) {
+      const previous = this._followedChart;
+      if (previous && !previous.isDisposed()) {
+        previous.off("rendered", this._centerOnSelectedNode);
+        previous.off("graphroam", this._handleGraphRoam);
+        previous.getZr().off("drag", this._stopFollowing);
+      }
+      chart?.on("rendered", this._centerOnSelectedNode);
+      chart?.on("graphroam", this._handleGraphRoam);
+      chart?.getZr().on("drag", this._stopFollowing);
+      this._followedChart = chart;
+    }
+    this._centerOnSelectedNode();
+  }
+
+  private _stopFollowing = () => {
+    this._followSelectedNode = false;
+    this._updateFollowing();
+  };
+
+  // A roam dispatched while ECharts renders is queued, so a flag set around
+  // dispatchAction would be cleared before the event fires
+  private _handleGraphRoam = (ev: unknown) => {
+    if ((ev as { from?: string }).from !== FOLLOW_ROAM) {
+      this._stopFollowing();
+    }
+  };
+
+  private _centerOnSelectedNode = () => {
+    const chart = this._followedChart;
+    if (!chart) {
+      return;
+    }
+    const series: any = chart
+      // @ts-ignore private method but no other way to get the graph positions
+      .getModel()
+      .getSeriesByIndex(0);
+    const node = series?.getGraph().getNodeById(this.selectedNode);
+    const position: number[] | undefined = node?.getLayout();
+    if (!position) {
+      return;
+    }
+    const toPixel = (point: number[]) =>
+      chart.convertToPixel({ seriesId: "network" }, point);
+    const [x, y] = toPixel(position);
+    const zoom = series.coordinateSystem.getRoamTransform()[0];
+    const centerX = chart.getWidth() / 2;
+    const centerY = chart.getHeight() / 2;
+    // Zoom so the neighbors stay in view
+    const fitX = Math.max(centerX - SELECTED_NODE_FIT_MARGIN, centerX / 2);
+    const fitY = Math.max(centerY - SELECTED_NODE_FIT_MARGIN, centerY / 2);
+    let targetZoom = SELECTED_NODE_MAX_ZOOM;
+    for (const edge of node.edges) {
+      const neighbor: number[] | undefined = (
+        edge.node1 === node ? edge.node2 : edge.node1
+      ).getLayout();
+      if (neighbor) {
+        const [neighborX, neighborY] = toPixel(neighbor);
+        targetZoom = Math.min(
+          targetZoom,
+          (zoom * fitX) / Math.abs(neighborX - x),
+          (zoom * fitY) / Math.abs(neighborY - y)
+        );
+      }
+    }
+    const zoomChanged = Math.abs(zoom - targetZoom) >= 1e-3;
+    if (
+      !zoomChanged &&
+      Math.abs(centerX - x) < 0.5 &&
+      Math.abs(centerY - y) < 0.5
+    ) {
+      return;
+    }
+    chart.dispatchAction({
+      type: "graphRoam",
+      from: FOLLOW_ROAM,
+      seriesId: "network",
+      dx: centerX - x,
+      dy: centerY - y,
+      // Any zoom, even 1, rescales every node and edge
+      zoom: zoomChanged ? targetZoom / zoom : undefined,
+      originX: centerX,
+      originY: centerY,
+    });
+  };
+
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     if (this._emphasisGuardHandler) {
@@ -538,7 +648,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
 
     ha-icon-button,
     ::slotted(ha-icon-button) {
-      margin-right: 12px;
+      margin-inline-end: var(--ha-space-3);
     }
   `;
 }

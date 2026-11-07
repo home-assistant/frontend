@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/ha-area-controls-picker";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -60,19 +59,20 @@ export class HuiAreaControlsCardFeatureEditor
     (
       areaId: string,
       excludeEntities: string[] | undefined,
-      // needed to update memoized function when entities, devices or areas change
-      _entities: HomeAssistant["entities"],
-      _devices: HomeAssistant["devices"],
-      _areas: HomeAssistant["areas"]
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"],
+      floors: HomeAssistant["floors"]
     ) => {
-      if (!this.hass) {
-        return [];
-      }
       const controlEntities = getAreaControlEntities(
+        this.hass!.states,
+        entities,
+        devices,
+        areas,
+        floors,
         AREA_CONTROL_DOMAINS,
         areaId,
-        excludeEntities,
-        this.hass!
+        excludeEntities
       );
       return (
         Object.keys(controlEntities) as (keyof typeof controlEntities)[]
@@ -90,7 +90,8 @@ export class HuiAreaControlsCardFeatureEditor
       this.context.exclude_entities,
       this.hass.entities,
       this.hass.devices,
-      this.hass.areas
+      this.hass.areas,
+      this.hass.floors
     );
 
     if (supportedControls.length === 0) {
@@ -161,7 +162,6 @@ export class HuiAreaControlsCardFeatureEditor
                   : nothing
               }
               <ha-area-controls-picker
-                .hass=${this.hass}
                 .areaId=${this.context.area_id}
                 .excludeEntities=${this.context.exclude_entities}
                 .excludeValues=${excludeValues}
@@ -195,7 +195,7 @@ export class HuiAreaControlsCardFeatureEditor
     if ("entity_id" in item) {
       const entityState = this.hass.states[item.entity_id];
       if (entityState) {
-        return computeStateName(entityState);
+        return this.hass.formatEntityName(entityState);
       }
       return item.entity_id;
     }
@@ -249,7 +249,8 @@ export class HuiAreaControlsCardFeatureEditor
         this.context!.exclude_entities,
         this.hass!.entities,
         this.hass!.devices,
-        this.hass!.areas
+        this.hass!.areas,
+        this.hass!.floors
       ).slice(0, MAX_DEFAULT_AREA_CONTROLS); // Limit to max default controls
     }
 

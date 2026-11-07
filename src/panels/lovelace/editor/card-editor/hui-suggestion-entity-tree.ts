@@ -16,8 +16,7 @@ import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { mainWindow } from "../../../../common/dom/get_main_window";
-import { computeEntityName } from "../../../../common/entity/compute_entity_name";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { computeEntityPickerDisplay } from "../../../../common/entity/compute_entity_name_display";
 import { ignoreRepeatedActivation } from "../../../../common/keyboard/ignore-repeated-activation";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import { debounce } from "../../../../common/util/debounce";
@@ -77,6 +76,15 @@ const SELECTED_SEARCH_ROW_STYLE = {
   "--ha-combo-box-item-headline-font-weight": "var(--ha-font-weight-medium)",
 };
 
+/**
+ * @element hui-suggestion-entity-tree
+ *
+ * @summary Searchable tree of entities grouped by floor, area and domain.
+ *
+ * @cssprop --ha-suggestion-entity-tree-padding-bottom - Space at the end of the scrolling tree. Defaults to `var(--ha-space-3)` when smaller.
+ *
+ * @fires entity-picked - Fired with the ID of the picked entity.
+ */
 @customElement("hui-suggestion-entity-tree")
 export class HuiSuggestionEntityTree extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -493,7 +501,6 @@ export class HuiSuggestionEntityTree extends LitElement {
             ${
               domain
                 ? html`<ha-domain-icon
-                    .hass=${this.hass}
                     .domain=${domain}
                     brand-fallback
                   ></ha-domain-icon>`
@@ -578,7 +585,6 @@ export class HuiSuggestionEntityTree extends LitElement {
                               <div slot="start" class="leading">
                                 ${this._renderChevron(dExpanded)}
                                 <ha-domain-icon
-                                  .hass=${this.hass}
                                   .domain=${g.domain}
                                   brand-fallback
                                 ></ha-domain-icon>
@@ -610,13 +616,19 @@ export class HuiSuggestionEntityTree extends LitElement {
   private _renderEntity(entityId: string, depthClass: string): TemplateResult {
     const stateObj = this.hass.states[entityId];
     const selected = this.selectedEntityId === entityId;
-    const entityName = stateObj
-      ? computeEntityName(stateObj, this.hass.entities, this.hass.devices)
-      : undefined;
-    const name =
-      entityName ||
-      (stateObj ? computeStateName(stateObj) : undefined) ||
-      entityId;
+    const name = stateObj
+      ? computeEntityPickerDisplay(
+          {
+            entities: this.hass.entities,
+            devices: this.hass.devices,
+            areas: this.hass.areas,
+            floors: this.hass.floors,
+            language: this.hass.language,
+            translationMetadata: this.hass.translationMetadata,
+          },
+          stateObj
+        ).primary
+      : entityId;
     return html`
       <ha-list-item-button
         aria-current=${selected ? "true" : "false"}
@@ -789,7 +801,10 @@ export class HuiSuggestionEntityTree extends LitElement {
         .search-results {
           flex: 1;
           min-height: 0;
-          padding-bottom: var(--ha-space-3);
+          padding-bottom: max(
+            var(--ha-suggestion-entity-tree-padding-bottom, 0px),
+            var(--ha-space-3)
+          );
           --ha-row-item-padding-block: 0;
           --ha-row-item-padding-inline: 0;
           --ha-row-item-gap: 0;

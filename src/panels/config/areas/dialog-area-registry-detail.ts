@@ -151,6 +151,11 @@ class DialogAreaDetail
     return true;
   }
 
+  private _entityName(entityId: string | null): string | null {
+    const stateObj = entityId ? this.hass.states[entityId] : undefined;
+    return stateObj ? this.hass.formatEntityName(stateObj) : null;
+  }
+
   private _dialogClosed(): void {
     this._error = "";
     this._params = undefined;
@@ -185,14 +190,12 @@ class DialogAreaDetail
       ></ha-input>
 
       <ha-icon-picker
-        .hass=${this.hass}
         .value=${this._icon}
         @value-changed=${this._iconChanged}
         .label=${this.hass.localize("ui.panel.config.areas.editor.icon")}
       ></ha-icon-picker>
 
       <ha-floor-picker
-        .hass=${this.hass}
         .value=${this._floor}
         @value-changed=${this._floorChanged}
         .label=${this.hass.localize("ui.panel.config.areas.editor.floor")}
@@ -200,7 +203,6 @@ class DialogAreaDetail
 
       <ha-labels-picker
         .label=${this.hass.localize("ui.components.label-picker.labels")}
-        .hass=${this.hass}
         .value=${this._labels}
         @value-changed=${this._labelsChanged}
         .placeholder=${this.hass.localize(
@@ -316,14 +318,8 @@ class DialogAreaDetail
         aliases: this._aliases,
         labels: await this._getLabelNames(),
         floor: this._floor ? this.hass.floors?.[this._floor]?.name : null,
-        temperature_entity: this._temperatureEntity
-          ? (this.hass.states[this._temperatureEntity]?.attributes
-              ?.friendly_name ?? null)
-          : null,
-        humidity_entity: this._humidityEntity
-          ? (this.hass.states[this._humidityEntity]?.attributes
-              ?.friendly_name ?? null)
-          : null,
+        temperature_entity: this._entityName(this._temperatureEntity),
+        humidity_entity: this._entityName(this._humidityEntity),
       },
       await buildAreaMetadataInspirations(this.hass.connection),
       this._suggestionInclude
@@ -366,7 +362,6 @@ class DialogAreaDetail
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${
           entry
@@ -378,7 +373,6 @@ class DialogAreaDetail
       >
         <ha-suggest-with-ai-button
           slot="headerActionItems"
-          .hass=${this.hass}
           .generateTask=${this._generateTask}
           @suggestion=${this._handleSuggestion}
         ></ha-suggest-with-ai-button>

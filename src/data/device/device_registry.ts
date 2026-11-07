@@ -1,5 +1,4 @@
 import type { Connection } from "home-assistant-js-websocket";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { HomeAssistant } from "../../types";
 import type { ConfigEntry } from "../config_entries";
@@ -7,7 +6,6 @@ import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
 } from "../entity/entity_registry";
-import type { EntitySources } from "../entity/entity_sources";
 import type { NextNamePart, RegistryEntry } from "../registry";
 
 export {
@@ -195,22 +193,19 @@ const compositeSplitsCache = new WeakMap<
 >();
 
 export const fetchDeviceCompositeSplits = (
-  hass: Pick<HomeAssistant, "connection" | "callWS">
+  connection: HomeAssistant["connection"],
+  callWS: HomeAssistant["callWS"]
 ): Promise<DeviceCompositeSplits> => {
-  const conn = hass.connection;
-
-  let request = compositeSplitsCache.get(conn);
+  let request = compositeSplitsCache.get(connection);
   if (!request) {
-    request = hass
-      .callWS<DeviceCompositeSplits>({
-        type: "config/device_registry/list_composite_splits",
-      })
-      .catch((err) => {
-        // Don't cache failures so the next caller retries.
-        compositeSplitsCache.delete(conn);
-        throw err;
-      });
-    compositeSplitsCache.set(conn, request);
+    request = callWS<DeviceCompositeSplits>({
+      type: "config/device_registry/list_composite_splits",
+    }).catch((err) => {
+      // Don't cache failures so the next caller retries.
+      compositeSplitsCache.delete(connection);
+      throw err;
+    });
+    compositeSplitsCache.set(connection, request);
   }
   return request;
 };
@@ -231,20 +226,6 @@ export const fetchLinkedDevices = (
       device_id: deviceId,
     })
     .then((result) => result.linked_devices);
-
-export const fallbackDeviceName = (
-  hass: HomeAssistant,
-  entities: EntityRegistryEntry[] | EntityRegistryDisplayEntry[] | string[]
-) => {
-  for (const entity of entities || []) {
-    const entityId = typeof entity === "string" ? entity : entity.entity_id;
-    const stateObj = hass.states[entityId];
-    if (stateObj) {
-      return computeStateName(stateObj);
-    }
-  }
-  return undefined;
-};
 
 export const devicesInArea = (devices: DeviceRegistryEntry[], areaId: string) =>
   devices.filter((device) => device.area_id === areaId);
@@ -310,7 +291,6 @@ export const getDeviceEntityDisplayLookup = (
 };
 
 export const getDeviceIntegrationLookup = (
-  entitySources: EntitySources,
   entities: EntityRegistryDisplayEntry[] | EntityRegistryEntry[],
   devices?: DeviceRegistryEntry[],
   configEntries?: ConfigEntry[]
@@ -318,14 +298,13 @@ export const getDeviceIntegrationLookup = (
   const deviceIntegrations: Record<string, Set<string>> = {};
 
   for (const entity of entities) {
-    const source = entitySources[entity.entity_id];
-    if (!source?.domain || entity.device_id === null) {
+    if (!entity.platform || entity.device_id === null) {
       continue;
     }
 
     deviceIntegrations[entity.device_id!] =
       deviceIntegrations[entity.device_id!] || new Set<string>();
-    deviceIntegrations[entity.device_id!].add(source.domain);
+    deviceIntegrations[entity.device_id!].add(entity.platform);
   }
   // Lookup devices that have no entities
   if (devices && configEntries) {

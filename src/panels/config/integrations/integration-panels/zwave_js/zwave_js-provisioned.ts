@@ -3,6 +3,7 @@ import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableSettingsController } from "../../../../../common/controllers/data-table-settings-controller";
 import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
 import type { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
@@ -36,6 +37,8 @@ class ZWaveJSProvisioned extends LitElement {
 
   @state() private _nodeIdToDevice: Record<number, DeviceRegistryEntry> = {};
 
+  private _tableSettings = new DataTableSettingsController(this, {});
+
   protected render() {
     return html`
       <hass-tabs-subpage-data-table
@@ -64,6 +67,9 @@ class ZWaveJSProvisioned extends LitElement {
             : undefined
         }
         @retry-load=${this._retryFetchProvisioningEntries}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
+        sync-url
       >
       </hass-tabs-subpage-data-table>
     `;

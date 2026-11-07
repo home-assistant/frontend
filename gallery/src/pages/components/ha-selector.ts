@@ -15,13 +15,13 @@ import {
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
 import { mockLabelRegistry } from "../../../../demo/src/stubs/label_registry";
 import type { HASSDomEvent } from "../../../../src/common/dom/fire_event";
-import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
 import type { BlueprintInput } from "../../../../src/data/blueprint";
 import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
 import type { LabelRegistryEntry } from "../../../../src/data/label/label_registry";
 import { StatisticMeanType } from "../../../../src/data/recorder";
+import { resolveSelectorContext } from "../../../../src/data/selector";
 import type { SerialPort } from "../../../../src/data/usb";
 import {
   showDialog,
@@ -680,6 +680,77 @@ const SCHEMAS: {
     },
   },
   {
+    name: "Unit of measurement",
+    input: {
+      sensor_device_class: {
+        name: "Device class",
+        selector: { device_class: { domain: "sensor" } },
+      },
+      sensor_state_class: {
+        name: "State class",
+        selector: { state_class: {} },
+      },
+      unit_linked: {
+        name: "Unit of the device class and state class above",
+        selector: {
+          unit_of_measurement: {
+            context: {
+              filter_device_class: "sensor_device_class",
+              filter_state_class: "sensor_state_class",
+            },
+          },
+        },
+      },
+      unit: {
+        name: "Any unit (custom allowed)",
+        selector: { unit_of_measurement: {} },
+      },
+      unit_temperature: {
+        name: "Temperature",
+        selector: { unit_of_measurement: { device_classes: ["temperature"] } },
+      },
+      unit_battery_humidity: {
+        name: "Battery or humidity",
+        selector: {
+          unit_of_measurement: { device_classes: ["battery", "humidity"] },
+        },
+      },
+      unit_aqi: {
+        name: "Air quality index (no unit)",
+        selector: { unit_of_measurement: { device_classes: ["aqi"] } },
+      },
+      unit_enum: {
+        name: "Enum (no unit)",
+        selector: { unit_of_measurement: { device_classes: ["enum"] } },
+      },
+      unit_timestamp: {
+        name: "Timestamp (no unit)",
+        selector: { unit_of_measurement: { device_classes: ["timestamp"] } },
+      },
+      unit_uptime: {
+        name: "Uptime (no unit)",
+        selector: { unit_of_measurement: { device_classes: ["uptime"] } },
+      },
+      unit_monetary: {
+        name: "Monetary (custom unit)",
+        selector: { unit_of_measurement: { device_classes: ["monetary"] } },
+      },
+      unit_angle: {
+        name: "Measurement angle",
+        selector: {
+          unit_of_measurement: { state_classes: ["measurement_angle"] },
+        },
+      },
+      unit_context: {
+        name: "Temperature or humidity, narrowed by context to humidity",
+        selector: {
+          unit_of_measurement: { device_classes: ["temperature", "humidity"] },
+        },
+        context: { filter_device_class: "humidity" },
+      },
+    },
+  },
+  {
     name: "Multiples",
     input: {
       entity: { name: "Entity", selector: { entity: { multiple: true } } },
@@ -991,34 +1062,30 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
   protected render(): TemplateResult {
     return html`
       <div class="options">
-        <ha-formfield label="Labels">
-          <ha-switch
-            .name=${"label"}
-            .checked=${this._label}
-            @change=${this._handleOptionChange}
-          ></ha-switch>
-        </ha-formfield>
-        <ha-formfield label="Required">
-          <ha-switch
-            .name=${"required"}
-            .checked=${this._required}
-            @change=${this._handleOptionChange}
-          ></ha-switch>
-        </ha-formfield>
-        <ha-formfield label="Disabled">
-          <ha-switch
-            .name=${"disabled"}
-            .checked=${this._disabled}
-            @change=${this._handleOptionChange}
-          ></ha-switch>
-        </ha-formfield>
-        <ha-formfield label="Helper text">
-          <ha-switch
-            .name=${"helper"}
-            .checked=${this._helper}
-            @change=${this._handleOptionChange}
-          ></ha-switch>
-        </ha-formfield>
+        <ha-switch
+          .name=${"label"}
+          .checked=${this._label}
+          @change=${this._handleOptionChange}
+          >Labels</ha-switch
+        >
+        <ha-switch
+          .name=${"required"}
+          .checked=${this._required}
+          @change=${this._handleOptionChange}
+          >Required</ha-switch
+        >
+        <ha-switch
+          .name=${"disabled"}
+          .checked=${this._disabled}
+          @change=${this._handleOptionChange}
+          >Disabled</ha-switch
+        >
+        <ha-switch
+          .name=${"helper"}
+          .checked=${this._helper}
+          @change=${this._handleOptionChange}
+          >Helper text</ha-switch
+        >
       </div>
       ${SCHEMAS.map((info, idx) => {
         const data = this.data[idx];
@@ -1039,7 +1106,7 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
                     <ha-selector
                       .hass=${this.hass}
                       .selector=${value!.selector}
-                      .context=${value!.context}
+                      .context=${this._context(value!, data)}
                       .key=${key}
                       .label=${this._label ? value!.name : undefined}
                       .value=${data[key] ?? value!.default}
@@ -1057,6 +1124,19 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
         `;
       })}
     `;
+  }
+
+  private _context(
+    input: (typeof SCHEMAS)[number]["input"][string],
+    data: Record<string, unknown>
+  ): Record<string, unknown> | undefined {
+    const selectorContext = input?.selector
+      ? resolveSelectorContext(input.selector, data)
+      : undefined;
+    if (!selectorContext) {
+      return input?.context;
+    }
+    return { ...input?.context, ...selectorContext };
   }
 
   private _handleValueChanged(ev) {
@@ -1077,7 +1157,7 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
       max-width: 800px;
       margin: 16px auto;
     }
-    .options ha-formfield {
+    .options ha-switch {
       margin-right: 16px;
     }
   `;

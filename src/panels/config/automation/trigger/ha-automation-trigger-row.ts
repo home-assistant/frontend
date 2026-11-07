@@ -9,11 +9,13 @@ import {
   mdiContentPaste,
   mdiDelete,
   mdiDotsVertical,
+  mdiIdentifier,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
   mdiPlusCircleMultipleOutline,
   mdiRenameBox,
   mdiStopCircleOutline,
+  mdiSwapHorizontal,
 } from "@mdi/js";
 import type {
   HassServiceTarget,
@@ -56,8 +58,13 @@ import type {
   TriggerList,
   TriggerSidebarConfig,
 } from "../../../../data/automation";
-import { isTrigger, subscribeTrigger } from "../../../../data/automation";
+import {
+  getRowNote,
+  isTrigger,
+  subscribeTrigger,
+} from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
+import { portTrigger } from "../../../../data/automation_replace";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
@@ -69,12 +76,20 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
+import { documentationUrl } from "../../../../util/documentation-url";
 import { isMac } from "../../../../util/is_mac";
-import { showEditorToast } from "../editor-toast";
+import {
+  createTrigger,
+  getTriggerPickerKey,
+  isTriggerReplaceable,
+} from "../automation-element-config";
+import { showEditorToast, showReplacedToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import "../ha-automation-row-options";
 import "../ha-automation-row-threshold";
 import { overflowStyles, rowStyles } from "../styles";
+import { showAddAutomationElementDialog } from "../show-add-automation-element-dialog";
+import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 import { getDeviceTarget } from "../target/get_device_target";
 import { getEntityTarget } from "../target/get_entity_target";
 import "../target/ha-automation-row-targets";
@@ -103,6 +118,7 @@ import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
+import { scrollRowIntoView } from "../scroll-row-into-view";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -244,12 +260,10 @@ export default class HaAutomationTriggerRow extends LitElement {
             ?.target
         : undefined;
 
-    const noteTooltipText = truncateWithEllipsis(
-      (type !== "list" &&
-        (this.trigger as Exclude<Trigger, TriggerList>).note?.trim()) ||
-        "",
-      250
-    );
+    const note =
+      type !== "list"
+        ? getRowNote((this.trigger as Exclude<Trigger, TriggerList>).note)
+        : undefined;
 
     return html`
       <div slot="leading-icon" class="trigger-leading">
@@ -290,7 +304,6 @@ export default class HaAutomationTriggerRow extends LitElement {
                 .path=${TRIGGER_ICONS[type]}
               ></ha-svg-icon>`
             : html`<ha-trigger-icon
-                .hass=${this.hass}
                 .trigger=${
                   (this.trigger as Exclude<Trigger, TriggerList>).trigger
                 }
@@ -327,8 +340,7 @@ export default class HaAutomationTriggerRow extends LitElement {
             : nothing
         }
         ${
-          type !== "list" &&
-          (this.trigger as Exclude<Trigger, TriggerList>).note?.trim()
+          note
             ? html`
                 <ha-svg-icon
                   tabindex="0"
@@ -340,7 +352,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                   class="note-indicator"
                 ></ha-svg-icon>
                 <ha-tooltip for="note-icon"
-                  ><p>${noteTooltipText}</p></ha-tooltip
+                  ><p>${truncateWithEllipsis(note, 250)}</p></ha-tooltip
                 >
               `
             : nothing
@@ -357,7 +369,9 @@ export default class HaAutomationTriggerRow extends LitElement {
         class="event-chip"
         aria-live="polite"
       >
-        ${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")}
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.disabled"
+        )}
       </ha-automation-row-event-chip>
 
       <ha-automation-row-event-chip
@@ -388,6 +402,21 @@ export default class HaAutomationTriggerRow extends LitElement {
           .label=${this.hass.localize("ui.common.menu")}
           .path=${mdiDotsVertical}
         ></ha-icon-button>
+        ${
+          isTriggerReplaceable(this.trigger)
+            ? html`<ha-dropdown-item value="replace" .disabled=${this.disabled}>
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${mdiSwapHorizontal}
+                ></ha-svg-icon>
+                ${this._renderOverflowLabel(
+                  this.hass.localize(
+                    "ui.panel.config.automation.editor.triggers.replace"
+                  )
+                )}
+              </ha-dropdown-item>`
+            : nothing
+        }
         <ha-dropdown-item
           value="rename"
           .disabled=${this.disabled || type === "list"}
@@ -402,16 +431,24 @@ export default class HaAutomationTriggerRow extends LitElement {
         ${
           type !== "list"
             ? html`<ha-dropdown-item value="edit_note">
-                <ha-svg-icon
-                  slot="icon"
-                  .path=${mdiCommentEditOutline}
-                ></ha-svg-icon>
-                ${this._renderOverflowLabel(
-                  this.hass.localize(
-                    `ui.panel.config.automation.editor.note.${(this.trigger as Exclude<Trigger, TriggerList>).note ? "edit" : "add"}`
-                  )
-                )}
-              </ha-dropdown-item>`
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiCommentEditOutline}
+                  ></ha-svg-icon>
+                  ${this._renderOverflowLabel(
+                    this.hass.localize(
+                      `ui.panel.config.automation.editor.note.${(this.trigger as Exclude<Trigger, TriggerList>).note ? "edit" : "add"}`
+                    )
+                  )}
+                </ha-dropdown-item>
+                <ha-dropdown-item value="edit_id" .disabled=${this.disabled}>
+                  <ha-svg-icon slot="icon" .path=${mdiIdentifier}></ha-svg-icon>
+                  ${this._renderOverflowLabel(
+                    this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.edit_id"
+                    )
+                  )}
+                </ha-dropdown-item>`
             : nothing
         }
         <wa-divider></wa-divider>
@@ -666,6 +703,19 @@ export default class HaAutomationTriggerRow extends LitElement {
     if (changedProperties.has("yamlMode")) {
       this._warnings = undefined;
     }
+    if (
+      changedProperties.has("trigger") &&
+      this._warnings &&
+      this._yamlMode &&
+      isConfigObject(this.trigger) &&
+      !isTriggerList(this.trigger)
+    ) {
+      this._warnings = getUiSupportWarnings(
+        this.hass.localize,
+        `ha-automation-trigger-${this.trigger.trigger}`,
+        this.trigger
+      );
+    }
   }
 
   protected override updated(changedProps: PropertyValues<this>): void {
@@ -746,7 +796,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   }, 5000);
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {
-    this._warnings = handleStructError(this.hass, ev.detail).warnings;
+    this._warnings = handleStructError(this.hass.localize, ev.detail).warnings;
     if (!this._yamlMode) {
       this._yamlMode = true;
     }
@@ -786,12 +836,16 @@ export default class HaAutomationTriggerRow extends LitElement {
           this.focus();
         }
       },
+      replace: isTriggerReplaceable(trigger) ? this._replaceTrigger : undefined,
       rename: () => {
         this._renameTrigger();
       },
       editNote: this._editNoteTrigger,
-      toggleYamlMode: () => {
-        this._toggleYamlMode();
+      editId: this._editIdTrigger,
+      toggleYamlMode: (yamlMode?: boolean) => {
+        if (yamlMode === undefined || yamlMode !== this._yamlMode) {
+          this._toggleYamlMode();
+        }
         this.openSidebar();
       },
       disable: this._onDisable,
@@ -816,10 +870,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
     if (this.narrow) {
       window.setTimeout(() => {
-        this.scrollIntoView({
-          block: "start",
-          behavior: "smooth",
-        });
+        scrollRowIntoView(this);
       }, 180);
     }
   }
@@ -832,6 +883,36 @@ export default class HaAutomationTriggerRow extends LitElement {
 
     copyToClipboard(dump(this.trigger));
   }
+
+  private _replaceTrigger = () => {
+    if (isTriggerList(this.trigger)) {
+      return;
+    }
+    if (this.narrow) {
+      fireEvent(this, "request-close-sidebar");
+    }
+    const trigger = this.trigger;
+    const key = getTriggerPickerKey(trigger, this.triggerDescriptions);
+    showAddAutomationElementDialog(this, {
+      type: "trigger",
+      clipboardItem: undefined,
+      replacingItemKey: key,
+      add: (value, target) => {
+        if (value === key && !target) {
+          return;
+        }
+        fireEvent(this, "replace-item", {
+          value: portTrigger(
+            trigger,
+            createTrigger(value, target),
+            this.hass,
+            this.triggerDescriptions
+          ),
+        });
+        showReplacedToast(this, this.hass.localize);
+      },
+    });
+  };
 
   private _onDelete = () => {
     fireEvent(this, "value-changed", { value: null });
@@ -935,6 +1016,69 @@ export default class HaAutomationTriggerRow extends LitElement {
     }
   };
 
+  private _editIdTrigger = async (): Promise<void> => {
+    if (isTriggerList(this.trigger)) return;
+    const trigger = this.trigger;
+    const result = await showPromptDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.automation.editor.triggers.edit_id_title"
+      ),
+      textBelowInput: html`<ha-alert alert-type="info">
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.edit_id_info",
+          {
+            link: html`<a
+              href=${documentationUrl(
+                this.hass,
+                "/docs/automation/trigger/#trigger-id"
+              )}
+              target="_blank"
+              rel="noreferrer"
+              >${this.hass.localize(
+                "ui.panel.config.automation.editor.triggers.edit_id_learn_more"
+              )}</a
+            >`,
+          }
+        )}
+      </ha-alert>`,
+      inputLabel: this.hass.localize(
+        "ui.panel.config.automation.editor.triggers.id"
+      ),
+      inputType: "string",
+      placeholder: this.hass.localize(
+        "ui.panel.config.automation.editor.triggers.edit_id_placeholder"
+      ),
+      defaultValue: trigger.id,
+      showCloseButton: true,
+      confirmText: this.hass.localize("ui.common.submit"),
+    });
+    if (result === null) {
+      return;
+    }
+    const id = result.trim() === "" ? undefined : result;
+    if (id === trigger.id) {
+      return;
+    }
+    const value = { ...trigger };
+    if (id === undefined) {
+      delete value.id;
+    } else {
+      value.id = id;
+    }
+    // Bypass the editor's generated ID cleanup so references to the old ID dangle
+    if (!this._triggers?.updateTriggerId(trigger, value)) {
+      fireEvent(this, "value-changed", {
+        value,
+      });
+    }
+
+    if (this._selected && this.optionsInSidebar) {
+      this.openSidebar(value); // refresh sidebar
+    } else if (this._yamlMode) {
+      this.triggerEditor?.yamlEditor?.setValue(value);
+    }
+  };
+
   private _editNoteTrigger = async (): Promise<void> => {
     if (isTriggerList(this.trigger)) return;
     const trigger = this.trigger;
@@ -1004,7 +1148,13 @@ export default class HaAutomationTriggerRow extends LitElement {
       message: this.hass.localize(
         "ui.panel.config.automation.editor.triggers.cut_to_clipboard"
       ),
-      duration: 2000,
+      duration: 4000,
+      action: {
+        text: this.hass.localize("ui.common.undo"),
+        action: () => {
+          fireEvent(window, "undo-change");
+        },
+      },
     });
   };
 
@@ -1077,11 +1227,17 @@ export default class HaAutomationTriggerRow extends LitElement {
     }
 
     switch (action) {
+      case "replace":
+        this._replaceTrigger();
+        break;
       case "rename":
         this._renameTrigger();
         break;
       case "edit_note":
         this._editNoteTrigger();
+        break;
+      case "edit_id":
+        this._editIdTrigger();
         break;
       case "duplicate":
         this._duplicateTrigger();

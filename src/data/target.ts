@@ -26,6 +26,14 @@ export interface TargetItem {
   id: string;
 }
 
+/**
+ * A target that can leave things out again. `exclude` has the shape of a
+ * target and is subtracted, as a whole, from everything the target resolves to.
+ */
+export type HassServiceTargetWithExclude = HassServiceTarget & {
+  exclude?: HassServiceTarget;
+};
+
 export interface SingleHassServiceTarget {
   entity_id?: string;
   device_id?: string;

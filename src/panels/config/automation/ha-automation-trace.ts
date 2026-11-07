@@ -53,7 +53,8 @@ import type {
   AutomationTrace,
   AutomationTraceExtended,
 } from "../../../data/trace";
-import { loadTrace, loadTraces } from "../../../data/trace";
+import { getTracePath, loadTrace, loadTraces } from "../../../data/trace";
+import { TraceRunController } from "../../../data/trace-run-controller";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
@@ -108,6 +109,15 @@ export class HaAutomationTrace extends LitElement {
 
   @query("hat-script-graph") private _graph?: HatScriptGraph;
 
+  private _runNavigation = new TraceRunController(this, {
+    tracePath: () => getTracePath("automation", this.automationId),
+    shownRunId: () => this._runId,
+    loadRun: (runId) => {
+      this._selected = undefined;
+      this._loadTraces(runId);
+    },
+  });
+
   /**
    * `hass` is replaced on every state update, so comparing it would rebuild
    * every label on every state event. The run already happened, so only the
@@ -119,12 +129,20 @@ export class HaAutomationTrace extends LitElement {
       trace === pTrace && entities === pEntities && manifests === pManifests
   );
 
+  private get _isRTL() {
+    return computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
+  }
+
   protected render(): TemplateResult {
     const stateObj = this._entityId
       ? this.hass.states[this._entityId]
       : undefined;
 
-    const title = stateObj?.attributes.friendly_name || this._entityId;
+    const title =
+      (stateObj && this.hass.formatEntityName(stateObj)) || this._entityId;
 
     let devButtons: TemplateResult | string = "";
     if (__DEV__) {
@@ -150,7 +168,9 @@ export class HaAutomationTrace extends LitElement {
                   appearance="plain"
                   size="s"
                   class="trace-link"
-                  @click=${this._navigateToAutomation}
+                  href="/config/automation/edit/${encodeURIComponent(
+                    stateObj.attributes.id
+                  )}"
                   slot="toolbar-icon"
                 >
                   ${this.hass.localize(
@@ -229,7 +249,6 @@ export class HaAutomationTrace extends LitElement {
                     @click=${this._pickOlderTrace}
                   ></ha-icon-button>
                   <ha-trace-picker
-                    .hass=${this.hass}
                     .traces=${this._traces}
                     .value=${this._runId}
                     @value-changed=${this._pickTrace}
@@ -275,7 +294,12 @@ export class HaAutomationTrace extends LitElement {
                           : html`
                               <ha-split-panel
                                 class="split"
-                                .position=${this._splitPosition}
+                                dir=${this._isRTL ? "rtl" : "ltr"}
+                                .position=${
+                                  this._isRTL
+                                    ? 100 - this._splitPosition
+                                    : this._splitPosition
+                                }
                                 @wa-reposition=${this._splitRepositioned}
                               >
                                 ${this._renderPanes()}
@@ -424,10 +448,13 @@ export class HaAutomationTrace extends LitElement {
       this._traces = undefined;
       this._entityId = undefined;
       this._runId = undefined;
+      this._selected = undefined;
       this._trace = undefined;
       this._logbookEntries = undefined;
       if (this.automationId) {
-        this._loadTraces();
+        // A link from another trace reuses this page and names the run.
+        const params = new URLSearchParams(location.search);
+        this._loadTraces(params.get("run_id") || undefined);
       }
     }
 
@@ -435,6 +462,7 @@ export class HaAutomationTrace extends LitElement {
       this._trace = undefined;
       this._logbookEntries = undefined;
       this._loadTrace();
+      this._runNavigation.writeRunIdToUrl(this._runId);
     }
 
     if (
@@ -476,18 +504,21 @@ export class HaAutomationTrace extends LitElement {
 
   private _pickOlderTrace() {
     const curIndex = this._traces!.findIndex((tr) => tr.run_id === this._runId);
-    this._runId = this._traces![curIndex + 1].run_id;
-    this._selected = undefined;
+    this._pickRun(this._traces![curIndex + 1].run_id);
   }
 
   private _pickNewerTrace() {
     const curIndex = this._traces!.findIndex((tr) => tr.run_id === this._runId);
-    this._runId = this._traces![curIndex - 1].run_id;
-    this._selected = undefined;
+    this._pickRun(this._traces![curIndex - 1].run_id);
   }
 
   private _pickTrace(ev) {
-    this._runId = ev.detail.value;
+    this._pickRun(ev.detail.value);
+  }
+
+  private _pickRun(runId: string) {
+    this._runNavigation.cancelLinkRequest();
+    this._runId = runId;
     this._selected = undefined;
   }
 
@@ -496,7 +527,15 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private _splitRepositioned(ev: HASSDomTargetEvent<HaSplitPanel>) {
-    this._splitPosition = ev.target.position;
+    const position = this._isRTL
+      ? 100 - ev.target.position
+      : ev.target.position;
+    // Ignore reposition events caused by applying the current position.
+    if (position === this._splitPosition) {
+      return;
+    }
+
+    this._splitPosition = position;
     this._storeSplitPosition();
   }
 
@@ -509,11 +548,18 @@ export class HaAutomationTrace extends LitElement {
   );
 
   private _refreshTraces() {
-    this._loadTraces();
+    // Keep the run of a link that is still loading.
+    this._loadTraces(this._runNavigation.requestedRunId);
   }
 
   private async _loadTraces(runId?: string) {
-    this._traces = await loadTraces(this.hass, "automation", this.automationId);
+    const request = this._runNavigation.startListRequest(runId);
+    const traces = await loadTraces(this.hass, "automation", this.automationId);
+    if (!this._runNavigation.isLatestListRequest(request)) {
+      return;
+    }
+    this._runNavigation.endListRequest();
+    this._traces = traces;
     // Newest will be on top.
     this._traces.reverse();
 
@@ -541,6 +587,9 @@ export class HaAutomationTrace extends LitElement {
           "ui.panel.config.automation.trace.trace_no_longer_available"
         ),
       });
+      if (!this._runNavigation.isLatestListRequest(request)) {
+        return;
+      }
     }
 
     // See if we can set a default runID
@@ -550,13 +599,15 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private async _loadTrace() {
+    const request = this._runNavigation.startTraceRequest();
+    const runId = this._runId!;
     const trace = await loadTrace(
       this.hass,
       "automation",
       this.automationId,
-      this._runId!
+      runId
     );
-    this._logbookEntries = isComponentLoaded(this.hass.config, "logbook")
+    const logbookEntries = isComponentLoaded(this.hass.config, "logbook")
       ? await getLogbookDataForContext(
           this.hass,
           trace.timestamp.start,
@@ -564,6 +615,14 @@ export class HaAutomationTrace extends LitElement {
         )
       : [];
 
+    // Another run was picked, or the same run loaded again, meanwhile.
+    if (
+      !this._runNavigation.isLatestTraceRequest(request) ||
+      runId !== this._runId
+    ) {
+      return;
+    }
+    this._logbookEntries = logbookEntries;
     this._trace = trace;
   }
 
@@ -671,7 +730,6 @@ export class HaAutomationTrace extends LitElement {
           font-size: var(--ha-font-size-xl);
           height: var(--header-height);
           padding: 4px;
-          background-color: var(--primary-background-color);
           font-weight: var(--ha-font-weight-normal);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
@@ -683,8 +741,6 @@ export class HaAutomationTrace extends LitElement {
           min-height: 0;
           display: flex;
           overflow: hidden;
-          background-color: var(--card-background-color);
-          direction: ltr;
         }
 
         :host([narrow]) .main {
@@ -707,8 +763,16 @@ export class HaAutomationTrace extends LitElement {
           --ha-split-panel-divider-hit-area: var(--ha-space-4);
         }
 
+        ha-split-panel.split[dir="rtl"] {
+          --ha-split-panel-min: 20%;
+          --ha-split-panel-max: 90%;
+        }
+
         .graph {
-          background-color: var(--primary-background-color);
+          background: var(
+            --ha-panel-background,
+            var(--primary-background-color)
+          );
           box-sizing: border-box;
           display: flex;
           flex-direction: column;
@@ -735,12 +799,14 @@ export class HaAutomationTrace extends LitElement {
           min-width: 0;
           min-height: 0;
           overflow-y: auto;
-          background-color: var(--card-background-color);
+          background: var(--ha-card-background, var(--card-background-color));
         }
         ha-tab-group {
-          background-color: var(--primary-background-color);
+          background: var(
+            --ha-panel-toolbar-background,
+            var(--ha-panel-background, var(--primary-background-color))
+          );
           border-bottom: 1px solid var(--divider-color);
-          direction: var(--direction);
         }
         ha-tab-group-tab::part(base) {
           padding: 2px 16px;
@@ -752,9 +818,6 @@ export class HaAutomationTrace extends LitElement {
           text-decoration: none;
         }
 
-        ha-trace-logbook {
-          direction: var(--direction);
-        }
         ha-trace-picker {
           flex-grow: 1;
           max-width: 500px;

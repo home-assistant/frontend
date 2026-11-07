@@ -153,13 +153,12 @@ export class HaMediaPlayerPicker extends LitElement {
             domain_name: domainName,
             sorting_label: [primary, secondary].filter(Boolean).join("_"),
             search_labels: {
-              ...computeEntitySearchLabels(
-                stateObj,
-                this._entities,
-                this._devices,
-                this._areas,
-                this._floors
-              ),
+              ...computeEntitySearchLabels(stateObj, {
+                entities: this._entities,
+                devices: this._devices,
+                areas: this._areas,
+                floors: this._floors,
+              }),
               domainName: domainName || null,
               entityId,
             },

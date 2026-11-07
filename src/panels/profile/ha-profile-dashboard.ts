@@ -121,7 +121,6 @@ class HaProfileDashboard extends LitElement {
           </ha-card>
           <ha-card outlined>
             <ha-config-navigation-list
-              .hass=${this.hass}
               .pages=${pages}
               has-secondary
               .label=${this.hass.localize("panel.profile")}

@@ -3,7 +3,6 @@ import { customElement, state } from "lit/decorators";
 import { formatTimeWithSeconds } from "../../../../src/common/datetime/format_time";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-control-select";
-import "../../../../src/components/ha-list";
 import type { FrontendLocaleData } from "../../../../src/data/translation";
 import {
   DateFormat,
@@ -49,7 +48,7 @@ export class DemoDateTimeTimeSeconds extends LitElement {
         @value-changed=${this.handleValueChanged}
       >
       </ha-control-select>
-      <ha-list>
+      <div>
         <div class="container header">
           <div>Language</div>
           <div class="center">Default (lang)</div>
@@ -96,7 +95,7 @@ export class DemoDateTimeTimeSeconds extends LitElement {
             </div>
           `
         )}
-      </ha-list>
+      </div>
     `;
   }
 

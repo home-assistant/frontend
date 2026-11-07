@@ -81,7 +81,7 @@ class DialogNewAutomation extends LitElement {
     this.blueprints = undefined;
     this._loadingBlueprints = true;
 
-    fetchBlueprints(this.hass!, this._mode)
+    fetchBlueprints(this.hass!.callWS, this._mode)
       .then((blueprints) => {
         this.blueprints = blueprints;
       })

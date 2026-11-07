@@ -67,7 +67,11 @@ export class HaListBase extends LitElement {
 
   protected hasFocusableItem = false;
 
+  private _activeItem?: HaListItemBase;
+
   private _unbindKeys?: () => void;
+
+  private _listItemsUpdatePending = false;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -151,6 +155,7 @@ export class HaListBase extends LitElement {
   /** Clear the active row, so no row is marked `active`. */
   public clearActiveItem() {
     this.activeItemIndex = -1;
+    this._activeItem = undefined;
     this.applyActive(false);
   }
 
@@ -163,7 +168,23 @@ export class HaListBase extends LitElement {
     if (!this.isFocusable(this.activeItemIndex)) {
       this.activeItemIndex = this.firstFocusableIndex;
     }
+    this._activeItem = this.items[this.activeItemIndex];
     this.applyActive(focusItem);
+  }
+
+  /**
+   * Run `updateListItems()` once after the current task, so rows that change
+   * their focusability together cause a single update.
+   */
+  public requestListItemsUpdate() {
+    if (this._listItemsUpdatePending) {
+      return;
+    }
+    this._listItemsUpdatePending = true;
+    queueMicrotask(() => {
+      this._listItemsUpdatePending = false;
+      this.updateListItems();
+    });
   }
 
   /**
@@ -172,6 +193,13 @@ export class HaListBase extends LitElement {
    */
   public updateListItems() {
     this.recomputeFocusableIndexes();
+    // Follow the active row when rows are added, removed or reordered
+    const activeIndex = this._activeItem
+      ? this.items.indexOf(this._activeItem)
+      : -1;
+    if (activeIndex !== -1) {
+      this.activeItemIndex = activeIndex;
+    }
     if (this.virtualFocus) {
       // Nothing is active until the owner starts navigating.
       if (
@@ -180,15 +208,15 @@ export class HaListBase extends LitElement {
       ) {
         this.activeItemIndex = -1;
       }
-      this.applyActive(false);
-      return;
-    }
-    if (
-      this.activeItemIndex >= this.itemCount ||
-      !this.hasFocusableItem ||
-      this.activeItemIndex < 0
-    ) {
+    } else if (!this.isFocusable(this.activeItemIndex)) {
+      // Also leave an active row that got disabled, so the list keeps a Tab stop
       this.activeItemIndex = this.firstFocusableIndex;
+      if (activeIndex !== -1) {
+        this._activeItem = this.items[this.activeItemIndex];
+      }
+    }
+    if (!this._activeItem) {
+      this._activeItem = this.items[this.activeItemIndex];
     }
     this.applyActive(false);
   }
@@ -218,6 +246,15 @@ export class HaListBase extends LitElement {
     }
     this.items = this.items.filter((it) => it !== item);
     this.updateListItems();
+    if (item === this._activeItem) {
+      // A moved row registers again in the same task, a removed row does not
+      queueMicrotask(() => {
+        if (this._activeItem === item && !this.items.includes(item)) {
+          this._activeItem = undefined;
+          this.updateListItems();
+        }
+      });
+    }
   };
 
   protected recomputeFocusableIndexes() {
@@ -278,6 +315,7 @@ export class HaListBase extends LitElement {
     const path = ev.composedPath();
     for (let i = 0; i < this.items.length; i++) {
       if (path.includes(this.items[i])) {
+        this._activeItem = this.items[i];
         if (i !== this.activeItemIndex) {
           this.activeItemIndex = i;
           this.applyActive(false);
@@ -295,6 +333,13 @@ export class HaListBase extends LitElement {
       return true;
     }
     if (ev.isComposing) {
+      return true;
+    }
+    // Let controls nested in a row handle their own Enter/Space
+    if (
+      (ev.key === "Enter" || ev.key === " ") &&
+      !(ev.composedPath()[0] as Element).hasAttribute?.("ha-list-item")
+    ) {
       return true;
     }
     const target = ev.target as HTMLElement | null;
@@ -385,6 +430,7 @@ export class HaListBase extends LitElement {
       return;
     }
     this.activeItemIndex = next;
+    this._activeItem = this.items[next];
     this.applyActive(true);
   }
 

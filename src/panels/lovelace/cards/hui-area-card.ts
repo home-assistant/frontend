@@ -17,10 +17,9 @@ import { BINARY_STATE_ON, STRINGS_SEPARATOR_DOT } from "../../../common/const";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { generateEntityFilter } from "../../../common/entity/entity_filter";
 import {
-  formatNumber,
+  formatNumberWithUnit,
   isNumericState,
 } from "../../../common/number/format_number";
-import { blankBeforeUnit } from "../../../common/translations/blank_before_unit";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-aspect-ratio";
 import "../../../components/ha-card";
@@ -257,12 +256,19 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       sensorClasses: string[],
       excludeEntities?: string[]
     ): Map<string, string[]> => {
-      const sensorFilter = generateEntityFilter(this.hass, {
-        area: areaId,
-        entity_category: "none",
-        domain: "sensor",
-        device_class: sensorClasses,
-      });
+      const sensorFilter = generateEntityFilter(
+        this.hass.states,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors,
+        {
+          area: areaId,
+          entity_category: "none",
+          domain: "sensor",
+          device_class: sensorClasses,
+        }
+      );
       const entityIds = Object.keys(entities).filter(
         (id) => sensorFilter(id) && !excludeEntities?.includes(id)
       );
@@ -278,12 +284,19 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       binarySensorClasses: string[],
       excludeEntities?: string[]
     ): Map<string, string[]> => {
-      const binarySensorFilter = generateEntityFilter(this.hass, {
-        area: areaId,
-        entity_category: "none",
-        domain: "binary_sensor",
-        device_class: binarySensorClasses,
-      });
+      const binarySensorFilter = generateEntityFilter(
+        this.hass.states,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors,
+        {
+          area: areaId,
+          entity_category: "none",
+          domain: "binary_sensor",
+          device_class: binarySensorClasses,
+        }
+      );
 
       const entityIds = Object.keys(entities).filter(
         (id) => binarySensorFilter(id) && !excludeEntities?.includes(id)
@@ -298,11 +311,18 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       entities: HomeAssistant["entities"],
       areaId: string
     ): string | undefined => {
-      const cameraFilter = generateEntityFilter(this.hass, {
-        area: areaId,
-        entity_category: "none",
-        domain: "camera",
-      });
+      const cameraFilter = generateEntityFilter(
+        this.hass.states,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors,
+        {
+          area: areaId,
+          entity_category: "none",
+          domain: "camera",
+        }
+      );
       const cameraEntities = Object.keys(entities).filter(cameraFilter);
       return cameraEntities.length > 0 ? cameraEntities[0] : undefined;
     }
@@ -315,11 +335,18 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       domains: string[],
       excludeEntities?: string[]
     ): string[] => {
-      const filter = generateEntityFilter(this.hass, {
-        area: areaId,
-        entity_category: "none",
-        domain: domains,
-      });
+      const filter = generateEntityFilter(
+        this.hass.states,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors,
+        {
+          area: areaId,
+          entity_category: "none",
+          domain: domains,
+        }
+      );
       return Object.keys(entities).filter(
         (id) => filter(id) && !excludeEntities?.includes(id)
       );
@@ -511,14 +538,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           ? values.reduce((acc, v) => acc + v, 0)
           : this._computeMedianValue(values);
 
-        const formattedValue = formatNumber(value, this.hass.locale, {
+        return formatNumberWithUnit(value, uom, this.hass.locale, {
           maximumFractionDigits: 1,
         });
-        const formattedUnit = uom
-          ? `${blankBeforeUnit(uom, this.hass.locale)}${uom}`
-          : "";
-
-        return `${formattedValue}${formattedUnit}`;
       })
       .filter(Boolean)
       .join(STRINGS_SEPARATOR_DOT);
@@ -584,7 +606,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     if (!area) {
       return html`
-        <hui-warning .hass=${this.hass}>
+        <hui-warning>
           ${this.hass.localize("ui.card.area.area_not_found")}
         </hui-warning>
       `;
@@ -594,11 +616,11 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     const name = this._config.name || computeAreaName(area);
 
-    const primary = name;
     const secondary = this._computeSensorsDisplay();
 
     const featurePosition = this._featurePosition(this._config);
     const features = this._featureLayout(this._config);
+    const hasFeatures = features.inline.length > 0 || features.below.length > 0;
 
     const displayType = this._config.display_type || "picture";
 
@@ -624,7 +646,11 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       this._config.grid_options?.rows !== "auto";
 
     return html`
-      <ha-card style=${styleMap(style)}>
+      <ha-card
+        style=${styleMap(style)}
+        role=${ifDefined(hasFeatures ? "group" : undefined)}
+        aria-labelledby=${ifDefined(hasFeatures ? "name" : undefined)}
+      >
         ${
           displayType === "compact"
             ? nothing
@@ -706,9 +732,10 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
             class=${ifDefined(
               this._config.vertical && fixedInfoHeight ? "twoline" : undefined
             )}
-            .primary=${primary}
             .secondary=${secondary}
-          ></ha-tile-info>
+          >
+            <span slot="primary" id="name">${name}</span>
+          </ha-tile-info>
           ${
             features.inline.length > 0
               ? html`
@@ -844,7 +871,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         /* two wrapped lines inside the 32px ha-tile-container reserves */
         --_tile-info-fixed-primary-line-height: var(--ha-space-4);
       }
-      ha-tile-info.twoline::part(primary) {
+      ha-tile-info.twoline > [slot="primary"] {
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;

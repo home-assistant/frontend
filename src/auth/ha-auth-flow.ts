@@ -41,6 +41,8 @@ export class HaAuthFlow extends LitElement {
 
   @property({ attribute: false }) public codeChallengeMethod?: string;
 
+  @property({ attribute: false }) public responseType?: string;
+
   @property({ attribute: false }) public step?: DataEntryFlowStep;
 
   @property({ attribute: false }) public initStoreToken = false;
@@ -307,7 +309,8 @@ export class HaAuthFlow extends LitElement {
         this.redirectUri,
         [newProvider.type, newProvider.id],
         this.codeChallenge,
-        this.codeChallengeMethod
+        this.codeChallengeMethod,
+        this.responseType
       );
 
       const data = await response.json();

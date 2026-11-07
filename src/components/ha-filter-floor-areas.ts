@@ -79,6 +79,8 @@ export class HaFilterFloorAreas extends LitElement {
 
   private _panel = new FilterPanelController(this, this._content);
 
+  private _relatedRequestId = 0;
+
   public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
 
@@ -282,6 +284,7 @@ export class HaFilterFloorAreas extends LitElement {
   );
 
   private async _findRelated() {
+    const requestId = ++this._relatedRequestId;
     const relatedPromises: Promise<RelatedResult>[] = [];
 
     if (
@@ -322,6 +325,12 @@ export class HaFilterFloorAreas extends LitElement {
     }
 
     const results = await Promise.all(relatedPromises);
+
+    // The value changed while this lookup ran
+    if (requestId !== this._relatedRequestId) {
+      return;
+    }
+
     const items = new Set<string>();
     for (const result of results) {
       if (result[this.type!]) {

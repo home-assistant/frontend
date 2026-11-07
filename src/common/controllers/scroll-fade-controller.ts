@@ -66,7 +66,7 @@ export class ScrollFadeController {
     if (!this._element) {
       return;
     }
-    const rtl = this._element.matches(":dir(rtl)");
+    const rtl = getComputedStyle(this._element).direction === "rtl";
     const scrolled = rtl ? -this._element.scrollLeft : this._element.scrollLeft;
     const maxScroll = this._element.scrollWidth - this._element.clientWidth;
     const start = scrolled > 1;

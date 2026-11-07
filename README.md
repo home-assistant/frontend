@@ -6,12 +6,12 @@ This is the repository for the official [Home Assistant](https://home-assistant.
 
 - [View demo of Home Assistant](https://demo.home-assistant.io/)
 - [More information about Home Assistant](https://home-assistant.io)
-- [Frontend development instructions](https://developers.home-assistant.io/docs/frontend/development/)
+- [Frontend development instructions](https://contributors.home-assistant.io/frontend/development/)
 
 ## Development
 
 - Initial setup: `script/setup`
-- Development: [Instructions](https://developers.home-assistant.io/docs/frontend/development/)
+- Development: [Instructions](https://contributors.home-assistant.io/frontend/development/)
 - Production build: `pnpm build`
 - Gallery: `cd gallery && script/develop_gallery`
 

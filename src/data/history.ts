@@ -104,13 +104,16 @@ export const fetchDateWS = (
   hass: Pick<HomeAssistant, "states" | "callWS">,
   startTime: Date,
   endTime: Date,
-  entityIds: string[]
+  entityIds: string[],
+  options: {
+    minimalResponse?: boolean;
+  } = {}
 ) => {
   const params = {
     type: "history/history_during_period",
     start_time: startTime.toISOString(),
     end_time: endTime.toISOString(),
-    minimal_response: true,
+    minimal_response: options.minimalResponse ?? true,
     no_attributes: !entityIds.some((entityId) =>
       entityIdHistoryNeedsAttributes(hass, entityId)
     ),
@@ -120,6 +123,32 @@ export const fetchDateWS = (
   }
   return hass.callWS<HistoryStates>(params);
 };
+
+// Rebuilding the charts for this many states takes tens of milliseconds
+const LARGE_HISTORY_STATES = 100_000;
+const MIN_LARGE_HISTORY_UPDATE_DELAY = 1000;
+
+export const countHistoryStates = (history: HistoryStates): number => {
+  let count = 0;
+  for (const states of Object.values(history)) {
+    count += states.length;
+  }
+  return count;
+};
+
+/** How long a live update may wait: none for a small history, else the time one chart pixel covers (1 s to `maxDelay`) */
+export const computeHistoryUpdateDelay = (
+  stateCount: number,
+  timespanMs: number,
+  chartPixels: number,
+  maxDelay: number
+): number =>
+  stateCount < LARGE_HISTORY_STATES
+    ? 0
+    : Math.min(
+        Math.max(timespanMs / chartPixels, MIN_LARGE_HISTORY_UPDATE_DELAY),
+        maxDelay
+      );
 
 export const subscribeHistory = (
   hass: HomeAssistant,
@@ -140,14 +169,11 @@ export const subscribeHistory = (
   }));
 
 export class HistoryStream {
-  hass: HomeAssistant;
-
   hoursToShow?: number;
 
   combinedHistory: HistoryStates;
 
-  constructor(hass: HomeAssistant, hoursToShow?: number) {
-    this.hass = hass;
+  constructor(hoursToShow?: number) {
     this.hoursToShow = hoursToShow;
     this.combinedHistory = {};
   }
@@ -238,7 +264,7 @@ export class HistoryStream {
 }
 
 export const subscribeHistoryStatesTimeWindow = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection" | "states">,
   callbackFunction: (data: HistoryStates) => void,
   hoursToShow: number,
   entityIds: string[],
@@ -280,7 +306,7 @@ export const subscribeHistoryStatesTimeWindow = (
  * a fresh `HistoryStream`, so consumers don't need to listen for reconnects.
  */
 const subscribeHistoryStream = async (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection">,
   callbackFunction: (data: HistoryStates) => void,
   buildParams: () => MessageBase,
   hoursToShow?: number
@@ -289,7 +315,7 @@ const subscribeHistoryStream = async (
   let disposed = false;
 
   const doSubscribe = async () => {
-    const stream = new HistoryStream(hass, hoursToShow);
+    const stream = new HistoryStream(hoursToShow);
     const unsub = await hass.connection.subscribeMessage<HistoryStreamMessage>(
       (message) => callbackFunction(stream.processMessage(message)),
       buildParams(),
@@ -681,6 +707,16 @@ export const isNumericEntity = (
     isNumericSensorDeviceClass(currentState.attributes.device_class)) ||
   numericStateFromHistory != null;
 
+// Non-numeric domains that computeHistory gives a unit, so they get a line chart
+const LINE_CHART_DOMAINS = ["climate", "humidifier", "water_heater", "zone"];
+
+export const isTimelineEntity = (
+  domain: string,
+  currentState: HassEntity | undefined
+): boolean =>
+  !isNumericEntity(domain, currentState, undefined) &&
+  !LINE_CHART_DOMAINS.includes(domain);
+
 export const mergeHistoryResults = (
   historyResult: HistoryResult,
   ltsResult?: HistoryResult,
@@ -696,6 +732,7 @@ export const mergeHistoryResults = (
     { historyItem?: LineChartUnit; ltsItem?: LineChartUnit }
   > = {};
 
+  const historyItemByEntity = new Map<string, LineChartUnit>();
   for (const item of historyResult.line) {
     const key = computeGroupKey(
       item.unit,
@@ -707,27 +744,39 @@ export const mergeHistoryResults = (
         historyItem: item,
       };
     }
+    for (const { entity_id } of item.data) {
+      historyItemByEntity.set(entity_id, item);
+    }
   }
 
-  for (const item of ltsResult.line) {
-    if (item.unit === BLANK_UNIT) {
-      // disabled entities have no unit, so we need to find the unit from the history result
-      item.unit =
-        historyResult.line.find((line) => line.identifier === item.identifier)
-          ?.unit ?? BLANK_UNIT;
-    }
+  const addLtsItem = (item: LineChartUnit) => {
     const key = computeGroupKey(
       item.unit,
       item.device_class,
       splitDeviceClasses
     );
     if (!key) {
+      return;
+    }
+    const entry = (lookup[key] ??= {});
+    if (entry.ltsItem) {
+      entry.ltsItem.data.push(...item.data);
+    } else {
+      entry.ltsItem = { ...item, data: [...item.data] };
+    }
+  };
+
+  for (const item of ltsResult.line) {
+    if (item.unit !== BLANK_UNIT) {
+      addLtsItem(item);
       continue;
     }
-    if (key in lookup) {
-      lookup[key].ltsItem = item;
-    } else {
-      lookup[key] = { ltsItem: item };
+    // Entities missing from hass.states when statistics were fetched have no
+    // unit, so each takes the unit of the history line it is in
+    for (const data of item.data) {
+      const { unit, device_class } =
+        historyItemByEntity.get(data.entity_id) ?? item;
+      addLtsItem({ ...item, unit, device_class, data: [data] });
     }
   }
 

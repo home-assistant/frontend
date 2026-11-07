@@ -2,9 +2,13 @@
 
 import fs from "fs-extra";
 import gulp from "gulp";
+import { createHash } from "node:crypto";
+import { createRequire } from "node:module";
 import path from "path";
 import paths from "../paths.cjs";
 import { ensureMapAssets, mapAssetsDir } from "./map-assets.js";
+
+const require = createRequire(import.meta.url);
 
 const npmPath = (...parts) =>
   path.resolve(paths.root_dir, "node_modules", ...parts);
@@ -77,19 +81,30 @@ async function copyMapPanel(staticDir) {
   // Style, glyphs and sprites for the vector base map
   await ensureMapAssets();
   fs.copySync(mapAssetsDir, staticPath("map/"));
-  copyFileDir(
-    npmPath("@mapbox/mapbox-gl-rtl-text/dist/mapbox-gl-rtl-text.js"),
-    staticPath("map/")
-  );
   // Controls and popups of the native MapLibre engine
   copyFileDir(npmPath("maplibre-gl/dist/maplibre-gl.css"), staticPath("map/"));
 }
 
 function copyZXingWasm(staticDir) {
   const staticPath = genStaticPath(staticDir);
-  copyFileDir(
-    npmPath("zxing-wasm/dist/reader/zxing_reader.wasm"),
-    staticPath("js")
+  // Resolve through barcode-detector, the wasm must match the zxing-wasm JS it bundles
+  const zxingWasm = createRequire(require.resolve("barcode-detector")).resolve(
+    "zxing-wasm/reader/zxing_reader.wasm"
+  );
+  const {
+    ZXING_WASM_SHA256,
+    ZXING_WASM_VERSION,
+  } = require("barcode-detector/pure");
+  const wasm = fs.readFileSync(zxingWasm);
+  if (createHash("sha256").update(wasm).digest("hex") !== ZXING_WASM_SHA256) {
+    throw new Error(
+      `${zxingWasm} does not match the zxing-wasm ${ZXING_WASM_VERSION} bundled in barcode-detector`
+    );
+  }
+  // Versioned file name, see locateFile in ha-qr-scanner
+  fs.outputFileSync(
+    staticPath("js", `zxing_reader-${ZXING_WASM_VERSION}.wasm`),
+    wasm
   );
 }
 

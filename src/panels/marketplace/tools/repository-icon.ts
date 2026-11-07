@@ -1,8 +1,12 @@
-import { mdiArrowUpCircle, mdiCheckCircle } from "@mdi/js";
+import {
+  mdiArrowUpCircle,
+  mdiArrowUpCircleOutline,
+  mdiCheckCircle,
+} from "@mdi/js";
 import { html, nothing } from "lit";
 import "../../../components/ha-svg-icon";
 import type { RepositoryBase } from "../../../data/marketplace/repository";
-import { brandsUrl } from "../../../util/brands-url";
+import { marketplaceBrandsUrl } from "../../../util/brands-url";
 import { typeIcon } from "./type-icon";
 
 interface RepositoryIconOptions {
@@ -11,6 +15,7 @@ interface RepositoryIconOptions {
   // Leave it out where everything shown is installed, a mark would say nothing
   installedLabel?: string;
   updateLabel?: string;
+  skippedLabel?: string;
 }
 
 // A corner of the icon, ringed so it stands out on any brand image
@@ -20,8 +25,14 @@ const BADGE_STYLE =
 // Like the icons on the devices page, the category icon without a domain.
 // Styled inline, as the tables render it where the styles of a page do not reach.
 export const renderRepositoryIcon = (
-  repository: RepositoryBase,
-  { darkMode, hassUrl, installedLabel, updateLabel }: RepositoryIconOptions
+  repository: RepositoryBase & { update_skipped?: boolean },
+  {
+    darkMode,
+    hassUrl,
+    installedLabel,
+    updateLabel,
+    skippedLabel,
+  }: RepositoryIconOptions
 ) =>
   html`<div style="position: relative; display: flex">
     ${
@@ -30,7 +41,7 @@ export const renderRepositoryIcon = (
             alt=""
             crossorigin="anonymous"
             referrerpolicy="no-referrer"
-            src=${brandsUrl(
+            src=${marketplaceBrandsUrl(
               {
                 domain: repository.domain,
                 type: "icon",
@@ -44,23 +55,32 @@ export const renderRepositoryIcon = (
           ></ha-svg-icon>`
     }
     ${
-      // An update says more than that it is installed, so it takes its place
-      updateLabel && repository.pending_upgrade
+      // A skipped update is still waiting, but muted as it was set aside
+      skippedLabel && repository.update_skipped
         ? html`<ha-svg-icon
-            class="update-badge"
+            class="skipped-badge"
             role="img"
-            aria-label=${updateLabel}
-            .path=${mdiArrowUpCircle}
-            style="${BADGE_STYLE}; color: var(--warning-color)"
+            aria-label=${skippedLabel}
+            .path=${mdiArrowUpCircleOutline}
+            style="${BADGE_STYLE}; color: var(--secondary-text-color)"
           ></ha-svg-icon>`
-        : installedLabel && repository.installed
+        : // An update says more than that it is installed, so it takes its place
+          updateLabel && repository.pending_upgrade
           ? html`<ha-svg-icon
-              class="installed-badge"
+              class="update-badge"
               role="img"
-              aria-label=${installedLabel}
-              .path=${mdiCheckCircle}
-              style="${BADGE_STYLE}; color: var(--success-color)"
+              aria-label=${updateLabel}
+              .path=${mdiArrowUpCircle}
+              style="${BADGE_STYLE}; color: var(--warning-color)"
             ></ha-svg-icon>`
-          : nothing
+          : installedLabel && repository.installed
+            ? html`<ha-svg-icon
+                class="installed-badge"
+                role="img"
+                aria-label=${installedLabel}
+                .path=${mdiCheckCircle}
+                style="${BADGE_STYLE}; color: var(--success-color)"
+              ></ha-svg-icon>`
+            : nothing
     }
   </div>`;

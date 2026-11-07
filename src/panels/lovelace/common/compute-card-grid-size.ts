@@ -40,6 +40,18 @@ export interface CardGridSize {
 export const isPreciseMode = (options: LovelaceGridOptions) =>
   typeof options.columns === "number" && options.columns % 3 !== 0;
 
+const CARD_SIZE_HEIGHT = 50;
+const GRID_ROW_HEIGHT = 56;
+const GRID_GAP = 8;
+
+export const cardSizeToGridRows = (cardSize: number): number =>
+  Math.max(
+    1,
+    Math.ceil(
+      (cardSize * CARD_SIZE_HEIGHT + GRID_GAP) / (GRID_ROW_HEIGHT + GRID_GAP)
+    )
+  );
+
 export const computeCardGridSize = (
   options: LovelaceGridOptions
 ): CardGridSize => {

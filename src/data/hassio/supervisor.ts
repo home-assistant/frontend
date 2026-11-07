@@ -1,4 +1,4 @@
-import type { HomeAssistant, PanelInfo } from "../../types";
+import type { HomeAssistant, HomeAssistantApi, PanelInfo } from "../../types";
 import type { SupervisorArch } from "../supervisor/supervisor";
 import type { AddonState } from "./addon";
 import { supervisorUrl, type HassioResponse } from "./common";
@@ -157,25 +157,25 @@ export const fetchHassioInfo = async (
     method: "get",
   });
 
-export const fetchHassioBoots = async (hass: HomeAssistant) =>
-  hass.callApi<HassioResponse<HassioBoots>>("GET", `hassio/host/logs/boots`);
+export const fetchHassioBoots = async (api: HomeAssistantApi) =>
+  api.callApi<HassioResponse<HassioBoots>>("GET", `hassio/host/logs/boots`);
 
 export const fetchHassioLogsLegacy = async (
-  hass: HomeAssistant,
+  api: HomeAssistantApi,
   provider: string
 ) =>
-  hass.callApi<string>(
+  api.callApi<string>(
     "GET",
     `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs`
   );
 
 export const fetchHassioLogs = async (
-  hass: HomeAssistant,
+  api: HomeAssistantApi,
   provider: string,
   range?: string,
   boot = 0
 ) =>
-  hass.callApiRaw(
+  api.callApiRaw(
     "GET",
     `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs${boot !== 0 ? `/boots/${boot}` : ""}`,
     undefined,
@@ -187,13 +187,13 @@ export const fetchHassioLogs = async (
   );
 
 export const fetchHassioLogsFollow = async (
-  hass: HomeAssistant,
+  api: HomeAssistantApi,
   provider: string,
   signal: AbortSignal,
   lines = 100,
   boot = 0
 ) =>
-  hass.callApiRaw(
+  api.callApiRaw(
     "GET",
     `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs${boot !== 0 ? `/boots/${boot}` : ""}/follow?lines=${lines}`,
     undefined,
@@ -202,7 +202,7 @@ export const fetchHassioLogsFollow = async (
   );
 
 export const fetchHassioLogsFollowSkip = async (
-  hass: HomeAssistant,
+  api: HomeAssistantApi,
   provider: string,
   signal: AbortSignal,
   cursor: string,
@@ -210,7 +210,7 @@ export const fetchHassioLogsFollowSkip = async (
   lines = 100,
   boot = 0
 ) =>
-  hass.callApiRaw(
+  api.callApiRaw(
     "GET",
     `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs${boot !== 0 ? `/boots/${boot}` : ""}/follow`,
     undefined,

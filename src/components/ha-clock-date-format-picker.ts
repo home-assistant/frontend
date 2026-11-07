@@ -14,7 +14,7 @@ import {
   formatClockCardDate,
 } from "../panels/lovelace/cards/clock/clock-date-format";
 import type { ClockCardDatePart } from "../panels/lovelace/cards/types";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { ValueChangedEvent } from "../types";
 import "./chips/ha-assist-chip";
 import "./chips/ha-chip-set";
 import "./chips/ha-input-chip";
@@ -26,10 +26,7 @@ import "./ha-sortable";
 
 type ClockDatePartSection = "weekday" | "day" | "month" | "year" | "separator";
 
-type ClockDateSeparatorPart = Extract<
-  ClockCardDatePart,
-  "separator-dash" | "separator-slash" | "separator-dot" | "separator-new-line"
->;
+type ClockDateSeparatorPart = Extract<ClockCardDatePart, `separator-${string}`>;
 
 const CLOCK_DATE_PART_SECTION_ORDER: readonly ClockDatePartSection[] = [
   "day",
@@ -43,6 +40,7 @@ const CLOCK_DATE_SEPARATOR_VALUES: Record<ClockDateSeparatorPart, string> = {
   "separator-dash": "-",
   "separator-slash": "/",
   "separator-dot": ".",
+  "separator-comma": ",",
   "separator-new-line": "",
 };
 
@@ -116,8 +114,6 @@ interface ClockDatePartValueItem {
 
 @customElement("ha-clock-date-format-picker")
 export class HaClockDateFormatPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
@@ -153,7 +149,6 @@ export class HaClockDateFormatPicker extends LitElement {
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
       <ha-generic-picker
-        .hass=${this.hass}
         .disabled=${this.disabled}
         .required=${this.required && !value.length}
         .value=${this._getPickerValue()}

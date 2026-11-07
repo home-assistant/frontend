@@ -38,7 +38,7 @@ export interface AlarmControlPanelEntity extends HassEntityBase {
 }
 
 export const callAlarmAction = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService">,
   entity: string,
   action:
     | "arm_away"
@@ -49,7 +49,7 @@ export const callAlarmAction = (
     | "disarm",
   code?: string
 ) => {
-  hass!.callService("alarm_control_panel", `alarm_${action}`, {
+  hass.callService("alarm_control_panel", `alarm_${action}`, {
     entity_id: entity,
     code,
   });

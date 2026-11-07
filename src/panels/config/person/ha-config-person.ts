@@ -5,9 +5,10 @@ import { customElement, property, state } from "lit/decorators";
 import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-list";
-import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
+import "../../../components/item/ha-list-item-base";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-base";
 import "../../../components/user/ha-person-badge";
 import type { Person } from "../../../data/person";
 import {
@@ -92,23 +93,22 @@ export class HaConfigPerson extends LitElement {
           </span>
 
           <ha-card outlined class="storage">
-            <ha-list>
+            <ha-list-base>
               ${this._storageItems.map(
                 (entry) => html`
-                  <ha-list-item
-                    graphic="avatar"
+                  <ha-list-item-button
                     @click=${this._openEditEntry}
                     .entry=${entry}
                   >
                     <ha-person-badge
                       .person=${entry}
-                      slot="graphic"
+                      slot="start"
                     ></ha-person-badge>
-                    <span>${entry.name}</span>
-                  </ha-list-item>
+                    <span slot="headline">${entry.name}</span>
+                  </ha-list-item-button>
                 `
               )}
-            </ha-list>
+            </ha-list-base>
             ${
               this._storageItems.length === 0
                 ? html`
@@ -138,19 +138,19 @@ export class HaConfigPerson extends LitElement {
             this._configItems.length > 0
               ? html`
                   <ha-card outlined header="Configuration.yaml persons">
-                    <ha-list>
+                    <ha-list-base>
                       ${this._configItems.map(
                         (entry) => html`
-                          <ha-list-item graphic="avatar">
+                          <ha-list-item-base>
                             <ha-person-badge
                               .person=${entry}
-                              slot="graphic"
+                              slot="start"
                             ></ha-person-badge>
-                            <span>${entry.name}</span>
-                          </ha-list-item>
+                            <span slot="headline">${entry.name}</span>
+                          </ha-list-item-base>
                         `
                       )}
-                    </ha-list>
+                    </ha-list-base>
                   </ha-card>
                 `
               : nothing
@@ -171,7 +171,7 @@ export class HaConfigPerson extends LitElement {
   }
 
   private async _fetchData() {
-    this._usersLoad = fetchUsers(this.hass!);
+    this._usersLoad = fetchUsers(this.hass!.callWS);
     const personData = await fetchPersons(this.hass!);
 
     this._storageItems = personData.storage.sort((ent1, ent2) =>
@@ -279,7 +279,7 @@ export class HaConfigPerson extends LitElement {
         }
       },
       refreshUsers: () => {
-        this._usersLoad = fetchUsers(this.hass!);
+        this._usersLoad = fetchUsers(this.hass!.callWS);
       },
     });
   }
@@ -299,7 +299,7 @@ export class HaConfigPerson extends LitElement {
       align-items: center;
       justify-content: space-around;
     }
-    ha-list:has(+ .empty) {
+    ha-list-base:has(+ .empty) {
       display: none;
     }
   `;

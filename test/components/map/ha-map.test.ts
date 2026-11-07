@@ -1,5 +1,6 @@
 import type { HassEntities } from "home-assistant-js-websocket";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { computeEntityNameDisplayWithoutContext } from "../../../src/common/entity/compute_entity_name_display";
 import "../../../src/components/map/ha-map";
 import type { HaMap } from "../../../src/components/map/ha-map";
 
@@ -67,6 +68,9 @@ const createMap = async (
   ];
   el.clusterMarkers = options.clusterMarkers ?? false;
   (el as any)._states = options.states ?? STATES;
+  (el as any)._formatters = {
+    formatEntityName: computeEntityNameDisplayWithoutContext,
+  };
   (el as any)._config = {
     config: { latitude: 52.3731339, longitude: 4.8903147 },
   };

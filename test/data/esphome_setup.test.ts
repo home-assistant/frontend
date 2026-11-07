@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type {
   ESPHomeBluetoothProxyCapabilities,
   ESPHomeDeviceCapabilities,
+  ESPHomeWizardPage,
   ESPHomeZWaveProxyCapabilities,
 } from "../../src/data/esphome";
 import {
@@ -13,9 +14,13 @@ import {
   getESPHomeAudioControls,
   getESPHomeSetupBannerState,
   getESPHomeSetupCapabilityIds,
+  getESPHomeSwitch,
+  getESPHomeWizardSwitches,
+  hasESPHomeBluetoothSwitch,
   hasESPHomeSetupCapabilities,
   hasStartedNonBluetoothESPHomeSetup,
   isESPHomeSerialConfigured,
+  isMusicAssistantConfigured,
   isESPHomeSetupDeferred,
   withDeferredESPHomeDevice,
 } from "../../src/data/esphome_setup";
@@ -47,7 +52,7 @@ const capabilities = (
 const deriveOptions = (
   overrides: Partial<{
     mediaPlayerSupported: boolean;
-    musicAssistantLoaded: boolean;
+    musicAssistantConfigured: boolean;
     sendspinSupported: boolean;
     sendspinEnabled: boolean;
     serialConfigured: boolean;
@@ -55,7 +60,7 @@ const deriveOptions = (
   }> = {}
 ) => ({
   mediaPlayerSupported: false,
-  musicAssistantLoaded: false,
+  musicAssistantConfigured: false,
   serialConfigured: false,
   ...overrides,
 });
@@ -89,15 +94,23 @@ describe("hasESPHomeSetupCapabilities", () => {
     expect(hasESPHomeSetupCapabilities(undefined)).toBe(false);
   });
 
-  it("is false for Bluetooth alone", () => {
-    expect(
-      hasESPHomeSetupCapabilities(
-        capabilities({
-          bluetooth_proxy: { supported: true },
-        })
-      )
-    ).toBe(false);
-  });
+  it.each([
+    [true, true, true],
+    [false, true, false],
+    [false, false, true],
+  ])(
+    "is %s for Bluetooth alone with capability %s and switch %s",
+    (expected, supported, bluetoothSwitch) => {
+      expect(
+        hasESPHomeSetupCapabilities(
+          capabilities({
+            bluetooth_proxy: { supported },
+          }),
+          { bluetoothSwitch }
+        )
+      ).toBe(expected);
+    }
+  );
 
   it("is false for a device with no advertised capabilities", () => {
     expect(hasESPHomeSetupCapabilities(capabilities())).toBe(false);
@@ -179,6 +192,18 @@ describe("deriveESPHomeSetupStatus", () => {
     expect(status.serial).toBeUndefined();
   });
 
+  it("marks Bluetooth not started when its switch is off", () => {
+    const status = deriveESPHomeSetupStatus(
+      capabilities({
+        bluetooth_proxy: { supported: true },
+      }),
+      { ...deriveOptions(), bluetoothEnabled: false }
+    );
+
+    expect(status.bluetooth).toBe("not-started");
+    expect(countRemainingESPHomeCapabilities(status)).toBe(1);
+  });
+
   it("marks audio from media_player entities, not capabilities", () => {
     const caps = capabilities();
 
@@ -193,7 +218,7 @@ describe("deriveESPHomeSetupStatus", () => {
         caps,
         deriveOptions({
           mediaPlayerSupported: true,
-          musicAssistantLoaded: true,
+          musicAssistantConfigured: true,
         })
       ).audio
     ).toBe("completed");
@@ -210,7 +235,7 @@ describe("deriveESPHomeSetupStatus", () => {
         caps,
         deriveOptions({
           mediaPlayerSupported: true,
-          musicAssistantLoaded: true,
+          musicAssistantConfigured: true,
           sendspinSupported: true,
           sendspinEnabled: false,
         })
@@ -221,9 +246,21 @@ describe("deriveESPHomeSetupStatus", () => {
         caps,
         deriveOptions({
           mediaPlayerSupported: true,
-          musicAssistantLoaded: true,
+          musicAssistantConfigured: true,
           sendspinSupported: true,
           sendspinEnabled: true,
+        })
+      ).audio
+    ).toBe("completed");
+  });
+
+  it("keeps audio completed while the Sendspin switch is unavailable", () => {
+    expect(
+      deriveESPHomeSetupStatus(
+        capabilities(),
+        deriveOptions({
+          musicAssistantConfigured: true,
+          sendspinSupported: true,
         })
       ).audio
     ).toBe("completed");
@@ -295,7 +332,7 @@ describe("deriveESPHomeSetupStatus", () => {
     expect(
       deriveESPHomeSetupStatus(caps, {
         mediaPlayerSupported: false,
-        musicAssistantLoaded: false,
+        musicAssistantConfigured: false,
       }).serial
     ).toBeUndefined();
   });
@@ -397,8 +434,23 @@ describe("isESPHomeSerialConfigured", () => {
   });
 });
 
+describe("isMusicAssistantConfigured", () => {
+  it.each([
+    ["no entries", undefined, false],
+    ["another integration", [{ domain: "esphome", source: "user" }], false],
+    [
+      "an ignored discovery",
+      [{ domain: "music_assistant", source: "ignore" }],
+      false,
+    ],
+    ["an entry", [{ domain: "music_assistant", source: "hassio" }], true],
+  ])("handles %s", (_name, entries, expected) => {
+    expect(isMusicAssistantConfigured(entries)).toBe(expected);
+  });
+});
+
 describe("remaining capabilities and continue-setup", () => {
-  it("counts incomplete rows and ignores Bluetooth", () => {
+  it("counts incomplete rows, with Bluetooth completed when it has no switch", () => {
     const status = deriveESPHomeSetupStatus(
       capabilities({
         bluetooth_proxy: { supported: true },
@@ -460,7 +512,7 @@ describe("remaining capabilities and continue-setup", () => {
       }),
       deriveOptions({
         mediaPlayerSupported: true,
-        musicAssistantLoaded: true,
+        musicAssistantConfigured: true,
       })
     );
     expect(countRemainingESPHomeCapabilities(withoutSwitch)).toBe(0);
@@ -472,7 +524,7 @@ describe("remaining capabilities and continue-setup", () => {
       }),
       deriveOptions({
         mediaPlayerSupported: true,
-        musicAssistantLoaded: true,
+        musicAssistantConfigured: true,
         sendspinSupported: true,
         sendspinEnabled: false,
       })
@@ -486,7 +538,7 @@ describe("remaining capabilities and continue-setup", () => {
       }),
       deriveOptions({
         mediaPlayerSupported: true,
-        musicAssistantLoaded: true,
+        musicAssistantConfigured: true,
         sendspinSupported: true,
         sendspinEnabled: true,
       })
@@ -540,99 +592,150 @@ describe("remaining capabilities and continue-setup", () => {
   });
 });
 
+describe("getESPHomeWizardSwitches", () => {
+  const page = (
+    title: string,
+    entityIds: (string | null)[]
+  ): ESPHomeWizardPage => ({
+    title,
+    description: "",
+    entities: entityIds.map((entity_id) => ({ entity_id, description: "" })),
+  });
+
+  it("takes the switches from the Bluetooth and Sendspin pages by title", () => {
+    expect(
+      getESPHomeWizardSwitches({
+        pages: [
+          page("Sendspin", [
+            "switch.proxy_sendspin",
+            "switch.proxy_sendspin_unpaired_access",
+          ]),
+          page(" bluetooth ", ["switch.proxy_bluetooth"]),
+          page("Lights", ["switch.proxy_light"]),
+        ],
+      })
+    ).toEqual({
+      bluetooth: "switch.proxy_bluetooth",
+      sendspin: "switch.proxy_sendspin",
+      sendspinUnpairedAccess: "switch.proxy_sendspin_unpaired_access",
+    });
+  });
+
+  it("skips entities that are not switches, keeping the order", () => {
+    expect(
+      getESPHomeWizardSwitches({
+        pages: [
+          page("Sendspin", [
+            "media_player.proxy_sendspin",
+            "switch.proxy_sendspin_unpaired_access",
+          ]),
+        ],
+      })
+    ).toEqual({
+      bluetooth: undefined,
+      sendspin: undefined,
+      sendspinUnpairedAccess: "switch.proxy_sendspin_unpaired_access",
+    });
+  });
+
+  it.each([
+    ["no wizard", undefined],
+    ["no matching pages", { pages: [page("Lights", ["switch.proxy_light"])] }],
+    [
+      "entities without an entity id",
+      { pages: [page("Bluetooth", [null]), page("Sendspin", [])] },
+    ],
+  ])("finds no switches with %s", (_name, wizard) => {
+    expect(getESPHomeWizardSwitches(wizard)).toEqual({
+      bluetooth: undefined,
+      sendspin: undefined,
+      sendspinUnpairedAccess: undefined,
+    });
+  });
+});
+
+describe("getESPHomeSwitch", () => {
+  it("reads the switch state", () => {
+    expect(
+      getESPHomeSwitch("switch.proxy_bluetooth", {
+        "switch.proxy_bluetooth": { state: "off" },
+      })
+    ).toEqual({ entityId: "switch.proxy_bluetooth", on: false });
+  });
+
+  it.each([
+    ["no wizard switch", undefined, {}],
+    ["a disabled switch without a state", "switch.proxy_bluetooth", {}],
+    [
+      "an unavailable switch",
+      "switch.proxy_bluetooth",
+      { "switch.proxy_bluetooth": { state: "unavailable" } },
+    ],
+  ])("ignores %s", (_name, entityId, states) => {
+    expect(getESPHomeSwitch(entityId, states)).toBeUndefined();
+  });
+
+  it("counts an enabled switch as present, but not a disabled one", () => {
+    const entities = [
+      { entity_id: "switch.proxy_bluetooth", disabled_by: null },
+      { entity_id: "switch.disabled_bluetooth", disabled_by: "integration" },
+    ];
+    expect(hasESPHomeBluetoothSwitch("switch.proxy_bluetooth", entities)).toBe(
+      true
+    );
+    expect(
+      hasESPHomeBluetoothSwitch("switch.disabled_bluetooth", entities)
+    ).toBe(false);
+    expect(hasESPHomeBluetoothSwitch(undefined, entities)).toBe(false);
+  });
+});
+
 describe("getESPHomeAudioControls", () => {
-  it("maps the Sendspin Enabled switch without inverting it", () => {
+  const sendspin = {
+    entity_id: "switch.proxy_sendspin",
+    device_id: "dev-1",
+    platform: "esphome",
+  };
+
+  it("uses the wizard's Sendspin switch without inverting it", () => {
     expect(
       getESPHomeAudioControls(
         "dev-1",
-        [
-          {
-            entity_id: "media_player.proxy",
-            device_id: "dev-1",
-            platform: "esphome",
-          },
-          {
-            entity_id: "switch.proxy_sendspin_enabled",
-            device_id: "dev-1",
-            platform: "esphome",
-          },
-          {
-            entity_id: "switch.other_sendspin_enabled",
-            device_id: "dev-2",
-            platform: "esphome",
-          },
-        ],
-        {
-          "switch.proxy_sendspin_enabled": { state: "on" },
-          "switch.other_sendspin_enabled": { state: "off" },
-        }
+        [sendspin],
+        { "switch.proxy_sendspin": { state: "on" } },
+        "switch.proxy_sendspin"
       )
-    ).toMatchObject({
+    ).toEqual({
       supported: true,
-      sendspinEntityId: "switch.proxy_sendspin_enabled",
+      sendspinEntityId: "switch.proxy_sendspin",
       sendspinOn: true,
     });
   });
 
-  it("treats Sendspin Enabled off as the client stopped", () => {
-    expect(
-      getESPHomeAudioControls(
-        "dev-1",
-        [
-          {
-            entity_id: "switch.sendspin_enabled",
-            device_id: "dev-1",
-            platform: "esphome",
-          },
-        ],
-        { "switch.sendspin_enabled": { state: "off" } }
-      )
-    ).toMatchObject({
-      supported: true,
-      sendspinEntityId: "switch.sendspin_enabled",
-      sendspinOn: false,
-    });
-  });
-
-  it("ignores label matches that are not the Sendspin Enabled object id", () => {
-    expect(
-      getESPHomeAudioControls(
-        "dev-1",
-        [
-          {
-            entity_id: "switch.guest_room_night_light",
-            device_id: "dev-1",
-            platform: "esphome",
-          },
-          {
-            entity_id: "switch.guest_room_sendspin",
-            device_id: "dev-1",
-            platform: "esphome",
-          },
-          {
-            entity_id: "switch.guest_room_require_pin_to_stream",
-            device_id: "dev-1",
-            platform: "esphome",
-          },
-          {
-            entity_id: "switch.proxy_sendspin_guest_mode",
-            device_id: "dev-1",
-            platform: "esphome",
-          },
-        ],
-        {
-          "switch.guest_room_night_light": { state: "on" },
-          "switch.guest_room_sendspin": { state: "off" },
-          "switch.guest_room_require_pin_to_stream": { state: "on" },
-          "switch.proxy_sendspin_guest_mode": { state: "on" },
-        }
-      )
-    ).toMatchObject({
-      supported: false,
-      sendspinEntityId: undefined,
-      sendspinOn: false,
-    });
-  });
+  it.each([
+    ["without the wizard", [sendspin], undefined],
+    [
+      "for a disabled switch",
+      [{ ...sendspin, disabled_by: "user" }],
+      "switch.proxy_sendspin",
+    ],
+  ])(
+    "finds no Sendspin switch %s",
+    (_name, entities, wizardSendspinEntityId) => {
+      expect(
+        getESPHomeAudioControls(
+          "dev-1",
+          entities,
+          { "switch.proxy_sendspin": { state: "on" } },
+          wizardSendspinEntityId
+        )
+      ).toEqual({
+        supported: false,
+        sendspinEntityId: undefined,
+        sendspinOn: undefined,
+      });
+    }
+  );
 });
 
 describe("Later persistence helpers", () => {

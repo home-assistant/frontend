@@ -37,8 +37,8 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         </hui-warning>
       `;
     }
@@ -80,7 +80,7 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
         this._config.action_name || this.hass.localize("ui.card.scene.activate")
       ))
     ) {
-      activateScene(this.hass, this._config!.entity);
+      activateScene(this.hass.callService, this._config!.entity);
     }
   }
 }

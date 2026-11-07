@@ -7,7 +7,7 @@ import type { HomeDashboardStrategyConfig } from "../../../../src/panels/lovelac
 import { HomeDashboardStrategy } from "../../../../src/panels/lovelace/strategies/home/home-dashboard-strategy";
 import type { HomeOverviewViewStrategyConfig } from "../../../../src/panels/lovelace/strategies/home/home-overview-view-strategy";
 import { HomeOverviewViewStrategy } from "../../../../src/panels/lovelace/strategies/home/home-overview-view-strategy";
-import { generateLovelaceSectionStrategy } from "../../../../src/panels/lovelace/strategies/get-strategy";
+import type { HeadingCardConfig } from "../../../../src/panels/lovelace/cards/types";
 import type { HomeAssistant } from "../../../../src/types";
 
 export interface DemoHomeDashboardStrategyConfig extends Omit<
@@ -61,29 +61,33 @@ class DemoHomeOverviewViewStrategy extends ReactiveElement {
       { ...config, type: "home-overview" },
       hass
     );
-    // Expand the favorites section so the demo card can be added to it
-    const sections = await Promise.all(
-      (view.sections || []).map(async (section) => {
-        if (
-          !isStrategySection(section) ||
-          section.strategy.type !== "common-controls"
-        ) {
-          return section;
-        }
-        // The demo card takes up the space of two tiles
-        const limit = (section.strategy.limit as number | undefined) ?? 8;
-        const favorites = await generateLovelaceSectionStrategy(
-          { ...section, strategy: { ...section.strategy, limit: limit - 2 } },
-          hass
-        );
-        const [heading, ...cards] = favorites.cards || [];
-        return {
-          ...favorites,
-          // Place the demo card first so the tiles fill the rows next to it
-          cards: [heading, { type: "custom:ha-demo-next-card" }, ...cards],
-        };
-      })
+    // Add the demo card to the favorites section, found by its heading
+    const favoritesHeading = hass.localize(
+      "ui.panel.lovelace.strategy.home.favorites"
     );
+    const sections = (view.sections || []).map((section) => {
+      if (
+        isStrategySection(section) ||
+        !section.cards?.some(
+          (card) =>
+            card.type === "heading" &&
+            (card as HeadingCardConfig).heading === favoritesHeading
+        )
+      ) {
+        return section;
+      }
+      const [heading, ...cards] = section.cards;
+      return {
+        ...section,
+        // Place the demo card first so the tiles fill the rows next to it. It
+        // takes up the space of two tiles, so keep two less, but at least six.
+        cards: [
+          heading,
+          { type: "custom:ha-demo-next-card" },
+          ...cards.slice(0, Math.max(6, cards.length - 2)),
+        ],
+      };
+    });
 
     return {
       ...view,
