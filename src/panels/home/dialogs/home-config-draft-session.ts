@@ -1,5 +1,32 @@
 import { deepEqual } from "../../../common/util/deep-equal";
+import {
+  resolveShortcutItems,
+  type ShortcutItem,
+} from "../../../data/home_shortcuts";
 import type { EditorState } from "./dialog-edit-home";
+
+const stripUndefined = <T extends object>(item: T): T =>
+  Object.fromEntries(
+    Object.entries(item).filter(([, value]) => value !== undefined)
+  ) as T;
+
+const normalizeShortcuts = (items: ShortcutItem[]): ShortcutItem[] =>
+  resolveShortcutItems(items).map(stripUndefined);
+
+/**
+ * Comparison-only form of an editor state: shortcuts are resolved the way
+ * they render (so `[]` matches the full default list) and stripped of
+ * `undefined` keys (e.g. `hidden` after hiding then showing again). Never
+ * persist the result.
+ */
+const normalizeEditorState = (state: EditorState): EditorState => ({
+  ...state,
+  shortcuts: normalizeShortcuts(state.shortcuts),
+});
+
+/** Content equality of two editor states, ignoring shortcut shape only. */
+export const editorStatesEqual = (a: EditorState, b: EditorState): boolean =>
+  deepEqual(normalizeEditorState(a), normalizeEditorState(b));
 
 /**
  * Immutable draft/dirty/staleness tracker for the home dashboard editor.
@@ -18,7 +45,7 @@ export class HomeConfigDraftSession {
   }
 
   get isDirty(): boolean {
-    return !deepEqual(this.draft, this._baseline);
+    return !editorStatesEqual(this.draft, this._baseline);
   }
 
   withDraft(newDraft: EditorState): HomeConfigDraftSession {

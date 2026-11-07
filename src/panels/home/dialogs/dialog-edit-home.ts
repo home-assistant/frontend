@@ -21,7 +21,10 @@ import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import "../../../components/entity/ha-favorites-editor";
 import "../components/home-shortcuts-editor";
-import { HomeConfigDraftSession } from "./home-config-draft-session";
+import {
+  editorStatesEqual,
+  HomeConfigDraftSession,
+} from "./home-config-draft-session";
 import type { EditHomeDialogParams } from "./show-dialog-edit-home";
 
 export interface EditorState {
@@ -67,7 +70,7 @@ export class DialogEditHome
 
   @state() private _submitting = false;
 
-  // Set when _save() itself closes a successfully saved session: the panel
+  // Set when _save() itself closes a non-stale saved session: the panel
   // already shows the saved config, so _dialogClosed() skips the preview
   // revert that every other close path still needs.
   private _closedBySave = false;
@@ -83,7 +86,13 @@ export class DialogEditHome
       shortcuts: params.config.shortcuts ? [...params.config.shortcuts] : [],
     };
     this._session = HomeConfigDraftSession.start(initial);
-    this._initDirtyTracking({ type: "deep" }, initial);
+    // Same comparison as the session's isDirty, so Save and the stale-save
+    // close decision can never disagree. The mixin doesn't clone baselines
+    // for custom compares; safe since drafts are never mutated in place.
+    this._initDirtyTracking(
+      { type: "custom", compare: editorStatesEqual },
+      initial
+    );
     this._open = true;
   }
 
@@ -378,15 +387,17 @@ export class DialogEditHome
           this._session = updated;
           return;
         }
-        // The rebased draft happens to match what was just persisted (e.g.
-        // edited away and back to it): nothing left to revert, so fall
-        // through and close normally below instead of leaving the dialog
-        // open with Save disabled and nothing to do.
+        // The rebased draft matches what was just persisted (e.g. edited
+        // away and back to it): fall through and close normally below
+        // instead of leaving the dialog open with Save disabled.
       } else {
         this._markDirtyStateClean();
       }
 
-      this._closedBySave = true;
+      // A stale close keeps _closedBySave false: the last preview may differ
+      // in shape from what was saved (e.g. `hidden: undefined`), so the
+      // panel can't recognize and clear it; revert it on close instead.
+      this._closedBySave = !stale;
       // closeDialog() refuses while submitting.
       this._submitting = false;
       this.closeDialog();

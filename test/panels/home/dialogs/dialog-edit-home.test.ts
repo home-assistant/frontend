@@ -1,5 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { HomeFrontendSystemData } from "../../../../src/data/frontend";
+import {
+  resolveShortcutItems,
+  type ShortcutItem,
+} from "../../../../src/data/home_shortcuts";
 import type { EditHomeDialogParams } from "../../../../src/panels/home/dialogs/show-dialog-edit-home";
 import type { HomeAssistant } from "../../../../src/types";
 import {
@@ -117,6 +121,21 @@ const favoriteEntitiesChanged = (
     })
   );
 
+const shortcutsChanged = (el: TestDialogEditHome, shortcuts: ShortcutItem[]) =>
+  (
+    el as unknown as Record<"_shortcutsChanged", (ev: CustomEvent) => void>
+  )._shortcutsChanged(
+    new CustomEvent("value-changed", { detail: { value: shortcuts } })
+  );
+
+// What home-shortcuts-editor emits when toggling the "light" summary from a
+// config with no stored shortcuts: the full resolved list, with the toggled
+// item's `hidden` set to true or left as an explicit `undefined` key.
+const lightShortcutHidden = (hidden: true | undefined): ShortcutItem[] =>
+  resolveShortcutItems([]).map((item) =>
+    item.type === "summary" && item.key === "light" ? { ...item, hidden } : item
+  );
+
 const dialogClosed = (el: TestDialogEditHome) =>
   (el as unknown as Record<"_dialogClosed", () => void>)._dialogClosed();
 
@@ -128,6 +147,17 @@ const isOpen = (el: TestDialogEditHome) =>
 
 const isSubmitting = (el: TestDialogEditHome) =>
   (el as unknown as Record<"_submitting", boolean>)._submitting;
+
+const saveButton = (el: TestDialogEditHome) =>
+  el.shadowRoot!.querySelector('ha-button[slot="primaryAction"]') as
+    (HTMLElement & { disabled: boolean }) | null;
+
+const preventScrimClose = (el: TestDialogEditHome) =>
+  (
+    el.shadowRoot!.querySelector("ha-dialog") as unknown as {
+      preventScrimClose: boolean;
+    }
+  ).preventScrimClose;
 
 // Our own header X, slotted over ha-dialog's default one, which would
 // close through wa-dialog directly and bypass closeDialog().
@@ -588,5 +618,54 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     // with Save disabled and nothing left to do.
     expect((el as unknown as Record<"_open", boolean>)._open).toBe(false);
     expect(el.isDirtyState).toBe(false);
+  });
+
+  it("stays clean after hiding then showing a shortcut with no stored shortcuts", async () => {
+    const el = createDialog();
+    el.showDialog({ config: {}, saveConfig: vi.fn(), previewConfig: vi.fn() });
+    await el.updateComplete;
+
+    shortcutsChanged(el, lightShortcutHidden(true));
+    await el.updateComplete;
+    expect(el.isDirtyState).toBe(true);
+    expect(saveButton(el)?.disabled).toBe(false);
+
+    shortcutsChanged(el, lightShortcutHidden(undefined));
+    await el.updateComplete;
+    expect(el.isDirtyState).toBe(false);
+    expect(saveButton(el)?.disabled).toBe(true);
+    expect(preventScrimClose(el)).toBe(false);
+  });
+
+  it("closes and reverts the preview when a stale save's newer draft only differs in shortcut shape", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    const pendingSave = deferred<boolean>();
+    const saveConfig = vi.fn(() => pendingSave.promise);
+    el.showDialog({ config: {}, saveConfig, previewConfig });
+    await el.updateComplete;
+
+    welcomeChanged(el, false);
+    await el.updateComplete;
+
+    const savePromise = save(el);
+
+    // Hide then show a shortcut mid-save: same content as what is being
+    // saved, but the previewed draft now holds the full list with
+    // `hidden: undefined`, which the panel can't match to the saved config.
+    shortcutsChanged(el, lightShortcutHidden(true));
+    await el.updateComplete;
+    shortcutsChanged(el, lightShortcutHidden(undefined));
+    await el.updateComplete;
+
+    pendingSave.resolve(true);
+    await savePromise;
+
+    expect(isOpen(el)).toBe(false);
+    expect(el.isDirtyState).toBe(false);
+
+    previewConfig.mockClear();
+    dialogClosed(el);
+    expect(previewConfig).toHaveBeenCalledWith(undefined);
   });
 });

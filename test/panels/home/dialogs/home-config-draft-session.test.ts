@@ -1,4 +1,8 @@
 import { describe, expect, it } from "vitest";
+import {
+  resolveShortcutItems,
+  type ShortcutItem,
+} from "../../../../src/data/home_shortcuts";
 import type { EditorState } from "../../../../src/panels/home/dialogs/dialog-edit-home";
 import { HomeConfigDraftSession } from "../../../../src/panels/home/dialogs/home-config-draft-session";
 
@@ -96,5 +100,86 @@ describe("HomeConfigDraftSession", () => {
       .withDraft({ ...withFavorite, favorite_entities: ["light.kitchen"] });
 
     expect(session.isDirty).toBe(false);
+  });
+
+  describe("shortcut shape normalization", () => {
+    const withShortcuts = (shortcuts: ShortcutItem[]): EditorState => ({
+      ...stateA,
+      shortcuts,
+    });
+    const defaults = resolveShortcutItems([]);
+    const setHidden = (hidden: true | undefined): ShortcutItem[] =>
+      defaults.map((item) =>
+        item.type === "summary" && item.key === "light"
+          ? { ...item, hidden }
+          : item
+      );
+
+    it("is clean after hiding then showing a shortcut again (hidden: undefined)", () => {
+      const session = HomeConfigDraftSession.start(withShortcuts(defaults))
+        .withDraft(withShortcuts(setHidden(true)))
+        .withDraft(withShortcuts(setHidden(undefined)));
+      expect(session.isDirty).toBe(false);
+    });
+
+    it("treats no stored shortcuts and the full resolved default list as equal", () => {
+      const session = HomeConfigDraftSession.start(withShortcuts([])).withDraft(
+        withShortcuts(resolveShortcutItems([]))
+      );
+      expect(session.isDirty).toBe(false);
+    });
+
+    it("ignores undefined keys on custom shortcuts", () => {
+      const custom: ShortcutItem = { type: "custom", path: "/lovelace/0" };
+      const session = HomeConfigDraftSession.start(
+        withShortcuts([custom])
+      ).withDraft(
+        withShortcuts([
+          { ...custom, label: undefined, icon: undefined, color: undefined },
+        ])
+      );
+      expect(session.isDirty).toBe(false);
+    });
+
+    it("is dirty when a shortcut is really hidden, reordered or added", () => {
+      const start = HomeConfigDraftSession.start(withShortcuts([]));
+      expect(start.withDraft(withShortcuts(setHidden(true))).isDirty).toBe(
+        true
+      );
+      expect(
+        start.withDraft(withShortcuts([...defaults].reverse())).isDirty
+      ).toBe(true);
+      expect(
+        start.withDraft(
+          withShortcuts([...defaults, { type: "custom", path: "/lovelace/0" }])
+        ).isDirty
+      ).toBe(true);
+    });
+
+    it("keeps the draft as emitted: normalization is for comparison only", () => {
+      const draft = withShortcuts(setHidden(undefined));
+      const session = HomeConfigDraftSession.start(withShortcuts([])).withDraft(
+        draft
+      );
+      expect(session.draft).toBe(draft);
+    });
+
+    it("reports a stale save as clean when the newer draft only differs in shape", () => {
+      const session = HomeConfigDraftSession.start(withShortcuts([])).withDraft(
+        { ...withShortcuts([]), show_welcome_message: false }
+      );
+      const savedGeneration = session.generation;
+      const savedDraft = session.draft;
+      const shapeOnly = session
+        .withDraft({ ...savedDraft, shortcuts: setHidden(true) })
+        .withDraft({ ...savedDraft, shortcuts: setHidden(undefined) });
+
+      const { session: updated, stale } = shapeOnly.withSaved(
+        savedGeneration,
+        savedDraft
+      );
+      expect(stale).toBe(true);
+      expect(updated.isDirty).toBe(false);
+    });
   });
 });

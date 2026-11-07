@@ -470,13 +470,11 @@ class PanelHome extends SubscribeMixin(LitElement) {
       await saveFrontendSystemData(this.hass.connection, "home", config);
       this._config = config || {};
       if (deepEqual(this._previewConfig, config)) {
-        // Otherwise the dialog's own preview push already cleared this on
-        // a normal close; only a stale-but-now-matching completion (see
-        // dialog-edit-home's withSaved()) can still leave it set here. A
-        // reused legacy dialog instance is never destroyed between opens
-        // (make-dialog-manager keeps it in the DOM), so a leftover value
-        // would otherwise persist indefinitely and leak into the next
-        // showDialog() call.
+        // The saved draft is what's being previewed: clear it here, since
+        // dialog-edit-home skips its own revert after a non-stale save (see
+        // _closedBySave); stale completions are reverted by the dialog on
+        // close. A leftover value would otherwise leak into the next
+        // showDialog(), as the legacy dialog instance is reused.
         this._previewConfig = undefined;
       }
     } catch (err: any) {
