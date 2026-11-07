@@ -147,6 +147,19 @@ type ServiceActionWithTemplate = ServiceAction & {
 
 export type { ServiceActionWithTemplate };
 
+// A notify.* action, shaped so it is always a valid ServiceAction too. The
+// companion app payload (actions, tag, channel, ...) lives in data.data,
+// which the backend passes through without a declared schema.
+export interface NotifyAction extends BaseAction {
+  action: string;
+  target?: { entity_id?: string | string[] };
+  data?: {
+    message: string;
+    title?: string;
+    data?: Record<string, unknown>;
+  };
+}
+
 export interface DeviceAction extends BaseAction {
   type: string;
   device_id: string;
@@ -287,6 +300,7 @@ export interface ActionTypes {
   wait_for_trigger: WaitForTriggerAction;
   variables: VariablesAction;
   service: ServiceAction;
+  notify: NotifyAction;
   stop: StopAction;
   sequence: SequenceAction;
   parallel: ParallelAction;
@@ -397,6 +411,16 @@ export const getActionType = (action: Action): ActionType => {
     return "set_conversation_response";
   }
   if ("action" in action || "service" in action) {
+    const serviceId =
+      (action as ServiceAction).action ??
+      (action as { service?: string }).service;
+    if (typeof serviceId === "string") {
+      const [domain, service] = serviceId.split(".", 2);
+      // notify.reload is a plain service call, not a message to send
+      if (domain === "notify" && service && service !== "reload") {
+        return "notify";
+      }
+    }
     return "service";
   }
   return "unknown";

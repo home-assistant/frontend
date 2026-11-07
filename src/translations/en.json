@@ -6524,6 +6524,70 @@
                     "template": "based on a template"
                   }
                 },
+                "notify": {
+                  "label": "Send a notification",
+                  "description": {
+                    "picker": "Sends a title and message to a device or notification service.",
+                    "full": "Send a notification: {message}",
+                    "no_message": "Send a notification"
+                  },
+                  "target": "Target",
+                  "target_helper": "A device running the companion app. Advanced options are only available for these.",
+                  "no_target": "No notify-capable device or service found.",
+                  "multiple_targets_not_supported": "Editing a notification with more than one target isn't supported here. Edit it in YAML.",
+                  "message": "Message",
+                  "title": "Title",
+                  "advanced": "Advanced",
+                  "advanced_unavailable": "Advanced options are only available when the target is a device running the companion app.",
+                  "tag": "Tag",
+                  "tag_helper": "Replaces a previous notification with the same tag.",
+                  "group": "Group",
+                  "group_helper": "Groups notifications together.",
+                  "channel": "Channel",
+                  "channel_helper": "Android notification channel. Created automatically on first use.",
+                  "importance": {
+                    "label": "Importance",
+                    "options": {
+                      "min": "Minimum",
+                      "low": "Low",
+                      "default": "Default",
+                      "high": "High",
+                      "max": "Maximum"
+                    }
+                  },
+                  "priority": {
+                    "label": "Priority",
+                    "options": {
+                      "default": "Default",
+                      "high": "High"
+                    }
+                  },
+                  "visibility": {
+                    "label": "Lock screen visibility",
+                    "options": {
+                      "public": "Public",
+                      "private": "Private",
+                      "secret": "Secret"
+                    }
+                  },
+                  "sticky": "Sticky",
+                  "sticky_helper": "Keeps the notification from being dismissed by swiping.",
+                  "color": "Color",
+                  "icon": "Icon",
+                  "icon_helper": "For example mdi:home, or an icon URL.",
+                  "image": "Image URL",
+                  "subtitle": "Subtitle",
+                  "subtitle_helper": "iOS only.",
+                  "click_action": "URL opened on tap",
+                  "ttl": "Time to live (seconds)",
+                  "tts_text": "Spoken text (TTS)",
+                  "tts_text_helper": "Spoken instead of shown, on Android Auto and Wear OS.",
+                  "actions": "Notification buttons",
+                  "actions_add": "Add button",
+                  "actions_action": "Button ID",
+                  "actions_title": "Button label",
+                  "actions_uri": "URL opened by the button"
+                },
                 "device_id": {
                   "label": "Device",
                   "action": "Action",

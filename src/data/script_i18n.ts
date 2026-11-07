@@ -87,6 +87,18 @@ const tryDescribeAction = <T extends ActionType>(
     actionType = getActionType(action) as T;
   }
 
+  if (actionType === "notify") {
+    const config = action as ActionTypes["notify"];
+    const message = config.data?.message;
+    return message && !isTemplate(message)
+      ? hass.localize(`${actionTranslationBaseKey}.notify.description.full`, {
+          message,
+        })
+      : hass.localize(
+          `${actionTranslationBaseKey}.notify.description.no_message`
+        );
+  }
+
   if (actionType === "service") {
     const config = action as ActionTypes["service"];
 
