@@ -383,18 +383,6 @@ const getWeatherExtrema = (
       fc.templow == null &&
       (tempLow === undefined || fc.temperature < tempLow)
     ) {
-      fc.templow !== undefined &&
-      (tempLow === undefined || fc.templow < tempLow)
-    ) {
-      tempLow =
-        temperatureFractionDigits === undefined
-          ? fc.templow
-          : round(fc.templow, temperatureFractionDigits);
-    }
-    if (
-      fc.templow === undefined &&
-      (tempLow === undefined || fc.temperature < tempLow)
-    ) {
       tempLow =
         temperatureFractionDigits === undefined
           ? fc.temperature
