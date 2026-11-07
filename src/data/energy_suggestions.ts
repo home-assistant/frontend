@@ -6,6 +6,7 @@ import type {
   GridSourceTypeEnergyPreference,
 } from "./energy";
 import {
+  getEnergyGasUnitClass,
   emptyBatteryEnergyPreference,
   emptyGasEnergyPreference,
   emptyGridSourceEnergyPreference,
@@ -101,7 +102,6 @@ const ENERGY_SLOTS: EnergySuggestionSlot[] = [
   "solar",
   "device",
 ];
-const VOLUME_SLOTS: EnergySuggestionSlot[] = ["gas", "water"];
 
 const RE_GRID = /import|export|return|deliver|grid|tarif/;
 const RE_EXPORT = /export|return|deliver|produc|inject|feed/;
@@ -122,6 +122,8 @@ type Kind =
 interface Classified {
   statisticId: string;
   kind: Kind;
+  unitClass: string;
+  groupId: string;
   group: string;
   deviceId?: string;
   cycle: boolean;
@@ -261,6 +263,14 @@ export const computeEnergySuggestions = (
 ): EnergyMeterSuggestion[] => {
   const configured = configuredStatisticIds(input.preferences);
   const dismissed = new Set(input.dismissed);
+  // All gas meters of the dashboard share one unit class.
+  const gasUnitClass = getEnergyGasUnitClass(
+    input.preferences,
+    undefined,
+    Object.fromEntries(
+      input.statistics.map((meta) => [meta.statistic_id, meta])
+    )
+  );
 
   const classified: Classified[] = [];
   for (const meta of input.statistics) {
@@ -271,11 +281,15 @@ export const computeEnergySuggestions = (
     ) {
       continue;
     }
-    const isExternal = meta.statistic_id.includes(":");
-    if (!isExternal && !input.states[meta.statistic_id]) {
+    const isConfigured = configured.has(meta.statistic_id);
+    // Configured meters without a state still count for deduplication.
+    if (
+      !isConfigured &&
+      !meta.statistic_id.includes(":") &&
+      !input.states[meta.statistic_id]
+    ) {
       continue;
     }
-    const isConfigured = configured.has(meta.statistic_id);
     if (
       !isConfigured &&
       (dismissed.has(meta.statistic_id) ||
@@ -288,10 +302,13 @@ export const computeEnergySuggestions = (
       continue;
     }
     const deviceId = input.entities[meta.statistic_id]?.device_id;
+    const groupId = deviceId ?? meta.statistic_id;
     classified.push({
       statisticId: meta.statistic_id,
       kind,
-      group: groupKey(kind, deviceId ?? meta.statistic_id),
+      unitClass: meta.unit_class!,
+      groupId,
+      group: groupKey(kind, groupId),
       deviceId,
       cycle: RE_CYCLE.test(searchText(meta, input)),
       configured: isConfigured,
@@ -303,9 +320,14 @@ export const computeEnergySuggestions = (
     groups.set(item.group, [...(groups.get(item.group) ?? []), item]);
   }
 
+  const context: GroupContext = {
+    gasUnitClass,
+    hasDeviceMeter: (groupId) =>
+      groups.has(groupKey({ slot: "device" }, groupId)),
+  };
   const suggestions: EnergyMeterSuggestion[] = [];
   for (const items of groups.values()) {
-    suggestions.push(...suggestionsForGroup(items));
+    suggestions.push(...suggestionsForGroup(items, context));
   }
 
   return suggestions.sort(
@@ -322,22 +344,57 @@ const preferTotals = (items: Classified[]) =>
       a.statisticId.localeCompare(b.statisticId)
   );
 
+interface GroupContext {
+  gasUnitClass?: string;
+  hasDeviceMeter: (groupId: string) => boolean;
+}
+
+// Slots a meter's unit fits; gas only when it matches the configured gas unit.
+const allowedSlots = (
+  unitClass: string,
+  gasUnitClass: string | undefined
+): EnergySuggestionSlot[] => {
+  const slots: EnergySuggestionSlot[] =
+    unitClass === VOLUME_UNIT_CLASS ? ["water"] : [...ENERGY_SLOTS];
+  return !gasUnitClass || gasUnitClass === unitClass
+    ? ["gas", ...slots]
+    : slots;
+};
+
 const toSuggestion = (
   item: Classified,
+  context: GroupContext,
   pairedStatisticId?: string
-): EnergyMeterSuggestion => ({
-  statisticId: item.statisticId,
-  slot: item.kind.slot,
-  slots: pairedStatisticId
-    ? ["battery"]
-    : item.kind.slot === "gas" || item.kind.slot === "water"
-      ? VOLUME_SLOTS
-      : ENERGY_SLOTS,
-  pairedStatisticId,
-  deviceId: item.deviceId,
-});
+): EnergyMeterSuggestion[] => {
+  if (pairedStatisticId) {
+    return [
+      {
+        statisticId: item.statisticId,
+        slot: "battery",
+        slots: ["battery"],
+        pairedStatisticId,
+        deviceId: item.deviceId,
+      },
+    ];
+  }
+  const slots = allowedSlots(item.unitClass, context.gasUnitClass);
+  if (!slots.includes(item.kind.slot)) {
+    return [];
+  }
+  return [
+    {
+      statisticId: item.statisticId,
+      slot: item.kind.slot,
+      slots: SLOT_ORDER.filter((slot) => slots.includes(slot)),
+      deviceId: item.deviceId,
+    },
+  ];
+};
 
-const suggestionsForGroup = (items: Classified[]): EnergyMeterSuggestion[] => {
+const suggestionsForGroup = (
+  items: Classified[],
+  context: GroupContext
+): EnergyMeterSuggestion[] => {
   const kind = items[0].kind;
   const open = items.filter((item) => !item.configured && !item.cycle);
 
@@ -351,7 +408,7 @@ const suggestionsForGroup = (items: Classified[]): EnergyMeterSuggestion[] => {
     const hasTariffs = items.some(isTariff);
     return open
       .filter((item) => !hasTariffs || isTariff(item))
-      .map((item) => toSuggestion(item));
+      .flatMap((item) => toSuggestion(item, context));
   }
 
   if (items.some((item) => item.configured)) {
@@ -364,17 +421,23 @@ const suggestionsForGroup = (items: Classified[]): EnergyMeterSuggestion[] => {
     const charge = preferTotals(items.filter(isCharge))[0];
     const discharge = preferTotals(items.filter((item) => !isCharge(item)))[0];
     if (charge && discharge) {
-      return [toSuggestion(discharge, charge.statisticId)];
+      return toSuggestion(discharge, context, charge.statisticId);
     }
-    // A lone charge meter is usually an EV charger or other appliance.
+    // A lone charge meter is usually an EV charger or other appliance, unless
+    // its device already has a consumption meter.
+    if (context.hasDeviceMeter(items[0].groupId)) {
+      return [];
+    }
     return preferTotals(items)
       .slice(0, 1)
-      .map((item) => toSuggestion({ ...item, kind: { slot: "device" } }));
+      .flatMap((item) =>
+        toSuggestion({ ...item, kind: { slot: "device" } }, context)
+      );
   }
 
   return preferTotals(items)
     .slice(0, 1)
-    .map((item) => toSuggestion(item));
+    .flatMap((item) => toSuggestion(item, context));
 };
 
 const fillGridSide = (

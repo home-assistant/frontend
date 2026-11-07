@@ -4,6 +4,7 @@ import type { DeviceRegistryEntry } from "../../src/data/device/device_registry"
 import type { EnergyPreferences } from "../../src/data/energy";
 import {
   EMPTY_PREFERENCES,
+  emptyGasEnergyPreference,
   emptyGridSourceEnergyPreference,
 } from "../../src/data/energy";
 import type { EnergySuggestionInput } from "../../src/data/energy_suggestions";
@@ -361,5 +362,103 @@ describe("suggestionTab", () => {
     ["water", "water"],
   ] as const)("puts %s on the %s tab", (slot, tab) => {
     expect(suggestionTab(slot)).toBe(tab);
+  });
+});
+
+describe("computeEnergySuggestions review fixes", () => {
+  const offeredSlots = (input: EnergySuggestionInput) =>
+    Object.fromEntries(
+      computeEnergySuggestions(input).map((s) => [s.statisticId, s.slots])
+    );
+
+  it("only offers slots the unit of a meter fits", () => {
+    const input = buildInput([
+      {
+        entityId: "sensor.boiler_gas_energy",
+        deviceId: "b",
+        deviceClass: "gas",
+      },
+      {
+        entityId: "sensor.meter_gas",
+        deviceId: "g",
+        unitClass: "volume",
+        deviceClass: "gas",
+      },
+    ]);
+    expect(offeredSlots(input)).toEqual({
+      "sensor.boiler_gas_energy": [
+        "grid_import",
+        "grid_export",
+        "solar",
+        "gas",
+        "device",
+      ],
+      "sensor.meter_gas": ["gas", "water"],
+    });
+  });
+
+  it("doesn't mix gas units with the configured gas meter", () => {
+    const sensors = [
+      {
+        entityId: "sensor.boiler_gas_energy",
+        deviceId: "b",
+        deviceClass: "gas",
+      },
+      {
+        entityId: "sensor.meter_gas",
+        deviceId: "g",
+        unitClass: "volume",
+        deviceClass: "gas",
+      },
+      {
+        entityId: "sensor.cabin_gas",
+        deviceId: "c",
+        unitClass: "volume",
+        deviceClass: "gas",
+      },
+    ];
+    const input = buildInput(sensors, {
+      ...EMPTY_PREFERENCES,
+      energy_sources: [
+        { ...emptyGasEnergyPreference(), stat_energy_from: "sensor.meter_gas" },
+      ],
+    });
+    expect(offeredSlots(input)).toEqual({
+      "sensor.cabin_gas": ["gas", "water"],
+    });
+  });
+
+  it("keeps a configured meter without a state for deduplication", () => {
+    const input = buildInput(
+      [
+        { entityId: "sensor.p1_energy_import_t1", deviceId: "p" },
+        { entityId: "sensor.p1_energy_import", deviceId: "p" },
+      ],
+      {
+        ...EMPTY_PREFERENCES,
+        energy_sources: [
+          {
+            ...emptyGridSourceEnergyPreference(),
+            stat_energy_from: "sensor.p1_energy_import",
+          },
+        ],
+      }
+    );
+    delete input.states["sensor.p1_energy_import"];
+    expect(slots(input)).toEqual({});
+  });
+
+  it("doesn't suggest a lone charge meter when its device has a meter", () => {
+    const input = buildInput(
+      [
+        { entityId: "sensor.wallbox_energy", deviceId: "w" },
+        { entityId: "sensor.wallbox_charged_energy", deviceId: "w" },
+      ],
+      {
+        ...EMPTY_PREFERENCES,
+        device_consumption: [{ stat_consumption: "sensor.wallbox_energy" }],
+      }
+    );
+    expect(slots(input)).toEqual({});
   });
 });

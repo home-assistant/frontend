@@ -4638,6 +4638,7 @@
             "add": "Add",
             "dismiss": "Dismiss",
             "dismiss_failed": "Couldn't save that this meter is dismissed",
+            "load_failed": "Couldn't check for meters that aren't in your energy dashboard yet.",
             "slots": {
               "grid_import": "Grid consumption",
               "grid_export": "Return to grid",

@@ -8,21 +8,33 @@ import {
   mdiSolarPower,
   mdiWater,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { ContextType } from "@lit/context";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { getEntityAreaId } from "../../../../common/entity/context/get_entity_context";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
+import {
+  apiContext,
+  areasContext,
+  connectionContext,
+  devicesContext,
+  entitiesContext,
+  formattersContext,
+  internationalizationContext,
+  statesContext,
+} from "../../../../data/context";
 import type { EnergyPreferences } from "../../../../data/energy";
-import { saveEnergyPreferences } from "../../../../data/energy";
 import type {
   EnergyMeterSuggestion,
   EnergySuggestionSlot,
@@ -58,10 +70,13 @@ const SLOT_ICONS: Record<EnergySuggestionSlot, string> = {
 
 @customElement("ha-energy-suggestions")
 export class EnergySuggestions extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false })
   public preferences!: EnergyPreferences;
+
+  // Saving is left to the page, which also refreshes its energy data.
+  @property({ attribute: false }) public save!: (
+    preferences: EnergyPreferences
+  ) => Promise<EnergyPreferences>;
 
   @property() public tab: EnergySuggestionTab = "electricity";
 
@@ -72,6 +87,38 @@ export class EnergySuggestions extends LitElement {
   @state() private _slots: Record<string, EnergySuggestionSlot> = {};
 
   @state() private _busy = false;
+
+  @state() private _loadError?: string;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
+
+  @state()
+  @consume({ context: devicesContext, subscribe: true })
+  private _devices!: ContextType<typeof devicesContext>;
+
+  @state()
+  @consume({ context: areasContext, subscribe: true })
+  private _areas!: ContextType<typeof areasContext>;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: ContextType<typeof formattersContext>;
 
   private _computeSuggestions = memoizeOne(
     (
@@ -93,21 +140,44 @@ export class EnergySuggestions extends LitElement {
       }).filter((suggestion) => suggestionTab(suggestion.slot) === tab)
   );
 
-  protected firstUpdated(changedProps: PropertyValues<this>) {
-    super.firstUpdated(changedProps);
-    this._load();
+  connectedCallback() {
+    super.connectedCallback();
+    if (!this._statistics) {
+      this._load();
+    }
   }
 
   private async _load() {
-    const [statistics, userData] = await Promise.all([
-      getStatisticIds(this.hass, "sum"),
-      fetchFrontendUserData(this.hass.connection, "energy"),
-    ]);
-    this._statistics = statistics;
-    this._dismissed = userData?.dismissed_suggestions ?? [];
+    this._loadError = undefined;
+    try {
+      const [statistics, userData] = await Promise.all([
+        getStatisticIds(this._api, "sum"),
+        fetchFrontendUserData(this._connection.connection, "energy"),
+      ]);
+      this._statistics = statistics;
+      this._dismissed = userData?.dismissed_suggestions ?? [];
+    } catch (err: any) {
+      this._loadError = err.message;
+    }
   }
 
   protected render(): TemplateResult | typeof nothing {
+    if (this._loadError) {
+      return html`
+        <ha-card>
+          <div class="card-content">
+            <ha-alert alert-type="error">
+              ${this._i18n.localize(
+                "ui.panel.config.energy.suggestions.load_failed"
+              )}
+              <ha-button slot="action" size="s" @click=${this._load}>
+                ${this._i18n.localize("ui.common.retry")}
+              </ha-button>
+            </ha-alert>
+          </div>
+        </ha-card>
+      `;
+    }
     if (!this._statistics || !this._dismissed) {
       return nothing;
     }
@@ -115,9 +185,9 @@ export class EnergySuggestions extends LitElement {
       this._statistics,
       this.preferences,
       this._dismissed,
-      this.hass.states,
-      this.hass.entities,
-      this.hass.devices,
+      this._states,
+      this._entities,
+      this._devices,
       this.tab
     );
     if (!suggestions.length) {
@@ -128,12 +198,14 @@ export class EnergySuggestions extends LitElement {
       <ha-card>
         <h1 class="card-header">
           <ha-svg-icon .path=${mdiLightbulbOnOutline}></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.energy.suggestions.title", {
+          ${this._i18n.localize("ui.panel.config.energy.suggestions.title", {
             count: suggestions.length,
           })}
         </h1>
         <div class="card-content">
-          <p>${this.hass.localize("ui.panel.config.energy.suggestions.sub")}</p>
+          <p>
+            ${this._i18n.localize("ui.panel.config.energy.suggestions.sub")}
+          </p>
           <div class="items-container">
             ${repeat(
               suggestions,
@@ -151,8 +223,8 @@ export class EnergySuggestions extends LitElement {
     const label = suggestionStatisticIds(suggestion)
       .map((statisticId) =>
         getStatisticLabel(
-          this.hass.states,
-          this.hass.formatEntityName,
+          this._states,
+          this._formatters.formatEntityName,
           statisticId,
           this._statistics!.find((meta) => meta.statistic_id === statisticId)
         )
@@ -160,10 +232,10 @@ export class EnergySuggestions extends LitElement {
       .join(" + ");
     const areaId = getEntityAreaId(
       suggestion.statisticId,
-      this.hass.entities,
-      this.hass.devices
+      this._entities,
+      this._devices
     );
-    const area = areaId ? this.hass.areas[areaId] : undefined;
+    const area = areaId ? this._areas[areaId] : undefined;
 
     return html`
       <div class="suggestion">
@@ -180,13 +252,13 @@ export class EnergySuggestions extends LitElement {
         </div>
         <div class="actions">
           <ha-select
-            .label=${this.hass.localize(
+            .label=${this._i18n.localize(
               "ui.panel.config.energy.suggestions.slot"
             )}
             .value=${slot}
             .options=${suggestion.slots.map((value) => ({
               value,
-              label: this.hass.localize(
+              label: this._i18n.localize(
                 `ui.panel.config.energy.suggestions.slots.${value}`
               ),
             }))}
@@ -199,7 +271,7 @@ export class EnergySuggestions extends LitElement {
             .disabled=${this._busy}
             .suggestion=${suggestion}
             @click=${this._add}
-            >${this.hass.localize(
+            >${this._i18n.localize(
               "ui.panel.config.energy.suggestions.add"
             )}</ha-button
           >
@@ -210,7 +282,7 @@ export class EnergySuggestions extends LitElement {
             .disabled=${this._busy}
             .suggestion=${suggestion}
             @click=${this._dismiss}
-            >${this.hass.localize(
+            >${this._i18n.localize(
               "ui.panel.config.energy.suggestions.dismiss"
             )}</ha-button
           >
@@ -230,8 +302,7 @@ export class EnergySuggestions extends LitElement {
       .suggestion;
     this._busy = true;
     try {
-      const result = await saveEnergyPreferences(
-        this.hass,
+      const result = await this.save(
         addEnergySuggestion(
           this.preferences,
           suggestion,
@@ -241,9 +312,12 @@ export class EnergySuggestions extends LitElement {
       fireEvent(this, "value-changed", { value: result });
     } catch (err: any) {
       showAlertDialog(this, {
-        title: this.hass.localize("ui.panel.config.energy.save_config_failed", {
-          error: err.message,
-        }),
+        title: this._i18n.localize(
+          "ui.panel.config.energy.save_config_failed",
+          {
+            error: err.message,
+          }
+        ),
       });
     } finally {
       this._busy = false;
@@ -254,19 +328,22 @@ export class EnergySuggestions extends LitElement {
     const suggestion: EnergyMeterSuggestion = (ev.currentTarget as any)
       .suggestion;
     const previous = this._dismissed!;
+    this._busy = true;
     this._dismissed = [...previous, ...suggestionStatisticIds(suggestion)];
     try {
-      await saveFrontendUserData(this.hass.connection, "energy", {
+      await saveFrontendUserData(this._connection.connection, "energy", {
         dismissed_suggestions: this._dismissed,
       });
     } catch (err: any) {
       this._dismissed = previous;
       showAlertDialog(this, {
-        title: this.hass.localize(
+        title: this._i18n.localize(
           "ui.panel.config.energy.suggestions.dismiss_failed"
         ),
         text: err.message,
       });
+    } finally {
+      this._busy = false;
     }
   }
 
@@ -298,6 +375,7 @@ export class EnergySuggestions extends LitElement {
         }
         .actions {
           display: flex;
+          flex-wrap: wrap;
           align-items: center;
           gap: var(--ha-space-2);
           margin-inline-start: auto;
