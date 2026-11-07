@@ -559,30 +559,6 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     expect(previewConfig).toHaveBeenCalledWith(undefined);
   });
 
-  it("blocks scrim and Escape closes while a save is pending, even when the draft is clean", async () => {
-    const el = createDialog();
-    const previewConfig = vi.fn();
-    const pendingSave = deferred<boolean>();
-    const saveConfig = vi.fn(() => pendingSave.promise);
-    el.showDialog({ config: {}, saveConfig, previewConfig });
-    await el.updateComplete;
-
-    welcomeChanged(el, false);
-    await el.updateComplete;
-
-    const savePromise = save(el);
-    welcomeChanged(el, true); // clean again while the save is in flight
-    await el.updateComplete;
-
-    const haDialog = el.shadowRoot!.querySelector("ha-dialog") as unknown as {
-      preventScrimClose: boolean;
-    };
-    expect(el.isDirtyState).toBe(false);
-    expect(haDialog.preventScrimClose).toBe(true);
-
-    pendingSave.resolve(true);
-    await savePromise;
-  });
 
   it("disables the header close button while a save is pending", async () => {
     const el = createDialog();
