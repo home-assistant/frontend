@@ -1,0 +1,23 @@
+{
+  "living_room": ["sitkamer", "woonkamer", "leefarea", "gesinskamer"],
+  "bedroom": ["slaapkamer", "gastekamer", "hoofslaapkamer"],
+  "kids_room": ["kinderkamer", "speelkamer", "babakamer"],
+  "kitchen": ["kombuis"],
+  "dining_room": ["eetkamer"],
+  "bathroom": ["badkamer", "stort"],
+  "toilet": ["toilet", "wc", "kleinhuisie"],
+  "office": ["kantoor", "studeerkamer", "tuiskantoor"],
+  "laundry_room": ["waskamer", "opwasplek"],
+  "hallway": ["gang", "portaal", "ingang"],
+  "stairs": ["trap"],
+  "garage": ["motorhuis", "garage", "afdak"],
+  "garden": ["tuin", "erf", "grasperk", "kweekhuis"],
+  "terrace": ["stoep", "balkon", "terras", "patio", "veranda"],
+  "basement": ["kelder"],
+  "attic": ["solder"],
+  "storage": ["stoorkamer", "pakkamer", "spens"],
+  "utility_room": ["tegniese kamer"],
+  "gym": ["gimnasium", "oefenkamer"],
+  "pool": ["swembad"],
+  "home_cinema": ["tuisteater"]
+}

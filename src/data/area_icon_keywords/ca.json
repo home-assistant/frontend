@@ -1,0 +1,23 @@
+{
+  "living_room": ["sala destar", "saló", "sala"],
+  "bedroom": ["dormitori", "habitació", "habitació de convidats"],
+  "kids_room": ["habitació dels nens", "habitació infantil", "sala de jocs"],
+  "kitchen": ["cuina"],
+  "dining_room": ["menjador"],
+  "bathroom": ["bany", "cambra de bany", "dutxa"],
+  "toilet": ["lavabo", "vàter", "wc"],
+  "office": ["despatx", "oficina", "estudi"],
+  "laundry_room": ["safareig", "bugaderia"],
+  "hallway": ["passadís", "rebedor", "entrada", "vestíbul"],
+  "stairs": ["escala", "escales"],
+  "garage": ["garatge"],
+  "garden": ["jardí", "pati", "gespa", "hivernacle", "hort"],
+  "terrace": ["terrassa", "balcó", "porxo"],
+  "basement": ["soterrani", "celler"],
+  "attic": ["golfes", "àtic"],
+  "storage": ["traster", "rebost", "magatzem"],
+  "utility_room": ["sala tècnica", "sala de calderes"],
+  "gym": ["gimnàs"],
+  "pool": ["piscina"],
+  "home_cinema": ["cinema a casa", "sala de cinema"]
+}

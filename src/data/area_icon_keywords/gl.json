@@ -1,0 +1,23 @@
+{
+  "living_room": ["sala de estar", "salón", "sala"],
+  "bedroom": ["dormitorio", "cuarto", "habitación"],
+  "kids_room": ["cuarto dos nenos", "cuarto infantil"],
+  "kitchen": ["cociña"],
+  "dining_room": ["comedor"],
+  "bathroom": ["baño", "cuarto de baño", "ducha"],
+  "toilet": ["aseo", "váter", "wc"],
+  "office": ["oficina", "despacho", "estudo"],
+  "laundry_room": ["lavandaría"],
+  "hallway": ["corredor", "entrada", "vestíbulo"],
+  "stairs": ["escaleira", "escaleiras"],
+  "garage": ["garaxe"],
+  "garden": ["xardín", "horta", "invernadoiro"],
+  "terrace": ["terraza", "balcón"],
+  "basement": ["soto", "adega"],
+  "attic": ["faiado"],
+  "storage": ["trasteiro", "despensa", "almacén"],
+  "utility_room": ["sala técnica"],
+  "gym": ["ximnasio"],
+  "pool": ["piscina"],
+  "home_cinema": ["cine na casa"]
+}

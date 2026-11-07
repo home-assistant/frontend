@@ -1,0 +1,23 @@
+{
+  "living_room": ["stue", "opholdsstue", "dagligstue", "alrum"],
+  "bedroom": ["soveværelse", "gæsteværelse", "sovekammer"],
+  "kids_room": ["børneværelse", "legeværelse"],
+  "kitchen": ["køkken", "køkkenalrum"],
+  "dining_room": ["spisestue"],
+  "bathroom": ["badeværelse", "bad", "bruserum"],
+  "toilet": ["toilet", "wc", "gæstetoilet"],
+  "office": ["kontor", "arbejdsværelse", "hjemmekontor"],
+  "laundry_room": ["bryggers", "vaskerum"],
+  "hallway": ["gang", "entré", "entre", "hall", "gangen"],
+  "stairs": ["trappe", "trappeopgang"],
+  "garage": ["garage", "carport"],
+  "garden": ["have", "græsplæne", "drivhus"],
+  "terrace": ["terrasse", "altan", "balkon", "veranda"],
+  "basement": ["kælder"],
+  "attic": ["loft", "loftsrum"],
+  "storage": ["depot", "skur", "viktualierum", "opbevaring"],
+  "utility_room": ["teknikrum", "fyrrum"],
+  "gym": ["træningsrum", "motionsrum"],
+  "pool": ["pool", "svømmebassin"],
+  "home_cinema": ["hjemmebiograf", "biografrum"]
+}

@@ -1,0 +1,23 @@
+{
+  "living_room": ["dhoma e ndenjes", "sallon", "ndenjja"],
+  "bedroom": ["dhoma e gjumit", "dhoma e mysafirëve"],
+  "kids_room": ["dhoma e fëmijëve", "dhoma e lojërave"],
+  "kitchen": ["kuzhina", "kuzhinë"],
+  "dining_room": ["dhoma e ngrënies"],
+  "bathroom": ["banjo", "banja", "dush"],
+  "toilet": ["tualet", "wc"],
+  "office": ["zyra", "zyrë", "studio"],
+  "laundry_room": ["lavanderi"],
+  "hallway": ["korridor", "hyrje", "holl"],
+  "stairs": ["shkallë", "shkallët"],
+  "garage": ["garazh"],
+  "garden": ["kopsht", "oborr", "serrë"],
+  "terrace": ["tarracë", "ballkon", "verandë"],
+  "basement": ["bodrum", "qilar"],
+  "attic": ["papafingo"],
+  "storage": ["depo", "magazinë", "qilar ushqimesh"],
+  "utility_room": ["dhoma teknike"],
+  "gym": ["palestër"],
+  "pool": ["pishinë"],
+  "home_cinema": ["kinema shtëpiake"]
+}

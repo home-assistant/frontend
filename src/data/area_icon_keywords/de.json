@@ -1,0 +1,38 @@
+{
+  "living_room": ["wohnzimmer", "stube", "wohnbereich", "wohnraum"],
+  "bedroom": ["schlafzimmer", "gästezimmer", "elternschlafzimmer"],
+  "kids_room": ["kinderzimmer", "babyzimmer", "spielzimmer"],
+  "kitchen": ["küche", "kochnische", "wohnküche"],
+  "dining_room": ["esszimmer", "essbereich"],
+  "bathroom": ["badezimmer", "bad", "dusche", "duschbad"],
+  "toilet": ["toilette", "wc", "gäste wc", "klo"],
+  "office": ["büro", "arbeitszimmer", "homeoffice", "home office"],
+  "laundry_room": ["waschküche", "waschraum", "hauswirtschaftsraum"],
+  "hallway": [
+    "flur",
+    "diele",
+    "gang",
+    "eingang",
+    "eingangsbereich",
+    "korridor"
+  ],
+  "stairs": ["treppe", "treppenhaus"],
+  "garage": ["garage", "carport"],
+  "garden": ["garten", "rasen", "vorgarten", "gewächshaus"],
+  "terrace": ["terrasse", "balkon", "veranda", "wintergarten"],
+  "basement": ["keller", "untergeschoss"],
+  "attic": ["dachboden", "speicher", "dachgeschoss"],
+  "storage": [
+    "abstellraum",
+    "abstellkammer",
+    "lager",
+    "vorratskammer",
+    "speisekammer",
+    "schuppen",
+    "gartenhaus"
+  ],
+  "utility_room": ["technikraum", "heizungsraum", "heizraum", "serverraum"],
+  "gym": ["fitnessraum", "fitnessstudio", "sportraum"],
+  "pool": ["pool", "schwimmbad", "schwimmbecken"],
+  "home_cinema": ["heimkino", "kinoraum", "fernsehzimmer"]
+}

@@ -1,0 +1,23 @@
+{
+  "living_room": ["stove", "daglegstove"],
+  "bedroom": ["soverom", "gjesterom"],
+  "kids_room": ["barnerom", "leikerom"],
+  "kitchen": ["kjøkken"],
+  "dining_room": ["spisestove"],
+  "bathroom": ["bad", "baderom", "dusj"],
+  "toilet": ["toalett", "wc", "do"],
+  "office": ["kontor", "heimekontor", "arbeidsrom"],
+  "laundry_room": ["vaskerom"],
+  "hallway": ["gang", "entré", "hall"],
+  "stairs": ["trapp"],
+  "garage": ["garasje"],
+  "garden": ["hage", "plen", "drivhus"],
+  "terrace": ["terrasse", "balkong", "veranda"],
+  "basement": ["kjellar"],
+  "attic": ["loft"],
+  "storage": ["bod", "lager"],
+  "utility_room": ["teknisk rom", "fyrrom"],
+  "gym": ["treningsrom"],
+  "pool": ["basseng"],
+  "home_cinema": ["heimekino"]
+}

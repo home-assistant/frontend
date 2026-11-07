@@ -1,0 +1,23 @@
+{
+  "living_room": ["dzīvojamā istaba", "viesistaba"],
+  "bedroom": ["guļamistaba"],
+  "kids_room": ["bērnu istaba", "rotaļu istaba"],
+  "kitchen": ["virtuve"],
+  "dining_room": ["ēdamistaba"],
+  "bathroom": ["vannas istaba", "duša"],
+  "toilet": ["tualete", "wc"],
+  "office": ["birojs", "kabinets", "darba istaba"],
+  "laundry_room": ["veļas telpa"],
+  "hallway": ["gaitenis", "priekšnams", "koridors"],
+  "stairs": ["kāpnes"],
+  "garage": ["garāža"],
+  "garden": ["dārzs", "zāliens", "siltumnīca"],
+  "terrace": ["terase", "balkons", "veranda"],
+  "basement": ["pagrabs"],
+  "attic": ["bēniņi"],
+  "storage": ["noliktava", "pieliekamais"],
+  "utility_room": ["tehniskā telpa", "katlu telpa"],
+  "gym": ["sporta zāle"],
+  "pool": ["baseins"],
+  "home_cinema": ["mājas kinozāle"]
+}

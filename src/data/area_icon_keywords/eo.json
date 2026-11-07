@@ -1,0 +1,23 @@
+{
+  "living_room": ["salono", "loĝoĉambro", "loĝejo"],
+  "bedroom": ["dormoĉambro", "gastoĉambro"],
+  "kids_room": ["infanĉambro", "ludĉambro"],
+  "kitchen": ["kuirejo"],
+  "dining_room": ["manĝoĉambro", "manĝejo"],
+  "bathroom": ["banĉambro", "banejo", "duŝejo"],
+  "toilet": ["necesejo", "wc", "tualetejo"],
+  "office": ["oficejo", "laborĉambro", "studejo"],
+  "laundry_room": ["lavejo", "lavĉambro"],
+  "hallway": ["koridoro", "enirejo", "vestiblo", "halo"],
+  "stairs": ["ŝtuparo"],
+  "garage": ["garaĝo"],
+  "garden": ["ĝardeno", "korto", "gazono", "forcejo"],
+  "terrace": ["teraso", "balkono", "verando"],
+  "basement": ["kelo"],
+  "attic": ["subtegmento"],
+  "storage": ["provizejo", "deponejo", "stokejo"],
+  "utility_room": ["teknika ĉambro", "hejtejo"],
+  "gym": ["sportejo", "trejnejo"],
+  "pool": ["naĝejo"],
+  "home_cinema": ["hejma kinejo"]
+}
