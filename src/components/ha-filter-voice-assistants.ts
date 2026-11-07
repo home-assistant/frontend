@@ -92,7 +92,13 @@ export class HaFilterVoiceAssistants extends LitElement {
                       >
                       </voice-assistant-brand-icon>
                       <span slot="headline"
-                        >${voiceAssistants[voiceAssistantId].name}</span
+                        >${
+                          voiceAssistantId === "google_assistant"
+                            ? this._localize(
+                                "ui.panel.config.dashboard.voice_assistants.google_assistant_local"
+                              )
+                            : voiceAssistants[voiceAssistantId].name
+                        }</span
                       >
                     </ha-list-item-option>`
                 )}
