@@ -613,40 +613,18 @@ export default class HaAutomationActionRow extends LitElement {
                   value="move_up"
                   .disabled=${this.disabled || !!this.first}
                 >
-                  <div class="overflow-label">
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.move_up"
-                    )}
-                    ${
-                      !this.narrow
-                        ? html`<span class="shortcut">
-                            <span>Alt</span>
-                            <span>+</span>
-                            <span>↑</span>
-                          </span>`
-                        : nothing
-                    }
-                  </div>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.move_up"
+                  )}
                   <ha-svg-icon slot="icon" .path=${mdiArrowUp}></ha-svg-icon
                 ></ha-dropdown-item>
                 <ha-dropdown-item
                   value="move_down"
                   .disabled=${this.disabled || !!this.last}
                 >
-                  <div class="overflow-label">
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.move_down"
-                    )}
-                    ${
-                      !this.narrow
-                        ? html`<span class="shortcut">
-                            <span>Alt</span>
-                            <span>+</span>
-                            <span>↓</span>
-                          </span>`
-                        : nothing
-                    }
-                  </div>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.move_down"
+                  )}
                   <ha-svg-icon slot="icon" .path=${mdiArrowDown}></ha-svg-icon
                 ></ha-dropdown-item>
               `
