@@ -186,14 +186,29 @@ export const subscribeMarketplaceIntegrationDomains = (
   hass: HomeAssistant,
   callback: (domains: Set<string>) => void
 ): UnsubscribeFunc => {
+  let disposed = false;
   let entryLoaded = false;
+  let fetching = false;
+  let outdated = false;
   let signals: Promise<UnsubscribeFunc>[] = [];
 
   const refresh = async () => {
-    try {
-      callback(await fetchMarketplaceIntegrationDomains(hass));
-    } catch {
-      callback(new Set());
+    if (fetching) {
+      outdated = true;
+      return;
+    }
+    fetching = true;
+    const domains = await fetchMarketplaceIntegrationDomains(hass).catch(
+      () => new Set<string>()
+    );
+    fetching = false;
+    if (disposed || !entryLoaded) {
+      return;
+    }
+    callback(domains);
+    if (outdated) {
+      outdated = false;
+      refresh();
     }
   };
 
@@ -211,6 +226,9 @@ export const subscribeMarketplaceIntegrationDomains = (
   };
 
   const entries = subscribeConfigEntries(hass, (updates) => {
+    if (disposed) {
+      return;
+    }
     const update = updates.find(({ entry }) => entry.domain === "marketplace");
     if (!update) {
       return;
@@ -238,6 +256,7 @@ export const subscribeMarketplaceIntegrationDomains = (
   hass.connection.addEventListener("ready", handleReady);
 
   return () => {
+    disposed = true;
     hass.connection.removeEventListener("ready", handleReady);
     entries.then((unsubscribe) => unsubscribe()).catch(() => undefined);
     unsubscribeSignals();
