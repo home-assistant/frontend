@@ -290,6 +290,41 @@ describe("ha-panel-home stale strategy regeneration guard", () => {
     expect(mockedGenerateLovelaceDashboardStrategy).not.toHaveBeenCalled();
   });
 
+  it("ignores a content-equal preview in a new object without discarding the in-flight post-save refresh", async () => {
+    const el = createPanel();
+
+    const inFlight = deferred<{ views: unknown[] }>();
+    mockedGenerateLovelaceDashboardStrategy.mockReturnValueOnce(
+      inFlight.promise as any
+    );
+    mockedSaveFrontendSystemData.mockResolvedValueOnce(undefined);
+
+    // A stale save: a newer draft is previewed while an older one is saved,
+    // so the preview stays and the save starts its immediate refresh.
+    setPreviewConfig(el, {
+      hide_welcome_message: true,
+      hide_suggested_entities: true,
+    });
+    await saveConfig(el, { hide_welcome_message: true });
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
+
+    // The newer draft content is pushed again, as a new object with the
+    // same content.
+    setPreviewConfig(el, {
+      hide_welcome_message: true,
+      hide_suggested_entities: true,
+    });
+
+    inFlight.resolve({ views: ["current"] });
+    await vi.advanceTimersByTimeAsync(0);
+    // The in-flight refresh was not invalidated...
+    expect(el._lovelace?.config).toEqual({ views: ["current"] });
+
+    // ...and no extra one was scheduled behind it.
+    await vi.advanceTimersByTimeAsync(200);
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
+  });
+
   it("clears _previewConfig after a save whose content matches it, so a reopened dialog does not inherit a stale draft", async () => {
     const el = createPanel();
     mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({

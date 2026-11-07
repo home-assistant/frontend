@@ -274,11 +274,12 @@ class PanelHome extends SubscribeMixin(LitElement) {
   };
 
   private _setPreviewConfig = (config: HomeFrontendSystemData | undefined) => {
-    if (config === this._previewConfig) {
-      // No-op: e.g. opening and cancelling the dialog without any edit
-      // still calls previewConfig(undefined) once, which was already the
-      // value here. Bumping the generation and regenerating for that would
-      // rebuild the whole dashboard for nothing.
+    if (deepEqual(config, this._previewConfig)) {
+      // No-op for the value already previewed, whether the same reference
+      // (e.g. previewConfig(undefined) when cancelling without any edit) or
+      // a new object with identical content. Bumping the generation would
+      // discard an in-flight regeneration and rebuild the whole dashboard
+      // for nothing.
       return;
     }
     this._previewConfig = config;

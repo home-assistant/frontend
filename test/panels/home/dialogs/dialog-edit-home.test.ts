@@ -434,6 +434,42 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     expect(previewConfig).not.toHaveBeenCalledWith(undefined);
   });
 
+  it("does not re-push the unchanged draft when a stale save only rebases the baseline", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    const pendingSave = deferred<boolean>();
+    el.showDialog({
+      config: {},
+      saveConfig: vi.fn(() => pendingSave.promise),
+      previewConfig,
+    });
+    await el.updateComplete;
+
+    welcomeChanged(el, false);
+    await el.updateComplete;
+    const savePromise = save(el);
+    suggestedChanged(el, false);
+    await el.updateComplete;
+    previewConfig.mockClear();
+
+    pendingSave.resolve(true);
+    await savePromise;
+    await el.updateComplete;
+
+    // Still open on the newer draft, which the panel already previews: a
+    // re-push would invalidate the panel's post-save refresh for nothing.
+    expect(isOpen(el)).toBe(true);
+    expect(previewConfig).not.toHaveBeenCalled();
+
+    // A real edit afterwards is still previewed.
+    welcomeChanged(el, true);
+    await el.updateComplete;
+    expect(previewConfig).toHaveBeenCalledTimes(1);
+    expect(previewConfig).toHaveBeenCalledWith({
+      hide_suggested_entities: true,
+    });
+  });
+
   it("rebases the clean baseline to what was actually persisted when a stale save resolves after editing back to the original content", async () => {
     const el = createDialog();
     const previewConfig = vi.fn();

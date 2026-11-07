@@ -108,6 +108,8 @@ export class DialogEditHome
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+    const previous = changedProps.get("_session") as
+      HomeConfigDraftSession | undefined;
     if (
       changedProps.has("_session") &&
       this._session &&
@@ -115,7 +117,11 @@ export class DialogEditHome
       // Skip the first _session assignment from showDialog(): it mirrors
       // the already-rendered saved config, so previewing it would just
       // trigger a redundant regeneration in the panel behind the dialog.
-      changedProps.get("_session") !== undefined
+      previous !== undefined &&
+      // The preview follows the draft: only withDraft() bumps generation.
+      // withSaved() only rebases the baseline, so re-pushing the same
+      // draft would invalidate the panel's post-save refresh for nothing.
+      previous.generation !== this._session.generation
     ) {
       this._params.previewConfig(
         buildHomeConfig(this._params.config, this._session.draft)
