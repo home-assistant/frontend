@@ -30,6 +30,7 @@ export const graphEntitiesConfigStruct = union([
     entity: string(),
     name: optional(entityNameStruct),
     color: optional(string()),
+    secondary_y_axis: optional(boolean()),
   }),
   string(),
 ]);

@@ -541,6 +541,7 @@ export interface GraphEntityConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
   color?: string;
+  secondary_y_axis?: boolean;
 }
 
 export interface HistoryGraphCardConfig extends LovelaceCardConfig {

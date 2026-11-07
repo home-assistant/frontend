@@ -11097,7 +11097,8 @@
               "expand_legend": "Expand legend",
               "min_y_axis": "Y axis minimum",
               "max_y_axis": "Y axis maximum",
-              "fit_y_data": "Extend Y axis limits to fit data"
+              "fit_y_data": "Extend Y axis limits to fit data",
+              "secondary_y_axis": "Use secondary Y axis"
             },
             "energy-date-selection": {
               "name": "Energy date picker",

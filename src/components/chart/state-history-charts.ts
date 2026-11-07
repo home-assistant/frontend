@@ -21,13 +21,11 @@ import type {
 } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { configContext } from "../../data/context";
-import type {
-  HistoryResult,
-  LineChartUnit,
-  TimelineEntity,
-} from "../../data/history";
+import type { HistoryResult, TimelineEntity } from "../../data/history";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistantConfig } from "../../types";
+import type { MergedLineChartUnit } from "./merge-secondary-y-axis";
+import { mergeSecondaryYAxisUnits } from "./merge-secondary-y-axis";
 import "./state-history-chart-line";
 import type { StateHistoryChartLine } from "./state-history-chart-line";
 import "./state-history-chart-timeline";
@@ -69,6 +67,8 @@ export class StateHistoryCharts extends LitElement {
     string,
     string | undefined
   >;
+
+  @property({ attribute: false }) public secondaryYAxisEntities?: Set<string>;
 
   @property({ type: Boolean, reflect: true }) public virtualize = false;
 
@@ -157,12 +157,17 @@ export class StateHistoryCharts extends LitElement {
         ${this._localize("ui.components.history_charts.no_history_found")}
       </div>`;
     }
+    const lineItems = mergeSecondaryYAxisUnits(
+      this.historyData!.line,
+      this.secondaryYAxisEntities
+    );
+
     const combinedItems = this.historyData!.timeline.length
       ? (this.virtualize
           ? chunkData(this.historyData!.timeline, CANVAS_TIMELINE_ROWS_CHUNK)
           : [this.historyData!.timeline]
-        ).concat(this.historyData!.line)
-      : this.historyData!.line;
+        ).concat(lineItems)
+      : lineItems;
 
     // eslint-disable-next-line lit/no-this-assign-in-render
     this._chartCount = combinedItems.length;
@@ -190,7 +195,7 @@ export class StateHistoryCharts extends LitElement {
   }
 
   private _renderHistoryItem: RenderItemFunction<
-    TimelineEntity[] | LineChartUnit
+    TimelineEntity[] | MergedLineChartUnit
   > = (item, index) => {
     if (!item || index === undefined) {
       // eslint-disable-next-line lit/prefer-nothing
@@ -201,6 +206,8 @@ export class StateHistoryCharts extends LitElement {
         <state-history-chart-line
           .unit=${item.unit}
           .data=${item.data}
+          .secondaryUnit=${item.secondary?.unit}
+          .secondaryData=${item.secondary?.data}
           .identifier=${item.identifier}
           .showNames=${this.showNames}
           .startTime=${this._computedStartTime}
