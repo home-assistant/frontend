@@ -364,19 +364,19 @@ const getWeatherExtrema = (
     if (new Date(fc.datetime).getDate() !== today) {
       break;
     }
-    if (!tempHigh || fc.temperature > tempHigh) {
+    if (fc.temperature !== undefined && fc.temperature !== null && (tempHigh === undefined || fc.temperature > tempHigh)) {
       tempHigh =
         temperatureFractionDigits === undefined
           ? fc.temperature
           : round(fc.temperature, temperatureFractionDigits);
     }
-    if (fc.templow !== undefined && (!tempLow || fc.templow < tempLow)) {
+    if (fc.templow !== undefined && fc.templow !== null && (tempLow === undefined || fc.templow < tempLow)) {
       tempLow =
         temperatureFractionDigits === undefined
           ? fc.templow
           : round(fc.templow, temperatureFractionDigits);
     }
-    if (!fc.templow && (!tempLow || fc.temperature < tempLow)) {
+    if ((fc.templow === undefined || fc.templow === null) && fc.temperature !== undefined && fc.temperature !== null && (tempLow === undefined || fc.temperature < tempLow)) {
       tempLow =
         temperatureFractionDigits === undefined
           ? fc.temperature
