@@ -28,8 +28,10 @@ export class MoreInfoViewVoiceAssistants extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.has("entry") && this.entry) {
-      this._exposed = undefined;
-      this._locked = undefined;
+      if (changedProps.get("entry")?.entity_id !== this.entry.entity_id) {
+        this._exposed = undefined;
+        this._locked = undefined;
+      }
       this._fetchExposed();
     }
   }
