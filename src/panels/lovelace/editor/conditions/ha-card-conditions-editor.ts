@@ -18,6 +18,7 @@ import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import { ICON_CONDITION } from "../../common/icon-condition";
 import type {
@@ -177,6 +178,8 @@ export class HaCardConditionsEditor extends LitElement {
               >
                 <div
                   slot="drag-handle"
+                  id="move-condition-${idx}"
+                  aria-keyshortcuts="Alt+ArrowUp Alt+ArrowDown"
                   class="handle ${
                     this._rowSortSelected === idx ? "active" : ""
                   }"
@@ -189,6 +192,17 @@ export class HaCardConditionsEditor extends LitElement {
                   @keydown=${this._handleDragKeydown}
                 >
                   <ha-svg-icon .path=${mdiDragHorizontalVariant}></ha-svg-icon>
+                  <ha-tooltip for="move-condition-${idx}">
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.move_up"
+                    )}
+                    (Alt+↑)
+                    <br />
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.move_down"
+                    )}
+                    (Alt+↓)
+                  </ha-tooltip>
                 </div>
               </ha-card-condition-editor>
             `
