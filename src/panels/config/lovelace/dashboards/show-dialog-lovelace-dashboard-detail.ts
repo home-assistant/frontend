@@ -4,7 +4,7 @@ import type {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
   LovelaceDashboardSuggestions,
-  LovelaceDashboardMutableParams,
+  LovelaceDashboardUpdateParams,
 } from "../../../../data/lovelace/dashboard";
 
 export interface LovelaceDashboardDetailsDialogParams {
@@ -21,9 +21,7 @@ export interface LovelaceDashboardDetailsDialogParams {
   lovelaceConfig?: LovelaceConfig;
   saveConfig?: (config: LovelaceConfig) => Promise<void>;
   createDashboard?: (values: LovelaceDashboardCreateParams) => Promise<unknown>;
-  updateDashboard: (
-    updates: Partial<LovelaceDashboardMutableParams>
-  ) => Promise<unknown>;
+  updateDashboard: (updates: LovelaceDashboardUpdateParams) => Promise<unknown>;
   removeDashboard: () => Promise<boolean>;
 }
 

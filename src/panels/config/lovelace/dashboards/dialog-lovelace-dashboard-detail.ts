@@ -293,7 +293,10 @@ export class DialogLovelaceDashboardDetail extends DirtyStateProviderMixin<Dashb
             icon: {},
           },
         },
-        ...(!params.dashboard
+        // The default dashboard is looked up by its "lovelace" url path.
+        ...(!params.dashboard ||
+        (params.dashboard.mode === "storage" &&
+          params.dashboard.url_path !== "lovelace")
           ? ([
               {
                 name: "url_path",
@@ -387,7 +390,7 @@ export class DialogLovelaceDashboardDetail extends DirtyStateProviderMixin<Dashb
   }
 
   private _fillUrlPath(title: string) {
-    if (this._urlPathChanged || !title) {
+    if (this._urlPathChanged || !title || this._params?.dashboard) {
       return;
     }
 
@@ -419,12 +422,26 @@ export class DialogLovelaceDashboardDetail extends DirtyStateProviderMixin<Dashb
     }
     this._submitting = true;
     try {
+      // Saved first: the dashboard can't be found at its old url after a move.
+      if (
+        this._backgroundConfig &&
+        this._params.saveConfig &&
+        this._params.lovelaceConfig &&
+        this._backgroundConfig.background !==
+          this._params.lovelaceConfig.background
+      ) {
+        await this._params.saveConfig(this._backgroundConfig);
+      }
       if (this._params.dashboard) {
         await this._params.updateDashboard({
           require_admin: this._data.require_admin ?? false,
           show_in_sidebar: this._data.show_in_sidebar ?? true,
           icon: this._data.icon || undefined,
           title: this._data.title ?? "",
+          ...(this._data.url_path &&
+          this._data.url_path !== this._params.dashboard.url_path
+            ? { url_path: this._data.url_path }
+            : {}),
         });
       } else if (this._params.createDashboard) {
         await this._params.createDashboard({
@@ -435,15 +452,6 @@ export class DialogLovelaceDashboardDetail extends DirtyStateProviderMixin<Dashb
           url_path: this._data.url_path ?? "",
           mode: "storage",
         });
-      }
-      if (
-        this._backgroundConfig &&
-        this._params.saveConfig &&
-        this._params.lovelaceConfig &&
-        this._backgroundConfig.background !==
-          this._params.lovelaceConfig.background
-      ) {
-        await this._params.saveConfig(this._backgroundConfig);
       }
       this._markDirtyStateClean();
       this.closeDialog();
