@@ -301,8 +301,8 @@ importers:
         specifier: 4.5.1
         version: 4.5.1
       '@versatiles/style':
-        specifier: 8.0.0
-        version: 8.0.0(maplibre-gl@6.16.0)
+        specifier: 8.1.1
+        version: 8.1.1(maplibre-gl@6.16.0)
       '@vibrant/color':
         specifier: 4.0.4
         version: 4.0.4
@@ -355,8 +355,8 @@ importers:
         specifier: 3.0.2
         version: 3.0.2
       fullcalendar:
-        specifier: 7.1.3
-        version: 7.1.3(temporal-polyfill@1.0.6)
+        specifier: 7.1.4
+        version: 7.1.4(temporal-polyfill@1.0.7)
       fuse.js:
         specifier: 7.5.0
         version: 7.5.0
@@ -430,8 +430,8 @@ importers:
         specifier: 2.0.2
         version: 2.0.2
       temporal-polyfill:
-        specifier: 1.0.6
-        version: 1.0.6
+        specifier: 1.0.7
+        version: 1.0.7
       tinykeys:
         specifier: 4.0.1
         version: 4.0.1(patch_hash=cdc7ece96d53357d38ff3c124a2553f86e3a5dc333d641d223eb6f07e28275f0)
@@ -2093,16 +2093,16 @@ packages:
       typescript:
         optional: true
 
-  '@full-ui/headless-calendar@7.1.3':
-    resolution: {integrity: sha512-CFomIp87osqY65Hlu2c0e2ZnofBe9tKOO8IoPzIfSPVDK/+aGz4Itj6mLu4xPjIvzRDQiopcVzYlip6u1bvYxw==}
+  '@full-ui/headless-calendar@7.1.4':
+    resolution: {integrity: sha512-b0o9zsbJKpeM+e5eh27paqfDseQgMQkOy4jjp+nCLABmUQWn2kJ+vV3QdSNXL/9R7S+SwN6Ky21p1hDYvDdgUg==}
     peerDependencies:
-      temporal-polyfill: ^1.0.1
+      temporal-polyfill: ^1.0.7
 
-  '@fullcalendar/core@7.1.3':
-    resolution: {integrity: sha512-DLGXqX7CnuUQHH679FgE6+jc927wa708ydIcnfVx372IOK/OiDZjqc+IBwuKnu2EyqleCooDoAnUAcvXBhHosA==}
+  '@fullcalendar/core@7.1.4':
+    resolution: {integrity: sha512-Pkjagkqa4U9n2PemmdjrejmgrbiN6UyeP0pd0qKSjnvPDZzMJGPJvQ00sgm67KL0FAyQSnKMy0odSz9yv6s2XA==}
     peerDependencies:
-      '@full-ui/headless-calendar': 7.1.3
-      temporal-polyfill: ^1.0.1
+      '@full-ui/headless-calendar': 7.1.4
+      temporal-polyfill: ^1.0.7
 
   '@gar/promise-retry@1.0.3':
     resolution: {integrity: sha512-GmzA9ckNokPypTg10pgpeHNQe7ph+iIKKmhKu3Ob9ANkswreCx7R3cKmY781K8QK3AqVL3xVh9A42JvIAbkkSA==}
@@ -3899,8 +3899,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@versatiles/style@8.0.0':
-    resolution: {integrity: sha512-N/sSh5jrHRUzsYD58hBUseiHnuvAWqBQA6jMoRMEGPICY/mk7zT1lKnTHS5gIX38oUIo56nHHJ3n7Eay03/7cQ==}
+  '@versatiles/style@8.1.1':
+    resolution: {integrity: sha512-wotbl1VYI0JK94oq7Ji/QTdUi4jHoXtWpBnia/tcFBvAM8Ho4URnRjkNdJ6VbMM/3PqoFEYhUispAhsdCvv5hA==}
     engines: {node: '>=20'}
     peerDependencies:
       maplibre-gl: '>=5.5.0'
@@ -5342,10 +5342,10 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
-  fullcalendar@7.1.3:
-    resolution: {integrity: sha512-Mn8VNqLX80C93UFh0s9aKqhHUSh0BwK8pczyQ+nNDKutJeM0/SVLkJoizTfX9sdmwGiS6+hkAHAg9YC10Us0gg==}
+  fullcalendar@7.1.4:
+    resolution: {integrity: sha512-RLaHmd8rkoIha1QHVana64v/Dq5rGFft5Yo25sp48D5isoCR2et5OZ+VOPdjvW/CSfa12WYlOqAz94yTt4728A==}
     peerDependencies:
-      temporal-polyfill: ^1.0.1
+      temporal-polyfill: ^1.0.7
 
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
@@ -7453,14 +7453,14 @@ packages:
     resolution: {integrity: sha512-aoBAniQmmwtcKp/7BzsH8Cxzv8OL736p7v1ihGb5e9DJ9kTwGWHrQrVB5+lfVDzfGrdRzXch+ig7LHaY1JTOrg==}
     engines: {node: '>=8'}
 
-  temporal-polyfill@1.0.6:
-    resolution: {integrity: sha512-tYyEry1HLGUDbm2356W3iYD0OZdo7rlP7h98Zr/EnjqLZQwTAfcBDUvJnJbfA15v/vQad57hJZScG5O0W2oKEA==}
+  temporal-polyfill@1.0.7:
+    resolution: {integrity: sha512-/qHG5yJUCFRAYrlo/4zgFsV7p+cSnGJjtpd3c3sKB3ayuIln3U0nthfKa9MoMl0nY7NAjrru5/w0BMjcAxg9MA==}
 
   temporal-spec@1.0.1:
     resolution: {integrity: sha512-wxVoanmDeavXie1vu2JaQ3WIc3JZnWAOYFBsJyATaVsXsycKYUflGsyBmrRSnoCpZJpwPyr38VpgSUlQ8CbFxg==}
 
-  temporal-utils@1.0.3:
-    resolution: {integrity: sha512-9jbTSX3HvkOWvDpNpFzwX/d1mkCrgQgwLmVTOEiuocZGKHsrQJtttGZFmybJ2zYP5zCSZuU5ZyeS8+eOEPABiQ==}
+  temporal-utils@1.0.4:
+    resolution: {integrity: sha512-4mAcgbWlaxe+gn23gk8g0iHxCVGVOhKzSCfF5HM3lfvH8BdT+/pBmH/R/E4CrIse+koUgs8ThkPzCLnui6Fi8w==}
 
   tempy@0.6.0:
     resolution: {integrity: sha512-G13vtMYPT/J8A4X2SjdtBTphZlrp1gKv6hZiOjw14RCWg6GbHuQBGtjlx75xLbYV/wEc0D7G5K4rxKP/cXk8Bw==}
@@ -9915,14 +9915,14 @@ snapshots:
     optionalDependencies:
       typescript: 6.0.3
 
-  '@full-ui/headless-calendar@7.1.3(temporal-polyfill@1.0.6)':
+  '@full-ui/headless-calendar@7.1.4(temporal-polyfill@1.0.7)':
     dependencies:
-      temporal-polyfill: 1.0.6
+      temporal-polyfill: 1.0.7
 
-  '@fullcalendar/core@7.1.3(@full-ui/headless-calendar@7.1.3(temporal-polyfill@1.0.6))(temporal-polyfill@1.0.6)':
+  '@fullcalendar/core@7.1.4(@full-ui/headless-calendar@7.1.4(temporal-polyfill@1.0.7))(temporal-polyfill@1.0.7)':
     dependencies:
-      '@full-ui/headless-calendar': 7.1.3(temporal-polyfill@1.0.6)
-      temporal-polyfill: 1.0.6
+      '@full-ui/headless-calendar': 7.1.4(temporal-polyfill@1.0.7)
+      temporal-polyfill: 1.0.7
 
   '@gar/promise-retry@1.0.3': {}
 
@@ -11825,7 +11825,7 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.12.2':
     optional: true
 
-  '@versatiles/style@8.0.0(maplibre-gl@6.16.0)':
+  '@versatiles/style@8.1.1(maplibre-gl@6.16.0)':
     dependencies:
       '@maplibre/maplibre-gl-style-spec': 26.5.1
     optionalDependencies:
@@ -13333,12 +13333,12 @@ snapshots:
   fsevents@2.3.3:
     optional: true
 
-  fullcalendar@7.1.3(temporal-polyfill@1.0.6):
+  fullcalendar@7.1.4(temporal-polyfill@1.0.7):
     dependencies:
-      '@full-ui/headless-calendar': 7.1.3(temporal-polyfill@1.0.6)
-      '@fullcalendar/core': 7.1.3(@full-ui/headless-calendar@7.1.3(temporal-polyfill@1.0.6))(temporal-polyfill@1.0.6)
+      '@full-ui/headless-calendar': 7.1.4(temporal-polyfill@1.0.7)
+      '@fullcalendar/core': 7.1.4(@full-ui/headless-calendar@7.1.4(temporal-polyfill@1.0.7))(temporal-polyfill@1.0.7)
       preact: 10.29.8
-      temporal-polyfill: 1.0.6
+      temporal-polyfill: 1.0.7
     transitivePeerDependencies:
       - preact-render-to-string
 
@@ -15712,14 +15712,14 @@ snapshots:
 
   temp-dir@2.0.0: {}
 
-  temporal-polyfill@1.0.6:
+  temporal-polyfill@1.0.7:
     dependencies:
       temporal-spec: 1.0.1
-      temporal-utils: 1.0.3
+      temporal-utils: 1.0.4
 
   temporal-spec@1.0.1: {}
 
-  temporal-utils@1.0.3: {}
+  temporal-utils@1.0.4: {}
 
   tempy@0.6.0:
     dependencies:
