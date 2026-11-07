@@ -21,6 +21,7 @@ import {
   getEnergyInfo,
   getEnergyPreferences,
   getReferencedStatisticIds,
+  saveEnergyPreferences,
 } from "../../../data/energy";
 import type { StatisticsMetaData } from "../../../data/recorder";
 import { getStatisticMetadata } from "../../../data/recorder";
@@ -37,6 +38,7 @@ import "./components/ha-energy-home-settings";
 import "./components/ha-energy-battery-settings";
 import "./components/ha-energy-gas-settings";
 import "./components/ha-energy-water-settings";
+import "./components/ha-energy-suggestions";
 import { fileDownload } from "../../../util/file_download";
 import { showToast } from "../../../util/toast";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
@@ -149,7 +151,15 @@ class HaConfigEnergy extends LitElement {
         <ha-alert>
           ${this.hass.localize("ui.panel.config.energy.new_device_info")}
         </ha-alert>
-        <div class="content">${cache(this._renderTabContent())}</div>
+        <div class="content">
+          <ha-energy-suggestions
+            .preferences=${this._preferences!}
+            .save=${this._savePreferences}
+            .tab=${this._currTab}
+            @value-changed=${this._prefsChanged}
+          ></ha-energy-suggestions>
+          ${cache(this._renderTabContent())}
+        </div>
       </hass-tabs-subpage>
     `;
   }
@@ -258,6 +268,9 @@ class HaConfigEnergy extends LitElement {
     await this._fetchMetaData();
   }
 
+  private _savePreferences = (preferences: EnergyPreferences) =>
+    saveEnergyPreferences(this.hass, preferences);
+
   private async _prefsChanged(ev: CustomEvent) {
     this._preferences = ev.detail.value;
     this._validationResult = undefined;
@@ -346,6 +359,7 @@ class HaConfigEnergy extends LitElement {
           margin: 12px auto;
         }
 
+        ha-energy-suggestions,
         ha-energy-grid-settings,
         ha-energy-solar-settings,
         ha-energy-home-settings,

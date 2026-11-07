@@ -4631,6 +4631,24 @@
               "now": "Now"
             }
           },
+          "suggestions": {
+            "title": "{count, plural,\n  one {# meter isn't}\n  other {# meters aren't}\n} in your energy dashboard yet",
+            "sub": "These meters record energy but aren't used in your energy dashboard. Check where each one belongs and add it, or dismiss it.",
+            "slot": "Add as",
+            "add": "Add",
+            "dismiss": "Dismiss",
+            "dismiss_failed": "Couldn't save that this meter is dismissed",
+            "load_failed": "Couldn't check for meters that aren't in your energy dashboard yet.",
+            "slots": {
+              "grid_import": "Grid consumption",
+              "grid_export": "Return to grid",
+              "solar": "Solar production",
+              "battery": "Home battery",
+              "gas": "Gas consumption",
+              "water": "Water consumption",
+              "device": "Individual device"
+            }
+          },
           "delete_source": "Are you sure you want to remove this source?",
           "save_config_failed": "Failed to save config: {error}",
           "delete_integration": "Are you sure you want to remove this integration? It will remove the entities it provides",
