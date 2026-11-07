@@ -40,8 +40,6 @@ export class PowerViewStrategy extends ReactiveElement {
       config: hass.config,
       panelUrl: hass.panelUrl,
       key: collectionKey,
-      // The "Now" view is real-time; roll its day period over at midnight.
-      midnightRollover: true,
     });
     if (!energyCollection.prefs) {
       await energyCollection.refresh();

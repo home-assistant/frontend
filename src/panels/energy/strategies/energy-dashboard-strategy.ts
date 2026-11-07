@@ -165,9 +165,6 @@ async function fetchEnergyPrefs(
     config: hass.config,
     panelUrl: hass.panelUrl,
     key: defaultCollection || DEFAULT_ENERGY_COLLECTION_KEY,
-    // When landing directly on the "Now" view this warms its real-time
-    // collection, so it must be created with midnight rollover too.
-    midnightRollover: defaultCollection === DEFAULT_POWER_COLLECTION_KEY,
   });
 
   return await new Promise<EnergyPreferences>((resolve) => {

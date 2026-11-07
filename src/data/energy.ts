@@ -1,6 +1,5 @@
 import {
   addDays,
-  addHours,
   addMilliseconds,
   addMonths,
   addYears,
@@ -994,24 +993,58 @@ const clearEnergyCollectionPreferences = (
   });
 };
 
+const HOUR_IN_MS = 60 * 60 * 1000;
+const SHORT_TERM_STATS_INTERVAL = 5 * 60 * 1000;
+const SHORT_TERM_STATS_MARGIN = 15 * 1000;
+
+// Recorder compiles short-term statistics on the UTC 5-minute grid at :10s, so
+// the first bucket covering `timestamp` is readable just after the next one.
+const firstShortTermStatsAfter = (timestamp: number): number =>
+  (Math.floor(timestamp / SHORT_TERM_STATS_INTERVAL) + 1) *
+    SHORT_TERM_STATS_INTERVAL +
+  SHORT_TERM_STATS_MARGIN;
+
+// Statistics are keyed by the hour they start in and queried with
+// `start >= period start`, so a period beginning mid-hour never sees that hour.
+// Zones offset by half or quarter hours start their day there, and for them the
+// first hour worth waiting for is the next whole one.
+const firstQueryableHour = (timestamp: number): number =>
+  Math.ceil(timestamp / HOUR_IN_MS) * HOUR_IN_MS;
+
 const scheduleHourlyRefresh = (collection: EnergyCollection) => {
   if (collection._refreshTimeout !== undefined) {
     window.clearTimeout(collection._refreshTimeout);
   }
 
   if (collection._active && (!collection.end || collection.end > new Date())) {
-    // The stats are created every hour
-    // Schedule a refresh for 20 minutes past the hour
-    // If the end is larger than the current time.
-    const nextFetch = new Date();
-    if (nextFetch.getMinutes() >= 20) {
-      nextFetch.setHours(nextFetch.getHours() + 1);
+    const now = Date.now();
+
+    // Long-term hourly stats land just after the hour, so wait until :20 UTC.
+    const hourlyRefresh = new Date(now);
+    if (hourlyRefresh.getUTCMinutes() >= 20) {
+      hourlyRefresh.setUTCHours(hourlyRefresh.getUTCHours() + 1);
     }
-    nextFetch.setMinutes(20, 0, 0);
+    hourlyRefresh.setUTCMinutes(20, 0, 0);
+
+    // Before that, Core can already stitch an open hour from short-term rows,
+    // so refresh as soon as the first bucket of the period's first queryable
+    // hour, or of the current hour, exists.
+    const currentHourBucket = new Date(now);
+    currentHourBucket.setUTCMinutes(5, 15, 0);
+
+    const nextFetch = Math.min(
+      hourlyRefresh.getTime(),
+      ...[
+        firstShortTermStatsAfter(
+          firstQueryableHour(collection.start.getTime())
+        ),
+        currentHourBucket.getTime(),
+      ].filter((candidate) => candidate > now)
+    );
 
     collection._refreshTimeout = window.setTimeout(
       () => collection.refresh(),
-      nextFetch.getTime() - Date.now()
+      nextFetch - Date.now()
     );
   }
 };
@@ -1074,93 +1107,26 @@ export const hasCombinableEnergySources = (
   return new Set(sources.map((source) => source.type)).size < sources.length;
 };
 
-// When today's first hourly statistic becomes available (01:00 in the
-// configured timezone). Rolling the statistics view over at midnight would
-// show an empty graph.
-export const getEnergyFirstStatisticAt = (
-  now: Date,
-  locale: HomeAssistant["locale"],
-  config: HomeAssistant["config"]
-): Date => addHours(calcDate(now, startOfDay, locale, config), 1);
-
-// The statistics Energy view shows yesterday until 01:00 so the graph is not
-// empty. The real-time "Now" view never does this — it has live data.
-export const shouldFallbackEnergyPeriodToYesterday = (
-  midnightRollover: boolean,
-  now: Date,
-  locale: HomeAssistant["locale"],
-  config: HomeAssistant["config"]
-): boolean =>
-  !midnightRollover &&
-  now.getTime() < getEnergyFirstStatisticAt(now, locale, config).getTime();
-
-// Live day used while a rollover timer is scheduled (today, or the hour-0
-// yesterday fallback). Custom dates do not use this. If the user already
-// picked today during hour 0, keep today rather than snapping back.
+// Live day used while a rollover timer is scheduled. Custom dates do not use
+// this. Always today — Core fills the unfinished current hour from short-term
+// stats in statistics_during_period, so hour/day charts are not empty after
+// the first short-term bucket.
 export const getEnergyLiveDayPeriod = (
-  midnightRollover: boolean,
   now: Date,
   locale: HomeAssistant["locale"],
-  config: HomeAssistant["config"],
-  currentStart: Date
-): { start: Date; end: Date } => {
-  const todayStart = calcDate(now, startOfDay, locale, config);
-  if (
-    shouldFallbackEnergyPeriodToYesterday(
-      midnightRollover,
-      now,
-      locale,
-      config
-    ) &&
-    currentStart.getTime() !== todayStart.getTime()
-  ) {
-    const yesterday = calcDate(now, addDays, locale, config, -1);
-    return {
-      start: calcDate(yesterday, startOfDay, locale, config),
-      end: calcDate(yesterday, endOfDay, locale, config),
-    };
-  }
-  return {
-    start: todayStart,
-    end: calcDate(now, endOfDay, locale, config),
-  };
-};
+  config: HomeAssistant["config"]
+): { start: Date; end: Date } => ({
+  start: calcDate(now, startOfDay, locale, config),
+  end: calcDate(now, endOfDay, locale, config),
+});
 
-// When does the collection's day period need to roll over to the next day?
-// With `midnightRollover` (the real-time "Now" view) it rolls over right at
-// midnight. Otherwise it waits an hour, until the new day's first hourly
-// statistic exists — rolling over at midnight would show an empty graph.
-// Pass `periodStart` when the collection is on a specific day: hour-0
-// yesterday (and any older stale live day) must wake at today 01:00, not
-// tomorrow 01:00. Keep tomorrow 01:00 only when the user already picked today.
+// Next midnight in the configured zone, not browser-local addDays, so a DST
+// transition cannot skip a server-tz day.
 export const getNextEnergyPeriodStart = (
-  midnightRollover: boolean,
   now: Date,
   locale: HomeAssistant["locale"],
-  config: HomeAssistant["config"],
-  periodStart?: Date
-): Date => {
-  const todayStart = calcDate(now, startOfDay, locale, config);
-  if (
-    periodStart &&
-    shouldFallbackEnergyPeriodToYesterday(
-      midnightRollover,
-      now,
-      locale,
-      config
-    ) &&
-    periodStart.getTime() !== todayStart.getTime()
-  ) {
-    return getEnergyFirstStatisticAt(now, locale, config);
-  }
-  // Next midnight in the configured zone, not browser-local addDays, so a
-  // DST transition cannot skip a server-tz day.
-  const nextMidnight = addMilliseconds(
-    calcDate(now, endOfDay, locale, config),
-    1
-  );
-  return midnightRollover ? nextMidnight : addHours(nextMidnight, 1);
-};
+  config: HomeAssistant["config"]
+): Date => addMilliseconds(calcDate(now, endOfDay, locale, config), 1);
 
 export interface EnergyCollectionOptions {
   callWS: HomeAssistant["callWS"];
@@ -1172,10 +1138,6 @@ export interface EnergyCollectionOptions {
   panelUrl: string;
   key?: string;
   prefs?: EnergyPreferences;
-  // The real-time "Now" view opts in to rolling its day period over at
-  // midnight rather than an hour later (it shows live data, so it always
-  // tracks today and never falls back to yesterday in the first hour).
-  midnightRollover?: boolean;
 }
 
 export const getEnergyDataCollection = (
@@ -1194,36 +1156,23 @@ export const getEnergyDataCollection = (
     return existingCollection;
   }
 
-  const midnightRollover = options.midnightRollover ?? false;
-
   energyCollectionKeys.add(collectionKey);
 
-  // Set start to start of today if we have data for today, otherwise yesterday.
-  // The real-time "Now" view always tracks today; it shows live data even
-  // before today's first statistic exists, so it never falls back to yesterday.
-  const initialNow = new Date();
   const preferredPeriod =
     (localStorage.getItem(
       getEnergyDefaultPeriodStorageKey(panelUrl, options.key)
     ) as DateRange) || "today";
-  const period =
-    preferredPeriod === "today" &&
-    shouldFallbackEnergyPeriodToYesterday(
-      midnightRollover,
-      initialNow,
-      locale,
-      config
-    )
-      ? "yesterday"
-      : preferredPeriod;
-
-  const [initialStart, initialEnd] = calcDateRange(locale, config, period);
+  const [initialStart, initialEnd] = calcDateRange(
+    locale,
+    config,
+    preferredPeriod
+  );
   const combineSourcesStorageKey = getEnergyCombineSourcesStorageKey(
     panelUrl,
     options.key
   );
   const storedCombineSources = localStorage.getItem(combineSourcesStorageKey);
-  // True while tracking today (or hour-0 yesterday), rather than a custom range.
+  // True while tracking today, rather than a custom range.
   let followLiveDay = preferredPeriod === "today";
 
   let revision = 0;
@@ -1306,13 +1255,7 @@ export const getEnergyDataCollection = (
     }
   );
   const applyLiveDayPeriod = (now: Date): boolean => {
-    const live = getEnergyLiveDayPeriod(
-      midnightRollover,
-      now,
-      locale,
-      config,
-      collection.start
-    );
+    const live = getEnergyLiveDayPeriod(now, locale, config);
     const changed =
       collection.start.getTime() !== live.start.getTime() ||
       collection.end?.getTime() !== live.end.getTime();
@@ -1344,13 +1287,8 @@ export const getEnergyDataCollection = (
       },
       Math.max(
         0,
-        getNextEnergyPeriodStart(
-          midnightRollover,
-          scheduledAt,
-          locale,
-          config,
-          collection.start
-        ).getTime() - scheduledAt.getTime()
+        getNextEnergyPeriodStart(scheduledAt, locale, config).getTime() -
+          scheduledAt.getTime()
       )
     );
   };
