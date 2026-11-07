@@ -674,6 +674,7 @@
             "number": "Number",
             "object": "Object",
             "color_rgb": "RGB color",
+            "color_rgbw": "RGBW color",
             "select": "Select",
             "state": "State",
             "target": "Target",
