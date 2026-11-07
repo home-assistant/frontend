@@ -8,6 +8,7 @@ import {
   mdiDotsVertical,
   mdiDownload,
   mdiHandExtendedOutline,
+  mdiHeartPulse,
   mdiPlayCircleOutline,
   mdiPlus,
   mdiProgressHelper,
@@ -48,6 +49,7 @@ import {
   updateConfigEntry,
 } from "../../../data/config_entries";
 import { groupDevicesByParent } from "../../../data/device/device_registry";
+import { showConfigEntryHealthDialog } from "./show-dialog-config-entry-health";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -335,6 +337,12 @@ export class HaConfigEntryRow extends LitElement {
                 `
               : nothing
           }
+          <ha-dropdown-item value="health">
+            <ha-svg-icon slot="icon" .path=${mdiHeartPulse}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.health.menu"
+            )}
+          </ha-dropdown-item>
           ${
             !item.disabled_by &&
             RECOVERABLE_STATES.includes(item.state) &&
@@ -557,6 +565,13 @@ export class HaConfigEntryRow extends LitElement {
     const value = ev.detail.item.value;
     if (value === "reload") {
       this._handleReload();
+      return;
+    }
+    if (value === "health") {
+      showConfigEntryHealthDialog(this, {
+        entry: this.data.entry,
+        entities: this._getEntities(),
+      });
       return;
     }
     if (value === "rename") {
