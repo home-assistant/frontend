@@ -1591,9 +1591,17 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private async _restoreEntityId(): Promise<void> {
-    const entityIds = await getAutomaticEntityIds(this.hass, [
-      this._origEntityId,
-    ]);
+    // use the unsaved name and area, as they are part of the entity ID
+    const entityIds = await getAutomaticEntityIds(
+      this.hass,
+      [this._origEntityId],
+      {
+        [this._origEntityId]: {
+          name: this._computeName(),
+          area_id: this._computeAreaId(),
+        },
+      }
+    );
     this._entityId = entityIds[this._origEntityId] || this._origEntityId;
   }
 
