@@ -23,7 +23,7 @@ export interface LoggedError {
   first_occurred: number;
 }
 
-export const fetchSystemLog = async (hass: HomeAssistant) => {
+export const fetchSystemLog = async (hass: Pick<HomeAssistant, "callWS">) => {
   const log = await hass.callWS<LoggedError[]>({ type: "system_log/list" });
   for (const error of log) {
     error.level = error.level.toLowerCase() as LoggedError["level"];

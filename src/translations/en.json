@@ -7939,6 +7939,38 @@
             "enable_debug_logging": "Enable debug logging",
             "reconfigure": "Reconfigure",
             "reload": "Reload",
+            "health": {
+              "menu": "Health",
+              "title": "Health of {title}",
+              "load_failed": "Couldn't load the health of this integration.",
+              "summary": {
+                "ok": "Everything looks fine.",
+                "warning": "Some things need a look.",
+                "error": "This integration has a problem."
+              },
+              "state": {
+                "loaded": "Running",
+                "setup_in_progress": "Starting",
+                "unload_in_progress": "Stopping",
+                "not_loaded": "Not running",
+                "setup_retry": "Failed to start, retrying",
+                "setup_error": "Failed to start",
+                "migration_error": "Failed to migrate its settings",
+                "failed_unload": "Failed to stop",
+                "disabled": "Disabled"
+              },
+              "flows": "Needs to be reauthenticated or reconfigured",
+              "flows_link": "Go to the integrations",
+              "entities": "{available} of {total} entities available",
+              "entities_link": "View entities",
+              "and_more": "and {count} more",
+              "repairs": "{count, plural,\n  =0 {No open repairs for {integration}}\n  one {1 open repair for {integration}}\n  other {# open repairs for {integration}}\n}",
+              "repairs_link": "View repairs",
+              "logs": "{errors, plural,\n  one {1 error}\n  other {# errors}\n} and {warnings, plural,\n  one {1 warning}\n  other {# warnings}\n} from {integration} in the recent log",
+              "logs_link": "View logs",
+              "setup_time": "{integration} took {seconds} s to start",
+              "setup_time_fast": "{integration} took less than 0.1 s to start"
+            },
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "marketplace_uninstall": {
               "title": "Also uninstall {name}?",
