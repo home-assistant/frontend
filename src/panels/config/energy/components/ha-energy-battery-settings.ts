@@ -19,6 +19,7 @@ import type {
 } from "../../../../data/energy";
 import {
   getBatteryEnergyStatIds,
+  getBatteryFlowStatIds,
   getBatteryName,
   getBatteryPrimaryStat,
   saveEnergyPreferences,
@@ -123,6 +124,7 @@ export class EnergyBatterySettings extends LitElement {
                       const chargeStat =
                         getBatteryEnergyStatIds(source).charge[0];
                       const toEntityState = this.hass.states[chargeStat];
+                      const summary = this._directionsSummary(source);
                       return html`
                         <ha-card outlined>
                           <ha-automation-row
@@ -145,16 +147,20 @@ export class EnergyBatterySettings extends LitElement {
                                 >${this._sourceName(source)}</span
                               >
                               ${
-                                source.name
-                                  ? nothing
-                                  : html`<span class="label secondary"
-                                      >${getStatisticLabel(
-                                        this.hass.states,
-                                        this.hass.formatEntityName,
-                                        chargeStat,
-                                        this.statsMetadata?.[chargeStat]
-                                      )}</span
+                                summary
+                                  ? html`<span class="label secondary"
+                                      >${summary}</span
                                     >`
+                                  : source.name
+                                    ? nothing
+                                    : html`<span class="label secondary"
+                                        >${getStatisticLabel(
+                                          this.hass.states,
+                                          this.hass.formatEntityName,
+                                          chargeStat,
+                                          this.statsMetadata?.[chargeStat]
+                                        )}</span
+                                      >`
                               }
                             </div>
                             <ha-icon-button
@@ -204,6 +210,35 @@ export class EnergyBatterySettings extends LitElement {
     );
   }
 
+  private _directionsSummary(
+    source: BatterySourceTypeEnergyPreference
+  ): string | undefined {
+    const flows = getBatteryFlowStatIds(source);
+    if (!flows) {
+      return undefined;
+    }
+    const key = "ui.panel.config.energy.battery.summary";
+    const charge =
+      flows.grid_to_battery && flows.solar_to_battery
+        ? this.hass.localize(`${key}.charges_from_grid_and_solar`)
+        : flows.grid_to_battery
+          ? this.hass.localize(`${key}.charges_from_grid`)
+          : flows.solar_to_battery
+            ? this.hass.localize(`${key}.charges_from_solar`)
+            : undefined;
+    const discharge =
+      flows.battery_to_home && flows.battery_to_grid
+        ? this.hass.localize(`${key}.discharges_to_home_and_grid`)
+        : flows.battery_to_home
+          ? this.hass.localize(`${key}.discharges_to_home`)
+          : flows.battery_to_grid
+            ? this.hass.localize(`${key}.discharges_to_grid`)
+            : undefined;
+    return charge && discharge
+      ? this.hass.localize(`${key}.directions`, { charge, discharge })
+      : charge || discharge;
+  }
+
   private _addSource() {
     this._openEditor();
   }
@@ -228,12 +263,20 @@ export class EnergyBatterySettings extends LitElement {
     preferences: EnergyPreferences,
     source?: BatterySourceTypeEnergyPreference
   ): EnergyEditorConfig {
+    const sources = preferences.energy_sources;
     return {
       kind: "battery",
       params: {
         statsMetadata: this.statsMetadata,
         source: source ? { ...source } : undefined,
-        battery_sources: preferences.energy_sources.filter(isBatterySource),
+        battery_sources: sources.filter(isBatterySource),
+        has_grid_import: sources.some(
+          (src) => src.type === "grid" && !!src.stat_energy_from
+        ),
+        has_grid_export: sources.some(
+          (src) => src.type === "grid" && !!src.stat_energy_to
+        ),
+        has_solar: sources.some((src) => src.type === "solar"),
         saveCallback: (newSource) => this._saveSource(newSource, source),
       },
     };
