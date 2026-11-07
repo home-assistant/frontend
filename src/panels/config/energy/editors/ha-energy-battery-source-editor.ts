@@ -14,13 +14,15 @@ import "../../../../components/ha-alert";
 import "../../../../components/input/ha-input";
 import type { HaInput } from "../../../../components/input/ha-input";
 import type {
-  BatterySourceTypeEnergyPreference,
+  BatteryTotalsSourceTypeEnergyPreference,
   PowerConfig,
 } from "../../../../data/energy";
 import {
   computeEnergyLabel,
   emptyBatteryEnergyPreference,
   energyStatisticHelpUrl,
+  getBatteryEnergyStatIds,
+  isBatteryDirections,
 } from "../../../../data/energy";
 import {
   getStatisticLabel,
@@ -61,7 +63,7 @@ import type {
 import { EnergyEditorMixin, energyEditorStyles } from "./energy-editor";
 
 interface BatteryFormState {
-  source: BatterySourceTypeEnergyPreference;
+  source: BatteryTotalsSourceTypeEnergyPreference;
   powerType: PowerType;
   powerConfig: PowerConfig;
 }
@@ -121,7 +123,7 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
   })
   private _pending?: PowerIntegral[];
 
-  @state() private _source?: BatterySourceTypeEnergyPreference;
+  @state() private _source?: BatteryTotalsSourceTypeEnergyPreference;
 
   @state() private _powerType: PowerType = "none";
 
@@ -148,23 +150,23 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
     const params = this.params;
     this._error = undefined;
     this._saving = false;
-    this._source = params.source
-      ? { ...params.source }
+    const savedSource = this._savedSource;
+    this._source = savedSource
+      ? { ...savedSource }
       : emptyBatteryEnergyPreference();
 
     this._powerType = getPowerTypeFromConfig(
-      params.source?.power_config,
-      params.source?.stat_rate
+      savedSource?.power_config,
+      savedSource?.stat_rate
     );
     this._powerConfig = getInitialPowerConfig(
-      params.source?.power_config,
-      params.source?.stat_rate
+      savedSource?.power_config,
+      savedSource?.stat_rate
     );
 
-    const allSources: string[] = [];
-    params.battery_sources.forEach((entry) => {
-      allSources.push(entry.stat_energy_from);
-      allSources.push(entry.stat_energy_to);
+    const allSources = params.battery_sources.flatMap((entry) => {
+      const { charge, discharge } = getBatteryEnergyStatIds(entry);
+      return [...discharge, ...charge];
     });
     this._excludeList = allSources.filter(
       (id) =>
@@ -175,7 +177,7 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
     this._excludeListPower = buildPowerExcludeList(
       params.battery_sources,
       this._powerConfig,
-      params.source?.stat_rate
+      savedSource?.stat_rate
     );
 
     this._initDirtyTracking(
@@ -187,6 +189,13 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
       }
     );
     this._loadUnits();
+  }
+
+  // Only batteries configured with totals can be edited here
+  private get _savedSource():
+    BatteryTotalsSourceTypeEnergyPreference | undefined {
+    const source = this.params.source;
+    return source && !isBatteryDirections(source) ? source : undefined;
   }
 
   private async _loadUnits() {
@@ -286,7 +295,7 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
         .powerConfig=${this._powerConfig}
         .excludeList=${this._excludeListPower}
         .helperEntityId=${getPowerHelperEntityId(
-          this.params.source,
+          this._savedSource,
           this._powerConfig
         )}
         .localizeBaseKey=${"ui.panel.config.energy.battery.dialog"}
@@ -448,7 +457,7 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
         }
       }
 
-      const source: BatterySourceTypeEnergyPreference = {
+      const source: BatteryTotalsSourceTypeEnergyPreference = {
         type: "battery",
         stat_energy_from: draft.stat_energy_from,
         stat_energy_to: draft.stat_energy_to,
@@ -487,7 +496,7 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
   }
 
   private _energyFromPower(
-    draft: BatterySourceTypeEnergyPreference,
+    draft: BatteryTotalsSourceTypeEnergyPreference,
     pending: PowerIntegral[]
   ): Promise<string[] | undefined> {
     return confirmIntegrals(this, {

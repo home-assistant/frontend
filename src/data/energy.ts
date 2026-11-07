@@ -98,7 +98,7 @@ export const emptyHomeEnergyPreference =
   });
 
 export const emptyBatteryEnergyPreference =
-  (): BatterySourceTypeEnergyPreference => ({
+  (): BatteryTotalsSourceTypeEnergyPreference => ({
     type: "battery",
     stat_energy_from: "",
     stat_energy_to: "",
@@ -190,16 +190,124 @@ export interface HomeSourceTypeEnergyPreference {
   name?: string;
 }
 
-export interface BatterySourceTypeEnergyPreference {
+export interface BatteryTotalsSourceTypeEnergyPreference {
   type: "battery";
-  stat_energy_from: string;
-  stat_energy_to: string;
+  stat_energy_from: string; // out of the battery
+  stat_energy_to: string; // into the battery
   stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
   stat_soc?: string;
   capacity?: number; // usable capacity in kWh, used to weight the combined SOC
   name?: string;
 }
+
+// Non-negative power sensors, any subset
+export interface BatteryDirectionsPowerConfig {
+  stat_rate_from_grid?: string; // grid → battery
+  stat_rate_from_solar?: string; // solar → battery
+  stat_rate_to_home?: string; // battery → home
+  stat_rate_to_grid?: string; // battery → grid
+}
+
+// An empty direction means the flow never happens
+export interface BatteryDirectionsSourceTypeEnergyPreference {
+  type: "battery";
+  stat_energy_from?: undefined;
+  stat_energy_to?: undefined;
+  stat_energy_from_grid?: string; // grid → battery
+  stat_energy_from_solar?: string; // solar → battery
+  stat_energy_to_home?: string; // battery → home
+  stat_energy_to_grid?: string; // battery → grid
+  // Net power generated from power_config, + discharge and − charge
+  stat_rate?: string;
+  power_config?: BatteryDirectionsPowerConfig;
+  stat_soc?: string;
+  capacity?: number;
+  name?: string;
+}
+
+export type BatterySourceTypeEnergyPreference =
+  | BatteryTotalsSourceTypeEnergyPreference
+  | BatteryDirectionsSourceTypeEnergyPreference;
+
+export interface BatteryFlowStatIds {
+  grid_to_battery?: string;
+  solar_to_battery?: string;
+  battery_to_home?: string;
+  battery_to_grid?: string;
+}
+
+export const BATTERY_FLOW_KEYS = [
+  "grid_to_battery",
+  "solar_to_battery",
+  "battery_to_home",
+  "battery_to_grid",
+] as const satisfies readonly (keyof BatteryFlowStatIds)[];
+
+export const isBatteryDirections = (
+  source: BatterySourceTypeEnergyPreference
+): source is BatteryDirectionsSourceTypeEnergyPreference => {
+  const directions = source as BatteryDirectionsSourceTypeEnergyPreference;
+  return !!(
+    directions.stat_energy_from_grid ||
+    directions.stat_energy_from_solar ||
+    directions.stat_energy_to_home ||
+    directions.stat_energy_to_grid
+  );
+};
+
+/** The direction statistics, or undefined for a battery configured with totals. */
+export const getBatteryFlowStatIds = (
+  source: BatterySourceTypeEnergyPreference
+): BatteryFlowStatIds | undefined =>
+  isBatteryDirections(source)
+    ? {
+        grid_to_battery: source.stat_energy_from_grid || undefined,
+        solar_to_battery: source.stat_energy_from_solar || undefined,
+        battery_to_home: source.stat_energy_to_home || undefined,
+        battery_to_grid: source.stat_energy_to_grid || undefined,
+      }
+    : undefined;
+
+/** The direction power sensors, or undefined for a battery configured with totals. */
+export const getBatteryFlowPowerIds = (
+  source: BatterySourceTypeEnergyPreference
+): BatteryFlowStatIds | undefined =>
+  isBatteryDirections(source)
+    ? {
+        grid_to_battery: source.power_config?.stat_rate_from_grid || undefined,
+        solar_to_battery:
+          source.power_config?.stat_rate_from_solar || undefined,
+        battery_to_home: source.power_config?.stat_rate_to_home || undefined,
+        battery_to_grid: source.power_config?.stat_rate_to_grid || undefined,
+      }
+    : undefined;
+
+/** Statistics whose sum is the energy going into and coming out of the battery. */
+export const getBatteryEnergyStatIds = (
+  source: BatterySourceTypeEnergyPreference
+): { charge: string[]; discharge: string[] } => {
+  if (!isBatteryDirections(source)) {
+    return {
+      charge: [source.stat_energy_to],
+      discharge: [source.stat_energy_from],
+    };
+  }
+  const ids = (...stats: (string | undefined)[]) =>
+    stats.filter((id): id is string => !!id);
+  return {
+    charge: ids(source.stat_energy_from_grid, source.stat_energy_from_solar),
+    discharge: ids(source.stat_energy_to_home, source.stat_energy_to_grid),
+  };
+};
+
+/** Identifies a battery in page keys and lookups. */
+export const getBatteryPrimaryStat = (
+  source: BatterySourceTypeEnergyPreference
+): string => {
+  const { charge, discharge } = getBatteryEnergyStatIds(source);
+  return discharge[0] ?? charge[0] ?? "";
+};
 export interface GasSourceTypeEnergyPreference {
   type: "gas";
 
@@ -376,6 +484,28 @@ export const computeEnergyLabel = (
   );
 };
 
+/**
+ * Name that cards show as "<name> charged" and "<name> discharged". Unnamed
+ * batteries configured with totals are labelled by each statistic instead.
+ */
+export const getBatteryName = (
+  states: HomeAssistant["states"],
+  formatEntityName: HomeAssistant["formatEntityName"],
+  source: BatterySourceTypeEnergyPreference,
+  statsMetadata?: Record<string, StatisticsMetaData>
+): string | undefined => {
+  if (source.name || !isBatteryDirections(source)) {
+    return source.name;
+  }
+  const primary = getBatteryPrimaryStat(source);
+  return computeEnergyLabel(
+    states,
+    formatEntityName,
+    primary,
+    statsMetadata?.[primary]
+  );
+};
+
 export const computeEnergyStatisticArea = (
   registries: HomeAssistantRegistries,
   statisticId: string
@@ -474,8 +604,8 @@ export const getReferencedStatisticIds = (
     }
 
     if (source.type === "battery") {
-      statIDs.push(source.stat_energy_from);
-      statIDs.push(source.stat_energy_to);
+      const { charge, discharge } = getBatteryEnergyStatIds(source);
+      statIDs.push(...discharge, ...charge);
       continue;
     }
 
@@ -1559,7 +1689,8 @@ const getEnergyGasUnit = (
           return [source.stat_energy_to];
         }
         if (source.type === "battery") {
-          return [source.stat_energy_from, source.stat_energy_to];
+          const { charge, discharge } = getBatteryEnergyStatIds(source);
+          return [...discharge, ...charge];
         }
         if (source.type === "grid") {
           return [source.stat_energy_from, source.stat_energy_to].filter(
@@ -1632,6 +1763,14 @@ export interface EnergySumData {
   from_battery?: Record<number, number>;
   solar?: Record<number, number>;
   home?: Record<number, number>;
+  // Set together, only when a battery has direction statistics
+  grid_to_battery?: Record<number, number>;
+  solar_to_battery?: Record<number, number>;
+  battery_to_home?: Record<number, number>;
+  battery_to_grid?: Record<number, number>;
+  // Charge and discharge of the batteries configured with totals
+  to_battery_totals?: Record<number, number>;
+  from_battery_totals?: Record<number, number>;
   total: {
     to_grid?: number;
     from_grid?: number;
@@ -1639,6 +1778,12 @@ export interface EnergySumData {
     from_battery?: number;
     solar?: number;
     home?: number;
+    grid_to_battery?: number;
+    solar_to_battery?: number;
+    battery_to_home?: number;
+    battery_to_grid?: number;
+    to_battery_totals?: number;
+    from_battery_totals?: number;
   };
   timestamps: number[];
 }
@@ -1680,14 +1825,10 @@ const getSummedDataPartial = (
   data: EnergyData,
   compare?: boolean
 ): EnergySumData => {
-  const statIds: {
-    to_grid?: string[];
-    from_grid?: string[];
-    solar?: string[];
-    to_battery?: string[];
-    from_battery?: string[];
-    home?: string[];
-  } = {};
+  const statIds: Partial<
+    Record<Exclude<keyof EnergySumData, "total" | "timestamps">, string[]>
+  > = {};
+  const batteries: BatterySourceTypeEnergyPreference[] = [];
 
   for (const source of data.prefs.energy_sources) {
     if (source.type === "solar") {
@@ -1705,12 +1846,14 @@ const getSummedDataPartial = (
     }
 
     if (source.type === "battery") {
+      batteries.push(source);
+      const { charge, discharge } = getBatteryEnergyStatIds(source);
       if (statIds.to_battery) {
-        statIds.to_battery.push(source.stat_energy_to);
-        statIds.from_battery!.push(source.stat_energy_from);
+        statIds.to_battery.push(...charge);
+        statIds.from_battery!.push(...discharge);
       } else {
-        statIds.to_battery = [source.stat_energy_to];
-        statIds.from_battery = [source.stat_energy_from];
+        statIds.to_battery = [...charge];
+        statIds.from_battery = [...discharge];
       }
       continue;
     }
@@ -1734,6 +1877,23 @@ const getSummedDataPartial = (
         statIds.to_grid = [source.stat_energy_to];
       }
     }
+  }
+
+  if (batteries.some(isBatteryDirections)) {
+    for (const key of BATTERY_FLOW_KEYS) {
+      statIds[key] = batteries.flatMap(
+        (battery) => getBatteryFlowStatIds(battery)?.[key] ?? []
+      );
+    }
+    const totalsBatteries = batteries.filter(
+      (battery) => !isBatteryDirections(battery)
+    );
+    statIds.to_battery_totals = totalsBatteries.flatMap(
+      (battery) => getBatteryEnergyStatIds(battery).charge
+    );
+    statIds.from_battery_totals = totalsBatteries.flatMap(
+      (battery) => getBatteryEnergyStatIds(battery).discharge
+    );
   }
 
   const summedData: EnergySumData = { total: {}, timestamps: [] };
@@ -1806,11 +1966,12 @@ const computeConsumptionDataPartial = (
     },
   };
 
+  const measured = BATTERY_FLOW_KEYS.some((key) => data[key]);
   const fromGrid = data.from_grid;
   const toGrid = data.to_grid;
   const solarData = data.solar;
-  const toBattery = data.to_battery;
-  const fromBattery = data.from_battery;
+  const toBattery = measured ? data.to_battery_totals : data.to_battery;
+  const fromBattery = measured ? data.from_battery_totals : data.from_battery;
   const total = outData.total;
 
   data.timestamps.forEach((t) => {
@@ -1825,13 +1986,25 @@ const computeConsumptionDataPartial = (
       used_total,
       solar_to_battery,
       solar_to_grid,
-    } = computeConsumptionSingle({
-      from_grid: fromGrid && (fromGrid[t] ?? 0),
-      to_grid: toGrid && (toGrid[t] ?? 0),
-      solar: solarData && (solarData[t] ?? 0),
-      to_battery: toBattery && (toBattery[t] ?? 0),
-      from_battery: fromBattery && (fromBattery[t] ?? 0),
-    });
+    } = computeConsumptionSingle(
+      {
+        from_grid: fromGrid && (fromGrid[t] ?? 0),
+        to_grid: toGrid && (toGrid[t] ?? 0),
+        solar: solarData && (solarData[t] ?? 0),
+        to_battery: toBattery && (toBattery[t] ?? 0),
+        from_battery: fromBattery && (fromBattery[t] ?? 0),
+      },
+      measured
+        ? {
+            measured: {
+              grid_to_battery: data.grid_to_battery?.[t] ?? 0,
+              solar_to_battery: data.solar_to_battery?.[t] ?? 0,
+              battery_to_home: data.battery_to_home?.[t] ?? 0,
+              battery_to_grid: data.battery_to_grid?.[t] ?? 0,
+            },
+          }
+        : undefined
+    );
 
     const usedTotal = hasHome ? Math.max(homeUsed, 0) : used_total;
     outData.used_total[t] = usedTotal;
@@ -1855,13 +2028,15 @@ const computeConsumptionDataPartial = (
   return outData;
 };
 
-export const computeConsumptionSingle = (data: {
+interface ConsumptionInput {
   from_grid: number | undefined;
   to_grid: number | undefined;
   solar: number | undefined;
   to_battery: number | undefined;
   from_battery: number | undefined;
-}): {
+}
+
+interface ConsumptionResult {
   grid_to_battery: number;
   battery_to_grid: number;
   solar_to_battery: number;
@@ -1870,7 +2045,12 @@ export const computeConsumptionSingle = (data: {
   used_grid: number;
   used_battery: number;
   used_total: number;
-} => {
+}
+
+const inferConsumption = (
+  data: ConsumptionInput,
+  usedTotal?: number
+): ConsumptionResult => {
   let to_grid = Math.max(data.to_grid || 0, 0);
   let to_battery = Math.max(data.to_battery || 0, 0);
   let solar = Math.max(data.solar || 0, 0);
@@ -1878,11 +2058,12 @@ export const computeConsumptionSingle = (data: {
   let from_battery = Math.max(data.from_battery || 0, 0);
 
   const used_total =
+    usedTotal ??
     (from_grid || 0) +
-    (solar || 0) +
-    (from_battery || 0) -
-    (to_grid || 0) -
-    (to_battery || 0);
+      (solar || 0) +
+      (from_battery || 0) -
+      (to_grid || 0) -
+      (to_battery || 0);
 
   let grid_to_battery = 0;
 
@@ -1947,6 +2128,70 @@ export const computeConsumptionSingle = (data: {
     battery_to_grid,
     solar_to_battery,
     solar_to_grid,
+  };
+};
+
+export type MeasuredBatteryFlows = Record<
+  (typeof BATTERY_FLOW_KEYS)[number],
+  number | undefined
+>;
+
+/**
+ * Splits the energy or power of one period into flows. Batteries with
+ * direction statistics pass them in `measured`, and `to_battery` and
+ * `from_battery` then only hold the batteries configured with totals.
+ * Measured flows are kept as they are; only the rest is estimated. Leave a
+ * meter undefined when it isn't configured, rather than 0.
+ */
+export const computeConsumptionSingle = (
+  data: ConsumptionInput,
+  options?: { measured?: MeasuredBatteryFlows; used_total?: number }
+): ConsumptionResult => {
+  const measured = options?.measured;
+  if (!measured) {
+    return inferConsumption(data, options?.used_total);
+  }
+  const clamp = (value: number | undefined) => Math.max(value || 0, 0);
+  const gridToBattery = clamp(measured.grid_to_battery);
+  const solarToBattery = clamp(measured.solar_to_battery);
+  const batteryToHome = clamp(measured.battery_to_home);
+  const batteryToGrid = clamp(measured.battery_to_grid);
+  const fromGrid = clamp(data.from_grid);
+  const toGrid = clamp(data.to_grid);
+  const solar = clamp(data.solar);
+  // A flow without a configured meter never passed one, so it stays out of
+  // the home load
+  const metered = (meter: number | undefined, flow: number) =>
+    meter === undefined ? 0 : flow;
+  const toBattery =
+    clamp(data.to_battery) +
+    metered(data.from_grid, gridToBattery) +
+    metered(data.solar, solarToBattery);
+  const fromBattery =
+    clamp(data.from_battery) +
+    batteryToHome +
+    metered(data.to_grid, batteryToGrid);
+  const usedTotal =
+    options.used_total ?? fromGrid + solar + fromBattery - toGrid - toBattery;
+
+  // Only what the measured flows leave over is estimated
+  const inferred = inferConsumption(
+    {
+      from_grid: Math.max(fromGrid - gridToBattery, 0),
+      to_grid: Math.max(toGrid - batteryToGrid, 0),
+      solar: Math.max(solar - solarToBattery, 0),
+      to_battery: data.to_battery,
+      from_battery: data.from_battery,
+    },
+    Math.max(usedTotal - batteryToHome, 0)
+  );
+  return {
+    ...inferred,
+    grid_to_battery: inferred.grid_to_battery + gridToBattery,
+    solar_to_battery: inferred.solar_to_battery + solarToBattery,
+    battery_to_grid: inferred.battery_to_grid + batteryToGrid,
+    used_battery: inferred.used_battery + batteryToHome,
+    used_total: usedTotal,
   };
 };
 
@@ -2439,18 +2684,54 @@ export const downloadEnergyData = (
     grid_productions_cost
   );
 
+  const batteries = energy_sources.filter(
+    (s): s is BatterySourceTypeEnergyPreference => s.type === "battery"
+  );
   const battery_ins: string[] = [];
   const battery_outs: string[] = [];
-  energy_sources
-    .filter((s) => s.type === "battery")
-    .forEach((source) => {
-      source = source as BatterySourceTypeEnergyPreference;
-      battery_ins.push(source.stat_energy_to);
-      battery_outs.push(source.stat_energy_from);
+  const battery_flows: Record<keyof BatteryFlowStatIds, string[]> = {
+    grid_to_battery: [],
+    solar_to_battery: [],
+    battery_to_home: [],
+    battery_to_grid: [],
+  };
+  batteries.forEach((source) => {
+    const flows = getBatteryFlowStatIds(source);
+    if (!flows) {
+      const { charge, discharge } = getBatteryEnergyStatIds(source);
+      battery_ins.push(...charge);
+      battery_outs.push(...discharge);
+      return;
+    }
+    BATTERY_FLOW_KEYS.forEach((key) => {
+      if (flows[key]) {
+        battery_flows[key].push(flows[key]);
+      }
     });
+  });
 
   printCategory("battery_in", battery_ins, electricUnit);
   printCategory("battery_out", battery_outs, electricUnit);
+  printCategory(
+    "battery_in_from_grid",
+    battery_flows.grid_to_battery,
+    electricUnit
+  );
+  printCategory(
+    "battery_in_from_solar",
+    battery_flows.solar_to_battery,
+    electricUnit
+  );
+  printCategory(
+    "battery_out_to_home",
+    battery_flows.battery_to_home,
+    electricUnit
+  );
+  printCategory(
+    "battery_out_to_grid",
+    battery_flows.battery_to_grid,
+    electricUnit
+  );
 
   const solar_productions: string[] = [];
   energy_sources
@@ -2567,7 +2848,7 @@ export const downloadEnergyData = (
 
   const hasSolar = !!solar_productions.length;
   const hasHome = !!home_consumptions.length;
-  const hasBattery = !!battery_ins.length;
+  const hasBattery = batteries.length > 0;
   const hasGridReturn = !!grid_productions.length;
   const hasGridSource = !!grid_consumptions.length;
 

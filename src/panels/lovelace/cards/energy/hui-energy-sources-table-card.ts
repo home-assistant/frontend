@@ -24,6 +24,8 @@ import {
 import type { EnergyData, EnergySourceByType } from "../../../../data/energy";
 import {
   energySourcesByType,
+  getBatteryEnergyStatIds,
+  getBatteryName,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
@@ -182,7 +184,8 @@ export class HuiEnergySourcesTableCard
     compareCost: number | null,
     showCosts: boolean,
     compare: boolean,
-    name?: string
+    name?: string,
+    moreInfo = true
   ) {
     const displayPrecision =
       type === "gas" && this._gasUnits?.[statId] === energyUnit
@@ -221,10 +224,10 @@ export class HuiEnergySourcesTableCard
 
     return html`<tr
       class="mdc-data-table__row ${classMap({
-        clickable: !isExternalStatistic(statId),
+        clickable: moreInfo && !isExternalStatistic(statId),
       })}"
       @click=${this._handleMoreInfo}
-      .entity=${statId}
+      .entity=${moreInfo ? statId : undefined}
     >
       <td class="mdc-data-table__cell cell-bullet">
         <div
@@ -562,6 +565,19 @@ export class HuiEnergySourcesTableCard
       };
     };
 
+    const _sumStatData = (statIds: string[]) =>
+      statIds.reduce(
+        (sum, statId) => {
+          const data = _extractStatData(statId, null);
+          return {
+            hasData: sum.hasData || data.hasData,
+            energy: sum.energy + data.energy,
+            energyCompare: sum.energyCompare + data.energyCompare,
+          };
+        },
+        { hasData: false, energy: 0, energyCompare: 0 }
+      );
+
     const showOnlyTotals = this._config.show_only_totals;
     const combine =
       !showOnlyTotals &&
@@ -790,16 +806,17 @@ export class HuiEnergySourcesTableCard
               })}
               ${_renderSimpleCategory("solar")}
               ${types.battery?.map((source, idx) => {
+                const { charge, discharge } = getBatteryEnergyStatIds(source);
                 const {
                   hasData: hasFromData,
                   energy: energyFrom,
                   energyCompare: energyFromCompare,
-                } = _extractStatData(source.stat_energy_from, null);
+                } = _sumStatData(discharge);
                 const {
                   hasData: hasToData,
                   energy: energyTo,
                   energyCompare: energyToCompare,
-                } = _extractStatData(source.stat_energy_to, null);
+                } = _sumStatData(charge);
 
                 if (!hasFromData && !hasToData) {
                   return nothing;
@@ -822,10 +839,16 @@ export class HuiEnergySourcesTableCard
                   return nothing;
                 }
 
+                const name = getBatteryName(
+                  this._states,
+                  this._formatEntityName,
+                  source,
+                  this._data!.statsMetadata
+                );
                 return html` ${this._renderRow(
                   computedStyles,
                   "battery_out",
-                  source.stat_energy_from,
+                  discharge[0],
                   idx,
                   energyFrom,
                   energyFromCompare,
@@ -834,16 +857,17 @@ export class HuiEnergySourcesTableCard
                   null,
                   showCosts,
                   compare,
-                  source.name
+                  name
                     ? this._i18n.localize(
                         "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_discharged",
-                        { name: source.name }
+                        { name }
                       )
-                    : ""
+                    : "",
+                  discharge.length === 1
                 )}${this._renderRow(
                   computedStyles,
                   "battery_in",
-                  source.stat_energy_to,
+                  charge[0],
                   idx,
                   -energyTo,
                   -energyToCompare,
@@ -852,12 +876,13 @@ export class HuiEnergySourcesTableCard
                   null,
                   showCosts,
                   compare,
-                  source.name
+                  name
                     ? this._i18n.localize(
                         "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_charged",
-                        { name: source.name }
+                        { name }
                       )
-                    : ""
+                    : "",
+                  charge.length === 1
                 )}`;
               })}
               ${renderCombinedRow(

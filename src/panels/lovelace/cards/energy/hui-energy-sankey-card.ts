@@ -18,11 +18,15 @@ import type {
   EnergyConsumptionData,
   EnergyData,
   EnergySourceByType,
+  EnergySumData,
 } from "../../../../data/energy";
 import {
   computeConsumptionData,
   computeEnergyDeviceLabels,
   energySourcesByType,
+  getBatteryEnergyStatIds,
+  getBatteryFlowStatIds,
+  getBatteryName,
   getSummedData,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
@@ -331,7 +335,7 @@ class HuiEnergySankeyCard
         typeNodes,
         typeLinks,
         consumption,
-        summedData.timestamps,
+        summedData,
         computedStyle
       );
       nodes.push(...separate.nodes);
@@ -440,33 +444,47 @@ class HuiEnergySankeyCard
     typeNodes: Node[],
     typeLinks: Link[],
     consumption: EnergyConsumptionData,
-    timestamps: number[],
+    summedData: EnergySumData,
     computedStyle: CSSStyleDeclaration
   ): { nodes: Node[]; links: Link[] } {
     interface SourceNode {
       id: string;
       values?: Record<number, number>;
+      // Flows of a battery with direction statistics, by the other node
+      measured?: Record<string, Record<number, number>>;
     }
     const nodes: Node[] = [];
 
+    const sumSeries = (statIds: (string | undefined)[]) => {
+      const values: Record<number, number> = {};
+      let total = 0;
+      statIds.forEach((statId) => {
+        if (!statId) {
+          return;
+        }
+        this._data!.stats[statId]?.forEach(({ start, change }) => {
+          if (change === null || change === undefined) {
+            return;
+          }
+          values[start] = (values[start] ?? 0) + change;
+          total += change;
+        });
+      });
+      return { values, total };
+    };
+
     const addNode = (
       type: string,
-      statId: string,
+      statIds: string[],
       colorVariable: string,
       idx: number,
       index: number,
-      name: string | undefined
+      name: string | undefined,
+      measured?: SourceNode["measured"]
     ): SourceNode => {
+      const statId = statIds[0];
       const id = `${type}:${statId}`;
-      const values: Record<number, number> = {};
-      let total = 0;
-      this._data!.stats[statId]?.forEach(({ start, change }) => {
-        if (change === null || change === undefined) {
-          return;
-        }
-        values[start] = (values[start] ?? 0) + change;
-        total += change;
-      });
+      const { values, total } = sumSeries(statIds);
       nodes.push({
         id,
         label:
@@ -487,10 +505,11 @@ class HuiEnergySankeyCard
           idx
         ),
         index,
-        entityId: statId in this._states ? statId : undefined,
+        entityId:
+          statIds.length === 1 && statId in this._states ? statId : undefined,
         group: type,
       });
-      return { id, values };
+      return { id, values, measured };
     };
 
     const addGroup = <T>(
@@ -505,41 +524,62 @@ class HuiEnergySankeyCard
       return sources.map(toNode);
     };
 
-    const batteryOut = addGroup("battery", split.battery, (source, idx) =>
-      addNode(
+    const batteryName = (
+      source: NonNullable<EnergySourceByType["battery"]>[number],
+      key: "named_battery_discharged" | "named_battery_charged"
+    ) => {
+      const name = getBatteryName(
+        this._states,
+        this._formatEntityName,
+        source,
+        this._data!.statsMetadata
+      );
+      return (
+        name &&
+        this._i18n.localize(
+          `ui.panel.lovelace.cards.energy.energy_sources_table.${key}`,
+          { name }
+        )
+      );
+    };
+    const series = (statId?: string) => sumSeries([statId]).values;
+    const batteryOut = addGroup("battery", split.battery, (source, idx) => {
+      const flows = getBatteryFlowStatIds(source);
+      return addNode(
         "battery",
-        source.stat_energy_from,
+        getBatteryEnergyStatIds(source).discharge,
         "--energy-battery-out-color",
         idx,
         0,
-        source.name &&
-          this._i18n.localize(
-            "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_discharged",
-            { name: source.name }
-          )
-      )
-    );
-    const batteryIn = addGroup("battery_in", split.battery, (source, idx) =>
-      addNode(
+        batteryName(source, "named_battery_discharged"),
+        flows && {
+          home: series(flows.battery_to_home),
+          grid_return: series(flows.battery_to_grid),
+        }
+      );
+    });
+    const batteryIn = addGroup("battery_in", split.battery, (source, idx) => {
+      const flows = getBatteryFlowStatIds(source);
+      return addNode(
         "battery_in",
-        source.stat_energy_to,
+        getBatteryEnergyStatIds(source).charge,
         "--energy-battery-in-color",
         idx,
         1,
-        source.name &&
-          this._i18n.localize(
-            "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_charged",
-            { name: source.name }
-          )
-      )
-    );
+        batteryName(source, "named_battery_charged"),
+        flows && {
+          grid: series(flows.grid_to_battery),
+          solar: series(flows.solar_to_battery),
+        }
+      );
+    });
     const gridIn = addGroup(
       "grid",
       split.grid?.filter((source) => source.stat_energy_from),
       (source, idx) =>
         addNode(
           "grid",
-          source.stat_energy_from!,
+          [source.stat_energy_from!],
           "--energy-grid-consumption-color",
           idx,
           0,
@@ -554,7 +594,7 @@ class HuiEnergySankeyCard
     const solar = addGroup("solar", split.solar, (source, idx) =>
       addNode(
         "solar",
-        source.stat_energy_from,
+        [source.stat_energy_from],
         "--energy-solar-color",
         idx,
         0,
@@ -567,7 +607,7 @@ class HuiEnergySankeyCard
       (source, idx) =>
         addNode(
           "grid_return",
-          source.stat_energy_to!,
+          [source.stat_energy_to!],
           "--energy-grid-return-color",
           idx,
           1,
@@ -597,22 +637,57 @@ class HuiEnergySankeyCard
       "battery>grid_return": consumption.battery_to_grid,
       "solar>grid_return": consumption.solar_to_grid,
     };
+    const measuredFlows: Record<string, Record<number, number> | undefined> = {
+      "battery>home": summedData.battery_to_home,
+      "grid>battery_in": summedData.grid_to_battery,
+      "solar>battery_in": summedData.solar_to_battery,
+      "battery>grid_return": summedData.battery_to_grid,
+    };
     const isSplit = (id: string) => groups[id][0]?.id !== id;
+    // Batteries with direction statistics get their own flows, the rest of
+    // a flow is split across the others
     const shares = (id: string, t: number): SankeyFlowShare[] =>
-      groups[id].map(({ id: nodeId, values }) => [
-        nodeId,
-        values ? (values[t] ?? 0) : 1,
-      ]);
+      groups[id]
+        .filter((node) => !node.measured)
+        .map(({ id: nodeId, values }) => [
+          nodeId,
+          values ? (values[t] ?? 0) : 1,
+        ]);
+    const exact = (node: SourceNode, other: string, t: number) =>
+      Math.max(node.measured![other]?.[t] ?? 0, 0);
     const links = typeLinks.flatMap((link) => {
       if (!isSplit(link.source) && !isSplit(link.target)) {
         return [link];
       }
-      const flow = flows[`${link.source}>${link.target}`];
+      const key = `${link.source}>${link.target}`;
+      const flow = flows[key];
+      const measuredSources = groups[link.source].filter((n) => n.measured);
+      const measuredTargets = groups[link.target].filter((n) => n.measured);
+      const measuredFlow =
+        measuredSources.length || measuredTargets.length
+          ? measuredFlows[key]
+          : undefined;
       const splitLinks = new Map<string, Link & { value: number }>();
-      for (const t of timestamps) {
+      for (const t of summedData.timestamps) {
+        measuredSources.forEach((node) =>
+          addSplitSankeyLinks(
+            splitLinks,
+            exact(node, link.target, t),
+            [[node.id, 1]],
+            shares(link.target, t)
+          )
+        );
+        measuredTargets.forEach((node) =>
+          addSplitSankeyLinks(
+            splitLinks,
+            exact(node, link.source, t),
+            shares(link.source, t),
+            [[node.id, 1]]
+          )
+        );
         addSplitSankeyLinks(
           splitLinks,
-          flow[t] ?? 0,
+          (flow[t] ?? 0) - Math.max(measuredFlow?.[t] ?? 0, 0),
           shares(link.source, t),
           shares(link.target, t)
         );
