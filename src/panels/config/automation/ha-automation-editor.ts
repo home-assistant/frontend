@@ -9,6 +9,7 @@ import {
   mdiInformationOutline,
   mdiPlay,
   mdiPlayCircleOutline,
+  mdiPlaylistCheck,
   mdiPlaylistEdit,
   mdiPlusCircleMultipleOutline,
   mdiRedo,
@@ -75,6 +76,7 @@ import type { Entries, ValueChangedEvent } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showEditorToast } from "./editor-toast";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { showAutomationDryRunDialog } from "./dry-run/show-dialog-automation-dry-run";
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
 import { showAutomationSaveDialog } from "./automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveTimeoutDialog } from "./automation-save-timeout-dialog/show-dialog-automation-save-timeout";
@@ -361,6 +363,13 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           <ha-dropdown-item .disabled=${!stateObj} value="run">
             ${this.hass.localize("ui.panel.config.automation.editor.run")}
             <ha-svg-icon slot="icon" .path=${mdiPlay}></ha-svg-icon>
+          </ha-dropdown-item>
+
+          <ha-dropdown-item .disabled=${!this.config} value="dry_run">
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.dry_run.menu"
+            )}
+            <ha-svg-icon slot="icon" .path=${mdiPlaylistCheck}></ha-svg-icon>
           </ha-dropdown-item>
 
           ${
@@ -885,6 +894,13 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     );
   }
 
+  private _dryRun() {
+    if (!this.config) {
+      return;
+    }
+    showAutomationDryRunDialog(this, { config: this.config });
+  }
+
   private async _toggle(): Promise<void> {
     if (!this.hass || !this.currentEntityId) {
       return;
@@ -1301,6 +1317,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         break;
       case "run":
         this._runActions();
+        break;
+      case "dry_run":
+        this._dryRun();
         break;
       case "rename":
         this._promptAutomationAlias();
