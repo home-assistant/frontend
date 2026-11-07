@@ -280,4 +280,71 @@ describe("MaintenanceViewStrategy.generate", () => {
       },
     ]);
   });
+
+  const createBatteryHass = () =>
+    createMockHass({
+      "sensor.car_target_charge": createMockEntityState(
+        "sensor.car_target_charge",
+        "80",
+        { device_class: "battery" }
+      ),
+      "sensor.remote_battery": createMockEntityState(
+        "sensor.remote_battery",
+        "80",
+        { device_class: "battery" }
+      ),
+    });
+
+  it("leaves hidden entities out of the view", async () => {
+    const view = await MaintenanceViewStrategy.generate(
+      { type: "maintenance", hidden_entities: ["sensor.car_target_charge"] },
+      createBatteryHass()
+    );
+
+    const section = view.sections?.[0] as LovelaceSectionConfig;
+
+    expect(section.cards?.slice(1)).toEqual([
+      {
+        type: "tile",
+        entity: "sensor.remote_battery",
+        name: { type: "entity" },
+      },
+    ]);
+  });
+
+  it("keeps hidden entities as hidden visibility wrappers while editing", async () => {
+    const view = await MaintenanceViewStrategy.generate(
+      {
+        type: "maintenance",
+        hidden_entities: ["sensor.car_target_charge"],
+        edit_visibility: true,
+      },
+      createBatteryHass()
+    );
+
+    const section = view.sections?.[0] as LovelaceSectionConfig;
+
+    expect(section.cards?.slice(1)).toEqual([
+      {
+        type: "entity-visibility",
+        entity: "sensor.car_target_charge",
+        hidden: true,
+        card: {
+          type: "tile",
+          entity: "sensor.car_target_charge",
+          name: { type: "entity" },
+        },
+      },
+      {
+        type: "entity-visibility",
+        entity: "sensor.remote_battery",
+        hidden: false,
+        card: {
+          type: "tile",
+          entity: "sensor.remote_battery",
+          name: { type: "entity" },
+        },
+      },
+    ]);
+  });
 });
