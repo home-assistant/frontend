@@ -98,7 +98,10 @@ class HaConfigEnergy extends LitElement {
     if (changedProperties.has("route")) {
       const tab = this.route.path.substring(1);
       if (!tab || !TABS.some((t) => t.path.endsWith(`/${tab}`))) {
-        navigate(`${this.route.prefix}/electricity`, { replace: true });
+        navigate(`${this.route.prefix}/electricity${location.search}`, {
+          replace: true,
+          keepDialogs: true,
+        });
       }
     }
   }
