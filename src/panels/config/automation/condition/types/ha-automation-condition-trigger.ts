@@ -106,7 +106,13 @@ export class HaTriggerCondition extends LitElement {
               appearance="checkbox"
             >
               <span slot="start" class="trigger-row-leading">
-                <span class="trigger-index-badge">${option.index + 1}</span>
+                ${
+                  this._triggers?.showIndices
+                    ? html`<span class="trigger-index-badge"
+                        >${option.index + 1}</span
+                      >`
+                    : nothing
+                }
                 <ha-trigger-icon
                   .trigger=${
                     "trigger" in option.trigger ? option.trigger.trigger : ""
@@ -197,8 +203,7 @@ export class HaTriggerCondition extends LitElement {
         ? ids
         : [...ids, id]
       : ids.filter((_id) => _id !== id);
-    if (this._triggers) {
-      this._triggers.select(this.condition, selectedIds);
+    if (this._triggers?.select(this.condition, selectedIds)) {
       return;
     }
     fireEvent(this, "value-changed", {

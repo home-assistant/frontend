@@ -43,8 +43,12 @@ export interface AutomationTriggerContext {
   options: TriggerIdOption[];
   /** True while the user is editing a `triggered_by` condition; trigger rows show their index badges only in this state. */
   showIndices: boolean;
-  /** Pass the original condition object so identical conditions remain distinguishable. */
-  select: (condition: TriggerCondition, ids: string[]) => void;
+  /**
+   * Pass the original condition object so identical conditions remain distinguishable.
+   * Return false when the condition is not one of the automation's conditions, as in
+   * a blueprint automation, whose conditions live in its inputs.
+   */
+  select: (condition: TriggerCondition, ids: string[]) => boolean;
   /** Requests confirmation before migrating duplicate IDs throughout the automation. */
   fixDuplicateIds: () => Promise<void>;
   /**
@@ -138,6 +142,27 @@ export const getTriggerIdOptions = (
       duplicate: explicitId ? duplicates.has(explicitId) : false,
     };
   });
+};
+
+/**
+ * Build options from a blueprint's substituted triggers. The blueprint owns its
+ * triggers, so only those with a stored ID can be referenced, and triggers sharing
+ * an ID are one option: a condition on that ID matches any of them.
+ */
+export const getBlueprintTriggerIdOptions = (
+  triggers: Trigger | Trigger[] | undefined
+): TriggerIdOption[] => {
+  const options: TriggerIdOption[] = [];
+  const seenIds = new Set<string>();
+  flattenTriggers(triggers).forEach((trigger, index) => {
+    const id = getTriggerId(trigger);
+    if (!id || seenIds.has(id)) {
+      return;
+    }
+    seenIds.add(id);
+    options.push({ id, trigger, index, draft: false, duplicate: false });
+  });
+  return options;
 };
 
 /**

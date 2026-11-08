@@ -3,11 +3,13 @@ import type { LitElement, ReactiveController } from "lit";
 import memoizeOne from "memoize-one";
 import type {
   AutomationConfig,
+  BlueprintAutomationConfig,
   SidebarConfig,
   Trigger,
   TriggerCondition,
 } from "../../../../data/automation";
 import { ContextSubscriptionController } from "../../../../common/decorators/consume";
+import { debounce } from "../../../../common/util/debounce";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { internationalizationContext } from "../../../../data/context";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -16,12 +18,14 @@ import {
   automationTriggerContext,
   cleanupRemovedGeneratedTriggerReferences,
   cleanupUnusedGeneratedTriggerIds,
+  getBlueprintTriggerIdOptions,
   getTriggerIdOptions,
   getExplicitTriggerIds,
   isGeneratedTriggerId,
   makeDuplicateTriggerIdsUnique,
   replaceLeafTrigger,
   updateTriggerCondition,
+  type TriggerIdOption,
 } from "./automation-trigger-id";
 import { preserveAutomationRowKeys } from "../ha-automation-sortable-list-mixin";
 
@@ -31,6 +35,10 @@ interface AutomationTriggerControllerOptions {
   canEdit: () => boolean;
   /** Apply one complete change through the editor's undo and dirty-state handling. */
   commit: (config: AutomationConfig) => void;
+  /** Resolve a blueprint automation's triggers, with its inputs substituted. */
+  fetchBlueprintTriggers: (
+    useBlueprint: BlueprintAutomationConfig["use_blueprint"]
+  ) => Promise<Trigger | Trigger[] | undefined>;
 }
 
 /**
@@ -43,6 +51,9 @@ interface AutomationTriggerControllerOptions {
  *
  * The transformation helpers only change configuration. This controller preserves
  * the corresponding row keys so an open sidebar continues to track the edited row.
+ *
+ * A blueprint automation has no triggers of its own: options come from the
+ * blueprint's substituted triggers, and conditions in its inputs change themselves.
  */
 export class AutomationTriggerController implements ReactiveController {
   // Only read in event handlers, so it does not need to rerender the host.
@@ -53,6 +64,15 @@ export class AutomationTriggerController implements ReactiveController {
   // Unassigned options contain candidate IDs. Reuse them until the trigger list
   // changes, so rendering and selection use the same IDs across host updates.
   private _getTriggerIdOptions = memoizeOne(getTriggerIdOptions);
+
+  private _getBlueprintTriggerIdOptions = memoizeOne(
+    getBlueprintTriggerIdOptions
+  );
+
+  /** The blueprint use whose triggers were last requested. */
+  private _blueprintRequested?: BlueprintAutomationConfig["use_blueprint"];
+
+  private _blueprintTriggers?: Trigger | Trigger[];
 
   constructor(
     private _host: LitElement,
@@ -78,13 +98,24 @@ export class AutomationTriggerController implements ReactiveController {
     _host.addController(this);
   }
 
+  public hostDisconnected() {
+    this._fetchBlueprintTriggers.cancel();
+    this._blueprintRequested = undefined;
+  }
+
   /** Publish options before descendants render, including after undo or redo. */
   public hostUpdate() {
     const config = this._options.getConfig();
     if (!config) {
       return;
     }
-    const options = this._getTriggerIdOptions(config.triggers);
+    let options: TriggerIdOption[];
+    if ("use_blueprint" in config) {
+      this._requestBlueprintTriggers(config.use_blueprint);
+      options = this._getBlueprintTriggerIdOptions(this._blueprintTriggers);
+    } else {
+      options = this._getTriggerIdOptions(config.triggers);
+    }
     if (options !== this._provider.value.options) {
       this._provider.setValue({ ...this._provider.value, options });
     }
@@ -138,10 +169,49 @@ export class AutomationTriggerController implements ReactiveController {
     return cleaned;
   }
 
-  private _selectTriggerIds = (condition: TriggerCondition, ids: string[]) => {
-    const config = this._options.getConfig();
-    if (!config || !this._options.canEdit()) {
+  /** Request the blueprint's triggers again whenever its path or inputs change. */
+  private _requestBlueprintTriggers(
+    useBlueprint: BlueprintAutomationConfig["use_blueprint"]
+  ) {
+    if (useBlueprint === this._blueprintRequested) {
       return;
+    }
+    if (useBlueprint.path !== this._blueprintRequested?.path) {
+      this._blueprintTriggers = undefined;
+    }
+    this._blueprintRequested = useBlueprint;
+    this._fetchBlueprintTriggers(useBlueprint);
+  }
+
+  private _fetchBlueprintTriggers = debounce(
+    async (useBlueprint: BlueprintAutomationConfig["use_blueprint"]) => {
+      let triggers: Trigger | Trigger[] | undefined;
+      try {
+        triggers = await this._options.fetchBlueprintTriggers(useBlueprint);
+      } catch (_err) {
+        // Inputs fail to substitute while they are incomplete; keep the last triggers.
+        return;
+      }
+      if (useBlueprint !== this._blueprintRequested) {
+        return;
+      }
+      this._blueprintTriggers = triggers;
+      this._host.requestUpdate();
+    },
+    500,
+    true
+  );
+
+  private _selectTriggerIds = (
+    condition: TriggerCondition,
+    ids: string[]
+  ): boolean => {
+    const config = this._options.getConfig();
+    if (config && "use_blueprint" in config) {
+      return false;
+    }
+    if (!config || !this._options.canEdit()) {
+      return true;
     }
     const triggers = assignGeneratedTriggerIds(
       config.triggers,
@@ -157,6 +227,7 @@ export class AutomationTriggerController implements ReactiveController {
     // Generated IDs that no condition or action references are no longer in use.
     // Strip them so the YAML does not accumulate stale identifiers.
     this._commit(cleanupUnusedGeneratedTriggerIds(updated));
+    return true;
   };
 
   private _fixDuplicateTriggerIds = async () => {
