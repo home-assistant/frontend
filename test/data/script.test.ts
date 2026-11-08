@@ -7,8 +7,12 @@ describe("getActionType", () => {
     ["light.turn_on", "service"],
     ["notify.send_message", "notify"],
     ["notify.mobile_app_jans_iphone", "notify"],
+    ["notify.mobile_app", "notify"],
     // notify.reload is a plain service call, not a message to send
     ["notify.reload", "service"],
+    // Other notify services can declare their own, unrelated fields
+    ["notify.telegram_bot", "service"],
+    ["notify.html5", "service"],
   ])("classifies action %s as %s", (action, expected) => {
     expect(getActionType({ action } as Action)).toBe(expected);
   });

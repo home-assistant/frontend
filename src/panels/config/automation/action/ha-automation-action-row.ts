@@ -322,7 +322,11 @@ export default class HaAutomationActionRow extends LitElement {
   private _renderRow() {
     const type = getAutomationActionType(this.action);
 
-    const action = type === "service" && (this.action as ServiceAction).action;
+    // notify.send_message has an entity target like any other service; a
+    // legacy per-device notify action has none to show as a chip here.
+    const action =
+      (type === "service" || type === "notify") &&
+      (this.action as ServiceAction).action;
 
     const actionHasTarget =
       action &&

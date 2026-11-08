@@ -416,8 +416,14 @@ export const getActionType = (action: Action): ActionType => {
       (action as { service?: string }).service;
     if (typeof serviceId === "string") {
       const [domain, service] = serviceId.split(".", 2);
-      // notify.reload is a plain service call, not a message to send
-      if (domain === "notify" && service && service !== "reload") {
+      // Other notify services (Telegram, a notify group, ...) can declare
+      // their own fields; only these two shapes are known to be safe here.
+      if (
+        domain === "notify" &&
+        (service === "send_message" ||
+          service === "mobile_app" ||
+          service?.startsWith("mobile_app_"))
+      ) {
         return "notify";
       }
     }

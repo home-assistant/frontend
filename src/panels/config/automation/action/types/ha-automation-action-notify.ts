@@ -1,4 +1,5 @@
 import { mdiDelete, mdiPlus } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { html, LitElement, nothing, css } from "lit";
 import { customElement, property } from "lit/decorators";
 import { assert } from "superstruct";
@@ -117,6 +118,34 @@ export class HaNotifyAction extends LitElement implements ActionElement {
     return undefined;
   }
 
+  // notify.send_message always resolves safely (its target, if any, is a
+  // plain entity_id); a legacy action only does when exactly one device's
+  // slug matches its name. Run on every hass/action change, including the
+  // first, so an unresolvable legacy action never renders this editor at all.
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
+    if (changedProps.has("hass") || changedProps.has("action")) {
+      const service = this.action.action?.split(".", 2)[1];
+      if (service && service !== "send_message") {
+        const matches = this._devicesForLegacyService(service);
+        if (matches.length !== 1) {
+          fireEvent(
+            this,
+            "ui-mode-not-available",
+            Error(
+              this.hass.localize(
+                matches.length > 1
+                  ? `${translationBaseKey}.ambiguous_device`
+                  : `${translationBaseKey}.unknown_device`
+              )
+            )
+          );
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   // Devices with a notify entity: the companion app, and anything else
   // that models its notifications the same way.
   private _includeDomains = ["notify"];
@@ -200,6 +229,14 @@ export class HaNotifyAction extends LitElement implements ActionElement {
     )?.entity_id;
   }
 
+  // Every device whose legacy service slug matches. More than one means the
+  // match can't be trusted (two devices slugify to the same name).
+  private _devicesForLegacyService(service: string): string[] {
+    return Object.keys(this.hass.devices).filter(
+      (deviceId) => this._legacyServiceForDevice(deviceId) === service
+    );
+  }
+
   private _currentDeviceId(): string | undefined {
     const action = this.action.action;
     if (!action) {
@@ -214,9 +251,31 @@ export class HaNotifyAction extends LitElement implements ActionElement {
       const entityId = Array.isArray(target) ? target[0] : target;
       return entityId ? this.hass.entities[entityId]?.device_id : undefined;
     }
-    return Object.keys(this.hass.devices).find(
-      (deviceId) => this._legacyServiceForDevice(deviceId) === service
-    );
+    const matches = this._devicesForLegacyService(service);
+    return matches.length === 1 ? matches[0] : undefined;
+  }
+
+  // The action/target pair the given device resolves to. Always deriving it
+  // this way, instead of trusting the action already on the config, keeps
+  // the recipient and the advanced payload in sync with each other.
+  private _actionFor(deviceId: string | undefined): {
+    action: string;
+    target?: { entity_id: string };
+  } {
+    if (deviceId) {
+      const legacyService = this._legacyServiceForDevice(deviceId);
+      if (legacyService) {
+        return { action: `notify.${legacyService}` };
+      }
+      const entityId = this._notifyEntityIdForDevice(deviceId);
+      if (entityId) {
+        return {
+          action: "notify.send_message",
+          target: { entity_id: entityId },
+        };
+      }
+    }
+    return { action: "notify.send_message" };
   }
 
   private _hasAnyNotifyDevice(): boolean {
@@ -338,6 +397,9 @@ export class HaNotifyAction extends LitElement implements ActionElement {
                       ></ha-input>
                       <ha-icon-button
                         .path=${mdiDelete}
+                        .label=${this.hass.localize(
+                          `${translationBaseKey}.actions_remove`
+                        )}
                         .disabled=${this.disabled}
                         data-index=${index}
                         @click=${this._removeActionButtonClicked}
@@ -388,55 +450,22 @@ export class HaNotifyAction extends LitElement implements ActionElement {
   }
 
   private _applyDevice(deviceId: string | undefined) {
+    const { action, target } = this._actionFor(deviceId);
     const message = this.action.data?.message ?? "";
     const title = this.action.data?.title;
-
-    if (!deviceId) {
-      // Keep a notify.* action so this still renders as this editor, with
-      // no target picked yet.
-      fireEvent(this, "value-changed", {
-        value: {
-          ...this.action,
-          action: "notify.send_message",
-          target: undefined,
-        },
-      });
-      return;
-    }
-
-    const legacyService = this._legacyServiceForDevice(deviceId);
-    if (legacyService) {
-      const data: NotifyAction["data"] = { message };
-      if (title) {
-        data.title = title;
-      }
-      if (this.action.data?.data) {
-        data.data = this.action.data.data;
-      }
-      fireEvent(this, "value-changed", {
-        value: {
-          ...this.action,
-          action: `notify.${legacyService}`,
-          target: undefined,
-          data,
-        },
-      });
-      return;
-    }
-
-    const entityId = this._notifyEntityIdForDevice(deviceId);
     const data: NotifyAction["data"] = { message };
     if (title) {
       data.title = title;
     }
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.action,
-        action: "notify.send_message",
-        target: entityId ? { entity_id: entityId } : undefined,
-        data,
-      },
-    });
+    // The advanced payload only means something for the legacy action
+    if (action !== "notify.send_message" && this.action.data?.data) {
+      data.data = this.action.data.data;
+    }
+    const value = { ...this.action, action, target, data };
+    if (!target) {
+      delete value.target;
+    }
+    fireEvent(this, "value-changed", { value });
   }
 
   private _mainChanged(ev: CustomEvent) {
@@ -445,14 +474,19 @@ export class HaNotifyAction extends LitElement implements ActionElement {
       message: string;
       title?: string;
     };
+    const { action, target } = this._actionFor(this._currentDeviceId());
     const data: NotifyAction["data"] = { message };
     if (title) {
       data.title = title;
     }
-    if (this.action.data?.data) {
+    if (action !== "notify.send_message" && this.action.data?.data) {
       data.data = this.action.data.data;
     }
-    fireEvent(this, "value-changed", { value: { ...this.action, data } });
+    const value = { ...this.action, action, target, data };
+    if (!target) {
+      delete value.target;
+    }
+    fireEvent(this, "value-changed", { value });
   }
 
   private _advancedChanged(ev: CustomEvent) {
@@ -505,6 +539,7 @@ export class HaNotifyAction extends LitElement implements ActionElement {
   private _updateExtraData(mutate: (extra: Record<string, unknown>) => void) {
     const extra = { ...(this.action.data?.data ?? {}) };
     mutate(extra);
+    const { action, target } = this._actionFor(this._currentDeviceId());
     const data: NotifyAction["data"] = {
       message: this.action.data?.message ?? "",
     };
@@ -514,7 +549,11 @@ export class HaNotifyAction extends LitElement implements ActionElement {
     if (Object.keys(extra).length) {
       data.data = extra;
     }
-    fireEvent(this, "value-changed", { value: { ...this.action, data } });
+    const value = { ...this.action, action, target, data };
+    if (!target) {
+      delete value.target;
+    }
+    fireEvent(this, "value-changed", { value });
   }
 
   static styles = css`

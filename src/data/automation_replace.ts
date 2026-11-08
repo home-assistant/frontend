@@ -302,8 +302,9 @@ const getServiceTarget = (
   return Object.keys(result).length ? result : undefined;
 };
 
+// A notify action is a service action in disguise, shaped the same way
 const isServiceAction = (action: Action): action is ServiceAction =>
-  getAutomationActionType(action) === "service";
+  ["service", "notify"].includes(getAutomationActionType(action) as string);
 
 export const portAction = (
   oldAction: Action,

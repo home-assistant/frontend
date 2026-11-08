@@ -6535,6 +6535,8 @@
                   "target_helper": "A device running the companion app. Advanced options are only available for these.",
                   "no_target": "No notify-capable device or service found.",
                   "multiple_targets_not_supported": "Editing a notification with more than one target isn't supported here. Edit it in YAML.",
+                  "ambiguous_device": "More than one device matches this notification's target, so it can't be shown here safely. Edit it in YAML.",
+                  "unknown_device": "No device matches this notification's target anymore, so it can't be shown here safely. Edit it in YAML.",
                   "message": "Message",
                   "title": "Title",
                   "advanced": "Advanced",
@@ -6586,7 +6588,8 @@
                   "actions_add": "Add button",
                   "actions_action": "Button ID",
                   "actions_title": "Button label",
-                  "actions_uri": "URL opened by the button"
+                  "actions_uri": "URL opened by the button",
+                  "actions_remove": "Remove button"
                 },
                 "device_id": {
                   "label": "Device",
