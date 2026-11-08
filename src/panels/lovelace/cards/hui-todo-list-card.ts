@@ -1147,11 +1147,20 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       oldIndex
     );
 
-    // Optimistic change
     const itemIndex = this._items!.findIndex((itm) => itm.uid === itemId);
-    let item = this._items!.splice(itemIndex, 1)[0];
     const changeCategory =
-      category !== undefined && category !== (item.category || null);
+      category !== undefined &&
+      category !== (this._items![itemIndex].category || null);
+    if (
+      changeCategory &&
+      !this._todoListSupportsFeature(TodoListEntityFeature.SET_CATEGORY_ON_ITEM)
+    ) {
+      // The list can't change the category: leave the item where it was
+      return;
+    }
+
+    // Optimistic change
+    let item = this._items!.splice(itemIndex, 1)[0];
     if (changeCategory) {
       item = { ...item, category };
     }
