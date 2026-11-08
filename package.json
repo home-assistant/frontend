@@ -123,7 +123,7 @@
     "sortablejs": "1.15.7",
     "stacktrace-js": "2.0.2",
     "superstruct": "2.0.2",
-    "temporal-polyfill": "1.0.7",
+    "temporal-polyfill": "1.0.8",
     "tinykeys": "4.0.1",
     "weekstart": "2.0.0",
     "workbox-cacheable-response": "7.4.1",
@@ -223,7 +223,7 @@
     "webpackbar": "7.0.0",
     "workbox-build": "7.4.1"
   },
-  "packageManager": "pnpm@12.17.0",
+  "packageManager": "pnpm@12.18.0",
   "volta": {
     "node": "24.22.2"
   }
