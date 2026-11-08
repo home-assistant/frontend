@@ -20,13 +20,11 @@ import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import "../../../components/entity/ha-favorites-editor";
 import "../components/home-shortcuts-editor";
-import {
-  editorStatesEqual,
-  HomeConfigDraftSession,
-} from "./home-config-draft-session";
+import { HomeConfigDraftSession } from "./home-config-draft-session";
 import {
   buildHomeConfig,
   editorStateFromConfig,
+  editorStatesEqual,
   type EditorState,
 } from "./home-config-editor-state";
 import type { EditHomeDialogParams } from "./show-dialog-edit-home";

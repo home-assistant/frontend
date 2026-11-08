@@ -4,10 +4,7 @@ import {
   type ShortcutItem,
 } from "../../../../src/data/home_shortcuts";
 import type { EditorState } from "../../../../src/panels/home/dialogs/home-config-editor-state";
-import {
-  editorStatesEqual,
-  HomeConfigDraftSession,
-} from "../../../../src/panels/home/dialogs/home-config-draft-session";
+import { HomeConfigDraftSession } from "../../../../src/panels/home/dialogs/home-config-draft-session";
 
 const stateA: EditorState = {
   favorite_entities: [],
@@ -57,87 +54,5 @@ describe("HomeConfigDraftSession", () => {
       draft
     );
     expect(session.draft).toBe(draft);
-  });
-});
-
-describe("editorStatesEqual", () => {
-  it("treats different content as not equal", () => {
-    expect(editorStatesEqual(stateB, stateA)).toBe(false);
-  });
-
-  it("treats content edited back to the original as equal", () => {
-    expect(editorStatesEqual({ ...stateA }, stateA)).toBe(true);
-  });
-
-  it("compares array fields by content, not by reference (a round-trip edit produces a new array)", () => {
-    const withFavorite: EditorState = {
-      ...stateA,
-      favorite_entities: ["light.kitchen"],
-    };
-    // A brand new array literal with the same contents as the baseline's,
-    // not the same reference as withFavorite.favorite_entities.
-    expect(
-      editorStatesEqual(
-        { ...withFavorite, favorite_entities: ["light.kitchen"] },
-        withFavorite
-      )
-    ).toBe(true);
-    expect(
-      editorStatesEqual(
-        {
-          ...withFavorite,
-          favorite_entities: ["light.kitchen", "light.hallway"],
-        },
-        withFavorite
-      )
-    ).toBe(false);
-  });
-
-  describe("shortcut shape normalization", () => {
-    it("is equal after hiding then showing a shortcut again (hidden: undefined)", () => {
-      expect(
-        editorStatesEqual(
-          withShortcuts(setHidden(undefined)),
-          withShortcuts(defaults)
-        )
-      ).toBe(true);
-    });
-
-    it("treats no stored shortcuts and the full resolved default list as equal", () => {
-      expect(
-        editorStatesEqual(
-          withShortcuts(resolveShortcutItems([])),
-          withShortcuts([])
-        )
-      ).toBe(true);
-    });
-
-    it("ignores undefined keys on custom shortcuts", () => {
-      const custom: ShortcutItem = { type: "custom", path: "/lovelace/0" };
-      expect(
-        editorStatesEqual(
-          withShortcuts([
-            { ...custom, label: undefined, icon: undefined, color: undefined },
-          ]),
-          withShortcuts([custom])
-        )
-      ).toBe(true);
-    });
-
-    it("is not equal when a shortcut is really hidden, reordered or added", () => {
-      const start = withShortcuts([]);
-      expect(editorStatesEqual(withShortcuts(setHidden(true)), start)).toBe(
-        false
-      );
-      expect(
-        editorStatesEqual(withShortcuts([...defaults].reverse()), start)
-      ).toBe(false);
-      expect(
-        editorStatesEqual(
-          withShortcuts([...defaults, { type: "custom", path: "/lovelace/0" }]),
-          start
-        )
-      ).toBe(false);
-    });
   });
 });
