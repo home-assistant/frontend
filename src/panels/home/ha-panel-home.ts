@@ -134,7 +134,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
 
     // Locale changed: regenerate to refresh translated content
     if (oldHass.localize !== this.hass.localize) {
-      // A pending preview debounce would otherwise still fire later and
+      // A pending registry debounce would otherwise still fire later and
       // trigger a redundant second regeneration on top of this one.
       this._debounceRegenerateStrategy.cancel();
       this._setLovelace();
@@ -283,12 +283,13 @@ class PanelHome extends SubscribeMixin(LitElement) {
       return;
     }
     this._previewConfig = config;
-    // Invalidate any in-flight _setLovelace() call synchronously: without
-    // this, a stale generation started before this preview change (e.g. a
-    // draft edit right before Cancel) could still resolve and get applied
-    // before the debounced regeneration below even starts.
-    this._lovelaceGeneration++;
-    this._debounceRegenerateStrategy();
+    // Preview at once: the debounce only batches registry updates, and
+    // regenerating now also covers one still pending. _setLovelace() bumps
+    // the generation synchronously, so older in-flight results are dropped.
+    // Unlike _regenerateStrategyConfig(), this skips the deleted area view
+    // redirect: the home editor only opens from the overview.
+    this._debounceRegenerateStrategy.cancel();
+    this._setLovelace();
   };
 
   private _editArea = async () => {
@@ -491,12 +492,8 @@ class PanelHome extends SubscribeMixin(LitElement) {
     showToast(this, {
       message: this.hass.localize("ui.common.successfully_saved"),
     });
-    // dialog-edit-home now owns exactly when to push or clear
-    // _previewConfig (via previewConfig()), so this method no longer
-    // touches it directly. A preview edit made just before Save may still
-    // have a debounced regeneration pending; the immediate refresh below
-    // already covers it, so cancel it to avoid a redundant one once the
-    // timer fires.
+    // A registry change may still have a debounced regeneration pending;
+    // the immediate refresh below already covers it.
     this._debounceRegenerateStrategy.cancel();
     this._setLovelace();
     return true;
