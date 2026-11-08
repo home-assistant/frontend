@@ -14,7 +14,11 @@ import type {
   PlatformTrigger,
 } from "../../../data/automation";
 import type { ConditionDescription } from "../../../data/condition";
-import { internationalizationContext } from "../../../data/context";
+import {
+  formattersContext,
+  internationalizationContext,
+  statesContext,
+} from "../../../data/context";
 import type { NumericThresholdSelector } from "../../../data/selector";
 import type { TriggerDescription } from "../../../data/trigger";
 import { rowSummaryStyles } from "./styles";
@@ -30,6 +34,14 @@ export class HaAutomationRowThreshold extends LitElement {
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: ContextType<typeof formattersContext>;
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
@@ -99,50 +111,63 @@ export class HaAutomationRowThreshold extends LitElement {
     }
   );
 
-  private _getLabel = memoizeOne(
-    (threshold: NumericThresholdValue | undefined, i18n: typeof this._i18n) => {
-      if (
-        !threshold ||
-        !threshold?.type ||
-        threshold.type === "any" ||
-        threshold.value?.active_choice === "entity" ||
-        threshold.value_min?.active_choice === "entity" ||
-        threshold.value_max?.active_choice === "entity"
-      ) {
-        return undefined;
-      }
+  private _getLabel(
+    threshold: NumericThresholdValue | undefined,
+    i18n: typeof this._i18n
+  ) {
+    if (!threshold || !threshold?.type || threshold.type === "any") {
+      return undefined;
+    }
 
-      if (threshold.type === "between" || threshold.type === "outside") {
-        const min = threshold.value_min?.number;
-        const max = threshold.value_max?.number;
-        if (min === undefined || max === undefined) {
-          return undefined;
-        }
-
-        const separateUnits =
-          threshold.value_min?.unit_of_measurement !==
+    if (threshold.type === "between" || threshold.type === "outside") {
+      const sharedUnit =
+        threshold.value_min?.active_choice !== "entity" &&
+        threshold.value_max?.active_choice !== "entity" &&
+        threshold.value_min?.unit_of_measurement ===
           threshold.value_max?.unit_of_measurement;
-
-        return i18n.localize(
-          `ui.components.selectors.numeric_threshold.row_label.${threshold.type}`,
-          {
-            from: `${formatNumber(min, this._i18n.locale)}${separateUnits ? this._unit(threshold.value_min?.unit_of_measurement) : ""}`,
-            to: `${formatNumber(max, this._i18n.locale)}${this._unit(threshold.value_max?.unit_of_measurement)}`,
-          }
-        );
-      }
-
-      if (isNaN(Number(threshold.value?.number))) {
+      const min = this._bound(threshold.value_min, !sharedUnit);
+      const max = this._bound(threshold.value_max);
+      if (min === undefined || max === undefined) {
         return undefined;
       }
+
       return i18n.localize(
         `ui.components.selectors.numeric_threshold.row_label.${threshold.type}`,
         {
-          value: `${formatNumber(threshold.value!.number!, this._i18n.locale)}${this._unit(threshold.value!.unit_of_measurement ?? "")}`,
+          from: min,
+          to: max,
         }
       );
     }
-  );
+
+    const value = this._bound(threshold.value);
+    if (value === undefined) {
+      return undefined;
+    }
+    return i18n.localize(
+      `ui.components.selectors.numeric_threshold.row_label.${threshold.type}`,
+      {
+        value,
+      }
+    );
+  }
+
+  private _bound(
+    bound?: ThresholdValueEntry,
+    withUnit = true
+  ): string | undefined {
+    if (bound?.active_choice === "entity") {
+      if (!bound.entity) {
+        return undefined;
+      }
+      const entity = this._states[bound.entity];
+      return entity ? this._formatters.formatEntityName(entity) : bound.entity;
+    }
+    if (bound?.number === undefined || !Number.isFinite(bound.number)) {
+      return undefined;
+    }
+    return `${formatNumber(bound.number, this._i18n.locale)}${withUnit ? this._unit(bound.unit_of_measurement) : ""}`;
+  }
 
   private _unit(unit?: string): string {
     if (!unit) {
