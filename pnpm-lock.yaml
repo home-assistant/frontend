@@ -7099,8 +7099,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  serialize-javascript@7.1.0:
-    resolution: {integrity: sha512-RNEqWOyhhUQYN9V1GfHwu9AR/g+NTciH6Z5u3/no6X3/w+04J2lVDL+svFQVXgXrEGBMG2puMVN3gq2SNGuTGw==}
+  serialize-javascript@7.1.4:
+    resolution: {integrity: sha512-FqlEuoTq/zRmA4Lg6aOqyH3lCHbUtCB0bmHCeFniX2GBdDqMJM3FwdvEhlE5Pim1dlt2FfBdVPmUNNiGhhKqpw==}
     engines: {node: '>=20.0.0'}
 
   serve-handler@6.1.7:
@@ -10862,7 +10862,7 @@ snapshots:
 
   '@rollup/plugin-terser@1.0.0(rollup@4.62.4)':
     dependencies:
-      serialize-javascript: 7.1.0
+      serialize-javascript: 7.1.4
       smob: 1.6.2
       terser: 5.50.0
     optionalDependencies:
@@ -15233,7 +15233,7 @@ snapshots:
 
   semver@7.8.5: {}
 
-  serialize-javascript@7.1.0: {}
+  serialize-javascript@7.1.4: {}
 
   serve-handler@6.1.7:
     dependencies:
