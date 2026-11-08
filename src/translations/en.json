@@ -2985,8 +2985,7 @@
           },
           "voice_assistants": {
             "main": "Voice assistants",
-            "secondary": "Manage your voice assistants",
-            "google_assistant_local": "Google Assistant (local)"
+            "secondary": "Manage your voice assistants"
           },
           "energy": {
             "main": "Energy",
