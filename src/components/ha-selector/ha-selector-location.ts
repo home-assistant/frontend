@@ -156,17 +156,13 @@ export class HaLocationSelector extends LitElement {
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const value = ev.detail.value;
-    const radius = Math.round(ev.detail.value.radius);
 
     fireEvent(this, "value-changed", {
       value: {
         latitude: value.latitude,
         longitude: value.longitude,
-        ...(this.selector.location?.radius &&
-        !this.selector.location?.radius_readonly
-          ? {
-              radius,
-            }
+        ...(this.selector.location?.radius && value.radius != null
+          ? { radius: Math.round(value.radius) }
           : {}),
       },
     });
