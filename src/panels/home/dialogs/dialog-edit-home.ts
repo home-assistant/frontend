@@ -13,7 +13,6 @@ import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import type { HaFormSchema } from "../../../components/ha-form/types";
-import type { HomeFrontendSystemData } from "../../../data/frontend";
 import type { ShortcutItem } from "../../../data/home_shortcuts";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
@@ -25,26 +24,12 @@ import {
   editorStatesEqual,
   HomeConfigDraftSession,
 } from "./home-config-draft-session";
+import {
+  buildHomeConfig,
+  editorStateFromConfig,
+  type EditorState,
+} from "./home-config-editor-state";
 import type { EditHomeDialogParams } from "./show-dialog-edit-home";
-
-export interface EditorState {
-  favorite_entities: string[];
-  show_suggested_entities: boolean;
-  show_welcome_message: boolean;
-  shortcuts: ShortcutItem[];
-}
-
-export const buildHomeConfig = (
-  baseConfig: HomeFrontendSystemData,
-  draft: EditorState
-): HomeFrontendSystemData => ({
-  ...baseConfig,
-  favorite_entities:
-    draft.favorite_entities.length > 0 ? draft.favorite_entities : undefined,
-  hide_suggested_entities: draft.show_suggested_entities ? undefined : true,
-  hide_welcome_message: draft.show_welcome_message ? undefined : true,
-  shortcuts: draft.shortcuts.length > 0 ? draft.shortcuts : undefined,
-});
 
 // The common-controls strategy caps the section at 8 (or the favorites count,
 // whichever is larger); once favorites reach the cap, predictions never render
@@ -77,14 +62,7 @@ export class DialogEditHome
 
   public showDialog(params: EditHomeDialogParams): void {
     this._params = params;
-    const initial: EditorState = {
-      favorite_entities: params.config.favorite_entities
-        ? [...params.config.favorite_entities]
-        : [],
-      show_suggested_entities: !params.config.hide_suggested_entities,
-      show_welcome_message: !params.config.hide_welcome_message,
-      shortcuts: params.config.shortcuts ? [...params.config.shortcuts] : [],
-    };
+    const initial = editorStateFromConfig(params.config);
     this._session = HomeConfigDraftSession.start(initial);
     // Same comparison as the session's isDirty, so Save and the stale-save
     // close decision can never disagree. The mixin doesn't clone baselines

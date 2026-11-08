@@ -3,7 +3,7 @@ import {
   resolveShortcutItems,
   type ShortcutItem,
 } from "../../../../src/data/home_shortcuts";
-import type { EditorState } from "../../../../src/panels/home/dialogs/dialog-edit-home";
+import type { EditorState } from "../../../../src/panels/home/dialogs/home-config-editor-state";
 import { HomeConfigDraftSession } from "../../../../src/panels/home/dialogs/home-config-draft-session";
 
 const stateA: EditorState = {

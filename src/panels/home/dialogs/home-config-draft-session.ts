@@ -3,7 +3,7 @@ import {
   resolveShortcutItems,
   type ShortcutItem,
 } from "../../../data/home_shortcuts";
-import type { EditorState } from "./dialog-edit-home";
+import type { EditorState } from "./home-config-editor-state";
 
 const stripUndefined = <T extends object>(item: T): T =>
   Object.fromEntries(
