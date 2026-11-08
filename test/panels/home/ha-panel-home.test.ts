@@ -341,44 +341,21 @@ describe("ha-panel-home stale strategy regeneration guard", () => {
     expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
   });
 
-  it("clears _previewConfig after a save whose content matches it, so a reopened dialog does not inherit a stale draft", async () => {
+  it("clears _previewConfig after any successful save", async () => {
     const el = createPanel();
     mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
       views: [],
     } as any);
     mockedSaveFrontendSystemData.mockResolvedValueOnce(undefined);
 
-    const draft: HomeFrontendSystemData = { hide_welcome_message: true };
-    setPreviewConfig(el, draft);
+    setPreviewConfig(el, { hide_welcome_message: true });
 
-    // The saved config is content-equal to the current preview (e.g. Save
-    // was clicked on that exact draft), but built via a separate
-    // buildHomeConfig() call, so it is a different object reference.
-    await saveConfig(el, { hide_welcome_message: true });
+    // The editors are disabled while saving, so no newer draft can exist:
+    // the preview goes even when its content differs from the saved config,
+    // and a reopened dialog does not inherit it.
+    await saveConfig(el, { hide_suggested_entities: true });
 
     expect(getPreviewConfig(el)).toBeUndefined();
-  });
-
-  it("preserves _previewConfig after a save whose content differs from it, keeping a newer live draft", async () => {
-    const el = createPanel();
-    mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
-      views: [],
-    } as any);
-    mockedSaveFrontendSystemData.mockResolvedValueOnce(undefined);
-
-    // A newer edit is pushed to the preview after the save's config was
-    // captured but before it resolves (mirrors dialog-edit-home's stale
-    // save handling, which keeps the dialog open with the newer draft).
-    const saved: HomeFrontendSystemData = { hide_welcome_message: true };
-    const newerDraft: HomeFrontendSystemData = {
-      hide_welcome_message: true,
-      hide_suggested_entities: true,
-    };
-    setPreviewConfig(el, newerDraft);
-
-    await saveConfig(el, saved);
-
-    expect(getPreviewConfig(el)).toEqual(newerDraft);
   });
 
   it("cancels a pending registry debounce before a locale-driven regeneration", async () => {

@@ -471,14 +471,10 @@ class PanelHome extends SubscribeMixin(LitElement) {
     try {
       await saveFrontendSystemData(this.hass.connection, "home", config);
       this._config = config || {};
-      if (deepEqual(this._previewConfig, config)) {
-        // The saved draft is what's being previewed: clear it here, since
-        // dialog-edit-home skips its own revert after a non-stale save (see
-        // _closedBySave); stale completions are reverted by the dialog on
-        // close. A leftover value would otherwise leak into the next
-        // showDialog(), as the legacy dialog instance is reused.
-        this._previewConfig = undefined;
-      }
+      // The saved config replaces the preview. No newer draft can exist:
+      // dialog-edit-home disables its editors while saving. Clearing it
+      // here also keeps it out of a later _setup() or a reopened dialog.
+      this._previewConfig = undefined;
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("Failed to save home configuration:", err);

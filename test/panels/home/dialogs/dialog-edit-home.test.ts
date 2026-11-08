@@ -75,6 +75,10 @@ const dialogClosed = (el: TestDialogEditHome) =>
 const save = (el: TestDialogEditHome) =>
   (el as unknown as Record<"_save", () => Promise<void>>)._save();
 
+const session = (el: TestDialogEditHome) =>
+  (el as unknown as Record<"_session", { draft: unknown } | undefined>)
+    ._session;
+
 const isOpen = (el: TestDialogEditHome) =>
   (el as unknown as Record<"_open", boolean>)._open;
 
@@ -166,7 +170,7 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     expect(previewConfig).toHaveBeenCalledWith(undefined);
   });
 
-  it("does not call previewConfig when closing without any edit", async () => {
+  it("still reverts the preview when closing without any edit", async () => {
     const el = createDialog();
     const previewConfig = vi.fn();
     el.showDialog({ config: {}, saveConfig: vi.fn(), previewConfig });
@@ -174,7 +178,9 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
 
     dialogClosed(el);
 
-    expect(previewConfig).not.toHaveBeenCalled();
+    // The panel ignores it when nothing is previewed.
+    expect(previewConfig).toHaveBeenCalledTimes(1);
+    expect(previewConfig).toHaveBeenCalledWith(undefined);
   });
 
   it("reports not dirty when an array field is edited back to matching content via a new array reference", async () => {
@@ -240,7 +246,7 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     expect(previewConfig).toHaveBeenCalledWith(undefined);
   });
 
-  it("does not clear the preview again when the dialog closes after a successful save", async () => {
+  it("still reverts the preview when the dialog closes after a successful save", async () => {
     const el = createDialog();
     const previewConfig = vi.fn();
     const saveConfig = vi.fn().mockResolvedValue(true);
@@ -256,8 +262,9 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     expect(isSubmitting(el)).toBe(false);
     dialogClosed(el);
 
-    expect(previewConfig).toHaveBeenCalledTimes(1);
-    expect(previewConfig).not.toHaveBeenCalledWith(undefined);
+    // The panel already cleared its preview on save, so this is a no-op.
+    expect(previewConfig).toHaveBeenCalledTimes(2);
+    expect(previewConfig).toHaveBeenLastCalledWith(undefined);
   });
 
   it("stays open after a failed save and can then be cancelled", async () => {
@@ -302,12 +309,13 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     expect(previewConfig).not.toHaveBeenCalled();
     expect(el.isDirtyState).toBe(true);
 
-    const retryPromise = save(el);
-    await retryPromise;
-    dialogClosed(el);
+    await save(el);
 
     expect(saveConfig).toHaveBeenCalledTimes(2);
-    expect(previewConfig).not.toHaveBeenCalledWith(undefined);
+    expect(saveConfig).toHaveBeenNthCalledWith(2, {
+      hide_welcome_message: true,
+    });
+    expect(isOpen(el)).toBe(false);
   });
 
   it("does not start a second save while one is already in flight", async () => {
@@ -331,7 +339,7 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     expect(saveConfig).toHaveBeenCalledTimes(1);
   });
 
-  it("does not close or discard a newer edit made while an earlier save from the same session is still in flight", async () => {
+  it("ignores editor changes while a save is pending", async () => {
     const el = createDialog();
     const previewConfig = vi.fn();
     const pendingSave = deferred<boolean>();
@@ -341,92 +349,25 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
 
     welcomeChanged(el, false);
     await el.updateComplete;
-
-    const savePromise = save(el); // captures the welcome-message-off draft
-
-    suggestedChanged(el, false);
-    await el.updateComplete;
-
-    pendingSave.resolve(true);
-    await savePromise;
-
-    // The stale completion must not close the dialog or mark it clean: the
-    // newer edit is still live, and isDirtyState reflects it against what
-    // was actually persisted (welcome message off only), not the original
-    // baseline.
-    expect(el.isDirtyState).toBe(true);
-
-    const retrySave = deferred<boolean>();
-    saveConfig.mockImplementationOnce(() => retrySave.promise);
-    const retryPromise = save(el);
-    retrySave.resolve(true);
-    await retryPromise;
-    dialogClosed(el);
-
-    expect(saveConfig).toHaveBeenCalledTimes(2);
-    expect(previewConfig).not.toHaveBeenCalledWith(undefined);
-  });
-
-  it("does not re-push the unchanged draft when a stale save only rebases the baseline", async () => {
-    const el = createDialog();
-    const previewConfig = vi.fn();
-    const pendingSave = deferred<boolean>();
-    el.showDialog({
-      config: {},
-      saveConfig: vi.fn(() => pendingSave.promise),
-      previewConfig,
-    });
-    await el.updateComplete;
-
-    welcomeChanged(el, false);
-    await el.updateComplete;
-    const savePromise = save(el);
-    suggestedChanged(el, false);
-    await el.updateComplete;
+    const draftAtSave = session(el)!.draft;
     previewConfig.mockClear();
 
-    pendingSave.resolve(true);
-    await savePromise;
+    const savePromise = save(el);
+
+    // Every editor is disabled while saving; a change still reaching a
+    // handler must neither alter the draft being saved nor the preview.
+    welcomeChanged(el, true);
+    suggestedChanged(el, false);
+    favoriteEntitiesChanged(el, ["light.kitchen"]);
+    shortcutsChanged(el, lightShortcutHidden(true));
     await el.updateComplete;
 
-    // Still open on the newer draft, which the panel already previews: a
-    // re-push would invalidate the panel's post-save refresh for nothing.
-    expect(isOpen(el)).toBe(true);
+    expect(session(el)!.draft).toBe(draftAtSave);
     expect(previewConfig).not.toHaveBeenCalled();
 
-    // A real edit afterwards is still previewed.
-    welcomeChanged(el, true);
-    await el.updateComplete;
-    expect(previewConfig).toHaveBeenCalledTimes(1);
-    expect(previewConfig).toHaveBeenCalledWith({
-      hide_suggested_entities: true,
-    });
-  });
-
-  it("rebases the clean baseline to what was actually persisted when a stale save resolves after editing back to the original content", async () => {
-    const el = createDialog();
-    const previewConfig = vi.fn();
-    const pendingSave = deferred<boolean>();
-    const saveConfig = vi.fn(() => pendingSave.promise);
-    el.showDialog({ config: {}, saveConfig, previewConfig });
-    await el.updateComplete;
-
-    welcomeChanged(el, false); // draft now differs from the original baseline
-    await el.updateComplete;
-
-    const savePromise = save(el); // captures the welcome-message-off draft
-
-    welcomeChanged(el, true); // edited back to the original content mid-save
-    await el.updateComplete;
-
     pendingSave.resolve(true);
     await savePromise;
-
-    // The backend now holds "welcome message off" (what was actually
-    // saved), but the screen shows "welcome message on" (the original
-    // baseline). isDirtyState must reflect that real mismatch, not the
-    // coincidence that the screen matches where editing started.
-    expect(el.isDirtyState).toBe(true);
+    expect(isOpen(el)).toBe(false);
   });
 
   it("does not let a pending save resurrect state if the session was torn down without closeDialog()", async () => {
@@ -455,7 +396,7 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     ).toBeUndefined();
   });
 
-  it("refuses to close while a save is pending, even after editing back to the original content", async () => {
+  it("refuses to close while a save is pending", async () => {
     const el = createDialog();
     const previewConfig = vi.fn();
     const pendingSave = deferred<boolean>();
@@ -463,33 +404,17 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     el.showDialog({ config: {}, saveConfig, previewConfig });
     await el.updateComplete;
 
-    welcomeChanged(el, false); // draft differs from the original baseline
+    welcomeChanged(el, false);
     await el.updateComplete;
 
-    const savePromise = save(el); // captures that draft, save now in flight
-
-    // Edited back to the original content mid-save: isDirtyState is false,
-    // which used to let the dialog close and be reopened for an
-    // overlapping second save.
-    welcomeChanged(el, true);
-    await el.updateComplete;
-    expect(el.isDirtyState).toBe(false);
+    const savePromise = save(el);
 
     expect(el.closeDialog()).toBe(false);
     expect(isOpen(el)).toBe(true);
 
     pendingSave.resolve(true);
     await savePromise;
-
-    // The stale save leaves a real mismatch with what was persisted, so the
-    // dialog stays open; now that the save is done it can be cancelled,
-    // which reverts the preview.
-    expect(isOpen(el)).toBe(true);
-    previewConfig.mockClear();
-    expect(el.closeDialog()).toBe(true);
-    dialogClosed(el);
-
-    expect(previewConfig).toHaveBeenCalledWith(undefined);
+    expect(isOpen(el)).toBe(false);
   });
 
   it("disables the header close button while a save is pending", async () => {
@@ -536,34 +461,6 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     expect(previewConfig).toHaveBeenCalledWith(undefined);
   });
 
-  it("closes normally when a stale save's rebased draft matches what was actually persisted", async () => {
-    const el = createDialog();
-    const previewConfig = vi.fn();
-    const pendingSave = deferred<boolean>();
-    const saveConfig = vi.fn(() => pendingSave.promise);
-    el.showDialog({ config: {}, saveConfig, previewConfig });
-    await el.updateComplete;
-
-    welcomeChanged(el, false); // draft = B
-    await el.updateComplete;
-
-    const savePromise = save(el); // captures B
-
-    suggestedChanged(el, false); // draft = C (B plus this change)
-    await el.updateComplete;
-    suggestedChanged(el, true); // back to B, matching what's being saved
-    await el.updateComplete;
-
-    pendingSave.resolve(true);
-    await savePromise;
-
-    // The rebased draft matches what was actually persisted: nothing left
-    // to save, so the dialog must close normally instead of staying open
-    // with Save disabled and nothing left to do.
-    expect((el as unknown as Record<"_open", boolean>)._open).toBe(false);
-    expect(el.isDirtyState).toBe(false);
-  });
-
   it("stays clean after hiding then showing a shortcut with no stored shortcuts", async () => {
     const el = createDialog();
     el.showDialog({ config: {}, saveConfig: vi.fn(), previewConfig: vi.fn() });
@@ -579,37 +476,5 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     expect(el.isDirtyState).toBe(false);
     expect(saveButton(el)?.disabled).toBe(true);
     expect(preventScrimClose(el)).toBe(false);
-  });
-
-  it("closes and reverts the preview when a stale save's newer draft only differs in shortcut shape", async () => {
-    const el = createDialog();
-    const previewConfig = vi.fn();
-    const pendingSave = deferred<boolean>();
-    const saveConfig = vi.fn(() => pendingSave.promise);
-    el.showDialog({ config: {}, saveConfig, previewConfig });
-    await el.updateComplete;
-
-    welcomeChanged(el, false);
-    await el.updateComplete;
-
-    const savePromise = save(el);
-
-    // Hide then show a shortcut mid-save: same content as what is being
-    // saved, but the previewed draft now holds the full list with
-    // `hidden: undefined`, which the panel can't match to the saved config.
-    shortcutsChanged(el, lightShortcutHidden(true));
-    await el.updateComplete;
-    shortcutsChanged(el, lightShortcutHidden(undefined));
-    await el.updateComplete;
-
-    pendingSave.resolve(true);
-    await savePromise;
-
-    expect(isOpen(el)).toBe(false);
-    expect(el.isDirtyState).toBe(false);
-
-    previewConfig.mockClear();
-    dialogClosed(el);
-    expect(previewConfig).toHaveBeenCalledWith(undefined);
   });
 });
