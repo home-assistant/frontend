@@ -21,23 +21,19 @@ const summarize = (groups: ReturnType<typeof groupItemsByCategory>) =>
 
 describe("groupItemsByCategory", () => {
   it("returns undefined when no item has a category", () => {
-    expect(
-      groupItemsByCategory([item("a"), item("b", null)], ["Grocery"])
-    ).toBeUndefined();
+    expect(groupItemsByCategory([item("a"), item("b", null)])).toBeUndefined();
+    expect(groupItemsByCategory([item("a")], true)).toBeUndefined();
   });
 
   it("sorts categories alphabetically and puts items without a category last", () => {
-    const groups = groupItemsByCategory(
-      [
-        item("soap"),
-        item("croquettes", "Pets"),
-        item("pasta", "Grocery"),
-        item("apples", "Fresh produce"),
-        item("rice", "Grocery"),
-        item("bread", ""),
-      ],
-      ["Pets", "Grocery", "Fresh produce"]
-    );
+    const groups = groupItemsByCategory([
+      item("soap"),
+      item("croquettes", "Pets"),
+      item("pasta", "Grocery"),
+      item("apples", "Fresh produce"),
+      item("rice", "Grocery"),
+      item("bread", ""),
+    ]);
     expect(summarize(groups)).toEqual([
       ["Fresh produce", ["apples"]],
       ["Grocery", ["pasta", "rice"]],
@@ -46,38 +42,16 @@ describe("groupItemsByCategory", () => {
     ]);
   });
 
-  it("includes categories that are not offered by the list", () => {
-    const groups = groupItemsByCategory(
-      [item("pasta", "Grocery"), item("croquettes", "Pets")],
-      ["Grocery"]
+  it("keeps the group without a category so items can be moved to it", () => {
+    expect(summarize(groupItemsByCategory([item("pasta", "Grocery")]))).toEqual(
+      [["Grocery", ["pasta"]]]
     );
-    expect(summarize(groups)).toEqual([
-      ["Grocery", ["pasta"]],
-      ["Pets", ["croquettes"]],
-    ]);
-  });
-
-  it("keeps empty groups so items can be moved to them", () => {
     expect(
-      summarize(
-        groupItemsByCategory(
-          [item("pasta", "Grocery")],
-          ["Grocery", "Fresh produce"],
-          true
-        )
-      )
+      summarize(groupItemsByCategory([item("pasta", "Grocery")], true))
     ).toEqual([
-      ["Fresh produce", []],
       ["Grocery", ["pasta"]],
       [null, []],
     ]);
-    expect(
-      summarize(groupItemsByCategory([item("soap")], ["Fresh produce"], true))
-    ).toEqual([
-      ["Fresh produce", []],
-      [null, ["soap"]],
-    ]);
-    expect(groupItemsByCategory([item("soap")], [], true)).toBeUndefined();
   });
 });
 

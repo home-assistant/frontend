@@ -25,7 +25,6 @@ import type { HaInput } from "../../components/input/ha-input";
 import type { TodoItem } from "../../data/todo";
 import {
   getCategoryOptions,
-  getTodoCategories,
   TodoItemStatus,
   TodoListEntityFeature,
   createItem,
@@ -324,7 +323,6 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
       .hass=${this.hass}
       .label=${this.hass.localize("ui.components.todo.item.category")}
       .selector=${this._categorySelector(
-        getTodoCategories(this.hass.states[this._params!.entity]),
         this._params!.categories,
         this._category
       )}
@@ -337,13 +335,12 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
 
   private _categorySelector = memoizeOne(
     (
-      listCategories: string[] | undefined,
       itemCategories: string[] | undefined,
       current: string | undefined
     ): SelectSelector => ({
       select: {
         options: getCategoryOptions(
-          [...(listCategories ?? []), ...(itemCategories ?? []), current],
+          [...(itemCategories ?? []), current],
           this.hass.locale.language
         ),
         custom_value: true,

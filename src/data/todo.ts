@@ -1,8 +1,4 @@
-import type {
-  Connection,
-  HassEntities,
-  HassEntity,
-} from "home-assistant-js-websocket";
+import type { Connection, HassEntities } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import { stringCompare } from "../common/string/compare";
 import type {
@@ -173,10 +169,6 @@ export const moveItem = (
     previous_uid,
   });
 
-export const getTodoCategories = (
-  stateObj: HassEntity | undefined
-): string[] | undefined => stateObj?.attributes.categories;
-
 /**
  * Return the distinct categories, sorted alphabetically, to offer for an item.
  */
@@ -193,24 +185,18 @@ export const getCategoryOptions = (
  *
  * Items keep their order within a group, and items without a category come
  * last. Returns undefined when no item has a category. With `includeEmpty`,
- * every category of the list and the group of items without a category are
- * returned even when they have no items, so items can be moved to them.
+ * the group of items without a category is returned even when it has no
+ * items, so items can be moved to it.
  */
 export const groupItemsByCategory = (
   items: TodoItem[],
-  categories: string[] = [],
   includeEmpty = false,
   language?: string
 ): TodoItemCategoryGroup[] | undefined => {
-  if (
-    !items.some((item) => item.category) &&
-    !(includeEmpty && categories.length)
-  ) {
+  if (!items.some((item) => item.category)) {
     return undefined;
   }
-  const groups = new Map<string, TodoItem[]>(
-    includeEmpty ? categories.map((category) => [category, []]) : []
-  );
+  const groups = new Map<string, TodoItem[]>();
   const withoutCategory: TodoItem[] = [];
   for (const item of items) {
     if (!item.category) {

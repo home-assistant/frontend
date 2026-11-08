@@ -77,7 +77,6 @@ import {
   createItem,
   deleteItems,
   getCategoryOptions,
-  getTodoCategories,
   groupItemsByCategory,
   moveItem,
   subscribeItems,
@@ -734,7 +733,6 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   ) {
     const groups = this._groupItemsByCategory(
       items,
-      getTodoCategories(this._stateObj),
       reordering &&
         this._todoListSupportsFeature(
           TodoListEntityFeature.SET_CATEGORY_ON_ITEM
@@ -1174,7 +1172,13 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     this._items = [...this._items!];
 
     if (changeCategory) {
-      await updateItem(this._api.callService, this._entityId!, item);
+      // Only send the category: the list may not support the other fields
+      await updateItem(this._api.callService, this._entityId!, {
+        uid: item.uid,
+        summary: item.summary,
+        status: item.status,
+        category,
+      });
     }
     await moveItem(this._api.callWS, this._entityId!, itemId, prevItemId);
   }
