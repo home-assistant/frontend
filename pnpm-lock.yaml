@@ -728,8 +728,8 @@ importers:
         specifier: 0.11.0
         version: 0.11.0
       '@rslib/core':
-        specifier: 1.0.5
-        version: 1.0.5(core-js@3.51.0)(typescript@6.0.3)
+        specifier: 1.0.6
+        version: 1.0.6(core-js@3.51.0)(typescript@6.0.3)
       lit:
         specifier: 3.3.3
         version: 3.3.3
@@ -3113,8 +3113,8 @@ packages:
   '@rsdoctor/utils@1.6.5':
     resolution: {integrity: sha512-/Ybsk9krXapFwn0LBS7iKqjVBreRbv2siySAKxEhMJiAiHmaWP8vFsgfyaQHK+TnjqQwiNlN/JeOnh8NF7+tyQ==}
 
-  '@rslib/core@1.0.5':
-    resolution: {integrity: sha512-8sAu++AGYtq0uaro9Nk/C5IqvvN79jaaEWbM5Uu/OgGgYdv72AcfILJKaYtueTaOl29RIl47XNLxxIEZ9BrpMQ==}
+  '@rslib/core@1.0.6':
+    resolution: {integrity: sha512-EWBYwtq4UuONBvu0PdyH7ERfiFQkBnwkwPL38MqHIf3lB0VhsiKkU6wtLdbVxrl9wwhpaodbnaSVccM5V/y7Jw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
@@ -7047,8 +7047,8 @@ packages:
     resolution: {integrity: sha512-kJ/M0Y0kzDM9VqK7zakLkyeLiiCJNgiqMHfK6KZcS/pj4Boy6AHlt/QHnS/wTRgx1D7dtaogRk6gApfsMofHjQ==}
     engines: {node: '>=14'}
 
-  rsbuild-plugin-dts@1.0.5:
-    resolution: {integrity: sha512-n7vHGdPxB3PWoDpLNP1fZ4WBmHEKqzKP0L++/HBDmSAznlah9mEHAXV1NEmGAaaJ3o4qLGYvEn/Z952Rni83ZQ==}
+  rsbuild-plugin-dts@1.0.6:
+    resolution: {integrity: sha512-KvSmhCfqZpNCF8F+xw40uFYZrp4SR264QvsjBLoXobMEuSVb/LffvfjAk/TqJ1LmWI9B7eGWeKMBOFIW5VIScQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     peerDependencies:
       '@microsoft/api-extractor': ^7
@@ -11142,10 +11142,10 @@ snapshots:
       - '@rspack/core'
       - webpack
 
-  '@rslib/core@1.0.5(core-js@3.51.0)(typescript@6.0.3)':
+  '@rslib/core@1.0.6(core-js@3.51.0)(typescript@6.0.3)':
     dependencies:
       '@rsbuild/core': 2.3.1(core-js@3.51.0)
-      rsbuild-plugin-dts: 1.0.5(@rsbuild/core@2.3.1(core-js@3.51.0))(typescript@6.0.3)
+      rsbuild-plugin-dts: 1.0.6(@rsbuild/core@2.3.1(core-js@3.51.0))(typescript@6.0.3)
     optionalDependencies:
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -15214,7 +15214,7 @@ snapshots:
       '@xn-sakina/rml-win32-arm64-msvc': 2.9.0
       '@xn-sakina/rml-win32-x64-msvc': 2.9.0
 
-  rsbuild-plugin-dts@1.0.5(@rsbuild/core@2.3.1(core-js@3.51.0))(typescript@6.0.3):
+  rsbuild-plugin-dts@1.0.6(@rsbuild/core@2.3.1(core-js@3.51.0))(typescript@6.0.3):
     dependencies:
       '@ast-grep/napi': 0.51.0
       '@rsbuild/core': 2.3.1(core-js@3.51.0)
