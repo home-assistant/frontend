@@ -12,7 +12,21 @@ export class HaSlider extends Slider {
   public connectedCallback() {
     super.connectedCallback();
     this.dir = mainWindow.document.dir;
+    this.addEventListener("pointerdown", this._capturePointer);
   }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener("pointerdown", this._capturePointer);
+  }
+
+  // Keep the drag's pointer on the slider, so releasing it elsewhere clicks
+  // the slider instead of whatever contains both, like an entity row.
+  private _capturePointer = (ev: PointerEvent) => {
+    if (!this.disabled) {
+      this.setPointerCapture(ev.pointerId);
+    }
+  };
 
   static get styles(): CSSResultGroup {
     return [

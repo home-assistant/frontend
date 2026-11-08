@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { DOMAINS_INPUT_ROW } from "../../../common/const";
@@ -36,11 +36,6 @@ export class HuiGenericEntityRow extends LitElement {
   @property({ attribute: "catch-interaction", type: Boolean })
   public catchInteraction?;
 
-  @query("slot.controls") private _controls?: HTMLSlotElement;
-
-  // Whether the current press started on the row's own control.
-  private _pressedControl = false;
-
   protected render() {
     if (!this.hass || !this.config) {
       return nothing;
@@ -69,8 +64,6 @@ export class HuiGenericEntityRow extends LitElement {
     return html`
       <div
         class="row ${classMap({ pointer })}"
-        @pointerdown=${this._handlePointerDown}
-        @click=${this._handleClickCapture}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this.config!.hold_action),
@@ -126,7 +119,6 @@ export class HuiGenericEntityRow extends LitElement {
                 </div>
               `
             : html`<slot
-                class="controls"
                 @touchcancel=${stopPropagation}
                 @touchend=${stopPropagation}
                 @keydown=${stopPropagation}
@@ -145,29 +137,6 @@ export class HuiGenericEntityRow extends LitElement {
       !this.secondaryText && !this.config?.secondary_info
     );
   }
-
-  private _handlePointerDown(ev: PointerEvent) {
-    this._pressedControl =
-      !!this._controls && ev.composedPath().includes(this._controls);
-  }
-
-  // Pressing the control, like dragging a slider, and releasing elsewhere on
-  // the row makes the browser click the row itself. That is not a tap on the
-  // row, so it must not reach the action handler.
-  private _handleClickCapture = {
-    capture: true,
-    handleEvent: (ev: MouseEvent) => {
-      const pressedControl = this._pressedControl;
-      this._pressedControl = false;
-      if (
-        pressedControl &&
-        this._controls &&
-        !ev.composedPath().includes(this._controls)
-      ) {
-        ev.stopImmediatePropagation();
-      }
-    },
-  };
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this.config!, ev.detail.action!);
