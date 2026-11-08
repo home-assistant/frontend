@@ -550,6 +550,8 @@ test.describe("Lovelace dashboard", () => {
     const slider = row.locator("ha-slider");
     const name = row.locator(".info");
     await expect(slider).toBeVisible({ timeout: PANEL_TIMEOUT });
+    // page.mouse does not scroll, and the row is below the fold on mobile
+    await slider.scrollIntoViewIfNeeded();
     await page.evaluate(() => {
       (window as any).__moreInfo = [];
       document.addEventListener("hass-more-info", (ev) =>
