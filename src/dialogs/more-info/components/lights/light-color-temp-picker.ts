@@ -50,6 +50,11 @@ export const generateColorTemperatureGradient = (min: number, max: number) => {
     .join(", ");
 };
 
+// Time to ignore state updates after releasing a picker, so that updates from
+// calls sent while dragging don't make it jump back before the final value
+// is reported.
+const RELEASE_HOLD_TIME = 1500;
+
 @customElement("light-color-temp-picker")
 class LightColorTempPicker extends LitElement {
   @state()
@@ -65,6 +70,10 @@ class LightColorTempPicker extends LitElement {
   @state() private _ctPickerValue?: number;
 
   @state() private _isInteracting?: boolean;
+
+  // Timer that keeps the released value shown while state updates from calls
+  // sent during dragging are still arriving.
+  private _releaseHoldTimeout?: number;
 
   protected render() {
     if (!this.stateObj) {
@@ -125,11 +134,29 @@ class LightColorTempPicker extends LitElement {
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
-    if (this._isInteracting || !changedProps.has("stateObj")) {
+    if (
+      this._isInteracting ||
+      this._releaseHoldTimeout !== undefined ||
+      !changedProps.has("stateObj")
+    ) {
       return;
     }
 
     this._updateSliderValues();
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    clearTimeout(this._releaseHoldTimeout);
+    this._releaseHoldTimeout = undefined;
+  }
+
+  private _holdReleasedValue() {
+    clearTimeout(this._releaseHoldTimeout);
+    this._releaseHoldTimeout = window.setTimeout(() => {
+      this._releaseHoldTimeout = undefined;
+      this._updateSliderValues();
+    }, RELEASE_HOLD_TIME);
   }
 
   private _ctColorCursorMoved(ev: CustomEvent) {
@@ -162,6 +189,7 @@ class LightColorTempPicker extends LitElement {
     }
 
     this._ctPickerValue = ct;
+    this._holdReleasedValue();
 
     this._updateColorTemp();
   }

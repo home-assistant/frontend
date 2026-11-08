@@ -33,6 +33,11 @@ declare global {
   }
 }
 
+// Time to ignore state updates after releasing a picker, so that updates from
+// calls sent while dragging don't make it jump back before the final value
+// is reported.
+const RELEASE_HOLD_TIME = 1500;
+
 @customElement("light-color-rgb-picker")
 class LightRgbColorPicker extends LitElement {
   @state()
@@ -58,6 +63,10 @@ class LightRgbColorPicker extends LitElement {
   @state() private _hsPickerValue?: [number, number];
 
   @state() private _isInteracting?: boolean;
+
+  // Timer that keeps the released value shown while state updates from calls
+  // sent during dragging are still arriving.
+  private _releaseHoldTimeout?: number;
 
   protected render() {
     if (!this.stateObj) {
@@ -235,11 +244,29 @@ class LightRgbColorPicker extends LitElement {
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
-    if (this._isInteracting || !changedProps.has("stateObj")) {
+    if (
+      this._isInteracting ||
+      this._releaseHoldTimeout !== undefined ||
+      !changedProps.has("stateObj")
+    ) {
       return;
     }
 
     this._updateSliderValues();
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    clearTimeout(this._releaseHoldTimeout);
+    this._releaseHoldTimeout = undefined;
+  }
+
+  private _holdReleasedValue() {
+    clearTimeout(this._releaseHoldTimeout);
+    this._releaseHoldTimeout = window.setTimeout(() => {
+      this._releaseHoldTimeout = undefined;
+      this._updateSliderValues();
+    }, RELEASE_HOLD_TIME);
   }
 
   private _hsColorCursorMoved(ev: CustomEvent) {
@@ -323,6 +350,7 @@ class LightRgbColorPicker extends LitElement {
     // final one.
     this._throttleUpdateColor.cancel();
     this._hsPickerValue = ev.detail.value;
+    this._holdReleasedValue();
 
     this._updateColor();
   }
