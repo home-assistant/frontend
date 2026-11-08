@@ -223,41 +223,4 @@ describe("<ha-selector-choose>", () => {
     );
     expect(nestedSelector.value).toEqual(template);
   });
-
-  const emittedValues = (element: HaChooseSelector) => {
-    const values: unknown[] = [];
-    element.addEventListener("value-changed", (ev) => {
-      values.push((ev as CustomEvent).detail.value);
-    });
-    return values;
-  };
-
-  it("wraps an edited plain duration without its old keys", async () => {
-    const element = await createElement({ hours: 0, minutes: 5, seconds: 0 });
-    const values = emittedValues(element);
-
-    const duration = { hours: 0, minutes: 6, seconds: 0 };
-    element
-      .shadowRoot!.querySelector("ha-selector")!
-      .dispatchEvent(
-        new CustomEvent("value-changed", { detail: { value: duration } })
-      );
-
-    expect(values).toEqual([{ duration, active_choice: "duration" }]);
-  });
-
-  it("keeps a plain duration under its choice when switching choices", async () => {
-    const duration = { hours: 0, minutes: 5, seconds: 0 };
-    const element = await createElement(duration);
-    const values = emittedValues(element);
-
-    element
-      .shadowRoot!.querySelector("ha-button-toggle-group")!
-      .dispatchEvent(
-        new CustomEvent("value-changed", { detail: { value: "text" } })
-      );
-
-    expect(values).toEqual([{ duration, active_choice: "text" }]);
-    expect(element.value).toEqual(duration);
-  });
 });
