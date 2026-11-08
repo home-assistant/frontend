@@ -44,6 +44,8 @@ export class HomeShortcutsEditor extends LitElement {
 
   @property({ attribute: false }) public shortcuts: ShortcutItem[] = [];
 
+  @property({ type: Boolean, reflect: true }) public disabled = false;
+
   private _resolveShortcuts = memoizeOne(resolveShortcutItems);
 
   private get _resolved(): ShortcutItem[] {
@@ -63,7 +65,11 @@ export class HomeShortcutsEditor extends LitElement {
       .map((i) => i.path);
 
     return html`
-      <ha-sortable handle-selector=".handle" @item-moved=${this._moved}>
+      <ha-sortable
+        handle-selector=".handle"
+        .disabled=${this.disabled}
+        @item-moved=${this._moved}
+      >
         <div class="list">
           ${repeat(
             resolved,
@@ -94,6 +100,7 @@ export class HomeShortcutsEditor extends LitElement {
                       <ha-switch
                         .checked=${!item.hidden}
                         .summaryKey=${item.key}
+                        .disabled=${this.disabled}
                         @change=${this._summaryToggleChanged}
                       ></ha-switch>
                     </ha-settings-row>
@@ -112,6 +119,7 @@ export class HomeShortcutsEditor extends LitElement {
                     .hass=${this.hass}
                     .item=${item}
                     .index=${index}
+                    .disabled=${this.disabled}
                     @edit-shortcut=${this._editShortcut}
                     @delete-shortcut=${this._deleteShortcut}
                   ></home-shortcut-list-item>
@@ -126,6 +134,7 @@ export class HomeShortcutsEditor extends LitElement {
           "ui.panel.home.editor.add_custom_shortcut"
         )}
         .excludePaths=${excludePaths}
+        .disabled=${this.disabled}
         @value-changed=${this._addShortcut}
       ></ha-navigation-picker>
     `;
@@ -162,6 +171,7 @@ export class HomeShortcutsEditor extends LitElement {
 
   private _moved(ev: HASSDomEvent<HASSDomEvents["item-moved"]>): void {
     ev.stopPropagation();
+    if (this.disabled) return;
     const { oldIndex, newIndex } = ev.detail;
     const next = [...this._resolved];
     const [moved] = next.splice(oldIndex, 1);
@@ -186,7 +196,7 @@ export class HomeShortcutsEditor extends LitElement {
   private _addShortcut(ev: ValueChangedEvent<string>): void {
     ev.stopPropagation();
     const path = ev.detail.value;
-    if (!path) return;
+    if (!path || this.disabled) return;
 
     (ev.currentTarget as HaNavigationPicker).value = "";
 
@@ -200,7 +210,7 @@ export class HomeShortcutsEditor extends LitElement {
   private _editShortcut(ev: HASSDomEvent<{ index: number }>): void {
     const { index } = ev.detail;
     const item = this._resolved[index];
-    if (!item || item.type !== "custom") return;
+    if (!item || item.type !== "custom" || this.disabled) return;
 
     showEditShortcutDialog(this, {
       item,
@@ -213,6 +223,7 @@ export class HomeShortcutsEditor extends LitElement {
   }
 
   private _deleteShortcut(ev: HASSDomEvent<{ index: number }>): void {
+    if (this.disabled) return;
     const { index } = ev.detail;
     const next = [...this._resolved];
     next.splice(index, 1);
@@ -258,6 +269,10 @@ export class HomeShortcutsEditor extends LitElement {
       flex-shrink: 0;
       display: flex;
       align-items: center;
+    }
+    :host([disabled]) .handle {
+      cursor: default;
+      color: var(--disabled-text-color);
     }
     ha-navigation-picker {
       display: block;

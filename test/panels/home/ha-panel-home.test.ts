@@ -108,6 +108,13 @@ const getPreviewConfig = (el: TestPanelHome) =>
     >
   )._previewConfig;
 
+// A registry the strategy depends on changes, as willUpdate() sees it.
+const changeAreaRegistry = (el: TestPanelHome) => {
+  const oldHass = el.hass;
+  el.hass = { ...oldHass, areas: { ...oldHass.areas } };
+  el.willUpdate(new Map([["hass", oldHass]]));
+};
+
 const deferred = <T>() => {
   let resolve!: (value: T) => void;
   const promise = new Promise<T>((res) => {
@@ -118,9 +125,8 @@ const deferred = <T>() => {
 
 describe("ha-panel-home stale strategy regeneration guard", () => {
   beforeEach(() => {
-    // _setPreviewConfig() schedules a real 200ms debounce internally. Fake
-    // timers keep it from ever firing on its own, since every test here
-    // controls _setLovelace() timing explicitly instead.
+    // Registry changes schedule a real 200ms debounce. Fake timers keep it
+    // from ever firing on its own, so each test decides when it runs.
     vi.useFakeTimers();
     mockedGenerateLovelaceDashboardStrategy.mockReset();
     mockedSaveFrontendSystemData.mockReset();
@@ -167,31 +173,32 @@ describe("ha-panel-home stale strategy regeneration guard", () => {
     const el = createPanel();
 
     const staleGeneration = deferred<{ views: unknown[] }>();
-    mockedGenerateLovelaceDashboardStrategy.mockReturnValueOnce(
-      staleGeneration.promise as any
-    );
+    const revertGeneration = deferred<{ views: unknown[] }>();
+    mockedGenerateLovelaceDashboardStrategy
+      .mockReturnValueOnce(staleGeneration.promise as any)
+      .mockReturnValueOnce(revertGeneration.promise as any);
 
     // An edit starts a draft regeneration that will take a while to resolve.
     setPreviewConfig(el, { hide_welcome_message: true });
-    const inFlight = setLovelace(el);
 
-    // The user cancels before that regeneration resolves. This must
-    // invalidate it immediately, not just once the next debounced
-    // regeneration actually starts.
+    // The user cancels before that regeneration resolves.
     setPreviewConfig(el, undefined);
 
-    // The cancelled draft's request finally comes back.
-    staleGeneration.resolve({ views: [] });
-    await inFlight;
-
+    // The cancelled draft's request finally comes back, and must be dropped.
+    staleGeneration.resolve({ views: ["cancelled draft"] });
+    await vi.advanceTimersByTimeAsync(0);
     expect(el._lovelace).toBeUndefined();
+
+    revertGeneration.resolve({ views: ["saved config"] });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(el._lovelace?.config).toEqual({ views: ["saved config"] });
   });
 
   it("still applies a regeneration that starts after the previous one", async () => {
     const el = createPanel();
 
     const config: HomeFrontendSystemData = { hide_welcome_message: true };
-    mockedGenerateLovelaceDashboardStrategy.mockResolvedValueOnce({
+    mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
       views: [],
     } as any);
 
@@ -208,7 +215,6 @@ describe("ha-panel-home stale strategy regeneration guard", () => {
     } as any);
 
     setPreviewConfig(el, { hide_welcome_message: true });
-    await setLovelace(el);
 
     expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenLastCalledWith(
       {
@@ -226,7 +232,6 @@ describe("ha-panel-home stale strategy regeneration guard", () => {
     );
 
     setPreviewConfig(el, undefined);
-    await setLovelace(el);
 
     expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenLastCalledWith(
       {
@@ -244,15 +249,36 @@ describe("ha-panel-home stale strategy regeneration guard", () => {
     );
   });
 
-  it("cancels a pending preview debounce so a fast save does not trigger a redundant extra regeneration", async () => {
+  it("previews a change at once and covers a pending registry regeneration", async () => {
     const el = createPanel();
+    el.hasUpdated = true;
+    mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
+      views: [],
+    } as any);
+
+    // A registry change schedules the 200ms debounce...
+    changeAreaRegistry(el);
+    expect(mockedGenerateLovelaceDashboardStrategy).not.toHaveBeenCalled();
+
+    // ...then a preview change regenerates without waiting for any timer.
+    setPreviewConfig(el, { hide_welcome_message: true });
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
+
+    // The registry debounce must not add a second regeneration later.
+    await vi.advanceTimersByTimeAsync(200);
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
+  });
+
+  it("cancels a pending registry debounce so a fast save does not trigger a redundant extra regeneration", async () => {
+    const el = createPanel();
+    el.hasUpdated = true;
     mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
       views: [],
     } as any);
     mockedSaveFrontendSystemData.mockResolvedValueOnce(undefined);
 
-    // A preview edit schedules the 200ms debounce...
-    setPreviewConfig(el, { hide_welcome_message: true });
+    // A registry change schedules the 200ms debounce...
+    changeAreaRegistry(el);
 
     // ...but the user saves before it fires.
     await saveConfig(el, { hide_welcome_message: true });
@@ -284,40 +310,30 @@ describe("ha-panel-home stale strategy regeneration guard", () => {
     // previewConfig(undefined), which is already the current value.
     setPreviewConfig(el, undefined);
 
-    // Nothing should have been scheduled: advancing past the debounce
-    // window must not trigger a regeneration.
+    // Nothing regenerates, not even once the debounce window has passed.
+    expect(mockedGenerateLovelaceDashboardStrategy).not.toHaveBeenCalled();
     await vi.advanceTimersByTimeAsync(200);
     expect(mockedGenerateLovelaceDashboardStrategy).not.toHaveBeenCalled();
   });
 
-  it("ignores a content-equal preview in a new object without discarding the in-flight post-save refresh", async () => {
+  it("ignores a content-equal preview in a new object without discarding the in-flight regeneration", async () => {
     const el = createPanel();
 
     const inFlight = deferred<{ views: unknown[] }>();
     mockedGenerateLovelaceDashboardStrategy.mockReturnValueOnce(
       inFlight.promise as any
     );
-    mockedSaveFrontendSystemData.mockResolvedValueOnce(undefined);
 
-    // A stale save: a newer draft is previewed while an older one is saved,
-    // so the preview stays and the save starts its immediate refresh.
-    setPreviewConfig(el, {
-      hide_welcome_message: true,
-      hide_suggested_entities: true,
-    });
-    await saveConfig(el, { hide_welcome_message: true });
+    // A draft is previewed, and its regeneration takes a while.
+    setPreviewConfig(el, { hide_welcome_message: true });
     expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
 
-    // The newer draft content is pushed again, as a new object with the
-    // same content.
-    setPreviewConfig(el, {
-      hide_welcome_message: true,
-      hide_suggested_entities: true,
-    });
+    // The same draft content is pushed again, as a new object.
+    setPreviewConfig(el, { hide_welcome_message: true });
 
     inFlight.resolve({ views: ["current"] });
     await vi.advanceTimersByTimeAsync(0);
-    // The in-flight refresh was not invalidated...
+    // The in-flight regeneration was not invalidated...
     expect(el._lovelace?.config).toEqual({ views: ["current"] });
 
     // ...and no extra one was scheduled behind it.
@@ -325,55 +341,32 @@ describe("ha-panel-home stale strategy regeneration guard", () => {
     expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
   });
 
-  it("clears _previewConfig after a save whose content matches it, so a reopened dialog does not inherit a stale draft", async () => {
+  it("clears _previewConfig after any successful save", async () => {
     const el = createPanel();
     mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
       views: [],
     } as any);
     mockedSaveFrontendSystemData.mockResolvedValueOnce(undefined);
 
-    const draft: HomeFrontendSystemData = { hide_welcome_message: true };
-    setPreviewConfig(el, draft);
+    setPreviewConfig(el, { hide_welcome_message: true });
 
-    // The saved config is content-equal to the current preview (e.g. Save
-    // was clicked on that exact draft), but built via a separate
-    // buildHomeConfig() call, so it is a different object reference.
-    await saveConfig(el, { hide_welcome_message: true });
+    // The editors are disabled while saving, so no newer draft can exist:
+    // the preview goes even when its content differs from the saved config,
+    // and a reopened dialog does not inherit it.
+    await saveConfig(el, { hide_suggested_entities: true });
 
     expect(getPreviewConfig(el)).toBeUndefined();
   });
 
-  it("preserves _previewConfig after a save whose content differs from it, keeping a newer live draft", async () => {
+  it("cancels a pending registry debounce before a locale-driven regeneration", async () => {
     const el = createPanel();
     mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
       views: [],
     } as any);
-    mockedSaveFrontendSystemData.mockResolvedValueOnce(undefined);
+    el.hasUpdated = true;
 
-    // A newer edit is pushed to the preview after the save's config was
-    // captured but before it resolves (mirrors dialog-edit-home's stale
-    // save handling, which keeps the dialog open with the newer draft).
-    const saved: HomeFrontendSystemData = { hide_welcome_message: true };
-    const newerDraft: HomeFrontendSystemData = {
-      hide_welcome_message: true,
-      hide_suggested_entities: true,
-    };
-    setPreviewConfig(el, newerDraft);
-
-    await saveConfig(el, saved);
-
-    expect(getPreviewConfig(el)).toEqual(newerDraft);
-  });
-
-  it("cancels a pending preview debounce before a locale-driven regeneration", async () => {
-    const el = createPanel();
-    mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
-      views: [],
-    } as any);
-    (el as unknown as Record<"hasUpdated", boolean>).hasUpdated = true;
-
-    // A preview edit schedules the 200ms debounce...
-    setPreviewConfig(el, { hide_welcome_message: true });
+    // A registry change schedules the 200ms debounce...
+    changeAreaRegistry(el);
 
     // ...but the locale changes before it fires.
     const oldHass = el.hass;
