@@ -278,6 +278,25 @@ export class HaNotifyAction extends LitElement implements ActionElement {
     return { action: "notify.send_message" };
   }
 
+  // Like _actionFor, but for editing a field rather than picking a device:
+  // when the action is already notify.send_message and there is no legacy
+  // action to upgrade to, re-deriving the target could silently redirect or
+  // drop it (an entity without a device, or a device with more than one
+  // notify entity), so the existing recipient is kept untouched instead.
+  private _actionForEdit(): {
+    action: string;
+    target?: NotifyAction["target"];
+  } {
+    const deviceId = this._currentDeviceId();
+    if (
+      this.action.action === "notify.send_message" &&
+      (!deviceId || !this._legacyServiceForDevice(deviceId))
+    ) {
+      return { action: this.action.action, target: this.action.target };
+    }
+    return this._actionFor(deviceId);
+  }
+
   private _hasAnyNotifyDevice(): boolean {
     return Object.values(this.hass.entities).some(
       (entity) => computeDomain(entity.entity_id) === "notify"
@@ -474,7 +493,7 @@ export class HaNotifyAction extends LitElement implements ActionElement {
       message: string;
       title?: string;
     };
-    const { action, target } = this._actionFor(this._currentDeviceId());
+    const { action, target } = this._actionForEdit();
     const data: NotifyAction["data"] = { message };
     if (title) {
       data.title = title;
@@ -539,7 +558,7 @@ export class HaNotifyAction extends LitElement implements ActionElement {
   private _updateExtraData(mutate: (extra: Record<string, unknown>) => void) {
     const extra = { ...(this.action.data?.data ?? {}) };
     mutate(extra);
-    const { action, target } = this._actionFor(this._currentDeviceId());
+    const { action, target } = this._actionForEdit();
     const data: NotifyAction["data"] = {
       message: this.action.data?.message ?? "",
     };

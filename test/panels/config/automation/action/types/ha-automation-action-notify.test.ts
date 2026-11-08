@@ -123,4 +123,52 @@ describe("ha-automation-action-notify", () => {
     expect(value.target).toBeUndefined();
     expect(value.data?.message).toBe("The garage door is still open");
   });
+
+  it("keeps the existing recipient when editing a field and there is no legacy action to switch to", async () => {
+    const hass = baseHass({
+      devices: {
+        jans_iphone: { id: "jans_iphone", name: "Jans iPhone" } as any,
+      },
+      // Two notify entities on the same device, no legacy action registered
+      entities: {
+        "notify.jans_iphone_1": {
+          entity_id: "notify.jans_iphone_1",
+          device_id: "jans_iphone",
+          labels: [],
+        } as any,
+        "notify.jans_iphone_2": {
+          entity_id: "notify.jans_iphone_2",
+          device_id: "jans_iphone",
+          labels: [],
+        } as any,
+      },
+    });
+    const el = await mount(hass, {
+      action: "notify.send_message",
+      target: { entity_id: "notify.jans_iphone_2" },
+      data: { message: "The garage door is open" },
+    });
+
+    const valueChanged = new Promise<{ value: NotifyAction }>((resolve) => {
+      el.addEventListener("value-changed", (ev: any) => resolve(ev.detail), {
+        once: true,
+      });
+    });
+
+    const mainForm = el.shadowRoot!.querySelector("ha-form")!;
+    mainForm.dispatchEvent(
+      new CustomEvent("value-changed", {
+        detail: {
+          value: { message: "The garage door is still open", title: "" },
+        },
+      })
+    );
+
+    const { value } = await valueChanged;
+    // No legacy action to upgrade to: the original recipient must survive,
+    // not get redirected to whichever of the device's entities resolves first
+    expect(value.action).toBe("notify.send_message");
+    expect(value.target).toEqual({ entity_id: "notify.jans_iphone_2" });
+    expect(value.data?.message).toBe("The garage door is still open");
+  });
 });
