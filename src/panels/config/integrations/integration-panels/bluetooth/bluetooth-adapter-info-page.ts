@@ -98,7 +98,8 @@ export class BluetoothAdapterInfoPage extends LitElement {
    * integration that provides them. The Bluetooth integration creates its own
    * device for a remote scanner, linked through `via_device_id` to the device
    * of the integration that provides it, so look there for that
-   * integration's config entry.
+   * integration's config entry first. The scanner's own device is only a
+   * fallback, as other integrations may have added entries to it.
    */
   private _getSourceConfigEntry(
     device: DeviceRegistryEntry
@@ -106,7 +107,7 @@ export class BluetoothAdapterInfoPage extends LitElement {
     const sourceDevice = device.via_device_id
       ? this.hass.devices[device.via_device_id]
       : undefined;
-    for (const candidate of [device, sourceDevice]) {
+    for (const candidate of [sourceDevice, device]) {
       if (!candidate) {
         continue;
       }
