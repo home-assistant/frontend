@@ -29,31 +29,23 @@ export const editorStatesEqual = (a: EditorState, b: EditorState): boolean =>
   deepEqual(normalizeEditorState(a), normalizeEditorState(b));
 
 /**
- * Immutable draft/dirty tracker for the home dashboard editor. Every edit
- * returns a new instance, so Lit's reference-based reactivity picks it up,
- * and bumps `generation`, which the dialog's updated() uses to push the
- * preview only when the draft changed.
+ * Immutable draft tracker for the home dashboard editor. Every edit returns a
+ * new instance, so Lit's reference-based reactivity picks it up, and bumps
+ * `generation`, which the dialog's updated() uses to push the preview only
+ * when the draft changed. The dirty state lives in the dialog's
+ * DirtyStateProviderMixin, which compares drafts with editorStatesEqual.
  */
 export class HomeConfigDraftSession {
   private constructor(
-    private readonly _baseline: EditorState,
     readonly draft: EditorState,
     readonly generation: number
   ) {}
 
   static start(initial: EditorState): HomeConfigDraftSession {
-    return new HomeConfigDraftSession(initial, initial, 0);
-  }
-
-  get isDirty(): boolean {
-    return !editorStatesEqual(this.draft, this._baseline);
+    return new HomeConfigDraftSession(initial, 0);
   }
 
   withDraft(newDraft: EditorState): HomeConfigDraftSession {
-    return new HomeConfigDraftSession(
-      this._baseline,
-      newDraft,
-      this.generation + 1
-    );
+    return new HomeConfigDraftSession(newDraft, this.generation + 1);
   }
 }

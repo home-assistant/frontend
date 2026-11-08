@@ -59,9 +59,9 @@ export class DialogEditHome
     this._params = params;
     const initial = editorStateFromConfig(params.config);
     this._session = HomeConfigDraftSession.start(initial);
-    // Same comparison as the session's isDirty. The mixin doesn't clone
-    // baselines for custom compares; safe since drafts are never mutated in
-    // place.
+    // The mixin is the only dirty tracking: it drives Save and
+    // preventScrimClose. It doesn't clone baselines for custom compares;
+    // safe since drafts are never mutated in place.
     this._initDirtyTracking(
       { type: "custom", compare: editorStatesEqual },
       initial
@@ -275,7 +275,9 @@ export class DialogEditHome
     );
   };
 
-  private _favoriteEntitiesChanged(ev: ValueChangedEvent<string[]>): void {
+  // Every editor change goes through here, so none can skip the guard or
+  // the dirty update. The preview push stays in updated().
+  private _patchDraft(patch: Partial<EditorState>): void {
     // Editors are disabled while saving; ignore any change still reaching
     // a handler, so the draft cannot move under a pending save.
     if (!this._session || this._submitting) {
@@ -283,52 +285,33 @@ export class DialogEditHome
     }
     this._session = this._session.withDraft({
       ...this._session.draft,
-      favorite_entities: ev.detail.value,
+      ...patch,
     });
     this._updateDirtyState(this._session.draft);
+  }
+
+  private _favoriteEntitiesChanged(ev: ValueChangedEvent<string[]>): void {
+    this._patchDraft({ favorite_entities: ev.detail.value });
   }
 
   private _welcomeChanged(
     ev: ValueChangedEvent<{ show_welcome_message: boolean }>
   ): void {
-    // Editors are disabled while saving; ignore any change still reaching
-    // a handler, so the draft cannot move under a pending save.
-    if (!this._session || this._submitting) {
-      return;
-    }
-    this._session = this._session.withDraft({
-      ...this._session.draft,
+    this._patchDraft({
       show_welcome_message: ev.detail.value.show_welcome_message,
     });
-    this._updateDirtyState(this._session.draft);
   }
 
   private _suggestedChanged(
     ev: ValueChangedEvent<{ show_suggested_entities: boolean }>
   ): void {
-    // Editors are disabled while saving; ignore any change still reaching
-    // a handler, so the draft cannot move under a pending save.
-    if (!this._session || this._submitting) {
-      return;
-    }
-    this._session = this._session.withDraft({
-      ...this._session.draft,
+    this._patchDraft({
       show_suggested_entities: ev.detail.value.show_suggested_entities,
     });
-    this._updateDirtyState(this._session.draft);
   }
 
   private _shortcutsChanged(ev: ValueChangedEvent<ShortcutItem[]>): void {
-    // Editors are disabled while saving; ignore any change still reaching
-    // a handler, so the draft cannot move under a pending save.
-    if (!this._session || this._submitting) {
-      return;
-    }
-    this._session = this._session.withDraft({
-      ...this._session.draft,
-      shortcuts: ev.detail.value,
-    });
-    this._updateDirtyState(this._session.draft);
+    this._patchDraft({ shortcuts: ev.detail.value });
   }
 
   private async _save(): Promise<void> {
