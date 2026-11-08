@@ -521,6 +521,63 @@ test.describe("Lovelace dashboard", () => {
       page.locator("[data-testid='edit-mode-button'], ha-menu-button")
     ).toBeAttached({ timeout: QUICK_TIMEOUT });
   });
+
+  test("dragging a row's slider off onto its name does not open more-info", async ({
+    page,
+  }) => {
+    // A demo dashboard with an input_number slider row in an entities card;
+    // the harness only loads the default demo's entities, so add it.
+    await goToPanel(page, "/?demo=arsaboo#/lovelace/0");
+    await page.evaluate(() =>
+      window.__mockHass.addEntities([
+        {
+          entity_id: "input_number.harmonyvolume",
+          state: "18.0",
+          attributes: {
+            min: 1,
+            max: 100,
+            step: 1,
+            mode: "slider",
+            friendly_name: "Volume",
+          },
+        },
+      ])
+    );
+    const row = page
+      .locator("hui-input-number-entity-row")
+      .filter({ has: page.locator("ha-slider") })
+      .first();
+    const slider = row.locator("ha-slider");
+    const name = row.locator(".info");
+    await expect(slider).toBeVisible({ timeout: PANEL_TIMEOUT });
+    await page.evaluate(() => {
+      (window as any).__moreInfo = [];
+      document.addEventListener("hass-more-info", (ev) =>
+        (window as any).__moreInfo.push((ev as CustomEvent).detail.entityId)
+      );
+    });
+    const moreInfoOpened = () =>
+      page.evaluate(() => (window as any).__moreInfo as string[]);
+
+    const sliderBox = (await slider.boundingBox())!;
+    const nameBox = (await name.boundingBox())!;
+    await page.mouse.move(
+      sliderBox.x + sliderBox.width / 2,
+      sliderBox.y + sliderBox.height / 2
+    );
+    await page.mouse.down();
+    await page.mouse.move(
+      nameBox.x + nameBox.width / 2,
+      nameBox.y + nameBox.height / 2,
+      { steps: 10 }
+    );
+    await page.mouse.up();
+    expect(await moreInfoOpened()).toEqual([]);
+
+    // A plain click on the name still opens more-info
+    await name.click();
+    await expect.poll(moreInfoOpened).toEqual(["input_number.harmonyvolume"]);
+  });
 });
 
 test.describe("Energy dashboard", () => {
