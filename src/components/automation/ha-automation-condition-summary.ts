@@ -11,7 +11,6 @@ import { getRowNote } from "../../data/automation";
 import type { ConditionDescription } from "../../data/condition";
 import { internationalizationContext } from "../../data/context";
 import "../../panels/config/automation/ha-automation-row-options";
-import "../../panels/config/automation/ha-automation-row-fields";
 import "../../panels/config/automation/ha-automation-row-threshold";
 import { getDeviceTarget } from "../../panels/config/automation/target/get_device_target";
 import { getEntityTarget } from "../../panels/config/automation/target/get_entity_target";
@@ -71,16 +70,13 @@ export class HaAutomationConditionSummary extends LitElement {
         ${this.label}
         ${
           this.description && this.condition
-            ? html`<ha-automation-row-fields
-                  .config=${this.condition}
-                  .description=${this.description}
-                ></ha-automation-row-fields>
-                <ha-automation-row-threshold
+            ? html`<ha-automation-row-threshold
                   .config=${this.condition}
                   .description=${this.description}
                 ></ha-automation-row-threshold>
                 <ha-automation-row-options
                   .config=${this.condition}
+                  .description=${this.description}
                 ></ha-automation-row-options> `
             : nothing
         }
