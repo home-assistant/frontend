@@ -223,7 +223,7 @@
     "webpackbar": "7.0.0",
     "workbox-build": "7.4.1"
   },
-  "packageManager": "pnpm@12.17.0",
+  "packageManager": "pnpm@12.18.0",
   "volta": {
     "node": "24.22.2"
   }
