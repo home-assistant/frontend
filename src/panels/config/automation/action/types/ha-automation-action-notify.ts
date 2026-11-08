@@ -124,6 +124,11 @@ export class HaNotifyAction extends LitElement implements ActionElement {
   // first, so an unresolvable legacy action never renders this editor at all.
   protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     if (changedProps.has("hass") || changedProps.has("action")) {
+      const err = HaNotifyAction.checkUiSupport(this.hass.localize, this.action);
+      if (err) {
+        fireEvent(this, "ui-mode-not-available", err);
+        return false;
+      }
       const service = this.action.action?.split(".", 2)[1];
       if (service && service !== "send_message") {
         const matches = this._devicesForLegacyService(service);
