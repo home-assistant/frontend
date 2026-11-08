@@ -32,6 +32,7 @@ import { UndoRedoController } from "../../common/controllers/undo-redo-controlle
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { ctrlOrCmdLabel } from "../../common/keyboard/ctrl-or-cmd";
+import { renderMoveShortcutHint } from "../../common/keyboard/render-move-shortcut-hint";
 import type { NavigateOptions } from "../../common/navigate";
 import { goBack, navigate, replaceCurrentUrl } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
@@ -545,9 +546,20 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
               this._editMode
                 ? html`
                     <ha-svg-icon
+                      id="move-view-${index}"
                       class="edit-icon view handle"
                       .path=${mdiDragHorizontalVariant}
                     ></ha-svg-icon>
+                    <ha-tooltip for="move-view-${index}">
+                      ${renderMoveShortcutHint(
+                        this.hass.localize(
+                          `ui.panel.lovelace.editor.edit_view.${rtl ? "move_right" : "move_left"}`
+                        ),
+                        this.hass.localize(
+                          `ui.panel.lovelace.editor.edit_view.${rtl ? "move_left" : "move_right"}`
+                        )
+                      )}
+                    </ha-tooltip>
                     <ha-icon-button
                       .label=${this.hass!.localize(
                         `ui.panel.lovelace.editor.edit_view.${rtl ? "move_right" : "move_left"}`

@@ -5,12 +5,14 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { renderMoveShortcutHint } from "../../../../common/keyboard/render-move-shortcut-hint";
 import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import type { Condition } from "../../../../data/automation";
 import type { ConditionDescriptions } from "../../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
@@ -213,6 +215,8 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
                     ? html`
                         <div
                           tabindex="0"
+                          id="move-row-${idx}"
+                          aria-keyshortcuts="Alt+ArrowUp Alt+ArrowDown"
                           class="handle ${
                             this.rowSortSelected === idx ? "active" : ""
                           }"
@@ -224,6 +228,16 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
                           <ha-svg-icon
                             .path=${mdiDragHorizontalVariant}
                           ></ha-svg-icon>
+                          <ha-tooltip for="move-row-${idx}">
+                            ${renderMoveShortcutHint(
+                              this.hass.localize(
+                                "ui.panel.config.automation.editor.move_up"
+                              ),
+                              this.hass.localize(
+                                "ui.panel.config.automation.editor.move_down"
+                              )
+                            )}
+                          </ha-tooltip>
                         </div>
                       `
                     : nothing

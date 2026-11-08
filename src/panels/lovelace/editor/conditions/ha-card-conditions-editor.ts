@@ -11,6 +11,7 @@ import type {
   HASSDomTargetEvent,
 } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { renderMoveShortcutHint } from "../../../../common/keyboard/render-move-shortcut-hint";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
@@ -193,15 +194,14 @@ export class HaCardConditionsEditor extends LitElement {
                 >
                   <ha-svg-icon .path=${mdiDragHorizontalVariant}></ha-svg-icon>
                   <ha-tooltip for="move-condition-${idx}">
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.move_up"
+                    ${renderMoveShortcutHint(
+                      this.hass.localize(
+                        "ui.panel.config.automation.editor.move_up"
+                      ),
+                      this.hass.localize(
+                        "ui.panel.config.automation.editor.move_down"
+                      )
                     )}
-                    (Alt+↑)
-                    <br />
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.move_down"
-                    )}
-                    (Alt+↓)
                   </ha-tooltip>
                 </div>
               </ha-card-condition-editor>
