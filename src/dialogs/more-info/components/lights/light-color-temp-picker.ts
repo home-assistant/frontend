@@ -153,7 +153,11 @@ class LightColorTempPicker extends LitElement {
   private _ctColorChanged(ev: CustomEvent) {
     const ct = ev.detail.value;
 
-    if (isNaN(ct) || this._ctPickerValue === ct) {
+    // A pending throttled call could otherwise send a stale value after the
+    // picker value was reset from an intermediate state update.
+    this._throttleUpdateColorTemp.cancel();
+
+    if (isNaN(ct)) {
       return;
     }
 

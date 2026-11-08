@@ -319,6 +319,9 @@ class LightRgbColorPicker extends LitElement {
     if (!ev.detail.value) {
       return;
     }
+    // A pending throttled call could otherwise send a stale color after the
+    // final one.
+    this._throttleUpdateColor.cancel();
     this._hsPickerValue = ev.detail.value;
 
     this._updateColor();
