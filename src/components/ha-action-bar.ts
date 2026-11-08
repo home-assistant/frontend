@@ -1,5 +1,4 @@
 import { LitElement, css, html } from "lit";
-import { customElement } from "lit/decorators";
 
 /**
  * @element ha-action-bar
@@ -10,7 +9,6 @@ import { customElement } from "lit/decorators";
  *
  * @cssprop --ha-action-bar-border-top - Top border of the bar, set it to match the border of the parent. Defaults to `var(--ha-border-width-sm) solid var(--divider-color)`.
  */
-@customElement("ha-action-bar")
 export class HaActionBar extends LitElement {
   protected render() {
     return html`<slot></slot>`;
@@ -28,6 +26,11 @@ export class HaActionBar extends LitElement {
       );
     }
   `;
+}
+
+// Don't throw if a custom card already took this generic name (#55748).
+if (!customElements.get("ha-action-bar")) {
+  customElements.define("ha-action-bar", HaActionBar);
 }
 
 declare global {
