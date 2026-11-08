@@ -109,12 +109,7 @@ export class HaChooseSelector extends LitElement {
 
   private _choiceChanged(ev) {
     ev.stopPropagation();
-    const value =
-      typeof this.value === "object"
-        ? this.value
-        : {
-            [this._activeChoice!]: this.value,
-          };
+    const value = this._choiceValues();
     const choice = ev.detail?.value || ev.target.value;
     this._activeChoice = choice;
     if (choice && "constant" in this.selector.choose.choices[choice].selector) {
@@ -129,9 +124,22 @@ export class HaChooseSelector extends LitElement {
     });
   }
 
+  /**
+   * A copy of the value with each choice's value under its key. A plain value,
+   * like a duration without active_choice, belongs to the active choice.
+   */
+  private _choiceValues(): Record<string, any> {
+    if (this.value === null || this.value === undefined) {
+      return {};
+    }
+    return typeof this.value === "object" && "active_choice" in this.value
+      ? { ...this.value }
+      : { [this._activeChoice!]: this.value };
+  }
+
   private _handleValueChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const value = typeof this.value === "object" ? this.value : {};
+    const value = this._choiceValues();
     fireEvent(this, "value-changed", {
       value: {
         ...value,
