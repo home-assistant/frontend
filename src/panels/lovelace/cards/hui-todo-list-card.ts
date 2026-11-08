@@ -76,8 +76,8 @@ import {
   TodoSortMode,
   createItem,
   deleteItems,
-  getTodoSections,
-  groupItemsBySection,
+  getTodoCategories,
+  groupItemsByCategory,
   moveItem,
   subscribeItems,
   updateItem,
@@ -581,7 +581,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                           </h2>
                           ${this._renderMenu(this._config, unavailable)}
                         </div>
-                        ${this._renderItemsBySection(
+                        ${this._renderItemsByCategory(
                           reorderableItems ?? [],
                           unavailable,
                           true
@@ -603,7 +603,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                           </div>`
                         : nothing
                     }
-                    ${this._renderItemsBySection(uncheckedItems, unavailable)}
+                    ${this._renderItemsByCategory(uncheckedItems, unavailable)}
                   `
                 : nothing
             }
@@ -720,18 +720,21 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       : undefined;
   }
 
-  private _groupItemsBySection = memoizeOne(groupItemsBySection);
+  private _groupItemsByCategory = memoizeOne(groupItemsByCategory);
 
-  private _renderItemsBySection(
+  private _renderItemsByCategory(
     items: TodoItem[],
     unavailable: boolean,
     reordering = false
   ) {
-    const groups = this._groupItemsBySection(
+    const groups = this._groupItemsByCategory(
       items,
-      getTodoSections(this._stateObj),
+      getTodoCategories(this._stateObj),
       reordering &&
-        this._todoListSupportsFeature(TodoListEntityFeature.SET_SECTION_ON_ITEM)
+        this._todoListSupportsFeature(
+          TodoListEntityFeature.SET_CATEGORY_ON_ITEM
+        ),
+      this._i18n.locale.language
     );
     if (!groups) {
       return this._renderItems(items, unavailable);
@@ -739,22 +742,22 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     const showHeaders = reordering || !this._config!.hide_section_headers;
     return repeat(
       groups,
-      (group) => group.section,
+      (group) => group.category,
       (group) => html`
         ${
           showHeaders
             ? html`<div
-                class="section-header ${classMap({
+                class="category-header ${classMap({
                   // Lets items be dropped under it, it has no drag handle
                   draggable: reordering,
                 })}"
-                data-section=${group.section ?? ""}
+                data-category=${group.category ?? ""}
               >
                 <h3>
                   ${
-                    group.section ??
+                    group.category ??
                     this._i18n.localize(
-                      "ui.panel.lovelace.cards.todo-list.no_section_items"
+                      "ui.panel.lovelace.cards.todo-list.no_category_items"
                     )
                   }
                 </h3>
@@ -1131,7 +1134,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       ) as HaListItemOption | undefined
     )?.value;
 
-    const section = this._findSection(
+    const category = this._findCategory(
       items,
       newIndex < oldIndex ? newIndex - 1 : newIndex,
       oldIndex
@@ -1140,10 +1143,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     // Optimistic change
     const itemIndex = this._items!.findIndex((itm) => itm.uid === itemId);
     let item = this._items!.splice(itemIndex, 1)[0];
-    const changeSection =
-      section !== undefined && section !== (item.section || null);
-    if (changeSection) {
-      item = { ...item, section };
+    const changeCategory =
+      category !== undefined && category !== (item.category || null);
+    if (changeCategory) {
+      item = { ...item, category };
     }
 
     if (!prevItemId) {
@@ -1154,17 +1157,17 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
     this._items = [...this._items!];
 
-    if (changeSection) {
+    if (changeCategory) {
       await updateItem(this._api.callService, this._entityId!, item);
     }
     await moveItem(this._api.callWS, this._entityId!, itemId, prevItemId);
   }
 
   /**
-   * Return the section of the header above an index, ignoring the moved item.
-   * Returns undefined when the list isn't grouped by section.
+   * Return the category of the header above an index, ignoring the moved item.
+   * Returns undefined when the list isn't grouped by category.
    */
-  private _findSection(
+  private _findCategory(
     items: HTMLCollection,
     start: number,
     movedIndex: number
@@ -1173,9 +1176,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       const element = items[index] as HTMLElement | undefined;
       if (
         index !== movedIndex &&
-        element?.classList.contains("section-header")
+        element?.classList.contains("category-header")
       ) {
-        return element.dataset.section || null;
+        return element.dataset.category || null;
       }
     }
     return undefined;
@@ -1225,13 +1228,13 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       font-weight: var(--ha-font-weight-medium);
     }
 
-    .section-header {
+    .category-header {
       padding-inline: var(--ha-space-4);
       margin-top: var(--ha-space-2);
       direction: var(--direction);
     }
 
-    .section-header h3 {
+    .category-header h3 {
       margin: var(--ha-space-2) 0 0;
       color: var(--secondary-text-color);
       font-size: var(--ha-font-size-s);

@@ -37,11 +37,11 @@ export interface TodoItem {
   description?: string | null;
   due?: string | null;
   completed?: string | null;
-  section?: string | null;
+  category?: string | null;
 }
 
-export interface TodoItemSectionGroup {
-  section: string | null;
+export interface TodoItemCategoryGroup {
+  category: string | null;
   items: TodoItem[];
 }
 
@@ -53,7 +53,7 @@ export enum TodoListEntityFeature {
   SET_DUE_DATE_ON_ITEM = 16,
   SET_DUE_DATETIME_ON_ITEM = 32,
   SET_DESCRIPTION_ON_ITEM = 64,
-  SET_SECTION_ON_ITEM = 128,
+  SET_CATEGORY_ON_ITEM = 128,
 }
 
 export const getTodoLists = (
@@ -115,7 +115,7 @@ export const updateItem = (
       rename: item.summary,
       status: item.status,
       description: item.description,
-      section: item.section,
+      category: item.category,
       due_datetime: item.due?.includes("T") ? item.due : undefined,
       due_date:
         item.due === undefined || item.due?.includes("T")
@@ -136,7 +136,7 @@ export const createItem = (
     {
       item: item.summary,
       description: item.description || undefined,
-      section: item.section || undefined,
+      category: item.category || undefined,
       due_datetime: item.due?.includes("T") ? item.due : undefined,
       due_date:
         item.due === undefined || item.due?.includes("T")
@@ -173,48 +173,52 @@ export const moveItem = (
     previous_uid,
   });
 
-export const getTodoSections = (
+export const getTodoCategories = (
   stateObj: HassEntity | undefined
-): string[] | undefined => stateObj?.attributes.sections;
+): string[] | undefined => stateObj?.attributes.categories;
 
 /**
- * Group items by section, in the order of the sections of the list.
+ * Group items by category, categories sorted alphabetically.
  *
- * Sections that are not in `sections` follow in order of appearance, and items
- * without a section come last. Returns undefined when no item has a section.
- * With `includeEmpty`, every section and the group of items without a section
- * are returned even when they have no items, so items can be moved to them.
+ * Items keep their order within a group, and items without a category come
+ * last. Returns undefined when no item has a category. With `includeEmpty`,
+ * every category of the list and the group of items without a category are
+ * returned even when they have no items, so items can be moved to them.
  */
-export const groupItemsBySection = (
+export const groupItemsByCategory = (
   items: TodoItem[],
-  sections: string[] = [],
-  includeEmpty = false
-): TodoItemSectionGroup[] | undefined => {
+  categories: string[] = [],
+  includeEmpty = false,
+  language?: string
+): TodoItemCategoryGroup[] | undefined => {
   if (
-    !items.some((item) => item.section) &&
-    !(includeEmpty && sections.length)
+    !items.some((item) => item.category) &&
+    !(includeEmpty && categories.length)
   ) {
     return undefined;
   }
-  const groups = new Map<string | null, TodoItem[]>(
-    sections.map((section) => [section, []])
+  const groups = new Map<string, TodoItem[]>(
+    includeEmpty ? categories.map((category) => [category, []]) : []
   );
-  const withoutSection: TodoItem[] = [];
+  const withoutCategory: TodoItem[] = [];
   for (const item of items) {
-    if (!item.section) {
-      withoutSection.push(item);
+    if (!item.category) {
+      withoutCategory.push(item);
       continue;
     }
-    const group = groups.get(item.section);
+    const group = groups.get(item.category);
     if (group) {
       group.push(item);
     } else {
-      groups.set(item.section, [item]);
+      groups.set(item.category, [item]);
     }
   }
-  groups.set(null, withoutSection);
-  return Array.from(groups, ([section, groupItems]) => ({
-    section,
-    items: groupItems,
-  })).filter((group) => includeEmpty || group.items.length);
+  const result: TodoItemCategoryGroup[] = Array.from(
+    groups,
+    ([category, groupItems]) => ({ category, items: groupItems })
+  ).sort((a, b) => stringCompare(a.category!, b.category!, language));
+  if (includeEmpty || withoutCategory.length) {
+    result.push({ category: null, items: withoutCategory });
+  }
+  return result;
 };
