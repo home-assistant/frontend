@@ -178,6 +178,17 @@ export const getTodoCategories = (
 ): string[] | undefined => stateObj?.attributes.categories;
 
 /**
+ * Return the distinct categories, sorted alphabetically, to offer for an item.
+ */
+export const getCategoryOptions = (
+  categories: (string | null | undefined)[],
+  language?: string
+): string[] =>
+  Array.from(new Set(categories.filter((category) => !!category))).sort(
+    (a, b) => stringCompare(a!, b!, language)
+  ) as string[];
+
+/**
  * Group items by category, categories sorted alphabetically.
  *
  * Items keep their order within a group, and items without a category come

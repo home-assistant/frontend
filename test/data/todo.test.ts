@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { TodoItem } from "../../src/data/todo";
-import { TodoItemStatus, groupItemsByCategory } from "../../src/data/todo";
+import {
+  TodoItemStatus,
+  getCategoryOptions,
+  groupItemsByCategory,
+} from "../../src/data/todo";
 
 const item = (uid: string, category?: string | null): TodoItem => ({
   uid,
@@ -74,5 +78,21 @@ describe("groupItemsByCategory", () => {
       [null, ["soap"]],
     ]);
     expect(groupItemsByCategory([item("soap")], [], true)).toBeUndefined();
+  });
+});
+
+describe("getCategoryOptions", () => {
+  it("merges categories, without duplicates or empty values, sorted", () => {
+    expect(
+      getCategoryOptions([
+        "Pets",
+        "Grocery",
+        undefined,
+        "",
+        null,
+        "Pets",
+        "Fresh produce",
+      ])
+    ).toEqual(["Fresh produce", "Grocery", "Pets"]);
   });
 });

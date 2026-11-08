@@ -76,6 +76,7 @@ import {
   TodoSortMode,
   createItem,
   deleteItems,
+  getCategoryOptions,
   getTodoCategories,
   groupItemsByCategory,
   moveItem,
@@ -722,6 +723,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   private _groupItemsByCategory = memoizeOne(groupItemsByCategory);
 
+  private _itemCategories = memoizeOne((items?: TodoItem[]) =>
+    getCategoryOptions(items?.map((item) => item.category) ?? [])
+  );
+
   private _renderItemsByCategory(
     items: TodoItem[],
     unavailable: boolean,
@@ -978,6 +983,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     showTodoItemEditDialog(this, {
       entity: this._entityId!,
       item,
+      categories: this._itemCategories(this._items),
     });
   }
 
@@ -1056,6 +1062,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         showTodoItemEditDialog(this, {
           entity: this._entityId!,
           item,
+          categories: this._itemCategories(this._items),
         });
       } else {
         createItem(this._api.callService, this._entityId!, {

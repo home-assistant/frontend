@@ -16,8 +16,7 @@ import type { HaCheckbox } from "../../components/ha-checkbox";
 import "../../components/ha-date-input";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
-import "../../components/ha-select";
-import type { HaSelectSelectEvent } from "../../components/ha-select";
+import "../../components/ha-selector/ha-selector-select";
 import "../../components/ha-textarea";
 import type { HaTextArea } from "../../components/ha-textarea";
 import "../../components/ha-time-input";
@@ -25,6 +24,7 @@ import "../../components/input/ha-input";
 import type { HaInput } from "../../components/input/ha-input";
 import type { TodoItem } from "../../data/todo";
 import {
+  getCategoryOptions,
   getTodoCategories,
   TodoItemStatus,
   TodoListEntityFeature,
@@ -35,6 +35,7 @@ import {
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
+import type { SelectSelector } from "../../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import type { TodoItemEditDialogParams } from "./show-dialog-todo-item-editor";
 
@@ -319,32 +320,36 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
   }
 
   private _renderCategory(canUpdate: boolean) {
-    const label = this.hass.localize("ui.components.todo.item.category");
-    const categories = getTodoCategories(
-      this.hass.states[this._params!.entity]
-    );
-    if (!categories?.length) {
-      return html`<ha-input
-        name="category"
-        .label=${label}
-        .value=${this._category ?? ""}
-        @input=${this._handleCategoryInput}
-        .disabled=${!canUpdate}
-      ></ha-input>`;
-    }
-    const options =
-      this._category && !categories.includes(this._category)
-        ? [...categories, this._category]
-        : categories;
-    return html`<ha-select
-      clearable
-      .label=${label}
+    return html`<ha-selector-select
+      .hass=${this.hass}
+      .label=${this.hass.localize("ui.components.todo.item.category")}
+      .selector=${this._categorySelector(
+        getTodoCategories(this.hass.states[this._params!.entity]),
+        this._params!.categories,
+        this._category
+      )}
       .value=${this._category}
-      .options=${options}
-      @selected=${this._handleCategorySelected}
+      .required=${false}
       .disabled=${!canUpdate}
-    ></ha-select>`;
+      @value-changed=${this._handleCategoryChanged}
+    ></ha-selector-select>`;
   }
+
+  private _categorySelector = memoizeOne(
+    (
+      listCategories: string[] | undefined,
+      itemCategories: string[] | undefined,
+      current: string | undefined
+    ): SelectSelector => ({
+      select: {
+        options: getCategoryOptions(
+          [...(listCategories ?? []), ...(itemCategories ?? []), current],
+          this.hass.locale.language
+        ),
+        custom_value: true,
+      },
+    })
+  );
 
   private _todoListSupportsFeature(feature: number): boolean {
     if (!this._params?.entity) {
@@ -400,13 +405,8 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
     this._updateDirtyState(this._currentState());
   }
 
-  private _handleCategoryInput(ev: InputEvent & HASSDomTargetEvent<HaInput>) {
-    this._category = ev.target.value?.trim() || undefined;
-    this._updateDirtyState(this._currentState());
-  }
-
-  private _handleCategorySelected(ev: HaSelectSelectEvent<string, true>) {
-    this._category = ev.detail.value || undefined;
+  private _handleCategoryChanged(ev: ValueChangedEvent<string | undefined>) {
+    this._category = ev.detail.value?.trim() || undefined;
     this._updateDirtyState(this._currentState());
   }
 
