@@ -226,12 +226,8 @@ export class HaItemDisplayEditor extends LitElement {
                             }
                           >
                             ${renderMoveShortcutHint(
-                              this._localize(
-                                "ui.panel.config.automation.editor.move_up"
-                              ),
-                              this._localize(
-                                "ui.panel.config.automation.editor.move_down"
-                              )
+                              this._localize("ui.common.move_up"),
+                              this._localize("ui.common.move_down")
                             )}
                           </ha-tooltip>
                         `

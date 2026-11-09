@@ -3,6 +3,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, queryAll } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { ifDefined } from "lit/directives/if-defined";
 import { renderMoveShortcutHint } from "../../../../common/keyboard/render-move-shortcut-hint";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -77,7 +78,7 @@ export default class HaAutomationOption extends AutomationSortableListMixin<Opti
                         <div
                           tabindex="0"
                           id="move-row-${idx}"
-                          aria-keyshortcuts="Alt+ArrowUp Alt+ArrowDown"
+                          aria-keyshortcuts=${ifDefined(this.optionsInSidebar ? "Alt+ArrowUp Alt+ArrowDown" : undefined)}
                           class="handle ${
                             this.rowSortSelected === idx ? "active" : ""
                           }"
@@ -89,16 +90,23 @@ export default class HaAutomationOption extends AutomationSortableListMixin<Opti
                           <ha-svg-icon
                             .path=${mdiDragHorizontalVariant}
                           ></ha-svg-icon>
-                          <ha-tooltip trigger="focus" for="move-row-${idx}">
-                            ${renderMoveShortcutHint(
-                              this.hass.localize(
-                                "ui.panel.config.automation.editor.move_up"
-                              ),
-                              this.hass.localize(
-                                "ui.panel.config.automation.editor.move_down"
-                              )
-                            )}
-                          </ha-tooltip>
+                          ${
+                            this.optionsInSidebar
+                              ? html`<ha-tooltip
+                                  trigger="focus"
+                                  for="move-row-${idx}"
+                                >
+                                  ${renderMoveShortcutHint(
+                                    this.hass.localize(
+                                      "ui.panel.config.automation.editor.move_up"
+                                    ),
+                                    this.hass.localize(
+                                      "ui.panel.config.automation.editor.move_down"
+                                    )
+                                  )}
+                                </ha-tooltip>`
+                              : nothing
+                          }
                         </div>
                       `
                     : nothing

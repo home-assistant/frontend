@@ -477,6 +477,8 @@
       "and": "and",
       "continue": "Continue",
       "previous": "Previous",
+      "move_up": "Move up",
+      "move_down": "Move down",
       "loading": "Loading",
       "refresh": "Refresh",
       "cancel": "Cancel",
