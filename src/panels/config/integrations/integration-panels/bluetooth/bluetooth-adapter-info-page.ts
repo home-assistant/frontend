@@ -98,8 +98,7 @@ export class BluetoothAdapterInfoPage extends LitElement {
    * integration that provides them. The Bluetooth integration creates its own
    * device for a remote scanner, linked through `via_device_id` to the device
    * of the integration that provides it, so look there for that
-   * integration's config entry. Only return it when it can be configured:
-   * it has an options flow and is not disabled.
+   * integration's config entry.
    */
   private _getSourceConfigEntry(
     device: DeviceRegistryEntry
@@ -110,22 +109,15 @@ export class BluetoothAdapterInfoPage extends LitElement {
     if (!sourceDevice) {
       return undefined;
     }
-    let sourceEntry: ConfigEntry | undefined;
     if (
       sourceDevice.primary_config_entry &&
       sourceDevice.primary_config_entry in this._sourceConfigEntries
     ) {
-      sourceEntry =
-        this._sourceConfigEntries[sourceDevice.primary_config_entry];
-    } else {
-      sourceEntry = sourceDevice.config_entries
-        .map((id) => this._sourceConfigEntries[id])
-        .find((e) => e !== undefined);
+      return this._sourceConfigEntries[sourceDevice.primary_config_entry];
     }
-    if (!sourceEntry?.supports_options || sourceEntry.disabled_by) {
-      return undefined;
-    }
-    return sourceEntry;
+    return sourceDevice.config_entries
+      .map((id) => this._sourceConfigEntries[id])
+      .find((e) => e !== undefined);
   }
 
   private async _subscribeBluetoothConnectionAllocations(): Promise<void> {
@@ -376,7 +368,9 @@ export class BluetoothAdapterInfoPage extends LitElement {
           <div slot="headline">${deviceName}</div>
           <div slot="supporting-text">${supportingParts.join(" · ")}</div>
           ${
-            optionsEntry
+            optionsEntry &&
+            (!isRemoteScanner ||
+              (optionsEntry.supports_options && !optionsEntry.disabled_by))
               ? html`<ha-icon-button
                   slot="end"
                   .path=${mdiCogOutline}
