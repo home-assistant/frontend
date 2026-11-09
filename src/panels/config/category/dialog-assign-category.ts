@@ -81,7 +81,6 @@ class DialogAssignCategory extends DirtyStateProviderMixin<AssignCategoryFormSta
         }
         <div class="form">
           <ha-category-picker
-            .hass=${this.hass}
             .scope=${this._scope}
             .label=${this.hass.localize(
               "ui.components.category-picker.category"

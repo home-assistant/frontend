@@ -15,6 +15,7 @@ import "../../../../components/radio/ha-radio-option";
 import "../../../../components/input/ha-input";
 import type { GasSourceTypeEnergyPreference } from "../../../../data/energy";
 import {
+  computeEnergyLabel,
   emptyGasEnergyPreference,
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
@@ -31,6 +32,13 @@ import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsGasDialogParams } from "./show-dialogs-energy";
 import type { HaInput } from "../../../../components/input/ha-input";
+import type { IntegralUnits } from "./energy-integral";
+import {
+  confirmIntegrals,
+  findIntegral,
+  integralTotalUnit,
+  integralUnits,
+} from "./energy-integral";
 
 type CostType = "no-costs" | "number" | "entity" | "statistic";
 
@@ -70,6 +78,8 @@ export class DialogEnergyGasSettings
 
   @state() private _error?: string;
 
+  @state() private _saving = false;
+
   private _excludeList?: string[];
 
   private _excludeListFlowRate?: string[];
@@ -78,6 +88,8 @@ export class DialogEnergyGasSettings
     params: EnergySettingsGasDialogParams
   ): Promise<void> {
     this._params = params;
+    this._error = undefined;
+    this._saving = false;
     this._source = params.source
       ? { ...params.source }
       : emptyGasEnergyPreference();
@@ -149,18 +161,23 @@ export class DialogEnergyGasSettings
           ? this._energy_units?.join(", ") || ""
           : this._gas_units?.join(", ") || "";
 
-    const unitPrice = this._pickedDisplayUnit
-      ? `${this.hass.config.currency}/${this._pickedDisplayUnit}`
+    const displayUnit = this._source.stat_energy_from
+      ? this._pickedDisplayUnit
+      : this._integralTotalUnit();
+
+    const unitPrice = displayUnit
+      ? `${this.hass.config.currency}/${displayUnit}`
       : undefined;
 
     const pickedUnitClass =
-      this._pickedDisplayUnit &&
-      this._energy_units?.includes(this._pickedDisplayUnit)
+      displayUnit && this._energy_units?.includes(displayUnit)
         ? "energy"
-        : this._pickedDisplayUnit &&
-            this._gas_units?.includes(this._pickedDisplayUnit)
+        : displayUnit && this._gas_units?.includes(displayUnit)
           ? "volume"
           : undefined;
+
+    const labelStatistic =
+      this._source.stat_energy_from || this._source.stat_rate;
 
     const externalSource =
       this._source.stat_energy_from &&
@@ -186,7 +203,6 @@ export class DialogEnergyGasSettings
         </div>
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${
             this._params.allowedGasUnitClass || gasUnitClasses
@@ -198,6 +214,7 @@ export class DialogEnergyGasSettings
           )}
           .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
+          .disabled=${this._saving}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.gas.dialog.entity_para",
             { unit: pickableUnit }
@@ -206,7 +223,6 @@ export class DialogEnergyGasSettings
         ></ha-statistic-picker>
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .includeUnitClass=${flowRateUnitClasses}
           .value=${this._source.stat_rate}
           .label=${this.hass.localize(
@@ -214,6 +230,9 @@ export class DialogEnergyGasSettings
           )}
           .excludeStatistics=${this._excludeListFlowRate}
           @value-changed=${this._flowRateStatisticChanged}
+          .disabled=${this._saving}
+          .invalid=${!!this._flowRateError()}
+          .errorMessage=${this._flowRateError()}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.gas.dialog.flow_rate_para",
             { unit: this._flow_rate_units?.join(", ") || "" }
@@ -225,15 +244,15 @@ export class DialogEnergyGasSettings
             "ui.panel.config.energy.gas.dialog.display_name"
           )}
           type="text"
-          .disabled=${!this._source?.stat_energy_from}
+          .disabled=${!labelStatistic || this._saving}
           .value=${this._source?.name || ""}
           .placeholder=${
-            this._source?.stat_energy_from
+            labelStatistic
               ? getStatisticLabel(
                   this.hass.states,
                   this.hass.formatEntityName,
-                  this._source.stat_energy_from,
-                  this._params?.statsMetadata?.[this._source.stat_energy_from]
+                  labelStatistic,
+                  this._params?.statsMetadata?.[labelStatistic]
                 )
               : ""
           }
@@ -242,6 +261,7 @@ export class DialogEnergyGasSettings
         </ha-input>
 
         <ha-radio-group
+          .disabled=${this._saving}
           .label=${this.hass.localize(
             "ui.panel.config.energy.gas.dialog.cost_para"
           )}
@@ -269,8 +289,8 @@ export class DialogEnergyGasSettings
         ${
           this._costs === "statistic"
             ? html`<ha-statistic-picker
+                .disabled=${this._saving}
                 class="price-options"
-                .hass=${this.hass}
                 statistic-types="sum"
                 .value=${this._source.stat_cost}
                 .label=${`${this.hass.localize(
@@ -280,6 +300,7 @@ export class DialogEnergyGasSettings
               ></ha-statistic-picker>`
             : this._costs === "entity"
               ? html`<ha-entity-picker
+                  .disabled=${this._saving}
                   class="price-options"
                   include-domains='["sensor", "input_number"]'
                   .value=${this._source.entity_energy_price}
@@ -316,6 +337,7 @@ export class DialogEnergyGasSettings
                 ></ha-entity-picker>`
               : this._costs === "number"
                 ? html`<ha-input
+                    .disabled=${this._saving}
                     .label=${`${this.hass.localize(
                       "ui.panel.config.energy.gas.dialog.cost_number_input"
                     )} ${unitPrice ? ` (${unitPrice})` : ""}`}
@@ -347,11 +369,13 @@ export class DialogEnergyGasSettings
           <ha-button
             @click=${this._save}
             .disabled=${
-              !this._source!.stat_energy_from ||
+              this._saving ||
+              !(this._source!.stat_energy_from || this._integralUnits()) ||
               (this._costs === "number" &&
                 typeof this._source!.number_energy_price !== "number") ||
               (!!this._params?.source && !this.isDirtyState)
             }
+            .loading=${this._saving}
             slot="primaryAction"
           >
             ${this.hass.localize("ui.common.save")}
@@ -457,20 +481,144 @@ export class DialogEnergyGasSettings
     this._updateDirtyState({ source: this._source!, costs: this._costs! });
   }
 
-  private async _save() {
-    try {
-      if (this._costs === "no-costs") {
-        this._source!.entity_energy_price = null;
-        this._source!.number_energy_price = null;
-        this._source!.stat_cost = null;
-        this._numberPriceText = "";
-      }
-      await this._params!.saveCallback(this._source!);
-      this._markDirtyStateClean();
-      this.closeDialog();
-    } catch (err: any) {
-      this._error = err.message;
+  private _integralUnits(): IntegralUnits | undefined {
+    const statRate = this._source?.stat_rate;
+    // Gas sources can't mix volume and energy units
+    if (
+      !statRate ||
+      !this._gas_units ||
+      this._params?.allowedGasUnitClass === "energy"
+    ) {
+      return undefined;
     }
+    return integralUnits(
+      this.hass.states[statRate]?.attributes.unit_of_measurement,
+      this._gas_units
+    );
+  }
+
+  private _flowRateError(): string | undefined {
+    if (
+      this._source?.stat_energy_from ||
+      !this._source?.stat_rate ||
+      !this._gas_units ||
+      this._integralUnits()
+    ) {
+      return undefined;
+    }
+    return this.hass.localize(
+      this._params?.allowedGasUnitClass === "energy"
+        ? "ui.panel.config.energy.gas.dialog.flow_rate_energy_sources"
+        : "ui.panel.config.energy.gas.dialog.flow_rate_no_volume"
+    );
+  }
+
+  private _integralTotalUnit(): string | undefined {
+    const units = this._integralUnits();
+    if (!units) {
+      return undefined;
+    }
+    const statRate = this._source!.stat_rate!;
+    // A reused helper can display another unit than a new one would
+    const existing = findIntegral(
+      this.hass.states,
+      this.hass.entities,
+      statRate,
+      "gas",
+      this._excludeList
+    );
+    return existing
+      ? getDisplayUnit(this.hass.states, existing, undefined) || undefined
+      : integralTotalUnit(
+          this.hass.states[statRate].attributes.unit_of_measurement!,
+          units
+        );
+  }
+
+  private async _save() {
+    // Closing or reopening the dialog replaces its state, but a created helper
+    // must still be saved with the submitted source
+    const params = this._params!;
+    const costs = this._costs;
+    let source = this._source!;
+    const isCurrent = () => this._params === params;
+    this._error = undefined;
+    this._saving = true;
+    try {
+      if (!source.stat_energy_from) {
+        const statEnergyFrom = await this._gasFromFlowRate(source);
+        if (!statEnergyFrom) {
+          return;
+        }
+        source = { ...source, stat_energy_from: statEnergyFrom };
+        if (isCurrent()) {
+          this._pickedDisplayUnit = this._integralTotalUnit();
+          // Keep edits made meanwhile, only fill in the new sensor
+          this._source = { ...this._source!, stat_energy_from: statEnergyFrom };
+          this._updateFormDirtyState();
+        }
+      }
+      if (costs === "no-costs") {
+        source = {
+          ...source,
+          entity_energy_price: null,
+          number_energy_price: null,
+          stat_cost: null,
+        };
+      }
+      await params.saveCallback(source);
+      if (isCurrent()) {
+        this._markDirtyStateClean();
+        this.closeDialog();
+      }
+    } catch (err: any) {
+      if (isCurrent()) {
+        this._error = err.message;
+      }
+    } finally {
+      if (isCurrent()) {
+        this._saving = false;
+      }
+    }
+  }
+
+  private async _gasFromFlowRate(
+    draft: GasSourceTypeEnergyPreference
+  ): Promise<string | undefined> {
+    const statRate = draft.stat_rate!;
+    const units = this._integralUnits();
+    if (!units) {
+      return undefined;
+    }
+    const sensors = await confirmIntegrals(this, this.hass, {
+      deviceClass: "gas",
+      states: this.hass.states,
+      entities: this.hass.entities,
+      requests: [
+        {
+          rate: statRate,
+          units,
+          name: this.hass.localize(
+            "ui.panel.config.energy.integral.gas.sensor_name",
+            {
+              name: computeEnergyLabel(
+                this.hass.states,
+                this.hass.formatEntityName,
+                statRate,
+                this._params?.statsMetadata?.[statRate],
+                draft.name
+              ),
+            }
+          ),
+        },
+      ],
+      intro: this.hass.localize(
+        "ui.panel.config.energy.gas.dialog.gas_sensor_needed"
+      ),
+      exclude: this._excludeList,
+      statsMetadata: this._params?.statsMetadata,
+    });
+    return sensors?.[0];
   }
 
   static get styles(): CSSResultGroup {

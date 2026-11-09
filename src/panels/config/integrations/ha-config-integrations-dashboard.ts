@@ -9,6 +9,7 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
+import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { deepActiveElement } from "../../../common/dom/deep-active-element";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
@@ -16,12 +17,13 @@ import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
-import {
-  getHistoryState,
-  navigate,
-  updateHistoryState,
-} from "../../../common/navigate";
+import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import {
+  integrationsLinkFromUrl,
+  integrationsQueryParamConfig,
+  integrationsQueryParams,
+} from "../../../common/url/integrations-query-params";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
@@ -169,7 +171,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     window.location.hash.substring(1)
   );
 
-  @state() private _filter: string = getHistoryState()?.filter || "";
+  @state() private _filter = "";
 
   @state() private _logInfos?: Record<string, IntegrationLogInfo>;
 
@@ -184,6 +186,17 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   });
 
   private _childReadyRegistered = false;
+
+  // The page can first be opened on /add, which sends itself on to the page
+  private _queryParams = new QueryParamsController(
+    this,
+    integrationsQueryParamConfig,
+    {
+      enabled: () => true,
+      navigated: () => this._applyUrl(),
+      path: "/config/integrations/dashboard",
+    }
+  );
 
   @consume({ context: childPanelReadyContext, subscribe: true })
   private _registerChildPanelReady?: RegisterChildPanelReady;
@@ -398,6 +411,14 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     }
   );
 
+  protected willUpdate(changed: PropertyValues<this>) {
+    super.willUpdate(changed);
+
+    if (!this.hasUpdated) {
+      this._applyUrl();
+    }
+  }
+
   protected firstUpdated(changed: PropertyValues<this>) {
     super.firstUpdated(changed);
     this._fetchManifests();
@@ -556,6 +577,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                     appearance="outlined"
                     .value=${this._filter}
                     @input=${this._handleSearchChange}
+                    @blur=${this._flushUrl}
                     .placeholder=${this.hass.localize(
                       "ui.panel.config.integrations.search"
                     )}
@@ -577,6 +599,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                     appearance="outlined"
                     .value=${this._filter}
                     @input=${this._handleSearchChange}
+                    @blur=${this._flushUrl}
                     .placeholder=${this.hass.localize(
                       "ui.panel.config.integrations.search"
                     )}
@@ -834,7 +857,10 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   };
 
   private async _fetchEntitySources() {
-    const entitySources = await fetchEntitySourcesWithCache(this.hass);
+    const entitySources = await fetchEntitySourcesWithCache(
+      this.hass.callWS,
+      this.hass.states
+    );
 
     const entitiesByDomain = {};
 
@@ -886,6 +912,8 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   }
 
   private _createFlow() {
+    // Keep the search typed so far on the entry the dialog's Back returns to
+    this._queryParams.flush();
     showAddIntegrationDialog(this, {
       initialFilter: this._filter,
       navigateToResult: true,
@@ -897,6 +925,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     switch (action) {
       case "show-ignored":
         this._showIgnored = !this._showIgnored;
+        this._writeUrl();
         break;
       case "show-disabled":
         this._toggleShowDisabled();
@@ -906,11 +935,46 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
 
   private _toggleShowDisabled() {
     this._showDisabled = !this._showDisabled;
+    this._writeUrl();
   }
 
   private _handleSearchChange(ev: HASSDomTargetEvent<HaInputSearch>) {
     this._filter = ev.target.value ?? "";
-    updateHistoryState({ filter: this._filter });
+
+    this._writeUrl(true);
+  }
+
+  private _flushUrl() {
+    this._queryParams.flush();
+  }
+
+  private _writeUrl(debounced = false) {
+    this._queryParams.write(
+      integrationsQueryParams({
+        search: this._filter,
+        showIgnored: this._showIgnored,
+        showDisabled: this._showDisabled,
+      }),
+      debounced
+    );
+  }
+
+  private _applyUrl() {
+    const searchParams = this._queryParams.searchParams();
+
+    if (!searchParams) {
+      return;
+    }
+
+    const link = integrationsLinkFromUrl(searchParams);
+
+    if (link) {
+      this._filter = link.search;
+      this._showIgnored = link.showIgnored;
+      this._showDisabled = link.showDisabled;
+    }
+
+    this._writeUrl();
   }
 
   private async _highlightEntry() {
@@ -946,7 +1010,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     const brand = extractSearchParam("brand");
     const domain = extractSearchParam("domain");
     // Navigating closes open dialogs, so open them once it has finished
-    await navigate("/config/integrations/dashboard/", { replace: true });
+    await navigate("/config/integrations/dashboard", { replace: true });
 
     if (brand) {
       showAddIntegrationDialog(this, {

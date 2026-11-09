@@ -30,11 +30,12 @@ import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
-import "../../components/ha-list";
-import "../../components/ha-list-item";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/ha-two-pane-top-app-bar-fixed";
+import "../../components/item/ha-list-item-button";
+import type { HaListItemButton } from "../../components/item/ha-list-item-button";
+import "../../components/list/ha-list-base";
 import { deleteConfigEntry } from "../../data/config_entries";
 import { getExtendedEntityRegistryEntry } from "../../data/entity/entity_registry";
 import { fetchIntegrationManifest } from "../../data/integration";
@@ -113,7 +114,13 @@ class PanelTodo extends LitElement {
           this._entityId = undefined;
         }
         if (!this._entityId) {
-          this._entityId = getTodoLists(this.hass, false)[0]?.entity_id;
+          this._entityId = getTodoLists(
+            this.hass.states,
+            this.hass.entities,
+            this.hass.formatEntityName,
+            this.hass.locale.language,
+            false
+          )[0]?.entity_id;
         }
       }
     }
@@ -172,7 +179,14 @@ class PanelTodo extends LitElement {
       ? this.hass.states[this._entityId]
       : undefined;
     const showPane = this._showPaneController.value ?? !this.narrow;
-    const listItems = getTodoLists(this.hass, false).map(
+    const todoLists = getTodoLists(
+      this.hass.states,
+      this.hass.entities,
+      this.hass.formatEntityName,
+      this.hass.locale.language,
+      false
+    );
+    const listItems = todoLists.map(
       (list) =>
         html`<ha-dropdown-item
           @click=${this._setEntityId}
@@ -225,17 +239,34 @@ class PanelTodo extends LitElement {
               : this.hass.localize("panel.todo")
           }
         </div>
-        <ha-list slot="pane" activatable>${listItems}</ha-list>
+        <ha-list-base
+          slot="pane"
+          aria-label=${this.hass.localize("panel.todo")}
+        >
+          ${todoLists.map(
+            (list) => html`
+              <ha-list-item-button
+                .entityId=${list.entity_id}
+                class=${list.entity_id === this._entityId ? "selected" : ""}
+                aria-current=${list.entity_id === this._entityId ? "true" : "false"}
+                @click=${this._setEntityIdFromRow}
+              >
+                <ha-state-icon slot="start" .stateObj=${list}></ha-state-icon>
+                <span slot="headline">${list.name}</span>
+              </ha-list-item-button>
+            `
+          )}
+        </ha-list-base>
         ${
           showPane && this.hass.user?.is_admin
-            ? html`<ha-list-item
-                graphic="icon"
+            ? html`<ha-button
                 slot="pane-footer"
+                appearance="filled"
                 @click=${this._addList}
               >
-                <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
+                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                 ${this.hass.localize("ui.panel.todo.create_list")}
-              </ha-list-item>`
+              </ha-button>`
             : nothing
         }
         <ha-dropdown
@@ -359,7 +390,13 @@ class PanelTodo extends LitElement {
     }
     const result = await deleteConfigEntry(this.hass, entryId);
 
-    this._entityId = getTodoLists(this.hass, false)[0]?.entity_id;
+    this._entityId = getTodoLists(
+      this.hass.states,
+      this.hass.entities,
+      this.hass.formatEntityName,
+      this.hass.locale.language,
+      false
+    )[0]?.entity_id;
 
     if (result.require_restart) {
       showAlertDialog(this, {
@@ -400,6 +437,12 @@ class PanelTodo extends LitElement {
     const item = ev.currentTarget;
 
     this._entityId = item.value;
+  }
+
+  private _setEntityIdFromRow(
+    ev: HASSDomCurrentTargetEvent<HaListItemButton & { entityId: string }>
+  ) {
+    this._entityId = ev.currentTarget.entityId;
   }
 
   static get styles(): CSSResultGroup {
@@ -444,8 +487,24 @@ class PanelTodo extends LitElement {
           --ha-button-box-shadow: var(--ha-box-shadow-l);
         }
 
+        ha-button[slot="pane-footer"] {
+          display: block;
+          width: fit-content;
+          margin: var(--ha-space-2) auto var(--ha-space-2);
+        }
+
         ha-dropdown.lists ha-dropdown-item {
           max-width: 80vw;
+        }
+
+        ha-list-item-button.selected {
+          --icon-primary-color: var(--primary-color);
+        }
+        ha-list-item-button.selected::part(base) {
+          background-color: var(--ha-color-fill-primary-quiet-resting);
+        }
+        ha-list-item-button.selected::part(headline) {
+          color: var(--primary-color);
         }
       `,
     ];

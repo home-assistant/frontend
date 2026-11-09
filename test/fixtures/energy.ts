@@ -81,6 +81,7 @@ export const generateEnergyPreferences = (
     energy_sources: sources,
     device_consumption: [],
     device_consumption_water: [],
+    device_consumption_gas: [],
   };
 };
 
@@ -101,6 +102,8 @@ const statisticIdsForPrefs = (prefs: EnergyPreferences): string[] => {
       if (source.stat_energy_to) ids.push(source.stat_energy_to);
     } else if (source.type === "battery") {
       ids.push(source.stat_energy_from, source.stat_energy_to);
+    } else if (source.type === "home") {
+      ids.push(source.stat_energy_to);
     } else {
       ids.push(source.stat_energy_from);
     }

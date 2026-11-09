@@ -151,7 +151,6 @@ class PanelMediaBrowser extends LitElement {
           </ha-dropdown-item>
         </ha-dropdown>
         <ha-media-player-browse
-          .hass=${this.hass}
           .entityId=${this._entityId}
           .navigateIds=${this._navigateIds}
           .preferredLayout=${this._preferredLayout}
@@ -192,7 +191,10 @@ class PanelMediaBrowser extends LitElement {
     }
 
     if (this.route.path === "") {
-      navigate(`/media-browser/${this._entityId}`, { replace: true });
+      navigate(`/media-browser/${this._entityId}${location.search}`, {
+        replace: true,
+        keepDialogs: true,
+      });
       return;
     }
 

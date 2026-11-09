@@ -5,6 +5,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { ctrlOrCmdLabel } from "../../../../common/keyboard/ctrl-or-cmd";
 import { fireEntityRelatedContext } from "../../../../data/context";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { stripDefaults } from "../../../../common/util/strip-defaults";
@@ -14,6 +15,7 @@ import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-spinner";
+import "../../../../components/ha-tooltip";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import {
   getCustomBadgeEntry,
@@ -38,6 +40,7 @@ import type { GUIModeChangedEvent } from "../types";
 import "./hui-badge-element-editor";
 import type { HuiBadgeElementEditor } from "./hui-badge-element-editor";
 import type { EditBadgeDialogParams } from "./show-edit-badge-dialog";
+import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 
 declare global {
   // for fire event
@@ -52,7 +55,9 @@ declare global {
 
 @customElement("hui-dialog-edit-badge")
 export class HuiDialogEditBadge
-  extends DirtyStateProviderMixin<LovelaceBadgeConfig>()(LitElement)
+  extends DirtyStateProviderMixin<LovelaceBadgeConfig>()(
+    KeyboardShortcutMixin(LitElement)
+  )
   implements HassDialog<EditBadgeDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -192,7 +197,6 @@ export class HuiDialogEditBadge
         .preventScrimClose=${this.isEffectiveDirtyState}
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
-        @opened=${this._opened}
       >
         <ha-icon-button
           slot="headerNavigationIcon"
@@ -263,6 +267,7 @@ export class HuiDialogEditBadge
                     @click=${this._toggleMode}
                     .disabled=${!this._guiModeAvailable}
                     class="gui-mode-button"
+                    id="toggle-editor-mode"
                   >
                     ${this.hass!.localize(
                       !this._badgeEditorEl || this._GUImode
@@ -270,6 +275,9 @@ export class HuiDialogEditBadge
                         : "ui.panel.lovelace.editor.edit_badge.show_visual_editor"
                     )}
                   </ha-button>
+                  <ha-tooltip slot="secondaryAction" for="toggle-editor-mode">
+                    ${ctrlOrCmdLabel(this.hass!.localize)}+Shift+Y
+                  </ha-tooltip>
                 `
               : nothing
           }
@@ -325,8 +333,10 @@ export class HuiDialogEditBadge
     });
   }
 
-  private _opened() {
-    this._badgeEditorEl?.focusYamlEditor();
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    return this._params && this._guiModeAvailable
+      ? { Y: () => this._toggleMode() }
+      : {};
   }
 
   private get _canSave(): boolean {

@@ -101,7 +101,12 @@ class ZWaveJSControllerStatistics extends SubscribeMixin(LitElement) {
         ha-card {
           margin: auto;
           margin-top: var(--ha-space-4);
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
+        }
+
+        ha-list-item-base::part(headline),
+        ha-list-item-base::part(supporting-text) {
+          white-space: normal;
         }
 
         span[slot="end"] {
@@ -110,7 +115,7 @@ class ZWaveJSControllerStatistics extends SubscribeMixin(LitElement) {
         }
 
         .container {
-          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+          padding: var(--ha-space-2) var(--ha-content-gutter) var(--ha-space-4);
         }
       `,
     ];

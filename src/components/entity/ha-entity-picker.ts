@@ -253,7 +253,10 @@ export class HaEntityPicker extends LitElement {
 
     const { primary, secondary } = computeEntityPickerDisplay(
       {
-        ...this._registries,
+        entities: this._registries.entities,
+        devices: this._registries.devices,
+        areas: this._registries.areas,
+        floors: this._registries.floors,
         language: this._i18n.language,
         translationMetadata: this._i18n.translationMetadata,
       },

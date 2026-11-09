@@ -141,7 +141,6 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
               ? Object.keys(this._blueprints).length
                 ? html`
                     <ha-blueprint-picker
-                      .hass=${this.hass}
                       .label=${this.hass.localize(
                         "ui.panel.config.automation.editor.blueprint.blueprint_to_use"
                       )}

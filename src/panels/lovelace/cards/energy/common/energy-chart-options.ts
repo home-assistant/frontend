@@ -26,7 +26,10 @@ import type {
 } from "echarts/types/dist/shared";
 import type { LineDataItemOption } from "echarts/types/src/chart/line/LineSeries";
 import type { FrontendLocaleData } from "../../../../../data/translation";
-import { formatNumber } from "../../../../../common/number/format_number";
+import {
+  formatNumber,
+  formatNumberWithUnit,
+} from "../../../../../common/number/format_number";
 import {
   formatDateMonthYear,
   formatDateShort,
@@ -296,12 +299,8 @@ function formatTooltip(
   const rows: TemplateResult[] = [];
   for (const param of params) {
     const y = param.value?.[1] as number;
-    const value = formatNumber(
-      y,
-      locale,
-      y < 0.1 ? { maximumFractionDigits: 3 } : undefined
-    );
-    if (value === "0") {
+    const formatOptions = y < 0.1 ? { maximumFractionDigits: 3 } : undefined;
+    if (formatNumber(y, locale, formatOptions) === "0") {
       continue;
     }
     // Only the positive bars (consumption) are summed into a total. Negative
@@ -324,7 +323,9 @@ function formatTooltip(
                 >`
             : nothing
         }:
-        <div style="direction:ltr; display: inline;">${value} ${unit}</div>`
+        <div style="direction:ltr; display: inline;">
+          ${formatNumberWithUnit(y, unit, locale, formatOptions)}
+        </div>`
     );
   }
   if (rows.length === 0) {
@@ -355,7 +356,9 @@ export function formatSeriesTotal(
     (acc, point) => acc + ((point?.value ?? point)?.[1] ?? 0),
     0
   );
-  return `${formatNumber(total, locale, { maximumFractionDigits: 2 })} ${unit}`;
+  return formatNumberWithUnit(total, unit, locale, {
+    maximumFractionDigits: 2,
+  });
 }
 
 export function fillLineGaps(datasets: LineSeriesOption[]) {

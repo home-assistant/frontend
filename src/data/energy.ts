@@ -28,7 +28,8 @@ import type { DateRange } from "../common/datetime/calc_date_range";
 import { calcDateRange } from "../common/datetime/calc_date_range";
 import { computeAreaName } from "../common/entity/compute_area_name";
 import { getEntityAreaId } from "../common/entity/context/get_entity_context";
-import { formatNumber } from "../common/number/format_number";
+import type { EntityNameItem } from "../common/entity/entity_name_config";
+import { formatNumberWithUnit } from "../common/number/format_number";
 import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import { groupBy } from "../common/util/group-by";
 import type { HomeAssistant, HomeAssistantRegistries } from "../types";
@@ -88,6 +89,12 @@ export const emptySolarEnergyPreference =
     type: "solar",
     stat_energy_from: "",
     config_entry_solar_forecast: null,
+  });
+
+export const emptyHomeEnergyPreference =
+  (): HomeSourceTypeEnergyPreference => ({
+    type: "home",
+    stat_energy_to: "",
   });
 
 export const emptyBatteryEnergyPreference =
@@ -175,6 +182,14 @@ export interface SolarSourceTypeEnergyPreference {
   name?: string;
 }
 
+export interface HomeSourceTypeEnergyPreference {
+  type: "home";
+
+  stat_energy_to: string;
+  stat_rate?: string;
+  name?: string;
+}
+
 export interface BatterySourceTypeEnergyPreference {
   type: "battery";
   stat_energy_from: string;
@@ -227,6 +242,7 @@ export interface WaterSourceTypeEnergyPreference {
 
 export type EnergySource =
   | SolarSourceTypeEnergyPreference
+  | HomeSourceTypeEnergyPreference
   | GridSourceTypeEnergyPreference
   | BatterySourceTypeEnergyPreference
   | GasSourceTypeEnergyPreference
@@ -236,12 +252,14 @@ export interface EnergyPreferences {
   energy_sources: EnergySource[];
   device_consumption: DeviceConsumptionEnergyPreference[];
   device_consumption_water: DeviceConsumptionEnergyPreference[];
+  device_consumption_gas: DeviceConsumptionEnergyPreference[];
 }
 
 export const EMPTY_PREFERENCES: EnergyPreferences = {
   energy_sources: [],
   device_consumption: [],
   device_consumption_water: [],
+  device_consumption_gas: [],
 };
 
 export interface EnergyInfo {
@@ -259,6 +277,7 @@ export interface EnergyPreferencesValidation {
   energy_sources: EnergyValidationIssue[][];
   device_consumption: EnergyValidationIssue[][];
   device_consumption_water: EnergyValidationIssue[][];
+  device_consumption_gas: EnergyValidationIssue[][];
 }
 
 export const getEnergyInfo = (callWS: HomeAssistant["callWS"]) =>
@@ -312,6 +331,7 @@ export const getFossilEnergyConsumption = async (
 export interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
   solar?: SolarSourceTypeEnergyPreference[];
+  home?: HomeSourceTypeEnergyPreference[];
   battery?: BatterySourceTypeEnergyPreference[];
   gas?: GasSourceTypeEnergyPreference[];
   water?: WaterSourceTypeEnergyPreference[];
@@ -320,21 +340,48 @@ export interface EnergySourceByType {
 export const energySourcesByType = (prefs: EnergyPreferences) =>
   groupBy(prefs.energy_sources, (item) => item.type) as EnergySourceByType;
 
+const ENERGY_DEVICE_NAME = [
+  { type: "parent_device" },
+  { type: "device" },
+] satisfies EntityNameItem[];
+
+const ENERGY_DEVICE_ENTITY_NAME = [
+  { type: "parent_device" },
+  { type: "device" },
+  { type: "entity" },
+] satisfies EntityNameItem[];
+
 /**
- * Display name of a configured statistic. A name set by the user always wins;
- * otherwise the entity is named the same way the rest of the UI names
- * entities, so devices sharing an entity name stay distinguishable.
- * Statistics without an entity (external or removed) keep the statistic label.
+ * Display name of an individual device. A name set by the user always wins;
+ * otherwise the device is named like an entity without the entity part, so
+ * the energy and power sensors of one device share a name. Entities without a
+ * device and statistics without an entity keep the statistic label.
+ *
+ * `includeEntityName` adds the entity name back for devices that would
+ * otherwise share a name with another device in the same list, see
+ * `computeAmbiguousEnergyDevices`.
  */
 export const computeEnergyLabel = (
   states: HomeAssistant["states"],
   formatEntityName: HomeAssistant["formatEntityName"],
   statisticId: string,
   statisticsMetaData?: StatisticsMetaData,
-  customName?: string
+  customName?: string,
+  includeEntityName = false
 ): string => {
   if (customName) {
     return customName;
+  }
+
+  const entity = states[statisticId];
+  const deviceName =
+    entity &&
+    formatEntityName(
+      entity,
+      includeEntityName ? ENERGY_DEVICE_ENTITY_NAME : ENERGY_DEVICE_NAME
+    );
+  if (deviceName) {
+    return deviceName;
   }
 
   return getStatisticLabel(
@@ -359,6 +406,61 @@ export const computeEnergyStatisticArea = (
 };
 
 /**
+ * Statistic ids of the devices that would share their label with another
+ * device in the same list, which happens when one device has several meters of
+ * the same type. Those are named with the entity name as well, so they stay
+ * apart in the charts. Lists hold one type of device, so an energy meter and a
+ * water meter of one device never collide.
+ */
+export const computeAmbiguousEnergyDevices = (
+  states: HomeAssistant["states"],
+  formatEntityName: HomeAssistant["formatEntityName"],
+  devices: Partial<DeviceConsumptionEnergyPreference>[],
+  statisticKey: "stat_consumption" | "stat_rate" = "stat_consumption"
+): Set<string> => {
+  const statisticIdsByLabel = new Map<string, Set<string>>();
+  const named = new Set<string>();
+
+  for (const device of devices) {
+    const statisticId = device[statisticKey];
+    if (!statisticId) {
+      continue;
+    }
+    const entity = states[statisticId];
+    // A name set by the user is the label, so it counts towards a collision,
+    // but it is never the one that gives way. Statistics named after their
+    // entity or their metadata are distinct enough already.
+    const label =
+      device.name || (entity && formatEntityName(entity, ENERGY_DEVICE_NAME));
+    if (!label) {
+      continue;
+    }
+    if (device.name) {
+      named.add(statisticId);
+    }
+    const statisticIds = statisticIdsByLabel.get(label);
+    if (statisticIds) {
+      statisticIds.add(statisticId);
+    } else {
+      statisticIdsByLabel.set(label, new Set([statisticId]));
+    }
+  }
+
+  const ambiguous = new Set<string>();
+  for (const statisticIds of statisticIdsByLabel.values()) {
+    if (statisticIds.size > 1) {
+      for (const statisticId of statisticIds) {
+        if (!named.has(statisticId)) {
+          ambiguous.add(statisticId);
+        }
+      }
+    }
+  }
+
+  return ambiguous;
+};
+
+/**
  * Device labels keyed by statistic id. Cards that show live power or flow
  * key their nodes by `stat_rate` instead of `stat_consumption`; devices
  * without the requested statistic are left out.
@@ -371,6 +473,12 @@ export const computeEnergyDeviceLabels = (
   statisticKey: "stat_consumption" | "stat_rate" = "stat_consumption"
 ): Record<string, string> => {
   const labels: Record<string, string> = {};
+  const ambiguous = computeAmbiguousEnergyDevices(
+    states,
+    formatEntityName,
+    devices,
+    statisticKey
+  );
 
   for (const device of devices) {
     const statisticId = device[statisticKey];
@@ -380,7 +488,8 @@ export const computeEnergyDeviceLabels = (
         formatEntityName,
         statisticId,
         statsMetadata?.[statisticId],
-        device.name
+        device.name,
+        ambiguous.has(statisticId)
       );
     }
   }
@@ -394,6 +503,7 @@ export interface EnergyData {
   startCompare?: Date;
   endCompare?: Date;
   compareMode?: CompareMode;
+  combineSources?: boolean;
   prefs: EnergyPreferences;
   info: EnergyInfo;
   stats: Statistics;
@@ -420,6 +530,11 @@ export const getReferencedStatisticIds = (
 
     if (source.type === "solar") {
       statIDs.push(source.stat_energy_from);
+      continue;
+    }
+
+    if (source.type === "home") {
+      statIDs.push(source.stat_energy_to);
       continue;
     }
 
@@ -473,6 +588,11 @@ export const getReferencedStatisticIds = (
       ...prefs.device_consumption_water.map((d) => d.stat_consumption)
     );
   }
+  if (!(includeTypes && !includeTypes.includes("gas"))) {
+    statIDs.push(
+      ...prefs.device_consumption_gas.map((d) => d.stat_consumption)
+    );
+  }
 
   return statIDs;
 };
@@ -490,7 +610,7 @@ export const getReferencedStatisticIdsPower = (
       continue;
     }
 
-    if (source.type === "solar") {
+    if (source.type === "solar" || source.type === "home") {
       statIDs.push(source.stat_rate);
       continue;
     }
@@ -509,6 +629,7 @@ export const getReferencedStatisticIdsPower = (
   }
   statIDs.push(...prefs.device_consumption.map((d) => d.stat_rate));
   statIDs.push(...prefs.device_consumption_water.map((d) => d.stat_rate));
+  statIDs.push(...prefs.device_consumption_gas.map((d) => d.stat_rate));
 
   return statIDs.filter(Boolean) as string[];
 };
@@ -570,6 +691,7 @@ const getEnergyData = async (
   const energyStatIds = getReferencedStatisticIds(prefs, info, [
     "grid",
     "solar",
+    "home",
     "battery",
     "gas",
     "device",
@@ -616,9 +738,16 @@ const getEnergyData = async (
   const gasIsOtherEnergy =
     ENERGY_UNITS.includes(gasUnit as any) && gasUnit !== "kWh";
   const gasEnergyStatIds = gasIsOtherEnergy
-    ? (energySourcesByType(prefs).gas ?? []).map(
-        (source) => source.stat_energy_from
-      )
+    ? [
+        ...new Set([
+          ...(energySourcesByType(prefs).gas ?? []).map(
+            (source) => source.stat_energy_from
+          ),
+          ...prefs.device_consumption_gas.map(
+            (device) => device.stat_consumption
+          ),
+        ]),
+      ]
     : [];
   const gasEnergyUnits: StatisticsUnitConfiguration = {
     energy: gasIsOtherEnergy
@@ -911,10 +1040,13 @@ export interface EnergyCollection extends Omit<
   start: Date;
   end?: Date;
   compare?: CompareMode;
+  combineSources?: boolean;
   prefs?: EnergyPreferences;
   clearPrefs(): void;
   setPeriod(newStart: Date, newEnd?: Date): void;
   setCompare(compare: CompareMode): void;
+  setCombineSources(combine: boolean): void;
+  setDefaultCombineSources(combine: boolean): void;
   isActive(): boolean;
   _refreshTimeout?: number;
   _updatePeriodTimeout?: number;
@@ -1000,6 +1132,24 @@ export const getEnergyDefaultPeriodStorageKey = (
 ): string => {
   const [key] = convertCollectionKeyToConnection(panelUrl, collectionKey);
   return `energy-default-period-${key}`;
+};
+
+export const getEnergyCombineSourcesStorageKey = (
+  panelUrl: string,
+  collectionKey?: string
+): string => {
+  const [key] = convertCollectionKeyToConnection(panelUrl, collectionKey);
+  return `energy-combine-sources-${key}`;
+};
+
+export const hasCombinableEnergySources = (
+  prefs: EnergyPreferences,
+  types?: EnergySource["type"][]
+): boolean => {
+  const sources = types
+    ? prefs.energy_sources.filter((source) => types.includes(source.type))
+    : prefs.energy_sources;
+  return new Set(sources.map((source) => source.type)).size < sources.length;
 };
 
 // When today's first hourly statistic becomes available (01:00 in the
@@ -1146,6 +1296,11 @@ export const getEnergyDataCollection = (
       : preferredPeriod;
 
   const [initialStart, initialEnd] = calcDateRange(locale, config, period);
+  const combineSourcesStorageKey = getEnergyCombineSourcesStorageKey(
+    panelUrl,
+    options.key
+  );
+  const storedCombineSources = localStorage.getItem(combineSourcesStorageKey);
   // True while tracking today (or hour-0 yesterday), rather than a custom range.
   let followLiveDay = preferredPeriod === "today";
 
@@ -1200,7 +1355,7 @@ export const getEnergyDataCollection = (
       return;
     }
     publishedSelectionRevision = requestSelectionRevision;
-    store.setState(data, true);
+    store.setState(withCombineSources(data), true);
   };
 
   // Use the collection's subscription lifecycle, but publish explicitly so an
@@ -1320,6 +1475,23 @@ export const getEnergyDataCollection = (
     };
   };
 
+  // The setting only applies while a source type is configured twice, so it
+  // cannot leave cards split once there is nothing left to combine.
+  const withCombineSources = (data: EnergyData): EnergyData => ({
+    ...data,
+    combineSources: hasCombinableEnergySources(data.prefs)
+      ? collection.combineSources
+      : undefined,
+  });
+
+  // Display-only: re-publish the current data instead of fetching it again.
+  const applyCombineSources = (combine: boolean) => {
+    collection.combineSources = combine;
+    if (store.state) {
+      store.setState(withCombineSources(store.state), true);
+    }
+  };
+
   const collection: EnergyCollection = {
     get state() {
       return store.state;
@@ -1328,6 +1500,12 @@ export const getEnergyDataCollection = (
     subscribe,
     start: calcDate(initialStart, startOfDay, locale, config),
     end: calcDate(initialEnd, endOfDay, locale, config),
+    combineSources:
+      storedCombineSources === "true"
+        ? true
+        : storedCombineSources === "false"
+          ? false
+          : undefined,
     prefs: options.prefs,
     _active: 0,
     isActive: () => !!collection._active,
@@ -1364,6 +1542,15 @@ export const getEnergyDataCollection = (
         collection.compare = compare;
       }
     },
+    setCombineSources(combine: boolean) {
+      applyCombineSources(combine);
+      localStorage.setItem(combineSourcesStorageKey, String(combine));
+    },
+    setDefaultCombineSources(combine: boolean) {
+      if (collection.combineSources === undefined) {
+        applyCombineSources(combine);
+      }
+    },
   };
   // Custom cards also access the Energy collection directly on the connection.
   (connection as any)[key] = collection;
@@ -1381,13 +1568,18 @@ export type EnergyGasUnitClass = (typeof energyGasUnitClass)[number];
 export const getEnergyGasUnitClass = (
   prefs: EnergyPreferences,
   excludeSource?: string,
-  statisticsMetaData: Record<string, StatisticsMetaData> = {}
+  statisticsMetaData: Record<string, StatisticsMetaData> = {},
+  excludeFrom?: "source" | "device"
 ): EnergyGasUnitClass | undefined => {
   for (const source of prefs.energy_sources) {
     if (source.type !== "gas") {
       continue;
     }
-    if (excludeSource && excludeSource === source.stat_energy_from) {
+    if (
+      excludeSource &&
+      excludeSource === source.stat_energy_from &&
+      excludeFrom !== "device"
+    ) {
       continue;
     }
     const statisticIdWithMeta = statisticsMetaData[source.stat_energy_from];
@@ -1399,6 +1591,19 @@ export const getEnergyGasUnitClass = (
       return statisticIdWithMeta.unit_class as EnergyGasUnitClass;
     }
   }
+  for (const device of prefs.device_consumption_gas) {
+    if (
+      excludeSource &&
+      excludeSource === device.stat_consumption &&
+      excludeFrom !== "source"
+    ) {
+      continue;
+    }
+    const unitClass = statisticsMetaData[device.stat_consumption]?.unit_class;
+    if (energyGasUnitClass.includes(unitClass as EnergyGasUnitClass)) {
+      return unitClass as EnergyGasUnitClass;
+    }
+  }
   return undefined;
 };
 
@@ -1408,15 +1613,15 @@ const getEnergyGasUnit = (
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): string => {
-  const units = prefs.energy_sources
-    .filter((s) => s.type === "gas")
-    .map((s) =>
-      getDisplayUnit(
-        states,
-        s.stat_energy_from,
-        statisticsMetaData[s.stat_energy_from]
-      )
-    );
+  const gasStatIds = [
+    ...prefs.energy_sources.flatMap((s) =>
+      s.type === "gas" ? [s.stat_energy_from] : []
+    ),
+    ...prefs.device_consumption_gas.map((d) => d.stat_consumption),
+  ];
+  const units = gasStatIds.map((id) =>
+    getDisplayUnit(states, id, statisticsMetaData[id])
+  );
 
   const unitClass = getEnergyGasUnitClass(prefs, undefined, statisticsMetaData);
   if (unitClass === "energy") {
@@ -1427,6 +1632,9 @@ const getEnergyGasUnit = (
       ...prefs.energy_sources.flatMap((source) => {
         if (source.type === "solar") {
           return [source.stat_energy_from];
+        }
+        if (source.type === "home") {
+          return [source.stat_energy_to];
         }
         if (source.type === "battery") {
           return [source.stat_energy_from, source.stat_energy_to];
@@ -1439,10 +1647,7 @@ const getEnergyGasUnit = (
         return [];
       }),
     ]);
-    const isSharedWithKWh = prefs.energy_sources.some(
-      (source) =>
-        source.type === "gas" && kWhStatIds.has(source.stat_energy_from)
-    );
+    const isSharedWithKWh = gasStatIds.some((id) => kWhStatIds.has(id));
     const first = units[0];
     if (
       !isSharedWithKWh &&
@@ -1504,12 +1709,14 @@ export interface EnergySumData {
   to_battery?: Record<number, number>;
   from_battery?: Record<number, number>;
   solar?: Record<number, number>;
+  home?: Record<number, number>;
   total: {
     to_grid?: number;
     from_grid?: number;
     to_battery?: number;
     from_battery?: number;
     solar?: number;
+    home?: number;
   };
   timestamps: number[];
 }
@@ -1557,6 +1764,7 @@ const getSummedDataPartial = (
     solar?: string[];
     to_battery?: string[];
     from_battery?: string[];
+    home?: string[];
   } = {};
 
   for (const source of data.prefs.energy_sources) {
@@ -1566,6 +1774,11 @@ const getSummedDataPartial = (
       } else {
         statIds.solar = [source.stat_energy_from];
       }
+      continue;
+    }
+
+    if (source.type === "home") {
+      statIds.home = [source.stat_energy_to];
       continue;
     }
 
@@ -1679,6 +1892,8 @@ const computeConsumptionDataPartial = (
   const total = outData.total;
 
   data.timestamps.forEach((t) => {
+    const homeUsed = data.home?.[t];
+    const hasHome = homeUsed !== undefined && homeUsed !== null;
     const {
       grid_to_battery,
       battery_to_grid,
@@ -1696,18 +1911,19 @@ const computeConsumptionDataPartial = (
       from_battery: fromBattery && (fromBattery[t] ?? 0),
     });
 
-    outData.used_total[t] = used_total;
-    total.used_total += used_total;
-    outData.grid_to_battery[t] = grid_to_battery;
-    total.grid_to_battery += grid_to_battery;
-    outData.battery_to_grid![t] = battery_to_grid;
-    total.battery_to_grid += battery_to_grid;
-    outData.used_battery![t] = used_battery;
-    total.used_battery += used_battery;
+    const usedTotal = hasHome ? Math.max(homeUsed, 0) : used_total;
+    outData.used_total[t] = usedTotal;
+    total.used_total += usedTotal;
     outData.used_grid![t] = used_grid;
     total.used_grid += used_grid;
     outData.used_solar![t] = used_solar;
     total.used_solar += used_solar;
+    outData.used_battery![t] = used_battery;
+    total.used_battery += used_battery;
+    outData.grid_to_battery[t] = grid_to_battery;
+    total.grid_to_battery += grid_to_battery;
+    outData.battery_to_grid![t] = battery_to_grid;
+    total.battery_to_grid += battery_to_grid;
     outData.solar_to_battery[t] = solar_to_battery;
     total.solar_to_battery += solar_to_battery;
     outData.solar_to_grid[t] = solar_to_grid;
@@ -1846,23 +2062,25 @@ export const formatConsumptionShort = (
     }
     pickedUnit = units[unitIndex];
   }
-  return (
-    formatNumber(
-      val,
-      locale,
-      displayPrecision !== undefined && pickedUnit === unit
-        ? {
-            minimumFractionDigits: displayPrecision,
-            maximumFractionDigits: displayPrecision,
-          }
-        : {
-            maximumFractionDigits:
-              Math.abs(val) < 10 ? 2 : Math.abs(val) < 100 ? 1 : 0,
-          }
-    ) +
-    " " +
-    pickedUnit
-  );
+  const formatOptions: Intl.NumberFormatOptions =
+    displayPrecision !== undefined && pickedUnit === unit
+      ? {
+          minimumFractionDigits: displayPrecision,
+          maximumFractionDigits: displayPrecision,
+        }
+      : { maximumFractionDigits: shortFractionDigits(val) };
+  return formatNumberWithUnit(val, pickedUnit, locale, formatOptions);
+};
+
+const shortFractionDigits = (value: number): number => {
+  const absValue = Math.abs(value);
+  if (absValue < 10) {
+    return 2;
+  }
+  if (absValue < 100) {
+    return 1;
+  }
+  return 0;
 };
 
 export const calculateSolarConsumedGauge = (
@@ -2081,10 +2299,56 @@ export const formatFlowRateShort = (
 ): string => {
   const isMetric = lengthUnitSystem === "km";
   if (isMetric) {
-    return `${formatNumber(litersPerMin, hassLocale, { maximumFractionDigits: 1 })} L/min`;
+    return formatNumberWithUnit(litersPerMin, "L/min", hassLocale, {
+      maximumFractionDigits: 1,
+    });
   }
   const galPerMin = litersPerMin / LITERS_PER_GALLON;
-  return `${formatNumber(galPerMin, hassLocale, { maximumFractionDigits: 1 })} gal/min`;
+  return formatNumberWithUnit(galPerMin, "gal/min", hassLocale, {
+    maximumFractionDigits: 1,
+  });
+};
+
+export type WaterGasResource = "water" | "gas";
+
+export const getWaterGasDevicesKey = (resource: WaterGasResource) =>
+  `device_consumption_${resource}` as const;
+
+export const getWaterGasDevices = (
+  prefs: EnergyPreferences,
+  resource: WaterGasResource
+): DeviceConsumptionEnergyPreference[] =>
+  prefs[getWaterGasDevicesKey(resource)];
+
+export const getFlowRateUnit = (
+  resource: WaterGasResource,
+  prefs: EnergyPreferences,
+  states: HomeAssistant["states"]
+): string | undefined => {
+  const ids = [
+    ...prefs.energy_sources.flatMap((s) =>
+      s.type === resource && s.stat_rate ? [s.stat_rate] : []
+    ),
+    ...getWaterGasDevices(prefs, resource).flatMap((d) =>
+      d.stat_rate ? [d.stat_rate] : []
+    ),
+  ];
+  for (const id of ids) {
+    const unit = states[id]?.attributes.unit_of_measurement;
+    if (unit) {
+      return unit;
+    }
+  }
+  return undefined;
+};
+
+export const getFlowRateInUnit = (
+  stateObj: HassEntity | undefined,
+  unit: string
+): number | undefined => {
+  const value = getFlowRateFromState(stateObj);
+  const factor = FLOW_RATE_TO_LMIN[unit];
+  return value === undefined || factor === undefined ? value : value / factor;
 };
 
 /**
@@ -2127,14 +2391,10 @@ export const formatPowerShort = (
     unitIndex++;
   }
 
-  return (
-    formatNumber(value, locale, {
-      // For watts, show no decimals. For kW and above, always show 3 decimals.
-      maximumFractionDigits: units[unitIndex] === "W" ? 0 : 3,
-    }) +
-    " " +
-    units[unitIndex]
-  );
+  return formatNumberWithUnit(value, units[unitIndex], locale, {
+    // For watts, show no decimals. For kW and above, always show 3 decimals.
+    maximumFractionDigits: units[unitIndex] === "W" ? 0 : 3,
+  });
 };
 
 export function getSuggestedPeriod(
@@ -2171,6 +2431,7 @@ export const downloadEnergyData = (
   const energy_sources = energyData.prefs.energy_sources;
   const device_consumption = energyData.prefs.device_consumption;
   const device_consumption_water = energyData.prefs.device_consumption_water;
+  const device_consumption_gas = energyData.prefs.device_consumption_gas;
   const stats = state.stats;
 
   interface CsvRow {
@@ -2279,6 +2540,16 @@ export const downloadEnergyData = (
 
   printCategory("solar_production", solar_productions, electricUnit);
 
+  const home_consumptions: string[] = [];
+  energy_sources
+    .filter((s) => s.type === "home")
+    .forEach((source) => {
+      source = source as HomeSourceTypeEnergyPreference;
+      home_consumptions.push(source.stat_energy_to);
+    });
+
+  printCategory("home_consumption", home_consumptions, electricUnit);
+
   const gas_consumptions: string[] = [];
   const gas_consumptions_cost: string[] = [];
   energy_sources
@@ -2341,6 +2612,16 @@ export const downloadEnergyData = (
     printCategory("device_consumption_water", waterDevices, state.waterUnit);
   }
 
+  if (device_consumption_gas) {
+    const gasDevices: string[] = [];
+    device_consumption_gas.forEach((source) => {
+      source = source as DeviceConsumptionEnergyPreference;
+      gasDevices.push(source.stat_consumption);
+    });
+
+    printCategory("device_consumption_gas", gasDevices, state.gasUnit);
+  }
+
   const { summedData } = getSummedData(state);
   const { consumption } = computeConsumptionData(summedData, undefined);
 
@@ -2363,6 +2644,7 @@ export const downloadEnergyData = (
   };
 
   const hasSolar = !!solar_productions.length;
+  const hasHome = !!home_consumptions.length;
   const hasBattery = !!battery_ins.length;
   const hasGridReturn = !!grid_productions.length;
   const hasGridSource = !!grid_consumptions.length;
@@ -2418,7 +2700,10 @@ export const downloadEnergyData = (
     }
   }
 
-  if ((hasGridSource ? 1 : 0) + (hasSolar ? 1 : 0) + (hasBattery ? 1 : 0) > 1) {
+  if (
+    hasHome ||
+    (hasGridSource ? 1 : 0) + (hasSolar ? 1 : 0) + (hasBattery ? 1 : 0) > 1
+  ) {
     processConsumptionData(
       "calculated_total_consumption",
       electricUnit,

@@ -352,7 +352,7 @@ export class HaLocationsEditor extends LitElement {
   static styles = css`
     .map {
       position: relative;
-      height: 100%;
+      height: var(--ha-locations-editor-map-height, 100%);
     }
     ha-map {
       display: block;

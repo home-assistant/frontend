@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { generateEntityFilter } from "../../../src/common/entity/entity_filter";
+import {
+  findFilteredEntities,
+  generateEntityFilter,
+} from "../../../src/common/entity/entity_filter";
 import type { HomeAssistant } from "../../../src/types";
 
 // Mock HomeAssistant with comprehensive data
@@ -703,5 +706,27 @@ describe("generateEntityFilter", () => {
       expect(filter("light.bedroom")).toBe(false);
       expect(filter("sensor.temperature")).toBe(false);
     });
+  });
+});
+
+describe("findFilteredEntities", () => {
+  it("should match any filter and drop excluded entities", () => {
+    const entities = findFilteredEntities(
+      mockHass,
+      [{ domain: "light" }, { domain: "switch" }],
+      ["light.bedroom"]
+    );
+
+    expect(entities).toContain("light.living_room");
+    expect(entities).toContain("switch.kitchen");
+    expect(entities).not.toContain("light.bedroom");
+    expect(entities).not.toContain("sensor.temperature");
+  });
+
+  it("should return every match when nothing is excluded", () => {
+    const entities = findFilteredEntities(mockHass, [{ domain: "light" }]);
+
+    expect(entities).toContain("light.living_room");
+    expect(entities).toContain("light.bedroom");
   });
 });

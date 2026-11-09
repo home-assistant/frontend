@@ -41,6 +41,11 @@ declare global {
   var __HASS_URL__: string;
   // Read by intl-polyfill before a polyfill replaces Intl.DateTimeFormat
   var __haNativeTimeZone: string | undefined;
+  // Shared by every legacy entry bundle so the Intl polyfills load once
+  var __haIntlPolyfill: Promise<void> | undefined;
+  // Handshake between the app entry and the extra modules in index.html
+  var __haScopedRegistryReady: boolean | undefined;
+  var __haLoadExtraModules: (() => void) | undefined;
   /* eslint-enable @typescript-eslint/naming-convention */
 
   interface Window {

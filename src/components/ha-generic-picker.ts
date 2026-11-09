@@ -2,7 +2,7 @@ import "@home-assistant/webawesome/dist/components/popover/popover";
 import type WaPopover from "@home-assistant/webawesome/dist/components/popover/popover";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import type { ContextType } from "@lit/context";
-import { mdiPlaylistPlus } from "@mdi/js";
+import { mdiPlaylistPlus, mdiRefresh } from "@mdi/js";
 import {
   css,
   html,
@@ -17,13 +17,15 @@ import { styleMap } from "lit/directives/style-map";
 import { tinykeys } from "tinykeys";
 import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
-import { configContext } from "../data/context";
+import { configContext, internationalizationContext } from "../data/context";
 import { PickerMixin } from "../mixins/picker-mixin";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import { isIosApp } from "../util/is_ios";
+import "./ha-alert";
 import "./ha-bottom-sheet";
 import "./ha-button";
 import "./ha-combo-box-item";
+import "./ha-icon-button";
 import "./ha-input-helper-text";
 import "./ha-picker-combo-box";
 import type {
@@ -33,6 +35,7 @@ import type {
 } from "./ha-picker-combo-box";
 import "./ha-picker-field";
 import "./ha-svg-icon";
+import "./skeleton/ha-skeleton";
 
 @customElement("ha-generic-picker")
 export class HaGenericPicker extends PickerMixin(LitElement) {
@@ -114,6 +117,15 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   @property({ type: Boolean, attribute: "no-unknown-state" })
   public noUnknownState = false;
 
+  /** Shows a skeleton in place of the field while its items load. */
+  @property({ type: Boolean, reflect: true }) public loading = false;
+
+  /**
+   * Shows this error with a retry button in place of the field when its items
+   * failed to load. The retry button fires `picker-retry`.
+   */
+  @property({ attribute: false }) public loadError?: string;
+
   @query(".container") private _containerElement?: HTMLDivElement;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
@@ -123,6 +135,14 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   @state()
   @consume({ context: configContext, subscribe: true })
   private _hassConfig?: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
+
+  // Set once loading starts, then hidden with CSS once it ends, so the
+  // skeleton fades out over the field
+  @state() private _skeletonShown = false;
 
   @state() private _opened = false;
 
@@ -155,9 +175,14 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   private _unsubscribeTinyKeys?: () => void;
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
+    if (changedProperties.has("loading") && this.loading) {
+      this._skeletonShown = true;
+    }
     if (
       changedProperties.has("value") ||
-      changedProperties.has("noUnknownState")
+      changedProperties.has("noUnknownState") ||
+      changedProperties.has("loading") ||
+      changedProperties.has("loadError")
     ) {
       this._setUnknownValue();
     }
@@ -183,45 +208,73 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
             : nothing
         }
         <div id="picker">
-          <slot name="field">
-            ${
-              this.addButtonLabel && !this.value
-                ? html`<ha-button
-                    size="s"
-                    appearance="filled"
-                    @click=${this.open}
-                    .disabled=${this.disabled}
-                  >
-                    <ha-svg-icon
-                      .path=${mdiPlaylistPlus}
-                      slot="start"
-                    ></ha-svg-icon>
-                    ${this.addButtonLabel}
-                  </ha-button>`
-                : html`<ha-picker-field
-                    type="button"
-                    class=${this._opened ? "opened" : ""}
-                    compact
-                    .unknown=${this._unknownValue}
-                    .unknownItemText=${this.unknownItemText}
-                    aria-label=${ifDefined(this.ariaLabel || this.label)}
-                    @click=${this.open}
-                    @clear=${this._clear}
-                    .icon=${this.icon}
-                    .image=${this.image}
-                    .label=${label}
-                    .placeholder=${this.placeholder}
-                    .value=${this.value}
-                    .valueRenderer=${this.valueRenderer}
-                    .required=${this.required}
-                    .disabled=${this.disabled}
-                    .invalid=${this.invalid}
-                    .hideClearIcon=${this.hideClearIcon}
-                  >
-                    <slot name="start"></slot>
-                  </ha-picker-field>`
-            }
-          </slot>
+          <div class="field" ?inert=${this.loading || !!this.loadError}>
+            <slot name="field">
+              ${
+                this.addButtonLabel && !this.value
+                  ? html`<ha-button
+                      size="s"
+                      appearance="filled"
+                      @click=${this.open}
+                      .disabled=${this.disabled}
+                    >
+                      <ha-svg-icon
+                        .path=${mdiPlaylistPlus}
+                        slot="start"
+                      ></ha-svg-icon>
+                      ${this.addButtonLabel}
+                    </ha-button>`
+                  : html`<ha-picker-field
+                      type="button"
+                      class=${this._opened ? "opened" : ""}
+                      compact
+                      .unknown=${this._unknownValue}
+                      .unknownItemText=${this.unknownItemText}
+                      aria-label=${ifDefined(this.ariaLabel || this.label)}
+                      @click=${this.open}
+                      @clear=${this._clear}
+                      .icon=${this.icon}
+                      .image=${this.image}
+                      .label=${label}
+                      .placeholder=${this.placeholder}
+                      .value=${this.value}
+                      .valueRenderer=${this.valueRenderer}
+                      .required=${this.required}
+                      .disabled=${this.disabled}
+                      .invalid=${this.invalid}
+                      .hideClearIcon=${this.hideClearIcon}
+                    >
+                      <slot name="start"></slot>
+                    </ha-picker-field>`
+              }
+            </slot>
+          </div>
+          ${
+            this._skeletonShown
+              ? html`<ha-skeleton
+                  class="loading-skeleton"
+                  role=${ifDefined(this.loading ? "progressbar" : undefined)}
+                  aria-label=${ifDefined(
+                    this.loading ? this._loadingLabel() : undefined
+                  )}
+                ></ha-skeleton>`
+              : nothing
+          }
+          ${
+            this.loadError
+              ? html`<div class="load-error">
+                  <ha-alert alert-type="error">
+                    ${this.loadError}
+                    <ha-icon-button
+                      slot="action"
+                      .path=${mdiRefresh}
+                      .label=${this._i18n?.localize("ui.common.retry")}
+                      @click=${this._retry}
+                    ></ha-icon-button>
+                  </ha-alert>
+                </div>`
+              : nothing
+          }
         </div>
         ${
           this._pickerWrapperOpen || this._opened
@@ -298,9 +351,25 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     `;
   }
 
+  private _loadingLabel() {
+    const label = this.ariaLabel || this.label || this.placeholder;
+    return label
+      ? this._i18n?.localize("ui.components.generic-picker.loading", {
+          label,
+        })
+      : this._i18n?.localize("ui.common.loading");
+  }
+
+  private _retry(ev: Event) {
+    ev.stopPropagation();
+    fireEvent(this, "picker-retry");
+  }
+
   private _setUnknownValue = () => {
     const items = this.getItems();
     if (
+      this.loading ||
+      this.loadError ||
       this.noUnknownState ||
       this.allowCustomValue ||
       this.value === undefined ||
@@ -413,7 +482,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     }
   ) {
     ev?.stopPropagation();
-    if (this.disabled) {
+
+    if (this.disabled || this.loading || this.loadError) {
       return;
     }
     this._selectedValue = options?.selectedValue;
@@ -458,6 +528,53 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
           position: relative;
           display: block;
           max-width: 100%;
+        }
+        /* The error shares the field's cell, so a wrapping error grows the
+           picker instead of covering what follows */
+        #picker {
+          position: relative;
+          display: grid;
+        }
+        #picker > .field,
+        #picker > .load-error {
+          grid-area: 1 / 1;
+          min-width: 0;
+        }
+        /* The field keeps its place under the skeleton, so nothing moves and
+           the two cross fade once loading ends */
+        .field {
+          transition: opacity var(--ha-animation-duration-fast, 150ms) ease-out;
+        }
+        :host([loading]) .field,
+        .field[inert] {
+          opacity: 0;
+        }
+        .loading-skeleton {
+          position: absolute;
+          inset: 0;
+          --ha-skeleton-border-radius: var(--ha-border-radius-sm);
+          transition: opacity var(--ha-animation-duration-fast, 150ms) ease-out;
+        }
+        @starting-style {
+          .loading-skeleton {
+            opacity: 0;
+          }
+        }
+        /* Hidden once faded out, and at once when no fade runs */
+        :host(:not([loading])) .loading-skeleton {
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+          transition:
+            opacity var(--ha-animation-duration-fast, 150ms) ease-out,
+            visibility 0s linear var(--ha-animation-duration-fast, 150ms);
+        }
+        .load-error {
+          display: flex;
+          align-items: center;
+        }
+        .load-error ha-alert {
+          flex: 1;
         }
         label[disabled] {
           color: var(--mdc-text-field-disabled-ink-color, rgba(0, 0, 0, 0.6));
@@ -540,5 +657,6 @@ declare global {
   interface HASSDomEvents {
     "picker-closed": undefined;
     "picker-opened": undefined;
+    "picker-retry": undefined;
   }
 }

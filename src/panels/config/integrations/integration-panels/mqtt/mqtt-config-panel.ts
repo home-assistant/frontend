@@ -438,7 +438,11 @@ export class MQTTConfigPanel extends LitElement {
         }
         ha-card {
           margin: 0 auto var(--ha-space-4);
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
+        }
+        ha-list-item-button::part(headline),
+        ha-list-item-button::part(supporting-text) {
+          white-space: normal;
         }
         ha-select {
           width: 96px;
@@ -531,7 +535,7 @@ export class MQTTConfigPanel extends LitElement {
         }
 
         .container {
-          padding: var(--ha-space-2) var(--ha-space-4)
+          padding: var(--ha-space-2) var(--ha-content-gutter)
             calc(var(--ha-space-16) + var(--safe-area-inset-bottom, 0px));
         }
 

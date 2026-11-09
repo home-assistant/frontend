@@ -2,6 +2,7 @@ import deepFreeze from "deep-freeze";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import type { ConfigPath } from "../../../../common/util/config-path";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-yaml-editor";
@@ -17,12 +18,10 @@ import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/vie
 import { isStrategyView } from "../../../../data/lovelace/config/view";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../cards/hui-card";
 import "../../sections/hui-section";
 import { getViewType } from "../../views/get-view-type";
 import { addCards, addSection } from "../config-util";
-import type { LovelacePath } from "../lovelace-path";
 import { getAtPath, getParentPath, getViewPath } from "../lovelace-path";
 import { showCreateCardDialog } from "./show-create-card-dialog";
 import type { SuggestCardDialogParams } from "./show-suggest-card-dialog";
@@ -242,7 +241,7 @@ export class HuiDialogSuggestCard extends LitElement {
 
   private _computeNewConfig(
     config: LovelaceConfig,
-    path: LovelacePath
+    path: ConfigPath
   ): LovelaceConfig {
     if (!this._viewSupportsSection) {
       return addCards(config, path, this._cardConfig!);
@@ -282,7 +281,6 @@ export class HuiDialogSuggestCard extends LitElement {
     );
     await this._params!.saveConfig(newConfig);
     this._saving = false;
-    showSaveSuccessToast(this, this.hass);
     this.closeDialog();
   }
 }

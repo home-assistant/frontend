@@ -6,6 +6,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { ctrlOrCmdLabel } from "../../../../common/keyboard/ctrl-or-cmd";
 import {
   fireRelatedContext,
   type RelatedContextItem,
@@ -18,6 +19,7 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-spinner";
+import "../../../../components/ha-tooltip";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import {
@@ -46,6 +48,7 @@ import type { GUIModeChangedEvent } from "../types";
 import "./hui-card-element-editor";
 import type { HuiCardElementEditor } from "./hui-card-element-editor";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
+import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 
 declare global {
   // for fire event
@@ -60,7 +63,9 @@ declare global {
 
 @customElement("hui-dialog-edit-card")
 export class HuiDialogEditCard
-  extends DirtyStateProviderMixin<LovelaceCardConfig>()(LitElement)
+  extends DirtyStateProviderMixin<LovelaceCardConfig>()(
+    KeyboardShortcutMixin(LitElement)
+  )
   implements HassDialog<EditCardDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -204,7 +209,6 @@ export class HuiDialogEditCard
         .preventScrimClose=${this.isEffectiveDirtyState}
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
-        @opened=${this._opened}
       >
         <ha-icon-button
           slot="headerNavigationIcon"
@@ -286,6 +290,7 @@ export class HuiDialogEditCard
                     @click=${this._toggleMode}
                     .disabled=${!this._guiModeAvailable}
                     class="gui-mode-button"
+                    id="toggle-editor-mode"
                     appearance="plain"
                   >
                     ${this.hass!.localize(
@@ -294,6 +299,9 @@ export class HuiDialogEditCard
                         : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
                     )}
                   </ha-button>
+                  <ha-tooltip slot="secondaryAction" for="toggle-editor-mode">
+                    ${ctrlOrCmdLabel(this.hass!.localize)}+Shift+Y
+                  </ha-tooltip>
                 `
               : ""
           }
@@ -349,8 +357,10 @@ export class HuiDialogEditCard
     });
   }
 
-  private _opened() {
-    this._cardEditorEl?.focusYamlEditor();
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    return this._params && this._guiModeAvailable
+      ? { Y: () => this._toggleMode() }
+      : {};
   }
 
   private _cardConfigInSection = memoizeOne(

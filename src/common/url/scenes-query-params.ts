@@ -1,6 +1,7 @@
 import type {
   DataTableFilter,
   DataTableFilters,
+  FloorAreasFilterValue,
 } from "../../data/data_table_filters";
 import { dataTableQueryParamConfig } from "./data-table-query-params";
 import {
@@ -24,6 +25,7 @@ export const scenesFilterQueryParamConfig = {
     "category",
     "assistants",
   ],
+  boolean: [{ key: "no_area", trueValue: "1" }],
 } as const satisfies QueryParamConfig;
 
 export type ScenesFilterQueryParams = QueryParamValues<
@@ -35,7 +37,7 @@ const list = (filter: DataTableFilter | undefined): string[] | undefined =>
 
 const floorAreas = (
   filter: DataTableFilter | undefined
-): Record<string, string[]> | undefined =>
+): FloorAreasFilterValue | undefined =>
   filter?.value && !Array.isArray(filter.value) ? filter.value : undefined;
 
 export const scenesFilterQueryParams = (
@@ -43,6 +45,7 @@ export const scenesFilterQueryParams = (
 ): ScenesFilterQueryParams => ({
   floor: floorAreas(filters["ha-filter-floor-areas"])?.floors,
   area: floorAreas(filters["ha-filter-floor-areas"])?.areas,
+  no_area: floorAreas(filters["ha-filter-floor-areas"])?.no_area,
   device: list(filters["ha-filter-devices"]),
   entity: list(filters["ha-filter-entities"]),
   label: list(filters["ha-filter-labels"]),
@@ -55,7 +58,7 @@ export const scenesFilterQueryParams = (
 // filter list sends back what it was given in its own order.
 export const scenesFilterQueryString = (filters: DataTableFilters): string => {
   const params = scenesFilterQueryParams(filters);
-  const sorted: ScenesFilterQueryParams = {};
+  const sorted: ScenesFilterQueryParams = { ...params };
 
   for (const key of scenesFilterQueryParamConfig.list) {
     sorted[key] = params[key] && [...params[key]].sort();
@@ -87,8 +90,9 @@ export const scenesLinkFromUrl = (
 
   const { search } = decodeQueryParams(searchParams, dataTableQueryParamConfig);
 
-  const values = (key: keyof ScenesFilterQueryParams): string[] =>
-    params[key]?.filter(Boolean) ?? [];
+  const values = (
+    key: (typeof scenesFilterQueryParamConfig.list)[number]
+  ): string[] => params[key]?.filter(Boolean) ?? [];
 
   const filter = (value: DataTableFilter["value"]): DataTableFilter => ({
     value,
@@ -102,13 +106,14 @@ export const scenesLinkFromUrl = (
     search: search ?? "",
     filters: {
       "ha-filter-floor-areas": filter(
-        floors.length || areas.length ? { floors, areas } : undefined
+        floors.length || areas.length || params.no_area
+          ? { floors, areas, no_area: params.no_area }
+          : undefined
       ),
       "ha-filter-devices": filter(values("device")),
       "ha-filter-entities": filter(values("entity")),
       "ha-filter-labels": filter(values("label")),
-      // The category filter picks one category
-      "ha-filter-categories": filter(values("category").slice(0, 1)),
+      "ha-filter-categories": filter(values("category")),
       "ha-filter-voice-assistants": filter(values("assistants")),
     },
   };

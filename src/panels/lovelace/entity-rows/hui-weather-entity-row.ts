@@ -197,7 +197,12 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           }
         </div>
         <div class="secondary">
-          ${getSecondaryWeatherAttribute(this.hass!, stateObj, forecast!)}
+          ${getSecondaryWeatherAttribute(
+            this.hass!.formatEntityAttributeValue,
+            this.hass!.localize,
+            stateObj,
+            forecast!
+          )}
         </div>
       </div>
     `;

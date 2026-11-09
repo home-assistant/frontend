@@ -13,8 +13,6 @@ import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-settings-row";
-import "../../../components/ha-switch";
-import type { HaSwitch } from "../../../components/ha-switch";
 import {
   AITaskEntityFeature,
   fetchAITaskPreferences,
@@ -67,7 +65,7 @@ export class AITaskPref extends LitElement {
     if (!this.hass || !isComponentLoaded(this.hass.config, "ai_task")) {
       return;
     }
-    fetchAITaskPreferences(this.hass).then((prefs) => {
+    fetchAITaskPreferences(this.hass.callWS).then((prefs) => {
       this._prefs = prefs;
       this._updateConfigFlow("gen_data_entity_id");
       this._updateConfigFlow("gen_image_entity_id");
@@ -76,7 +74,6 @@ export class AITaskPref extends LitElement {
   }
 
   protected render() {
-    const prefs = { ...this._prefs, ...this._pendingPrefs };
     const disabled =
       this._saving ||
       (this._prefs === undefined &&
@@ -164,22 +161,6 @@ export class AITaskPref extends LitElement {
               this.hass.localize("ui.panel.config.ai_task.evaluate_settings")
             )}
           </ha-settings-row>
-          <ha-switch
-            .checked=${prefs.allow_automatic_evaluation ?? false}
-            .disabled=${disabled || !prefs.evaluate_entity_id}
-            @change=${this._handleAutomaticEvaluationChange}
-          >
-            <span class="automatic-evaluation-heading">
-              ${this.hass.localize(
-                "ui.panel.config.ai_task.allow_automatic_evaluation"
-              )}
-            </span>
-            <span class="automatic-evaluation-description">
-              ${this.hass.localize(
-                "ui.panel.config.ai_task.allow_automatic_evaluation_description"
-              )}
-            </span>
-          </ha-switch>
         </div>
         <div class="card-actions">
           <ha-progress-button .disabled=${disabled} @click=${this._update}>
@@ -237,7 +218,7 @@ export class AITaskPref extends LitElement {
     let configFlow: EntityConfigFlow | undefined;
     try {
       configFlow = entityId
-        ? await fetchEntityConfigFlow(this.hass, entityId)
+        ? await fetchEntityConfigFlow(this.hass, this.hass.entities, entityId)
         : undefined;
     } catch (_err) {
       configFlow = undefined;
@@ -256,9 +237,6 @@ export class AITaskPref extends LitElement {
     this._pendingPrefs = {
       ...this._pendingPrefs,
       [key]: value,
-      ...(key === "evaluate_entity_id" && !value
-        ? { allow_automatic_evaluation: false }
-        : {}),
     };
     this._updateConfigFlow(key);
   }
@@ -269,15 +247,6 @@ export class AITaskPref extends LitElement {
     if (configFlow) {
       showEntityConfigFlow(this, this.hass, configFlow);
     }
-  }
-
-  private _handleAutomaticEvaluationChange(
-    ev: HASSDomCurrentTargetEvent<HaSwitch>
-  ) {
-    this._pendingPrefs = {
-      ...this._pendingPrefs,
-      allow_automatic_evaluation: ev.currentTarget.checked,
-    };
   }
 
   private async _update(ev: HASSDomCurrentTargetEvent<HaProgressButton>) {
@@ -331,29 +300,6 @@ export class AITaskPref extends LitElement {
     }
     .card-actions {
       text-align: right;
-    }
-    ha-switch {
-      display: block;
-      margin-block-start: var(--ha-space-4);
-    }
-    ha-switch::part(base) {
-      height: auto;
-      flex-direction: row-reverse;
-    }
-    ha-switch::part(label) {
-      flex: 1;
-      margin-inline-start: 0;
-      margin-inline-end: var(--ha-space-4);
-    }
-    .automatic-evaluation-heading,
-    .automatic-evaluation-description {
-      display: block;
-    }
-    .automatic-evaluation-description {
-      margin-block-start: var(--ha-space-1);
-      color: var(--secondary-text-color);
-      font-size: var(--ha-font-size-s);
-      line-height: normal;
     }
     .picker {
       display: flex;

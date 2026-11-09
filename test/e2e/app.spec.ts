@@ -338,7 +338,7 @@ test.describe("System log reporting", () => {
   }) => {
     await goToPanel(page, "/?scenario=system-log-reporting#/config/logs");
     await page
-      .locator("system-log-card ha-list-item")
+      .locator("system-log-card ha-list-item-button")
       .filter({ hasText: "Delayed manifest error" })
       .click();
     const detail = page.locator("dialog-system-log-detail");
@@ -351,7 +351,7 @@ test.describe("System log reporting", () => {
     await detail.getByRole("button", { name: "Close", exact: true }).click();
     await expect(detail.locator("ha-dialog")).not.toBeAttached();
     await page
-      .locator("system-log-card ha-list-item")
+      .locator("system-log-card ha-list-item-button")
       .filter({ hasText: "Built-in integration error" })
       .click();
     await page.evaluate(() => window.resolveReportManifest?.());
@@ -520,6 +520,36 @@ test.describe("Lovelace dashboard", () => {
     await expect(
       page.locator("[data-testid='edit-mode-button'], ha-menu-button")
     ).toBeAttached({ timeout: QUICK_TIMEOUT });
+  });
+
+  test("going back after leaving edit mode does not enter it again", async ({
+    page,
+  }) => {
+    // A demo dashboard with more than one view
+    await goToPanel(page, "/?demo=teachingbirds&edit=1#/lovelace/home");
+    const root = page.locator("hui-root").first();
+    const isEditing = () =>
+      root.evaluate(
+        (el) =>
+          (el as HTMLElement & { lovelace?: { editMode: boolean } }).lovelace
+            ?.editMode
+      );
+    await expect.poll(isEditing, { timeout: PANEL_TIMEOUT }).toBe(true);
+
+    // Leaves /lovelace/home behind with ?edit=1 in its URL
+    await root.locator("ha-tab-group-tab[panel='1']").click();
+    await expect(page).toHaveURL(/#\/lovelace\/home_info$/, {
+      timeout: QUICK_TIMEOUT,
+    });
+    await root.locator("ha-button.exit-edit-mode").click();
+    await expect.poll(isEditing, { timeout: QUICK_TIMEOUT }).toBe(false);
+
+    await page.goBack();
+
+    await expect(page).toHaveURL(/\/\?demo=teachingbirds#\/lovelace\/home$/, {
+      timeout: QUICK_TIMEOUT,
+    });
+    expect(await isEditing()).toBe(false);
   });
 });
 

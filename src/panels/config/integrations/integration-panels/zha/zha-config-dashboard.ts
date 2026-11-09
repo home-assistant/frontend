@@ -520,7 +520,14 @@ class ZHAConfigDashboard extends LitElement {
         ha-card {
           margin: auto;
           margin-top: var(--ha-space-4);
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
+        }
+
+        ha-list-item-base::part(headline),
+        ha-list-item-base::part(supporting-text),
+        ha-list-item-button::part(headline),
+        ha-list-item-button::part(supporting-text) {
+          white-space: normal;
         }
 
         .nav-card .card-header {
@@ -618,7 +625,7 @@ class ZHAConfigDashboard extends LitElement {
         }
 
         .container {
-          padding: var(--ha-space-2) var(--ha-space-4)
+          padding: var(--ha-space-2) var(--ha-content-gutter)
             calc(var(--ha-space-20) + var(--safe-area-inset-bottom, 0px));
         }
       `,

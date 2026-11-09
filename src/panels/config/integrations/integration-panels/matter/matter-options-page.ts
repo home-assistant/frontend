@@ -313,12 +313,17 @@ class MatterOptionsPage extends LitElement {
       haStyle,
       css`
         .container {
-          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+          padding: var(--ha-space-2) var(--ha-content-gutter) var(--ha-space-4);
         }
 
         ha-card {
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
           margin: auto;
+        }
+
+        ha-row-item::part(headline),
+        ha-row-item::part(supporting-text) {
+          white-space: normal;
         }
       `,
     ];

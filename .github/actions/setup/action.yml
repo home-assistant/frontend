@@ -28,6 +28,7 @@ runs:
       with:
         path: |
           node_modules
+          packages/*/node_modules
           ~/.local/share/pnpm/store
         key: >-
           ${{ inputs.node-modules-cache-key }}-${{ runner.os }}-${{ runner.arch }}-${{

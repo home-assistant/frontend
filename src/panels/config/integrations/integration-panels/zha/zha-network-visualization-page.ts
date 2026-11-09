@@ -15,14 +15,27 @@ import "../../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZHADevice } from "../../../../../data/zha";
-import { fetchDevices, refreshTopology } from "../../../../../data/zha";
+import {
+  fetchDevices,
+  refreshTopology,
+  ZHADeviceType,
+} from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
+import { MobileAwareMixin } from "../../../../../mixins/mobile-aware-mixin";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { formatAsPaddedHex } from "./functions";
-import { createZHANetworkChartData } from "./zha-network-data";
+import {
+  computeZHADeviceType,
+  formatAsPaddedHex,
+  formatGreenPowerSrcId,
+} from "./functions";
+import {
+  createZHANetworkChartData,
+  SPACER_PREFIX,
+  VIRTUAL_PARENT_PREFIX,
+} from "./zha-network-data";
 
 @customElement("zha-network-visualization-page")
-export class ZHANetworkVisualizationPage extends LitElement {
+export class ZHANetworkVisualizationPage extends MobileAwareMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -30,6 +43,8 @@ export class ZHANetworkVisualizationPage extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+
+  @property({ attribute: false }) public deviceId?: string;
 
   @state()
   private _networkData: NetworkData = {
@@ -70,6 +85,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
           .searchFilter=${this._searchFilter}
           .data=${this._networkData}
           .searchableAttributes=${this._getSearchableAttributes}
+          .selectedNode=${
+            this._devices.find(
+              (device) => device.device_reg_id === this.deviceId
+            )?.ieee
+          }
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
         >
@@ -102,7 +122,8 @@ export class ZHANetworkVisualizationPage extends LitElement {
     this._networkData = createZHANetworkChartData(
       this._devices,
       this.hass,
-      this
+      this,
+      this._isMobileSize
     );
   }
 
@@ -122,9 +143,14 @@ export class ZHANetworkVisualizationPage extends LitElement {
       attributes.push(device.model);
     }
     if (device.device_type) {
-      attributes.push(device.device_type);
+      attributes.push(computeZHADeviceType(device, this.hass.localize));
     }
-    if (device.nwk != null) {
+    if (device.device_type === ZHADeviceType.GreenPower) {
+      const srcId = formatGreenPowerSrcId(device);
+      if (srcId) {
+        attributes.push(srcId);
+      }
+    } else if (device.nwk != null) {
       attributes.push(formatAsPaddedHex(device.nwk));
     }
     return attributes;
@@ -138,6 +164,13 @@ export class ZHANetworkVisualizationPage extends LitElement {
     const { dataType, data, name } = params as CallbackDataParams;
     if (dataType === "edge") {
       const { source, target, value } = data as any;
+      // the chain from the coordinator to a virtual parent is invisible
+      if (
+        target.startsWith(SPACER_PREFIX) ||
+        target.startsWith(VIRTUAL_PARENT_PREFIX)
+      ) {
+        return nothing;
+      }
       const targetName = this._networkData.nodes.find(
         (node) => node.id === target
       )!.name;
@@ -147,13 +180,20 @@ export class ZHANetworkVisualizationPage extends LitElement {
       const reverseValue = this._networkData.links.find(
         (link) => link.source === source && link.target === target
       )?.reverseValue;
+      // a virtual link value only sets the edge length, it is not an LQI
+      const isVirtual = source.startsWith(VIRTUAL_PARENT_PREFIX);
       return html`${sourceName} →
-      ${targetName}${value ? html` <b>LQI:</b> ${value}` : nothing}${
+      ${targetName}${
+        value && !isVirtual ? html` <b>LQI:</b> ${value}` : nothing
+      }${
         reverseValue
           ? html`<br />${targetName} → ${sourceName}
               <b>LQI:</b> ${reverseValue}`
           : nothing
       }`;
+    }
+    if ((data as any).id.startsWith(SPACER_PREFIX)) {
+      return nothing;
     }
     const device = this._devices.find((d) => d.ieee === (data as any).id);
     if (!device) {
@@ -166,10 +206,18 @@ export class ZHANetworkVisualizationPage extends LitElement {
       : undefined;
     return html`<b>IEEE: </b>${device.ieee}<br /><b
         >${this.hass.localize("ui.panel.config.zha.visualization.device_type")}: </b
-      >${device.device_type.replace("_", " ")}${
-        device.nwk != null
-          ? html`<br /><b>NWK: </b>${formatAsPaddedHex(device.nwk)}`
-          : nothing
+      >${computeZHADeviceType(device, this.hass.localize)}${
+        device.device_type === ZHADeviceType.GreenPower
+          ? formatGreenPowerSrcId(device)
+            ? html`<br /><b
+                  >${this.hass.localize(
+                    "ui.panel.config.zha.device_page.src_id"
+                  )}: </b
+                >${formatGreenPowerSrcId(device)}`
+            : nothing
+          : device.nwk != null
+            ? html`<br /><b>NWK: </b>${formatAsPaddedHex(device.nwk)}`
+            : nothing
       }${
         device.manufacturer != null && device.model != null
           ? html`<br /><b

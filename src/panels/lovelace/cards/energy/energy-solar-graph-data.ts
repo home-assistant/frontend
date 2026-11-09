@@ -12,6 +12,7 @@ import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
 import type { HomeAssistant } from "../../../../types";
 import { getEnergyColor } from "./common/color";
+import { sumEnergyStatistics } from "./common/sum-statistics";
 import {
   type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
@@ -34,6 +35,7 @@ export interface EnergySolarGraphDataParams {
   computedStyles: CSSStyleDeclaration;
   /** Fallback for `energyData.end` (the component uses `endOfToday()`). */
   now: Date;
+  combineSources?: boolean;
 }
 
 export interface EnergySolarGraphData {
@@ -64,10 +66,19 @@ export function generateEnergySolarGraphData(
   const compareStart = energyData.startCompare;
   const compareEnd = energyData.endCompare;
 
-  const solarSources: SolarSourceTypeEnergyPreference[] =
+  const configuredSources: SolarSourceTypeEnergyPreference[] =
     energyData.prefs.energy_sources.filter(
       (source) => source.type === "solar"
     ) as SolarSourceTypeEnergyPreference[];
+
+  const { solarSources, stats, statsCompare } =
+    params.combineSources && configuredSources.length > 1
+      ? combineSolarSources(params, configuredSources)
+      : {
+          solarSources: configuredSources,
+          stats: energyData.stats,
+          statsCompare: energyData.statsCompare,
+        };
 
   // Both processDataSet calls below receive identical start/end/compareStart,
   // so the compare transform and the suggested period are loop-invariant across
@@ -85,13 +96,13 @@ export function generateEnergySolarGraphData(
     if (v > yMax) yMax = v;
   };
 
-  if (energyData.statsCompare) {
+  if (statsCompare) {
     datasets.push(
       ...processDataSet(
         params,
         compareTransform,
         period,
-        energyData.statsCompare,
+        statsCompare,
         energyData.statsMetadata,
         solarSources,
         computedStyles,
@@ -116,7 +127,7 @@ export function generateEnergySolarGraphData(
       params,
       compareTransform,
       period,
-      energyData.stats,
+      stats,
       energyData.statsMetadata,
       solarSources,
       computedStyles,
@@ -147,12 +158,43 @@ export function generateEnergySolarGraphData(
 
   return {
     chartData: datasets,
-    total: processTotal(energyData.stats, solarSources),
+    total: processTotal(energyData.stats, configuredSources),
     start,
     end,
     compareStart,
     compareEnd,
     yAxisFractionDigits: computeYAxisFractionDigits(yMin, yMax, true),
+  };
+}
+
+const COMBINED_SOLAR_ID = "solar";
+
+function combineSolarSources(
+  { localize, energyData }: EnergySolarGraphDataParams,
+  sources: SolarSourceTypeEnergyPreference[]
+) {
+  const statIds = sources.map((source) => source.stat_energy_from);
+  const combined: SolarSourceTypeEnergyPreference = {
+    type: "solar",
+    stat_energy_from: COMBINED_SOLAR_ID,
+    name: localize("ui.panel.lovelace.cards.energy.energy_distribution.solar"),
+    config_entry_solar_forecast: [
+      ...new Set(
+        sources.flatMap((source) => source.config_entry_solar_forecast ?? [])
+      ),
+    ],
+  };
+  return {
+    solarSources: [combined],
+    stats: {
+      [COMBINED_SOLAR_ID]: sumEnergyStatistics(energyData.stats, statIds),
+    },
+    statsCompare: energyData.statsCompare && {
+      [COMBINED_SOLAR_ID]: sumEnergyStatistics(
+        energyData.statsCompare,
+        statIds
+      ),
+    },
   };
 }
 

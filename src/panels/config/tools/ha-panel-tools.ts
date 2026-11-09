@@ -30,6 +30,11 @@ const TOOLS_TABS = [
     translationKey: "ui.panel.config.tools.tabs.actions.title",
   },
   {
+    panel: "action-history",
+    translationKey: "ui.panel.config.tools.tabs.action_history.title",
+    component: "logbook",
+  },
+  {
     panel: "template",
     translationKey: "ui.panel.config.tools.tabs.templates.title",
   },
@@ -40,6 +45,8 @@ const TOOLS_TABS = [
   {
     panel: "debug-console",
     translationKey: "ui.panel.config.tools.tabs.debug_console.title",
+    // Only loaded when enabled in YAML.
+    component: "debug_console",
   },
   {
     panel: "statistics",
@@ -88,9 +95,8 @@ class PanelTools extends LitElement {
         <ha-tab-group @wa-tab-show=${this._handlePageSelected} slot="subRow">
           ${TOOLS_TABS.filter(
             (tab) =>
-              tab.panel !== "debug-console" ||
-              // Only loaded when enabled in YAML.
-              isComponentLoaded(this.hass.config, "debug_console")
+              !("component" in tab) ||
+              isComponentLoaded(this.hass.config, tab.component)
           ).map(
             (tab) => html`
               <ha-tab-group-tab

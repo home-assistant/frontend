@@ -1,5 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
+import { computeCssColor } from "../color/compute-color";
 import { computeDomain } from "./compute_domain";
+import { stateColorCss } from "./state_color";
 
 export const ALERT_DOMAINS = [
   "alarm_control_panel",
@@ -7,8 +9,6 @@ export const ALERT_DOMAINS = [
   "cover",
   "lock",
 ];
-
-export const DEFAULT_ALERT_COLOR = "red";
 
 export const computeAlertActiveStates = (entityId: string): string[] => {
   switch (computeDomain(entityId)) {
@@ -25,3 +25,16 @@ export const computeAlertActiveStates = (entityId: string): string[] => {
 
 export const isAlertActive = (stateObj: HassEntity): boolean =>
   computeAlertActiveStates(stateObj.entity_id).includes(stateObj.state);
+
+export const computeAlertColor = (
+  stateObj: HassEntity,
+  color: string
+): string | undefined => {
+  if (color === "none") {
+    return undefined;
+  }
+  if (color === "state") {
+    return stateColorCss(stateObj);
+  }
+  return computeCssColor(color);
+};

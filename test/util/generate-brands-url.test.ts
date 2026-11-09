@@ -4,11 +4,13 @@ import {
   addBrandsAuth,
   brandsUrl,
   clearBrandsTokenRefresh,
+  darkBrandUrl,
   fetchAndScheduleBrandsAccessToken,
   fetchBrandsAccessToken,
   hardwareBrandsUrl,
   marketplaceBrandsUrl,
   scheduleBrandsTokenRefresh,
+  subscribeBrandsAccessToken,
 } from "../../src/util/brands-url";
 
 // NOTE: the cached brands token is module-level state that persists across
@@ -159,6 +161,49 @@ describe("addBrandsAuth", () => {
   });
 });
 
+describe("darkBrandUrl", () => {
+  it("Switches a brands API icon to its dark variant", () => {
+    assert.strictEqual(
+      darkBrandUrl("/api/brands/integration/linksys_velop/icon.png"),
+      "/api/brands/integration/linksys_velop/dark_icon.png"
+    );
+  });
+
+  it("Keeps the image type, size, host and query", () => {
+    assert.strictEqual(
+      darkBrandUrl(
+        "http://homeassistant.local:8123/api/brands/marketplace/hair/logo@2x.png?token=abc"
+      ),
+      "http://homeassistant.local:8123/api/brands/marketplace/hair/dark_logo@2x.png?token=abc"
+    );
+  });
+
+  it("Switches a legacy CDN brand URL", () => {
+    assert.strictEqual(
+      darkBrandUrl("https://brands.home-assistant.io/_/sonos/icon.png"),
+      "https://brands.home-assistant.io/_/sonos/dark_icon.png"
+    );
+  });
+
+  it("Leaves dark brand URLs unchanged", () => {
+    assert.strictEqual(
+      darkBrandUrl("/api/brands/integration/hue/dark_icon.png"),
+      "/api/brands/integration/hue/dark_icon.png"
+    );
+  });
+
+  it("Leaves non-brand URLs unchanged", () => {
+    assert.strictEqual(
+      darkBrandUrl("/api/image_proxy/image.icon?token=abc"),
+      "/api/image_proxy/image.icon?token=abc"
+    );
+    assert.strictEqual(
+      darkBrandUrl("https://example.com/icon.png"),
+      "https://example.com/icon.png"
+    );
+  });
+});
+
 describe("scheduleBrandsTokenRefresh", () => {
   afterEach(() => {
     clearBrandsTokenRefresh();
@@ -235,6 +280,41 @@ describe("scheduleBrandsTokenRefresh", () => {
     // Advance 30 minutes — should not have refreshed because we cleared
     await vi.advanceTimersByTimeAsync(30 * 60 * 1000);
     assert.strictEqual(callCount, 1);
+  });
+});
+
+describe("subscribeBrandsAccessToken", () => {
+  afterEach(() => {
+    clearBrandsTokenRefresh();
+    vi.useRealTimers();
+  });
+
+  it("reports the current token, then each change until unsubscribed", async () => {
+    vi.useFakeTimers();
+    let token = "subscribed-token-1";
+    const mockHass = {
+      callWS: async () => ({ token }),
+    } as unknown as HomeAssistant;
+    await fetchBrandsAccessToken(mockHass);
+
+    const listener = vi.fn();
+    const unsubscribe = subscribeBrandsAccessToken(listener);
+    assert.deepEqual(listener.mock.calls, [["subscribed-token-1"]]);
+
+    // Unchanged token: no call
+    await fetchBrandsAccessToken(mockHass);
+    assert.strictEqual(listener.mock.calls.length, 1);
+
+    // The 30 minute refresh reports the rotated token
+    token = "subscribed-token-2";
+    scheduleBrandsTokenRefresh(mockHass);
+    await vi.advanceTimersByTimeAsync(30 * 60 * 1000);
+    assert.deepEqual(listener.mock.calls[1], ["subscribed-token-2"]);
+
+    unsubscribe();
+    token = "subscribed-token-3";
+    await fetchBrandsAccessToken(mockHass);
+    assert.strictEqual(listener.mock.calls.length, 2);
   });
 });
 

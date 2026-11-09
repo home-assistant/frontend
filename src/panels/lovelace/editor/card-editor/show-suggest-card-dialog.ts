@@ -1,14 +1,14 @@
+import type { ConfigPath } from "../../../../common/util/config-path";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import type { LovelacePath } from "../lovelace-path";
 
 export interface SuggestCardDialogParams {
   lovelaceConfig?: LovelaceConfig;
   yaml?: boolean;
   saveConfig?: (config: LovelaceConfig) => void;
-  path?: LovelacePath;
+  path?: ConfigPath;
   entities?: string[]; // We pass this to create dialog when user chooses "Pick own"
   cardConfig: LovelaceCardConfig[]; // We can pass a suggested config,s
   sectionConfig?: LovelaceSectionConfig;

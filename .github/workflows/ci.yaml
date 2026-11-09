@@ -31,7 +31,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Prepare dependencies
-        uses: ./.github/actions/prepare-dependencies
+        uses: $/.github/actions/prepare-dependencies
 
   lint:
     name: Lint and check format
@@ -43,7 +43,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Node with shared dependencies
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           node-modules-cache: true
       - name: Check for duplicate dependencies
@@ -89,7 +89,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Node with shared dependencies
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           node-modules-cache: true
       - name: Build resources
@@ -110,7 +110,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Node with shared dependencies
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           node-modules-cache: true
       # Read-only reuse of the rspack cache written by the nightly (see
@@ -127,7 +127,7 @@ jobs:
           restore-keys: |
             rspack-cache-${{ runner.os }}-
       - name: Build Application
-        uses: ./.github/actions/build
+        uses: $/.github/actions/build
         with:
           target: build-app
           github-token: ${{ secrets.GITHUB_TOKEN }}

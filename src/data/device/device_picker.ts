@@ -36,6 +36,14 @@ export interface DeviceAreaLabel {
 }
 
 export interface GetDevicesOptions {
+  states: HomeAssistant["states"];
+  areas: HomeAssistant["areas"];
+  devices: HomeAssistant["devices"];
+  entities: HomeAssistant["entities"];
+  localize: LocalizeFunc;
+  language: string;
+  translationMetadata: HomeAssistant["translationMetadata"];
+  configEntryLookup: Record<string, ConfigEntry>;
   includeDomains?: string[];
   excludeDomains?: string[];
   includeDeviceClasses?: string[];
@@ -130,12 +138,16 @@ export const deviceComboBoxKeys: FuseWeightedKey[] = [
   },
 ];
 
-export const getDevices = (
-  hass: HomeAssistant,
-  configEntryLookup: Record<string, ConfigEntry>,
-  options?: GetDevicesOptions
-): DevicePickerItem[] => {
+export const getDevices = (options: GetDevicesOptions): DevicePickerItem[] => {
   const {
+    states,
+    areas,
+    devices,
+    entities,
+    localize,
+    language,
+    translationMetadata,
+    configEntryLookup,
     includeDomains,
     excludeDomains,
     includeDeviceClasses,
@@ -145,10 +157,10 @@ export const getDevices = (
     value,
     idPrefix = "",
     nested,
-  } = options ?? {};
+  } = options;
 
-  const devices = Object.values(hass.devices);
-  const entities = Object.values(hass.entities);
+  const deviceList = Object.values(devices);
+  const entityList = Object.values(entities);
 
   let deviceEntityLookup: DeviceEntityDisplayLookup = {};
 
@@ -156,7 +168,7 @@ export const getDevices = (
     includeDomains || excludeDomains || includeDeviceClasses || entityFilter;
 
   if (filtersEntities) {
-    deviceEntityLookup = getDeviceEntityDisplayLookup(entities);
+    deviceEntityLookup = getDeviceEntityDisplayLookup(entityList);
   }
 
   // Targeting a device also targets its child devices (a parent inherits its
@@ -166,7 +178,7 @@ export const getDevices = (
   // single-level, so one hop covers it.
   const filterChildrenByParent = new Map<string, DeviceRegistryEntry[]>();
   if (filtersEntities) {
-    for (const device of devices) {
+    for (const device of deviceList) {
       if (device.parent_device_id) {
         const siblings = filterChildrenByParent.get(device.parent_device_id);
         if (siblings) {
@@ -195,7 +207,7 @@ export const getDevices = (
     return combined;
   };
 
-  let inputDevices = devices.filter(
+  let inputDevices = deviceList.filter(
     (device) => device.id === value || !device.disabled_by
   );
 
@@ -236,7 +248,7 @@ export const getDevices = (
         return false;
       }
       return devEntities.some((entity) => {
-        const stateObj = hass.states[entity.entity_id];
+        const stateObj = states[entity.entity_id];
         if (!stateObj) {
           return false;
         }
@@ -255,7 +267,7 @@ export const getDevices = (
         return false;
       }
       return devEntities.some((entity) => {
-        const stateObj = hass.states[entity.entity_id];
+        const stateObj = states[entity.entity_id];
         if (!stateObj) {
           return false;
         }
@@ -273,16 +285,16 @@ export const getDevices = (
   }
 
   const outputDevices = inputDevices.map<DevicePickerItem>((device) => {
-    const deviceName = computeDeviceNameDisplay(device, hass.localize);
+    const deviceName = computeDeviceNameDisplay(device, localize);
 
     const { areaName, viaDeviceName, viaDeviceAreaName, parentDeviceName } =
       computeDeviceAreaLabel(
         device,
-        hass.areas,
-        hass.devices,
-        hass.localize,
-        hass.language,
-        hass.translationMetadata
+        areas,
+        devices,
+        localize,
+        language,
+        translationMetadata
       );
 
     const configEntry = device.primary_config_entry
@@ -290,9 +302,9 @@ export const getDevices = (
       : undefined;
 
     const domain = configEntry?.domain;
-    const domainName = domain ? domainToName(hass.localize, domain) : undefined;
+    const domainName = domain ? domainToName(localize, domain) : undefined;
     const primary =
-      deviceName || hass.localize("ui.components.device-picker.unnamed_device");
+      deviceName || localize("ui.components.device-picker.unnamed_device");
 
     return {
       id: `${idPrefix}${device.id}`,
@@ -347,7 +359,7 @@ export const getDevices = (
     caseInsensitiveStringCompare(
       itemByDeviceId.get(a.id)!.primary,
       itemByDeviceId.get(b.id)!.primary,
-      hass.locale.language
+      language
     );
 
   topLevel.sort(compareByName);

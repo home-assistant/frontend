@@ -61,9 +61,9 @@ describe("scenes query params", () => {
     );
   });
 
-  it("keeps one category, as the category filter picks one", () => {
+  it("keeps every category", () => {
     expect(
       scenesLinkFromUrl("?category=a,b")?.filters["ha-filter-categories"]
-    ).toEqual(filter(["a"]));
+    ).toEqual(filter(["a", "b"]));
   });
 });
