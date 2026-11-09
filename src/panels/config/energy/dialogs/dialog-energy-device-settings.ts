@@ -12,6 +12,7 @@ import "./ha-energy-upstream-device-picker";
 import type { HaInput } from "../../../../components/input/ha-input";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
 import {
+  computeAmbiguousEnergyDevices,
   computeEnergyLabel,
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
@@ -86,6 +87,46 @@ export class DialogEnergyDeviceSettings
     this._initDirtyTracking({ type: "deep" }, this._device ?? null);
   }
 
+  // Label the device would get without a display name, so the placeholder
+  // matches the device list and the charts.
+  private _namePlaceholder(): string {
+    const device = this._device;
+    if (!device) {
+      return "";
+    }
+    const statisticKey = device.stat_consumption
+      ? "stat_consumption"
+      : "stat_rate";
+    const statisticId = device[statisticKey];
+    if (!statisticId) {
+      return "";
+    }
+    // The saved entry of the device being edited is replaced by the draft
+    // without a display name, which is what the placeholder stands for. The
+    // draft may point at another statistic by now, so match the saved one.
+    const edited = this._params?.device?.stat_consumption;
+    const devices = [
+      ...(this._params?.device_consumptions ?? []).filter(
+        (other) => other.stat_consumption !== edited
+      ),
+      { ...device, name: undefined },
+    ];
+
+    return computeEnergyLabel(
+      this.hass.states,
+      this.hass.formatEntityName,
+      statisticId,
+      this._params?.statsMetadata?.[statisticId],
+      undefined,
+      computeAmbiguousEnergyDevices(
+        this.hass.states,
+        this.hass.formatEntityName,
+        devices,
+        statisticKey
+      ).has(statisticId)
+    );
+  }
+
   private _computePossibleParents() {
     if (!this._device || !this._params) {
       this._possibleParents = [];
@@ -132,9 +173,6 @@ export class DialogEnergyDeviceSettings
     if (!this._params) {
       return nothing;
     }
-
-    const labelStatistic =
-      this._device?.stat_consumption ?? this._device?.stat_rate;
 
     return html`
       <ha-dialog
@@ -185,16 +223,7 @@ export class DialogEnergyDeviceSettings
           )}
           .disabled=${!this._device || this._saving}
           .value=${this._device?.name || ""}
-          .placeholder=${
-            labelStatistic
-              ? computeEnergyLabel(
-                  this.hass.states,
-                  this.hass.formatEntityName,
-                  labelStatistic,
-                  this._params?.statsMetadata?.[labelStatistic]
-                )
-              : ""
-          }
+          .placeholder=${this._namePlaceholder()}
           @input=${this._nameChanged}
         >
         </ha-input>
@@ -209,6 +238,7 @@ export class DialogEnergyDeviceSettings
           )}
           .value=${this._device?.included_in_stat}
           .possibleParents=${this._possibleParents}
+          .devices=${this._params.device_consumptions}
           .statsMetadata=${this._params.statsMetadata}
           .emptyLabel=${this.hass.localize(
             "ui.panel.config.energy.device_consumption.dialog.no_upstream_devices"
