@@ -5,50 +5,41 @@ import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
 import { apiContext, formattersContext } from "../../../data/context";
-import type { CoverControlMode, CoverEntity } from "../../../data/cover";
-import {
-  CoverEntityFeature,
-  coverModeValue,
-  coverSupportsPosition,
-  coverSupportsTiltPosition,
-} from "../../../data/cover";
-import {
-  shouldShowFavoriteOptions,
-  type ExtEntityRegistryEntry,
-} from "../../../data/entity/entity_registry";
-import "../../../state-control/cover/ha-state-control-cover-drawing";
 import type {
   CoverCommand,
+  CoverControlMode,
   CoverDrag,
-} from "../../../state-control/cover/ha-state-control-cover-drawing";
+  CoverEntity,
+} from "../../../data/cover";
+import {
+  coverCurrentValue,
+  coverHasPositionControls,
+  coverHasTiltControls,
+  coverModeAttribute,
+  coverServiceData,
+  coverSupportsPosition,
+  coverSupportsTiltPosition,
+  defaultCoverMode,
+} from "../../../data/cover";
+import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { CoverRequestController } from "../../../state-control/cover/cover-request-controller";
+import "../../../state-control/cover/ha-state-control-cover";
 import type { HomeAssistantApi, HomeAssistantFormatters } from "../../../types";
-import { CoverRequestController } from "../components/covers/cover-request-controller";
 import "../components/covers/ha-more-info-cover-buttons";
 import "../components/covers/ha-more-info-cover-favorite-positions";
 import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
-const POSITION_FEATURES = [
-  CoverEntityFeature.OPEN,
-  CoverEntityFeature.CLOSE,
-  CoverEntityFeature.STOP,
-  CoverEntityFeature.SET_POSITION,
-];
-
-const TILT_FEATURES = [
-  CoverEntityFeature.OPEN_TILT,
-  CoverEntityFeature.CLOSE_TILT,
-  CoverEntityFeature.STOP_TILT,
-  CoverEntityFeature.SET_TILT_POSITION,
-];
-
-const supportsAny = (stateObj: CoverEntity, features: CoverEntityFeature[]) =>
-  features.some((feature) => supportsFeature(stateObj, feature));
+type CoverHintKey =
+  | "requested"
+  | "requested_open"
+  | "requested_closed"
+  | "currently"
+  | "currently_unknown";
 
 @customElement("more-info-cover")
 class MoreInfoCover extends LitElement {
@@ -81,12 +72,8 @@ class MoreInfoCover extends LitElement {
       return;
     }
     const oldStateObj = changedProps.get("stateObj") as CoverEntity | undefined;
-    if (!oldStateObj || oldStateObj.entity_id !== this.stateObj.entity_id) {
-      this._mode =
-        supportsAny(this.stateObj, TILT_FEATURES) &&
-        !supportsAny(this.stateObj, POSITION_FEATURES)
-          ? "tilt"
-          : "position";
+    if (oldStateObj?.entity_id !== this.stateObj.entity_id) {
+      this._mode = defaultCoverMode(this.stateObj);
       this._requests.clear();
       this._drag = undefined;
       return;
@@ -102,23 +89,17 @@ class MoreInfoCover extends LitElement {
   private _handleCommand(ev: HASSDomEvent<CoverCommand>) {
     ev.stopPropagation();
     const stateObj = this.stateObj!;
-    const { service, value } = ev.detail;
-    if (value !== undefined && !Number.isFinite(value)) {
-      return;
-    }
-    const data: Record<string, unknown> = { entity_id: stateObj.entity_id };
-    if (service === "set_cover_position") {
-      data.position = value;
-    } else if (service === "set_cover_tilt_position") {
-      data.tilt_position = value;
-    }
     this._api
-      .callService("cover", service, data)
+      .callService(
+        "cover",
+        ev.detail.service,
+        coverServiceData(stateObj, ev.detail)
+      )
       .catch(() => this._requests.clear());
     this._requests.commandSent(ev.detail, stateObj);
   }
 
-  private _handleDrag(ev: HASSDomEvent<{ drag?: CoverDrag }>) {
+  private _handleDrag(ev: HASSDomEvent<HASSDomEvents["cover-drag-changed"]>) {
     ev.stopPropagation();
     this._drag = ev.detail.drag;
   }
@@ -126,73 +107,66 @@ class MoreInfoCover extends LitElement {
   private _formatValue(mode: CoverControlMode, value: number) {
     return this._formatters.formatEntityAttributeValue(
       this.stateObj!,
-      mode === "tilt" ? "current_tilt_position" : "current_position",
+      coverModeAttribute(mode),
       Math.round(value)
     );
   }
 
-  private _stateOverride(): { text: string; accent: boolean } {
-    if (this._drag?.swipe?.flipped) {
-      return {
-        text: this._localize(
-          this._drag.swipe.start
-            ? "ui.dialogs.more_info_control.cover.closes_on_release"
-            : "ui.dialogs.more_info_control.cover.opens_on_release"
-        ),
-        accent: true,
-      };
+  private _hint(key: CoverHintKey, values?: Record<string, string>) {
+    return this._localize(`ui.dialogs.more_info_control.cover.${key}`, values);
+  }
+
+  private _dragText(): string | undefined {
+    const drag = this._drag;
+    if (!drag) {
+      return undefined;
     }
-    if (this._drag && !this._drag.swipe) {
-      return {
-        text: this._formatValue(this._mode, this._drag.value),
-        accent: true,
-      };
+    if (!drag.swipe) {
+      return this._formatValue(this._mode, drag.value);
     }
-    return { text: this._stateText(), accent: false };
+    if (!drag.swipe.passedHalfway) {
+      return undefined;
+    }
+    return this._localize(
+      drag.swipe.action === "close"
+        ? "ui.dialogs.more_info_control.cover.closes_on_release"
+        : "ui.dialogs.more_info_control.cover.opens_on_release"
+    );
   }
 
   private _stateText(): string {
     const stateObj = this.stateObj!;
     const stateDisplay = this._formatters.formatEntityState(stateObj);
-    const position =
-      stateObj.attributes.current_position ??
-      stateObj.attributes.current_tilt_position;
-    if (!position || Math.round(position) === 0) {
+    const mode: CoverControlMode =
+      stateObj.attributes.current_position == null ? "tilt" : "position";
+    const value = coverCurrentValue(stateObj, mode);
+    if (!value || Math.round(value) === 0) {
       return stateDisplay;
     }
-    return `${stateDisplay} · ${this._formatValue("position", position)}`;
+    return `${stateDisplay} · ${this._formatValue(mode, value)}`;
   }
 
-  private _secondaryOverride(): string | undefined {
-    const stateObj = this.stateObj!;
-    const localize = (
-      key:
-        | "requested"
-        | "requested_open"
-        | "requested_closed"
-        | "currently"
-        | "currently_unknown",
-      values?: Record<string, string>
-    ) => this._localize(`ui.dialogs.more_info_control.cover.${key}`, values);
-    if (this._drag?.swipe) {
+  private _dragHint(): string | undefined {
+    if (!this._drag || this._drag.swipe) {
       return undefined;
     }
-    if (this._drag) {
-      const current = coverModeValue(stateObj, this._mode);
-      return current === undefined
-        ? localize("currently_unknown")
-        : localize("currently", {
-            value: this._formatValue(this._mode, current),
-          });
-    }
+    const current = coverCurrentValue(this.stateObj!, this._mode);
+    return current === undefined
+      ? this._hint("currently_unknown")
+      : this._hint("currently", {
+          value: this._formatValue(this._mode, current),
+        });
+  }
+
+  private _requestHint(): string | undefined {
     const request = this._requests.request;
-    if (!request) {
+    if (!request || this._drag) {
       return undefined;
     }
-    if (request.mode === "position" && !coverSupportsPosition(stateObj)) {
-      return localize(request.value ? "requested_open" : "requested_closed");
+    if (request.mode === "position" && !coverSupportsPosition(this.stateObj!)) {
+      return this._hint(request.value ? "requested_open" : "requested_closed");
     }
-    return localize("requested", {
+    return this._hint("requested", {
       value: this._formatValue(request.mode, request.value),
     });
   }
@@ -201,18 +175,9 @@ class MoreInfoCover extends LitElement {
     if (!this.entry) {
       return false;
     }
-    const tilt = this._mode === "tilt";
-    const supported = tilt
+    return this._mode === "tilt"
       ? coverSupportsTiltPosition(stateObj)
       : coverSupportsPosition(stateObj);
-    const options = this.entry.options?.cover;
-    return (
-      supported &&
-      (Boolean(this.editMode) ||
-        shouldShowFavoriteOptions(
-          tilt ? options?.favorite_tilt_positions : options?.favorite_positions
-        ))
-    );
   }
 
   protected render() {
@@ -221,16 +186,15 @@ class MoreInfoCover extends LitElement {
     }
     const stateObj = this.stateObj;
     const bothModes =
-      supportsAny(stateObj, POSITION_FEATURES) &&
-      supportsAny(stateObj, TILT_FEATURES);
-    const header = this._stateOverride();
+      coverHasPositionControls(stateObj) && coverHasTiltControls(stateObj);
+    const dragText = this._dragText();
 
     return html`
       <ha-more-info-state-header
         .stateObj=${stateObj}
-        .stateOverride=${header.text}
-        .secondaryOverride=${this._secondaryOverride()}
-        .stateAccent=${header.accent}
+        .stateOverride=${dragText ?? this._stateText()}
+        .changedTextOverride=${this._dragHint() ?? this._requestHint()}
+        .stateAccent=${dragText !== undefined}
       ></ha-more-info-state-header>
       <div
         class="controls"
@@ -238,11 +202,11 @@ class MoreInfoCover extends LitElement {
         @cover-drag-changed=${this._handleDrag}
       >
         <div class="main-control">
-          <ha-state-control-cover-drawing
+          <ha-state-control-cover
             .stateObj=${stateObj}
             .mode=${this._mode}
             .request=${this._requests.request}
-          ></ha-state-control-cover-drawing>
+          ></ha-state-control-cover>
           ${
             bothModes
               ? html`

@@ -12,6 +12,36 @@ export const DEFAULT_COVER_FAVORITE_POSITIONS = [0, 25, 75, 100];
 
 export type CoverControlMode = "position" | "tilt";
 
+export type CoverService =
+  | "open_cover"
+  | "close_cover"
+  | "stop_cover"
+  | "set_cover_position"
+  | "open_cover_tilt"
+  | "close_cover_tilt"
+  | "stop_cover_tilt"
+  | "set_cover_tilt_position";
+
+export interface CoverCommand {
+  service: CoverService;
+  value?: number;
+}
+
+export interface CoverRequest {
+  mode: CoverControlMode;
+  value: number;
+}
+
+export interface CoverSwipe {
+  action: "open" | "close";
+  passedHalfway: boolean;
+}
+
+export interface CoverDrag {
+  value: number;
+  swipe?: CoverSwipe;
+}
+
 export const coverSupportsPosition = (stateObj: CoverEntity) =>
   supportsFeature(stateObj, CoverEntityFeature.SET_POSITION);
 
@@ -21,11 +51,49 @@ export const coverSupportsTiltPosition = (stateObj: CoverEntity) =>
 export const coverSupportsAnyPosition = (stateObj: CoverEntity) =>
   coverSupportsPosition(stateObj) || coverSupportsTiltPosition(stateObj);
 
-export function isFullyOpen(stateObj: CoverEntity) {
-  if (stateObj.attributes.current_position !== undefined) {
-    return stateObj.attributes.current_position === 100;
+const POSITION_FEATURES = [
+  CoverEntityFeature.OPEN,
+  CoverEntityFeature.CLOSE,
+  CoverEntityFeature.STOP,
+  CoverEntityFeature.SET_POSITION,
+];
+
+const TILT_FEATURES = [
+  CoverEntityFeature.OPEN_TILT,
+  CoverEntityFeature.CLOSE_TILT,
+  CoverEntityFeature.STOP_TILT,
+  CoverEntityFeature.SET_TILT_POSITION,
+];
+
+export const coverHasPositionControls = (stateObj: CoverEntity) =>
+  POSITION_FEATURES.some((feature) => supportsFeature(stateObj, feature));
+
+export const coverHasTiltControls = (stateObj: CoverEntity) =>
+  TILT_FEATURES.some((feature) => supportsFeature(stateObj, feature));
+
+export const defaultCoverMode = (stateObj: CoverEntity): CoverControlMode =>
+  coverHasTiltControls(stateObj) && !coverHasPositionControls(stateObj)
+    ? "tilt"
+    : "position";
+
+export const coverModeAttribute = (mode: CoverControlMode) =>
+  mode === "tilt" ? "current_tilt_position" : "current_position";
+
+export const coverServiceData = (
+  stateObj: CoverEntity,
+  { service, value }: CoverCommand
+): Record<string, unknown> => {
+  if (service === "set_cover_position") {
+    return { entity_id: stateObj.entity_id, position: value };
   }
-  return stateObj.state === "open";
+  if (service === "set_cover_tilt_position") {
+    return { entity_id: stateObj.entity_id, tilt_position: value };
+  }
+  return { entity_id: stateObj.entity_id };
+};
+
+export function isFullyOpen(stateObj: CoverEntity) {
+  return stateObj.attributes.current_position === 100;
 }
 
 export function isFullyClosed(stateObj: CoverEntity) {
@@ -49,6 +117,10 @@ export function isOpening(stateObj: CoverEntity) {
 
 export function isClosing(stateObj: CoverEntity) {
   return stateObj.state === "closing";
+}
+
+export function isMoving(stateObj: CoverEntity) {
+  return isOpening(stateObj) || isClosing(stateObj);
 }
 
 export function isTiltOnly(stateObj: CoverEntity) {
@@ -113,10 +185,7 @@ export interface CoverEntity extends HassEntityBase {
   attributes: CoverEntityAttributes;
 }
 
-export const coverIsMoving = (stateObj: CoverEntity) =>
-  stateObj.state === "opening" || stateObj.state === "closing";
-
-export const coverModeValue = (
+export const coverCurrentValue = (
   stateObj: CoverEntity,
   mode: CoverControlMode
 ): number | undefined => {
@@ -135,3 +204,10 @@ export const coverModeValue = (
   }
   return stateObj.state === "closed" || stateObj.state === "opening" ? 0 : 100;
 };
+
+declare global {
+  interface HASSDomEvents {
+    "cover-command": CoverCommand;
+    "cover-drag-changed": { drag?: CoverDrag };
+  }
+}

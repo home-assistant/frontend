@@ -20,7 +20,7 @@ export class HaMoreInfoStateHeader extends LitElement {
 
   @property({ attribute: false }) public changedOverride?: number;
 
-  @property({ attribute: false }) public secondaryOverride?: string;
+  @property({ attribute: false }) public changedTextOverride?: string;
 
   @property({ attribute: false }) public stateAccent = false;
 
@@ -61,9 +61,9 @@ export class HaMoreInfoStateHeader extends LitElement {
       </p>
       <div class="time-row">
         ${
-          this.secondaryOverride
+          this.changedTextOverride
             ? html`<p class="last-changed secondary" aria-hidden="true">
-                ${this.secondaryOverride}
+                ${this.changedTextOverride}
               </p>`
             : html`<p class="last-changed" @click=${this._toggleAbsolute}>
                 ${
@@ -89,7 +89,7 @@ export class HaMoreInfoStateHeader extends LitElement {
         <slot name="after-time"></slot>
       </div>
       <span class="visually-hidden" aria-live="polite"
-        >${this.secondaryOverride ?? ""}</span
+        >${this.changedTextOverride ?? ""}</span
       >
     `;
   }

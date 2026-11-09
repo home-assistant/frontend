@@ -3,7 +3,7 @@ const SWIPE_LOCKED_COMPONENTS = new Set([
   "ha-slider",
   "ha-control-switch",
   "ha-control-circular-slider",
-  "ha-state-control-cover-drawing",
+  "ha-state-control-cover",
   "ha-hs-color-picker",
   "ha-map",
   // Charts pan and pinch-zoom on touch

@@ -1,51 +1,38 @@
-import {
-  mdiArrowBottomLeft,
-  mdiArrowCollapseHorizontal,
-  mdiArrowDown,
-  mdiArrowExpandHorizontal,
-  mdiArrowTopRight,
-  mdiArrowUp,
-  mdiDoorClosed,
-  mdiDoorOpen,
-  mdiGate,
-  mdiGateOpen,
-  mdiStop,
-} from "@mdi/js";
+import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import {
+  computeCloseIcon,
+  computeOpenIcon,
+} from "../../../../common/entity/cover_icon";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-control-button";
 import "../../../../components/ha-svg-icon";
-import type { CoverControlMode, CoverEntity } from "../../../../data/cover";
-import { CoverEntityFeature } from "../../../../data/cover";
-import { UNAVAILABLE } from "../../../../data/entity/entity";
-import type { CoverService } from "../../../../state-control/cover/ha-state-control-cover-drawing";
+import type {
+  CoverControlMode,
+  CoverEntity,
+  CoverService,
+} from "../../../../data/cover";
+import {
+  CoverEntityFeature,
+  canClose,
+  canCloseTilt,
+  canOpen,
+  canOpenTilt,
+  canStop,
+  canStopTilt,
+} from "../../../../data/cover";
 
 interface CoverButton {
   service: CoverService;
   icon: string;
+  text: string;
   label: string;
-  ariaLabel: string;
   disabled: boolean;
 }
-
-const computeDirectionIcons = (stateObj: CoverEntity): [string, string] => {
-  switch (stateObj.attributes.device_class) {
-    case "door":
-      return [mdiDoorOpen, mdiDoorClosed];
-    case "gate":
-      return [mdiGateOpen, mdiGate];
-    case "curtain":
-      return [mdiArrowExpandHorizontal, mdiArrowCollapseHorizontal];
-    case "awning":
-      return [mdiArrowDown, mdiArrowUp];
-    default:
-      return [mdiArrowUp, mdiArrowDown];
-  }
-};
 
 @customElement("ha-more-info-cover-buttons")
 export class HaMoreInfoCoverButtons extends LitElement {
@@ -57,84 +44,71 @@ export class HaMoreInfoCoverButtons extends LitElement {
   @consumeLocalize()
   private _localize!: LocalizeFunc;
 
-  private _buttons(): CoverButton[] {
+  private _shortText(key: "open" | "close" | "stop") {
+    return this._localize(`ui.dialogs.more_info_control.cover.${key}`);
+  }
+
+  private _tiltButtons(): CoverButton[] {
     const stateObj = this.stateObj;
-    const unavailable = stateObj.state === UNAVAILABLE;
-    const assumed = stateObj.attributes.assumed_state === true;
-    const supports = (feature: CoverEntityFeature) =>
-      supportsFeature(stateObj, feature);
-    const localize = (key: "open" | "close" | "stop") =>
-      this._localize(`ui.dialogs.more_info_control.cover.${key}`);
     const buttons: CoverButton[] = [];
-
-    if (this.mode === "tilt") {
-      const tilt = stateObj.attributes.current_tilt_position;
-      if (supports(CoverEntityFeature.OPEN_TILT)) {
-        buttons.push({
-          service: "open_cover_tilt",
-          icon: mdiArrowTopRight,
-          label: localize("open"),
-          ariaLabel: this._localize("ui.card.cover.open_tilt_cover"),
-          disabled: unavailable || (!assumed && tilt === 100),
-        });
-      }
-      if (supports(CoverEntityFeature.STOP_TILT)) {
-        buttons.push({
-          service: "stop_cover_tilt",
-          icon: mdiStop,
-          label: localize("stop"),
-          ariaLabel: this._localize("ui.card.cover.stop_cover"),
-          disabled: unavailable,
-        });
-      }
-      if (supports(CoverEntityFeature.CLOSE_TILT)) {
-        buttons.push({
-          service: "close_cover_tilt",
-          icon: mdiArrowBottomLeft,
-          label: localize("close"),
-          ariaLabel: this._localize("ui.card.cover.close_tilt_cover"),
-          disabled: unavailable || (!assumed && tilt === 0),
-        });
-      }
-      return buttons;
-    }
-
-    const [openIcon, closeIcon] = computeDirectionIcons(stateObj);
-    const position = stateObj.attributes.current_position;
-    const withPosition = supports(CoverEntityFeature.SET_POSITION);
-    const fullyOpen = withPosition && position === 100;
-    const fullyClosed = withPosition
-      ? position === 0
-      : stateObj.state === "closed";
-    if (supports(CoverEntityFeature.OPEN)) {
+    if (supportsFeature(stateObj, CoverEntityFeature.OPEN_TILT)) {
       buttons.push({
-        service: "open_cover",
-        icon: openIcon,
-        label: localize("open"),
-        ariaLabel: this._localize("ui.card.cover.open_cover"),
-        disabled:
-          unavailable ||
-          (!assumed && (fullyOpen || stateObj.state === "opening")),
+        service: "open_cover_tilt",
+        icon: mdiArrowTopRight,
+        text: this._shortText("open"),
+        label: this._localize("ui.card.cover.open_tilt_cover"),
+        disabled: !canOpenTilt(stateObj),
       });
     }
-    if (supports(CoverEntityFeature.STOP)) {
+    if (supportsFeature(stateObj, CoverEntityFeature.STOP_TILT)) {
+      buttons.push({
+        service: "stop_cover_tilt",
+        icon: mdiStop,
+        text: this._shortText("stop"),
+        label: this._localize("ui.card.cover.stop_cover"),
+        disabled: !canStopTilt(stateObj),
+      });
+    }
+    if (supportsFeature(stateObj, CoverEntityFeature.CLOSE_TILT)) {
+      buttons.push({
+        service: "close_cover_tilt",
+        icon: mdiArrowBottomLeft,
+        text: this._shortText("close"),
+        label: this._localize("ui.card.cover.close_tilt_cover"),
+        disabled: !canCloseTilt(stateObj),
+      });
+    }
+    return buttons;
+  }
+
+  private _positionButtons(): CoverButton[] {
+    const stateObj = this.stateObj;
+    const buttons: CoverButton[] = [];
+    if (supportsFeature(stateObj, CoverEntityFeature.OPEN)) {
+      buttons.push({
+        service: "open_cover",
+        icon: computeOpenIcon(stateObj),
+        text: this._shortText("open"),
+        label: this._localize("ui.card.cover.open_cover"),
+        disabled: !canOpen(stateObj),
+      });
+    }
+    if (supportsFeature(stateObj, CoverEntityFeature.STOP)) {
       buttons.push({
         service: "stop_cover",
         icon: mdiStop,
-        label: localize("stop"),
-        ariaLabel: this._localize("ui.card.cover.stop_cover"),
-        disabled: unavailable,
+        text: this._shortText("stop"),
+        label: this._localize("ui.card.cover.stop_cover"),
+        disabled: !canStop(stateObj),
       });
     }
-    if (supports(CoverEntityFeature.CLOSE)) {
+    if (supportsFeature(stateObj, CoverEntityFeature.CLOSE)) {
       buttons.push({
         service: "close_cover",
-        icon: closeIcon,
-        label: localize("close"),
-        ariaLabel: this._localize("ui.card.cover.close_cover"),
-        disabled:
-          unavailable ||
-          (!assumed && (fullyClosed || stateObj.state === "closing")),
+        icon: computeCloseIcon(stateObj),
+        text: this._shortText("close"),
+        label: this._localize("ui.card.cover.close_cover"),
+        disabled: !canClose(stateObj),
       });
     }
     return buttons;
@@ -150,7 +124,8 @@ export class HaMoreInfoCoverButtons extends LitElement {
     if (!this.stateObj) {
       return nothing;
     }
-    const buttons = this._buttons();
+    const buttons =
+      this.mode === "tilt" ? this._tiltButtons() : this._positionButtons();
     if (!buttons.length) {
       return nothing;
     }
@@ -158,14 +133,14 @@ export class HaMoreInfoCoverButtons extends LitElement {
       ${buttons.map(
         (button) => html`
           <ha-control-button
-            .label=${button.ariaLabel}
+            .label=${button.label}
             .disabled=${button.disabled}
             data-service=${button.service}
             @click=${this._handleClick}
           >
             <div class="content">
               <ha-svg-icon .path=${button.icon}></ha-svg-icon>
-              <span>${button.label}</span>
+              <span>${button.text}</span>
             </div>
           </ha-control-button>
         `
