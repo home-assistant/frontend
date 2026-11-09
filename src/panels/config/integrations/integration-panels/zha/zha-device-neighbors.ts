@@ -59,7 +59,8 @@ class ZHADeviceNeighbors extends LitElement {
     (
       device: ZHADevice | undefined,
       devices: Map<string, ZHADevice> | undefined,
-      hass: HomeAssistant
+      areas: HomeAssistant["areas"],
+      haDevices: HomeAssistant["devices"]
     ) => {
       const outputDevices: DeviceRowData[] = [];
       if (device && devices) {
@@ -68,7 +69,9 @@ class ZHADeviceNeighbors extends LitElement {
           outputDevices.push({
             name:
               zhaDevice?.user_given_name || zhaDevice?.name || neighbor.ieee,
-            area: zhaDevice ? getZHADeviceAreaName(zhaDevice, hass) : undefined,
+            area: zhaDevice
+              ? getZHADeviceAreaName(zhaDevice, areas, haDevices)
+              : undefined,
             id: zhaDevice?.device_reg_id || neighbor.ieee,
             lqi: Number(neighbor.lqi),
             depth: Number(neighbor.depth),
@@ -157,7 +160,8 @@ class ZHADeviceNeighbors extends LitElement {
     const neighbors = this._deviceNeighbors(
       this.device,
       this._devices,
-      this.hass
+      this.hass.areas,
+      this.hass.devices
     );
 
     if (!neighbors.length) {

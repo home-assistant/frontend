@@ -7,22 +7,25 @@ import type { HomeAssistant } from "../../../../../types";
 
 export const getZHADeviceAreaName = (
   device: ZHADevice,
-  hass: HomeAssistant
+  areas: HomeAssistant["areas"],
+  devices: HomeAssistant["devices"]
 ): string | undefined => {
-  // Resolve via the device registry so a child device inherits its
-  // parent's area, matching the ZHA network visualization.
-  const haDevice = hass.devices[device.device_reg_id];
+  // The device registry is authoritative: an entry with no effective
+  // area means the device has no area, even if ZHA still reports one
+  // from its cached response. Resolve via the registry so a child
+  // device inherits its parent's area, matching the ZHA network
+  // visualization.
+  const haDevice = devices[device.device_reg_id];
   if (haDevice) {
-    const area = getDeviceArea(haDevice, hass.areas, hass.devices);
-    if (area) {
-      return computeAreaName(area);
-    }
+    const area = getDeviceArea(haDevice, areas, devices);
+    return area ? computeAreaName(area) : undefined;
   }
-  // Fall back to the area reported by ZHA itself.
+  // Fall back to the area reported by ZHA itself, only when the device
+  // has no registry entry at all.
   if (!device.area_id) {
     return undefined;
   }
-  const areaEntry = hass.areas[device.area_id];
+  const areaEntry = areas[device.area_id];
   return areaEntry ? computeAreaName(areaEntry) : undefined;
 };
 

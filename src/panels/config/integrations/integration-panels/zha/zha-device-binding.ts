@@ -53,7 +53,11 @@ export class ZHADeviceBindingControl extends LitElement {
                 ? device.user_given_name
                 : device.name,
               secondary: this.hass
-                ? getZHADeviceAreaName(device, this.hass)
+                ? getZHADeviceAreaName(
+                    device,
+                    this.hass.areas,
+                    this.hass.devices
+                  )
                 : undefined,
             }))}
           >
