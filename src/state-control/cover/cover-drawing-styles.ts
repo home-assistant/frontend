@@ -25,7 +25,7 @@ export const coverDrawingStyles = css`
     --cover-drawing-grass-top: #a8d49a;
     --cover-drawing-grass-bottom: #7fb071;
     --cover-drawing-handle: #ffffff;
-    --cover-drawing-gauge: rgba(0, 0, 0, 0.22);
+    --cover-drawing-gauge: rgba(0, 0, 0, 0.12);
     --cover-drawing-handle-shadow: rgba(0, 0, 0, 0.28);
   }
   .control.dark {
@@ -47,7 +47,7 @@ export const coverDrawingStyles = css`
     --cover-drawing-grass-top: #3f6b45;
     --cover-drawing-grass-bottom: #2b4a31;
     --cover-drawing-handle: #f2f4f6;
-    --cover-drawing-gauge: rgba(0, 0, 0, 0.4);
+    --cover-drawing-gauge: rgba(0, 0, 0, 0.28);
     --cover-drawing-handle-shadow: rgba(0, 0, 0, 0.6);
   }
   .sky-top {
@@ -155,7 +155,7 @@ export const coverDrawingStyles = css`
   }
   .gauge-ball {
     fill: var(--cover-drawing-handle);
-    filter: drop-shadow(0 1px 2px var(--cover-drawing-handle-shadow));
+    filter: drop-shadow(0 0.5px 1.5px var(--cover-drawing-handle-shadow));
   }
   .pill-handle {
     fill: var(--cover-drawing-handle);
