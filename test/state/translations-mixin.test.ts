@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { LocalizeFunc } from "../../src/common/translations/localize";
 import { HassBaseEl } from "../../src/state/hass-base-mixin";
 import translationsMixin from "../../src/state/translations-mixin";
@@ -42,7 +42,7 @@ const createElement = () => {
 };
 
 describe("translations mixin fragment loading", () => {
-  afterEach(() => {
+  beforeEach(() => {
     vi.mocked(getTranslation).mockClear();
   });
 
