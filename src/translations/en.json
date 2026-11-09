@@ -1160,14 +1160,8 @@
         "utility_room": {
           "keywords": "utility room|boiler room|technical room|plant room|server room"
         },
-        "gym": {
-          "keywords": "gym|fitness room|workout room|home gym"
-        },
         "pool": {
           "keywords": "pool|swimming pool|pool house"
-        },
-        "home_cinema": {
-          "keywords": "home cinema|home theater|home theatre|cinema room|media room|tv room"
         }
       },
       "icon_picker": {

@@ -76,9 +76,7 @@ export const ROOM_ICONS = {
     "mdi:server-network",
     "mdi:flash",
   ],
-  gym: ["mdi:dumbbell", "mdi:weight-lifter", "mdi:yoga", "mdi:run"],
   pool: ["mdi:pool", "mdi:swim"],
-  home_cinema: ["mdi:theater", "mdi:projector", "mdi:television"],
 } as const satisfies Record<string, readonly string[]>;
 
 export type RoomType = keyof typeof ROOM_ICONS;
