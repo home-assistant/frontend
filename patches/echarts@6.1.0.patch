@@ -1,3 +1,20 @@
+diff --git a/lib/chart/graph/GraphView.js b/lib/chart/graph/GraphView.js
+index 92a4ee7fd97b832387d01f194c879928f1301e52..3ce63ed90c186791853c7a213923ef3414e4bdc3 100644
+--- a/lib/chart/graph/GraphView.js
++++ b/lib/chart/graph/GraphView.js
+@@ -132,10 +132,11 @@ var GraphView = /** @class */function (_super) {
+           switch (layout) {
+             case 'force':
+               forceLayout.warmUp();
+-              !_this._layouting && _this._startForceLayoutIteration(forceLayout, api, layoutAnimation);
+               forceLayout.setFixed(idx);
+               // Write position back to layout
+               data.setItemLayout(idx, [el.x, el.y]);
++              // Without layout animation the layout would run to its end on every drag event
++              !_this._layouting && _this._startForceLayoutIteration(forceLayout, api, true);
+               break;
+             case 'circular':
+               data.setItemLayout(idx, [el.x, el.y]);
 diff --git a/lib/component/helper/RoamController.js b/lib/component/helper/RoamController.js
 index 95366713472f3ec5f3649547bb1fe202b806a2e6..e91f99229d554e79077486e1caf3602c8702ea66 100644
 --- a/lib/component/helper/RoamController.js
