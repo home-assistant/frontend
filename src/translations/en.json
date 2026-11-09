@@ -1891,6 +1891,7 @@
       "image_cropper": {
         "crop": "Crop",
         "crop_image": "Picture to crop",
+        "load_error": "This picture could not be loaded. Try another file.",
         "use_original": "Use original"
       },
       "date-picker": {

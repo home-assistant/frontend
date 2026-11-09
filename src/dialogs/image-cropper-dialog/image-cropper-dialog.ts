@@ -15,6 +15,7 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../common/decorators/consume";
+import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog";
@@ -57,6 +58,61 @@ const intersect = (a: Rect, b: Rect): Rect => {
   };
 };
 
+const sameSize = (a: Rect, b: Rect): boolean =>
+  Math.abs(a.width - b.width) < EPSILON &&
+  Math.abs(a.height - b.height) < EPSILON;
+
+const moveInto = (rect: Rect, bounds: Rect): Rect => ({
+  ...rect,
+  x: clamp(rect.x, bounds.x, bounds.x + bounds.width - rect.width),
+  y: clamp(rect.y, bounds.y, bounds.y + bounds.height - rect.height),
+});
+
+const anchorOf = (
+  start: number,
+  size: number,
+  nextStart: number,
+  nextSize: number
+): number => {
+  if (Math.abs(nextStart - start) < EPSILON) {
+    return nextStart;
+  }
+  if (Math.abs(nextStart + nextSize - (start + size)) < EPSILON) {
+    return start + size;
+  }
+  return nextStart + nextSize / 2;
+};
+
+const shrinkInto = (current: Rect, next: Rect, bounds: Rect): Rect => {
+  const ax = anchorOf(current.x, current.width, next.x, next.width);
+  const ay = anchorOf(current.y, current.height, next.y, next.height);
+  let scale = 1;
+  if (next.x < bounds.x) {
+    scale = Math.min(scale, (ax - bounds.x) / (ax - next.x));
+  }
+  if (next.x + next.width > bounds.x + bounds.width) {
+    scale = Math.min(
+      scale,
+      (bounds.x + bounds.width - ax) / (next.x + next.width - ax)
+    );
+  }
+  if (next.y < bounds.y) {
+    scale = Math.min(scale, (ay - bounds.y) / (ay - next.y));
+  }
+  if (next.y + next.height > bounds.y + bounds.height) {
+    scale = Math.min(
+      scale,
+      (bounds.y + bounds.height - ay) / (next.y + next.height - ay)
+    );
+  }
+  return {
+    x: ax + (next.x - ax) * scale,
+    y: ay + (next.y - ay) * scale,
+    width: next.width * scale,
+    height: next.height * scale,
+  };
+};
+
 const scaleRect = ({ x, y, width, height }: Rect, ratio: number): Rect => ({
   x: x * ratio,
   y: y * ratio,
@@ -81,6 +137,8 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Rect>()(
   @state() private _shown = false;
 
   @state() private _cropReady = false;
+
+  @state() private _loadError = false;
 
   @state() private _isTargetAspectRatio?: boolean;
 
@@ -123,6 +181,7 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Rect>()(
     try {
       await image.decode();
     } catch {
+      this._loadError = true;
       return;
     }
     if (!this.isConnected) {
@@ -153,6 +212,7 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Rect>()(
     try {
       await image.$ready();
     } catch {
+      this._loadError = true;
       return;
     }
     if (!this.isConnected || image !== this._image) {
@@ -294,48 +354,56 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Rect>()(
           })}"
         >
           ${
-            this._imageSize && this._shown
-              ? html`
-                  <cropper-canvas
-                    background
-                    style=${styleMap({
-                      aspectRatio: `${this._imageSize.width} / ${this._imageSize.height}`,
-                    })}
-                  >
-                    <cropper-image
-                      src=${this._imageUrl!}
-                      alt=${label}
-                      scalable
-                      translatable
-                      @change=${this._handleImageChange}
-                    ></cropper-image>
-                    <cropper-shade hidden></cropper-shade>
-                    <cropper-handle action="move" plain></cropper-handle>
-                    <cropper-selection
-                      aspect-ratio=${ifDefined(
-                        this.params.options.aspectRatio || undefined
-                      )}
-                      initial-coverage=${INITIAL_COVERAGE}
-                      precise
-                      movable
-                      resizable
-                      outlined
-                      @change=${this._handleSelectionChange}
+            this._loadError
+              ? html`<ha-alert alert-type="error">
+                  ${this._i18n.localize("ui.dialogs.image_cropper.load_error")}
+                </ha-alert>`
+              : this._imageSize && this._shown
+                ? html`
+                    <cropper-canvas
+                      background
+                      style=${styleMap({
+                        aspectRatio: `${this._imageSize.width} / ${this._imageSize.height}`,
+                      })}
                     >
-                      <cropper-grid role="grid" bordered covered></cropper-grid>
+                      <cropper-image
+                        src=${this._imageUrl!}
+                        alt=${label}
+                        scalable
+                        translatable
+                        @change=${this._handleImageChange}
+                      ></cropper-image>
+                      <cropper-shade hidden></cropper-shade>
                       <cropper-handle action="move" plain></cropper-handle>
-                      <cropper-handle action="n-resize"></cropper-handle>
-                      <cropper-handle action="e-resize"></cropper-handle>
-                      <cropper-handle action="s-resize"></cropper-handle>
-                      <cropper-handle action="w-resize"></cropper-handle>
-                      <cropper-handle action="ne-resize"></cropper-handle>
-                      <cropper-handle action="nw-resize"></cropper-handle>
-                      <cropper-handle action="se-resize"></cropper-handle>
-                      <cropper-handle action="sw-resize"></cropper-handle>
-                    </cropper-selection>
-                  </cropper-canvas>
-                `
-              : nothing
+                      <cropper-selection
+                        aspect-ratio=${ifDefined(
+                          this.params.options.aspectRatio || undefined
+                        )}
+                        initial-coverage=${INITIAL_COVERAGE}
+                        precise
+                        movable
+                        resizable
+                        outlined
+                        @change=${this._handleSelectionChange}
+                      >
+                        <cropper-grid
+                          role="grid"
+                          bordered
+                          covered
+                        ></cropper-grid>
+                        <cropper-handle action="move" plain></cropper-handle>
+                        <cropper-handle action="n-resize"></cropper-handle>
+                        <cropper-handle action="e-resize"></cropper-handle>
+                        <cropper-handle action="s-resize"></cropper-handle>
+                        <cropper-handle action="w-resize"></cropper-handle>
+                        <cropper-handle action="ne-resize"></cropper-handle>
+                        <cropper-handle action="nw-resize"></cropper-handle>
+                        <cropper-handle action="se-resize"></cropper-handle>
+                        <cropper-handle action="sw-resize"></cropper-handle>
+                      </cropper-selection>
+                    </cropper-canvas>
+                  `
+                : nothing
           }
         </div>
         <ha-dialog-footer slot="footer">
@@ -386,14 +454,22 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Rect>()(
     if (!this._cropReady || this._refitting) {
       return;
     }
-    const selection = this._selection!;
+    const selection = this._selectionRect();
     const image = this._imageRect();
+    const bounds = intersect(image, this._canvasRect());
     const next = ev.detail;
-    if (
-      (next.width < MIN_SELECTION_SIZE && next.width < selection.width) ||
-      !contains(intersect(image, this._canvasRect()), next)
-    ) {
+    if (next.width < MIN_SELECTION_SIZE && next.width < selection.width) {
       ev.preventDefault();
+      return;
+    }
+    if (!contains(bounds, next)) {
+      ev.preventDefault();
+      const fitted = sameSize(next, selection)
+        ? moveInto(next, bounds)
+        : this.params?.options.aspectRatio
+          ? shrinkInto(selection, next, bounds)
+          : intersect(next, bounds);
+      this._selection!.$change(fitted.x, fitted.y, fitted.width, fitted.height);
       return;
     }
     this._updateDirtyState(this._cropData(next, image));
@@ -404,11 +480,28 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Rect>()(
       return;
     }
     const selection = this._selectionRect();
-    if (!contains(ev.detail, selection)) {
+    const next = ev.detail;
+    if (!contains(next, selection)) {
       ev.preventDefault();
+      const current = this._imageRect();
+      if (sameSize(next, current)) {
+        const x = clamp(
+          next.x,
+          selection.x + selection.width - next.width,
+          selection.x
+        );
+        const y = clamp(
+          next.y,
+          selection.y + selection.height - next.height,
+          selection.y
+        );
+        if (x !== current.x || y !== current.y) {
+          this._image!.$move(x - current.x, y - current.y);
+        }
+      }
       return;
     }
-    this._updateDirtyState(this._cropData(selection, ev.detail));
+    this._updateDirtyState(this._cropData(selection, next));
   }
 
   private async _cropImage() {
