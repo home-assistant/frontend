@@ -1,3 +1,5 @@
+import type { LocalizeFunc } from "../common/translations/localize";
+
 export const ROOM_ICONS = {
   living_room: [
     "mdi:sofa",
@@ -154,24 +156,15 @@ const roomIconSuggestions = (rooms: RoomType[]): string[] => [
   ...new Set(rooms.flatMap((room) => ROOM_ICONS[room])),
 ];
 
-const KEYWORDS: Record<string, Promise<RoomKeywords | undefined>> = {};
-
-const loadRoomKeywords = (language: string) => {
-  KEYWORDS[language] ??= import(`./area_icon_keywords/${language}.json`)
-    .then((module) => module.default as RoomKeywords)
-    .catch(() => undefined);
-  return KEYWORDS[language];
-};
-
-export const getAreaIconSuggestions = async (
+export const getAreaIconSuggestions = (
   names: string[],
-  language: string
-): Promise<string[]> => {
-  const keywords =
-    (await loadRoomKeywords(language)) ??
-    (await loadRoomKeywords(language.split("-")[0]));
-  if (!keywords) {
-    return [];
-  }
+  localize: LocalizeFunc
+): string[] => {
+  const keywords: RoomKeywords = Object.fromEntries(
+    ROOM_TYPES.map((room) => [
+      room,
+      localize(`ui.panel.config.areas.icon_keywords.${room}`).split("|"),
+    ])
+  );
   return roomIconSuggestions(matchRoomTypes(names, keywords));
 };

@@ -104,8 +104,6 @@ class DialogAreaDetail
 
   private _iconFollowsName = false;
 
-  private _iconSuggestionRequest = 0;
-
   @state() private _open = false;
 
   @state() private _suggestionInclude: MetadataSuggestionInclude = {
@@ -169,15 +167,11 @@ class DialogAreaDetail
     }
   }
 
-  private async _updateSuggestedIcons() {
-    const request = ++this._iconSuggestionRequest;
-    const icons = await getAreaIconSuggestions(
+  private _updateSuggestedIcons() {
+    const icons = getAreaIconSuggestions(
       [this._name ?? "", ...(this._aliases ?? [])],
-      this.hass.locale.language
+      this.hass.localize
     );
-    if (request !== this._iconSuggestionRequest || !this._open) {
-      return;
-    }
     this._suggestedIcons = icons;
     if (this._iconFollowsName) {
       const untouched = !this.isDirtyState;
