@@ -179,11 +179,6 @@ export class HaNetworkGraph extends LitElement {
   @property({ attribute: false }) public hoverFocus = true;
 
   /**
-   * Show the button that turns the force layout on and off.
-   */
-  @property({ attribute: false }) public physicsToggle = true;
-
-  /**
    * Distance in pixels from the center of a node within which a click next to
    * it still clicks the node, so small nodes are easier to hit. 0 is off.
    */
@@ -344,19 +339,13 @@ export class HaNetworkGraph extends LitElement {
     >
       <slot name="search" slot="search"></slot>
       <slot name="button" slot="button"></slot>
-      ${
-        this.physicsToggle
-          ? html`<ha-icon-button
-              slot="button"
-              class=${this._physicsEnabled ? "active" : "inactive"}
-              .path=${mdiGoogleCirclesGroup}
-              @click=${this._togglePhysics}
-              label=${this._localize(
-                "ui.panel.config.common.graph.toggle_physics"
-              )}
-            ></ha-icon-button>`
-          : nothing
-      }
+      <ha-icon-button
+        slot="button"
+        class=${this._physicsEnabled ? "active" : "inactive"}
+        .path=${mdiGoogleCirclesGroup}
+        @click=${this._togglePhysics}
+        label=${this._localize("ui.panel.config.common.graph.toggle_physics")}
+      ></ha-icon-button>
       <ha-icon-button
         slot="button"
         class=${this._showLabels ? "active" : "inactive"}

@@ -496,7 +496,6 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
         .data=${this._chartData(structure)}
         .selectedNode=${this._focusedNode}
         .hoverFocus=${false}
-        .physicsToggle=${false}
         .nodeClickRadius=${NODE_CLICK_RADIUS}
         .tooltipFormatter=${this._tooltipFormatter}
         @chart-click=${this._handleChartClick}
