@@ -77,6 +77,39 @@ export const ROOM_ICONS = {
     "mdi:flash",
   ],
   pool: ["mdi:pool", "mdi:swim"],
+  media_room: [
+    "mdi:theater",
+    "mdi:projector",
+    "mdi:television",
+    "mdi:movie-open",
+  ],
+  game_room: [
+    "mdi:gamepad-variant",
+    "mdi:billiards",
+    "mdi:cards-playing",
+    "mdi:dice-multiple",
+  ],
+  music_room: ["mdi:piano", "mdi:guitar-acoustic", "mdi:music"],
+  library: ["mdi:bookshelf", "mdi:book-open-variant", "mdi:library"],
+  bar: [
+    "mdi:glass-cocktail",
+    "mdi:glass-mug-variant",
+    "mdi:bottle-wine",
+    "mdi:beer",
+  ],
+  dressing_room: [
+    "mdi:hanger",
+    "mdi:wardrobe",
+    "mdi:tshirt-crew",
+    "mdi:shoe-heel",
+  ],
+  workshop: ["mdi:tools", "mdi:hammer-wrench", "mdi:toolbox", "mdi:saw-blade"],
+  server_room: ["mdi:server-network", "mdi:server", "mdi:router-network"],
+  safe_room: ["mdi:shield-home", "mdi:shield-lock", "mdi:safe"],
+  prayer_room: ["mdi:hands-pray", "mdi:meditation", "mdi:candle"],
+  sauna: ["mdi:spa", "mdi:hot-tub", "mdi:thermometer-high"],
+  outdoor_kitchen: ["mdi:grill", "mdi:grill-outline", "mdi:pizza"],
+  driveway: ["mdi:road-variant", "mdi:car", "mdi:gate"],
 } as const satisfies Record<string, readonly string[]>;
 
 export type RoomType = keyof typeof ROOM_ICONS;

@@ -1124,8 +1124,21 @@
           "basement": "basement|cellar",
           "attic": "attic|loft",
           "storage": "storage|storage room|pantry|closet|shed|storeroom",
-          "utility_room": "utility room|boiler room|technical room|plant room|server room",
-          "pool": "pool|swimming pool|pool house"
+          "utility_room": "utility room|boiler room|technical room|plant room",
+          "pool": "pool|swimming pool|pool house",
+          "media_room": "media room|home cinema|home theater|home theatre|cinema room|movie room|tv room",
+          "game_room": "game room|games room|gaming room|recreation room|rec room|billiard room",
+          "music_room": "music room|music studio|piano room|practice room",
+          "library": "library|reading room|book room",
+          "bar": "bar|home bar|pub|wine room|wine cellar",
+          "dressing_room": "dressing room|walk-in closet|walk-in wardrobe",
+          "workshop": "workshop|tool room|craft room|hobby room",
+          "server_room": "server room|network room|rack room",
+          "safe_room": "safe room|panic room|shelter|storm shelter|bunker",
+          "prayer_room": "prayer room|chapel|meditation room",
+          "sauna": "sauna|steam room",
+          "outdoor_kitchen": "outdoor kitchen|summer kitchen|barbecue area|bbq area|grill area",
+          "driveway": "driveway|parking|parking space"
         }
       },
       "icon_picker": {
