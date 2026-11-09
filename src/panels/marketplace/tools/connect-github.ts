@@ -15,6 +15,7 @@ import {
   isWebSocketError,
   marketplaceErrorMessage,
 } from "../../../data/marketplace/websocket";
+import { MARKETPLACE_NAME } from "../../../data/marketplace/common";
 
 // The API pages and dialogs get from their context.
 export type MarketplaceApi = Pick<HomeAssistant, "callApi" | "callWS">;
@@ -104,7 +105,9 @@ export const handleGitHubRateLimited = (
 
   showConfirmationDialog(element, {
     title: localize("ui.panel.marketplace.github.rate_limited_title"),
-    text: localize("ui.panel.marketplace.github.rate_limited"),
+    text: localize("ui.panel.marketplace.github.rate_limited", {
+      marketplace: MARKETPLACE_NAME,
+    }),
     confirmText: localize("ui.panel.marketplace.github.connect"),
     dismissText: localize("ui.common.close"),
     confirm: () => {

@@ -20,6 +20,7 @@ describe("Marketplace strings", () => {
   it("names the repository to add", () => {
     expect(
       format("my.add_repository_description", {
+        marketplace: "Marketplace",
         repository: "owner/card",
       })
     ).toBe("Add the custom repository owner/card to the Marketplace?");

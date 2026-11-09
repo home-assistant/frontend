@@ -39,6 +39,7 @@ import { showMarketplaceInUseDialog } from "../dialogs/show-dialog-marketplace-i
 import { showMarketplaceInstallDialog } from "../dialogs/show-dialog-marketplace-install";
 import { handleGitHubRateLimited } from "../tools/connect-github";
 import type { MarketplaceApi } from "../tools/connect-github";
+import { MARKETPLACE_NAME } from "../../../data/marketplace/common";
 
 export interface MarketplaceRepositoryMenuItem {
   value: string;
@@ -134,7 +135,9 @@ const confirmUninstallRepository = async (
     title: localize("ui.panel.marketplace.dialog.uninstall.title", {
       name: repository.name,
     }),
-    text: localize("ui.panel.marketplace.dialog.uninstall.message"),
+    text: localize("ui.panel.marketplace.dialog.uninstall.message", {
+      marketplace: MARKETPLACE_NAME,
+    }),
     confirmText: localize("ui.panel.marketplace.common.uninstall"),
     destructive: true,
     action: async () => {
