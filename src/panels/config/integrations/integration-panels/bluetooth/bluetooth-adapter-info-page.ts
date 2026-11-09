@@ -98,8 +98,8 @@ export class BluetoothAdapterInfoPage extends LitElement {
    * integration that provides them. The Bluetooth integration creates its own
    * device for a remote scanner, linked through `via_device_id` to the device
    * of the integration that provides it, so look there for that
-   * integration's config entry first. The scanner's own device is only a
-   * fallback, as other integrations may have added entries to it.
+   * integration's config entry. Only return it when it can be configured:
+   * it has an options flow and is not disabled.
    */
   private _getSourceConfigEntry(
     device: DeviceRegistryEntry
@@ -107,24 +107,25 @@ export class BluetoothAdapterInfoPage extends LitElement {
     const sourceDevice = device.via_device_id
       ? this.hass.devices[device.via_device_id]
       : undefined;
-    for (const candidate of [sourceDevice, device]) {
-      if (!candidate) {
-        continue;
-      }
-      if (
-        candidate.primary_config_entry &&
-        candidate.primary_config_entry in this._sourceConfigEntries
-      ) {
-        return this._sourceConfigEntries[candidate.primary_config_entry];
-      }
-      const configEntry = candidate.config_entries
+    if (!sourceDevice) {
+      return undefined;
+    }
+    let sourceEntry: ConfigEntry | undefined;
+    if (
+      sourceDevice.primary_config_entry &&
+      sourceDevice.primary_config_entry in this._sourceConfigEntries
+    ) {
+      sourceEntry =
+        this._sourceConfigEntries[sourceDevice.primary_config_entry];
+    } else {
+      sourceEntry = sourceDevice.config_entries
         .map((id) => this._sourceConfigEntries[id])
         .find((e) => e !== undefined);
-      if (configEntry) {
-        return configEntry;
-      }
     }
-    return undefined;
+    if (!sourceEntry?.supports_options || sourceEntry.disabled_by) {
+      return undefined;
+    }
+    return sourceEntry;
   }
 
   private async _subscribeBluetoothConnectionAllocations(): Promise<void> {
@@ -375,7 +376,7 @@ export class BluetoothAdapterInfoPage extends LitElement {
           <div slot="headline">${deviceName}</div>
           <div slot="supporting-text">${supportingParts.join(" · ")}</div>
           ${
-            optionsEntry && (!isRemoteScanner || optionsEntry.supports_options)
+            optionsEntry
               ? html`<ha-icon-button
                   slot="end"
                   .path=${mdiCogOutline}
