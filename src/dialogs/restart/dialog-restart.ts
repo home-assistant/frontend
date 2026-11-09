@@ -429,8 +429,7 @@ class DialogRestart extends LitElement {
           margin-bottom: 10px;
           box-shadow: none;
           --expansion-panel-content-padding: 0;
-          --expansion-panel-summary-padding: 0
-            var(--mdc-list-side-padding, 20px);
+          --expansion-panel-summary-padding: 0 var(--ha-space-5);
           --ha-card-border-radius: var(--ha-border-radius-square);
         }
 
@@ -472,10 +471,7 @@ class DialogRestart extends LitElement {
           font-weight: var(--ha-font-weight-medium);
           line-height: var(--ha-line-height-condensed);
           margin: 8px 0 4px 0;
-          padding-left: var(--mdc-list-side-padding, 20px);
-          padding-right: var(--mdc-list-side-padding, 20px);
-          padding-inline-start: var(--mdc-list-side-padding, 20px);
-          padding-inline-end: var(--mdc-list-side-padding, 20px);
+          padding-inline: var(--ha-space-5);
         }
         .loader {
           display: flex;
