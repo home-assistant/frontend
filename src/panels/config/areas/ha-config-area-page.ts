@@ -9,6 +9,7 @@ import {
   mdiRobot,
   mdiScriptText,
   mdiShape,
+  mdiTextureBox,
   mdiTools,
   mdiTransitConnectionVariant,
 } from "@mdi/js";
@@ -37,6 +38,7 @@ import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-domain-icon";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-next";
@@ -361,45 +363,73 @@ class HaConfigAreaPage extends LitElement {
         )
     );
 
+    const header = html`
+      <ha-card outlined class="area-header">
+        <div class="card-content area-header-content">
+          ${
+            area.picture
+              ? html`<div class="area-media">
+                  <img alt=${area.name} src=${area.picture} />
+                </div>`
+              : nothing
+          }
+          <div class="area-info">
+            <h1 class="area-name">
+              ${
+                area.icon
+                  ? html`<ha-icon
+                      class="area-icon"
+                      .icon=${area.icon}
+                    ></ha-icon>`
+                  : html`<ha-svg-icon
+                      class="area-icon"
+                      .path=${mdiTextureBox}
+                    ></ha-svg-icon>`
+              }
+              <span>${area.name}</span>
+            </h1>
+            <div class="area-summary">
+              ${this.hass.localize(
+                "ui.panel.config.areas.quick_links.devices",
+                { count: quickLinkCounts.devices }
+              )}
+              ·
+              ${this.hass.localize(
+                "ui.panel.config.areas.quick_links.entities",
+                { count: quickLinkCounts.entities }
+              )}
+            </div>
+          </div>
+          <div class="area-actions">
+            <ha-button
+              appearance=${area.picture ? "plain" : "filled"}
+              .entry=${area}
+              @click=${this._showSettings}
+            >
+              <ha-svg-icon
+                slot="start"
+                .path=${area.picture ? mdiPencil : mdiImagePlus}
+              ></ha-svg-icon>
+              ${this.hass.localize(
+                area.picture
+                  ? "ui.panel.config.areas.edit_picture"
+                  : "ui.panel.config.areas.add_picture"
+              )}
+            </ha-button>
+            <ha-button
+              appearance="filled"
+              variant="brand"
+              @click=${this._showAddToDialog}
+            >
+              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+              ${this.hass.localize("ui.dialogs.more_info_control.add_to.item")}
+            </ha-button>
+          </div>
+        </div>
+      </ha-card>
+    `;
+
     const infoColumn = html`
-      ${
-        area.picture
-          ? html`<div class="img-container">
-              <img alt=${area.name} src=${area.picture} />
-              <ha-icon-button
-                .path=${mdiPencil}
-                .entry=${area}
-                @click=${this._showSettings}
-                .label=${this.hass.localize(
-                  "ui.panel.config.areas.edit_settings"
-                )}
-                class="img-edit-btn"
-              ></ha-icon-button>
-            </div>`
-          : nothing
-      }
-      <div class="action-buttons">
-        ${
-          area.picture
-            ? nothing
-            : html`<ha-button
-                appearance="filled"
-                .entry=${area}
-                @click=${this._showSettings}
-              >
-                <ha-svg-icon .path=${mdiImagePlus} slot="start"></ha-svg-icon>
-                ${this.hass.localize("ui.panel.config.areas.add_picture")}
-              </ha-button>`
-        }
-        <ha-button
-          appearance="filled"
-          variant="brand"
-          @click=${this._showAddToDialog}
-        >
-          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-          ${this.hass.localize("ui.dialogs.more_info_control.add_to.item")}
-        </ha-button>
-      </div>
       <ha-card
         outlined
         .header=${this.hass.localize("ui.panel.config.devices.caption")}
@@ -715,14 +745,7 @@ class HaConfigAreaPage extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         back-path="/config/areas/dashboard"
-        .header=${html`${
-          area.icon
-            ? html`<ha-icon
-                .icon=${area.icon}
-                style="margin-inline-end: 8px;"
-              ></ha-icon>`
-            : nothing
-        }${area.name}`}
+        .header=${this.hass.localize("ui.panel.config.areas.caption")}
       >
         <ha-dropdown slot="toolbar-icon" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
@@ -764,10 +787,13 @@ class HaConfigAreaPage extends LitElement {
           </ha-dropdown-item>
         </ha-dropdown>
 
-        <div class="container" ${this._columnsController.target()}>
-          ${columnContents.map(
-            (contents) => html`<div class="column">${contents}</div>`
-          )}
+        <div class="content">
+          ${header}
+          <div class="container" ${this._columnsController.target()}>
+            ${columnContents.map(
+              (contents) => html`<div class="column">${contents}</div>`
+            )}
+          </div>
         </div>
       </hass-subpage>
     `;
@@ -1054,34 +1080,87 @@ class HaConfigAreaPage extends LitElement {
           color: var(--secondary-text-color);
         }
 
-        .action-buttons {
-          display: flex;
-          gap: var(--ha-space-2);
-          flex-wrap: wrap;
-          justify-content: space-around;
-        }
-
-        img {
-          border-radius: var(
-            --ha-card-border-radius,
-            var(--ha-border-radius-lg)
-          );
-          width: 100%;
-        }
-
         :host {
           display: block;
           height: 100%;
+        }
+        /* Spaced like the Marketplace repository page: 16px below the toolbar
+           and one card gap between the header card and the columns. */
+        .content {
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-4);
+          margin: auto;
+          padding: var(--ha-space-4) var(--ha-content-gutter);
+          max-width: var(--ha-content-width-wide);
         }
         .container {
           display: flex;
           flex-wrap: wrap;
           gap: var(--ha-space-4);
-          margin: auto;
-          max-width: var(--ha-content-width-wide);
-          padding: var(--ha-space-2) var(--ha-content-gutter);
-          margin-top: var(--ha-space-8);
-          margin-bottom: var(--ha-space-8);
+        }
+
+        /* The actions move to their own row when the name would get too
+           narrow, for example with long translated labels. */
+        .area-header-content {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: var(--ha-space-4);
+        }
+        /* The picture is only shown when the area has one. The area icon
+           always sits next to the name, so it shows exactly once. */
+        .area-media {
+          flex: none;
+          width: 160px;
+          aspect-ratio: 16 / 10;
+          border-radius: var(--ha-border-radius-lg);
+          overflow: hidden;
+        }
+        .area-media img {
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          background-color: var(--secondary-background-color);
+        }
+        .area-info {
+          flex: 1 1 200px;
+          min-width: 0;
+        }
+        .area-name {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+          margin: 0;
+          font-size: var(--ha-font-size-2xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          overflow-wrap: anywhere;
+        }
+        .area-icon {
+          flex: none;
+        }
+        .area-summary {
+          margin-top: var(--ha-space-1);
+          color: var(--secondary-text-color);
+          font-size: var(--ha-font-size-m);
+        }
+        .area-actions {
+          flex: none;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: flex-end;
+          gap: var(--ha-space-2);
+          margin-inline-start: auto;
+        }
+
+        :host([narrow]) .area-media {
+          width: 96px;
+        }
+        :host([narrow]) .area-actions {
+          flex-basis: 100%;
+          justify-content: flex-start;
         }
         .column {
           box-sizing: border-box;
@@ -1094,10 +1173,6 @@ class HaConfigAreaPage extends LitElement {
         }
         .column > *:not(:first-child) {
           margin-top: var(--ha-space-4);
-        }
-
-        :host([narrow]) .container {
-          margin-top: 0;
         }
 
         a {
@@ -1119,32 +1194,13 @@ class HaConfigAreaPage extends LitElement {
           width: 24px;
           height: 24px;
           object-fit: contain;
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
         }
-        ha-card > *:first-child {
+        ha-card:not(.area-header) > *:first-child {
           margin-top: -16px;
-        }
-        .img-container {
-          position: relative;
-        }
-        .img-edit-btn {
-          position: absolute;
-          top: 4px;
-          right: 4px;
-          inset-inline-end: 4px;
-          inset-inline-start: initial;
-          display: none;
-        }
-        .img-container:hover .img-edit-btn {
-          display: block;
-        }
-        .img-edit-btn::before {
-          content: "";
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          background-color: var(--card-background-color);
-          opacity: 0.5;
-          border-radius: var(--ha-border-radius-circle);
         }
         .logbook-header {
           display: flex;
