@@ -571,6 +571,7 @@ export class HaConfigEntryRow extends LitElement {
       showConfigEntryHealthDialog(this, {
         entry: this.data.entry,
         entities: this._getEntities(),
+        manifest: this.manifest,
       });
       return;
     }

@@ -71,6 +71,7 @@ const health = (overrides: {
   issues?: RepairsIssue[];
   log?: LoggedError[];
   flows?: DataEntryFlowProgress[];
+  loggers?: string[];
 }) =>
   computeConfigEntryHealth(
     { ...ENTRY, ...overrides.entry } as ConfigEntry,
@@ -79,7 +80,8 @@ const health = (overrides: {
     overrides.issues ?? [],
     overrides.log ?? [],
     overrides.flows ?? [],
-    [{ domain: "hue", seconds: 1.5 }]
+    [{ domain: "hue", seconds: 1.5 }],
+    overrides.loggers
   );
 
 describe("computeConfigEntryHealth", () => {
@@ -146,6 +148,18 @@ describe("computeConfigEntryHealth", () => {
       ],
     });
     expect(result.logs).toEqual({ status: "error", errors: 3, warnings: 2 });
+  });
+
+  it("counts errors from the integration's library loggers", () => {
+    const result = health({
+      loggers: ["aiohue"],
+      log: [
+        logged("aiohue", "error", 1),
+        logged("aiohue.v2.controllers", "warning", 4),
+        logged("aiohuemore", "error", 7),
+      ],
+    });
+    expect(result.logs).toEqual({ status: "error", errors: 1, warnings: 4 });
   });
 
   it("flags reauthentication of this entry only", () => {

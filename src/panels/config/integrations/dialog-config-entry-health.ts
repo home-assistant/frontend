@@ -107,6 +107,7 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
     (
       entry: ConfigEntry,
       entities: ConfigEntryHealthDialogParams["entities"],
+      loggers: string[] | undefined,
       states: HassEntities,
       data: HealthData
     ) =>
@@ -117,7 +118,8 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
         data.issues,
         data.log,
         data.flows,
-        data.setups
+        data.setups,
+        loggers
       )
   );
 
@@ -131,7 +133,7 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
     try {
       const [{ issues }, log, flows, setups] = await Promise.all([
         fetchRepairsIssues(this._connection.connection),
-        fetchSystemLog(this._api),
+        fetchSystemLog(this._api.callWS),
         fetchConfigFlowInProgress(this._connection.connection),
         fetchIntegrationSetups(this._api.callWS),
       ]);
@@ -167,6 +169,7 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
                   this._computeHealth(
                     this._currentEntry,
                     this.params.entities,
+                    this.params.manifest?.loggers,
                     this._states,
                     this._data
                   )
@@ -219,8 +222,8 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
           health.state,
           this._i18n.localize(
             entry.disabled_by && entry.state !== "failed_unload"
-              ? `${key}.state.disabled`
-              : `${key}.state.${entry.state}`
+              ? `${key}.disabled`
+              : `ui.panel.config.integrations.config_entry.state.${entry.state}`
           ),
           entry.state === "failed_unload"
             ? html`<p>

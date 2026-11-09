@@ -52,7 +52,9 @@ export const computeConfigEntryHealth = (
   issues: RepairsIssue[],
   log: LoggedError[],
   flows: DataEntryFlowProgress[],
-  setups: IntegrationSetup[]
+  setups: IntegrationSetup[],
+  // Library loggers from the manifest, so dependency errors count too.
+  loggers: string[] = []
 ): ConfigEntryHealth => {
   const enabled = entities.filter((entity) => !entity.disabled_by);
   // Entities without a state yet (e.g. while the entry is not loaded) count as unavailable.
@@ -66,7 +68,11 @@ export const computeConfigEntryHealth = (
       !issue.ignored && (issue.issue_domain ?? issue.domain) === entry.domain
   );
   const entryLog = log.filter(
-    (item) => getLoggedErrorIntegration(item) === entry.domain
+    (item) =>
+      getLoggedErrorIntegration(item) === entry.domain ||
+      loggers.some(
+        (logger) => item.name === logger || item.name.startsWith(`${logger}.`)
+      )
   );
   const sumCount = (levels: LoggedError["level"][]) =>
     entryLog
