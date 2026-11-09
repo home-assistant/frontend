@@ -108,39 +108,32 @@ export class HaAutomationRowOptions extends LitElement {
   @consumeEntityStates({ entityIdPath: ["_entityIds"] })
   private _states?: ContextType<typeof statesContext>;
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  private _syncEntityIds(): void {
+    const fields = Object.entries(this.description?.fields || {});
+    const ids = this._targetId ? [this._targetId] : [];
+    for (const [name, field] of fields) {
+      const selector = field.selector;
+      const value = this.config.options?.[name];
+      if (!selector || value == null) continue;
+      if ("state" in selector) {
+        const contextEntity = field.context?.filter_entity;
+        const entityId =
+          selector.state?.entity_id ??
+          (contextEntity ? this.config.options?.[contextEntity] : undefined);
+        ids.push(
+          ...ensureArray(entityId || []).filter(
+            (id): id is string => typeof id === "string"
+          )
+        );
+      } else {
+        ids.push(...collectEntityIds(selector, value));
+      }
+    }
     if (
-      changedProperties.has("config") ||
-      changedProperties.has("description") ||
-      changedProperties.has("_registries") ||
-      changedProperties.has("_targetId")
+      ids.length !== this._entityIds.length ||
+      ids.some((id, index) => id !== this._entityIds[index])
     ) {
-      const fields = Object.entries(this.description?.fields || {});
-      const ids = this._targetId ? [this._targetId] : [];
-      for (const [name, field] of fields) {
-        const selector = field.selector;
-        const value = this.config.options?.[name];
-        if (!selector || value == null) continue;
-        if ("state" in selector) {
-          const contextEntity = field.context?.filter_entity;
-          const entityId =
-            selector.state?.entity_id ??
-            (contextEntity ? this.config.options?.[contextEntity] : undefined);
-          ids.push(
-            ...ensureArray(entityId || []).filter(
-              (id): id is string => typeof id === "string"
-            )
-          );
-        } else {
-          ids.push(...collectEntityIds(selector, value));
-        }
-      }
-      if (
-        ids.length !== this._entityIds.length ||
-        ids.some((id, index) => id !== this._entityIds[index])
-      ) {
-        this._entityIds = ids;
-      }
+      this._entityIds = ids;
     }
   }
 
@@ -165,6 +158,7 @@ export class HaAutomationRowOptions extends LitElement {
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
+    this._syncEntityIds();
     // Collapse the host when empty so the parent flex gap is not reserved.
     this.toggleAttribute("hidden", !this._getLabels().length);
   }
