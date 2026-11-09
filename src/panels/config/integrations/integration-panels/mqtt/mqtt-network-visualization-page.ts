@@ -286,17 +286,17 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
       this._fetchConfig(this._focusedNode!);
     }
     // Loaded again with every refresh of the structure
+    const hasTopics =
+      this._focusedNode?.startsWith(ENTITY_PREFIX) ||
+      this._focusedNode?.startsWith(ARTIFACT_PREFIX);
     if (
-      this._focusedNode?.startsWith(ENTITY_PREFIX) &&
+      hasTopics &&
       (this._lastMessagesNode !== this._focusedNode ||
         (changedProperties as PropertyValues).has("_structure"))
     ) {
-      this._fetchLastMessages(this._focusedNode);
-    } else if (
-      !this._focusedNode?.startsWith(ENTITY_PREFIX) &&
-      this._lastMessagesNode
-    ) {
-      // Only entities have stored messages
+      this._fetchLastMessages(this._focusedNode!);
+    } else if (!hasTopics && this._lastMessagesNode) {
+      // Only entities, triggers and tags have stored messages
       this._lastMessagesNode = undefined;
       this._lastMessages = {};
     }
@@ -309,9 +309,7 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
     this._lastMessagesNode = nodeId;
     let details: MQTTExplorerDetails;
     try {
-      details = await fetchMQTTExplorerDetails(this.hass, {
-        entity_id: nodeId.substring(ENTITY_PREFIX.length),
-      });
+      details = await fetchMQTTExplorerDetails(this.hass, configItem(nodeId)!);
     } catch (_err) {
       // The tooltips then show no last message
       return;
