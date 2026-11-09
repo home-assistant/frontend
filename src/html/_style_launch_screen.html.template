@@ -74,19 +74,20 @@
     height: auto;
   }
   @media (prefers-color-scheme: dark) {
-    /* body selector to avoid minification causing bad jinja2 */
+    /*
+     * Core renders the app's index.html through Jinja2, where the minified
+     * `@media (...){#ha-launch-screen` would read as the start of a `{# #}`
+     * comment. The `body` prefix keeps a character between `{` and `#`.
+     */
     body #ha-launch-screen {
       background-color: var(--primary-background-color, #111111);
     }
   }
   @media (max-height: 560px) {
-    /* body selector to avoid minification causing bad jinja2 */
+    /* `body` prefix for the same Jinja2 reason as above. */
     body #ha-launch-screen .ha-launch-screen-spacer-top {
       margin-top: 24px;
       padding-top: 24px;
-    }
-    body #ha-launch-screen .ha-launch-screen-spacer-bottom {
-      padding-top: 16px;
     }
     .ohf-logo {
       margin-block: 24px;
