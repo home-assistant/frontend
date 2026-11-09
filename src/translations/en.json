@@ -11683,8 +11683,6 @@
               "show_only_forecast": "Show only forecast",
               "forecast_type": "Select forecast type",
               "forecast_slots": "Maximum number of forecast elements to show",
-              "show_day_names": "Show day names",
-              "show_day_names_helper": "Marks where each new day starts. Without it, twice daily forecasts only show day or night.",
               "no_type": "No type",
               "daily": "Daily",
               "hourly": "Hourly",

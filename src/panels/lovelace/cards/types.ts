@@ -707,7 +707,6 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   show_forecast?: boolean;
   forecast_type?: ForecastType;
   forecast_slots?: number;
-  show_day_names?: boolean;
   secondary_info_attribute?: keyof TranslationDict["ui"]["card"]["weather"]["attributes"];
   round_temperature?: boolean;
   theme?: string;
