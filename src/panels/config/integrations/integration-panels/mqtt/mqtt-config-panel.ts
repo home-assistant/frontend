@@ -4,6 +4,7 @@ import {
   mdiDevices,
   mdiShape,
   mdiTune,
+  mdiVectorPolyline,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -213,6 +214,10 @@ export class MQTTConfigPanel extends LitElement {
       <ha-card class="nav-card">
         <div class="card-header">
           ${this.hass.localize("ui.panel.config.mqtt.my_network_title")}
+          <ha-button appearance="filled" href="/config/mqtt/visualization">
+            <ha-svg-icon slot="start" .path=${mdiVectorPolyline}></ha-svg-icon>
+            ${this.hass.localize("ui.panel.config.mqtt.show_map")}
+          </ha-button>
         </div>
         <div class="card-content">
           <ha-list-nav
@@ -425,6 +430,9 @@ export class MQTTConfigPanel extends LitElement {
         }
 
         .nav-card .card-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
           padding-bottom: var(--ha-space-2);
         }
         .content {
