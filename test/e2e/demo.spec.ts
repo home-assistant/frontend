@@ -8,6 +8,7 @@ import {
   loadDemo,
   moreInfoCardSelector,
   openDemoSidebar,
+  openEnergyDatePicker,
   reloadDemo,
 } from "./demo/helpers";
 import {
@@ -40,14 +41,13 @@ test.describe("Home Assistant Demo", () => {
     });
   });
 
-  test("energy calendar applies a single picked day", async ({ page }) => {
-    await page.clock.setFixedTime(new Date("2026-11-20T12:00:00Z"));
-    await loadDemo(page, "/#/energy/overview");
-    const selector = page.locator("hui-energy-period-selector");
-    await expect(selector).toBeVisible({ timeout: PANEL_TIMEOUT });
-    await selector.locator(".date-range").click();
-    const picker = page.locator("date-range-picker");
-    await expect(picker).toBeVisible();
+  test("energy calendar applies a single tapped day", async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(!isMobile, "A single tap applies only without a hover preview");
+    // Touch users can save one day without completing a two-click range.
+    const { selector, picker } = await openEnergyDatePicker(page);
     await picker
       .locator("calendar-month")
       .getByRole("button", { name: "November 15", exact: true })
@@ -61,9 +61,11 @@ test.describe("Home Assistant Demo", () => {
       "2026-11-15/2026-11-15"
     );
     await picker
+      .locator("calendar-month")
       .getByRole("button", { name: "November 10", exact: true })
       .click();
     await picker
+      .locator("calendar-month")
       .getByRole("button", { name: "November 18", exact: true })
       .click();
     await picker.getByRole("button", { name: "Select", exact: true }).click();
@@ -73,6 +75,47 @@ test.describe("Home Assistant Demo", () => {
       "value",
       "2026-11-10/2026-11-18"
     );
+    expectNoPageErrors(pageErrors);
+  });
+
+  test("energy calendar requires a completed range with hover", async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(isMobile, "Hover previews apply to the desktop project");
+    // Select must not save old dates while the pointer previews a pending range.
+    const { selector, picker } = await openEnergyDatePicker(page);
+    const calendar = picker.locator("calendar-month");
+    const select = picker.getByRole("button", { name: "Select", exact: true });
+    await expect(select).toBeEnabled();
+    await calendar
+      .getByRole("button", { name: "November 15", exact: true })
+      .click();
+    await calendar
+      .getByRole("button", { name: "November 18", exact: true })
+      .hover();
+    await expect(select).toBeDisabled();
+    await calendar
+      .getByRole("button", { name: "November 18", exact: true })
+      .click();
+    await expect(select).toBeEnabled();
+    await select.click();
+    await expect(picker).toBeHidden();
+    await selector.locator(".date-range").click();
+    await expect(picker.locator("calendar-range")).toHaveJSProperty(
+      "value",
+      "2026-11-15/2026-11-18"
+    );
+    await calendar
+      .getByRole("button", { name: "November 10", exact: true })
+      .click();
+    await expect(select).toBeDisabled();
+    await calendar
+      .getByRole("button", { name: "November 10", exact: true })
+      .click();
+    await expect(select).toBeEnabled();
+    await select.click();
+    await expect(selector.locator(".header-title")).toContainText("10");
     expectNoPageErrors(pageErrors);
   });
 

@@ -162,6 +162,26 @@ describe("date-range-picker time zone", () => {
     });
   });
 
+  it("does not save a half-picked range on a hover-capable device", async () => {
+    const el = await createRangePicker(TimeZone.server, {
+      startDate: new Date("2026-09-01T04:00:00.000Z"),
+      endDate: new Date("2026-10-01T03:59:00.000Z"),
+    });
+    vi.mocked(window.matchMedia).mockReturnValueOnce({
+      matches: true,
+    } as MediaQueryList);
+    (el as any)._handleRangeStart({ target: { tentative: "2026-09-15" } });
+    expect(window.matchMedia).toHaveBeenLastCalledWith("(hover: hover)");
+    expect(saveRange(el)).toEqual({ start: undefined, end: undefined });
+    (el as any)._handleChange({
+      target: { value: "2026-09-15/2026-09-18", focusedDate: "2026-09-18" },
+    });
+    expect(saveRange(el)).toEqual({
+      start: "2026-09-15T04:00:00.000Z",
+      end: "2026-09-19T03:59:00.000Z",
+    });
+  });
+
   it("saves picked days in the server time zone", async () => {
     const el = await createRangePicker(TimeZone.server);
     (el as any)._dateValue = "2026-09-18/2026-09-21";
