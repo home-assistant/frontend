@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
 
 export interface InputText {
   id: string;
@@ -36,10 +36,10 @@ export const fetchInputText = (hass: HomeAssistant) =>
   hass.callWS<InputText[]>({ type: "input_text/list" });
 
 export const createInputText = (
-  hass: Pick<HomeAssistant, "callWS">,
+  callWS: HomeAssistantApi["callWS"],
   values: InputTextMutableParams
 ) =>
-  hass.callWS<InputText>({
+  callWS<InputText>({
     type: "input_text/create",
     ...values,
   });

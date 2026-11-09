@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
 
 export const weekdays = [
   "sunday",
@@ -33,10 +33,10 @@ export const fetchSchedule = (hass: HomeAssistant) =>
   hass.callWS<Schedule[]>({ type: "schedule/list" });
 
 export const createSchedule = (
-  hass: Pick<HomeAssistant, "callWS">,
+  callWS: HomeAssistantApi["callWS"],
   values: ScheduleMutableParams
 ) =>
-  hass.callWS<Schedule>({
+  callWS<Schedule>({
     type: "schedule/create",
     ...values,
   });

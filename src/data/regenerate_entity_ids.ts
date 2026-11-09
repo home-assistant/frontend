@@ -15,7 +15,7 @@ export const regenerateEntityIds = async (
   hass: HomeAssistant,
   entities: string[]
 ): Promise<void> => {
-  const entityIdsMapping = await getAutomaticEntityIds(hass, entities);
+  const entityIdsMapping = await getAutomaticEntityIds(hass.callWS, entities);
 
   const entityIdsEntries = Object.entries(entityIdsMapping);
 

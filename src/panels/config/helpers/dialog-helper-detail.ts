@@ -91,7 +91,7 @@ type HelperCreators = Record<
   HelperDomain,
   {
     create: (
-      api: HomeAssistantApi,
+      callWS: HomeAssistantApi["callWS"],
       // Not properly typed because there is currently a mismatch for this._item between:
       // 1. Type passed to form should be Helper
       // 2. Type received by creator should be MutableParams version
@@ -236,7 +236,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._open = true;
     await this.updateComplete;
     this._i18n.loadFragmentTranslation("config");
-    const flows = await getConfigFlowHandlers(this._api, "helper");
+    const flows = await getConfigFlowHandlers(this._api.callApi, "helper");
     await this._i18n.loadBackendTranslation("title", flows, true);
     // Ensure the titles are loaded before we render the flows.
     this._helperFlows = flows;
@@ -556,7 +556,10 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._submitting = true;
     this._error = "";
     try {
-      const createdEntity = await HELPERS[domain].create(this._api, this._item);
+      const createdEntity = await HELPERS[domain].create(
+        this._api.callWS,
+        this._item
+      );
       // The dialog was closed or reopened while waiting
       if (this._params !== params) {
         return;
@@ -618,7 +621,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     let error = "Entity not found";
     if (entityId) {
       try {
-        return (await updateEntitiesArea(this._api, [entityId], areaId))[
+        return (await updateEntitiesArea(this._api.callWS, [entityId], areaId))[
           entityId
         ];
       } catch (err: unknown) {

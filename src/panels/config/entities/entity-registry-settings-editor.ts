@@ -1593,7 +1593,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
   private async _restoreEntityId(): Promise<void> {
     // use the unsaved name and area, as they are part of the entity ID
     const entityIds = await getAutomaticEntityIds(
-      this.hass,
+      this.hass.callWS,
       [this._origEntityId],
       {
         [this._origEntityId]: {

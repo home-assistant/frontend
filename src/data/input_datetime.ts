@@ -45,10 +45,10 @@ export const fetchInputDateTime = (hass: HomeAssistant) =>
   hass.callWS<InputDateTime[]>({ type: "input_datetime/list" });
 
 export const createInputDateTime = (
-  hass: Pick<HomeAssistant, "callWS">,
+  callWS: HomeAssistantApi["callWS"],
   values: InputDateTimeMutableParams
 ) =>
-  hass.callWS<InputDateTime>({
+  callWS<InputDateTime>({
     type: "input_datetime/create",
     ...values,
   });
