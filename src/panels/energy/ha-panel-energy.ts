@@ -93,7 +93,10 @@ class PanelEnergy extends LitElement {
     const validPaths = views.map((view) => view.path);
     const viewPath: string | undefined = this.route!.path.split("/")[1];
     if (!viewPath || !validPaths.includes(viewPath)) {
-      navigate(`${this.route!.prefix}/${validPaths[0]}`, { replace: true });
+      navigate(`${this.route!.prefix}/${validPaths[0]}${location.search}`, {
+        replace: true,
+        keepDialogs: true,
+      });
     } else {
       // Force hui-root to re-process the route by creating a new route object
       this.route = { ...this.route! };
