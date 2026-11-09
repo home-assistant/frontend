@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { consume } from "../../../common/decorators/consume";
+import { consumeEntityStates } from "../../../common/decorators/consume-context-entry";
 import { createDurationData } from "../../../common/datetime/create_duration_data";
 import { formatDurationNarrow } from "../../../common/datetime/format_duration";
 import { normalizeDuration } from "../../../common/datetime/normalize_duration";
@@ -20,6 +21,7 @@ import {
   registriesContext,
   statesContext,
 } from "../../../data/context";
+import { resolveEntityIDs, type Selector } from "../../../data/selector";
 import { formatSelectorValue } from "../../../data/selector/format_selector_value";
 import { rowSummaryStyles } from "./styles";
 
@@ -40,6 +42,28 @@ interface HaAutomationRowOptionsConfig {
   timeout?: string | number | ForDict;
 }
 
+const collectEntityIds = (selector: Selector, value: unknown): string[] => {
+  if ("entity" in selector) {
+    return ensureArray(value).filter(
+      (id): id is string => typeof id === "string"
+    );
+  }
+  if ("object" in selector && selector.object?.fields) {
+    return ensureArray(value).flatMap((item) => {
+      if (!item || typeof item !== "object") return [];
+      return Object.entries(selector.object!.fields!).flatMap(([key, field]) =>
+        field.selector && key in item
+          ? collectEntityIds(
+              field.selector,
+              (item as Record<string, unknown>)[key]
+            )
+          : []
+      );
+    });
+  }
+  return [];
+};
+
 @customElement("ha-automation-row-options")
 export class HaAutomationRowOptions extends LitElement {
   @property({ attribute: false }) public config!: HaAutomationRowOptionsConfig;
@@ -50,9 +74,69 @@ export class HaAutomationRowOptions extends LitElement {
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
 
-  @state()
   @consume({ context: statesContext, subscribe: true })
-  private _states!: ContextType<typeof statesContext>;
+  private _allStates!: ContextType<typeof statesContext>;
+
+  @state() private _entityIds: string[] = [];
+
+  @state()
+  @consumeEntityStates({ entityIdPath: ["_entityIds"] })
+  private _states?: ContextType<typeof statesContext>;
+
+  private _targetId?: string;
+
+  protected willUpdate(changedProperties: PropertyValues): void {
+    if (
+      changedProperties.has("config") ||
+      changedProperties.has("description") ||
+      changedProperties.has("_registries")
+    ) {
+      const fields = Object.entries(this.description?.fields || {});
+      const needsTarget = fields.some(
+        ([name, field]) =>
+          this.config.options?.[name] != null &&
+          field.selector &&
+          "state" in field.selector &&
+          field.selector.state?.entity_id === undefined
+      );
+      this._targetId =
+        needsTarget && this.config.target && this._allStates && this._registries
+          ? resolveEntityIDs(
+              { ...this._registries, states: this._allStates },
+              this.config.target,
+              this._registries.entities,
+              this._registries.devices,
+              this._registries.areas,
+              { target: this.description?.target || {} }
+            )[0]
+          : undefined;
+      const ids = this._targetId ? [this._targetId] : [];
+      for (const [name, field] of fields) {
+        const selector = field.selector;
+        const value = this.config.options?.[name];
+        if (!selector || value == null) continue;
+        if ("state" in selector) {
+          const contextEntity = field.context?.filter_entity;
+          const entityId =
+            selector.state?.entity_id ??
+            (contextEntity ? this.config.options?.[contextEntity] : undefined);
+          ids.push(
+            ...ensureArray(entityId || []).filter(
+              (id): id is string => typeof id === "string"
+            )
+          );
+        } else {
+          ids.push(...collectEntityIds(selector, value));
+        }
+      }
+      if (
+        ids.length !== this._entityIds.length ||
+        ids.some((id, index) => id !== this._entityIds[index])
+      ) {
+        this._entityIds = ids;
+      }
+    }
+  }
 
   @state()
   @consume({ context: registriesContext, subscribe: true })
@@ -149,8 +233,7 @@ export class HaAutomationRowOptions extends LitElement {
     );
     const domain = getConditionDomain(this.config.condition);
     const condition = getConditionObjectId(this.config.condition);
-    const targetId = ensureArray(this.config.target?.entity_id || [])[0];
-    const target = targetId ? this._states[targetId] : undefined;
+    const target = this._targetId ? this._states?.[this._targetId] : undefined;
     return fields.flatMap(([name, field]) => {
       const value = this.config.options?.[name];
       const selector = field.selector!;
@@ -183,8 +266,15 @@ export class HaAutomationRowOptions extends LitElement {
             if (extra) {
               return extra.label;
             }
-            const entityId = ensureArray(selector.state?.entity_id || [])[0];
-            const entity = entityId ? this._states[entityId] : target;
+            const contextEntity = field.context?.filter_entity;
+            const entityIds =
+              selector.state?.entity_id ??
+              (contextEntity
+                ? this.config.options?.[contextEntity]
+                : undefined);
+            const entityId = ensureArray(entityIds || [])[0];
+            const entity =
+              typeof entityId === "string" ? this._states?.[entityId] : target;
             if (!entity) {
               return text;
             }
@@ -202,7 +292,7 @@ export class HaAutomationRowOptions extends LitElement {
           {
             ...this._i18n,
             ...this._registries,
-            states: this._states,
+            states: this._states || {},
             formatEntityName: this._formatters.formatEntityName,
           },
           value,

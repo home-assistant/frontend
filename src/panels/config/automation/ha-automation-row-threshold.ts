@@ -1,8 +1,10 @@
 import type { ContextType } from "@lit/context";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
+import { consumeEntityStates } from "../../../common/decorators/consume-context-entry";
 import { formatNumber } from "../../../common/number/format_number";
 import { blankBeforeUnit } from "../../../common/translations/blank_before_unit";
 import type {
@@ -17,7 +19,6 @@ import type { ConditionDescription } from "../../../data/condition";
 import {
   formattersContext,
   internationalizationContext,
-  statesContext,
 } from "../../../data/context";
 import type { NumericThresholdSelector } from "../../../data/selector";
 import type { TriggerDescription } from "../../../data/trigger";
@@ -35,9 +36,29 @@ export class HaAutomationRowThreshold extends LitElement {
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
 
+  @state() private _entityIds: string[] = [];
+
   @state()
-  @consume({ context: statesContext, subscribe: true })
-  private _states!: ContextType<typeof statesContext>;
+  @consumeEntityStates({ entityIdPath: ["_entityIds"] })
+  private _states?: Record<string, HassEntity>;
+
+  protected willUpdate(changedProperties: PropertyValues): void {
+    if (
+      changedProperties.has("config") ||
+      changedProperties.has("description")
+    ) {
+      const threshold = this._getThreshold(this.config, this.description);
+      const ids = [threshold?.value, threshold?.value_min, threshold?.value_max]
+        .filter((bound) => bound?.active_choice === "entity" && bound.entity)
+        .map((bound) => bound!.entity!);
+      if (
+        ids.length !== this._entityIds.length ||
+        ids.some((id, index) => id !== this._entityIds[index])
+      ) {
+        this._entityIds = ids;
+      }
+    }
+  }
 
   @state()
   @consume({ context: formattersContext, subscribe: true })
@@ -160,7 +181,7 @@ export class HaAutomationRowThreshold extends LitElement {
       if (!bound.entity) {
         return undefined;
       }
-      const entity = this._states[bound.entity];
+      const entity = this._states?.[bound.entity];
       return entity ? this._formatters.formatEntityName(entity) : bound.entity;
     }
     if (bound?.number === undefined || !Number.isFinite(bound.number)) {
