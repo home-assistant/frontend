@@ -213,7 +213,8 @@ class MqttTopicMessages extends LitElement {
       return html`<p class="secondary">${this._localize("unchanged")}</p>`;
     }
     const changes = diffJsonPayloads(previous.payload, selected.payload);
-    if (!changes) {
+    // Parsing hides changes in whitespace or in numbers beyond the safe range
+    if (!changes?.length) {
       return html`
         <div class="changes" dir="ltr">
           ${this._renderChange("removed", "previous", previous.payload)}
