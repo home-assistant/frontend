@@ -104,6 +104,11 @@ class ZWaveJSControllerStatistics extends SubscribeMixin(LitElement) {
           max-width: var(--ha-content-width-narrow);
         }
 
+        ha-list-item-base::part(headline),
+        ha-list-item-base::part(supporting-text) {
+          white-space: normal;
+        }
+
         span[slot="end"] {
           font-size: 0.95em;
           color: var(--primary-text-color);

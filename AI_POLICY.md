@@ -28,9 +28,17 @@ AI can be a helpful tool for writing code and documentation. However, due to the
 
 All contributions must be reviewed and understood by the contributor before submission. You should be able to explain every change in a pull request you submit. Pull requests that appear to be unreviewed AI output will be closed without review.
 
+## Design contributions
+
+AI can be a helpful tool to explore ideas and build mockups and prototypes. But AI tends to give the most common answer, not the one that fits Home Assistant and its users. So we require a human who brings the point of view and owns the design decisions.
+
+You should be able to explain the problem your design solves and why you made your choices. If a mockup or prototype was mostly generated with AI, say so when you share it. Check your work against the [design guidelines](https://contributors.home-assistant.io/design/), as AI tools often make up components, colors, or spacing that don't exist in Home Assistant. Design proposals that look like unreviewed AI output may be closed or hidden.
+
 ## Our use of AI
 
 Some of our projects use AI tools to assist with code reviews, issue triaging, reporting, and other project management tasks. These tools may leave comments on pull requests or issues. As with any automated tooling, these comments are not always correct.
+
+We also use AI to help keep the design system, the Figma kit, and the code in sync. The design decisions behind them are made by people.
 
 If an AI tool leaves a comment on your contribution, treat it as you would any other review comment. If you believe it is incorrect, say so; a brief explanation is sufficient. Maintainers always have the final say. If in doubt, ask a maintainer.
 

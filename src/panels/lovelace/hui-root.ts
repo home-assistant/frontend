@@ -719,6 +719,13 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
 
   private _handlePopState = () => {
     this._restoreScroll = true;
+    // Edit mode is not part of history. An entry left while editing keeps
+    // ?edit=1, so going back to it after leaving edit mode must not enter it
+    // again: sync the URL to the current mode instead.
+    if (!this.lovelace?.editMode && extractSearchParamsObject().edit === "1") {
+      this._clearParam("edit");
+      return;
+    }
     this._handleUrlChanged();
   };
 

@@ -1092,7 +1092,8 @@
         "no_areas": "No areas available",
         "no_match": "No areas found for {term}",
         "failed_create_area": "Failed to create area.",
-        "unknown": "Unknown area selected"
+        "unknown": "Unknown area selected",
+        "no_area": "[%key:ui::components::device-picker::no_area%]"
       },
       "floor-picker": {
         "clear": "Clear",
@@ -2935,6 +2936,13 @@
           "save_failed": "Failed to save security and safety page configuration"
         }
       },
+      "maintenance": {
+        "editor": {
+          "title": "Edit visible entities",
+          "load_failed": "Failed to load maintenance page configuration",
+          "save_failed": "Failed to save maintenance page configuration"
+        }
+      },
       "my": {
         "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced.",
         "component_not_loaded": "This redirect is not supported by your Home Assistant instance. You need the integration {integration} to use this redirect.",
@@ -3938,7 +3946,6 @@
             "more_info": "For more information, visit {link}"
           },
           "overview": {
-            "header": "Backup",
             "menu": {
               "upload_backup": "Upload backup"
             },
@@ -7939,6 +7946,28 @@
             "enable_debug_logging": "Enable debug logging",
             "reconfigure": "Reconfigure",
             "reload": "Reload",
+            "health": {
+              "menu": "Health",
+              "title": "Health of {title}",
+              "load_failed": "Couldn't load the health of this integration.",
+              "summary": {
+                "ok": "Everything looks fine.",
+                "warning": "Some things need a look.",
+                "error": "This integration has a problem."
+              },
+              "disabled": "Disabled",
+              "flows": "Needs to be reauthenticated or reconfigured",
+              "flows_link": "Go to the integrations",
+              "entities": "{available} of {total} entities available",
+              "entities_link": "View entities",
+              "and_more": "and {count} more",
+              "repairs": "{count, plural,\n  =0 {No open repairs for {integration}}\n  one {1 open repair for {integration}}\n  other {# open repairs for {integration}}\n}",
+              "repairs_link": "View repairs",
+              "logs": "{errors, plural,\n  one {1 error}\n  other {# errors}\n} and {warnings, plural,\n  one {1 warning}\n  other {# warnings}\n} from {integration} in the recent log",
+              "logs_link": "View logs",
+              "setup_time": "{integration} took {seconds} s to start",
+              "setup_time_fast": "{integration} took less than 0.1 s to start"
+            },
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "marketplace_uninstall": {
               "title": "Also uninstall {name}?",
@@ -8230,6 +8259,7 @@
           "disabled_by_user": "Disabled by user",
           "manage_integration": "Manage integration",
           "option_flow": "Configure Bluetooth options",
+          "source_option_flow": "Configure {integration} options",
           "no_connections": "No active connections",
           "active_connections": "connections",
           "no_advertisements_found": "No matching Bluetooth advertisements found",

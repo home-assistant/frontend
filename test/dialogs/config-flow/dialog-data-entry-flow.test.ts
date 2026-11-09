@@ -51,11 +51,6 @@ vi.mock("../../../src/components/ha-form/ha-form", () => {
   return {};
 });
 
-vi.mock("../../../src/components/ha-list-item", () => {
-  customElements.define("ha-list-item", class extends HTMLElement {});
-  return {};
-});
-
 vi.mock("../../../src/components/ha-area-picker", () => {
   customElements.define("ha-area-picker", class extends HTMLElement {});
   return {};

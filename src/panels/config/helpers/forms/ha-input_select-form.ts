@@ -5,7 +5,9 @@ import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { ifDefined } from "lit/directives/if-defined";
 import { renderMoveShortcutHint } from "../../../../common/keyboard/render-move-shortcut-hint";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { afterNextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
@@ -20,11 +22,12 @@ import type { HaInput } from "../../../../components/input/ha-input";
 import type { InputSelect } from "../../../../data/input_select";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-input_select-form")
 class HaInputSelectForm extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ type: Boolean }) public new = false;
 
@@ -96,7 +99,7 @@ class HaInputSelectForm extends LitElement {
   }
 
   protected render() {
-    if (!this.hass) {
+    if (!this._localize) {
       return nothing;
     }
 
@@ -106,13 +109,11 @@ class HaInputSelectForm extends LitElement {
           dialogInitialFocus
           auto-validate
           required
-          .validationMessage=${this.hass!.localize(
+          .validationMessage=${this._localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           .value=${this._name}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.name"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.generic.name")}
           .configValue=${"name"}
           @input=${this._valueChanged}
           .disabled=${this.disabled}
@@ -121,15 +122,11 @@ class HaInputSelectForm extends LitElement {
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.icon"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.generic.icon")}
           .disabled=${this.disabled}
         ></ha-icon-picker>
         <div class="header">
-          ${this.hass!.localize(
-            "ui.dialogs.helper_settings.input_select.options"
-          )}:
+          ${this._localize("ui.dialogs.helper_settings.input_select.options")}:
         </div>
         <ha-sortable
           @item-moved=${this._optionMoved}
@@ -138,7 +135,7 @@ class HaInputSelectForm extends LitElement {
         >
           <ha-list-base
             class="options"
-            aria-label=${this.hass!.localize(
+            aria-label=${this._localize(
               "ui.dialogs.helper_settings.input_select.options"
             )}
           >
@@ -173,10 +170,10 @@ class HaInputSelectForm extends LitElement {
                           .disabled=${this.disabled}
                         >
                           ${renderMoveShortcutHint(
-                            this.hass.localize(
+                            this._localize(
                               "ui.panel.config.automation.editor.move_up"
                             ),
-                            this.hass.localize(
+                            this._localize(
                               "ui.panel.config.automation.editor.move_down"
                             )
                           )}
@@ -184,7 +181,7 @@ class HaInputSelectForm extends LitElement {
                         <ha-icon-button
                           slot="end"
                           .index=${index}
-                          .label=${this.hass.localize(
+                          .label=${this._localize(
                             "ui.dialogs.helper_settings.input_select.remove_option"
                           )}
                           @click=${this._removeOption}
@@ -202,7 +199,7 @@ class HaInputSelectForm extends LitElement {
           <ha-input
             class="flex-auto"
             id="option_input"
-            .label=${this.hass!.localize(
+            .label=${this._localize(
               "ui.dialogs.helper_settings.input_select.add_option"
             )}
             @keydown=${this._handleKeyAdd}
@@ -213,9 +210,7 @@ class HaInputSelectForm extends LitElement {
             appearance="filled"
             @click=${this._addOption}
             .disabled=${this.disabled}
-            >${this.hass!.localize(
-              "ui.dialogs.helper_settings.input_select.add"
-            )}
+            >${this._localize("ui.dialogs.helper_settings.input_select.add")}
             <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           </ha-button>
         </div>
@@ -246,10 +241,10 @@ class HaInputSelectForm extends LitElement {
     const index = (ev.target as any).index;
     if (
       !(await showConfirmationDialog(this, {
-        title: this.hass.localize(
+        title: this._localize(
           "ui.dialogs.helper_settings.input_select.confirm_delete.delete"
         ),
-        text: this.hass.localize(
+        text: this._localize(
           "ui.dialogs.helper_settings.input_select.confirm_delete.prompt"
         ),
         destructive: true,

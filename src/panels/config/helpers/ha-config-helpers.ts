@@ -747,6 +747,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       >
         <ha-filter-floor-areas
           .type=${"entity"}
+          include-disabled-entities
           .value=${this._filters["ha-filter-floor-areas"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -1306,11 +1307,11 @@ ${rejected
       });
       return;
     }
-    const handlers = await getConfigFlowHandlers(this.hass, "helper");
+    const handlers = await getConfigFlowHandlers(this.hass.callApi, "helper");
 
     if (!handlers.includes(domain)) {
       const integrations = await getConfigFlowHandlers(
-        this.hass,
+        this.hass.callApi,
         "integration"
       );
       if (integrations.includes(domain)) {

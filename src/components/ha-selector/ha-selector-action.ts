@@ -21,6 +21,8 @@ export class HaActionSelector extends LitElement {
 
   @property({ attribute: false }) public value?: Action;
 
+  @property() public name?: string;
+
   @property() public label?: string;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
@@ -51,6 +53,7 @@ export class HaActionSelector extends LitElement {
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
       <ha-automation-action
+        .pathKey=${this.name}
         .disabled=${this.disabled}
         .actions=${this._actions(this.value)}
         .hass=${this.hass}
