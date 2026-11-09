@@ -12,15 +12,20 @@ import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
 import { consumeEntityStates } from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
+import "../../../components/item/ha-list-item-base";
+import "../../../components/list/ha-list-base";
+import type { ConfigEntry } from "../../../data/config_entries";
 import { fetchConfigFlowInProgress } from "../../../data/config_flow";
 import {
   apiContext,
+  configEntriesContext,
   connectionContext,
   internationalizationContext,
 } from "../../../data/context";
@@ -82,19 +87,32 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
   @consumeEntityStates({ entityIdPath: ["_entityIds"] })
   private _states: HassEntities = {};
 
+  // params.entry is a snapshot; updates replace the entry object.
+  @state()
+  @consume({ context: configEntriesContext, subscribe: true })
+  @transform<ConfigEntry[], ConfigEntry | undefined>({
+    transformer: function (this: DialogConfigEntryHealth, entries) {
+      return entries?.find(
+        (entry) => entry.entry_id === this.params?.entry.entry_id
+      );
+    },
+  })
+  private _entry?: ConfigEntry;
+
   @state() private _data?: HealthData;
 
   @state() private _error?: string;
 
   private _computeHealth = memoizeOne(
     (
-      params: ConfigEntryHealthDialogParams,
+      entry: ConfigEntry,
+      entities: ConfigEntryHealthDialogParams["entities"],
       states: HassEntities,
       data: HealthData
     ) =>
       computeConfigEntryHealth(
-        params.entry,
-        params.entities,
+        entry,
+        entities,
         states,
         data.issues,
         data.log,
@@ -115,7 +133,7 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
         fetchRepairsIssues(this._connection.connection),
         fetchSystemLog(this._api),
         fetchConfigFlowInProgress(this._connection.connection),
-        fetchIntegrationSetups(this._api),
+        fetchIntegrationSetups(this._api.callWS),
       ]);
       this._data = { issues, log, flows, setups };
     } catch (err: any) {
@@ -138,7 +156,7 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
         open
         header-title=${this._i18n.localize(
           "ui.panel.config.integrations.config_entry.health.title",
-          { title: this.params.entry.title }
+          { title: this._currentEntry.title }
         )}
       >
         ${
@@ -146,7 +164,12 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : this._data
               ? this._renderHealth(
-                  this._computeHealth(this.params, this._states, this._data)
+                  this._computeHealth(
+                    this._currentEntry,
+                    this.params.entities,
+                    this._states,
+                    this._data
+                  )
                 )
               : html`<ha-spinner></ha-spinner>`
         }
@@ -159,8 +182,12 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
     `;
   }
 
+  private get _currentEntry(): ConfigEntry {
+    return this._entry ?? this.params!.entry;
+  }
+
   private _renderHealth(health: ConfigEntryHealth) {
-    const { entry } = this.params!;
+    const entry = this._currentEntry;
     const key = "ui.panel.config.integrations.config_entry.health";
     // Repairs and log lines are only known per integration, not per entry.
     const integration = domainToName(this._i18n.localize, entry.domain);
@@ -187,7 +214,7 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
       >
         ${this._i18n.localize(`${key}.summary.${health.status}`)}
       </ha-alert>
-      <div class="rows">
+      <ha-list-base>
         ${this._row(
           health.state,
           this._i18n.localize(
@@ -286,7 +313,7 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
               )
             : nothing
         }
-      </div>
+      </ha-list-base>
     `;
   }
 
@@ -295,13 +322,19 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
     text: string,
     details: TemplateResult | typeof nothing = nothing
   ) {
-    return html`<div class="row">
-      <ha-svg-icon class=${status} .path=${STATUS_ICONS[status]}></ha-svg-icon>
-      <div class="text">
-        <span>${text}</span>
-        ${details}
-      </div>
-    </div>`;
+    return html`<ha-list-item-base>
+      <ha-svg-icon
+        slot="start"
+        class=${status}
+        .path=${STATUS_ICONS[status]}
+      ></ha-svg-icon>
+      <span slot="headline">${text}</span>
+      ${
+        details === nothing
+          ? nothing
+          : html`<div slot="supporting-text">${details}</div>`
+      }
+    </ha-list-item-base>`;
   }
 
   static get styles(): CSSResultGroup {
@@ -312,29 +345,19 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
           display: block;
           margin: var(--ha-space-6) auto;
         }
-        .rows {
-          display: flex;
-          flex-direction: column;
-          gap: var(--ha-space-4);
-          margin-top: var(--ha-space-4);
+        ha-list-base {
+          margin-top: var(--ha-space-2);
         }
-        .row {
-          display: flex;
-          gap: var(--ha-space-3);
-          align-items: flex-start;
+        /* Row items keep text on one line; errors and counts need to wrap. */
+        [slot="headline"],
+        [slot="supporting-text"] {
+          white-space: normal;
         }
-        .text {
-          display: flex;
-          flex-direction: column;
-          gap: var(--ha-space-1);
-          min-width: 0;
-        }
-        .text p,
-        .text ul {
+        [slot="supporting-text"] p,
+        [slot="supporting-text"] ul {
           margin: 0;
-          color: var(--secondary-text-color);
         }
-        .text ul {
+        [slot="supporting-text"] ul {
           padding-inline-start: var(--ha-space-5);
         }
         a {
