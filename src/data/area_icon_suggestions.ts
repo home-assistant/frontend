@@ -1,5 +1,6 @@
 import type { LocalizeFunc } from "../common/translations/localize";
 
+// Keywords live in ui.components.rooms.<room>.keywords. Editing an English list sends that room back to draft in every language on Lokalise.
 export const ROOM_ICONS = {
   living_room: [
     "mdi:sofa",
