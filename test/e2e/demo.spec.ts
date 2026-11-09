@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import type { MasonryView } from "../../src/panels/lovelace/views/hui-masonry-view";
 import {
   activateDemoSidebarPanel,
   DEMO_THEME_STORAGE_KEY,
@@ -38,6 +39,36 @@ test.describe("Home Assistant Demo", () => {
     await expect(page.locator(demoCardSelector).first()).toBeVisible({
       timeout: PANEL_TIMEOUT,
     });
+  });
+
+  test("masonry keeps cards connected while a card size is pending", async ({
+    page,
+  }) => {
+    await loadDemo(page, "/?demo=arsaboo#/lovelace/0");
+    const view = page.locator("hui-masonry-view");
+    await expect
+      .poll(() =>
+        view.evaluate((element: MasonryView) =>
+          element.cards.every((card) => card.isConnected)
+        )
+      )
+      .toBe(true);
+
+    const disconnected = await view.evaluate(async (element: MasonryView) => {
+      const card = element.cards[0];
+      // Keep the size of the first card pending while the view updates
+      card.getCardSize = () =>
+        new Promise<number>(() => {
+          // never resolves
+        });
+      card.dispatchEvent(new CustomEvent("card-updated"));
+      await new Promise(requestAnimationFrame);
+      await new Promise(requestAnimationFrame);
+      return element.cards.filter((c) => !c.isConnected).length;
+    });
+
+    expect(disconnected).toBe(0);
+    expectNoPageErrors(pageErrors);
   });
 
   test("sidebar navigation changes the active panel", async ({ page }) => {
