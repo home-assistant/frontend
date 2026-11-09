@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
 
 export interface Counter {
   id: string;
@@ -25,10 +25,10 @@ export const fetchCounter = (hass: HomeAssistant) =>
   hass.callWS<Counter[]>({ type: "counter/list" });
 
 export const createCounter = (
-  hass: HomeAssistant,
+  callWS: HomeAssistantApi["callWS"],
   values: CounterMutableParams
 ) =>
-  hass.callWS<Counter>({
+  callWS<Counter>({
     type: "counter/create",
     ...values,
   });

@@ -1307,11 +1307,11 @@ ${rejected
       });
       return;
     }
-    const handlers = await getConfigFlowHandlers(this.hass, "helper");
+    const handlers = await getConfigFlowHandlers(this.hass.callApi, "helper");
 
     if (!handlers.includes(domain)) {
       const integrations = await getConfigFlowHandlers(
-        this.hass,
+        this.hass.callApi,
         "integration"
       );
       if (integrations.includes(domain)) {

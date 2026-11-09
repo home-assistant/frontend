@@ -333,7 +333,7 @@ class StepFlowCreateEntry extends LitElement {
       });
 
       const entityIdsMapping = await getAutomaticEntityIds(
-        this.hass,
+        this.hass.callWS,
         entityIds
       );
 
@@ -423,7 +423,7 @@ class StepFlowCreateEntry extends LitElement {
   ): Promise<ExtEntityRegistryEntry[]> {
     try {
       const newEntityIds = await updateEntitiesArea(
-        this.hass,
+        this.hass.callWS,
         this._entitiesWithoutDevice(entities).map((entity) => entity.entity_id),
         areaId
       );

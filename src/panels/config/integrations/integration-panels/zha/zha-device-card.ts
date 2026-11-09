@@ -144,7 +144,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     );
 
     const entityIdsMapping = await getAutomaticEntityIds(
-      this.hass,
+      this.hass.callWS,
       entities.map((entity) => entity.entity_id)
     );
 

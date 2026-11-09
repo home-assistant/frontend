@@ -328,7 +328,10 @@ class DialogMatterAddDevice extends LitElement {
           .map((e) => e.entity_id);
 
         if (entityIds.length) {
-          const mapping = await getAutomaticEntityIds(this.hass, entityIds);
+          const mapping = await getAutomaticEntityIds(
+            this.hass.callWS,
+            entityIds
+          );
           await Promise.allSettled(
             Object.entries(mapping)
               .filter((entry): entry is [string, string] => !!entry[1])
