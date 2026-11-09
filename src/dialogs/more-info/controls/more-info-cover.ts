@@ -7,8 +7,6 @@ import { consumeLocalize } from "../../../common/decorators/consume-context-entr
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import "../../../components/ha-control-select";
-import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
 import { apiContext, formattersContext } from "../../../data/context";
@@ -49,8 +47,6 @@ const TILT_FEATURES = [
   CoverEntityFeature.SET_TILT_POSITION,
 ];
 
-const SPEED_SERVICES = ["open_cover", "close_cover", "set_cover_position"];
-
 const supportsAny = (stateObj: CoverEntity, features: CoverEntityFeature[]) =>
   features.some((feature) => supportsFeature(stateObj, feature));
 
@@ -77,8 +73,6 @@ class MoreInfoCover extends LitElement {
 
   @state() private _drag?: CoverDrag;
 
-  @state() private _speed?: string;
-
   private _requests = new CoverRequestController(this);
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
@@ -95,7 +89,6 @@ class MoreInfoCover extends LitElement {
           : "position";
       this._requests.clear();
       this._drag = undefined;
-      this._speed = undefined;
       return;
     }
     this._requests.stateChanged(this.stateObj);
@@ -119,13 +112,6 @@ class MoreInfoCover extends LitElement {
     } else if (service === "set_cover_tilt_position") {
       data.tilt_position = value;
     }
-    if (
-      this._speed &&
-      SPEED_SERVICES.includes(service) &&
-      supportsFeature(stateObj, CoverEntityFeature.SPEED)
-    ) {
-      data.speed = this._speed;
-    }
     this._api
       .callService("cover", service, data)
       .catch(() => this._requests.clear());
@@ -135,10 +121,6 @@ class MoreInfoCover extends LitElement {
   private _handleDrag(ev: HASSDomEvent<{ drag?: CoverDrag }>) {
     ev.stopPropagation();
     this._drag = ev.detail.drag;
-  }
-
-  private _handleSpeed(ev: CustomEvent<{ value: string }>) {
-    this._speed = ev.detail.value;
   }
 
   private _formatValue(mode: CoverControlMode, value: number) {
@@ -215,17 +197,6 @@ class MoreInfoCover extends LitElement {
     });
   }
 
-  private _speedOptions(stateObj: CoverEntity): ControlSelectOption[] {
-    return (stateObj.attributes.supported_speeds ?? []).map((speed) => ({
-      value: speed,
-      label: this._formatters.formatEntityAttributeValue(
-        stateObj,
-        "speed",
-        speed
-      ),
-    }));
-  }
-
   private _showFavorites(stateObj: CoverEntity): boolean {
     if (!this.entry) {
       return false;
@@ -252,11 +223,6 @@ class MoreInfoCover extends LitElement {
     const bothModes =
       supportsAny(stateObj, POSITION_FEATURES) &&
       supportsAny(stateObj, TILT_FEATURES);
-    const speedOptions =
-      this._mode === "position" &&
-      supportsFeature(stateObj, CoverEntityFeature.SPEED)
-        ? this._speedOptions(stateObj)
-        : [];
     const header = this._stateOverride();
 
     return html`
@@ -305,22 +271,6 @@ class MoreInfoCover extends LitElement {
           .mode=${this._mode}
         ></ha-more-info-cover-buttons>
         ${
-          speedOptions.length
-            ? html`
-                <ha-control-select
-                  class="speed"
-                  .options=${speedOptions}
-                  .value=${this._speed}
-                  .label=${this._formatters.formatEntityAttributeName(
-                    stateObj,
-                    "speed"
-                  )}
-                  @value-changed=${this._handleSpeed}
-                ></ha-control-select>
-              `
-            : nothing
-        }
-        ${
           this._showFavorites(stateObj)
             ? html`
                 <ha-more-info-cover-favorite-positions
@@ -346,8 +296,7 @@ class MoreInfoCover extends LitElement {
           align-items: center;
           gap: var(--ha-space-4);
         }
-        ha-more-info-cover-buttons,
-        .speed {
+        ha-more-info-cover-buttons {
           max-width: 360px;
         }
       `,
