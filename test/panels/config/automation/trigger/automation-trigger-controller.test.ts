@@ -157,6 +157,13 @@ describe("AutomationTriggerController with a blueprint automation", () => {
     expect(ids()).toEqual([]);
   });
 
+  it("offers nothing while `use_blueprint` is empty in YAML", () => {
+    update({ use_blueprint: null } as unknown as BlueprintAutomationConfig);
+
+    expect(ids()).toEqual([]);
+    expect(fetch.fetch).not.toHaveBeenCalled();
+  });
+
   it("handles picks again once the automation stops using a blueprint", () => {
     update(blueprint("motion.yaml"));
     update({

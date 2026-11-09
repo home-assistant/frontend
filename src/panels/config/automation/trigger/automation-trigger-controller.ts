@@ -110,7 +110,7 @@ export class AutomationTriggerController implements ReactiveController {
       return;
     }
     let options: TriggerIdOption[];
-    if ("use_blueprint" in config) {
+    if ("use_blueprint" in config && config.use_blueprint) {
       this._requestBlueprintTriggers(config.use_blueprint);
       options = this._getBlueprintTriggerIdOptions(this._blueprintTriggers);
     } else {
