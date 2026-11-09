@@ -2494,6 +2494,23 @@ describe("computeEnergyDeviceLabels", () => {
       );
     });
 
+    it("gives way to a user name that collides with the device name", () => {
+      assert.deepEqual(
+        computeEnergyDeviceLabels(
+          panelHass.states,
+          panelHass.formatEntityName,
+          [
+            { stat_consumption: "sensor.panel_kitchen_energy", name: "Panel" },
+            { stat_consumption: "sensor.panel_laundry_energy" },
+          ]
+        ),
+        {
+          "sensor.panel_kitchen_energy": "Panel",
+          "sensor.panel_laundry_energy": "Panel Laundry",
+        }
+      );
+    });
+
     it("tells apart the rate statistics of one device", () => {
       assert.deepEqual(
         computeEnergyDeviceLabels(

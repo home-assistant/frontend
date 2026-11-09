@@ -419,18 +419,24 @@ export const computeAmbiguousEnergyDevices = (
   statisticKey: "stat_consumption" | "stat_rate" = "stat_consumption"
 ): Set<string> => {
   const statisticIdsByLabel = new Map<string, Set<string>>();
+  const named = new Set<string>();
 
   for (const device of devices) {
     const statisticId = device[statisticKey];
-    // Devices named by the user and statistics named after their entity or
-    // their metadata are distinct enough already.
-    if (!statisticId || device.name) {
+    if (!statisticId) {
       continue;
     }
     const entity = states[statisticId];
-    const label = entity && formatEntityName(entity, ENERGY_DEVICE_NAME);
+    // A name set by the user is the label, so it counts towards a collision,
+    // but it is never the one that gives way. Statistics named after their
+    // entity or their metadata are distinct enough already.
+    const label =
+      device.name || (entity && formatEntityName(entity, ENERGY_DEVICE_NAME));
     if (!label) {
       continue;
+    }
+    if (device.name) {
+      named.add(statisticId);
     }
     const statisticIds = statisticIdsByLabel.get(label);
     if (statisticIds) {
@@ -444,7 +450,9 @@ export const computeAmbiguousEnergyDevices = (
   for (const statisticIds of statisticIdsByLabel.values()) {
     if (statisticIds.size > 1) {
       for (const statisticId of statisticIds) {
-        ambiguous.add(statisticId);
+        if (!named.has(statisticId)) {
+          ambiguous.add(statisticId);
+        }
       }
     }
   }
