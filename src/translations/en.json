@@ -3939,7 +3939,6 @@
             "more_info": "For more information, visit {link}"
           },
           "overview": {
-            "header": "Backup",
             "menu": {
               "upload_backup": "Upload backup"
             },
