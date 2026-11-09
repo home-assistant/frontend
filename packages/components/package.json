@@ -49,7 +49,7 @@
     "prepublishOnly": "pnpm run build"
   },
   "peerDependencies": {
-    "lit": "^3.3.0"
+    "lit": "3.3.3"
   },
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "0.11.0",
