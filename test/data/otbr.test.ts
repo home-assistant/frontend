@@ -36,14 +36,13 @@ const SAME_NETWORK_2 = otbr("dddddddddddddddd", "1111111111111111");
 const OTBR_INFO: OTBRInfoDict = {
   [OTHER_NETWORK.extended_address]: OTHER_NETWORK,
   [SAME_NETWORK.extended_address]: SAME_NETWORK,
-  [SAME_NETWORK_2.extended_address]: SAME_NETWORK_2,
 };
 
 describe("findOTBRInfoForDataset", () => {
   it("returns the preferred border router when it is on the network", () => {
     expect(
       findOTBRInfoForDataset(
-        OTBR_INFO,
+        { ...OTBR_INFO, [SAME_NETWORK_2.extended_address]: SAME_NETWORK_2 },
         dataset({ preferred_extended_address: SAME_NETWORK_2.extended_address })
       )
     ).toBe(SAME_NETWORK_2);
