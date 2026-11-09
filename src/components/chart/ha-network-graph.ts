@@ -575,6 +575,9 @@ export class HaNetworkGraph extends LitElement {
         { legend?: { selected?: Record<string, boolean> }[] } | undefined
     )?.legend?.[0];
     this._setHiddenCategories(legend?.selected ?? {});
+    // A recreated chart, e.g. after a theme change, lacks the drops since the
+    // last render
+    this.requestUpdate();
     this._updateFollowing();
   }
 
@@ -606,29 +609,42 @@ export class HaNetworkGraph extends LitElement {
     this._dragMoved = true;
   };
 
-  // ECharts lays out from the series option again, e.g. on a legend change, so
-  // the dropped position and the pin go into the option
   private _handleDragEnd = () => {
-    const id = this._dragMoved ? this._dragNode : undefined;
+    const id = this._dragNode;
+    const moved = this._dragMoved;
     this._dragNode = undefined;
     this._dragMoved = false;
-    if (!id) {
+    // A click also ends a drag, which releases a pinned node in ECharts
+    if (!id || (!moved && !this._pinnedNodes.includes(id))) {
       return;
     }
-    // ECharts releases the node from the running force layout on drag end
-    const series: any = this._baseChart?.chart
-      // @ts-ignore private method but no other way to get the force layout
-      ?.getModel()
-      .getSeriesByIndex(0);
-    const node = series?.getGraph().getNodeById(id);
-    if (node) {
-      series.forceLayout?.setFixed(node.dataIndex);
-    }
+    this._pinNodeInChart(id);
     if (!this._pinnedNodes.includes(id)) {
       this._pinnedNodes = [...this._pinnedNodes, id];
     }
     this._saveNodePositions();
   };
+
+  // A new series option would start the layout again, so the pin goes into
+  // the running force layout, and into the item option that ECharts lays out
+  // from again, e.g. on a legend change
+  private _pinNodeInChart(id: string) {
+    const series: any = this._baseChart?.chart
+      // @ts-ignore private method but no other way to get the graph
+      ?.getModel()
+      .getSeriesByIndex(0);
+    const node = series?.getGraph().getNodeById(id);
+    if (!node) {
+      return;
+    }
+    series.forceLayout?.setFixed(node.dataIndex);
+    const [x, y] = node.getLayout();
+    Object.assign(series.getData().getRawDataItem(node.dataIndex), {
+      fixed: true,
+      x,
+      y,
+    });
+  }
 
   private _updateFollowing() {
     const chart = this._followSelectedNode ? this._baseChart?.chart : undefined;
