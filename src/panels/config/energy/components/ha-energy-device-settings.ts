@@ -29,7 +29,7 @@ import type {
   EnergyValidationIssue,
 } from "../../../../data/energy";
 import {
-  computeEnergyLabel,
+  computeEnergyDeviceLabels,
   saveEnergyPreferences,
 } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
@@ -195,14 +195,15 @@ export class EnergyDeviceSettings extends LitElement {
     `;
   }
 
+  private _deviceLabels = memoizeOne(computeEnergyDeviceLabels);
+
   private _deviceName(device: DeviceConsumptionEnergyPreference) {
-    return computeEnergyLabel(
+    return this._deviceLabels(
       this.hass.states,
       this.hass.formatEntityName,
-      device.stat_consumption,
-      this.statsMetadata?.[device.stat_consumption],
-      device.name
-    );
+      this.preferences.device_consumption,
+      this.statsMetadata
+    )[device.stat_consumption];
   }
 
   private _renderIssueIndicator(

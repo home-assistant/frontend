@@ -32,7 +32,7 @@ import type {
   WaterGasResource,
 } from "../../../../data/energy";
 import {
-  computeEnergyLabel,
+  computeEnergyDeviceLabels,
   getEnergyGasUnitClass,
   getWaterGasDevices,
   getWaterGasDevicesKey,
@@ -225,14 +225,15 @@ export class EnergyDeviceSettingsWaterGas extends LitElement {
     `;
   }
 
+  private _deviceLabels = memoizeOne(computeEnergyDeviceLabels);
+
   private _deviceName(device: DeviceConsumptionEnergyPreference) {
-    return computeEnergyLabel(
+    return this._deviceLabels(
       this.hass.states,
       this.hass.formatEntityName,
-      device.stat_consumption,
-      this.statsMetadata?.[device.stat_consumption],
-      device.name
-    );
+      this._devices,
+      this.statsMetadata
+    )[device.stat_consumption];
   }
 
   private _renderIssueIndicator(
