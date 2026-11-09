@@ -295,7 +295,7 @@ class DialogConfigEntryHealth extends DialogMixin<ConfigEntryHealthDialogParams>
           }),
           health.logs.errors || health.logs.warnings
             ? html`<a
-                href=${`/config/logs?search=${encodeURIComponent(entry.domain)}`}
+                href=${`/config/logs?integration=${encodeURIComponent(entry.domain)}`}
               >
                 ${this._i18n.localize(`${key}.logs_link`)}
               </a>`
