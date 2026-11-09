@@ -283,13 +283,14 @@ class HaHsColorPicker extends LitElement {
     const x = e.center.x;
     const y = e.center.y;
     const boundingRect = e.target.getBoundingClientRect();
-    const offsetX = boundingRect.left;
-    const offsetY = boundingRect.top;
-    const maxX = e.target.clientWidth;
-    const maxY = e.target.clientHeight;
+    // The wheel is drawn as a centered square (object-fit: contain), but the
+    // canvas box itself is not always square (e.g. wider in Safari).
+    const size = Math.min(boundingRect.width, boundingRect.height);
+    const centerX = boundingRect.left + boundingRect.width / 2;
+    const centerY = boundingRect.top + boundingRect.height / 2;
 
-    const _x = (2 * (x - offsetX)) / maxX - 1;
-    const _y = (2 * (y - offsetY)) / maxY - 1;
+    const _x = (2 * (x - centerX)) / size;
+    const _y = (2 * (y - centerY)) / size;
 
     const [r, phi] = xy2polar(_x, _y);
     const [xx, yy] = polar2xy(Math.min(1, r), phi);
