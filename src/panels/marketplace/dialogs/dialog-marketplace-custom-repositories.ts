@@ -25,6 +25,7 @@ import {
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { showConnectGitHubFlow } from "../tools/connect-github";
 import type { MarketplaceCustomRepositoriesDialogParams } from "./show-dialog-marketplace-custom-repositories";
+import { MARKETPLACE_NAME } from "../../../data/marketplace/common";
 
 @customElement("dialog-marketplace-custom-repositories")
 export class DialogMarketplaceCustomRepositories extends DialogMixin<MarketplaceCustomRepositoriesDialogParams>(
@@ -72,7 +73,8 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
         <div>
           <p class="intro">
             ${this._i18n.localize(
-              "ui.panel.marketplace.dialog_custom_repositories.intro"
+              "ui.panel.marketplace.dialog_custom_repositories.intro",
+              { marketplace: MARKETPLACE_NAME }
             )}
           </p>
           ${

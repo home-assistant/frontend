@@ -11,6 +11,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
+import { MARKETPLACE_NAME } from "../../../data/marketplace/common";
 
 const installedFromTheMarketplace = async (
   hass: HomeAssistant,
@@ -65,7 +66,7 @@ export const offerMarketplaceUninstall = async (
     ),
     text: hass.localize(
       "ui.panel.config.integrations.config_entry.marketplace_uninstall.text",
-      { name }
+      { name, marketplace: MARKETPLACE_NAME }
     ),
     confirmText: hass.localize(
       "ui.panel.config.integrations.config_entry.marketplace_uninstall.confirm"

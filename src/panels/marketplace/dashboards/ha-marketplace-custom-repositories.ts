@@ -41,6 +41,7 @@ import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-
 import { haStyle } from "../../../resources/styles";
 import type { Route } from "../../../types";
 import { showMarketplaceAddFromLink } from "../tools/add-from-link";
+import { MARKETPLACE_NAME } from "../../../data/marketplace/common";
 
 const pageTabs: PageNavigation[] = [
   {
@@ -228,7 +229,7 @@ export class HaMarketplaceCustomRepositories extends LitElement {
       ),
       text: this._i18n.localize(
         "ui.panel.marketplace.custom_repositories.remove_selected_text",
-        { count: selectedRepositories.length }
+        { count: selectedRepositories.length, marketplace: MARKETPLACE_NAME }
       ),
       confirmText: this._i18n.localize("ui.common.remove"),
       dismissText: this._i18n.localize("ui.common.cancel"),
@@ -291,7 +292,8 @@ export class HaMarketplaceCustomRepositories extends LitElement {
         { name: repository?.name ?? repositoryId }
       ),
       text: this._i18n.localize(
-        "ui.panel.marketplace.custom_repositories.remove_text"
+        "ui.panel.marketplace.custom_repositories.remove_text",
+        { marketplace: MARKETPLACE_NAME }
       ),
       confirmText: this._i18n.localize("ui.common.remove"),
       destructive: true,

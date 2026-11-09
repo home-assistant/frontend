@@ -97,6 +97,7 @@ import {
   markdownWithRepositoryContext,
   repositoryUrl,
 } from "../tools/markdown";
+import { MARKETPLACE_NAME } from "../../../data/marketplace/common";
 
 // Repository pages live at /<id> below /repository, my links at /repository itself.
 const repositoryIdFromRoute = (route: Route): string => route.path.substring(1);
@@ -233,7 +234,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         ),
         text: this._i18n.localize(
           "ui.panel.marketplace.my.add_repository_description",
-          { repository: requestedRepository }
+          { marketplace: MARKETPLACE_NAME, repository: requestedRepository }
         ),
         confirmText: this._i18n.localize("ui.common.add"),
         dismissText: this._i18n.localize("ui.common.cancel"),
@@ -416,7 +417,9 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         ? isWebSocketError(err, ERROR_GITHUB_RATE_LIMITED)
         : handleGitHubRateLimited(this, this._api, this._i18n.localize, err);
       const message = rateLimited
-        ? this._i18n.localize("ui.panel.marketplace.github.rate_limited")
+        ? this._i18n.localize("ui.panel.marketplace.github.rate_limited", {
+            marketplace: MARKETPLACE_NAME,
+          })
         : marketplaceErrorMessage(err, this._i18n.localize);
 
       if (this._repository?.id === requestedRepositoryId) {
@@ -495,7 +498,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
       <hass-subpage
         .narrow=${this.narrow}
         back-path="/marketplace"
-        .header=${this._i18n.localize("ui.panel.marketplace.title")}
+        .header=${MARKETPLACE_NAME}
       >
         <ha-dropdown
           slot="toolbar-icon"
