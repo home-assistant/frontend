@@ -1,6 +1,30 @@
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import { computeAreaName } from "../../../../../common/entity/compute_area_name";
+import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import type { Cluster, ZHADevice, ZHAGroup } from "../../../../../data/zha";
 import { ZHADeviceType } from "../../../../../data/zha";
+import type { HomeAssistant } from "../../../../../types";
+
+export const getZHADeviceAreaName = (
+  device: ZHADevice,
+  hass: HomeAssistant
+): string | undefined => {
+  // Resolve via the device registry so a child device inherits its
+  // parent's area, matching the ZHA network visualization.
+  const haDevice = hass.devices[device.device_reg_id];
+  if (haDevice) {
+    const area = getDeviceArea(haDevice, hass.areas, hass.devices);
+    if (area) {
+      return computeAreaName(area);
+    }
+  }
+  // Fall back to the area reported by ZHA itself.
+  if (!device.area_id) {
+    return undefined;
+  }
+  const areaEntry = hass.areas[device.area_id];
+  return areaEntry ? computeAreaName(areaEntry) : undefined;
+};
 
 export const formatAsPaddedHex = (value: string | number): string => {
   let hex = value;

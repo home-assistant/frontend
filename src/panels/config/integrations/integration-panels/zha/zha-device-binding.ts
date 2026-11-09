@@ -8,6 +8,7 @@ import type { ZHADevice } from "../../../../../data/zha";
 import { bindDevices, unbindDevices } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
+import { getZHADeviceAreaName } from "./functions";
 
 @customElement("zha-device-binding-control")
 export class ZHADeviceBindingControl extends LitElement {
@@ -51,6 +52,9 @@ export class ZHADeviceBindingControl extends LitElement {
               label: device.user_given_name
                 ? device.user_given_name
                 : device.name,
+              secondary: this.hass
+                ? getZHADeviceAreaName(device, this.hass)
+                : undefined,
             }))}
           >
           </ha-select>
