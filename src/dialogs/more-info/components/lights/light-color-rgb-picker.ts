@@ -190,23 +190,29 @@ class LightRgbColorPicker extends LitElement {
     `;
   }
 
+  private _updateBrightnessAdjusted() {
+    const stateObj = this.stateObj;
+
+    this._brightnessAdjusted = undefined;
+    if (
+      stateObj.attributes.color_mode === LightColorMode.RGB &&
+      stateObj.attributes.rgb_color &&
+      !lightSupportsColorMode(stateObj, LightColorMode.RGBWW) &&
+      !lightSupportsColorMode(stateObj, LightColorMode.RGBW)
+    ) {
+      const maxVal = Math.max(...stateObj.attributes.rgb_color);
+
+      if (maxVal < 255) {
+        this._brightnessAdjusted = maxVal;
+      }
+    }
+  }
+
   private _updateSliderValues() {
     const stateObj = this.stateObj;
 
     if (stateObj.state === "on") {
-      this._brightnessAdjusted = undefined;
-      if (
-        stateObj.attributes.color_mode === LightColorMode.RGB &&
-        stateObj.attributes.rgb_color &&
-        !lightSupportsColorMode(stateObj, LightColorMode.RGBWW) &&
-        !lightSupportsColorMode(stateObj, LightColorMode.RGBW)
-      ) {
-        const maxVal = Math.max(...stateObj.attributes.rgb_color);
-
-        if (maxVal < 255) {
-          this._brightnessAdjusted = maxVal;
-        }
-      }
+      this._updateBrightnessAdjusted();
 
       this._wvSliderValue =
         stateObj.attributes.color_mode === LightColorMode.RGBW &&
@@ -244,11 +250,16 @@ class LightRgbColorPicker extends LitElement {
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
-    if (
-      this._isInteracting ||
-      this._releaseHoldTimeout !== undefined ||
-      !changedProps.has("stateObj")
-    ) {
+    if (!changedProps.has("stateObj")) {
+      return;
+    }
+
+    if (this._isInteracting || this._releaseHoldTimeout !== undefined) {
+      // Keep the picker values, but the brightness normalization has to
+      // follow the reported state, as it is applied to the next color sent.
+      if (this.stateObj.state === "on") {
+        this._updateBrightnessAdjusted();
+      }
       return;
     }
 
@@ -342,6 +353,9 @@ class LightRgbColorPicker extends LitElement {
       this._colorBrightnessSliderValue = hsv[2] / 2.55;
     }
 
+    // There is no release event for the native input, so keep its value
+    // until state updates from calls sent while picking have settled.
+    this._holdReleasedValue();
     this._throttleUpdateColor();
   }
 
