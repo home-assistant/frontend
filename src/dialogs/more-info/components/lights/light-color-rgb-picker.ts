@@ -265,7 +265,10 @@ class LightRgbColorPicker extends LitElement {
     clearTimeout(this._releaseHoldTimeout);
     this._releaseHoldTimeout = window.setTimeout(() => {
       this._releaseHoldTimeout = undefined;
-      this._updateSliderValues();
+      // A new drag started in the meantime; its release starts a new hold.
+      if (!this._isInteracting) {
+        this._updateSliderValues();
+      }
     }, RELEASE_HOLD_TIME);
   }
 
