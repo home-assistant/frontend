@@ -17,7 +17,7 @@ export const fetchInputBoolean = (hass: HomeAssistant) =>
   hass.callWS<InputBoolean[]>({ type: "input_boolean/list" });
 
 export const createInputBoolean = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   values: InputBooleanMutableParams
 ) =>
   hass.callWS<InputBoolean>({

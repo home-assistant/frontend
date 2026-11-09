@@ -36,7 +36,7 @@ export const fetchInputText = (hass: HomeAssistant) =>
   hass.callWS<InputText[]>({ type: "input_text/list" });
 
 export const createInputText = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   values: InputTextMutableParams
 ) =>
   hass.callWS<InputText>({

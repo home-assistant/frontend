@@ -78,7 +78,7 @@ export const deleteConfigFlow = (
 
 // The backend indexes a single key, and only these two exist.
 export const getConfigFlowHandlers = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callApi">,
   type?: "helper" | "integration"
 ) =>
   hass.callApi<string[]>(

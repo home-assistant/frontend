@@ -45,7 +45,7 @@ export const fetchInputDateTime = (hass: HomeAssistant) =>
   hass.callWS<InputDateTime[]>({ type: "input_datetime/list" });
 
 export const createInputDateTime = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   values: InputDateTimeMutableParams
 ) =>
   hass.callWS<InputDateTime>({

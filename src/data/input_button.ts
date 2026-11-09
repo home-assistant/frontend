@@ -15,7 +15,7 @@ export const fetchInputButton = (hass: HomeAssistant) =>
   hass.callWS<InputButton[]>({ type: "input_button/list" });
 
 export const createInputButton = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   values: InputButtonMutableParams
 ) =>
   hass.callWS<InputButton>({

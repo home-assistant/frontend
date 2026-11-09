@@ -33,7 +33,7 @@ export const fetchSchedule = (hass: HomeAssistant) =>
   hass.callWS<Schedule[]>({ type: "schedule/list" });
 
 export const createSchedule = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   values: ScheduleMutableParams
 ) =>
   hass.callWS<Schedule>({

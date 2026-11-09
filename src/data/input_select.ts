@@ -41,7 +41,7 @@ export const fetchInputSelect = (hass: HomeAssistant) =>
   hass.callWS<InputSelect[]>({ type: "input_select/list" });
 
 export const createInputSelect = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   values: InputSelectMutableParams
 ) =>
   hass.callWS<InputSelect>({

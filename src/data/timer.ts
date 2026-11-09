@@ -48,7 +48,10 @@ export interface TimerMutableParams {
 export const fetchTimer = (hass: HomeAssistant) =>
   hass.callWS<Timer[]>({ type: "timer/list" });
 
-export const createTimer = (hass: HomeAssistant, values: TimerMutableParams) =>
+export const createTimer = (
+  hass: Pick<HomeAssistant, "callWS">,
+  values: TimerMutableParams
+) =>
   hass.callWS<Timer>({
     type: "timer/create",
     ...values,

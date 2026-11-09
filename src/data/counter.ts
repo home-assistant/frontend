@@ -25,7 +25,7 @@ export const fetchCounter = (hass: HomeAssistant) =>
   hass.callWS<Counter[]>({ type: "counter/list" });
 
 export const createCounter = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   values: CounterMutableParams
 ) =>
   hass.callWS<Counter>({

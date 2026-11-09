@@ -388,7 +388,7 @@ export interface AutomaticEntityIdOverrides {
 }
 
 export const getAutomaticEntityIds = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   entity_ids: string[],
   overrides?: Record<string, AutomaticEntityIdOverrides>
 ) =>
@@ -403,7 +403,7 @@ export const getAutomaticEntityIds = (
  * the area. Returns the entity ID of each entity after the change.
  */
 export const updateEntitiesArea = async (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   entityIds: string[],
   areaId: string
 ): Promise<Record<string, string>> => {
