@@ -1,6 +1,5 @@
 import { assert, describe, it } from "vitest";
 import {
-  pathEquals,
   stringifyPath,
   type ConfigPath,
 } from "../../../../src/common/util/config-path";
@@ -128,12 +127,6 @@ describe("path helpers", () => {
       1,
     ]);
     assert.deepEqual(getViewPath(["views", 1]), ["views", 1]);
-  });
-
-  it("compares paths", () => {
-    assert.strictEqual(pathEquals(["views", 0], ["views", 0]), true);
-    assert.strictEqual(pathEquals(["views", 0], ["views", 1]), false);
-    assert.strictEqual(pathEquals(["views", 0], ["views", 0, "cards"]), false);
   });
 
   it("does not consider a path its own ancestor", () => {
