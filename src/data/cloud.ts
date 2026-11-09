@@ -25,6 +25,7 @@ export interface CloudPreferences {
   alexa_enabled: boolean;
   remote_enabled: boolean;
   remote_allow_remote_enable: boolean;
+  remote_require_client_certificate: boolean;
   google_secure_devices_pin: string | null;
   cloudhooks: Record<string, CloudWebhook>;
   alexa_default_expose: string[] | null;
@@ -57,6 +58,7 @@ export interface CloudStatusLoggedIn {
   remote_certificate: CertificateInformation | null;
   remote_certificate_status: RemoteCertificateStatus | null;
   http_use_ssl: boolean;
+  http_ssl_peer_certificate: boolean;
   active_subscription: boolean;
   onboarding_postponed: boolean;
   onboarding_completed: boolean;
@@ -196,6 +198,7 @@ export const updateCloudPref = (
     google_secure_devices_pin?: CloudPreferences["google_secure_devices_pin"];
     tts_default_voice?: CloudPreferences["tts_default_voice"];
     remote_allow_remote_enable?: CloudPreferences["remote_allow_remote_enable"];
+    remote_require_client_certificate?: CloudPreferences["remote_require_client_certificate"];
     cloud_ice_servers_enabled?: CloudPreferences["cloud_ice_servers_enabled"];
   }
 ) =>
