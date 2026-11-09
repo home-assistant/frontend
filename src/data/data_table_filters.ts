@@ -5,8 +5,17 @@ export interface DataTableFilter {
 
 export type DataTableFilters = Record<string, DataTableFilter>;
 
+export interface FloorAreasFilterValue {
+  floors?: string[];
+  areas?: string[];
+  no_area?: boolean;
+}
+
 export type DataTableFiltersValue =
-  string[] | Record<"key" | string, string[]> | undefined;
+  | string[]
+  | Record<"key" | string, string[]>
+  | FloorAreasFilterValue
+  | undefined;
 
 export type DataTableFiltersValues = Record<string, DataTableFiltersValue>;
 

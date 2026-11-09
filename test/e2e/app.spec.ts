@@ -521,6 +521,36 @@ test.describe("Lovelace dashboard", () => {
       page.locator("[data-testid='edit-mode-button'], ha-menu-button")
     ).toBeAttached({ timeout: QUICK_TIMEOUT });
   });
+
+  test("going back after leaving edit mode does not enter it again", async ({
+    page,
+  }) => {
+    // A demo dashboard with more than one view
+    await goToPanel(page, "/?demo=teachingbirds&edit=1#/lovelace/home");
+    const root = page.locator("hui-root").first();
+    const isEditing = () =>
+      root.evaluate(
+        (el) =>
+          (el as HTMLElement & { lovelace?: { editMode: boolean } }).lovelace
+            ?.editMode
+      );
+    await expect.poll(isEditing, { timeout: PANEL_TIMEOUT }).toBe(true);
+
+    // Leaves /lovelace/home behind with ?edit=1 in its URL
+    await root.locator("ha-tab-group-tab[panel='1']").click();
+    await expect(page).toHaveURL(/#\/lovelace\/home_info$/, {
+      timeout: QUICK_TIMEOUT,
+    });
+    await root.locator("ha-button.exit-edit-mode").click();
+    await expect.poll(isEditing, { timeout: QUICK_TIMEOUT }).toBe(false);
+
+    await page.goBack();
+
+    await expect(page).toHaveURL(/\/\?demo=teachingbirds#\/lovelace\/home$/, {
+      timeout: QUICK_TIMEOUT,
+    });
+    expect(await isEditing()).toBe(false);
+  });
 });
 
 test.describe("Energy dashboard", () => {

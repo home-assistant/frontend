@@ -105,12 +105,18 @@ class HaConfigEnergy extends LitElement {
     if (changedProperties.has("route")) {
       const [, tab, kind, ...key] = this.route.path.split("/");
       if (!tab || !TABS.some((t) => t.path.endsWith(`/${tab}`))) {
-        navigate(`${this.route.prefix}/electricity`, { replace: true });
+        navigate(`${this.route.prefix}/electricity${location.search}`, {
+          replace: true,
+          keepDialogs: true,
+        });
       } else if (
         kind &&
         (!key.join("/") || !EDITOR_KINDS[tab].includes(kind))
       ) {
-        navigate(`${this.route.prefix}/${tab}`, { replace: true });
+        navigate(`${this.route.prefix}/${tab}${location.search}`, {
+          replace: true,
+          keepDialogs: true,
+        });
       }
     }
   }

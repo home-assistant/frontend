@@ -1,6 +1,7 @@
 import type {
   DataTableFilter,
   DataTableFilters,
+  FloorAreasFilterValue,
 } from "../../data/data_table_filters";
 import { dataTableQueryParamConfig } from "./data-table-query-params";
 import {
@@ -24,6 +25,7 @@ export const devicesFilterQueryParamConfig = {
     "config_entry",
     "sub_entry",
   ],
+  boolean: [{ key: "no_area", trueValue: "1" }],
 } as const satisfies QueryParamConfig;
 
 export type DevicesFilterQueryParams = QueryParamValues<
@@ -35,7 +37,7 @@ const list = (filter: DataTableFilter | undefined): string[] | undefined =>
 
 const floorAreas = (
   filter: DataTableFilter | undefined
-): Record<string, string[]> | undefined =>
+): FloorAreasFilterValue | undefined =>
   filter?.value && !Array.isArray(filter.value) ? filter.value : undefined;
 
 export const devicesFilterQueryParams = (
@@ -44,6 +46,7 @@ export const devicesFilterQueryParams = (
   status: list(filters["ha-filter-states"]),
   floor: floorAreas(filters["ha-filter-floor-areas"])?.floors,
   area: floorAreas(filters["ha-filter-floor-areas"])?.areas,
+  no_area: floorAreas(filters["ha-filter-floor-areas"])?.no_area,
   domain: list(filters["ha-filter-integrations"]),
   label: list(filters["ha-filter-labels"]),
   config_entry: list(filters.config_entry),
@@ -55,7 +58,7 @@ export const devicesFilterQueryParams = (
 // filter list sends back what it was given in its own order.
 export const devicesFilterQueryString = (filters: DataTableFilters): string => {
   const params = devicesFilterQueryParams(filters);
-  const sorted: DevicesFilterQueryParams = {};
+  const sorted: DevicesFilterQueryParams = { ...params };
 
   for (const key of devicesFilterQueryParamConfig.list) {
     sorted[key] = params[key] && [...params[key]].sort();
@@ -87,8 +90,9 @@ export const devicesLinkFromUrl = (
 
   const { search } = decodeQueryParams(searchParams, dataTableQueryParamConfig);
 
-  const values = (key: keyof DevicesFilterQueryParams): string[] =>
-    params[key]?.filter(Boolean) ?? [];
+  const values = (
+    key: (typeof devicesFilterQueryParamConfig.list)[number]
+  ): string[] => params[key]?.filter(Boolean) ?? [];
 
   const filter = (value: DataTableFilter["value"]): DataTableFilter => ({
     value,
@@ -103,7 +107,9 @@ export const devicesLinkFromUrl = (
     filters: {
       "ha-filter-states": filter(values("status")),
       "ha-filter-floor-areas": filter(
-        floors.length || areas.length ? { floors, areas } : undefined
+        floors.length || areas.length || params.no_area
+          ? { floors, areas, no_area: params.no_area }
+          : undefined
       ),
       "ha-filter-integrations": filter(values("domain")),
       "ha-filter-labels": filter(values("label")),
