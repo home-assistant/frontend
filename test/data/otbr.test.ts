@@ -32,19 +32,30 @@ const dataset = (overrides: Partial<ThreadDataSet>): ThreadDataSet => ({
 
 const OTHER_NETWORK = otbr("aaaaaaaaaaaaaaaa", "2222222222222222");
 const SAME_NETWORK = otbr("bbbbbbbbbbbbbbbb", "1111111111111111");
+const SAME_NETWORK_2 = otbr("dddddddddddddddd", "1111111111111111");
 const OTBR_INFO: OTBRInfoDict = {
   [OTHER_NETWORK.extended_address]: OTHER_NETWORK,
   [SAME_NETWORK.extended_address]: SAME_NETWORK,
+  [SAME_NETWORK_2.extended_address]: SAME_NETWORK_2,
 };
 
 describe("findOTBRInfoForDataset", () => {
-  it("returns the preferred border router, even when it is on another network", () => {
+  it("returns the preferred border router when it is on the network", () => {
+    expect(
+      findOTBRInfoForDataset(
+        OTBR_INFO,
+        dataset({ preferred_extended_address: SAME_NETWORK_2.extended_address })
+      )
+    ).toBe(SAME_NETWORK_2);
+  });
+
+  it("ignores the preferred border router when it is on another network", () => {
     expect(
       findOTBRInfoForDataset(
         OTBR_INFO,
         dataset({ preferred_extended_address: OTHER_NETWORK.extended_address })
       )
-    ).toBe(OTHER_NETWORK);
+    ).toBe(SAME_NETWORK);
   });
 
   it("falls back to a border router on the same extended PAN ID", () => {
