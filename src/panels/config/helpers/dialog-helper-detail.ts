@@ -1,11 +1,13 @@
 import { mdiAlertOutline } from "@mdi/js";
 import Fuse from "fuse.js";
-import type { HassConfig } from "home-assistant-js-websocket";
+import type { Connection, HassConfig } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { consume } from "../../../common/decorators/consume";
+import { transform } from "../../../common/decorators/transform";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -29,6 +31,12 @@ import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
+import {
+  apiContext,
+  configContext,
+  connectionContext,
+  internationalizationContext,
+} from "../../../data/context";
 import { createCounter } from "../../../data/counter";
 import {
   fetchEntityRegistry,
@@ -58,7 +66,13 @@ import {
   type FuseWeightedKey,
 } from "../../../resources/fuseMultiTerm";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import type {
+  HomeAssistantApi,
+  HomeAssistantConfig,
+  HomeAssistantConnection,
+  HomeAssistantInternationalization,
+  ValueChangedEvent,
+} from "../../../types";
 import type {
   Helper,
   HelperCategory,
@@ -77,7 +91,7 @@ type HelperCreators = Record<
   HelperDomain,
   {
     create: (
-      hass: HomeAssistant,
+      api: HomeAssistantApi,
       // Not properly typed because there is currently a mismatch for this._item between:
       // 1. Type passed to form should be Helper
       // 2. Type received by creator should be MutableParams version
@@ -147,7 +161,25 @@ const HELPER_SEARCH_KEYS: FuseWeightedKey[] = [
 export class DialogHelperDetail extends DirtyStateProviderMixin<
   { item?: HelperFormItem; area?: string } | undefined
 >()(LitElement) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<HomeAssistantConnection, Connection>({
+    transformer: ({ connection }) => connection,
+  })
+  private _connection!: Connection;
 
   @state() private _item?: HelperFormItem;
 
@@ -203,9 +235,9 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     }
     this._open = true;
     await this.updateComplete;
-    this.hass.loadFragmentTranslation("config");
-    const flows = await getConfigFlowHandlers(this.hass, "helper");
-    await this.hass.loadBackendTranslation("title", flows, true);
+    this._i18n.loadFragmentTranslation("config");
+    const flows = await getConfigFlowHandlers(this._api, "helper");
+    await this._i18n.loadBackendTranslation("title", flows, true);
     // Ensure the titles are loaded before we render the flows.
     this._helperFlows = flows;
 
@@ -214,13 +246,13 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._focusPicker();
   }
 
-  protected updated(changedProps: PropertyValues<this>): void {
+  protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    const oldHass = changedProps.get("hass");
+    const oldI18n = changedProps.get("_i18n") as
+      HomeAssistantInternationalization | undefined;
     if (
-      oldHass &&
-      (oldHass.localize !== this.hass.localize ||
-        oldHass.config !== this.hass.config)
+      (oldI18n && oldI18n.localize !== this._i18n.localize) ||
+      changedProps.get("_hassConfig") !== undefined
     ) {
       this._comboBox?.refreshItems();
     }
@@ -272,7 +304,6 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         <div class="form" @value-changed=${this._valueChanged}>
           ${this._error ? html`<div class="error">${this._error}</div>` : ""}
           ${dynamicElement(`ha-${this._domain}-form`, {
-            hass: this.hass,
             item: this._item,
             new: true,
             autofocus: true,
@@ -295,7 +326,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
                   @click=${this._goBack}
                   .disabled=${this._submitting}
                 >
-                  ${this.hass!.localize("ui.common.back")}
+                  ${this._i18n.localize("ui.common.back")}
                 </ha-button>`
           }
           <ha-button
@@ -303,7 +334,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
             @click=${this._createItem}
             .disabled=${this._submitting}
           >
-            ${this.hass!.localize("ui.panel.config.helpers.dialog.create")}
+            ${this._i18n.localize("ui.panel.config.helpers.dialog.create")}
           </ha-button>
         </ha-dialog-footer>
       `;
@@ -317,16 +348,16 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
           mode="dialog"
           .shown=${this._shown}
           no-sort
-          .label=${this.hass.localize(
+          .label=${this._i18n.localize(
             "ui.panel.config.integrations.search_helper"
           )}
           .getItems=${this._getItems}
           .rowRenderer=${this._renderHelperRow}
           .sections=${this._getSections(
             this._helperFlows,
-            this.hass.localize,
-            this.hass.config,
-            this.hass.locale.language
+            this._i18n.localize,
+            this._hassConfig,
+            this._i18n.locale.language
           )}
           .selectedSection=${this._category}
           @index-selected=${this._helperPicked}
@@ -342,12 +373,12 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         .preventScrimClose=${this.isDirtyState}
         header-title=${
           this._domain
-            ? this.hass.localize(
+            ? this._i18n.localize(
                 "ui.panel.config.helpers.dialog.create_platform",
                 {
                   platform:
                     (isHelperDomain(this._domain) &&
-                      this.hass.localize(
+                      this._i18n.localize(
                         `ui.panel.config.helpers.types.${
                           this._domain as HelperDomain
                         }`
@@ -355,7 +386,9 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
                     this._domain,
                 }
               )
-            : this.hass.localize("ui.panel.config.helpers.dialog.create_helper")
+            : this._i18n.localize(
+                "ui.panel.config.helpers.dialog.create_helper"
+              )
         }
         @after-show=${this._dialogShown}
         @closed=${this._dialogClosed}
@@ -441,9 +474,9 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._search = search;
     const allItems = this._getHelperItems(
       this._helperFlows ?? [],
-      this.hass.localize,
-      this.hass.config,
-      this.hass.locale.language
+      this._i18n.localize,
+      this._hassConfig,
+      this._i18n.locale.language
     );
     const items = search
       ? multiTermSortedSearch(
@@ -463,7 +496,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
       const categoryItems = items.filter((item) => item.category === category);
       return categoryItems.length
         ? [
-            this.hass.localize(
+            this._i18n.localize(
               `ui.panel.config.helpers.dialog.categories.${category}`
             ),
             ...categoryItems,
@@ -498,7 +531,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
                   @click=${stopPropagation}
                 ></ha-svg-icon>
                 <ha-tooltip slot="end" .for="icon-${domain}">
-                  ${this.hass.localize(
+                  ${this._i18n.localize(
                     "ui.dialogs.helper_settings.platform_not_loaded",
                     { platform: domain }
                   )}
@@ -523,7 +556,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._submitting = true;
     this._error = "";
     try {
-      const createdEntity = await HELPERS[domain].create(this.hass, this._item);
+      const createdEntity = await HELPERS[domain].create(this._api, this._item);
       // The dialog was closed or reopened while waiting
       if (this._params !== params) {
         return;
@@ -565,13 +598,13 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     try {
       // The entity ID usually matches the helper ID, unless it was taken
       const entry = await getExtendedEntityRegistryEntry(
-        this.hass,
+        this._api,
         `${domain}.${uniqueId}`
       ).catch(() => undefined);
       if (entry && isCreated(entry)) {
         return entry.entity_id;
       }
-      return (await fetchEntityRegistry(this.hass.connection)).find(isCreated)
+      return (await fetchEntityRegistry(this._connection)).find(isCreated)
         ?.entity_id;
     } catch (_err) {
       return undefined;
@@ -585,7 +618,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     let error = "Entity not found";
     if (entityId) {
       try {
-        return (await updateEntitiesArea(this.hass, [entityId], areaId))[
+        return (await updateEntitiesArea(this._api, [entityId], areaId))[
           entityId
         ];
       } catch (err: unknown) {
@@ -593,7 +626,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
       }
     }
     showAlertDialog(this, {
-      text: this.hass.localize(
+      text: this._i18n.localize(
         "ui.panel.config.integrations.config_flow.error_saving_entity",
         { error }
       ),
@@ -614,7 +647,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     const { id: domain, loaded } = ev.detail.item as HelperPickerItem;
     if (!loaded) {
       showAlertDialog(this, {
-        text: this.hass.localize(
+        text: this._i18n.localize(
           "ui.dialogs.helper_settings.platform_not_loaded",
           { platform: domain }
         ),
@@ -637,7 +670,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     } else {
       this._pendingConfigFlow = {
         startFlowHandler: domain,
-        manifest: await fetchIntegrationManifest(this.hass, domain),
+        manifest: await fetchIntegrationManifest(this._api, domain),
         dialogClosedCallback: this._params?.dialogClosedCallback,
         navigateToResult: this._params?.navigateToResult,
       };
