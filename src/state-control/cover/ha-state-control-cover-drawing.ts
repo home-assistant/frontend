@@ -308,6 +308,11 @@ export class HaStateControlCoverDrawing extends LitElement {
 
   private _moveWave(dt: number): boolean {
     const wave = this._wave;
+    if (this._reducedMotion) {
+      wave.position = this._shown.position;
+      wave.velocity = 0;
+      return false;
+    }
     const frames = Math.max(0.01, (dt * 1000) / 16.7);
     const keep = 0.9 ** frames;
     const instant = (this._shown.position - wave.position) / frames;
@@ -596,17 +601,7 @@ export class HaStateControlCoverDrawing extends LitElement {
 
   private _onKeyDown(ev: KeyboardEvent) {
     this._pointerFocus = false;
-    if (!this._interactive) {
-      return;
-    }
-    if (this._supportsSwipe) {
-      if (ev.key === "Enter" || ev.key === " ") {
-        ev.preventDefault();
-        const start = this._swipeStart();
-        if (this._canSwipeTo(start)) {
-          this._command(start ? "close_cover" : "open_cover");
-        }
-      }
+    if (!this._interactive || !this._supportsValue) {
       return;
     }
     this._readDirection();
@@ -745,7 +740,6 @@ export class HaStateControlCoverDrawing extends LitElement {
     const movingAngle = this._movingAngle(shape);
     const value = Math.round(this._drag?.value ?? this._requestedValue(mode));
     const slider = interactive && this._supportsValue;
-    const swipe = interactive && this._supportsSwipe;
     const { x, y, iw, ih } = VB;
 
     return html`
@@ -757,10 +751,10 @@ export class HaStateControlCoverDrawing extends LitElement {
           dark: this._darkMode,
           "pointer-focus": this._pointerFocus,
         })}
-        role=${ifDefined(slider ? "slider" : swipe ? "switch" : undefined)}
-        tabindex=${ifDefined(interactive ? "0" : undefined)}
+        role=${ifDefined(slider ? "slider" : undefined)}
+        tabindex=${ifDefined(slider ? "0" : undefined)}
         aria-label=${ifDefined(
-          interactive
+          slider
             ? this._formatters.formatEntityAttributeName(
                 this.stateObj,
                 mode === "tilt" ? "current_tilt_position" : "current_position"
@@ -775,9 +769,6 @@ export class HaStateControlCoverDrawing extends LitElement {
         )}
         aria-orientation=${ifDefined(
           slider ? (shape.horizontal ? "horizontal" : "vertical") : undefined
-        )}
-        aria-checked=${ifDefined(
-          swipe ? (this._swipeStart() === 100 ? "true" : "false") : undefined
         )}
         @pointerdown=${this._onPointerDown}
         @keydown=${this._onKeyDown}
