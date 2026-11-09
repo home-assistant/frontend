@@ -157,6 +157,79 @@ async function pollProcess(lokaliseApi, projectId, processId) {
 }
 /* eslint-enable no-await-in-loop */
 
+const DRAFTS_ACCEPTED_KEYS = [
+  // Written per language rather than translated from English, so an English edit doesn't make them outdated
+  "ui.components.rooms.keywords",
+];
+
+async function exportTranslations(lokaliseApi, projectId, filterData) {
+  const exportProcess = await lokaliseApi.files().async_download(projectId, {
+    format: "json",
+    original_filenames: false,
+    replace_breaks: false,
+    json_unescaped_slashes: true,
+    export_empty_as: "skip",
+    ...(filterData && { filter_data: filterData }),
+  });
+
+  const finishedProcess = await pollProcess(
+    lokaliseApi,
+    projectId,
+    exportProcess.process_id
+  );
+
+  const bundleUrl = finishedProcess.details.download_url;
+
+  console.log(`Downloading translations from: ${bundleUrl}`);
+
+  const response = await fetch(bundleUrl);
+
+  if (response.status !== 200 && response.status !== 0) {
+    throw new Error(response.statusText);
+  }
+
+  console.log(`Extracting translations...`);
+
+  const contents = await JSZip.loadAsync(await response.arrayBuffer());
+
+  const files = {};
+  await Promise.all(
+    Object.keys(contents.files).map(async (filename) => {
+      const file = contents.file(filename);
+      if (!file) {
+        // no file, probably a directory
+        return;
+      }
+      files[filename.split("/").splice(-1)[0]] = await file.async("string");
+    })
+  );
+  return files;
+}
+
+function acceptDrafts(files, draftFiles) {
+  Object.entries(draftFiles).forEach(([filename, content]) => {
+    const draftData = JSON.parse(content);
+    const data = files[filename] ? JSON.parse(files[filename]) : {};
+    let changed = false;
+    DRAFTS_ACCEPTED_KEYS.forEach((key) => {
+      const keys = key.split(".");
+      const drafts = keys.reduce((obj, part) => obj?.[part], draftData);
+      if (!drafts) {
+        return;
+      }
+      const parent = keys.slice(0, -1).reduce((obj, part) => {
+        obj[part] ??= {};
+        return obj[part];
+      }, data);
+      parent[keys.at(-1)] = drafts;
+      changed = true;
+    });
+    if (changed) {
+      files[filename] = JSON.stringify(data, null, 2);
+    }
+  });
+}
+
 gulp.task("fetch-lokalise", async function () {
   let apiKey;
   try {
@@ -193,52 +266,24 @@ gulp.task("fetch-lokalise", async function () {
   await Promise.all(
     projects.map(async ([project, projectId]) => {
       try {
-        const exportProcess = await lokaliseApi
-          .files()
-          .async_download(projectId, {
-            format: "json",
-            original_filenames: false,
-            replace_breaks: false,
-            json_unescaped_slashes: true,
-            export_empty_as: "skip",
-            filter_data: ["verified"],
-          });
-
-        const finishedProcess = await pollProcess(
-          lokaliseApi,
-          projectId,
-          exportProcess.process_id
-        );
-
-        const bundleUrl = finishedProcess.details.download_url;
-
-        console.log(`Downloading translations from: ${bundleUrl}`);
-
-        const response = await fetch(bundleUrl);
-
-        if (response.status !== 200 && response.status !== 0) {
-          throw new Error(response.statusText);
+        const [files, draftFiles] = await Promise.all([
+          exportTranslations(lokaliseApi, projectId, ["verified"]),
+          project === "frontend"
+            ? exportTranslations(lokaliseApi, projectId)
+            : undefined,
+        ]);
+        if (draftFiles) {
+          acceptDrafts(files, draftFiles);
         }
-
-        console.log(`Extracting translations...`);
-
-        const contents = await JSZip.loadAsync(await response.arrayBuffer());
 
         await mkdirPromise;
         await Promise.all(
-          Object.keys(contents.files).map(async (filename) => {
-            const file = contents.file(filename);
-            if (!file) {
-              // no file, probably a directory
-              return;
-            }
-            const content = await file.async("nodebuffer");
-            await fs.writeFile(
-              path.join(inDir, project, filename.split("/").splice(-1)[0]),
-              content,
-              { flag: "w", encoding }
-            );
-          })
+          Object.entries(files).map(([filename, content]) =>
+            fs.writeFile(path.join(inDir, project, filename), content, {
+              flag: "w",
+              encoding,
+            })
+          )
         );
       } catch (err) {
         console.error(err);
