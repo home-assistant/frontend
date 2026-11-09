@@ -15,6 +15,7 @@ import {
 import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { PendingValueSync } from "../../../../common/util/pending-value-sync";
 import { throttle } from "../../../../common/util/throttle";
 import "../../../../components/ha-hs-color-picker";
 import "../../../../components/ha-icon";
@@ -32,11 +33,6 @@ declare global {
     "color-changed": LightColor;
   }
 }
-
-// Time to ignore state updates after releasing a picker, so that updates from
-// calls sent while dragging don't make it jump back before the final value
-// is reported.
-const RELEASE_HOLD_TIME = 1500;
 
 @customElement("light-color-rgb-picker")
 class LightRgbColorPicker extends LitElement {
@@ -64,9 +60,7 @@ class LightRgbColorPicker extends LitElement {
 
   @state() private _isInteracting?: boolean;
 
-  // Timer that keeps the released value shown while state updates from calls
-  // sent during dragging are still arriving.
-  private _releaseHoldTimeout?: number;
+  private _pendingSync = new PendingValueSync();
 
   protected render() {
     if (!this.stateObj) {
@@ -254,33 +248,19 @@ class LightRgbColorPicker extends LitElement {
       return;
     }
 
-    if (this._isInteracting || this._releaseHoldTimeout !== undefined) {
+    const oldStateObj = changedProps.get("stateObj") as LightEntity | undefined;
+    if (oldStateObj?.entity_id !== this.stateObj?.entity_id) {
+      this._throttleUpdateColor.cancel();
+      this._pendingSync.reset();
+      this._isInteracting = false;
+      this._updateSliderValues();
+    } else if (!this._isInteracting && this._pendingSync.shouldSync()) {
+      this._updateSliderValues();
+    } else if (this.stateObj.state === "on") {
       // Keep the picker values, but the brightness normalization has to
       // follow the reported state, as it is applied to the next color sent.
-      if (this.stateObj.state === "on") {
-        this._updateBrightnessAdjusted();
-      }
-      return;
+      this._updateBrightnessAdjusted();
     }
-
-    this._updateSliderValues();
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    clearTimeout(this._releaseHoldTimeout);
-    this._releaseHoldTimeout = undefined;
-  }
-
-  private _holdReleasedValue() {
-    clearTimeout(this._releaseHoldTimeout);
-    this._releaseHoldTimeout = window.setTimeout(() => {
-      this._releaseHoldTimeout = undefined;
-      // A new drag started in the meantime; its release starts a new hold.
-      if (!this._isInteracting) {
-        this._updateSliderValues();
-      }
-    }, RELEASE_HOLD_TIME);
   }
 
   private _hsColorCursorMoved(ev: CustomEvent) {
@@ -291,6 +271,7 @@ class LightRgbColorPicker extends LitElement {
       return;
     }
     this._hsPickerValue = color;
+    this._pendingSync.schedule();
 
     this._throttleUpdateColor();
   }
@@ -353,21 +334,24 @@ class LightRgbColorPicker extends LitElement {
       this._colorBrightnessSliderValue = hsv[2] / 2.55;
     }
 
-    // There is no release event for the native input, so keep its value
-    // until state updates from calls sent while picking have settled.
-    this._holdReleasedValue();
+    this._pendingSync.schedule();
     this._throttleUpdateColor();
   }
 
   private _hsColorChanged(ev: CustomEvent) {
+    this._isInteracting = false;
     if (!ev.detail.value) {
+      // Nothing is sent, so stop blocking state updates.
+      this._throttleUpdateColor.cancel();
+      this._pendingSync.reset();
+      this._updateSliderValues();
       return;
     }
-    // A pending throttled call could otherwise send a stale color after the
+
+    // A pending throttled call would otherwise send an older color after the
     // final one.
     this._throttleUpdateColor.cancel();
     this._hsPickerValue = ev.detail.value;
-    this._holdReleasedValue();
 
     this._updateColor();
   }
@@ -414,11 +398,15 @@ class LightRgbColorPicker extends LitElement {
 
   private _applyColor(color: LightColor, params?: Record<string, any>) {
     fireEvent(this, "color-changed", color);
-    this._api.callService("light", "turn_on", {
-      entity_id: this.stateObj!.entity_id,
-      ...color,
-      ...params,
-    });
+    return this._pendingSync.run(
+      () =>
+        this._api.callService("light", "turn_on", {
+          entity_id: this.stateObj!.entity_id,
+          ...color,
+          ...params,
+        }),
+      () => this._updateSliderValues()
+    );
   }
 
   private _colorBrightnessSliderChanged(ev: CustomEvent) {

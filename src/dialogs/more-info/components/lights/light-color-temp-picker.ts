@@ -13,6 +13,7 @@ import {
 } from "../../../../common/color/convert-light-color";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateColorCss } from "../../../../common/entity/state_color";
+import { PendingValueSync } from "../../../../common/util/pending-value-sync";
 import { throttle } from "../../../../common/util/throttle";
 import "../../../../components/ha-control-slider";
 import {
@@ -50,11 +51,6 @@ export const generateColorTemperatureGradient = (min: number, max: number) => {
     .join(", ");
 };
 
-// Time to ignore state updates after releasing a picker, so that updates from
-// calls sent while dragging don't make it jump back before the final value
-// is reported.
-const RELEASE_HOLD_TIME = 1500;
-
 @customElement("light-color-temp-picker")
 class LightColorTempPicker extends LitElement {
   @state()
@@ -71,9 +67,7 @@ class LightColorTempPicker extends LitElement {
 
   @state() private _isInteracting?: boolean;
 
-  // Timer that keeps the released value shown while state updates from calls
-  // sent during dragging are still arriving.
-  private _releaseHoldTimeout?: number;
+  private _pendingSync = new PendingValueSync();
 
   protected render() {
     if (!this.stateObj) {
@@ -134,32 +128,19 @@ class LightColorTempPicker extends LitElement {
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
-    if (
-      this._isInteracting ||
-      this._releaseHoldTimeout !== undefined ||
-      !changedProps.has("stateObj")
-    ) {
+    if (!changedProps.has("stateObj")) {
       return;
     }
 
-    this._updateSliderValues();
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    clearTimeout(this._releaseHoldTimeout);
-    this._releaseHoldTimeout = undefined;
-  }
-
-  private _holdReleasedValue() {
-    clearTimeout(this._releaseHoldTimeout);
-    this._releaseHoldTimeout = window.setTimeout(() => {
-      this._releaseHoldTimeout = undefined;
-      // A new drag started in the meantime; its release starts a new hold.
-      if (!this._isInteracting) {
-        this._updateSliderValues();
-      }
-    }, RELEASE_HOLD_TIME);
+    const oldStateObj = changedProps.get("stateObj");
+    if (oldStateObj?.entity_id !== this.stateObj?.entity_id) {
+      this._throttleUpdateColorTemp.cancel();
+      this._pendingSync.reset();
+      this._isInteracting = false;
+      this._updateSliderValues();
+    } else if (!this._isInteracting && this._pendingSync.shouldSync()) {
+      this._updateSliderValues();
+    }
   }
 
   private _ctColorCursorMoved(ev: CustomEvent) {
@@ -172,6 +153,7 @@ class LightColorTempPicker extends LitElement {
     }
 
     this._ctPickerValue = ct;
+    this._pendingSync.schedule();
 
     this._throttleUpdateColorTemp();
   }
@@ -183,16 +165,20 @@ class LightColorTempPicker extends LitElement {
   private _ctColorChanged(ev: CustomEvent) {
     const ct = ev.detail.value;
 
-    // A pending throttled call could otherwise send a stale value after the
-    // picker value was reset from an intermediate state update.
+    this._isInteracting = false;
+
+    // A pending throttled call would otherwise send an older value after the
+    // final one.
     this._throttleUpdateColorTemp.cancel();
 
     if (isNaN(ct)) {
+      // Nothing is sent, so stop blocking state updates.
+      this._pendingSync.reset();
+      this._updateSliderValues();
       return;
     }
 
     this._ctPickerValue = ct;
-    this._holdReleasedValue();
 
     this._updateColorTemp();
   }
@@ -205,11 +191,15 @@ class LightColorTempPicker extends LitElement {
 
   private _applyColor(color: LightColor, params?: Record<string, any>) {
     fireEvent(this, "color-changed", color);
-    this._api.callService("light", "turn_on", {
-      entity_id: this.stateObj!.entity_id,
-      ...color,
-      ...params,
-    });
+    return this._pendingSync.run(
+      () =>
+        this._api.callService("light", "turn_on", {
+          entity_id: this.stateObj!.entity_id,
+          ...color,
+          ...params,
+        }),
+      () => this._updateSliderValues()
+    );
   }
 
   static get styles(): CSSResultGroup {
