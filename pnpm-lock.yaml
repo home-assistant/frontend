@@ -170,7 +170,7 @@ overrides:
   tslib: 2.9.1
 
 patchedDependencies:
-  echarts@6.1.0: 37f01fe232fbe6b84060784fafc5688202535874270ab1b1e02c58c7ee90b782
+  echarts@6.1.0: 6151b03e8e703a197c46d15051cd9118dd4f5d33bb9f39c8cf39721b0b5b3cf1
   sortablejs@1.15.7: f25f02dcc8720341c3cfac312e0502081328108270852ad039187c2c5e2ea432
   tinykeys@4.0.1: cdc7ece96d53357d38ff3c124a2553f86e3a5dc333d641d223eb6f07e28275f0
   workbox-build@7.4.1: 75e6346ad8d8af554c167f77ac7d9b9652f010398efdc6b399925a4795133099
@@ -343,10 +343,10 @@ importers:
         version: 0.0.1
       echarts:
         specifier: 6.1.0
-        version: 6.1.0(patch_hash=37f01fe232fbe6b84060784fafc5688202535874270ab1b1e02c58c7ee90b782)
+        version: 6.1.0(patch_hash=6151b03e8e703a197c46d15051cd9118dd4f5d33bb9f39c8cf39721b0b5b3cf1)
       echarts-extension-chart2music:
         specifier: 0.1.1
-        version: 0.1.1(echarts@6.1.0(patch_hash=37f01fe232fbe6b84060784fafc5688202535874270ab1b1e02c58c7ee90b782))(typescript@6.0.3)
+        version: 0.1.1(echarts@6.1.0(patch_hash=6151b03e8e703a197c46d15051cd9118dd4f5d33bb9f39c8cf39721b0b5b3cf1))(typescript@6.0.3)
       element-internals-polyfill:
         specifier: 3.0.2
         version: 3.0.2
@@ -12538,14 +12538,14 @@ snapshots:
     optionalDependencies:
       wcwidth: 1.0.1
 
-  echarts-extension-chart2music@0.1.1(echarts@6.1.0(patch_hash=37f01fe232fbe6b84060784fafc5688202535874270ab1b1e02c58c7ee90b782))(typescript@6.0.3):
+  echarts-extension-chart2music@0.1.1(echarts@6.1.0(patch_hash=6151b03e8e703a197c46d15051cd9118dd4f5d33bb9f39c8cf39721b0b5b3cf1))(typescript@6.0.3):
     dependencies:
       chart2music: 1.20.0(typescript@6.0.3)
-      echarts: 6.1.0(patch_hash=37f01fe232fbe6b84060784fafc5688202535874270ab1b1e02c58c7ee90b782)
+      echarts: 6.1.0(patch_hash=6151b03e8e703a197c46d15051cd9118dd4f5d33bb9f39c8cf39721b0b5b3cf1)
     transitivePeerDependencies:
       - typescript
 
-  echarts@6.1.0(patch_hash=37f01fe232fbe6b84060784fafc5688202535874270ab1b1e02c58c7ee90b782):
+  echarts@6.1.0(patch_hash=6151b03e8e703a197c46d15051cd9118dd4f5d33bb9f39c8cf39721b0b5b3cf1):
     dependencies:
       tslib: 2.9.1
       zrender: 6.1.0
