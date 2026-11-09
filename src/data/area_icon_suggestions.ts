@@ -163,7 +163,7 @@ export const getAreaIconSuggestions = (
   const keywords: RoomKeywords = Object.fromEntries(
     ROOM_TYPES.map((room) => [
       room,
-      localize(`ui.panel.config.areas.icon_keywords.${room}`).split("|"),
+      localize(`ui.components.rooms.${room}.keywords`).split("|"),
     ])
   );
   return roomIconSuggestions(matchRoomTypes(names, keywords));

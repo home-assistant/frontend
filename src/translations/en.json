@@ -1105,6 +1105,71 @@
         "failed_create_floor": "Failed to create floor.",
         "unknown": "Unknown floor selected"
       },
+      "rooms": {
+        "living_room": {
+          "keywords": "living room|lounge|family room|sitting room|den|living"
+        },
+        "bedroom": {
+          "keywords": "bedroom|guest room|master bedroom|master suite|bed room"
+        },
+        "kids_room": {
+          "keywords": "kids room|kids' room|kid's room|children's room|nursery|playroom|baby room"
+        },
+        "kitchen": {
+          "keywords": "kitchen|kitchenette"
+        },
+        "dining_room": {
+          "keywords": "dining room|dining area|dining"
+        },
+        "bathroom": {
+          "keywords": "bathroom|bath|shower room|ensuite|washroom"
+        },
+        "toilet": {
+          "keywords": "toilet|wc|restroom|powder room|loo|lavatory"
+        },
+        "office": {
+          "keywords": "office|study|home office|workspace|workroom"
+        },
+        "laundry_room": {
+          "keywords": "laundry|laundry room"
+        },
+        "hallway": {
+          "keywords": "hallway|hall|corridor|entrance|entryway|foyer|mudroom"
+        },
+        "stairs": {
+          "keywords": "stairs|staircase|stairway|stairwell|landing"
+        },
+        "garage": {
+          "keywords": "garage|carport"
+        },
+        "garden": {
+          "keywords": "garden|yard|backyard|front yard|lawn|greenhouse"
+        },
+        "terrace": {
+          "keywords": "terrace|patio|balcony|deck|porch|veranda"
+        },
+        "basement": {
+          "keywords": "basement|cellar"
+        },
+        "attic": {
+          "keywords": "attic|loft"
+        },
+        "storage": {
+          "keywords": "storage|storage room|pantry|closet|shed|storeroom"
+        },
+        "utility_room": {
+          "keywords": "utility room|boiler room|technical room|plant room|server room"
+        },
+        "gym": {
+          "keywords": "gym|fitness room|workout room|home gym"
+        },
+        "pool": {
+          "keywords": "pool|swimming pool|pool house"
+        },
+        "home_cinema": {
+          "keywords": "home cinema|home theater|home theatre|cinema room|media room|tv room"
+        }
+      },
       "icon_picker": {
         "suggested": "Suggested",
         "all_icons": "All icons"
@@ -3549,29 +3614,6 @@
           "delete_failed": "Some labels could not be deleted. Check system logs for more information."
         },
         "areas": {
-          "icon_keywords": {
-            "living_room": "living room|lounge|family room|sitting room|den|living",
-            "bedroom": "bedroom|guest room|master bedroom|master suite|bed room",
-            "kids_room": "kids room|kids' room|kid's room|children's room|nursery|playroom|baby room",
-            "kitchen": "kitchen|kitchenette",
-            "dining_room": "dining room|dining area|dining",
-            "bathroom": "bathroom|bath|shower room|ensuite|washroom",
-            "toilet": "toilet|wc|restroom|powder room|loo|lavatory",
-            "office": "office|study|home office|workspace|workroom",
-            "laundry_room": "laundry|laundry room",
-            "hallway": "hallway|hall|corridor|entrance|entryway|foyer|mudroom",
-            "stairs": "stairs|staircase|stairway|stairwell|landing",
-            "garage": "garage|carport",
-            "garden": "garden|yard|backyard|front yard|lawn|greenhouse",
-            "terrace": "terrace|patio|balcony|deck|porch|veranda",
-            "basement": "basement|cellar",
-            "attic": "attic|loft",
-            "storage": "storage|storage room|pantry|closet|shed|storeroom",
-            "utility_room": "utility room|boiler room|technical room|plant room|server room",
-            "gym": "gym|fitness room|workout room|home gym",
-            "pool": "pool|swimming pool|pool house",
-            "home_cinema": "home cinema|home theater|home theatre|cinema room|media room|tv room"
-          },
           "caption": "Areas",
           "description": "Group devices and entities into areas",
           "edit_settings": "Area settings",
