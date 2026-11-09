@@ -4,7 +4,10 @@ import {
   mdiNoteTextOutline,
 } from "@mdi/js";
 import { hexBlend } from "../../../../../common/color/hex";
-import type { LocalizeKeys } from "../../../../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../../../common/translations/localize";
 import type {
   NetworkData,
   NetworkLink,
@@ -109,14 +112,14 @@ export const enum MQTTNodeCategory {
 
 export const sourceName = (
   source: MQTTExplorerSource,
-  hass: HomeAssistant
+  localize: LocalizeFunc
 ): string => {
   if (source.type === "yaml") {
-    return hass.localize("ui.panel.config.mqtt.visualization.source_yaml");
+    return localize("ui.panel.config.mqtt.visualization.source_yaml");
   }
   // A discovery origin is named by its title
   if (source.type === "discovery" && !source.title) {
-    return hass.localize("ui.panel.config.mqtt.visualization.source_discovery");
+    return localize("ui.panel.config.mqtt.visualization.source_discovery");
   }
   return source.title ?? source.id;
 };
@@ -290,7 +293,7 @@ export function createMQTTNetworkChartData(
     const id = `${SOURCE_PREFIX}${source.id}`;
     nodes.push({
       id,
-      name: sourceName(source, hass),
+      name: sourceName(source, hass.localize),
       context: source.sw_version ?? undefined,
       category: MQTTNodeCategory.Source,
       value: 3,
@@ -369,6 +372,36 @@ export function createMQTTNetworkChartData(
   });
 
   const noDeviceNodes = new Set<string>();
+  // Items without a device hang under "No linked device" of their source
+  const noDeviceNode = (source: string): string => {
+    const id = `${NO_DEVICE_PREFIX}${source}`;
+    if (!noDeviceNodes.has(id)) {
+      noDeviceNodes.add(id);
+      nodes.push({
+        id,
+        name: localize("no_linked_device"),
+        category: MQTTNodeCategory.Device,
+        value: 2,
+        symbolSize: 24,
+        symbol: "emptyCircle",
+        itemStyle: { color: deviceColor },
+        polarDistance: 0.5,
+      });
+      links.push({
+        source: sourceNode(source),
+        target: id,
+        value: 2,
+        symbol: "none",
+        lineStyle: {
+          width: DEVICE_LINK_WIDTH,
+          color: deviceColor,
+          type: "dashed",
+        },
+      });
+    }
+    return id;
+  };
+
   structure.entities.forEach((entity) => {
     const source = entity.source ?? UNKNOWN_SOURCE;
     const onDevice = !!entity.device_id && deviceIds.has(entity.device_id);
@@ -377,37 +410,9 @@ export function createMQTTNetworkChartData(
       return;
     }
     const id = `${ENTITY_PREFIX}${entity.entity_id}`;
-    let parent: string;
-    if (onDevice) {
-      parent = `${DEVICE_PREFIX}${entity.device_id}`;
-    } else {
-      // Entities without a device hang under "No linked device" of their source
-      parent = `${NO_DEVICE_PREFIX}${source}`;
-      if (!noDeviceNodes.has(parent)) {
-        noDeviceNodes.add(parent);
-        nodes.push({
-          id: parent,
-          name: localize("no_linked_device"),
-          category: MQTTNodeCategory.Device,
-          value: 2,
-          symbolSize: 24,
-          symbol: "emptyCircle",
-          itemStyle: { color: deviceColor },
-          polarDistance: 0.5,
-        });
-        links.push({
-          source: sourceNode(source),
-          target: parent,
-          value: 2,
-          symbol: "none",
-          lineStyle: {
-            width: DEVICE_LINK_WIDTH,
-            color: deviceColor,
-            type: "dashed",
-          },
-        });
-      }
-    }
+    const parent = onDevice
+      ? `${DEVICE_PREFIX}${entity.device_id}`
+      : noDeviceNode(source);
     // A focused entity shows its topics
     const isExpanded = id === focusedNode;
     const entityNodeColor = entity.available ? entityColor : unavailableColor;
@@ -444,7 +449,10 @@ export function createMQTTNetworkChartData(
   });
 
   structure.artifacts.forEach((artifact) => {
-    if (!sourceIds.has(artifact.source) || !deviceIds.has(artifact.device_id)) {
+    if (
+      !sourceIds.has(artifact.source) ||
+      (artifact.device_id && !deviceIds.has(artifact.device_id))
+    ) {
       return;
     }
     const id = `${ARTIFACT_PREFIX}${artifact.artifact_id}`;
@@ -461,7 +469,9 @@ export function createMQTTNetworkChartData(
       polarDistance: 0.75,
     });
     links.push({
-      source: `${DEVICE_PREFIX}${artifact.device_id}`,
+      source: artifact.device_id
+        ? `${DEVICE_PREFIX}${artifact.device_id}`
+        : noDeviceNode(artifact.source),
       target: id,
       value: 1,
       symbol: "none",
@@ -585,8 +595,15 @@ export function createMQTTNetworkChartData(
     return true;
   });
   const hiddenCategoryNames = new Set(hiddenCategories);
-  const isHidden = (node: NetworkNode) =>
-    hiddenCategoryNames.has(categories[node.category!]?.name);
+  // Taken before the nodes get their new category index below
+  const hiddenNodeIds = new Set(
+    nodes
+      .filter((node) =>
+        hiddenCategoryNames.has(categories[node.category!]?.name)
+      )
+      .map((node) => node.id)
+  );
+  const isHidden = (node: NetworkNode) => hiddenNodeIds.has(node.id);
   const nodesById = new Map(nodes.map((node) => [node.id, node]));
   const childIds = new Map<string, string[]>();
   links.forEach((link) => {

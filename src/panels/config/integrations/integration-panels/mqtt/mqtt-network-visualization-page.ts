@@ -96,6 +96,8 @@ interface SelectedTopic {
   // The entity or artifact node the topic belongs to
   ownerNodeId: string;
   topic: MQTTExplorerEntityTopic;
+  // The QoS of the live subscription
+  qos: number;
 }
 
 const isFocusable = (id: string): boolean =>
@@ -218,7 +220,8 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
 
   protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
-    if (this.shadowRoot!.querySelector(".node-actions")) {
+    // A request that resolves after leaving the page still updates it
+    if (this.isConnected && this.shadowRoot!.querySelector(".node-actions")) {
       this._nodeActionsFrame ??= requestAnimationFrame(this._trackNodeActions);
     } else {
       // Removed actions get no pointerleave
@@ -417,20 +420,19 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
         this._selectedTopic
           ? html`<aside>
               <mqtt-topic-messages
-                .hass=${this.hass}
                 .topic=${this._selectedTopic.topic}
                 .messages=${this._topicMessages(
                   this._liveMessages,
                   this._storedMessages
                 )}
                 .live=${this._topicLive}
+                .qos=${this._selectedTopic.qos}
                 @mqtt-topic-messages-closed=${this._closeTopic}
               ></mqtt-topic-messages>
             </aside>`
           : this._showConfig && configItem(this._focusedNode)
             ? html`<aside>
                 <mqtt-config-view
-                  .hass=${this.hass}
                   .name=${this._nodeName(this._focusedNode!)}
                   .kind=${this._nodeKind(this._focusedNode!)}
                   .configs=${this._configs}
@@ -464,14 +466,9 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
   }
 
   private _nodeName(id: string): string {
-    const node = this._networkData(
-      this._structure!,
-      this._isMobileSize,
-      this._hiddenSources,
-      this._focusedNode,
-      this._searchFilter,
-      this._hiddenCategories
-    ).nodes.find((n) => n.id === id);
+    const node = this._chartData(this._structure!).nodes.find(
+      (n) => n.id === id
+    );
     return node?.name ?? id;
   }
 
@@ -498,14 +495,7 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
   private _renderGraph(structure: MQTTExplorerStructure) {
     return html`
       <ha-network-graph
-        .data=${this._networkData(
-          structure,
-          this._isMobileSize,
-          this._hiddenSources,
-          this._focusedNode,
-          this._searchFilter,
-          this._hiddenCategories
-        )}
+        .data=${this._chartData(structure)}
         .selectedNode=${this._focusedNode}
         .hoverFocus=${false}
         .physicsToggle=${false}
@@ -533,7 +523,7 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
                 .checked=${!this._hiddenSources.includes(source.id)}
                 @click=${this._toggleSource}
               >
-                ${sourceName(source, this.hass)}
+                ${sourceName(source, this.hass.localize)}
               </ha-dropdown-item>
             `
           )}
@@ -586,6 +576,19 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
     ></ha-input-search>`;
   }
 
+  private _chartData(structure: MQTTExplorerStructure) {
+    return this._networkData(
+      structure,
+      this._isMobileSize,
+      this._hiddenSources,
+      this._focusedNode,
+      this._searchFilter,
+      this._hiddenCategories,
+      this.hass.themes,
+      this.hass.localize
+    );
+  }
+
   private _networkData = memoizeOne(
     (
       structure: MQTTExplorerStructure,
@@ -593,7 +596,10 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
       hiddenSources: string[],
       focusedNode: string | undefined,
       searchFilter: string,
-      hiddenCategories: string[]
+      hiddenCategories: string[],
+      // The colors and names follow the theme and the language
+      _themes: HomeAssistant["themes"],
+      _localize: HomeAssistant["localize"]
     ) =>
       // The search fades the graph here, so the links between matches stay
       createMQTTNetworkChartData(
@@ -677,7 +683,11 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
     this._stopLiveMessages();
     // The messages take the place of the configuration
     this._showConfig = false;
-    const selection: SelectedTopic = { ownerNodeId, topic: ownerTopic };
+    const selection: SelectedTopic = {
+      ownerNodeId,
+      topic: ownerTopic,
+      qos: direction === "publish" ? PUBLISH_TOPIC_QOS : ownerTopic.qos,
+    };
     this._selectedTopic = selection;
     this._storedMessages = [];
     this._liveMessages = [];
@@ -695,15 +705,20 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
           ...this._liveMessages,
         ].slice(0, MAX_LIVE_MESSAGES);
       },
-      direction === "publish" ? PUBLISH_TOPIC_QOS : ownerTopic.qos
+      selection.qos
     );
     this._unsubTopic = unsub;
+    // An earlier subscription can settle after this one
     unsub.then(
       () => {
-        this._topicLive = this._unsubTopic === unsub;
+        if (this._unsubTopic === unsub) {
+          this._topicLive = true;
+        }
       },
       () => {
-        this._topicLive = false;
+        if (this._unsubTopic === unsub) {
+          this._topicLive = false;
+        }
       }
     );
 
@@ -827,7 +842,7 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
       const entities = this._structure.entities.filter(
         (e) => e.source === source.id
       ).length;
-      return html`<b>${sourceName(source, this.hass)}</b>${
+      return html`<b>${sourceName(source, localize)}</b>${
           source.sw_version
             ? html`<br /><b
                   >${localize("ui.panel.config.mqtt.visualization.version")}: </b
@@ -946,9 +961,9 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
       const { broker } = this._structure;
       return html`<b>${localize("ui.panel.config.mqtt.visualization.broker")}</b
         ><br />${broker.host}:${broker.port}<br /><span
-          style="color: var(${
-            broker.connected ? "--success-color" : "--error-color"
-          })"
+          style="color: ${
+            broker.connected ? "var(--success-color)" : "var(--error-color)"
+          }"
           >${localize(
             broker.connected
               ? "ui.panel.config.mqtt.visualization.connected"

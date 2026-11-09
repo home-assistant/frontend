@@ -3,8 +3,12 @@ import { dump } from "js-yaml";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { LocalizeKeys } from "../../../../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../../../common/translations/localize";
 import { sanitizeHttpUrl } from "../../../../../common/url/sanitize-http-url";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import "../../../../../components/ha-alert";
@@ -15,13 +19,14 @@ import type {
   MQTTExplorerConfig,
   MQTTExplorerSource,
 } from "../../../../../data/mqtt";
-import type { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
 import { sourceName } from "./mqtt-network-data";
 
 @customElement("mqtt-config-view")
 class MqttConfigView extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localizeFunc!: LocalizeFunc;
 
   // The name of the device, entity, trigger or tag
   @property({ attribute: false }) public name!: string;
@@ -80,7 +85,7 @@ class MqttConfigView extends LitElement {
   }
 
   private _localize(key: string): string {
-    return this.hass.localize(
+    return this._localizeFunc(
       `ui.panel.config.mqtt.visualization.config_view.${key}` as LocalizeKeys
     );
   }
@@ -100,7 +105,7 @@ class MqttConfigView extends LitElement {
         </div>
         <ha-icon-button
           .path=${mdiClose}
-          .label=${this.hass.localize("ui.common.close")}
+          .label=${this._localizeFunc("ui.common.close")}
           @click=${this._close}
         ></ha-icon-button>
       </div>
@@ -130,7 +135,9 @@ class MqttConfigView extends LitElement {
     const origin = config.origin;
     // The origin is published by any MQTT client
     const supportUrl = sanitizeHttpUrl(origin?.support_url);
-    const title = source ? sourceName(source, this.hass) : config.source;
+    const title = source
+      ? sourceName(source, this._localizeFunc)
+      : config.source;
     if (this.device && config.type === "yaml") {
       return html`<p class="secondary">${this._localize("yaml_device")}</p>`;
     }
@@ -255,7 +262,7 @@ class MqttConfigView extends LitElement {
   private async _copy(ev: Event): Promise<void> {
     await copyToClipboard((ev.currentTarget as HTMLElement).dataset.text!);
     showToast(this, {
-      message: this.hass.localize("ui.common.copied_clipboard"),
+      message: this._localizeFunc("ui.common.copied_clipboard"),
     });
   }
 

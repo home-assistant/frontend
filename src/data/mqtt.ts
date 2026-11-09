@@ -89,7 +89,8 @@ export interface MQTTExplorerArtifact {
   artifact_id: string;
   type: "device_trigger" | "tag";
   source: string;
-  device_id: string;
+  // Null for a tag scanner without a device
+  device_id: string | null;
   node_id: string | null;
   topics: MQTTExplorerEntityTopic[];
 }

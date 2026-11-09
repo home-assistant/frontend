@@ -1,8 +1,11 @@
 import { mdiClose, mdiContentCopy } from "@mdi/js";
+import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../../../common/decorators/consume";
 import { storage } from "../../../../../common/decorators/storage";
+import { transform } from "../../../../../common/decorators/transform";
 import { formatTimeWithSeconds } from "../../../../../common/datetime/format_time";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../../../../common/translations/localize";
@@ -11,8 +14,15 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-switch";
 import "../../../../../components/item/ha-list-item-option";
 import "../../../../../components/list/ha-list-selectable";
+import {
+  configContext,
+  internationalizationContext,
+} from "../../../../../data/context";
 import type { MQTTExplorerEntityTopic } from "../../../../../data/mqtt";
-import type { HomeAssistant } from "../../../../../types";
+import type {
+  HomeAssistantConfig,
+  HomeAssistantInternationalization,
+} from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
 import { diffJsonPayloads, prettyPrintJson } from "./mqtt-payload";
 
@@ -33,7 +43,16 @@ const CHANGE_SIGNS = { added: "+", removed: "−", changed: "~" } as const;
 
 @customElement("mqtt-topic-messages")
 class MqttTopicMessages extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _config!: HassConfig;
 
   @property({ attribute: false }) public topic!: MQTTExplorerEntityTopic;
 
@@ -42,6 +61,9 @@ class MqttTopicMessages extends LitElement {
 
   // The live subscription is active
   @property({ type: Boolean }) public live = false;
+
+  // The QoS of the live subscription
+  @property({ type: Number }) public qos = 0;
 
   @state() private _selectedId?: number;
 
@@ -65,7 +87,7 @@ class MqttTopicMessages extends LitElement {
   }
 
   private _localize(key: string, values?: Record<string, unknown>): string {
-    return this.hass.localize(
+    return this._i18n.localize(
       `ui.panel.config.mqtt.visualization.topic_view.${key}` as LocalizeKeys,
       values as any
     );
@@ -88,14 +110,14 @@ class MqttTopicMessages extends LitElement {
         <code class="topic">${this.topic.topic}</code>
         <ha-icon-button
           .path=${mdiClose}
-          .label=${this.hass.localize("ui.common.close")}
+          .label=${this._i18n.localize("ui.common.close")}
           @click=${this._close}
         ></ha-icon-button>
       </div>
       <div class="stats">
         ${
           this.live
-            ? this._localize("listening", { qos: this.topic.qos })
+            ? this._localize("listening", { qos: this.qos })
             : this._localize("not_listening")
         }
       </div>
@@ -117,8 +139,8 @@ class MqttTopicMessages extends LitElement {
                     <span slot="headline"
                       >${formatTimeWithSeconds(
                         msg.time,
-                        this.hass.locale,
-                        this.hass.config
+                        this._i18n.locale,
+                        this._config
                       )}</span
                     >
                     ${
@@ -250,7 +272,7 @@ class MqttTopicMessages extends LitElement {
     }
     await copyToClipboard(selected.payload);
     showToast(this, {
-      message: this.hass.localize("ui.common.copied_clipboard"),
+      message: this._i18n.localize("ui.common.copied_clipboard"),
     });
   }
 
