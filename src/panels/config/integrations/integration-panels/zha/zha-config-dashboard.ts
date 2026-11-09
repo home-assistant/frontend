@@ -523,6 +523,13 @@ class ZHAConfigDashboard extends LitElement {
           max-width: var(--ha-content-width-narrow);
         }
 
+        ha-list-item-base::part(headline),
+        ha-list-item-base::part(supporting-text),
+        ha-list-item-button::part(headline),
+        ha-list-item-button::part(supporting-text) {
+          white-space: normal;
+        }
+
         .nav-card .card-header {
           display: flex;
           align-items: center;
