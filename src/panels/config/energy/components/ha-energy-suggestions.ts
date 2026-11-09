@@ -1,13 +1,4 @@
-import {
-  mdiBatteryHigh,
-  mdiFire,
-  mdiHomeExportOutline,
-  mdiHomeImportOutline,
-  mdiLightbulbOnOutline,
-  mdiPowerPlug,
-  mdiSolarPower,
-  mdiWater,
-} from "@mdi/js";
+import { mdiFire, mdiFlash, mdiLightbulbOnOutline, mdiWater } from "@mdi/js";
 import type { ContextType } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -43,8 +34,7 @@ import type {
 import {
   addEnergySuggestion,
   computeEnergySuggestions,
-  suggestionStatisticIds,
-  suggestionTab,
+  updateDismissedSuggestions,
 } from "../../../../data/energy_suggestions";
 import {
   fetchFrontendUserData,
@@ -58,14 +48,10 @@ import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { energyCardStyles } from "./styles";
 
-const SLOT_ICONS: Record<EnergySuggestionSlot, string> = {
-  grid_import: mdiHomeImportOutline,
-  grid_export: mdiHomeExportOutline,
-  solar: mdiSolarPower,
-  battery: mdiBatteryHigh,
+const TAB_ICONS: Record<EnergySuggestionTab, string> = {
+  electricity: mdiFlash,
   gas: mdiFire,
   water: mdiWater,
-  device: mdiPowerPlug,
 };
 
 @customElement("ha-energy-suggestions")
@@ -130,8 +116,6 @@ export class EnergySuggestions extends LitElement {
       preferences: EnergyPreferences,
       dismissed: string[],
       states: HomeAssistant["states"],
-      entities: HomeAssistant["entities"],
-      devices: HomeAssistant["devices"],
       tab: EnergySuggestionTab
     ) =>
       computeEnergySuggestions({
@@ -139,9 +123,7 @@ export class EnergySuggestions extends LitElement {
         preferences,
         dismissed,
         states,
-        entities,
-        devices,
-      }).filter((suggestion) => suggestionTab(suggestion.slot) === tab)
+      }).filter((suggestion) => suggestion.tab === tab)
   );
 
   connectedCallback() {
@@ -191,8 +173,6 @@ export class EnergySuggestions extends LitElement {
       this.preferences,
       this._dismissed,
       this._states,
-      this._entities,
-      this._devices,
       this.tab
     );
     if (!suggestions.length) {
@@ -225,16 +205,14 @@ export class EnergySuggestions extends LitElement {
 
   private _renderSuggestion(suggestion: EnergyMeterSuggestion) {
     const slot = this._slotFor(suggestion);
-    const label = suggestionStatisticIds(suggestion)
-      .map((statisticId) =>
-        getStatisticLabel(
-          this._states,
-          this._formatters.formatEntityName,
-          statisticId,
-          this._statistics!.find((meta) => meta.statistic_id === statisticId)
-        )
+    const label = getStatisticLabel(
+      this._states,
+      this._formatters.formatEntityName,
+      suggestion.statisticId,
+      this._statistics!.find(
+        (meta) => meta.statistic_id === suggestion.statisticId
       )
-      .join(" + ");
+    );
     const areaId = getEntityAreaId(
       suggestion.statisticId,
       this._entities,
@@ -244,7 +222,7 @@ export class EnergySuggestions extends LitElement {
 
     return html`
       <div class="suggestion">
-        <ha-svg-icon .path=${SLOT_ICONS[slot]}></ha-svg-icon>
+        <ha-svg-icon .path=${TAB_ICONS[suggestion.tab]}></ha-svg-icon>
         <div class="content">
           <span class="label">${label}</span>
           ${
@@ -256,24 +234,28 @@ export class EnergySuggestions extends LitElement {
           }
         </div>
         <div class="actions">
-          <ha-select
-            .label=${this._i18n.localize(
-              "ui.panel.config.energy.suggestions.slot"
-            )}
-            .value=${slot}
-            .options=${suggestion.slots.map((value) => ({
-              value,
-              label: this._i18n.localize(
-                `ui.panel.config.energy.suggestions.slots.${value}`
-              ),
-            }))}
-            .disabled=${this._busy || suggestion.slots.length < 2}
-            .suggestion=${suggestion}
-            @selected=${this._slotSelected}
-          ></ha-select>
+          ${
+            suggestion.slots.length > 1
+              ? html`<ha-select
+                  .label=${this._i18n.localize(
+                    "ui.panel.config.energy.suggestions.slot"
+                  )}
+                  .value=${slot}
+                  .options=${suggestion.slots.map((value) => ({
+                    value,
+                    label: this._i18n.localize(
+                      `ui.panel.config.energy.suggestions.slots.${value}`
+                    ),
+                  }))}
+                  .disabled=${this._busy}
+                  .suggestion=${suggestion}
+                  @selected=${this._slotSelected}
+                ></ha-select>`
+              : nothing
+          }
           <ha-button
             size="s"
-            .disabled=${this._busy}
+            .disabled=${this._busy || !slot}
             .suggestion=${suggestion}
             @click=${this._add}
             >${this._i18n.localize(
@@ -296,12 +278,14 @@ export class EnergySuggestions extends LitElement {
     `;
   }
 
-  // A picked slot can stop fitting once the preferences change.
-  private _slotFor(suggestion: EnergyMeterSuggestion): EnergySuggestionSlot {
-    const picked = this._slots[suggestion.statisticId];
-    return picked && suggestion.slots.includes(picked)
-      ? picked
-      : suggestion.slot;
+  // Nothing is preselected when the meter fits more than one slot.
+  private _slotFor(
+    suggestion: EnergyMeterSuggestion
+  ): EnergySuggestionSlot | undefined {
+    if (suggestion.slots.length === 1) {
+      return suggestion.slots[0];
+    }
+    return this._slots[suggestion.statisticId];
   }
 
   private _slotSelected(ev: HaSelectSelectEvent<EnergySuggestionSlot>) {
@@ -313,14 +297,14 @@ export class EnergySuggestions extends LitElement {
   private async _add(ev: Event) {
     const suggestion: EnergyMeterSuggestion = (ev.currentTarget as any)
       .suggestion;
+    const slot = this._slotFor(suggestion);
+    if (!slot) {
+      return;
+    }
     this._busy = true;
     try {
       const result = await this.save(
-        addEnergySuggestion(
-          this.preferences,
-          suggestion,
-          this._slotFor(suggestion)
-        )
+        addEnergySuggestion(this.preferences, suggestion.statisticId, slot)
       );
       fireEvent(this, "value-changed", { value: result });
     } catch (err: any) {
@@ -342,7 +326,11 @@ export class EnergySuggestions extends LitElement {
       .suggestion;
     const previous = this._dismissed!;
     this._busy = true;
-    this._dismissed = [...previous, ...suggestionStatisticIds(suggestion)];
+    this._dismissed = updateDismissedSuggestions(
+      previous,
+      suggestion.statisticId,
+      this._statistics!
+    );
     try {
       await saveFrontendUserData(this._connection.connection, "energy", {
         dismissed_suggestions: this._dismissed,

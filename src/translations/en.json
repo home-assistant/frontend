@@ -4633,7 +4633,7 @@
           },
           "suggestions": {
             "title": "{count, plural,\n  one {# meter isn't}\n  other {# meters aren't}\n} in your energy dashboard yet",
-            "sub": "These meters record energy but aren't used in your energy dashboard. Check where each one belongs and add it, or dismiss it.",
+            "sub": "These meters record energy but aren't used in your energy dashboard. Choose where each one belongs and add it, or dismiss it.",
             "slot": "Add as",
             "add": "Add",
             "dismiss": "Dismiss",
@@ -4643,7 +4643,6 @@
               "grid_import": "Grid consumption",
               "grid_export": "Return to grid",
               "solar": "Solar production",
-              "battery": "Home battery",
               "gas": "Gas consumption",
               "water": "Water consumption",
               "device": "Individual device"
