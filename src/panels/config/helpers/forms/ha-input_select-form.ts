@@ -149,6 +149,7 @@ class HaInputSelectForm extends LitElement {
                     (option) => option,
                     (option, index) => html`
                       <ha-list-item-base
+                        id="move-option-${index}"
                         class="option"
                         interactive
                         .headline=${option}
@@ -162,11 +163,11 @@ class HaInputSelectForm extends LitElement {
                       >
                         <ha-svg-icon
                           slot="start"
-                          id="move-option-${index}"
                           class="handle"
                           .path=${mdiDragHorizontalVariant}
                         ></ha-svg-icon>
                         <ha-tooltip
+                          trigger="focus"
                           slot="start"
                           for="move-option-${index}"
                           .disabled=${this.disabled}

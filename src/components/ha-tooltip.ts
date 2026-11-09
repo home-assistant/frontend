@@ -11,6 +11,29 @@ export class HaTooltip extends Tooltip {
   /** The amount of time to wait before hiding the tooltip when the user mouses out.. */
   @property({ attribute: "hide-delay", type: Number }) hideDelay = 150;
 
+  private _anchorEvents?: AbortController;
+
+  public handleForChange(): void {
+    super.handleForChange();
+    this._anchorEvents?.abort();
+    this._anchorEvents = new AbortController();
+    this.anchor?.addEventListener(
+      "click",
+      () => {
+        // The underlying tooltip dismisses on click, including focus-only hints.
+        if (this.trigger === "focus" && this.anchor?.matches(":focus-within")) {
+          this.show();
+        }
+      },
+      { signal: this._anchorEvents.signal }
+    );
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._anchorEvents?.abort();
+  }
+
   static get styles(): CSSResultGroup {
     return [
       Tooltip.styles,

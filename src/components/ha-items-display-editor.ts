@@ -115,6 +115,7 @@ export class HaItemDisplayEditor extends LitElement {
               } = item;
               return html`
                 <ha-list-item-button
+                  id="move-item-row-${idx}"
                   @click=${
                     this.showNavigationButton ? this._navigate : undefined
                   }
@@ -215,7 +216,15 @@ export class HaItemDisplayEditor extends LitElement {
                             .path=${mdiDragHorizontalVariant}
                             slot="end"
                           ></ha-svg-icon>
-                          <ha-tooltip slot="end" for="move-item-${idx}">
+                          <ha-tooltip
+                            slot="end"
+                            trigger="focus"
+                            for=${
+                              this.showNavigationButton
+                                ? `move-item-${idx}`
+                                : `move-item-row-${idx}`
+                            }
+                          >
                             ${renderMoveShortcutHint(
                               this._localize(
                                 "ui.panel.config.automation.editor.move_up"

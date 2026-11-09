@@ -525,6 +525,7 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
         `;
         return html`
           <ha-tab-group-tab
+            id="move-view-${index}"
             slot="nav"
             panel=${index}
             .active=${current}
@@ -546,11 +547,10 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
               this._editMode
                 ? html`
                     <ha-svg-icon
-                      id="move-view-${index}"
                       class="edit-icon view handle"
                       .path=${mdiDragHorizontalVariant}
                     ></ha-svg-icon>
-                    <ha-tooltip for="move-view-${index}">
+                    <ha-tooltip trigger="focus" for="move-view-${index}">
                       ${renderMoveShortcutHint(
                         this.hass.localize(
                           `ui.panel.lovelace.editor.edit_view.${rtl ? "move_right" : "move_left"}`

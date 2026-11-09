@@ -89,7 +89,7 @@ export default class HaAutomationOption extends AutomationSortableListMixin<Opti
                           <ha-svg-icon
                             .path=${mdiDragHorizontalVariant}
                           ></ha-svg-icon>
-                          <ha-tooltip for="move-row-${idx}">
+                          <ha-tooltip trigger="focus" for="move-row-${idx}">
                             ${renderMoveShortcutHint(
                               this.hass.localize(
                                 "ui.panel.config.automation.editor.move_up"
