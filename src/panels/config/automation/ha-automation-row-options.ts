@@ -5,6 +5,7 @@ import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { consume } from "../../../common/decorators/consume";
 import { consumeEntityStates } from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { createDurationData } from "../../../common/datetime/create_duration_data";
 import { formatDurationNarrow } from "../../../common/datetime/format_duration";
 import { normalizeDuration } from "../../../common/datetime/normalize_duration";
@@ -74,8 +75,32 @@ export class HaAutomationRowOptions extends LitElement {
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
 
+  @state()
   @consume({ context: statesContext, subscribe: true })
-  private _allStates!: ContextType<typeof statesContext>;
+  @transform<ContextType<typeof statesContext>, string | undefined>({
+    watch: ["config", "description", "_registries"],
+    transformer(this: HaAutomationRowOptions, states) {
+      const fields = Object.entries(this.description?.fields || {});
+      const needsTarget = fields.some(
+        ([name, field]) =>
+          this.config?.options?.[name] != null &&
+          field.selector &&
+          "state" in field.selector &&
+          field.selector.state?.entity_id === undefined
+      );
+      return needsTarget && this.config?.target && states && this._registries
+        ? resolveEntityIDs(
+            { ...this._registries, states },
+            this.config.target,
+            this._registries.entities,
+            this._registries.devices,
+            this._registries.areas,
+            { target: this.description?.target || {} }
+          )[0]
+        : undefined;
+    },
+  })
+  private _targetId?: string;
 
   @state() private _entityIds: string[] = [];
 
@@ -83,33 +108,14 @@ export class HaAutomationRowOptions extends LitElement {
   @consumeEntityStates({ entityIdPath: ["_entityIds"] })
   private _states?: ContextType<typeof statesContext>;
 
-  private _targetId?: string;
-
   protected willUpdate(changedProperties: PropertyValues): void {
     if (
       changedProperties.has("config") ||
       changedProperties.has("description") ||
-      changedProperties.has("_registries")
+      changedProperties.has("_registries") ||
+      changedProperties.has("_targetId")
     ) {
       const fields = Object.entries(this.description?.fields || {});
-      const needsTarget = fields.some(
-        ([name, field]) =>
-          this.config.options?.[name] != null &&
-          field.selector &&
-          "state" in field.selector &&
-          field.selector.state?.entity_id === undefined
-      );
-      this._targetId =
-        needsTarget && this.config.target && this._allStates && this._registries
-          ? resolveEntityIDs(
-              { ...this._registries, states: this._allStates },
-              this.config.target,
-              this._registries.entities,
-              this._registries.devices,
-              this._registries.areas,
-              { target: this.description?.target || {} }
-            )[0]
-          : undefined;
       const ids = this._targetId ? [this._targetId] : [];
       for (const [name, field] of fields) {
         const selector = field.selector;
