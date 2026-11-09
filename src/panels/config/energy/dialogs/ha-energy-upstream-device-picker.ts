@@ -69,15 +69,10 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
 
   private _ambiguousStatisticIds = memoizeOne(
     (
-      _states: HomeAssistant["states"],
-      _formatEntityName: HomeAssistant["formatEntityName"],
+      states: HomeAssistant["states"],
+      formatEntityName: HomeAssistant["formatEntityName"],
       devices: DeviceConsumptionEnergyPreference[]
-    ) =>
-      computeAmbiguousEnergyDevices(
-        this.hass.states,
-        this.hass.formatEntityName,
-        devices
-      )
+    ) => computeAmbiguousEnergyDevices(states, formatEntityName, devices)
   );
 
   private _computeItem = (statisticId: string): UpstreamDeviceComboBoxItem => {
