@@ -139,15 +139,15 @@ describe("getServiceHiddenFields", () => {
   const modeFields = {
     mode: {
       required: true,
-      default: "duration",
-      selector: { select: { options: ["duration", "end_of_track"] } },
+      default: "clip",
+      selector: { select: { options: ["clip", "snapshot"] } },
     },
     advanced: {
       fields: {
         duration: {
           required: true,
           selector: { duration: {} },
-          visible: { field: "mode", value: "duration" },
+          visible: { field: "mode", value: "clip" },
         },
       },
     },
@@ -156,7 +156,7 @@ describe("getServiceHiddenFields", () => {
   const defaults = getServiceFieldDefaults(modeFields);
 
   it("collects the defaults of fields, including fields in sections", () => {
-    expect(defaults).toEqual({ mode: "duration" });
+    expect(defaults).toEqual({ mode: "clip" });
   });
 
   it("evaluates a field without a value with its default", () => {
@@ -183,7 +183,7 @@ describe("getServiceHiddenFields", () => {
         fields: {
           duration: {
             selector: { duration: {} },
-            visible: { field: "mode", value: "duration" },
+            visible: { field: "mode", value: "clip" },
           },
         },
       },
@@ -202,7 +202,7 @@ describe("getServiceHiddenFields", () => {
 
   it("uses the value of the field when it has one", () => {
     expect(
-      getServiceHiddenFields(visibility, defaults, { mode: "end_of_track" })
+      getServiceHiddenFields(visibility, defaults, { mode: "snapshot" })
     ).toEqual(new Set(["duration"]));
   });
 });
