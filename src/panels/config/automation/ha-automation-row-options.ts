@@ -44,6 +44,9 @@ interface HaAutomationRowOptionsConfig {
 }
 
 const collectEntityIds = (selector: Selector, value: unknown): string[] => {
+  if (value == null) {
+    return [];
+  }
   if ("entity" in selector) {
     return ensureArray(value).filter(
       (id): id is string => typeof id === "string"
