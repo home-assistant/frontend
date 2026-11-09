@@ -8238,6 +8238,7 @@
           "disabled_by_user": "Disabled by user",
           "manage_integration": "Manage integration",
           "option_flow": "Configure Bluetooth options",
+          "source_option_flow": "Configure {integration} options",
           "no_connections": "No active connections",
           "active_connections": "connections",
           "no_advertisements_found": "No matching Bluetooth advertisements found",
