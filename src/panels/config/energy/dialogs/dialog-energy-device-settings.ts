@@ -94,12 +94,19 @@ export class DialogEnergyDeviceSettings
     if (!device) {
       return "";
     }
-    const statisticKey = device.stat_consumption
-      ? "stat_consumption"
-      : "stat_rate";
-    const statisticId = device[statisticKey];
+    const statisticId = device.stat_consumption ?? device.stat_rate;
     if (!statisticId) {
       return "";
+    }
+    // Saving a draft without a consumption statistic creates the helper the
+    // device will be labelled by, so there is no entity to tell it apart yet.
+    if (!device.stat_consumption) {
+      return computeEnergyLabel(
+        this.hass.states,
+        this.hass.formatEntityName,
+        statisticId,
+        this._params?.statsMetadata?.[statisticId]
+      );
     }
     // The saved entry of the device being edited is replaced by the draft
     // without a display name, which is what the placeholder stands for. The
@@ -121,8 +128,7 @@ export class DialogEnergyDeviceSettings
       computeAmbiguousEnergyDevices(
         this.hass.states,
         this.hass.formatEntityName,
-        devices,
-        statisticKey
+        devices
       ).has(statisticId)
     );
   }
