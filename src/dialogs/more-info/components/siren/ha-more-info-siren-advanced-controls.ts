@@ -97,7 +97,11 @@ class MoreInfoSirenAdvancedControls extends LitElement {
                     <ha-input
                       type="number"
                       .label=${this.hass.localize("ui.components.siren.volume")}
-                      .value=${this._volume ? `${this._volume * 100}` : undefined}
+                      .value=${
+                        this._volume
+                          ? `${Math.round(this._volume * 100)}`
+                          : undefined
+                      }
                       @change=${this._handleVolumeChange}
                       .min=${0}
                       .max=${100}
