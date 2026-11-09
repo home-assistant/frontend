@@ -109,7 +109,7 @@ export interface ConfigEntryData {
 const AI_SETTINGS_DOMAINS = ["mcp", "mcp_server"];
 
 export const renderConfigEntryError = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "localize" | "loadBackendTranslation">,
   entry: ConfigEntry
 ): TemplateResult => {
   if (entry.reason) {
