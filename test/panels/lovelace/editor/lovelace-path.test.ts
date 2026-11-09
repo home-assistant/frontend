@@ -1,8 +1,12 @@
 import { assert, describe, it } from "vitest";
+import {
+  pathEquals,
+  stringifyPath,
+  type ConfigPath,
+} from "../../../../src/common/util/config-path";
 
 import type { LovelaceCardConfig } from "../../../../src/data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../src/data/lovelace/config/types";
-import type { LovelacePath } from "../../../../src/panels/lovelace/editor/lovelace-path";
 import {
   appendAtPath,
   deleteAtPath,
@@ -16,9 +20,7 @@ import {
   moveAtPath,
   normalizeCardPath,
   parsePath,
-  pathEquals,
   setAtPath,
-  stringifyPath,
 } from "../../../../src/panels/lovelace/editor/lovelace-path";
 
 const createConfig = (): LovelaceConfig => ({
@@ -48,13 +50,13 @@ const createConfig = (): LovelaceConfig => ({
 
 describe("stringifyPath / parsePath", () => {
   it("round trips a nested card path", () => {
-    const path: LovelacePath = ["views", 0, "sections", 1, "cards", 2];
+    const path: ConfigPath = ["views", 0, "sections", 1, "cards", 2];
     assert.strictEqual(stringifyPath(path), "views/0/sections/1/cards/2");
     assert.deepEqual(parsePath("views/0/sections/1/cards/2"), path);
   });
 
   it("round trips a slot path", () => {
-    const path: LovelacePath = ["views", 0, "header", "card"];
+    const path: ConfigPath = ["views", 0, "header", "card"];
     assert.strictEqual(stringifyPath(path), "views/0/header/card");
     assert.deepEqual(parsePath("views/0/header/card"), path);
   });

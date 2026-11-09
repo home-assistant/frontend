@@ -64,6 +64,7 @@ import {
 } from "../styles";
 import "../trigger/ha-automation-trigger-references";
 import { getUiSupportWarnings, isConfigObject } from "../ui-support";
+import { AutomationPathController } from "../automation-path";
 
 @customElement("ha-automation-option-row")
 export default class HaAutomationOptionRow extends LitElement {
@@ -88,6 +89,11 @@ export default class HaAutomationOptionRow extends LitElement {
 
   @property({ type: Boolean, attribute: "sort-selected" })
   public sortSelected = false;
+
+  protected readonly pathController = new AutomationPathController(this, {
+    segment: () => (this.defaultActions ? ["default"] : [this.index]),
+    row: () => (this.optionsInSidebar ? this : undefined),
+  });
 
   @state() private _expanded = false;
 
@@ -439,6 +445,7 @@ export default class HaAutomationOptionRow extends LitElement {
                 )}:
               </h4>
               <ha-automation-condition
+                path-key="conditions"
                 .conditions=${ensureArray<string | Condition>(
                   this.option.conditions
                 )}
@@ -457,6 +464,7 @@ export default class HaAutomationOptionRow extends LitElement {
         )}:
       </h4>
       <ha-automation-action
+        .pathKey=${this.option ? "sequence" : undefined}
         .actions=${
           (this.option
             ? ensureArray(this.option.sequence) || []
