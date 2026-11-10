@@ -351,7 +351,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
     showDeviceRegistryDetailDialog(this, {
       device,
       updateEntry: async (updates) => {
-        await updateDeviceRegistryEntry(this.hass, deviceId, updates);
+        await updateDeviceRegistryEntry(this.hass.callWS, deviceId, updates);
       },
     });
   }

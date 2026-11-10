@@ -50,7 +50,7 @@ export class HaVoiceAssistantSetupStepArea extends LitElement {
       });
       return;
     }
-    await updateDeviceRegistryEntry(this.hass, this.deviceId, {
+    await updateDeviceRegistryEntry(this.hass.callWS, this.deviceId, {
       area_id: area,
     });
     this._nextStep();

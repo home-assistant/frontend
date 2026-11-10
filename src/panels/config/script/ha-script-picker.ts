@@ -938,7 +938,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           categories: { script: category },
         })
       );
@@ -975,7 +975,7 @@ ${rejected
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           labels:
             action === "add"
               ? this.hass.entities[entityId].labels.concat(label)
@@ -1184,7 +1184,7 @@ ${rejected
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           area_id: area,
         })
       );

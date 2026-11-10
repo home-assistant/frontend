@@ -255,7 +255,11 @@ class HaConfigEntryDeviceRow extends LitElement {
     showDeviceRegistryDetailDialog(this, {
       device: this.device,
       updateEntry: async (updates) => {
-        await updateDeviceRegistryEntry(this.hass, this.device.id, updates);
+        await updateDeviceRegistryEntry(
+          this.hass.callWS,
+          this.device.id,
+          updates
+        );
       },
     });
   };
@@ -339,7 +343,7 @@ class HaConfigEntryDeviceRow extends LitElement {
       }
     }
 
-    await updateDeviceRegistryEntry(this.hass, this.device.id, {
+    await updateDeviceRegistryEntry(this.hass.callWS, this.device.id, {
       disabled_by: disable ? "user" : null,
     });
   };

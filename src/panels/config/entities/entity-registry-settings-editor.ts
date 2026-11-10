@@ -1414,7 +1414,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
 
     const result = await updateEntityRegistryEntry(
-      this.hass!,
+      this.hass!.callWS,
       this.entry.entity_id,
       params
     );
@@ -1821,7 +1821,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
     showDeviceRegistryDetailDialog(this, {
       device: this._device!,
       updateEntry: async (updates) => {
-        await updateDeviceRegistryEntry(this.hass, this._device!.id, updates);
+        await updateDeviceRegistryEntry(
+          this.hass.callWS,
+          this._device!.id,
+          updates
+        );
       },
     });
   }
