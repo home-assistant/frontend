@@ -27,6 +27,7 @@ import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-color-picker";
+import "../../../components/ha-domain-icon";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
@@ -149,6 +150,13 @@ const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren", "valve"];
 const SWITCH_AS_DOMAINS_INVERT = ["cover", "lock", "valve"];
 
 const PRECISIONS = [0, 1, 2, 3, 4, 5, 6];
+
+const DEFAULT_DEVICE_CLASS = "default";
+
+const DEVICE_CLASS_ICON_STATES: Record<string, string> = {
+  cover: "open",
+  binary_sensor: "on",
+};
 
 const SCANNER_SOURCE_TYPES = ["router", "bluetooth", "bluetooth_le"];
 
@@ -277,8 +285,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._name = this.entry.name || this._originalName;
     this._isMainEntity = !!this._device && !this._entryName;
     this._icon = this.entry.icon || "";
-    this._deviceClass =
-      this.entry.device_class || this.entry.original_device_class;
+    this._deviceClass = this.entry.device_class || this._originalDeviceClass;
     this._origEntityId = this.entry.entity_id;
     this._areaId = this.entry.area_id;
     this._mainEntityWithOwnArea = this._isMainEntity && !!this.entry.area_id;
@@ -343,9 +350,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
 
     this._deviceClassOptions = [[], []];
+    const originalDeviceClass = this._originalDeviceClass;
     for (const deviceClass of deviceClasses) {
-      if (deviceClass.includes(this.entry.original_device_class!)) {
-        this._deviceClassOptions[0] = deviceClass;
+      if (originalDeviceClass && deviceClass.includes(originalDeviceClass)) {
+        this._deviceClassOptions[0] = deviceClass.filter(
+          (entry) => entry !== originalDeviceClass
+        );
       } else {
         this._deviceClassOptions[1].push(...deviceClass);
       }
@@ -477,6 +487,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
     const defaultPrecision =
       this.entry.options?.sensor?.suggested_display_precision ?? undefined;
     const defaultName = this._originalName;
+    const defaultDeviceClassLabel = this._defaultDeviceClassLabel(domain);
+    const iconStateObj = this._hasDeviceClassChanged
+      ? this._stateObjWithDeviceClass(stateObj, this._deviceClass)
+      : stateObj;
 
     return html`
       ${
@@ -565,13 +579,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 .placeholder=${
                   this.entry.original_icon ||
                   stateObj?.attributes.icon ||
-                  (stateObj &&
+                  (iconStateObj &&
                     until(
                       entityIcon(
                         this.hass.entities,
                         this.hass.config,
                         this.hass.connection,
-                        stateObj
+                        iconStateObj
                       )
                     )) ||
                   until(entryIcon(this.hass, this.entry))
@@ -579,11 +593,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 .disabled=${this.disabled}
               >
                 ${
-                  !this._icon && !stateObj?.attributes.icon && stateObj
+                  !this._icon && !stateObj?.attributes.icon && iconStateObj
                     ? html`
                         <ha-state-icon
                           slot="start"
-                          .stateObj=${stateObj}
+                          .stateObj=${iconStateObj}
                         ></ha-state-icon>
                       `
                     : nothing
@@ -705,31 +719,35 @@ export class EntityRegistrySettingsEditor extends LitElement {
           ? html`
               <ha-select
                 .label=${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.device_class"
+                  "ui.dialogs.entity_registry.editor.type"
                 )}
                 .value=${
-                  this._deviceClass
-                    ? this.hass.localize(
+                  this._hasDefaultDeviceClass
+                    ? defaultDeviceClassLabel
+                    : this.hass.localize(
                         `ui.dialogs.entity_registry.editor.device_classes.${domain}.${this._deviceClass}`
                       )
-                    : undefined
                 }
-                clearable
                 @selected=${this._deviceClassChanged}
               >
+                ${this._renderDeviceClassItem(
+                  domain,
+                  DEFAULT_DEVICE_CLASS,
+                  this._originalDeviceClass,
+                  defaultDeviceClassLabel
+                )}
+                <wa-divider></wa-divider>
                 ${this._deviceClassesSorted(
                   domain,
                   this._deviceClassOptions[0],
                   this.hass.localize
-                ).map(
-                  (entry) => html`
-                    <ha-dropdown-item
-                      .value=${entry.deviceClass}
-                      .selected=${entry.deviceClass === this._deviceClass}
-                    >
-                      ${entry.label}
-                    </ha-dropdown-item>
-                  `
+                ).map((entry) =>
+                  this._renderDeviceClassItem(
+                    domain,
+                    entry.deviceClass,
+                    entry.deviceClass,
+                    entry.label
+                  )
                 )}
                 ${
                   this._deviceClassOptions[0].length &&
@@ -741,15 +759,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
                   domain,
                   this._deviceClassOptions[1],
                   this.hass.localize
-                ).map(
-                  (entry) => html`
-                    <ha-dropdown-item
-                      .value=${entry.deviceClass}
-                      .selected=${entry.deviceClass === this._deviceClass}
-                    >
-                      ${entry.label}
-                    </ha-dropdown-item>
-                  `
+                ).map((entry) =>
+                  this._renderDeviceClassItem(
+                    domain,
+                    entry.deviceClass,
+                    entry.deviceClass,
+                    entry.label
+                  )
                 )}
               </ha-select>
             `
@@ -1317,12 +1333,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
       new_entity_id: this._entityId.trim(),
     };
 
-    // Only update device class if changed by user
-    if (
-      this._deviceClass !==
-      (this.entry.device_class || this.entry.original_device_class)
-    ) {
-      params.device_class = this._deviceClass ?? null;
+    if (this._hasDeviceClassChanged) {
+      params.device_class = this._hasDefaultDeviceClass
+        ? null
+        : (this._deviceClass ?? null);
     }
 
     const stateObj: HassEntity | undefined =
@@ -1616,8 +1630,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._entityId = `${computeDomain(this._origEntityId)}.${(ev.target as HTMLInputElement).value}`;
   }
 
-  private _deviceClassChanged(ev: HaSelectSelectEvent<string, true>): void {
-    this._deviceClass = ev.detail.value;
+  private _deviceClassChanged(ev: HaSelectSelectEvent): void {
+    const value = ev.detail.value;
+    this._deviceClass =
+      value === DEFAULT_DEVICE_CLASS ? this._originalDeviceClass : value;
   }
 
   private _unitChanged(ev: HaSelectSelectEvent): void {
@@ -1787,6 +1803,73 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   private get _originalName(): string {
     return String(this.entry.original_name ?? "");
+  }
+
+  private get _originalDeviceClass(): string | undefined {
+    return this.entry.original_device_class || undefined;
+  }
+
+  private get _hasDefaultDeviceClass(): boolean {
+    return this._deviceClass === this._originalDeviceClass;
+  }
+
+  private get _hasDeviceClassChanged(): boolean {
+    return (
+      this._deviceClass !==
+      (this.entry.device_class || this._originalDeviceClass)
+    );
+  }
+
+  private _stateObjWithDeviceClass = memoizeOne(
+    (
+      stateObj: HassEntity | undefined,
+      deviceClass: string | undefined
+    ): HassEntity | undefined => {
+      if (!stateObj) {
+        return undefined;
+      }
+      return {
+        ...stateObj,
+        attributes: { ...stateObj.attributes, device_class: deviceClass },
+      };
+    }
+  );
+
+  private _renderDeviceClassItem(
+    domain: string,
+    value: string,
+    deviceClass: string | undefined,
+    label: string
+  ) {
+    return html`
+      <ha-dropdown-item
+        .value=${value}
+        .selected=${deviceClass === this._deviceClass}
+      >
+        <ha-domain-icon
+          slot="icon"
+          .domain=${domain}
+          .deviceClass=${deviceClass}
+          .state=${DEVICE_CLASS_ICON_STATES[domain]}
+        ></ha-domain-icon>
+        ${label}
+      </ha-dropdown-item>
+    `;
+  }
+
+  private _defaultDeviceClassLabel(domain: string): string {
+    const originalDeviceClass = this._originalDeviceClass;
+    const originalLabel = originalDeviceClass
+      ? this.hass.localize(
+          `ui.dialogs.entity_registry.editor.device_classes.${domain}.${originalDeviceClass}`
+        )
+      : domainToName(this.hass.localize, domain);
+    return this.hass.localize(
+      "ui.dialogs.entity_registry.editor.type_default",
+      {
+        type: originalLabel,
+      }
+    );
   }
 
   private _restoreName(): void {
