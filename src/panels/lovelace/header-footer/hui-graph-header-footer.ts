@@ -133,7 +133,6 @@ export class HuiGraphHeaderFooter
 
     return html`
       <hui-graph-base
-        hold-across-gaps
         ?loading=${this._loading}
         .coordinates=${this._coordinates}
       ></hui-graph-base>

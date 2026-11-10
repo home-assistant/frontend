@@ -55,7 +55,7 @@ const sampledRun = (count: number, fromX: number, y: number): number[][] =>
 
 describe("getPath", () => {
   it("returns an empty path without coordinates", () => {
-    expect(getPath([], true)).toBe("");
+    expect(getPath([])).toBe("");
   });
 
   // Points that are a sample apart must keep curving through their midpoints,
@@ -68,7 +68,7 @@ describe("getPath", () => {
       [30, 25],
     ];
 
-    expect(getPath(coords, true)).toBe(
+    expect(getPath(coords)).toBe(
       "M 0,10 0,10 Q0,10 5,15 Q10,20 15,12.5 Q20,5 25,15 Q30,25 30,25"
     );
   });
@@ -76,9 +76,9 @@ describe("getPath", () => {
   // A sensor that does not change sends nothing, so two points can be hours
   // apart. The curve used to bend across that whole stretch, showing a trend
   // where the value in fact held still.
-  it("holds the value across a gap in state history", () => {
+  it("holds the value across a gap in the data", () => {
     const coords = [...sampledRun(20, 0, 30), [120, 30], [122, 0], [124, 30]];
-    const path = getPath(coords, true);
+    const path = getPath(coords);
 
     expect(yAt(path, 60)).toBeCloseTo(30);
     expect(yAt(path, 100)).toBeCloseTo(30);
@@ -95,7 +95,7 @@ describe("getPath", () => {
 
     // the curve leans into the next point towards the end of the gap, so this
     // is a half pixel rather than nothing at all
-    expect(yAt(getPath(coords, true), 50)).toBeCloseTo(30, 0);
+    expect(yAt(getPath(coords), 50)).toBeCloseTo(30, 0);
   });
 
   // The coordinates always end at the right edge of the graph, which can land
@@ -107,7 +107,7 @@ describe("getPath", () => {
       [100, 0],
     ];
 
-    expect(getPath(coords, true)).toBe(
+    expect(getPath(coords)).toBe(
       "M 0,30 0,30 Q0,30 45,30 Q90,30 95,15 Q100,0 100,0 Q100,0 100,0"
     );
   });
@@ -121,22 +121,8 @@ describe("getPath", () => {
       [120, 0],
     ];
 
-    expect(getPath(coords, true)).toBe(
-      "M 0,30 0,30 Q0,30 20,15 Q40,0 60,15 Q80,30 100,15 Q120,0 120,0"
-    );
-  });
-
-  // Values at instants, such as a forecast, change between their points, so
-  // holding them would be as wrong as the bend is for history.
-  it("curves across a gap unless asked to hold", () => {
-    const coords = [
-      [0, 30],
-      [100, 0],
-      [120, 0],
-    ];
-
     expect(getPath(coords)).toBe(
-      "M 0,30 0,30 Q0,30 50,15 Q100,0 110,0 Q120,0 120,0"
+      "M 0,30 0,30 Q0,30 20,15 Q40,0 60,15 Q80,30 100,15 Q120,0 120,0"
     );
   });
 
@@ -148,6 +134,6 @@ describe("getPath", () => {
       [20, 20],
     ];
 
-    expect(getPath(coords, true)).not.toMatch(/NaN|Infinity/);
+    expect(getPath(coords)).not.toMatch(/NaN|Infinity/);
   });
 });
