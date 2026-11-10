@@ -123,7 +123,7 @@ class DialogAssignCategory extends DirtyStateProviderMixin<AssignCategoryFormSta
     this._error = undefined;
     try {
       await updateEntityRegistryEntry(
-        this.hass,
+        this.hass.callWS,
         this._params!.entityReg.entity_id,
         {
           categories: { [this._scope!]: this._category || null },

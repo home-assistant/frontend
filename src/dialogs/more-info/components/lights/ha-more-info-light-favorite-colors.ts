@@ -75,7 +75,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
 
   private async _save(newFavoriteColors: LightColor[]): Promise<void> {
     const result = await updateEntityRegistryEntry(
-      this._api,
+      this._api.callWS,
       this.entry!.entity_id,
       {
         options_domain: "light",

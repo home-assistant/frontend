@@ -1163,7 +1163,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           categories: { helpers: category },
         })
       );
@@ -1201,7 +1201,7 @@ ${rejected
     this._selected.forEach((entityId) => {
       const labels = this._labelsForEntity(entityId);
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           labels:
             action === "add"
               ? labels.concat(label)

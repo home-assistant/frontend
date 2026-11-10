@@ -400,9 +400,13 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       .filter((a): a is string => a !== null)
       .map((alias) => alias.trim())
       .filter((alias) => alias);
-    const result = await updateEntityRegistryEntry(this.hass, this.entityId, {
-      aliases: [...nullAliases, ...stringAliases],
-    });
+    const result = await updateEntityRegistryEntry(
+      this.hass.callWS,
+      this.entityId,
+      {
+        aliases: [...nullAliases, ...stringAliases],
+      }
+    );
     fireEvent(this, "entity-entry-updated", result.entity_entry);
   }
 
