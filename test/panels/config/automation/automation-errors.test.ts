@@ -3,6 +3,7 @@ import {
   configErrorPath,
   errorOwner,
   errorsOnKnownItems,
+  followErrors,
   followKnownErrorItems,
   knownErrorItems,
   errorText,
@@ -129,54 +130,89 @@ describe("automation errors", () => {
     const a = { trigger: "state", entity_id: ["sensor.a"], for: "abc" };
     const b = { trigger: "event", event_type: "b" };
     const c = { trigger: "state", entity_id: "sensor.c", for: "xyz" };
+    const forError = (index: number) => ({
+      message: "bad for",
+      path: ["triggers", index, "for"],
+    });
     const before = { triggers: [a, b, c] };
-    const known = knownErrorItems(before, [
-      { message: "bad for", path: ["triggers", 0, "for"] },
-      { message: "bad for", path: ["triggers", 2, "for"] },
-    ]);
+    const known = knownErrorItems(before, [forError(0), forError(2)]);
 
-    const editedA = { ...a, for: "abd" };
-    const edited = { triggers: [editedA, b, c] };
-    const sameItem = { message: "bad for", path: ["triggers", 0, "for"] };
-    // A value list entry belongs to the trigger, not to a row of its own
+    // Edited in place, the item keeps its errors; a value list entry belongs
+    // to the trigger, and a new error on another item waits for the save
+    const edited = { triggers: [{ ...a, for: "abd" }, b, c] };
     const valueEntry = {
       message: "bad entity",
       path: ["triggers", 0, "entity_id", 0],
     };
-    const otherItem = { message: "new", path: ["triggers", 1, "event_type"] };
+    const other = { message: "new", path: ["triggers", 1, "event_type"] };
     expect(
-      errorsOnKnownItems(known, edited, [sameItem, valueEntry, otherItem])
-    ).toEqual([sameItem, valueEntry]);
+      errorsOnKnownItems(followKnownErrorItems(known, before, edited), edited, [
+        forError(0),
+        valueEntry,
+        other,
+      ])
+    ).toEqual([forError(0), valueEntry]);
 
-    // Deleting a row moves the error of the next one to another index
+    // Deleting a row moves the next error, and the row that takes the old
+    // index doesn't count as known
     const deleted = { triggers: [b, c] };
-    const moved = { message: "bad for", path: ["triggers", 1, "for"] };
-    expect(errorsOnKnownItems(known, deleted, [moved])).toEqual([moved]);
-
-    // YAML is parsed again on every edit, so the items are new objects
-    const reparsed = structuredClone(deleted);
-    expect(errorsOnKnownItems(known, reparsed, [moved])).toEqual([moved]);
-
-    // A moved item is followed, so editing it afterwards keeps its error
-    const knownC = knownErrorItems(before, [
-      { message: "bad for", path: ["triggers", 2, "for"] },
-    ]);
-    const movedC = { message: "bad for", path: ["triggers", 0, "for"] };
-    const editedC = { triggers: [{ ...c, for: "xyy" }, a, b] };
-    expect(errorsOnKnownItems(knownC, editedC, [movedC])).toEqual([]);
-    const followed = followKnownErrorItems(knownC, { triggers: [c, a, b] });
-    expect(errorsOnKnownItems(followed, editedC, [movedC])).toEqual([movedC]);
-
-    // An item edited at its known path is followed when it moves afterwards
-    const cEdited = { ...c, for: "xyy" };
-    const afterEdit = followKnownErrorItems(knownC, {
-      triggers: [a, b, cEdited],
-    });
-    const afterMove = followKnownErrorItems(afterEdit, {
-      triggers: [cEdited, a, b],
-    });
     expect(
-      errorsOnKnownItems(afterMove, { triggers: [cEdited, a, b] }, [movedC])
-    ).toEqual([movedC]);
+      errorsOnKnownItems(
+        followKnownErrorItems(known, before, deleted),
+        deleted,
+        [forError(0), forError(1)]
+      )
+    ).toEqual([forError(1)]);
+
+    // Moving a row past another doesn't make the other one known
+    const swapped = { triggers: [b, a, c] };
+    expect(
+      errorsOnKnownItems(
+        followKnownErrorItems(known, before, swapped),
+        swapped,
+        [forError(0), forError(1)]
+      )
+    ).toEqual([forError(1)]);
+
+    // YAML is parsed again on every edit, so items are found by content
+    const reparsed = structuredClone(deleted);
+    expect(
+      errorsOnKnownItems(
+        followKnownErrorItems(known, before, reparsed),
+        reparsed,
+        [forError(0), forError(1)]
+      )
+    ).toEqual([forError(1)]);
+
+    // An item edited and then moved keeps its errors
+    const knownC = knownErrorItems(before, [forError(2)]);
+    const editedC = { ...c, for: "xyy" };
+    const afterEdit = { triggers: [a, b, editedC] };
+    const afterMove = { triggers: [editedC, a, b] };
+    const followed = followKnownErrorItems(
+      followKnownErrorItems(knownC, before, afterEdit),
+      afterEdit,
+      afterMove
+    );
+    expect(
+      errorsOnKnownItems(followed, afterMove, [forError(0), forError(2)])
+    ).toEqual([forError(0)]);
+  });
+
+  it("follow save errors to where their items are now", () => {
+    const a = { delay: "abc" };
+    const b = { delay: 1 };
+    const c = { wait_template: "{{ " };
+    const submitted = { actions: [a, b, c] };
+    const errors = [
+      { message: "bad delay", path: ["actions", 0, "delay"] },
+      { message: "bad template", path: ["actions", 2, "wait_template"] },
+      { message: "bad mode", path: ["mode"] },
+    ];
+    // A was deleted and C moved up while saving
+    expect(followErrors(errors, submitted, { actions: [c, b] })).toEqual([
+      { message: "bad template", path: ["actions", 0, "wait_template"] },
+      { message: "bad mode", path: ["mode"] },
+    ]);
   });
 });

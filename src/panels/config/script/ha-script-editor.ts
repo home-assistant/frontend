@@ -939,6 +939,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private async _saveScript(id): Promise<void> {
     this.saving = true;
+    const config = this.config!;
 
     let entityRegPromise: Promise<EntityRegistryEntry> | undefined;
     if (this.entityRegistryUpdate !== undefined && !this.scriptId) {
@@ -949,11 +950,7 @@ export class HaScriptEditor extends SubscribeMixin(
     }
 
     try {
-      await this.hass!.callApi(
-        "POST",
-        "config/script/config/" + id,
-        this.config
-      );
+      await this.hass!.callApi("POST", "config/script/config/" + id, config);
 
       if (this.entityRegistryUpdate !== undefined) {
         let entityId = this.currentEntityId;
@@ -1003,7 +1000,7 @@ export class HaScriptEditor extends SubscribeMixin(
       this.deprecatedConfigMigrated = false;
       this.clearConfigErrors();
     } catch (errors: unknown) {
-      this.showSaveErrors(errors);
+      this.showSaveErrors(errors, config);
       throw errors;
     } finally {
       this.saving = false;

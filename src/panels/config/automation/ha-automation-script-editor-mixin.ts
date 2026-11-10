@@ -37,11 +37,12 @@ import {
   errorsEqual,
   errorsOnKnownItems,
   errorText,
+  followErrors,
   followKnownErrorItems,
   knownErrorItems,
   mapErrorsToConfig,
   NO_ERRORS,
-  type KnownErrorItems,
+  type KnownErrorItem,
 } from "./automation-errors";
 import type { EntityRegistryUpdate } from "./automation-save-dialog/show-dialog-automation-save";
 import { showEditorToast } from "./editor-toast";
@@ -199,10 +200,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     // Validation responses of an older run are dropped
     private _validationRun = 0;
 
-    private _knownErrorItems: KnownErrorItems = knownErrorItems(
-      undefined,
-      NO_ERRORS
-    );
+    private _knownErrorItems: KnownErrorItem[] = [];
 
     protected willUpdate(changedProps: PropertyValues): void {
       super.willUpdate(changedProps);
@@ -219,6 +217,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       if (changedProps.has("config") && this.configErrors.length) {
         this._knownErrorItems = followKnownErrorItems(
           this._knownErrorItems,
+          changedProps.get("config"),
           this.config
         );
         this._revalidate();
@@ -233,17 +232,26 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       }
     }
 
-    protected async showSaveErrors(err: unknown) {
+    /** Shows the errors of saving `submitted`, the config sent to core. */
+    protected async showSaveErrors(err: unknown, submitted: TConfig) {
       const { message, errors } = parseConfigSaveError(err);
       if (!errors.length) {
         this._showSaveFailedToast(message);
         return;
       }
       this._validationRun++;
+      const submittedErrors = mapErrorsToConfig(submitted, errors);
+      // Edits made while saving moved or removed some of the items
+      const changed = submitted !== this.config;
       this._setConfigErrors(
         this.config,
-        mapErrorsToConfig(this.config, errors)
+        changed
+          ? followErrors(submittedErrors, submitted, this.config)
+          : submittedErrors
       );
+      if (changed && this.configErrors.length) {
+        this._revalidate();
+      }
       this._showSaveFailedToast(
         errors.length === 1
           ? errors[0].message
