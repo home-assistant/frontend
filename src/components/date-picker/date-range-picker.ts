@@ -97,6 +97,8 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
 
   @state() private _dateValue?: string;
 
+  @state() private _rangeIncomplete = false;
+
   @state() private _timeValue = {
     from: { hours: 0, minutes: 0 },
     to: { hours: 23, minutes: 59 },
@@ -195,6 +197,7 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
             .locale=${this._i18n.locale.language}
             .focusedDate=${this._focusDate}
             @focusday=${this._focusChanged}
+            @rangestart=${this._handleRangeStart}
             @change=${this._handleChange}
             show-outside-days
             .firstDayOfWeek=${firstWeekdayIndex(this._i18n.locale)}
@@ -253,7 +256,9 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
         <ha-button appearance="plain" @click=${this._cancel}
           >${this._i18n.localize("ui.common.cancel")}</ha-button
         >
-        <ha-button .disabled=${!this._dateValue} @click=${this._save}
+        <ha-button
+          .disabled=${!this._dateValue || this._rangeIncomplete}
+          @click=${this._save}
           >${this._i18n.localize(
             "ui.components.date-range-picker.select"
           )}</ha-button
@@ -280,7 +285,7 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
   }
 
   private _save() {
-    if (!this._dateValue) {
+    if (!this._dateValue || this._rangeIncomplete) {
       return;
     }
 
@@ -331,9 +336,21 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
     this._focusDate = ev.target.focusedDate;
   }
 
+  private _handleRangeStart(
+    ev: HASSDomTargetEvent<HTMLElementTagNameMap["calendar-range"]>
+  ) {
+    this._rangeIncomplete = matchMedia("(hover: hover)").matches;
+    if (this._rangeIncomplete) {
+      return;
+    }
+    const day = ev.target.tentative;
+    this._dateValue = `${day}/${day}`;
+  }
+
   private _handleChange(
     ev: HASSDomTargetEvent<HTMLElementTagNameMap["calendar-range"]>
   ) {
+    this._rangeIncomplete = false;
     const dateElement = ev.target as HTMLElementTagNameMap["calendar-range"];
     this._dateValue = dateElement.value;
     this._focusDate = dateElement.focusedDate;

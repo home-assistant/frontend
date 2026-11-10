@@ -19,6 +19,7 @@
     <meta name="referrer" content="same-origin" />
     <meta name="theme-color" content="{{ theme_color }}" />
     <meta name="color-scheme" content="dark light" />
+    <%= renderTemplate("_meta_viewport.html.template") %>
     <%= renderTemplate("_style_base.html.template") %>
     <style>
       html {
@@ -26,104 +27,14 @@
         color: var(--primary-text-color, #212121);
         height: 100vh;
       }
-      #ha-launch-screen {
-        font-family: ui-sans-serif, system-ui, sans-serif;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        user-select: none;
-        -webkit-user-select: none;
-        background-color: var(--primary-background-color, #fafafa);
-        z-index: 100;
-        transition: opacity var(--ha-animation-duration-normal, 250ms) ease-out;
-      }
-      #ha-launch-screen.removing {
-        opacity: 0;
-      }
-      @keyframes launch-lockup-in {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
-      #ha-launch-screen .ha-lockup {
-        display: flex;
-        align-items: center;
-        flex-shrink: 0;
-        animation: launch-lockup-in var(--ha-animation-duration-normal, 250ms) ease-out both;
-      }
-      #ha-launch-screen-info-box > *,
-      #ha-launch-screen .ohf-logo {
-        animation: launch-lockup-in var(--ha-animation-duration-normal, 250ms) ease-out both;
-      }
-      #ha-launch-screen .ha-logo {
-        width: 96px;
-        height: 96px;
-      }
-      #ha-launch-screen .ha-launch-screen-spacer-top {
-        flex: 1;
-        margin-top: calc( 2 * max(var(--safe-area-inset-top, 0px), 48px) + 46px );
-        padding-top: 48px;
-      }
-      #ha-launch-screen .ha-launch-screen-spacer-bottom {
-        flex: 1;
-        padding-top: 16px;
-      }
-      .ohf-logo {
-        margin: max(var(--safe-area-inset-bottom, 0px), 48px) 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
-        opacity: .66;
-      }
-      .ohf-logo span {
-        font-size: 12px;
-        line-height: 12px;
-        text-transform: uppercase;
-      }
-      .ohf-logo picture {
-        display: flex;
-      }
-      .ohf-logo img {
-        width: 237px;
-        aspect-ratio: 237 / 24;
-        height: auto;
-      }
       @media (prefers-color-scheme: dark) {
         html {
           background-color: var(--primary-background-color, #111111);
           color: var(--primary-text-color, #e1e1e1);
         }
-        /* body selector to avoid minification causing bad jinja2 */
-        body #ha-launch-screen {
-          background-color: var(--primary-background-color, #111111);
-        }
-      }
-      @media (max-height: 560px) {
-        /* body selector to avoid minification causing bad jinja2 */
-        body #ha-launch-screen .ha-launch-screen-spacer-top {
-          margin-top: 24px;
-          padding-top: 24px;
-        }
-        body #ha-launch-screen .ha-launch-screen-spacer-bottom {
-          padding-top: 16px;
-        }
-        .ohf-logo {
-          margin-block: 24px;
-        }
       }
     </style>
+    <%= renderTemplate("_style_launch_screen.html.template") %>
   </head>
   <body>
     <div id="ha-launch-screen">

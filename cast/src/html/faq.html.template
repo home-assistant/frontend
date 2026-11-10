@@ -3,6 +3,7 @@
   <head>
     <title>Home Assistant Cast - FAQ</title>
     <link rel="icon" href="/images/ha-cast-icon.png" type="image/png" />
+    <%= renderTemplate("../../../src/html/_meta_viewport.html.template") %>
     <%= renderTemplate("../../../src/html/_style_base.html.template") %>
     <style>
       body {
@@ -52,7 +53,7 @@
         <p>
           Home Assistant Cast allows you to show your Home Assistant data on a
           Chromecast device and allows you to interact with Home Assistant on
-          Google Assistant devices with a screen.
+          Google Home devices with a screen.
         </p>
       </div>
 

@@ -10,8 +10,12 @@ import "../../../../components/ha-dialog-footer";
 import "../../../../components/input/ha-input";
 import "./ha-energy-upstream-device-picker";
 import type { HaInput } from "../../../../components/input/ha-input";
-import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
+import type {
+  DeviceConsumptionEnergyPreference,
+  WaterGasResource,
+} from "../../../../data/energy";
 import {
+  computeAmbiguousEnergyDevices,
   computeEnergyLabel,
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
@@ -26,28 +30,30 @@ import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { IntegralUnits } from "./energy-integral";
 import { confirmIntegrals, integralUnits } from "./energy-integral";
-import type { EnergySettingsDeviceWaterDialogParams } from "./show-dialogs-energy";
+import type { EnergySettingsDeviceWaterGasDialogParams } from "./show-dialogs-energy";
+import type { LocalizeKeys } from "../../../../common/translations/localize";
 
-const volumeUnitClasses = ["volume"];
 const flowRateUnitClasses = ["volume_flow_rate"];
 
-// Without a water sensor, saving offers to create one from the flow rate sensor
+// Without a consumption sensor, saving offers to create one from the flow rate sensor
 type DeviceConsumptionDraft = Partial<DeviceConsumptionEnergyPreference>;
 
-@customElement("dialog-energy-device-settings-water")
-export class DialogEnergyDeviceSettingsWater
+@customElement("dialog-energy-device-settings-water-gas")
+export class DialogEnergyDeviceSettingsWaterGas
   extends DirtyStateProviderMixin<DeviceConsumptionDraft | null>()(LitElement)
-  implements HassDialog<EnergySettingsDeviceWaterDialogParams>
+  implements HassDialog<EnergySettingsDeviceWaterGasDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _params?: EnergySettingsDeviceWaterDialogParams;
+  @state() private _params?: EnergySettingsDeviceWaterGasDialogParams;
 
   @state() private _open = false;
 
   @state() private _device?: DeviceConsumptionDraft;
 
   @state() private _volume_units?: string[];
+
+  @state() private _energy_units?: string[];
 
   @state() private _flow_rate_units?: string[];
 
@@ -62,7 +68,7 @@ export class DialogEnergyDeviceSettingsWater
   private _possibleParents: DeviceConsumptionEnergyPreference[] = [];
 
   public async showDialog(
-    params: EnergySettingsDeviceWaterDialogParams
+    params: EnergySettingsDeviceWaterGasDialogParams
   ): Promise<void> {
     this._params = params;
     this._device = this._params.device;
@@ -70,8 +76,13 @@ export class DialogEnergyDeviceSettingsWater
     this._saving = false;
     this._computePossibleParents();
     this._volume_units = (
-      await getSensorDeviceClassConvertibleUnits(this.hass, "water")
+      await getSensorDeviceClassConvertibleUnits(this.hass, params.resource)
     ).units;
+    this._energy_units =
+      params.resource === "gas"
+        ? (await getSensorDeviceClassConvertibleUnits(this.hass, "energy"))
+            .units
+        : [];
     this._flow_rate_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "volume_flow_rate")
     ).units;
@@ -84,6 +95,84 @@ export class DialogEnergyDeviceSettingsWater
 
     this._open = true;
     this._initDirtyTracking({ type: "deep" }, this._device ?? null);
+  }
+
+  private get _resource(): WaterGasResource {
+    return this._params!.resource;
+  }
+
+  private _t(key: string, params?: Record<string, string>): string {
+    return this.hass.localize(
+      `ui.panel.config.energy.device_consumption_${this._resource}.dialog.${key}` as LocalizeKeys,
+      params as any
+    );
+  }
+
+  private get _unitClasses(): string[] {
+    if (this._params?.allowedUnitClass) {
+      return [this._params.allowedUnitClass];
+    }
+    return this._resource === "gas" ? ["volume", "energy"] : ["volume"];
+  }
+
+  private get _deviceClasses(): string[] | undefined {
+    if (this._resource === "water") {
+      return undefined;
+    }
+    switch (this._params?.allowedUnitClass) {
+      case "volume":
+        return ["gas"];
+      case "energy":
+        return ["energy"];
+      default:
+        return ["gas", "energy"];
+    }
+  }
+
+  // Label the device would get without a display name, so the placeholder
+  // matches the device list and the charts.
+  private _namePlaceholder(): string {
+    const device = this._device;
+    if (!device) {
+      return "";
+    }
+    const statisticId = device.stat_consumption ?? device.stat_rate;
+    if (!statisticId) {
+      return "";
+    }
+    // Saving a draft without a consumption statistic creates the helper the
+    // device will be labelled by, so there is no entity to tell it apart yet.
+    if (!device.stat_consumption) {
+      return computeEnergyLabel(
+        this.hass.states,
+        this.hass.formatEntityName,
+        statisticId,
+        this._params?.statsMetadata?.[statisticId]
+      );
+    }
+    // The saved entry of the device being edited is replaced by the draft
+    // without a display name, which is what the placeholder stands for. The
+    // draft may point at another statistic by now, so match the saved one.
+    const edited = this._params?.device?.stat_consumption;
+    const devices = [
+      ...(this._params?.device_consumptions ?? []).filter(
+        (other) => other.stat_consumption !== edited
+      ),
+      { ...device, name: undefined },
+    ];
+
+    return computeEnergyLabel(
+      this.hass.states,
+      this.hass.formatEntityName,
+      statisticId,
+      this._params?.statsMetadata?.[statisticId],
+      undefined,
+      computeAmbiguousEnergyDevices(
+        this.hass.states,
+        this.hass.formatEntityName,
+        devices
+      ).has(statisticId)
+    );
   }
 
   private _computePossibleParents() {
@@ -101,7 +190,7 @@ export class DialogEnergyDeviceSettingsWater
         }
       });
     }
-    // Saving without a water sensor can reuse the original one
+    // Saving without a consumption sensor can reuse the original one
     const stat =
       this._device.stat_consumption ?? this._params.device?.stat_consumption;
     if (stat) {
@@ -134,17 +223,20 @@ export class DialogEnergyDeviceSettingsWater
       return nothing;
     }
 
-    const pickableUnit = this._volume_units?.join(", ") || "";
-
-    const labelStatistic =
-      this._device?.stat_consumption ?? this._device?.stat_rate;
+    const resource = this._resource;
+    const pickableUnit = [
+      ...(this._params.allowedUnitClass === "energy"
+        ? []
+        : this._volume_units || []),
+      ...(this._params.allowedUnitClass === "volume"
+        ? []
+        : this._energy_units || []),
+    ].join(", ");
 
     return html`
       <ha-dialog
         .open=${this._open}
-        header-title=${this.hass.localize(
-          "ui.panel.config.energy.device_consumption_water.dialog.header"
-        )}
+        header-title=${this._t("header")}
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
@@ -152,73 +244,50 @@ export class DialogEnergyDeviceSettingsWater
 
         <ha-statistic-picker
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
-          .includeUnitClass=${volumeUnitClasses}
+          .includeUnitClass=${this._unitClasses}
+          .includeDeviceClass=${this._deviceClasses}
           .value=${this._device?.stat_consumption}
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.device_consumption_water.dialog.device_consumption_water"
-          )}
+          .label=${this._t(`device_consumption_${resource}`)}
           .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
           .disabled=${this._saving}
-          .helper=${this.hass.localize(
-            "ui.panel.config.energy.device_consumption_water.dialog.selected_stat_intro",
-            { unit: pickableUnit }
-          )}
+          .helper=${this._t("selected_stat_intro", { unit: pickableUnit })}
           autofocus
         ></ha-statistic-picker>
 
         <ha-statistic-picker
           .includeUnitClass=${flowRateUnitClasses}
           .value=${this._device?.stat_rate}
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.device_consumption_water.dialog.device_consumption_water_flow_rate"
-          )}
+          .label=${this._t(`device_consumption_${resource}_flow_rate`)}
           .excludeStatistics=${this._excludeListFlowRate}
           @value-changed=${this._flowRateStatisticChanged}
           .disabled=${this._saving}
           .invalid=${!!this._flowRateError()}
           .errorMessage=${this._flowRateError()}
-          .helper=${this.hass.localize(
-            "ui.panel.config.energy.device_consumption_water.dialog.selected_stat_intro",
-            { unit: this._flow_rate_units?.join(", ") || "" }
-          )}
+          .helper=${this._t("selected_stat_intro", {
+            unit: this._flow_rate_units?.join(", ") || "",
+          })}
         ></ha-statistic-picker>
 
         <ha-input
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.device_consumption_water.dialog.display_name"
-          )}
+          .label=${this._t("display_name")}
           type="text"
           .disabled=${!this._device || this._saving}
           .value=${this._device?.name || ""}
-          .placeholder=${
-            labelStatistic
-              ? computeEnergyLabel(
-                  this.hass.states,
-                  this.hass.formatEntityName,
-                  labelStatistic,
-                  this._params?.statsMetadata?.[labelStatistic]
-                )
-              : ""
-          }
+          .placeholder=${this._namePlaceholder()}
           @input=${this._nameChanged}
         >
         </ha-input>
 
         <ha-energy-upstream-device-picker
           .hass=${this.hass}
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.device_consumption_water.dialog.included_in_device"
-          )}
-          .helper=${this.hass.localize(
-            "ui.panel.config.energy.device_consumption_water.dialog.included_in_device_helper"
-          )}
+          .label=${this._t("included_in_device")}
+          .helper=${this._t("included_in_device_helper")}
           .value=${this._device?.included_in_stat}
           .possibleParents=${this._possibleParents}
+          .devices=${this._params.device_consumptions}
           .statsMetadata=${this._params.statsMetadata}
-          .emptyLabel=${this.hass.localize(
-            "ui.panel.config.energy.device_consumption_water.dialog.no_upstream_devices"
-          )}
+          .emptyLabel=${this._t("no_upstream_devices")}
           .disabled=${!this._device || this._saving}
           @value-changed=${this._parentChanged}
         ></ha-energy-upstream-device-picker>
@@ -258,7 +327,7 @@ export class DialogEnergyDeviceSettingsWater
     this._device =
       device.stat_consumption || device.stat_rate ? device : undefined;
     this._computePossibleParents();
-    // The new water sensor can rule out the picked upstream device
+    // The new consumption sensor can rule out the picked upstream device
     if (
       device.included_in_stat &&
       !this._possibleParents.some(
@@ -332,14 +401,20 @@ export class DialogEnergyDeviceSettingsWater
     ) {
       return undefined;
     }
-    return this.hass.localize(
-      "ui.panel.config.energy.device_consumption_water.dialog.flow_rate_no_volume"
+    return this._t(
+      this._params?.allowedUnitClass === "energy"
+        ? "flow_rate_energy_sources"
+        : "flow_rate_no_volume"
     );
   }
 
   private _integralUnits(): IntegralUnits | undefined {
     const statRate = this._device?.stat_rate;
-    if (!statRate || !this._volume_units) {
+    if (
+      !statRate ||
+      !this._volume_units ||
+      this._params?.allowedUnitClass === "energy"
+    ) {
       return undefined;
     }
     return integralUnits(
@@ -358,7 +433,7 @@ export class DialogEnergyDeviceSettingsWater
     this._saving = true;
     try {
       const statConsumption =
-        draft.stat_consumption ?? (await this._waterFromFlowRate(draft));
+        draft.stat_consumption ?? (await this._volumeFromFlowRate(draft));
       if (!statConsumption) {
         return;
       }
@@ -383,7 +458,7 @@ export class DialogEnergyDeviceSettingsWater
     }
   }
 
-  private async _waterFromFlowRate(
+  private async _volumeFromFlowRate(
     draft: DeviceConsumptionDraft
   ): Promise<string | undefined> {
     const statRate = draft.stat_rate!;
@@ -391,8 +466,9 @@ export class DialogEnergyDeviceSettingsWater
     if (!units) {
       return undefined;
     }
+    const resource = this._resource;
     const sensors = await confirmIntegrals(this, this.hass, {
-      deviceClass: "water",
+      deviceClass: resource,
       states: this.hass.states,
       entities: this.hass.entities,
       requests: [
@@ -400,7 +476,7 @@ export class DialogEnergyDeviceSettingsWater
           rate: statRate,
           units,
           name: this.hass.localize(
-            "ui.panel.config.energy.integral.water.sensor_name",
+            `ui.panel.config.energy.integral.${resource}.sensor_name` as LocalizeKeys,
             {
               name: computeEnergyLabel(
                 this.hass.states,
@@ -409,13 +485,11 @@ export class DialogEnergyDeviceSettingsWater
                 this._params?.statsMetadata?.[statRate],
                 draft.name
               ),
-            }
+            } as any
           ),
         },
       ],
-      intro: this.hass.localize(
-        "ui.panel.config.energy.device_consumption_water.dialog.water_sensor_needed"
-      ),
+      intro: this._t(`${resource}_sensor_needed`),
       exclude: this._excludeList,
       statsMetadata: this._params?.statsMetadata,
     });
@@ -448,6 +522,6 @@ export class DialogEnergyDeviceSettingsWater
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-energy-device-settings-water": DialogEnergyDeviceSettingsWater;
+    "dialog-energy-device-settings-water-gas": DialogEnergyDeviceSettingsWaterGas;
   }
 }

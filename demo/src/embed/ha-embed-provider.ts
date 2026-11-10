@@ -168,7 +168,8 @@ export class HaEmbedProvider extends LitElement {
     hass.mockWS("config/device_registry/list", (_msg, currentHass) =>
       Object.values(currentHass.devices)
     );
-    // The registry of the entities, without settings such as calendar colors
+    // The registry of the entities, with the options each entity sets, such
+    // as timer presets. Other settings, such as calendar colors, are not set.
     const registryEntries = (currentHass: MockHomeAssistant) =>
       Object.values(currentHass.entities).map(
         (entity): EntityRegistryEntry => ({
@@ -179,6 +180,9 @@ export class HaEmbedProvider extends LitElement {
           }),
           area_id: entity.area_id ?? null,
           device_id: entity.device_id ?? null,
+          options:
+            this.entities.find((item) => item.entity_id === entity.entity_id)
+              ?.options ?? null,
         })
       );
     hass.mockWS("config/entity_registry/list", (_msg, currentHass) =>

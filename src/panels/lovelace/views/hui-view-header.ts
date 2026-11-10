@@ -3,6 +3,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import type { ConfigPath } from "../../../common/util/config-path";
 import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 import {
   ScrollFadeController,
@@ -18,7 +19,6 @@ import type { HuiBadge } from "../badges/hui-badge";
 import "../badges/hui-view-badges";
 import type { HuiCard } from "../cards/hui-card";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import type { LovelacePath } from "../editor/lovelace-path";
 import { setAtPath } from "../editor/lovelace-path";
 import { showEditViewHeaderDialog } from "../editor/view-header/show-edit-view-header-dialog";
 import type { Lovelace } from "../types";
@@ -39,7 +39,7 @@ export class HuiViewHeader extends LitElement {
 
   @property({ attribute: false }) public config?: LovelaceViewHeaderConfig;
 
-  @property({ attribute: false }) public path!: LovelacePath;
+  @property({ attribute: false }) public path!: ConfigPath;
 
   private _checkHidden() {
     const allHidden =
@@ -141,7 +141,7 @@ export class HuiViewHeader extends LitElement {
     });
   }
 
-  private get _cardPath(): LovelacePath {
+  private get _cardPath(): ConfigPath {
     return [...this.path, "header", "card"];
   }
 

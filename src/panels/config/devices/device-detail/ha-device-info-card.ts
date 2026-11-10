@@ -17,6 +17,8 @@ import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 
+const ADDRESS_TYPES = ["mac", "bluetooth", "zigbee"];
+
 @customElement("ha-device-info-card")
 export class HaDeviceCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -234,9 +236,13 @@ export class HaDeviceCard extends LitElement {
   }
 
   protected _getAddresses() {
-    return this.device.connections.filter((conn) =>
-      ["mac", "bluetooth", "zigbee"].includes(conn[0])
-    );
+    return this.device.connections
+      .filter((conn) => ADDRESS_TYPES.includes(conn[0]))
+      .sort(
+        (a, b) =>
+          ADDRESS_TYPES.indexOf(a[0]) - ADDRESS_TYPES.indexOf(b[0]) ||
+          stringCompare(a[1], b[1])
+      );
   }
 
   private _computeDeviceNameDisplay(deviceId: string) {

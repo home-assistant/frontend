@@ -463,6 +463,11 @@ class ZHAOptionsPage extends LitElement {
           margin: auto;
         }
 
+        ha-list-item-base::part(headline),
+        ha-list-item-base::part(supporting-text) {
+          white-space: normal;
+        }
+
         ha-select,
         ha-input {
           min-width: 210px;

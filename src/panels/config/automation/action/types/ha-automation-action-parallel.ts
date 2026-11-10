@@ -35,6 +35,7 @@ export class HaParallelAction extends LitElement implements ActionElement {
 
     return html`
       <ha-automation-action
+        path-key="parallel"
         .actions=${action.parallel}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
