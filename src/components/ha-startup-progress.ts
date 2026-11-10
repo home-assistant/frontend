@@ -26,8 +26,22 @@ export class HaStartupProgress extends LitElement {
     const localize = this._localize;
     const progress = this.progress;
     const issues = progress.failed.length + progress.retrying.length;
+    const phase = localize(`ui.startup_progress.phase.${progress.phase}`);
+    const count =
+      progress.total === null
+        ? localize("ui.startup_progress.integrations_unknown")
+        : localize("ui.startup_progress.integrations", {
+            done: progress.done,
+            total: progress.total,
+          });
+    const issuesText = issues
+      ? localize("ui.startup_progress.issues", { count: issues })
+      : undefined;
     return html`
-      <div class="card" role="status">
+      <div class="card">
+        <span class="visually-hidden" role="status">
+          ${[phase, issuesText].filter(Boolean).join(". ")}
+        </span>
         <div class="header">
           <button
             class="toggle"
@@ -41,26 +55,9 @@ export class HaStartupProgress extends LitElement {
             @click=${this._toggle}
           >
             <span class="text">
-              <span class="phase">
-                ${localize(`ui.startup_progress.phase.${progress.phase}`)}
-              </span>
+              <span class="phase">${phase}</span>
               <span class="secondary">
-                ${
-                  progress.total === null
-                    ? localize("ui.startup_progress.integrations_unknown")
-                    : localize("ui.startup_progress.integrations", {
-                        done: progress.done,
-                        total: progress.total,
-                      })
-                }
-                ${
-                  issues
-                    ? html` ·
-                      ${localize("ui.startup_progress.issues", {
-                        count: issues,
-                      })}`
-                    : nothing
-                }
+                ${count}${issuesText ? ` · ${issuesText}` : nothing}
               </span>
             </span>
             <ha-svg-icon
@@ -77,7 +74,7 @@ export class HaStartupProgress extends LitElement {
         <ha-progress-bar
           .value=${progress.percent ?? 0}
           .indeterminate=${progress.percent === undefined}
-          .label=${localize(`ui.startup_progress.phase.${progress.phase}`)}
+          .label=${phase}
         ></ha-progress-bar>
         ${this._expanded ? this._renderDetails() : nothing}
       </div>
@@ -208,6 +205,14 @@ export class HaStartupProgress extends LitElement {
       flex-direction: column;
       flex: 1;
       min-width: 0;
+    }
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
     }
     .phase,
     .section {

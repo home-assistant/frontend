@@ -24,6 +24,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     private _startupProgressEl?: HTMLElementTagNameMap["ha-startup-progress"];
 
+    private _startupProgressResize?: ResizeObserver;
+
     private _disconnectedTimeout?: number;
 
     protected firstUpdated(changedProps: PropertyValues<this>) {
@@ -139,6 +141,17 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           "startup-progress-dismissed",
           () => this._hideStartupProgress()
         );
+        // Lifts the toast stack above the card so neither covers the other.
+        this._startupProgressResize = new ResizeObserver(() =>
+          this.style.setProperty(
+            "--ha-startup-progress-offset",
+            `calc(${this._startupProgressEl?.offsetHeight ?? 0}px + var(--ha-space-2))`
+          )
+        );
+        this._startupProgressResize.observe(this._startupProgressEl);
+      }
+      // The launch screen render swap clears the root, detaching the card.
+      if (!this._startupProgressEl.isConnected) {
         this.renderRoot.appendChild(this._startupProgressEl);
       }
       this._startupProgressEl.progress = computeStartupProgress(
@@ -150,6 +163,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     // Keeps the subscription, so the completion toast still reflects late failures.
     private _hideStartupProgress() {
       this._startupProgressVisible = false;
+      this._startupProgressResize?.disconnect();
+      this._startupProgressResize = undefined;
+      this.style.removeProperty("--ha-startup-progress-offset");
       this._startupProgressEl?.remove();
       this._startupProgressEl = undefined;
     }
@@ -170,12 +186,14 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
             })
           : this.hass!.localize("ui.notification_toast.started"),
         duration: issues ? 10000 : 5000,
-        action: issues
-          ? {
-              text: this.hass!.localize("ui.notification_toast.show"),
-              action: () => navigate("/config/integrations/dashboard"),
-            }
-          : undefined,
+        // The integrations dashboard is only available to admins.
+        action:
+          issues && this.hass!.user?.is_admin
+            ? {
+                text: this.hass!.localize("ui.notification_toast.show"),
+                action: () => navigate("/config/integrations/dashboard"),
+              }
+            : undefined,
       });
     }
 
