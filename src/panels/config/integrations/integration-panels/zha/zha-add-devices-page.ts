@@ -45,6 +45,9 @@ class ZHAAddDevicesPage extends LitElement {
 
   private _connection?: Connection;
 
+  // Set for the search in flight, so a pending subscription can tell it ended
+  private _search?: object;
+
   public connectedCallback(): void {
     super.connectedCallback();
     if (this.route && this.route.path && this.route.path !== "") {
@@ -200,12 +203,12 @@ class ZHAAddDevicesPage extends LitElement {
   // The backend ends the subscription when the connection drops, and it is not
   // sent again, so end the search here and show "Search again"
   private _connectionLost = () => {
-    this._subscribed = undefined;
     this._unsubscribe();
   };
 
   private _unsubscribe(): Promise<void> {
     this._active = false;
+    this._search = undefined;
     this._connection?.removeEventListener("disconnected", this._connectionLost);
     this._connection = undefined;
     if (this._addDevicesTimeoutHandle) {
@@ -213,7 +216,12 @@ class ZHAAddDevicesPage extends LitElement {
     }
     let unsubscribed = Promise.resolve();
     if (this._subscribed) {
-      unsubscribed = this._subscribed.then((unsub) => unsub());
+      unsubscribed = this._subscribed.then(
+        (unsub) => unsub(),
+        // A subscription that was cancelled or lost with the connection has
+        // nothing to unsubscribe
+        () => undefined
+      );
       this._subscribed = undefined;
     }
     this._wakeLock?.then((wakeLock) => wakeLock.release());
@@ -229,6 +237,8 @@ class ZHAAddDevicesPage extends LitElement {
     // session before starting the next one
     const unsubscribed = this._unsubscribe();
     this._active = true;
+    const search = {};
+    this._search = search;
     const data: any = { type: "zha/devices/permit", duration: 254 };
     if (this._ieeeAddress) {
       data.ieee = this._ieeeAddress;
@@ -245,7 +255,12 @@ class ZHAAddDevicesPage extends LitElement {
         connection.subscribeMessage(
           (message) => this._handleMessage(message),
           data,
-          { resubscribe: false }
+          {
+            resubscribe: false,
+            // While offline, subscribeMessage waits for the connection. Don't
+            // open the network if this search ended in the meantime
+            preCheck: () => this._search === search,
+          }
         )
       );
     this._addDevicesTimeoutHandle = setTimeout(
