@@ -1630,6 +1630,12 @@
         "go_to_line": {
           "label": "Go to line",
           "go": "Go"
+        },
+        "fold": {
+          "fold_line": "Fold line",
+          "unfold_line": "Unfold line",
+          "folded_code": "Folded code",
+          "unfold": "Unfold"
         }
       },
       "state-class-picker": {
