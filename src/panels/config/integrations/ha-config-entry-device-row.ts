@@ -76,7 +76,10 @@ class HaConfigEntryDeviceRow extends LitElement {
 
     const supportingText = [
       area ? html`<span class="area">${area.name}</span>` : undefined,
-      device.model || device.sw_version || device.manufacturer,
+      device.model ||
+        device.model_id ||
+        device.sw_version ||
+        device.manufacturer,
       entities.length
         ? bidiIsolate(
             this.hass.localize(
