@@ -3,20 +3,20 @@
 // other shows a trend that never happened: the value held until the later point
 // arrived. A stretch counts as such a gap when it is both this many times the
 // average distance between the other points and this much of the drawn width.
-const GAP_DISTANCE = 2;
+const GAP_DISTANCE = 3;
 const GAP_WIDTH = 0.1;
 
-// Holds the earlier value across a gap, up to one average distance before the
-// later point, where the curve then picks it up as it would any other point.
-const holdValueAcrossGaps = (coords: number[][]): number[][] => {
+// Finds the gaps among the coordinates, as the index of the point after each
+// gap paired with the average distance between the other points.
+export const findGaps = (coords: number[][]): [number, number][] => {
   const distances = coords.length - 1;
-  const width = coords[distances][0] - coords[0][0];
+  const width = distances > 0 ? coords[distances][0] - coords[0][0] : 0;
 
   if (distances < 2 || width <= 0) {
-    return coords;
+    return [];
   }
 
-  let held: number[][] | undefined;
+  const gaps: [number, number][] = [];
 
   for (let i = 1; i < coords.length; i++) {
     const distance = coords[i][0] - coords[i - 1][0];
@@ -27,14 +27,42 @@ const holdValueAcrossGaps = (coords: number[][]): number[][] => {
       Math.max((width - distance) / (distances - 1), 0) || distance / 10;
 
     if (distance > GAP_DISTANCE * spacing && distance > GAP_WIDTH * width) {
-      held ??= coords.slice(0, i);
-      held.push([coords[i][0] - spacing, coords[i - 1][1]]);
+      gaps.push([i, spacing]);
     }
-
-    held?.push(coords[i]);
   }
 
-  return held ?? coords;
+  return gaps;
+};
+
+// Holds the earlier value across a gap. Each curve here reaches halfway along
+// the segments either side of its point, so the held stretch starts one average
+// distance after the earlier point and ends with points two and one before the
+// later point, keeping the curves into and out of the gap as tight as anywhere
+// else on the graph.
+const holdValueAcrossGaps = (coords: number[][]): number[][] => {
+  const gaps = findGaps(coords);
+
+  if (!gaps.length) {
+    return coords;
+  }
+
+  const held: number[][] = [];
+  let from = 0;
+
+  for (const [index, spacing] of gaps) {
+    held.push(...coords.slice(from, index));
+    const [fromX, heldY] = coords[index - 1];
+    const toX = coords[index][0];
+    held.push(
+      [fromX + spacing, heldY],
+      [toX - 2 * spacing, heldY],
+      [toX - spacing, heldY]
+    );
+    from = index;
+  }
+
+  held.push(...coords.slice(from));
+  return held;
 };
 
 const midPoint = (

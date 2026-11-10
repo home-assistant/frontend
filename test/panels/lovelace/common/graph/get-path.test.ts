@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { coordinates } from "../../../../../src/panels/lovelace/common/graph/coordinates";
 import { getPath } from "../../../../../src/panels/lovelace/common/graph/get-path";
 
 // walks the line and curve commands of a path, so a test can ask where the
@@ -93,9 +94,7 @@ describe("getPath", () => {
       [120, 0],
     ];
 
-    // the curve leans into the next point towards the end of the gap, so this
-    // is a half pixel rather than nothing at all
-    expect(yAt(getPath(coords), 50)).toBeCloseTo(30, 0);
+    expect(yAt(getPath(coords), 50)).toBeCloseTo(30);
   });
 
   // The coordinates always end at the right edge of the graph, which can land
@@ -108,8 +107,69 @@ describe("getPath", () => {
     ];
 
     expect(getPath(coords)).toBe(
-      "M 0,30 0,30 Q0,30 45,30 Q90,30 95,15 Q100,0 100,0 Q100,0 100,0"
+      "M 0,30 0,30 Q0,30 5,30 Q10,30 45,30 Q80,30 85,30 Q90,30 95,15 Q100,0 100,0 Q100,0 100,0"
     );
+  });
+
+  // The change into the held value happens at the point before the gap, so it
+  // must not stretch halfway across the gap either.
+  it("keeps the change before a gap as tight as any other", () => {
+    const coords = [
+      [0, 0],
+      [2, 30],
+      [100, 0],
+      [102, 0],
+      [102, 0],
+    ];
+
+    expect(yAt(getPath(coords), 10)).toBeCloseTo(30);
+  });
+
+  // Sampling keeps the lowest and highest value of each frame, so a fan that
+  // spins up and stops within one frame would otherwise be held at full speed
+  // all night.
+  it("holds the last real state from sampled history", () => {
+    const { points } = coordinates(
+      [
+        [0, 0],
+        [10, 100],
+        [20, 0],
+        ...Array.from({ length: 10 }, (_, index): [number, number] => [
+          900 + index * 10,
+          50,
+        ]),
+      ],
+      100,
+      10,
+      10,
+      { minX: 0, maxX: 1000 }
+    );
+    const stoppedY = points[0][1];
+
+    expect(yAt(getPath(points), 50)).toBeCloseTo(stoppedY);
+  });
+
+  // Sampling moves the point before a quiet stretch back to the frame's
+  // highest value, which can make a stretch just short of a gap look like one.
+  it("holds the last real state when sampling widens a stretch into a gap", () => {
+    const { points } = coordinates(
+      [
+        [0, 0],
+        [5, 100],
+        [15, 50],
+        ...Array.from({ length: 89 }, (_, index): [number, number] => [
+          110 + index * 10,
+          50,
+        ]),
+      ],
+      100,
+      10,
+      50,
+      { minX: 0, maxX: 1000 }
+    );
+    const settledY = points.find(([x]) => x === 11)![1];
+
+    expect(yAt(getPath(points), 6)).toBeCloseTo(settledY);
   });
 
   // Points that are far apart but evenly spread are a slow sensor, not a gap.

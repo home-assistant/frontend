@@ -1,5 +1,6 @@
 import { downSampleLineData } from "../../../../components/chart/down-sample";
 import type { EntityHistoryState } from "../../../../data/history";
+import { findGaps } from "./get-path";
 
 export interface GraphSize {
   width: number;
@@ -68,6 +69,83 @@ const calcPoints = (
   return { points, yAxisOrigin };
 };
 
+// Puts back, in front of each gap getPath will find, the raw point before the
+// widest step between the raw points the gap spans: the state the sensor
+// settled on before it went quiet.
+const putBackLastStates = (
+  history: [number, number][],
+  points: [number, number][],
+  maxX: number
+): [number, number][] => {
+  // calcPoints closes the graph at maxX with the last value, so getPath sees
+  // that stretch too
+  const closed = [...points, [maxX, points[points.length - 1][1]]];
+  const gaps = findGaps(closed);
+
+  if (!gaps.length) {
+    return points;
+  }
+
+  const result: [number, number][] = [];
+  let from = 0;
+
+  for (const [index] of gaps) {
+    result.push(...points.slice(from, index));
+    from = index;
+
+    const before = closed[index - 1];
+    const afterX = closed[index][0];
+    let previous = before;
+    let settled = before;
+    let widest = 0;
+
+    for (const point of history) {
+      if (point[0] > before[0] && point[0] < afterX) {
+        if (point[0] - previous[0] > widest) {
+          widest = point[0] - previous[0];
+          settled = previous;
+        }
+        previous = point;
+      }
+    }
+    if (afterX - previous[0] > widest) {
+      settled = previous;
+    }
+
+    if (settled[0] !== before[0] || settled[1] !== before[1]) {
+      result.push(settled as [number, number]);
+    }
+  }
+
+  result.push(...points.slice(from));
+  return result.length === points.length ? points : result;
+};
+
+// Sampling keeps the lowest and highest value of each frame, or their mean, so
+// it can drop the state a sensor settled on before it went quiet. getPath holds
+// the point before a gap across the whole gap, so that point has to be the last
+// real state.
+const keepLastStateBeforeGaps = (
+  history: [number, number][],
+  sampled: [number, number][],
+  maxX = sampled[sampled.length - 1]?.[0]
+): [number, number][] => {
+  if (sampled === history || !sampled.length) {
+    return sampled;
+  }
+
+  // a point put back changes the distances getPath compares, which can turn
+  // another stretch into a gap, so repeat until nothing changes
+  let points = sampled;
+  let next = putBackLastStates(history, points, maxX);
+  while (next !== points) {
+    points = next;
+    next = putBackLastStates(history, points, maxX);
+  }
+
+  return points;
+};
+
 export const coordinates = (
   history: [number, number][],
   width: number,
@@ -85,7 +163,12 @@ export const coordinates = (
     limits?.maxX,
     useMean
   );
-  return calcPoints(sampledData, width, height, limits);
+  return calcPoints(
+    keepLastStateBeforeGaps(history, sampledData, limits?.maxX),
+    width,
+    height,
+    limits
+  );
 };
 
 export const coordinatesMinimalResponseCompressedState = (
