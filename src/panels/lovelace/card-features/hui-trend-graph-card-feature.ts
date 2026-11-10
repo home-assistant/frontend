@@ -243,6 +243,7 @@ class HuiHistoryChartCardFeature
     }
     return html`
       <hui-graph-base
+        hold-across-gaps
         ?loading=${this._loading}
         .coordinates=${this._coordinates}
         .yAxisOrigin=${this._yAxisOrigin}
