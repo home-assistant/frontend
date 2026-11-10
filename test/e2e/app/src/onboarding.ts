@@ -73,6 +73,7 @@ const subscriptionResults: Record<string, unknown> = {
     type: "current",
     notifications: {},
   },
+  "services/subscribe": { services: {} },
   subscribe_entities: { a: {} },
 };
 
@@ -107,7 +108,6 @@ const commandResults: Record<string, unknown> = {
   "frontend/set_system_data": undefined,
   get_config: demoConfig,
   get_panels: { lovelace: demoPanels.lovelace },
-  get_services: {},
   "lovelace/config": {
     views: [
       {

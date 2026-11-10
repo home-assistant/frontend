@@ -5,7 +5,6 @@ import {
   getAuth,
   subscribeConfig,
   subscribeEntities,
-  subscribeServices,
 } from "home-assistant-js-websocket";
 import { loadTokens, saveTokens } from "../common/auth/token_storage";
 import { hassUrl } from "../data/auth";
@@ -17,6 +16,7 @@ import { MAIN_WINDOW_NAME } from "../data/main_window";
 import type { WindowWithPreloads } from "../data/preloads";
 import { getRecorderInfo } from "../data/recorder";
 import { subscribeRepairsIssueRegistry } from "../data/repairs";
+import { subscribeServices } from "../data/service";
 import { subscribeAreaRegistry } from "../data/ws-area_registry";
 import { subscribeDeviceRegistry } from "../data/ws-device_registry";
 import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_display";
