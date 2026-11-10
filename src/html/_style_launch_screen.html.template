@@ -52,6 +52,33 @@
     flex: 1;
     padding-top: 16px;
   }
+  #ha-launch-screen-info-box p {
+    max-width: 400px;
+    margin: 0 16px 16px;
+    text-align: center;
+  }
+  /* Margins, not flex `gap` (Safari 14.1). */
+  #ha-launch-screen .ha-launch-screen-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: -4px 16px;
+  }
+  #ha-launch-screen .ha-launch-screen-actions button {
+    margin: 4px;
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    border-radius: 18px;
+    background: none;
+    color: var(--primary-color, #009ac7);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  #ha-launch-screen .ha-launch-screen-actions .ha-launch-screen-continue {
+    border-color: currentColor;
+  }
   .ohf-logo {
     margin: max(var(--safe-area-inset-bottom, 0px), 48px) 0;
     display: flex;
