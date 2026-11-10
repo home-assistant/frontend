@@ -9,7 +9,6 @@ import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-m
 import { migrateLayoutToGridOptions } from "../common/compute-card-grid-size";
 import { computeCardSize } from "../common/compute-card-size";
 import { getConfigEntityId } from "../common/get-config-entity-id";
-import { checkConditionsMet } from "../common/validate-condition";
 import { tryCreateCardElement } from "../create-element/create-card-element";
 import { createErrorCardElement } from "../create-element/create-element-base";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
@@ -29,9 +28,29 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
 
   @property({ attribute: false }) public config?: LovelaceCardConfig;
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public layout?: string;
+
+  private _hass?: HomeAssistant;
+
+  public get hass(): HomeAssistant | undefined {
+    return this._hass;
+  }
+
+  public set hass(hass: HomeAssistant | undefined) {
+    this._hass = hass;
+    if (!this._element || !hass) {
+      return;
+    }
+    try {
+      this._element.hass = hass;
+    } catch (e: any) {
+      // eslint-disable-next-line no-console
+      console.error(this.config?.type, e);
+      this._loadElement({ type: "error" });
+    }
+    this.setupConditionalListeners();
+    this._updateVisibility();
+  }
 
   private _elementConfig?: LovelaceCardConfig;
 
@@ -199,17 +218,6 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
           }
         }
       }
-      if (changedProps.has("hass")) {
-        try {
-          if (this.hass) {
-            this._element.hass = this.hass;
-          }
-        } catch (e: any) {
-          // eslint-disable-next-line no-console
-          console.error(this.config?.type, e);
-          this._loadElement({ type: "error" });
-        }
-      }
       if (changedProps.has("preview")) {
         try {
           this._element.preview = this.preview;
@@ -237,7 +245,7 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
       }
     }
 
-    if (changedProps.has("hass") || changedProps.has("preview")) {
+    if (changedProps.has("preview")) {
       this._updateVisibility();
     }
   }
@@ -262,14 +270,7 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
       return;
     }
 
-    const visible =
-      conditionsMet ??
-      (!this.config?.visibility ||
-        checkConditionsMet(
-          this.config.visibility,
-          this.hass,
-          this._conditionContext
-        ));
+    const visible = conditionsMet ?? this._conditionsVisible();
     this._setElementVisibility(visible);
   }
 

@@ -9,7 +9,7 @@ import type { BootstrapIntegrationsTimings } from "../data/bootstrap_integration
 import { subscribeBootstrapIntegrations } from "../data/bootstrap_integrations";
 import { domainToName } from "../data/integration";
 import type { Constructor } from "../types";
-import { showToast } from "../util/toast";
+import { HOST_ACTION_TOAST_ID, showToast } from "../util/toast";
 import type { HassBaseEl } from "./hass-base-mixin";
 import { navigate } from "../common/navigate";
 
@@ -94,6 +94,12 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     protected hassReconnected() {
       super.hassReconnected();
+      // A reboot toast is obsolete once we are connected again
+      showToast(this, {
+        id: HOST_ACTION_TOAST_ID,
+        message: "",
+        duration: 0,
+      });
       if (this._disconnectedTimeout) {
         clearTimeout(this._disconnectedTimeout);
         this._disconnectedTimeout = undefined;

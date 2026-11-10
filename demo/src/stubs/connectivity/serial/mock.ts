@@ -1,5 +1,12 @@
 import type { SerialPortUsage } from "../../../../../src/data/usb";
 import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
+// The RS-485 port below carries the Modbus connections, so both sides name the
+// same config entries.
+import {
+  FLEXIT_ENTRY_ID,
+  RS485_PORT,
+  SOLAREDGE_ENTRY_ID,
+} from "../modbus/fixtures";
 
 const PORTS: SerialPortUsage[] = [
   {
@@ -55,7 +62,7 @@ const PORTS: SerialPortUsage[] = [
     discovery_flows: [],
   },
   {
-    device: "/dev/ttyUSB1",
+    device: RS485_PORT,
     resolved_device:
       "/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A50285BI-if00-port0",
     serial_number: "A50285BI",
@@ -68,7 +75,24 @@ const PORTS: SerialPortUsage[] = [
     bcd_device: 1536,
     matching_integrations: [],
     present: true,
-    consumers: [],
+    consumers: [
+      {
+        kind: "config_entry",
+        title: "Flexit Nordic S4",
+        active: true,
+        domain: "flexit",
+        config_entry_id: FLEXIT_ENTRY_ID,
+        slug: null,
+      },
+      {
+        kind: "config_entry",
+        title: "SolarEdge SE7K",
+        active: true,
+        domain: "solaredge_modbus",
+        config_entry_id: SOLAREDGE_ENTRY_ID,
+        slug: null,
+      },
+    ],
     discovery_flows: [],
   },
   {

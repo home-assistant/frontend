@@ -141,7 +141,6 @@ export class HaWebhookTrigger extends LitElement {
               <ha-dropdown-item
                 .value=${method}
                 type="checkbox"
-                @request-selected=${this._allowedMethodsChanged}
                 .checked=${allowedMethods!.includes(method)}
               >
                 ${method}

@@ -1,7 +1,8 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../../common/decorators/consume";
 import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -74,7 +75,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
 
   private async _save(newFavoriteColors: LightColor[]): Promise<void> {
     const result = await updateEntityRegistryEntry(
-      this._api,
+      this._api.callWS,
       this.entry!.entity_id,
       {
         options_domain: "light",

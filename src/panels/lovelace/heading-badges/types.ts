@@ -1,10 +1,10 @@
 import type { ActionConfig } from "../../../data/lovelace/config/action";
-import type { Condition } from "../common/validate-condition";
+import type { VisibilityCondition } from "../common/validate-condition";
 
 export interface LovelaceHeadingBadgeConfig {
   type?: string;
   [key: string]: any;
-  visibility?: Condition[];
+  visibility?: VisibilityCondition[];
 }
 
 export interface ErrorBadgeConfig extends LovelaceHeadingBadgeConfig {
@@ -30,6 +30,7 @@ export interface EntityHeadingBadgeConfig extends LovelaceHeadingBadgeConfig {
 export interface ButtonHeadingBadgeConfig extends LovelaceHeadingBadgeConfig {
   type: "button";
   text?: string;
+  label?: string;
   icon?: string;
   color?: string;
   tap_action?: ActionConfig;

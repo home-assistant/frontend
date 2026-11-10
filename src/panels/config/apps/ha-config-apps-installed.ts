@@ -22,17 +22,13 @@ import type {
   HassioAddonInfo,
   HassioAddonsInfo,
 } from "../../../data/hassio/addon";
-import {
-  fetchHassioAddonsInfo,
-  reloadHassioAddons,
-} from "../../../data/hassio/addon";
-import { extractApiErrorMessage } from "../../../data/hassio/common";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
 import { getAppDisplayName } from "./common/app";
+import { checkForAppUpdates } from "./common/check-for-updates";
 import "./components/supervisor-apps-card-content";
 import type { AppTag } from "./components/supervisor-apps-card-content";
 import { supervisorAppsStyle } from "./resources/supervisor-apps-style";
@@ -50,6 +46,8 @@ export class HaConfigAppsInstalled extends LitElement {
   @state() private _filter?: string;
 
   @state() private _error?: string;
+
+  @state() private _checkingUpdates = false;
 
   protected firstUpdated() {
     this._loadData();
@@ -86,6 +84,7 @@ export class HaConfigAppsInstalled extends LitElement {
       >
         <ha-icon-button
           slot="toolbar-icon"
+          .disabled=${this._checkingUpdates}
           @click=${this._handleCheckUpdates}
           .path=${mdiRefresh}
           .label=${this.hass.localize(
@@ -96,6 +95,10 @@ export class HaConfigAppsInstalled extends LitElement {
           <ha-input-search
             appearance="outlined"
             .value=${this._filter}
+            .placeholder=${this.hass.localize(
+              "ui.panel.config.apps.installed.search",
+              { number: this._addonInfo.addons.length }
+            )}
             @input=${this._handleSearchChange}
           >
           </ha-input-search>
@@ -151,11 +154,8 @@ export class HaConfigAppsInstalled extends LitElement {
                                     "ui.panel.config.apps.installed.app_running"
                                   )
                           }
-                          .iconImage=${
-                            addon.icon
-                              ? `/api/hassio/addons/${addon.slug}/icon`
-                              : undefined
-                          }
+                          .appSlug=${addon.slug}
+                          .hasAppIcon=${addon.icon}
                         ></supervisor-apps-card-content>
                       </div>
                     </ha-card>
@@ -204,14 +204,16 @@ export class HaConfigAppsInstalled extends LitElement {
   }
 
   private async _handleCheckUpdates() {
+    this._checkingUpdates = true;
     try {
-      await reloadHassioAddons(this.hass);
-    } catch (err) {
-      showAlertDialog(this, {
-        text: extractApiErrorMessage(err),
-      });
+      const info = await checkForAppUpdates(this, this.hass);
+      if (info) {
+        this._addonInfo = info;
+      } else {
+        this._loadData();
+      }
     } finally {
-      this._loadData();
+      this._checkingUpdates = false;
     }
   }
 
@@ -256,7 +258,6 @@ export class HaConfigAppsInstalled extends LitElement {
       :host {
         display: block;
         height: 100%;
-        background-color: var(--primary-background-color);
       }
 
       ha-card {
@@ -276,10 +277,13 @@ export class HaConfigAppsInstalled extends LitElement {
         position: sticky;
         top: 0;
         z-index: 2;
-        background-color: var(--primary-background-color);
         padding: 0 var(--ha-space-4);
         box-sizing: border-box;
         border-bottom: 1px solid var(--divider-color);
+        background: var(
+          --ha-panel-toolbar-background,
+          var(--primary-background-color)
+        );
       }
 
       ha-input-search {
@@ -288,8 +292,8 @@ export class HaConfigAppsInstalled extends LitElement {
       }
 
       .content {
-        padding: var(--ha-space-4);
-        margin-bottom: var(--ha-space-18);
+        padding: var(--ha-space-6) var(--ha-space-4) var(--ha-space-4);
+        margin: 0 0 var(--ha-space-18);
         gap: var(--ha-space-4);
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(min(336px, 100%), 1fr));

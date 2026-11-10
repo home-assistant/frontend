@@ -6,12 +6,10 @@ import "../../../src/components/ha-settings-row";
 import "../../../src/components/ha-switch";
 import type { HaSwitch } from "../../../src/components/ha-switch";
 import "../../../src/components/ha-theme-settings";
-import type { HomeAssistant, ThemeSettings } from "../../../src/types";
+import type { ThemeSettings } from "../../../src/types";
 
 @customElement("gallery-settings")
 class GallerySettings extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public themeSettings!: ThemeSettings;
 
   @property({ type: Boolean }) public narrow = false;
@@ -26,7 +24,6 @@ class GallerySettings extends LitElement {
             Configure how the gallery renders component previews and examples.
           </div>
           <ha-theme-settings
-            .hass=${this.hass}
             .selectedTheme=${this.themeSettings}
             .narrow=${this.narrow}
             .heading=${"Theme"}

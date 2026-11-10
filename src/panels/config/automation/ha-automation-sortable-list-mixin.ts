@@ -7,6 +7,61 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { nextRender } from "../../../common/util/render-status";
 import type { AutomationClipboard } from "../../../data/automation";
 import type { Constructor, HomeAssistant } from "../../../types";
+import { AutomationPathController } from "./automation-path";
+
+const rowKeys = new WeakMap<object, string>();
+
+const getAutomationRowKey = (item: object): string => {
+  if (!rowKeys.has(item)) {
+    rowKeys.set(item, Math.random().toString());
+  }
+  return rowKeys.get(item)!;
+};
+
+// Keep the selected row and its sidebar callbacks alive across immutable edits.
+// Keys stay out of the automation YAML and the objects stored for undo.
+export const preserveAutomationRowKey = <T>(original: T, updated: T): T => {
+  if (
+    original &&
+    updated &&
+    typeof original === "object" &&
+    typeof updated === "object"
+  ) {
+    const key = rowKeys.get(original);
+    if (key !== undefined) {
+      rowKeys.set(updated, key);
+    }
+  }
+  return updated;
+};
+
+/**
+ * Reconcile rows after a transformation that keeps their paths and list order.
+ * Matching object keys and array indices represent the same logical row, so Lit's
+ * repeat directive can reuse its element, selection state, and sidebar callbacks.
+ * Do not use this to reconcile insertions, removals, or reordering between the two
+ * inputs: matching indices would then associate keys with different rows.
+ */
+export const preserveAutomationRowKeys = (
+  original: unknown,
+  updated: unknown
+): void => {
+  if (
+    original === updated ||
+    !original ||
+    !updated ||
+    typeof original !== "object" ||
+    typeof updated !== "object"
+  ) {
+    return;
+  }
+  preserveAutomationRowKey(original, updated);
+  const before = original as Record<string, unknown>;
+  const after = updated as Record<string, unknown>;
+  for (const key of Object.keys(before)) {
+    preserveAutomationRowKeys(before[key], after[key]);
+  }
+};
 
 export const AutomationSortableListMixin = <T extends object>(
   superClass: Constructor<LitElement>
@@ -20,6 +75,13 @@ export const AutomationSortableListMixin = <T extends object>(
 
     @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
       false;
+
+    /** Key of this list in the config of the row or editor rendering it. */
+    @property({ attribute: "path-key" }) public pathKey?: string;
+
+    protected readonly pathController = new AutomationPathController(this, {
+      segment: () => (this.pathKey === undefined ? [] : [this.pathKey]),
+    });
 
     @state() protected rowSortSelected?: number;
 
@@ -36,8 +98,6 @@ export const AutomationSortableListMixin = <T extends object>(
 
     protected focusItemIndexOnChange?: number;
 
-    private _itemKeys = new WeakMap<T, string>();
-
     protected get items(): T[] {
       throw new Error("Not implemented");
     }
@@ -47,11 +107,7 @@ export const AutomationSortableListMixin = <T extends object>(
     }
 
     protected getKey(item: T): string {
-      if (!this._itemKeys.has(item)) {
-        this._itemKeys.set(item, Math.random().toString());
-      }
-
-      return this._itemKeys.get(item)!;
+      return getAutomationRowKey(item);
     }
 
     protected moveUp(ev) {
@@ -146,14 +202,23 @@ export const AutomationSortableListMixin = <T extends object>(
         items.splice(index, 1);
       } else {
         // Store key on new value.
-        const key = this.getKey(items[index]);
-        this._itemKeys.set(newValue, key);
-
-        items[index] = newValue;
+        items[index] = preserveAutomationRowKey(items[index], newValue);
       }
 
       this.items = items;
       fireEvent(this, "value-changed", { value: items });
+    }
+
+    protected replaceItem(ev: CustomEvent) {
+      ev.stopPropagation();
+      const index = (ev.target as any).index;
+      // Unlike itemChanged, don't keep the row key: the new item gets a new
+      // row, so no state of the replaced row carries over.
+      this.focusItemIndexOnChange = index;
+      fireEvent(this, "value-changed", {
+        // @ts-expect-error Requires library bump to ES2023
+        value: this.items.toSpliced(index, 1, ev.detail.value),
+      });
     }
 
     protected duplicateItem(ev: CustomEvent) {

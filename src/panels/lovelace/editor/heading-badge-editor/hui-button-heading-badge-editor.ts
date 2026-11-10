@@ -11,7 +11,7 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type { Condition } from "../../common/validate-condition";
+import type { VisibilityCondition } from "../../common/validate-condition";
 import type { ButtonHeadingBadgeConfig } from "../../heading-badges/types";
 import type { LovelaceGenericElementEditor } from "../../types";
 import "../conditions/ha-card-conditions-editor";
@@ -31,6 +31,7 @@ const ACTIONS: UiAction[] = [
 const buttonConfigStruct = object({
   type: optional(string()),
   text: optional(string()),
+  label: optional(string()),
   icon: optional(string()),
   color: optional(string()),
   tap_action: optional(supportedActions(actionConfigStruct, ACTIONS)),
@@ -172,7 +173,7 @@ export class HuiButtonHeadingBadgeEditor
       return;
     }
 
-    const conditions = ev.detail.value as Condition[];
+    const conditions = ev.detail.value as VisibilityCondition[];
 
     const newConfig: ButtonHeadingBadgeConfig = {
       ...this._config,

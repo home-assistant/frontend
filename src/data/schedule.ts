@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
 
 export const weekdays = [
   "sunday",
@@ -13,6 +13,7 @@ export const weekdays = [
 export interface ScheduleDay {
   from: string;
   to: string;
+  data?: Record<string, boolean | string | number>;
 }
 
 type ScheduleDays = Partial<Record<(typeof weekdays)[number], ScheduleDay[]>>;
@@ -32,10 +33,10 @@ export const fetchSchedule = (hass: HomeAssistant) =>
   hass.callWS<Schedule[]>({ type: "schedule/list" });
 
 export const createSchedule = (
-  hass: HomeAssistant,
+  callWS: HomeAssistantApi["callWS"],
   values: ScheduleMutableParams
 ) =>
-  hass.callWS<Schedule>({
+  callWS<Schedule>({
     type: "schedule/create",
     ...values,
   });

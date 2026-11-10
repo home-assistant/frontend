@@ -194,17 +194,19 @@ class DialogMatterAddDevice extends LitElement {
       entityIds
     );
 
-    this._mainEntity = Object.values(entries).find((entry) => {
-      if (entry.entity_category) return false;
-      const domain = computeDomain(entry.entity_id);
-      const deviceClasses = OVERRIDE_DEVICE_CLASSES[domain];
-      if (!deviceClasses) return false;
-      const deviceClass = entry.device_class ?? entry.original_device_class;
-      if (!deviceClass) return false;
-      return deviceClasses.some(
-        (classes) => classes.length > 1 && classes.includes(deviceClass)
-      );
-    });
+    this._mainEntity = Object.values(entries)
+      .filter((entry): entry is ExtEntityRegistryEntry => entry !== null)
+      .find((entry) => {
+        if (entry.entity_category) return false;
+        const domain = computeDomain(entry.entity_id);
+        const deviceClasses = OVERRIDE_DEVICE_CLASSES[domain];
+        if (!deviceClasses) return false;
+        const deviceClass = entry.device_class ?? entry.original_device_class;
+        if (!deviceClass) return false;
+        return deviceClasses.some(
+          (classes) => classes.length > 1 && classes.includes(deviceClass)
+        );
+      });
   }
 
   private _dialogClosed(): void {
@@ -263,7 +265,6 @@ class DialogMatterAddDevice extends LitElement {
         @pairing-code-changed=${this._handlePairingCodeChanged}
         @step-selected=${this._handleStepSelected}
         @device-added-changed=${this._handleDeviceAddedChanged}
-        .hass=${this.hass}
       >
         ${dynamicElement(
           `matter-add-device-${this._step.replaceAll("_", "-")}`,
@@ -308,7 +309,7 @@ class DialogMatterAddDevice extends LitElement {
       const areaChanged = area !== origArea;
 
       if (nameChanged || areaChanged) {
-        await updateDeviceRegistryEntry(this.hass, device.id, {
+        await updateDeviceRegistryEntry(this.hass.callWS, device.id, {
           ...(nameChanged && { name_by_user: name || null }),
           ...(areaChanged && { area_id: area || null }),
         }).catch((err: Error) =>
@@ -327,12 +328,15 @@ class DialogMatterAddDevice extends LitElement {
           .map((e) => e.entity_id);
 
         if (entityIds.length) {
-          const mapping = await getAutomaticEntityIds(this.hass, entityIds);
+          const mapping = await getAutomaticEntityIds(
+            this.hass.callWS,
+            entityIds
+          );
           await Promise.allSettled(
             Object.entries(mapping)
               .filter((entry): entry is [string, string] => !!entry[1])
               .map(([oldId, newId]) =>
-                updateEntityRegistryEntry(this.hass, oldId, {
+                updateEntityRegistryEntry(this.hass.callWS, oldId, {
                   new_entity_id: newId,
                 }).catch((err: Error) =>
                   showAlertDialog(this, {
@@ -354,7 +358,7 @@ class DialogMatterAddDevice extends LitElement {
           undefined;
         if (deviceClass !== origClass) {
           await updateEntityRegistryEntry(
-            this.hass,
+            this.hass.callWS,
             this._mainEntity.entity_id,
             { device_class: deviceClass || null }
           ).catch((err: Error) =>

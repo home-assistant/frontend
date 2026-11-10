@@ -1,4 +1,4 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiFilterVariantRemove, mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -7,6 +7,9 @@ import { classMap } from "lit/directives/class-map";
 import { createRef, ref } from "lit/directives/ref";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
+import { transform } from "../common/decorators/transform";
+import { getDeviceAreaId } from "../common/entity/context/get_device_context";
 import {
   FilterPanelController,
   filterPanelStyles,
@@ -16,11 +19,16 @@ import { fireEvent } from "../common/dom/fire_event";
 import { computeRTL } from "../common/util/compute_rtl";
 import { deepEqual } from "../common/util/deep-equal";
 import type { LocalizeFunc } from "../common/translations/localize";
+import type { AreaRegistryEntry } from "../data/area/area_registry";
+import type { FloorAreasFilterValue } from "../data/data_table_filters";
 import {
   apiContext,
   areasContext,
+  devicesContext,
   floorsContext,
+  fullEntitiesContext,
   internationalizationContext,
+  statesContext,
 } from "../data/context";
 import { getFloorAreaLookup } from "../data/floor_registry";
 import type { RelatedResult } from "../data/search";
@@ -32,6 +40,7 @@ import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-svg-icon";
 import "./ha-tree-indicator";
+import "./item/ha-list-item-base";
 import "./item/ha-list-item-option";
 import type { HaListItemOption } from "./item/ha-list-item-option";
 import "./list/ha-list-selectable";
@@ -58,12 +67,32 @@ export class HaFilterFloorAreas extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
-  @property({ attribute: false }) public value?: {
-    floors?: string[];
-    areas?: string[];
-  };
+  @consume({ context: devicesContext, subscribe: true })
+  @state()
+  private _devices!: ContextType<typeof devicesContext>;
+
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  @state()
+  private _entities?: ContextType<typeof fullEntitiesContext>;
+
+  // Only a state being added or removed can change the state-only entities,
+  // so plain state updates keep the previous set and don't rerender
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<ContextType<typeof statesContext>, Set<string>>({
+    transformer: function (this: HaFilterFloorAreas, states) {
+      const ids = new Set(Object.keys(states));
+      return deepEqual(ids, this._stateIds) ? this._stateIds : ids;
+    },
+  })
+  private _stateIds?: Set<string>;
+
+  @property({ attribute: false }) public value?: FloorAreasFilterValue;
 
   @property() public type?: keyof RelatedResult;
+
+  @property({ type: Boolean, attribute: "include-disabled-entities" })
+  public includeDisabledEntities = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -75,12 +104,19 @@ export class HaFilterFloorAreas extends LitElement {
 
   private _panel = new FilterPanelController(this, this._content);
 
-  public willUpdate(properties: PropertyValues<this>) {
+  private _relatedRequestId = 0;
+
+  public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
 
     if (
-      properties.has("value") &&
-      !deepEqual(this.value, properties.get("value"))
+      (properties.has("value") &&
+        !deepEqual(this.value, properties.get("value"))) ||
+      // Items without an area are worked out from the registries
+      (this.value?.no_area &&
+        (properties.has("_devices") ||
+          properties.has("_entities") ||
+          (this.type !== "device" && properties.has("_stateIds"))))
     ) {
       this._findRelated();
     }
@@ -88,6 +124,12 @@ export class HaFilterFloorAreas extends LitElement {
 
   protected render() {
     const areas = this._areas(this._areasReg, this._floorsReg);
+    const groupOtherAreas =
+      !!areas.floors.length && !!areas.unassisgnedAreas.length;
+    const count =
+      (this.value?.areas?.length || 0) +
+      (this.value?.floors?.length || 0) +
+      (this.value?.no_area ? 1 : 0);
 
     return html`
       <ha-expansion-panel
@@ -98,13 +140,8 @@ export class HaFilterFloorAreas extends LitElement {
         <div slot="header" class="header">
           ${this._localize("ui.panel.config.areas.caption")}
           ${
-            this.value?.areas?.length || this.value?.floors?.length
-              ? html`<div class="badge">
-                    ${
-                      (this.value?.areas?.length || 0) +
-                      (this.value?.floors?.length || 0)
-                    }
-                  </div>
+            count
+              ? html`<div class="badge">${count}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     @click=${this._clearFilter}
@@ -125,6 +162,17 @@ export class HaFilterFloorAreas extends LitElement {
                   @ha-list-item-deselected=${this._handleRemoved}
                   aria-label=${this._localize("ui.panel.config.areas.caption")}
                 >
+                  <ha-list-item-option
+                    appearance="checkbox"
+                    selection-position="end"
+                    .value=${"no_area"}
+                    .type=${"no_area"}
+                    .selected=${this.value?.no_area || false}
+                  >
+                    <span slot="headline">
+                      ${this._localize("ui.components.area-picker.no_area")}
+                    </span>
+                  </ha-list-item-option>
                   ${repeat(
                     areas?.floors || [],
                     (floor) => floor.floor_id,
@@ -156,10 +204,31 @@ export class HaFilterFloorAreas extends LitElement {
                       )}
                     `
                   )}
+                  ${
+                    groupOtherAreas
+                      ? html`<ha-list-item-base role="presentation">
+                          <ha-svg-icon
+                            slot="start"
+                            .path=${mdiTextureBox}
+                          ></ha-svg-icon>
+                          <span slot="headline">
+                            ${this._localize(
+                              "ui.panel.config.areas.picker.other_areas"
+                            )}
+                          </span>
+                        </ha-list-item-base>`
+                      : nothing
+                  }
                   ${repeat(
-                    areas?.unassisgnedAreas,
-                    (area) => area.area_id,
-                    (area) => this._renderArea(area)
+                    areas.unassisgnedAreas,
+                    (area, index) =>
+                      `${area.area_id}${index === areas.unassisgnedAreas.length - 1 ? "___last" : ""}`,
+                    (area, index) =>
+                      this._renderArea(
+                        area,
+                        index === areas.unassisgnedAreas.length - 1,
+                        groupOtherAreas
+                      )
                   )}
                 </ha-list-selectable>
               </div>
@@ -169,9 +238,11 @@ export class HaFilterFloorAreas extends LitElement {
     `;
   }
 
-  private _renderArea(area, last = false) {
-    const hasFloor = !!area.floor_id;
-
+  private _renderArea(
+    area: AreaRegistryEntry,
+    last = false,
+    nested = !!area.floor_id
+  ) {
     return html`
       <ha-list-item-option
         appearance="checkbox"
@@ -184,11 +255,11 @@ export class HaFilterFloorAreas extends LitElement {
             this._i18n.language,
             this._i18n.translationMetadata.translations
           ),
-          floor: hasFloor,
+          floor: nested,
         })}
       >
         ${
-          hasFloor
+          nested
             ? html`<ha-tree-indicator
                 slot="start"
                 .end=${last}
@@ -221,6 +292,11 @@ export class HaFilterFloorAreas extends LitElement {
       return;
     }
 
+    if (addedItem.type === "no_area") {
+      this.value = { ...this.value, no_area: true };
+      return;
+    }
+
     this.value = {
       ...this.value,
       [addedItem.type]: [
@@ -240,6 +316,11 @@ export class HaFilterFloorAreas extends LitElement {
     ] as HaListItemOption & { type: string; value: string };
 
     if (!removedItem) {
+      return;
+    }
+
+    if (removedItem.type === "no_area") {
+      this.value = { ...this.value, no_area: false };
       return;
     }
 
@@ -278,11 +359,14 @@ export class HaFilterFloorAreas extends LitElement {
   );
 
   private async _findRelated() {
+    const requestId = ++this._relatedRequestId;
     const relatedPromises: Promise<RelatedResult>[] = [];
 
     if (
       !this.value ||
-      (!this.value.areas?.length && !this.value.floors?.length)
+      (!this.value.areas?.length &&
+        !this.value.floors?.length &&
+        !this.value.no_area)
     ) {
       this.value = {};
       fireEvent(this, "data-table-filter-changed", {
@@ -295,7 +379,9 @@ export class HaFilterFloorAreas extends LitElement {
     if (this.value.areas) {
       for (const areaId of this.value.areas) {
         if (this.type) {
-          relatedPromises.push(findRelated(this._api, "area", areaId));
+          relatedPromises.push(
+            findRelated(this._api, "area", areaId, this.includeDisabledEntities)
+          );
         }
       }
     }
@@ -303,13 +389,29 @@ export class HaFilterFloorAreas extends LitElement {
     if (this.value.floors) {
       for (const floorId of this.value.floors) {
         if (this.type) {
-          relatedPromises.push(findRelated(this._api, "floor", floorId));
+          relatedPromises.push(
+            findRelated(
+              this._api,
+              "floor",
+              floorId,
+              this.includeDisabledEntities
+            )
+          );
         }
       }
     }
 
     const results = await Promise.all(relatedPromises);
+
+    // The value changed while this lookup ran
+    if (requestId !== this._relatedRequestId) {
+      return;
+    }
+
     const items = new Set<string>();
+    if (this.value.no_area) {
+      this._itemsWithoutArea().forEach((item) => items.add(item));
+    }
     for (const result of results) {
       if (result[this.type!]) {
         result[this.type!]!.forEach((item) => items.add(item));
@@ -320,6 +422,39 @@ export class HaFilterFloorAreas extends LitElement {
       value: this.value,
       items: this.type ? items : undefined,
     });
+  }
+
+  private _itemsWithoutArea(): string[] {
+    if (this.type === "device") {
+      return Object.values(this._devices)
+        .filter((device) => !getDeviceAreaId(device, this._devices))
+        .map((device) => device.id);
+    }
+    // Matches the area column of each table: the entities and helpers tables
+    // give an entity without its own area the area of its device, the
+    // automations, scripts and scenes tables only show the entity's own area
+    const useDeviceArea = this.type === "entity";
+    const entities = this._entities || [];
+    const items = entities
+      .filter(
+        (entity) =>
+          (this.includeDisabledEntities || !entity.disabled_by) &&
+          !entity.area_id &&
+          !(
+            useDeviceArea &&
+            entity.device_id &&
+            this._devices[entity.device_id]?.area_id
+          )
+      )
+      .map((entity) => entity.entity_id);
+    // Entities without a registry entry can't have an area
+    const registered = new Set(entities.map((entity) => entity.entity_id));
+    for (const entityId of this._stateIds || []) {
+      if (!registered.has(entityId)) {
+        items.push(entityId);
+      }
+    }
+    return items;
   }
 
   private _handleClearFilterKeydown(ev: KeyboardEvent) {

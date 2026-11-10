@@ -176,3 +176,66 @@ describe("timeCachePromiseFunc cache ownership", () => {
     }
   });
 });
+
+describe("timeCachePromiseFunc overlapping callers", () => {
+  const flush = () =>
+    new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+
+  const setup = () => {
+    const resolvers: ((value: string) => void)[] = [];
+    const fetchData = vi.fn(
+      () =>
+        new Promise<string>((resolve) => {
+          resolvers.push(resolve);
+        })
+    );
+    const cache = {};
+    const call = (key: number) =>
+      timeCachePromiseFunc("_testOverlap", 30_000, fetchData, () => key, cache);
+    return { resolvers, fetchData, call };
+  };
+
+  it("starts one refetch when callers with the same new key wait on an in-flight request", async () => {
+    const { resolvers, fetchData, call } = setup();
+
+    call(1);
+    const first = call(2);
+    const second = call(2);
+
+    resolvers[0]("old");
+    await flush();
+    expect(fetchData).toHaveBeenCalledTimes(2);
+
+    resolvers[1]("new");
+    await expect(first).resolves.toBe("new");
+    await expect(second).resolves.toBe("new");
+
+    await expect(call(2)).resolves.toBe("new");
+    expect(fetchData).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not let an older request overwrite a newer cached result", async () => {
+    const { resolvers, fetchData, call } = setup();
+
+    call(1);
+    const keyTwo = call(2);
+    const keyThree = call(3);
+
+    resolvers[0]("one");
+    await flush();
+    expect(fetchData).toHaveBeenCalledTimes(2);
+
+    resolvers[1]("two");
+    await expect(keyTwo).resolves.toBe("two");
+    await flush();
+    expect(fetchData).toHaveBeenCalledTimes(3);
+
+    resolvers[2]("three");
+    await expect(keyThree).resolves.toBe("three");
+
+    await expect(call(3)).resolves.toBe("three");
+    expect(fetchData).toHaveBeenCalledTimes(3);
+  });
+});

@@ -30,9 +30,10 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import "../../../components/ha-alert";
 import "./components/ha-energy-device-settings";
-import "./components/ha-energy-device-settings-water";
+import "./components/ha-energy-device-settings-water-gas";
 import "./components/ha-energy-grid-settings";
 import "./components/ha-energy-solar-settings";
+import "./components/ha-energy-home-settings";
 import "./components/ha-energy-battery-settings";
 import "./components/ha-energy-gas-settings";
 import "./components/ha-energy-water-settings";
@@ -45,6 +46,7 @@ const INITIAL_CONFIG: EnergyPreferences = {
   energy_sources: [],
   device_consumption: [],
   device_consumption_water: [],
+  device_consumption_gas: [],
 };
 
 const TABS: PageNavigation[] = [
@@ -96,7 +98,10 @@ class HaConfigEnergy extends LitElement {
     if (changedProperties.has("route")) {
       const tab = this.route.path.substring(1);
       if (!tab || !TABS.some((t) => t.path.endsWith(`/${tab}`))) {
-        navigate(`${this.route.prefix}/electricity`, { replace: true });
+        navigate(`${this.route.prefix}/electricity${location.search}`, {
+          replace: true,
+          keepDialogs: true,
+        });
       }
     }
   }
@@ -171,6 +176,12 @@ class HaConfigEnergy extends LitElement {
             .info=${this._info}
             @value-changed=${this._prefsChanged}
           ></ha-energy-solar-settings>
+          <ha-energy-home-settings
+            .hass=${this.hass}
+            .preferences=${this._preferences!}
+            .validationResult=${this._validationResult}
+            @value-changed=${this._prefsChanged}
+          ></ha-energy-home-settings>
           <ha-energy-battery-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
@@ -195,6 +206,14 @@ class HaConfigEnergy extends LitElement {
             .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-gas-settings>
+          <ha-energy-device-settings-water-gas
+            .hass=${this.hass}
+            .resource=${"gas"}
+            .preferences=${this._preferences!}
+            .statsMetadata=${this._statsMetadata}
+            .validationResult=${this._validationResult}
+            @value-changed=${this._prefsChanged}
+          ></ha-energy-device-settings-water-gas>
         `;
       case "water":
         return html`
@@ -205,13 +224,14 @@ class HaConfigEnergy extends LitElement {
             .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-water-settings>
-          <ha-energy-device-settings-water
+          <ha-energy-device-settings-water-gas
             .hass=${this.hass}
+            .resource=${"water"}
             .preferences=${this._preferences!}
             .statsMetadata=${this._statsMetadata}
             .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
-          ></ha-energy-device-settings-water>
+          ></ha-energy-device-settings-water-gas>
         `;
       default:
         return nothing;
@@ -222,9 +242,9 @@ class HaConfigEnergy extends LitElement {
     this._error = undefined;
 
     const validationPromise = getEnergyPreferenceValidation(this.hass);
-    const energyInfoPromise = await getEnergyInfo(this.hass);
+    const energyInfoPromise = await getEnergyInfo(this.hass.callWS);
     try {
-      this._preferences = await getEnergyPreferences(this.hass);
+      this._preferences = await getEnergyPreferences(this.hass.callWS);
     } catch (err: any) {
       if (err.code === "not_found") {
         this._preferences = INITIAL_CONFIG;
@@ -249,7 +269,7 @@ class HaConfigEnergy extends LitElement {
     } catch (err: any) {
       this._error = err.message;
     }
-    this._info = await getEnergyInfo(this.hass);
+    this._info = await getEnergyInfo(this.hass.callWS);
     await this._fetchMetaData();
   }
 
@@ -258,7 +278,10 @@ class HaConfigEnergy extends LitElement {
       return;
     }
     const statIDs = getReferencedStatisticIds(this._preferences, this._info);
-    const statsMetadataArray = await getStatisticMetadata(this.hass, statIDs);
+    const statsMetadataArray = await getStatisticMetadata(
+      this.hass.callWS,
+      statIDs
+    );
     const statsMetadata: Record<string, StatisticsMetaData> = {};
     statsMetadataArray.forEach((x) => {
       statsMetadata[x.statistic_id] = x;
@@ -316,27 +339,26 @@ class HaConfigEnergy extends LitElement {
           align-items: center;
         }
         .content {
-          padding: 0 var(--ha-space-5);
-          max-width: 1040px;
+          padding: 0 var(--ha-content-gutter);
+          max-width: var(--ha-content-width-narrow);
           margin: 0 auto;
         }
 
         ha-alert {
           display: block;
           margin: 12px auto;
-          max-width: 600px;
         }
 
         ha-energy-grid-settings,
         ha-energy-solar-settings,
+        ha-energy-home-settings,
         ha-energy-battery-settings,
         ha-energy-gas-settings,
         ha-energy-water-settings,
         ha-energy-device-settings,
-        ha-energy-device-settings-water {
+        ha-energy-device-settings-water-gas {
           display: block;
-          max-width: 600px;
-          margin: 0 auto 12px;
+          margin-bottom: 12px;
         }
       `,
     ];

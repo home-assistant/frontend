@@ -973,6 +973,11 @@ const HA_FUNCTION_DEFS: HaFunctionDef[] = [
     info: "Creates a timedelta object.",
   },
   {
+    snippet: "timedelta_string(${value}, ${precision})",
+    detail: "value, precision?",
+    info: "Formats a timedelta object as a human-readable duration.",
+  },
+  {
     snippet: 'timestamp_custom(${timestamp}, "${format}")',
     detail: "timestamp, format, local_time?",
     info: "Formats a Unix timestamp using a custom strftime format string.",
@@ -1887,6 +1892,7 @@ const DOCUMENTED_NAMES = new Set<string>([
   "time_since",
   "time_until",
   "timedelta",
+  "timedelta_string",
   "timestamp_custom",
   "timestamp_local",
   "timestamp_utc",

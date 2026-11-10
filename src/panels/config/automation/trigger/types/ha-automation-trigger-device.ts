@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../../common/decorators/consume";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { deepEqual } from "../../../../../common/util/deep-equal";
 import "../../../../../components/device/ha-device-picker";
@@ -66,9 +66,9 @@ export class HaDeviceTrigger extends LitElement {
   private _extraFieldsData = memoizeOne(
     (trigger: DeviceTrigger, capabilities: DeviceCapabilities) => {
       const extraFieldsData = computeInitialHaFormData(
-        capabilities.extra_fields
+        capabilities.extra_fields ?? []
       );
-      capabilities.extra_fields.forEach((item) => {
+      capabilities.extra_fields?.forEach((item) => {
         if (trigger[item.name] !== undefined) {
           extraFieldsData![item.name] = trigger[item.name];
         }
@@ -122,7 +122,10 @@ export class HaDeviceTrigger extends LitElement {
     try {
       // Resolve the candidates before exposing the split map, so the picker
       // never offers one that cannot host the automation.
-      const compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+      const compositeSplits = await fetchDeviceCompositeSplits(
+        this.hass.connection,
+        this.hass.callWS
+      );
       await this._resolveReplacements(compositeSplits);
       this._compositeSplits = compositeSplits;
     } catch (_err) {
@@ -140,7 +143,6 @@ export class HaDeviceTrigger extends LitElement {
         .value=${deviceId}
         .replacementDeviceIds=${this._replacementDeviceIds}
         @value-changed=${this._devicePicked}
-        .hass=${this.hass}
         .disabled=${this.disabled}
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.device.label"
@@ -150,7 +152,6 @@ export class HaDeviceTrigger extends LitElement {
         .value=${this.trigger}
         .deviceId=${deviceId}
         @value-changed=${this._deviceTriggerPicked}
-        .hass=${this.hass}
         .disabled=${this.disabled}
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.device.trigger"

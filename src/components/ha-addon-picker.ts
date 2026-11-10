@@ -1,11 +1,17 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { html, LitElement, nothing } from "lit";
+import type { ContextType } from "@lit/context";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { consume } from "../common/decorators/consume";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { apiContext, configContext } from "../data/context";
 import { fetchHassioAddonsInfo } from "../data/hassio/addon";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { ValueChangedEvent } from "../types";
 import "./ha-alert";
+import "./ha-app-icon";
 import "./ha-combo-box-item";
 import "./ha-generic-picker";
 import type { HaGenericPicker } from "./ha-generic-picker";
@@ -18,13 +24,22 @@ const SEARCH_KEYS = [
   { name: "search_labels.repository", weight: 5 },
 ];
 
-const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
-  <ha-combo-box-item type="button">
+interface AddonPickerItem extends PickerComboBoxItem {
+  slug: string;
+  hasIcon: boolean;
+}
+
+const rowRenderer: RenderItemFunction<AddonPickerItem> = (item) => html`
+  <ha-combo-box-item>
     <span slot="headline">${item.primary}</span>
     <span slot="supporting-text">${item.secondary}</span>
     ${
-      item.icon
-        ? html` <img alt="" slot="start" .src=${item.icon} /> `
+      item.hasIcon
+        ? html`<ha-app-icon
+            slot="start"
+            .slug=${item.slug}
+            .hasIcon=${item.hasIcon}
+          ></ha-app-icon>`
         : nothing
     }
   </ha-combo-box-item>
@@ -32,7 +47,13 @@ const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
 
 @customElement("ha-addon-picker")
 class HaAddonPicker extends LitElement {
-  public hass!: HomeAssistant;
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
 
   @property() public label?: string;
 
@@ -40,7 +61,7 @@ class HaAddonPicker extends LitElement {
 
   @property() public helper?: string;
 
-  @state() private _addons?: PickerComboBoxItem[];
+  @state() private _addons?: AddonPickerItem[];
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -63,10 +84,7 @@ class HaAddonPicker extends LitElement {
   }
 
   protected render() {
-    const label =
-      this.label === undefined && this.hass
-        ? this.hass.localize("ui.components.app-picker.app")
-        : this.label;
+    const label = this.label ?? this._localize("ui.components.app-picker.app");
 
     if (this._error) {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
@@ -77,7 +95,6 @@ class HaAddonPicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${label}
         .valueRenderer=${this._valueRenderer}
@@ -96,17 +113,16 @@ class HaAddonPicker extends LitElement {
 
   private async _getApps() {
     try {
-      if (isComponentLoaded(this.hass.config, "hassio")) {
-        const addonsInfo = await fetchHassioAddonsInfo(this.hass);
+      if (isComponentLoaded(this._config.config, "hassio")) {
+        const addonsInfo = await fetchHassioAddonsInfo(this._api);
         this._addons = addonsInfo.addons
           .filter((addon) => addon.version)
           .map((addon) => ({
             id: addon.slug,
+            slug: addon.slug,
+            hasIcon: addon.icon,
             primary: addon.name,
             secondary: addon.slug,
-            icon: addon.icon
-              ? `/api/hassio/addons/${addon.slug}/icon`
-              : undefined,
             search_labels: {
               description: addon.description || null,
               repository: addon.repository || null,
@@ -114,14 +130,12 @@ class HaAddonPicker extends LitElement {
             sorting_label: [addon.name, addon.slug].filter(Boolean).join("_"),
           }));
       } else {
-        this._error = this.hass.localize(
+        this._error = this._localize(
           "ui.components.app-picker.error.no_supervisor"
         );
       }
     } catch (_err: any) {
-      this._error = this.hass.localize(
-        "ui.components.app-picker.error.fetch_apps"
-      );
+      this._error = this._localize("ui.components.app-picker.error.fetch_apps");
     }
   }
 
@@ -151,15 +165,22 @@ class HaAddonPicker extends LitElement {
   private _valueRenderer = (itemId: string) => {
     const item = this._addons!.find((addon) => addon.id === itemId);
     return html`${
-        item?.icon
-          ? html`<img
+        item?.hasIcon
+          ? html`<ha-app-icon
               slot="start"
-              alt=${item.primary ?? "Unknown"}
-              .src=${item.icon}
-            />`
+              .slug=${item.slug}
+              .hasIcon=${item.hasIcon}
+              .alt=${item.primary ?? "Unknown"}
+            ></ha-app-icon>`
           : nothing
       }<span slot="headline">${item?.primary || "Unknown"}</span>`;
   };
+
+  static styles = css`
+    ha-app-icon {
+      --ha-app-icon-size: var(--ha-space-8);
+    }
+  `;
 }
 
 declare global {

@@ -36,13 +36,72 @@ export interface FanEntity extends HassEntityBase {
 
 export type FanDirection = "forward" | "reverse";
 
-export type FanSpeed = "off" | "low" | "medium" | "high" | "on";
+// Named speeds are used when there are icons for every step. Fans with more
+// steps use numbered speeds ("1", "2", ...) instead.
+export type FanSpeed = "off" | "low" | "medium" | "high" | "on" | `${number}`;
 
-export const FAN_SPEEDS: Partial<Record<number, FanSpeed[]>> = {
+const FAN_SPEEDS_NAMED: Partial<Record<number, FanSpeed[]>> = {
   2: ["off", "on"],
   3: ["off", "low", "high"],
   4: ["off", "low", "medium", "high"],
 };
+
+// Fans with up to this many speeds (off included) show buttons by default.
+export const FAN_SPEED_COUNT_MAX_FOR_BUTTONS = 6;
+
+// Fans with more speeds than this (off included) can only show a slider.
+export const FAN_SPEED_COUNT_MAX_FOR_DISCRETE_SPEEDS = 11;
+
+export type FanSpeedStyle = "buttons" | "slider";
+
+export function computeFanSpeedCount(stateObj: FanEntity): number {
+  const step = stateObj.attributes.percentage_step ?? 1;
+  const speedCount = Math.round(100 / step) + 1;
+  return speedCount;
+}
+
+export function computeFanSpeeds(stateObj: FanEntity): FanSpeed[] | undefined {
+  const speedCount = computeFanSpeedCount(stateObj);
+  if (speedCount > FAN_SPEED_COUNT_MAX_FOR_DISCRETE_SPEEDS) {
+    return undefined;
+  }
+  return (
+    FAN_SPEEDS_NAMED[speedCount] ?? [
+      "off",
+      ...Array.from(
+        { length: speedCount - 1 },
+        (_, index) => `${index + 1}` as const
+      ),
+    ]
+  );
+}
+
+export const computeDefaultFanSpeedStyle = (
+  stateObj: FanEntity
+): FanSpeedStyle =>
+  computeFanSpeedCount(stateObj) <= FAN_SPEED_COUNT_MAX_FOR_BUTTONS
+    ? "buttons"
+    : "slider";
+
+// A slider brings nothing to an off/on fan, so it always shows buttons.
+export const supportsFanSpeedStyleChoice = (stateObj: FanEntity): boolean => {
+  const speedCount = computeFanSpeedCount(stateObj);
+  return (
+    speedCount >= 3 && speedCount <= FAN_SPEED_COUNT_MAX_FOR_DISCRETE_SPEEDS
+  );
+};
+
+// Fans without a choice always use their default style, whatever is requested.
+export const resolveFanSpeedStyle = (
+  stateObj: FanEntity,
+  style?: FanSpeedStyle
+): FanSpeedStyle =>
+  supportsFanSpeedStyleChoice(stateObj)
+    ? (style ?? computeDefaultFanSpeedStyle(stateObj))
+    : computeDefaultFanSpeedStyle(stateObj);
+
+export const isNumberedFanSpeed = (speed: FanSpeed): speed is `${number}` =>
+  !isNaN(Number(speed));
 
 export function fanPercentageToSpeed(
   stateObj: FanEntity,
@@ -50,9 +109,8 @@ export function fanPercentageToSpeed(
 ): FanSpeed {
   const step = stateObj.attributes.percentage_step ?? 1;
   const speedValue = Math.round(value / step);
-  const speedCount = Math.round(100 / step) + 1;
 
-  const speeds = FAN_SPEEDS[speedCount];
+  const speeds = computeFanSpeeds(stateObj);
   return speeds?.[speedValue] ?? "off";
 }
 
@@ -61,9 +119,8 @@ export function fanSpeedToPercentage(
   speed: FanSpeed
 ): number {
   const step = stateObj.attributes.percentage_step ?? 1;
-  const speedCount = Math.round(100 / step) + 1;
 
-  const speeds = FAN_SPEEDS[speedCount];
+  const speeds = computeFanSpeeds(stateObj);
 
   if (!speeds) {
     return 0;
@@ -76,27 +133,22 @@ export function fanSpeedToPercentage(
   return Math.floor(speedValue * step);
 }
 
-export function computeFanSpeedCount(stateObj: FanEntity): number {
-  const step = stateObj.attributes.percentage_step ?? 1;
-  const speedCount = Math.round(100 / step) + 1;
-  return speedCount;
-}
-
 export function computeFanSpeedIcon(
   stateObj: FanEntity,
   speed: FanSpeed
-): string {
-  const speedCount = computeFanSpeedCount(stateObj);
-  const speeds = FAN_SPEEDS[speedCount];
-  const index = speeds?.indexOf(speed) ?? 1;
-
-  return speed === "on"
-    ? mdiFan
-    : speed === "off"
-      ? mdiFanOff
-      : [mdiFanSpeed1, mdiFanSpeed2, mdiFanSpeed3][index - 1];
+): string | undefined {
+  if (speed === "on") {
+    return mdiFan;
+  }
+  if (speed === "off") {
+    return mdiFanOff;
+  }
+  if (isNumberedFanSpeed(speed)) {
+    return undefined;
+  }
+  const index = computeFanSpeeds(stateObj)?.indexOf(speed) ?? 1;
+  return [mdiFanSpeed1, mdiFanSpeed2, mdiFanSpeed3][index - 1];
 }
-export const FAN_SPEED_COUNT_MAX_FOR_BUTTONS = 4;
 
 export function computeFanSpeedStateDisplay(
   stateObj: FanEntity,

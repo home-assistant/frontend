@@ -16,6 +16,30 @@ import type {
   HaFormIntegerSchema,
 } from "./types";
 
+/**
+ * The value the slider shows: the data, or for a required field without data
+ * its suggested value, default or minimum.
+ */
+export const computeIntegerSliderValue = (
+  schema: HaFormIntegerSchema,
+  data?: HaFormIntegerData
+): number => {
+  if (data !== undefined) {
+    return data;
+  }
+
+  if (!schema.required) {
+    return schema.valueMin || 0;
+  }
+
+  return (
+    (schema.description?.suggested_value as HaFormIntegerData | undefined) ??
+    schema.default ??
+    schema.valueMin ??
+    0
+  );
+};
+
 @customElement("ha-form-integer")
 export class HaFormInteger extends LitElement implements HaFormElement {
   @property({ attribute: false }) public localize?: LocalizeFunc;
@@ -79,7 +103,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
             }
             <ha-slider
               labeled
-              .value=${this._value}
+              .value=${computeIntegerSliderValue(this.schema, this.data)}
               .min=${this.schema.valueMin}
               .max=${this.schema.valueMax}
               .disabled=${
@@ -91,7 +115,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
           </div>
           ${
             this.helper
-              ? html`<ha-input-helper-text .disabled=${this.disabled}
+              ? html`<ha-input-helper-text
                   >${this.helper}</ha-input-helper-text
                 >`
               : nothing
@@ -134,24 +158,6 @@ export class HaFormInteger extends LitElement implements HaFormElement {
           !!this.schema.required
       );
     }
-  }
-
-  private get _value() {
-    if (this.data !== undefined) {
-      return this.data;
-    }
-
-    if (!this.schema.required) {
-      return this.schema.valueMin || 0;
-    }
-
-    return (
-      (this.schema.description?.suggested_value !== undefined &&
-        this.schema.description?.suggested_value !== null) ||
-      this.schema.default ||
-      this.schema.valueMin ||
-      0
-    );
   }
 
   private _handleCheckboxChange(ev: HASSDomTargetEvent<HaCheckbox>) {

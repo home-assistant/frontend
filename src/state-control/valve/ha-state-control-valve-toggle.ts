@@ -1,10 +1,10 @@
-import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../common/decorators/consume";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { stateColorCss } from "../../common/entity/state_color";
 import type { LocalizeFunc } from "../../common/translations/localize";
@@ -91,7 +91,7 @@ export class HaStateControlValveToggle extends LitElement {
           >
             <ha-state-icon
               .stateObj=${this.stateObj}
-              stateValue="open"
+              .stateValue=${"open"}
             ></ha-state-icon>
           </ha-control-button>
           <ha-control-button
@@ -107,7 +107,7 @@ export class HaStateControlValveToggle extends LitElement {
           >
             <ha-state-icon
               .stateObj=${this.stateObj}
-              stateValue="closed"
+              .stateValue=${"closed"}
             ></ha-state-icon>
           </ha-control-button>
         </div>
@@ -135,12 +135,12 @@ export class HaStateControlValveToggle extends LitElement {
         <ha-state-icon
           slot="icon-on"
           .stateObj=${this.stateObj}
-          stateValue="open"
+          .stateValue=${"open"}
         ></ha-state-icon>
         <ha-state-icon
           slot="icon-off"
           .stateObj=${this.stateObj}
-          stateValue="closed"
+          .stateValue=${"closed"}
         ></ha-state-icon>
       </ha-control-switch>
     `;

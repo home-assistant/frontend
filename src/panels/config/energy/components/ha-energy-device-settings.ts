@@ -26,7 +26,7 @@ import type {
   EnergyValidationIssue,
 } from "../../../../data/energy";
 import {
-  computeEnergyLabel,
+  computeEnergyDeviceLabels,
   saveEnergyPreferences,
 } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
@@ -55,6 +55,13 @@ export class EnergyDeviceSettings extends LitElement {
   public validationResult?: EnergyPreferencesValidation;
 
   protected render(): TemplateResult {
+    const labels = computeEnergyDeviceLabels(
+      this.hass.states,
+      this.hass.formatEntityName,
+      this.preferences.device_consumption,
+      this.statsMetadata
+    );
+
     return html`
       <ha-card>
         <h1 class="card-header">
@@ -108,7 +115,7 @@ export class EnergyDeviceSettings extends LitElement {
                                   .path=${mdiDragHorizontalVariant}
                                 ></ha-svg-icon>
                               </div>
-                              ${this._renderName(device)}
+                              ${this._renderName(device, labels)}
                               ${this._renderIssueIndicator(
                                 this.validationResult?.device_consumption[
                                   index
@@ -148,13 +155,11 @@ export class EnergyDeviceSettings extends LitElement {
     `;
   }
 
-  private _renderName(device: DeviceConsumptionEnergyPreference) {
-    const name = computeEnergyLabel(
-      this.hass,
-      device.stat_consumption,
-      this.statsMetadata?.[device.stat_consumption],
-      device.name
-    );
+  private _renderName(
+    device: DeviceConsumptionEnergyPreference,
+    labels: Record<string, string>
+  ) {
+    const name = labels[device.stat_consumption];
     const areaId = getEntityAreaId(
       device.stat_consumption,
       this.hass.entities,

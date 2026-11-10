@@ -1,6 +1,6 @@
 import { LitElement } from "lit";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { navigate } from "../../src/common/navigate";
+import { handleHistoryPop, navigate } from "../../src/common/navigate";
 import { DirtyStateProviderMixin } from "../../src/mixins/dirty-state-provider-mixin";
 import { PreventUnsavedMixin } from "../../src/mixins/prevent-unsaved-mixin";
 
@@ -124,6 +124,26 @@ describe("PreventUnsavedMixin", () => {
 
     expect(element.promptCalls).toBe(0);
     expect(window.location.pathname).toEqual("/config/scene/dashboard");
+  });
+
+  it("prompts on a history pop away from the page", async () => {
+    // Reach the editor while still clean, so the entry records the page behind it.
+    setEntry("/config/automation/dashboard");
+    const element = await mountClean();
+    await navigate("/config/automation/edit/1234");
+
+    element.promptResponse = false;
+    element.setValue({ name: "Bedroom" });
+    await element.updateComplete;
+
+    // Fake the browser popping back to the page behind the editor.
+    window.history.replaceState(null, "", "/config/automation/dashboard");
+    const resume = vi.fn();
+
+    handleHistoryPop(resume);
+
+    await vi.waitFor(() => expect(element.promptCalls).toBe(1));
+    expect(resume).not.toHaveBeenCalled();
   });
 
   it("arms beforeunload only while dirty", async () => {

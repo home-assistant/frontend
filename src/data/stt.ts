@@ -12,17 +12,16 @@ export interface SpeechMetadata {
 
 export interface STTEngine {
   engine_id: string;
-  supported_languages?: string[];
+  supported_languages: string[];
   name?: string;
-  deprecated: boolean;
 }
 
 export const listSTTEngines = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   language?: string,
   country?: string
 ): Promise<{ providers: STTEngine[] }> =>
-  hass.callWS({
+  callWS({
     type: "stt/engine/list",
     language,
     country,

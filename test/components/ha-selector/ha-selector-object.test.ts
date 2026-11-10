@@ -1,6 +1,16 @@
+import { ContextProvider } from "@lit/context";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  formattersContext,
+  internationalizationContext,
+  registriesContext,
+  statesContext,
+} from "../../../src/data/context";
 import type { ObjectSelector } from "../../../src/data/selector";
-import type { HomeAssistant } from "../../../src/types";
+import type {
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+} from "../../../src/types";
 import type { HaObjectSelector } from "../../../src/components/ha-selector/ha-selector-object";
 import type {
   FormDialogData,
@@ -13,13 +23,13 @@ vi.mock("../../../src/components/ha-input-helper-text", () => {
   return {};
 });
 
-vi.mock("../../../src/components/ha-md-list", () => {
-  customElements.define("ha-md-list", class extends HTMLElement {});
+vi.mock("../../../src/components/list/ha-list-base", () => {
+  customElements.define("ha-list-base", class extends HTMLElement {});
   return {};
 });
 
-vi.mock("../../../src/components/ha-md-list-item", () => {
-  customElements.define("ha-md-list-item", class extends HTMLElement {});
+vi.mock("../../../src/components/item/ha-list-item-base", () => {
+  customElements.define("ha-list-item-base", class extends HTMLElement {});
   return {};
 });
 
@@ -32,16 +42,6 @@ vi.mock("../../../src/components/ha-yaml-editor", () => {
   customElements.define("ha-yaml-editor", class extends HTMLElement {});
   return {};
 });
-
-const hass = {
-  localize: (key: string) => key,
-  locale: "en-US",
-  floors: {},
-  areas: {},
-  devices: {},
-  states: {},
-  formatEntityName: () => "",
-} as unknown as HomeAssistant;
 
 const selectorConfig = {
   object: {
@@ -67,13 +67,32 @@ const mountSelector = async (
   value: FormDialogData | FormDialogData[] | "",
   config: ObjectSelector = selectorConfig
 ) => {
+  const host = document.createElement("div");
+  new ContextProvider(host, {
+    context: internationalizationContext,
+    initialValue: {
+      localize: (key: string) => key,
+      locale: { language: "en" },
+    } as unknown as HomeAssistantInternationalization,
+  });
+  new ContextProvider(host, {
+    context: registriesContext,
+    initialValue: { entities: {}, devices: {}, areas: {}, floors: {} },
+  });
+  new ContextProvider(host, { context: statesContext, initialValue: {} });
+  new ContextProvider(host, {
+    context: formattersContext,
+    initialValue: {
+      formatEntityName: () => "",
+    } as unknown as HomeAssistantFormatters,
+  });
   const selector = document.createElement(
     "ha-selector-object"
   ) as HaObjectSelector;
-  selector.hass = hass;
   selector.selector = config;
   selector.value = value;
-  document.body.append(selector);
+  host.append(selector);
+  document.body.append(host);
   await selector.updateComplete;
   return selector;
 };
@@ -148,6 +167,77 @@ describe("ha-selector-object form dialog flow", () => {
     expect(params.data).toEqual({
       name: "",
       states: [],
+    });
+  });
+
+  it("uses explicit object field defaults in Add dialog data", async () => {
+    const chooseDefault = {
+      active_choice: "Temperature",
+      Temperature: 4000,
+    };
+
+    const selector = await mountSelector([], {
+      object: {
+        multiple: true,
+        fields: {
+          name: {
+            required: true,
+            selector: { text: {} },
+          },
+          number: {
+            selector: { number: {} },
+            default: 0,
+          },
+          boolean: {
+            selector: { boolean: {} },
+            default: false,
+          },
+          text: {
+            selector: { text: {} },
+            default: "",
+          },
+          entities: {
+            selector: { entity: { multiple: true } },
+            default: [],
+          },
+          object: {
+            selector: { object: {} },
+            default: {},
+          },
+          choose: {
+            selector: {
+              choose: {
+                choices: {
+                  Disabled: { selector: { boolean: {} } },
+                  Temperature: { selector: { number: {} } },
+                },
+              },
+            },
+            default: chooseDefault,
+          },
+        },
+      },
+    });
+
+    const params = await resolveFormDialog(selector, "_addItem", {
+      name: "A",
+    });
+
+    expect(params.data).toEqual({
+      name: "",
+      number: 0,
+      boolean: false,
+      text: "",
+      entities: [],
+      object: {},
+      choose: chooseDefault,
+    });
+
+    (params.data!.choose as { Temperature: number }).Temperature = 3000;
+
+    expect(chooseDefault).toEqual({
+      active_choice: "Temperature",
+      Temperature: 4000,
     });
   });
 

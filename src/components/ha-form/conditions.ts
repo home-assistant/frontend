@@ -1,9 +1,10 @@
+import { ensureArray } from "../../common/array/ensure-array";
 import type {
-  HaFormBaseSchema,
   HaFormCondition,
   HaFormDataContainer,
   HaFormFieldCondition,
   HaFormSchema,
+  HaFormVisible,
 } from "./types";
 
 const isEmpty = (value: unknown): boolean =>
@@ -57,11 +58,10 @@ export const evaluateCondition = (
   return matchFieldCondition(condition, data);
 };
 
-export const isFieldVisible = (
-  schema: HaFormSchema,
+export const isVisible = (
+  visible: HaFormVisible | undefined,
   data: HaFormDataContainer | undefined
 ): boolean => {
-  const { visible } = schema as HaFormBaseSchema;
   if (visible === undefined || visible === true) {
     return true;
   }
@@ -72,25 +72,62 @@ export const isFieldVisible = (
   return conditions.every((condition) => evaluateCondition(condition, data));
 };
 
+export const combineVisible = (
+  ...options: (HaFormVisible | undefined)[]
+): HaFormVisible => {
+  const conditions: HaFormCondition[] = [];
+  for (const visible of options) {
+    if (visible === undefined || visible === true) {
+      continue;
+    }
+    if (visible === false) {
+      return false;
+    }
+    conditions.push(...(Array.isArray(visible) ? visible : [visible]));
+  }
+  return conditions;
+};
+
+const getConditionFields = (visible: HaFormVisible | undefined): string[] =>
+  visible === undefined || typeof visible === "boolean"
+    ? []
+    : ensureArray(visible).flatMap((condition) =>
+        "condition" in condition
+          ? condition.conditions.flatMap((sub) => getConditionFields(sub))
+          : [condition.field]
+      );
+
 // Hiding a field drops its value, which can flip another field's condition, so
-// resolve the set to a fixpoint.
+// a field is evaluated after the fields its condition depends on.
 export const getHiddenFields = (
-  schema: readonly HaFormSchema[],
+  fields: readonly (readonly [string, HaFormVisible | undefined])[],
   data: HaFormDataContainer | undefined
 ): Set<string> => {
-  const hidden = new Set<string>();
+  const conditions = new Map(fields);
   const evalData: HaFormDataContainer = { ...(data ?? {}) };
-  let changed = true;
-  while (changed) {
-    changed = false;
-    for (const field of schema) {
-      if (hidden.has(field.name) || isFieldVisible(field, evalData)) {
-        continue;
-      }
-      hidden.add(field.name);
-      delete evalData[field.name];
-      changed = true;
+  const hidden = new Set<string>();
+  const resolved = new Set<string>();
+  const resolve = (name: string) => {
+    if (resolved.has(name) || !conditions.has(name)) {
+      return;
     }
-  }
+    resolved.add(name);
+    const visible = conditions.get(name);
+    getConditionFields(visible).forEach(resolve);
+    if (!isVisible(visible, evalData)) {
+      hidden.add(name);
+      delete evalData[name];
+    }
+  };
+  fields.forEach(([name]) => resolve(name));
   return hidden;
 };
+
+export const getHiddenSchemaFields = (
+  schema: readonly HaFormSchema[],
+  data: HaFormDataContainer | undefined
+): Set<string> =>
+  getHiddenFields(
+    schema.map((field) => [field.name, field.visible] as const),
+    data
+  );

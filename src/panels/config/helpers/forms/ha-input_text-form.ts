@@ -1,7 +1,9 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-icon-picker";
@@ -11,11 +13,12 @@ import "../../../../components/radio/ha-radio-option";
 import "../../../../components/input/ha-input";
 import type { InputText } from "../../../../data/input_text";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-input_text-form")
 class HaInputTextForm extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ type: Boolean }) public new = false;
 
@@ -60,7 +63,7 @@ class HaInputTextForm extends LitElement {
   }
 
   protected render() {
-    if (!this.hass) {
+    if (!this._localize) {
       return nothing;
     }
 
@@ -70,29 +73,24 @@ class HaInputTextForm extends LitElement {
           .value=${this._name}
           .configValue=${"name"}
           @input=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.name"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.generic.name")}
           auto-validate
           required
-          .validationMessage=${this.hass!.localize(
+          .validationMessage=${this._localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           dialogInitialFocus
           .disabled=${this.disabled}
         ></ha-input>
         <ha-icon-picker
-          .hass=${this.hass}
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.icon"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.generic.icon")}
           .disabled=${this.disabled}
         ></ha-icon-picker>
         <ha-expansion-panel
-          header=${this.hass.localize(
+          header=${this._localize(
             "ui.dialogs.helper_settings.generic.more_options"
           )}
           outlined
@@ -104,7 +102,7 @@ class HaInputTextForm extends LitElement {
             min="0"
             max="255"
             @input=${this._valueChanged}
-            .label=${this.hass!.localize(
+            .label=${this._localize(
               "ui.dialogs.helper_settings.input_text.min"
             )}
             .disabled=${this.disabled}
@@ -116,13 +114,13 @@ class HaInputTextForm extends LitElement {
             max="255"
             type="number"
             @input=${this._valueChanged}
-            .label=${this.hass!.localize(
+            .label=${this._localize(
               "ui.dialogs.helper_settings.input_text.max"
             )}
           ></ha-input>
           <ha-radio-group
             orientation="horizontal"
-            .label=${this.hass.localize(
+            .label=${this._localize(
               "ui.dialogs.helper_settings.input_text.mode"
             )}
             .value=${this._mode}
@@ -131,12 +129,10 @@ class HaInputTextForm extends LitElement {
             @change=${this._modeChanged}
           >
             <ha-radio-option value="text">
-              ${this.hass.localize(
-                "ui.dialogs.helper_settings.input_text.text"
-              )}
+              ${this._localize("ui.dialogs.helper_settings.input_text.text")}
             </ha-radio-option>
             <ha-radio-option value="password">
-              ${this.hass.localize(
+              ${this._localize(
                 "ui.dialogs.helper_settings.input_text.password"
               )}
             </ha-radio-option>
@@ -145,10 +141,10 @@ class HaInputTextForm extends LitElement {
             .value=${this._pattern || ""}
             .configValue=${"pattern"}
             @input=${this._valueChanged}
-            .label=${this.hass!.localize(
+            .label=${this._localize(
               "ui.dialogs.helper_settings.input_text.pattern_label"
             )}
-            .hint=${this.hass!.localize(
+            .hint=${this._localize(
               "ui.dialogs.helper_settings.input_text.pattern_helper"
             )}
             .disabled=${this.disabled}

@@ -61,30 +61,30 @@ export const subscribeLabelRegistry = (
   );
 
 export const createLabelRegistryEntry = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   values: LabelRegistryEntryMutableParams
 ) =>
-  hass.callWS<LabelRegistryEntry>({
+  callWS<LabelRegistryEntry>({
     type: "config/label_registry/create",
     ...values,
   });
 
 export const updateLabelRegistryEntry = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   labelId: string,
   updates: Partial<LabelRegistryEntryMutableParams>
 ) =>
-  hass.callWS<LabelRegistryEntry>({
+  callWS<LabelRegistryEntry>({
     type: "config/label_registry/update",
     label_id: labelId,
     ...updates,
   });
 
 export const deleteLabelRegistryEntry = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   labelId: string
 ) =>
-  hass.callWS({
+  callWS({
     type: "config/label_registry/delete",
     label_id: labelId,
   });

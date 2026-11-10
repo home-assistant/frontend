@@ -93,9 +93,9 @@ export class HaAutomationRowEventChip extends LitElement {
     }
 
     :host([variant="neutral"]) {
-      --background-color: var(--ha-color-fill-neutral-normal-resting);
-      --background-color-hover: var(--ha-color-fill-neutral-normal-hover);
-      --text-color: var(--ha-color-on-neutral-normal);
+      --background-color: var(--ha-color-fill-neutral-loud-resting);
+      --background-color-hover: var(--ha-color-fill-neutral-loud-hover);
+      --text-color: var(--ha-color-on-neutral-loud);
     }
 
     :host([variant="success"]) {

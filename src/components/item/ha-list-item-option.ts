@@ -106,9 +106,15 @@ export class HaListItemOption extends HaListItemBase {
       .base {
         cursor: inherit;
       }
-      :host([appearance="line"][selected]:not([disabled])) .base,
-      :host([appearance="line"][active]:not([disabled])) .base {
+      :host([appearance="line"][selected]:not([disabled])) .base {
         background-color: var(--ha-list-item-selected-background);
+      }
+      /* The keyboard highlight stays visible on the selected option. */
+      :host([appearance="line"][active]:not([disabled])) .base {
+        background-color: var(
+          --ha-list-item-active-background,
+          var(--ha-list-item-focus-background)
+        );
       }
       :host([appearance="line"][selected]:not([disabled])) {
         color: var(--primary-color);

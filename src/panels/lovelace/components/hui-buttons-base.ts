@@ -1,11 +1,10 @@
-import { consume } from "@lit/context";
 import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, state, property } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { preserveUnchangedEntityStatesRecord } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import { statesContext } from "../../../data/context";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
@@ -53,7 +52,11 @@ export class HuiButtonsBase extends LitElement {
           const name =
             (entityConf.show_name && stateObj) ||
             (entityConf.name && entityConf.show_name !== false)
-              ? entityConf.name || (stateObj ? computeStateName(stateObj) : "")
+              ? stateObj
+                ? this.hass.formatEntityName(stateObj, entityConf.name)
+                : typeof entityConf.name === "string"
+                  ? entityConf.name
+                  : ""
               : "";
 
           return html`

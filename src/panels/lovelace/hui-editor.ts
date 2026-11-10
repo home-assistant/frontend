@@ -17,6 +17,8 @@ import {
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
+import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
+import { PreventUnsavedMixin } from "../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { Lovelace } from "./types";
@@ -34,7 +36,7 @@ const strategyStruct = type({
 
 @customElement("hui-editor")
 class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
-  LitElement
+  PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
 ) {
   @property({ type: Boolean }) public narrow = false;
 
@@ -66,8 +68,8 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
           slot="actionItems"
           class="save-button
               ${classMap({
-                saved: this._saving === false || this.isDirtyState,
-              })}"
+            saved: this._saving === false || this.isDirtyState,
+          })}"
         >
           ${
             this.isDirtyState
@@ -87,7 +89,6 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
         >
         <div class="content">
           <ha-yaml-editor
-            autofocus
             @value-changed=${this._yamlChanged}
             @editor-save=${this._handleSave}
             disable-fullscreen
@@ -101,6 +102,7 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._setValue();
+    this.yamlEditor.focus();
   }
 
   protected updated(changedProps: PropertyValues<this>) {
@@ -171,17 +173,17 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
     this._config = ev.detail.isValid ? ev.detail.value : undefined;
     this._yamlError = ev.detail.errorMsg;
     this._updateDirtyState(this.yamlEditor.yaml);
-    if (this.isDirtyState && !window.onbeforeunload) {
-      window.onbeforeunload = () => true;
-    } else if (!this.isDirtyState && window.onbeforeunload) {
-      window.onbeforeunload = null;
-    }
   }
 
-  private async _closeEditor() {
+  /**
+   * Also closes the editor: it is a panel state rather than a route, so leaving
+   * by a navigation never reaches `_closeEditor` and the panel can be cached.
+   */
+  private async _confirmDiscard(addHistory: boolean): Promise<boolean> {
     if (
       this.isDirtyState &&
       !(await showConfirmationDialog(this, {
+        addHistory,
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.confirm_unsaved_changes"
         ),
@@ -189,13 +191,24 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
         confirmText: this.hass!.localize("ui.common.leave"),
       }))
     ) {
-      return;
+      return false;
     }
 
-    window.onbeforeunload = null;
-    if (this.closeEditor) {
-      this.closeEditor();
-    }
+    this._markDirtyStateClean();
+    this.closeEditor?.();
+    return true;
+  }
+
+  protected async promptDiscardChanges(): Promise<boolean> {
+    return this._confirmDiscard(false);
+  }
+
+  private async _closeEditor() {
+    await this._confirmDiscard(true);
+  }
+
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    return { Y: () => this._closeEditor() };
   }
 
   private async _resetConfig() {
@@ -210,7 +223,7 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
       });
       return;
     }
-    window.onbeforeunload = null;
+    this._markDirtyStateClean();
     if (this.closeEditor) {
       this.closeEditor();
     }
@@ -290,7 +303,6 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
         ),
       });
     }
-    window.onbeforeunload = null;
     this._markDirtyStateClean();
     this._saving = false;
   }

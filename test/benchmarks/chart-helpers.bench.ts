@@ -1,4 +1,4 @@
-import { bench, describe } from "vitest";
+import { describe, test } from "vitest";
 import type { BarSeriesOption } from "echarts/types/dist/shared";
 import { fillDataGapsAndRoundCaps } from "../../src/components/chart/round-caps";
 import { computeYAxisFractionDigits } from "../../src/components/chart/y-axis-fraction-digits";
@@ -31,19 +31,25 @@ const buildBarDatasets = (
 describe("fillDataGapsAndRoundCaps", () => {
   // fillDataGapsAndRoundCaps mutates its input, so rebuild per iteration;
   // build cost is included in both baseline and comparison runs.
-  bench("stacked, 8 series, month of hourly bars", () => {
-    fillDataGapsAndRoundCaps(buildBarDatasets(1, true), true);
+  test("stacked, 8 series, month of hourly bars", async ({ bench }) => {
+    await bench("stacked, 8 series, month of hourly bars", () => {
+      fillDataGapsAndRoundCaps(buildBarDatasets(1, true), true);
+    }).run();
   });
 
-  bench("non-stacked, 8 series, month of hourly bars", () => {
-    fillDataGapsAndRoundCaps(buildBarDatasets(2, false), false);
+  test("non-stacked, 8 series, month of hourly bars", async ({ bench }) => {
+    await bench("non-stacked, 8 series, month of hourly bars", () => {
+      fillDataGapsAndRoundCaps(buildBarDatasets(2, false), false);
+    }).run();
   });
 });
 
 describe("computeYAxisFractionDigits", () => {
-  bench("typical ranges", () => {
-    computeYAxisFractionDigits(0, 100);
-    computeYAxisFractionDigits(1.85, 2.0);
-    computeYAxisFractionDigits(0, 0.005);
+  test("typical ranges", async ({ bench }) => {
+    await bench("typical ranges", () => {
+      computeYAxisFractionDigits(0, 100);
+      computeYAxisFractionDigits(1.85, 2.0);
+      computeYAxisFractionDigits(0, 0.005);
+    }).run();
   });
 });

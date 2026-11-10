@@ -1,6 +1,7 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -17,6 +18,8 @@ import "../ha-label";
 @customElement("ha-data-table-labels")
 class HaDataTableLabels extends LitElement {
   @property({ attribute: false }) public labels!: LabelRegistryEntry[];
+
+  @property({ type: Boolean }) public clickable = false;
 
   @state() private _visibleCount = 0;
 
@@ -181,15 +184,16 @@ class HaDataTableLabels extends LitElement {
   }
 
   private _renderLabel(label: LabelRegistryEntry, clickAction: boolean) {
+    const clickable = clickAction && this.clickable;
     return html`
       <ha-label
         dense
-        role="button"
-        tabindex="0"
+        role=${ifDefined(clickable ? "button" : undefined)}
+        tabindex=${ifDefined(clickable ? "0" : undefined)}
         .color=${label.color}
         .item=${label}
-        @click=${clickAction ? this._labelClicked : undefined}
-        @keydown=${clickAction ? this._labelClicked : undefined}
+        @click=${clickable ? this._labelClicked : undefined}
+        @keydown=${clickable ? this._labelClicked : undefined}
         .description=${label.description}
       >
         ${

@@ -104,7 +104,8 @@ export class EnergyGasSettings extends LitElement {
                             >${
                               source.name ||
                               getStatisticLabel(
-                                this.hass,
+                                this.hass.states,
+                                this.hass.formatEntityName,
                                 source.stat_energy_from,
                                 this.statsMetadata?.[source.stat_energy_from]
                               )
@@ -150,7 +151,8 @@ export class EnergyGasSettings extends LitElement {
       allowedGasUnitClass: getEnergyGasUnitClass(
         this.preferences,
         undefined,
-        this.statsMetadata
+        this.statsMetadata,
+        "source"
       ),
       gas_sources: this.preferences.energy_sources.filter(
         (src) => src.type === "gas"
@@ -174,7 +176,8 @@ export class EnergyGasSettings extends LitElement {
       allowedGasUnitClass: getEnergyGasUnitClass(
         this.preferences,
         origSource.stat_energy_from,
-        this.statsMetadata
+        this.statsMetadata,
+        "source"
       ),
       gas_sources: this.preferences.energy_sources.filter(
         (src) => src.type === "gas"

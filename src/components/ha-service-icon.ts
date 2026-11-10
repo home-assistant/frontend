@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import { initialState } from "@lit/task";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { Connection, HassConfig } from "home-assistant-js-websocket";
+import { consume } from "../common/decorators/consume";
 import { AsyncValueTask } from "../common/controllers/async-value-task";
 import { computeDomain } from "../common/entity/compute_domain";
 import { transform } from "../common/decorators/transform";

@@ -31,6 +31,7 @@ export class HaHeaderBar extends LitElement {
         --app-header-background-color,
         var(--primary-background-color)
       );
+      backdrop-filter: var(--app-header-backdrop-filter, none);
       padding: var(--header-bar-padding);
     }
 

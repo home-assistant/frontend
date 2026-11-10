@@ -81,7 +81,6 @@ class DialogAssignCategory extends DirtyStateProviderMixin<AssignCategoryFormSta
         }
         <div class="form">
           <ha-category-picker
-            .hass=${this.hass}
             .scope=${this._scope}
             .label=${this.hass.localize(
               "ui.components.category-picker.category"
@@ -124,7 +123,7 @@ class DialogAssignCategory extends DirtyStateProviderMixin<AssignCategoryFormSta
     this._error = undefined;
     try {
       await updateEntityRegistryEntry(
-        this.hass,
+        this.hass.callWS,
         this._params!.entityReg.entity_id,
         {
           categories: { [this._scope!]: this._category || null },

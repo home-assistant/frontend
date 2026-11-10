@@ -1,5 +1,5 @@
 import { mdiContentCopy, mdiRefresh } from "@mdi/js";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { addHours } from "date-fns";
 import type {
   HassEntities,
@@ -10,6 +10,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../common/decorators/consume";
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
 import { storage } from "../../../../common/decorators/storage";
 import type { HASSDomTargetEvent } from "../../../../common/dom/fire_event";
@@ -25,7 +26,6 @@ import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-input-helper-text";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-tip";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import "../../../../components/input/ha-input";
@@ -131,6 +131,7 @@ class HaPanelDevState extends LitElement {
       attributeFilter: string,
       deviceFilter: string,
       areaFilter: string,
+      deviceColumnShown: boolean,
       states: HassEntities,
       entities: HomeAssistantRegistries["entities"],
       devices: HomeAssistantRegistries["devices"],
@@ -142,6 +143,7 @@ class HaPanelDevState extends LitElement {
         attributeFilter,
         deviceFilter,
         areaFilter,
+        deviceColumnShown,
         states,
         entities,
         devices,
@@ -156,6 +158,7 @@ class HaPanelDevState extends LitElement {
       this._attributeFilter,
       this._deviceFilter,
       this._areaFilter,
+      !this.narrow && this._showDevice,
       this._states,
       this._registries.entities,
       this._registries.devices,
@@ -492,6 +495,7 @@ class HaPanelDevState extends LitElement {
     attributeFilter: string,
     deviceFilter: string,
     areaFilter: string,
+    deviceColumnShown: boolean,
     states: HassEntities,
     entities: HomeAssistantRegistries["entities"],
     devices: HomeAssistantRegistries["devices"],
@@ -539,11 +543,17 @@ class HaPanelDevState extends LitElement {
 
     return Object.values(states)
       .filter((value) => {
+        // Match the entity column's name; without the device column, match
+        // the full name.
         if (
           entityFilterRegExp &&
           !entityFilterRegExp.test(value.entity_id) &&
-          (value.attributes.friendly_name === undefined ||
-            !entityFilterRegExp.test(value.attributes.friendly_name))
+          !entityFilterRegExp.test(
+            this.hass.formatEntityName(
+              value,
+              deviceColumnShown ? { type: "entity" } : undefined
+            )
+          )
         ) {
           return false;
         }

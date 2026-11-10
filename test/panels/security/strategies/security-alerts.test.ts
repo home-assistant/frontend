@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   computeDefaultSecurityAlertVisibility,
   computeSecurityAlertCardConfig,
+  isSecurityAlertActive,
 } from "../../../../src/panels/security/strategies/security-alerts";
 import { createMockEntityState } from "../../../fixtures/hass";
 
@@ -27,6 +28,28 @@ describe("computeDefaultSecurityAlertVisibility", () => {
   });
 });
 
+describe("isSecurityAlertActive", () => {
+  it.each([
+    ["alarm_control_panel.house", "triggered", true],
+    ["alarm_control_panel.house", "armed_away", false],
+    ["binary_sensor.leak", "on", true],
+    ["binary_sensor.leak", "off", false],
+    ["cover.garage_door", "open", true],
+    ["cover.garage_door", "closed", false],
+    ["lock.front_door", "unlocked", true],
+    ["lock.front_door", "jammed", true],
+    ["lock.front_door", "open", true],
+    ["lock.front_door", "locked", false],
+  ])("%s in state %s is active: %s", (entityId, state, active) => {
+    const states = { [entityId]: createMockEntityState(entityId, state) };
+    expect(isSecurityAlertActive(states, entityId)).toBe(active);
+  });
+
+  it("is not active for a missing entity", () => {
+    expect(isSecurityAlertActive({}, "lock.front_door")).toBe(false);
+  });
+});
+
 describe("computeSecurityAlertCardConfig", () => {
   it("maps alert severity to a red alert card", () => {
     expect(
@@ -37,7 +60,7 @@ describe("computeSecurityAlertCardConfig", () => {
     ).toEqual({
       type: "alert",
       entity: "binary_sensor.smoke",
-      color: "red",
+      alert_color: "red",
       visibility: [
         {
           condition: "state",
@@ -48,15 +71,22 @@ describe("computeSecurityAlertCardConfig", () => {
     });
   });
 
-  it("uses the entity device class for the default severity", () => {
-    const stateObj = createMockEntityState("binary_sensor.smoke", "off", {
-      device_class: "smoke",
-    });
+  it.each(["glass_break", "smoke"])(
+    "uses the %s device class for the default severity",
+    (deviceClass) => {
+      const stateObj = createMockEntityState(
+        `binary_sensor.${deviceClass}`,
+        "off",
+        {
+          device_class: deviceClass,
+        }
+      );
 
-    expect(
-      computeSecurityAlertCardConfig(stateObj, {
-        entity: "binary_sensor.smoke",
-      }).color
-    ).toBe("red");
-  });
+      expect(
+        computeSecurityAlertCardConfig(stateObj, {
+          entity: stateObj.entity_id,
+        }).alert_color
+      ).toBe("red");
+    }
+  );
 });

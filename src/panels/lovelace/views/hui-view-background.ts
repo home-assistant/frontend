@@ -4,9 +4,11 @@ import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewBackgroundConfig } from "../../../data/lovelace/config/view";
 import {
+  getImageEntityIdFromMediaSourceContentId,
   isMediaSourceContentId,
   resolveMediaSourceWithCache,
 } from "../../../data/media_source";
+import { computeImageUrl } from "../../../data/image";
 
 @customElement("hui-view-background")
 export class HUIViewBackground extends LitElement {
@@ -16,6 +18,8 @@ export class HUIViewBackground extends LitElement {
     string | LovelaceViewBackgroundConfig | undefined;
 
   @state({ attribute: false }) resolvedImage?: string;
+
+  private _entityId: string | undefined = undefined;
 
   protected render() {
     return nothing;
@@ -37,17 +41,41 @@ export class HUIViewBackground extends LitElement {
     const backgroundImage = this._getBackgroundImage(this.background);
 
     if (!backgroundImage || !isMediaSourceContentId(backgroundImage)) {
+      this._entityId = undefined;
       this.resolvedImage = undefined;
       return;
     }
 
     let resolvedUrl: string | undefined;
-    try {
-      resolvedUrl = (
-        await resolveMediaSourceWithCache(this.hass, backgroundImage)
-      ).url;
-    } catch {
-      resolvedUrl = undefined;
+    this._entityId = getImageEntityIdFromMediaSourceContentId(backgroundImage);
+    if (this._entityId) {
+      const stateObj = this.hass.states[this._entityId];
+      if (stateObj) {
+        const url = computeImageUrl(stateObj);
+        if (url) {
+          const image = new Image();
+          image.src = this.hass.hassUrl(url);
+          try {
+            await image.decode();
+            const newStateObj = this.hass.states[this._entityId];
+            // Discard if stale
+            if (url !== computeImageUrl(newStateObj)) {
+              return;
+            }
+            resolvedUrl = url;
+          } catch {
+            resolvedUrl = undefined;
+          }
+        }
+      }
+    } else {
+      try {
+        resolvedUrl = (
+          await resolveMediaSourceWithCache(this.hass, backgroundImage)
+        ).url;
+      } catch {
+        resolvedUrl = undefined;
+      }
     }
     // Discard if the background changed while resolving
     if (this._getBackgroundImage(this.background) === backgroundImage) {
@@ -57,10 +85,9 @@ export class HUIViewBackground extends LitElement {
 
   private _applyTheme() {
     const computedStyles = getComputedStyle(this);
-    const themeBackground = computedStyles.getPropertyValue(
-      "--lovelace-background"
-    );
-
+    const themeBackground =
+      computedStyles.getPropertyValue("--lovelace-background") ||
+      computedStyles.getPropertyValue("--ha-panel-background");
     const fixedBackground = this._isFixedBackground(
       this.background || themeBackground
     );
@@ -131,6 +158,13 @@ export class HUIViewBackground extends LitElement {
       ) {
         applyTheme = true;
       }
+      if (
+        this._entityId &&
+        this.hass.states[this._entityId] !== oldHass?.states[this._entityId]
+      ) {
+        this._fetchMedia();
+        applyTheme = true;
+      }
     }
 
     if (changedProperties.has("background")) {
@@ -166,7 +200,10 @@ export class HUIViewBackground extends LitElement {
       width: 100%;
       background: var(
         --view-background,
-        var(--lovelace-background, var(--primary-background-color))
+        var(
+          --lovelace-background,
+          var(--ha-panel-background, var(--primary-background-color))
+        )
       );
       opacity: var(--view-background-opacity);
     }

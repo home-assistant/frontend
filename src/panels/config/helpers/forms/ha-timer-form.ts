@@ -2,7 +2,9 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { createDurationData } from "../../../../common/datetime/create_duration_data";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-checkbox";
 import "../../../../components/ha-duration-input";
 import type { HaDurationData } from "../../../../components/ha-duration-input";
@@ -11,11 +13,12 @@ import "../../../../components/input/ha-input";
 import type { ForDict } from "../../../../data/automation";
 import type { DurationDict, Timer } from "../../../../data/timer";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-timer-form")
 class HaTimerForm extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ type: Boolean }) public new = false;
 
@@ -57,7 +60,7 @@ class HaTimerForm extends LitElement {
   }
 
   protected render() {
-    if (!this.hass) {
+    if (!this._localize) {
       return nothing;
     }
 
@@ -67,25 +70,20 @@ class HaTimerForm extends LitElement {
           .value=${this._name}
           .configValue=${"name"}
           @input=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.name"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.generic.name")}
           auto-validate
           required
-          .validationMessage=${this.hass!.localize(
+          .validationMessage=${this._localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           dialogInitialFocus
           .disabled=${this.disabled}
         ></ha-input>
         <ha-icon-picker
-          .hass=${this.hass}
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.icon"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.generic.icon")}
           .disabled=${this.disabled}
         ></ha-icon-picker>
         <ha-duration-input
@@ -100,7 +98,7 @@ class HaTimerForm extends LitElement {
           @change=${this._toggleRestore}
           .disabled=${this.disabled}
         >
-          ${this.hass.localize("ui.dialogs.helper_settings.timer.restore")}
+          ${this._localize("ui.dialogs.helper_settings.timer.restore")}
         </ha-checkbox>
       </div>
     `;

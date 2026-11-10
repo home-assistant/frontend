@@ -2,25 +2,26 @@ import { mdiDelete, mdiLock, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { stopKeydownEnterSpacePropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
+import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
-import "../../../../../components/ha-dialog";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-base";
 import type {
   MatterLockInfo,
   MatterLockUser,
 } from "../../../../../data/matter-lock";
 import {
+  clearMatterLockUser,
   getMatterLockInfo,
   getMatterLockUsers,
-  clearMatterLockUser,
 } from "../../../../../data/matter-lock";
 import {
   showAlertDialog,
@@ -162,11 +163,10 @@ class DialogMatterLockManage extends LitElement {
                 )}
               </p>`
             : html`
-                <ha-md-list>
+                <ha-list-base>
                   ${occupiedUsers.map(
                     (user) => html`
-                      <ha-md-list-item
-                        type="button"
+                      <ha-list-item-button
                         .user=${user}
                         @click=${this._handleUserClick}
                       >
@@ -191,11 +191,12 @@ class DialogMatterLockManage extends LitElement {
                           .path=${mdiDelete}
                           .user=${user}
                           @click=${this._handleDeleteUserClick}
+                          @keydown=${stopKeydownEnterSpacePropagation}
                         ></ha-icon-button>
-                      </ha-md-list-item>
+                      </ha-list-item-button>
                     `
                   )}
-                </ha-md-list>
+                </ha-list-base>
               `
         }
         ${

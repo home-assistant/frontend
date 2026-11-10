@@ -148,7 +148,7 @@ class DialogRestoreBackup
       <ha-dialog
         .open=${this._open}
         header-title=${dialogTitle}
-        .preventScrimClose=${this.isDirtyState}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <div class="content">

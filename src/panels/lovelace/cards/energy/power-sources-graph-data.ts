@@ -8,11 +8,17 @@ import { computeYAxisFractionDigits } from "../../../../components/chart/y-axis-
 import type { EnergyData } from "../../../../data/energy";
 import { getPowerFromState } from "../../../../data/energy";
 import type { StatisticValue } from "../../../../data/recorder";
+import { getStatisticLabel } from "../../../../data/recorder";
 import { LinearGradient } from "../../../../resources/echarts/echarts";
+import type { HomeAssistant } from "../../../../types";
+import { getEnergyColor } from "./common/color";
 import { fillLineGaps } from "./common/energy-chart-options";
+
+type PowerSourceType = "solar" | "grid" | "battery";
 
 export interface PowerSourcesGraphDataParams {
   localize: LocalizeFunc;
+  formatPower: (powerWatts: number) => string;
   states: HassEntities;
   energyData: EnergyData;
   computedStyles: CSSStyleDeclaration;
@@ -22,6 +28,9 @@ export interface PowerSourcesGraphDataParams {
   end: Date;
   /** Current time, injected (was `Date.now()`). */
   now: number;
+  combineSources?: boolean;
+  formatEntityName?: HomeAssistant["formatEntityName"];
+  darkMode?: boolean;
 }
 
 export interface PowerSourcesGraphData {
@@ -72,6 +81,82 @@ function processData(
   return { positive, negative };
 }
 
+const sourceSeriesId = (type: PowerSourceType, statRate: string) =>
+  `${type}-${statRate}`;
+
+const getSplitTypes = (
+  energyData: EnergyData,
+  combineSources: boolean
+): Set<PowerSourceType> => {
+  const split = new Set<PowerSourceType>();
+  if (combineSources) {
+    return split;
+  }
+  const seen = new Set<PowerSourceType>();
+  for (const source of energyData.prefs.energy_sources) {
+    if (
+      (source.type === "solar" ||
+        source.type === "grid" ||
+        source.type === "battery") &&
+      source.stat_rate
+    ) {
+      if (seen.has(source.type)) {
+        split.add(source.type);
+      }
+      seen.add(source.type);
+    }
+  }
+  return split;
+};
+
+export function getPowerLegendValues(
+  energyData: EnergyData,
+  states: HassEntities,
+  formatPower: (powerWatts: number) => string,
+  combineSources = true
+): Record<string, string> {
+  const splitTypes = getSplitTypes(energyData, combineSources);
+  const watts: Record<string, number> = {};
+  let homeWatts: number | undefined;
+  for (const source of energyData.prefs.energy_sources) {
+    if (source.type === "home") {
+      if (source.stat_rate) {
+        const w = getPowerFromState(states[source.stat_rate]);
+        if (w !== undefined) {
+          homeWatts = (homeWatts ?? 0) + w;
+        }
+      }
+      continue;
+    }
+    if (
+      (source.type === "solar" ||
+        source.type === "grid" ||
+        source.type === "battery") &&
+      source.stat_rate
+    ) {
+      const w = getPowerFromState(states[source.stat_rate]);
+      if (w !== undefined) {
+        const key = splitTypes.has(source.type)
+          ? sourceSeriesId(source.type, source.stat_rate)
+          : source.type;
+        watts[key] = (watts[key] ?? 0) + w;
+      }
+    }
+  }
+  const keys = Object.keys(watts);
+  if (!keys.length && homeWatts === undefined) {
+    return {};
+  }
+  const values: Record<string, string> = {};
+  let total = 0;
+  for (const key of keys) {
+    values[key] = formatPower(watts[key]);
+    total += watts[key];
+  }
+  values.usage = formatPower(Math.max(0, homeWatts ?? total));
+  return values;
+}
+
 /**
  * Transforms an energy collection update (`EnergyData` + prefs) into the
  * ECharts series, legend, and derived state for the power sources graph card.
@@ -83,26 +168,47 @@ export function generatePowerSourcesGraphData(
   params: PowerSourcesGraphDataParams
 ): PowerSourcesGraphData {
   const { localize, states, energyData, computedStyles } = params;
+  const combineSources = params.combineSources ?? true;
+  const splitTypes = getSplitTypes(energyData, combineSources);
+
+  const legendValues = getPowerLegendValues(
+    energyData,
+    states,
+    params.formatPower,
+    combineSources
+  );
 
   const datasets: LineSeriesOption[] = [];
   const legendData: CustomLegendOption["data"] = [];
 
-  const statIds = {
+  const typeMeta: Record<PowerSourceType, { color: string; name: string }> = {
     solar: {
-      stats: [] as string[],
       color: "--energy-solar-color",
       name: localize("ui.panel.lovelace.cards.energy.power_graph.solar"),
     },
     grid: {
-      stats: [] as string[],
       color: "--energy-grid-consumption-color",
       name: localize("ui.panel.lovelace.cards.energy.power_graph.grid"),
     },
     battery: {
-      stats: [] as string[],
       color: "--energy-battery-out-color",
       name: localize("ui.panel.lovelace.cards.energy.power_graph.battery"),
     },
+  };
+
+  interface SeriesGroup {
+    id: string;
+    type: PowerSourceType;
+    stats: string[];
+    name: string;
+    positiveName: string;
+    negativeName: string;
+    colorHex: string;
+  }
+  const groups: Record<PowerSourceType, SeriesGroup[]> = {
+    solar: [],
+    grid: [],
+    battery: [],
   };
 
   let yMin = Infinity;
@@ -111,27 +217,97 @@ export function generatePowerSourcesGraphData(
     if (v < yMin) yMin = v;
     if (v > yMax) yMax = v;
   };
+  let homeStatId: string | undefined;
+  const typeIdx: Record<PowerSourceType, number> = {
+    solar: 0,
+    grid: 0,
+    battery: 0,
+  };
 
   for (const source of energyData.prefs.energy_sources) {
-    if (source.type === "solar") {
-      if (source.stat_rate) {
-        statIds.solar.stats.push(source.stat_rate);
-      }
+    if (source.type === "home") {
+      homeStatId = source.stat_rate;
       continue;
     }
-
-    if (source.type === "battery") {
-      if (source.stat_rate) {
-        statIds.battery.stats.push(source.stat_rate);
-      }
+    if (
+      source.type !== "solar" &&
+      source.type !== "grid" &&
+      source.type !== "battery"
+    ) {
       continue;
     }
-
-    if (source.type === "grid") {
-      if (source.stat_rate) {
-        statIds.grid.stats.push(source.stat_rate);
-      }
+    const idx = typeIdx[source.type]++;
+    if (!source.stat_rate) {
+      continue;
     }
+    if (!splitTypes.has(source.type)) {
+      const meta = typeMeta[source.type];
+      if (!groups[source.type].length) {
+        groups[source.type].push({
+          id: source.type,
+          type: source.type,
+          stats: [],
+          name: meta.name,
+          positiveName: meta.name,
+          negativeName: meta.name,
+          colorHex: computedStyles.getPropertyValue(meta.color),
+        });
+      }
+      groups[source.type][0].stats.push(source.stat_rate);
+      continue;
+    }
+    const name =
+      source.name ||
+      (params.formatEntityName
+        ? getStatisticLabel(
+            states,
+            params.formatEntityName,
+            source.stat_rate,
+            energyData.statsMetadata[source.stat_rate]
+          )
+        : source.stat_rate);
+    let positiveName = name;
+    let negativeName = name;
+    if (source.name && source.type === "battery") {
+      positiveName = localize(
+        "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_discharged",
+        { name: source.name }
+      );
+      negativeName = localize(
+        "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_charged",
+        { name: source.name }
+      );
+    } else if (
+      source.name &&
+      source.type === "grid" &&
+      source.stat_energy_from &&
+      source.stat_energy_to
+    ) {
+      positiveName = localize(
+        "ui.panel.lovelace.cards.energy.energy_sources_table.named_grid_imported",
+        { name: source.name }
+      );
+      negativeName = localize(
+        "ui.panel.lovelace.cards.energy.energy_sources_table.named_grid_exported",
+        { name: source.name }
+      );
+    }
+    groups[source.type].push({
+      id: sourceSeriesId(source.type, source.stat_rate),
+      type: source.type,
+      stats: [source.stat_rate],
+      name,
+      positiveName,
+      negativeName,
+      colorHex: getEnergyColor(
+        computedStyles,
+        params.darkMode ?? false,
+        false,
+        false,
+        typeMeta[source.type].color,
+        idx
+      ),
+    });
   }
   const commonSeriesOptions: LineSeriesOption = {
     type: "line",
@@ -149,57 +325,58 @@ export function generatePowerSourcesGraphData(
   const seriesData: Record<
     string,
     {
-      colorHex: string;
       rgb: [number, number, number];
       positive: [number, number][];
       negative: [number, number][];
     }
   > = {};
+  const statsById = energyData.stats;
 
-  Object.keys(statIds).forEach((key) => {
-    const meta = statIds[key];
-    if (meta.stats.length) {
-      const colorHex = computedStyles.getPropertyValue(meta.color);
-      const rgb = hex2rgb(colorHex);
+  const getStatsWithCurrent = (id: string): StatisticValue[] => {
+    const stats = [...(statsById[id] ?? [])];
+    if (showingToday) {
+      // Append current state if we are showing today
+      const currentStateWatts = getPowerFromState(states[id]);
+      if (currentStateWatts !== undefined) {
+        // getPowerFromState returns power in W; convert to kW for this graph
+        stats.push({
+          start: now,
+          end: now,
+          mean: currentStateWatts / 1000,
+        });
+      }
+    }
+    return stats;
+  };
+
+  const legendOrder: PowerSourceType[] = ["solar", "grid", "battery"];
+  legendOrder.forEach((type) => {
+    groups[type].forEach((group) => {
+      const rgb = hex2rgb(group.colorHex);
       // Echarts is supposed to handle that but it is bugged when you use it together with stacking.
       // The interpolation breaks the stacking, so this positive/negative is a workaround
       const { positive, negative } = processData(
-        meta.stats.map((id: string) => {
-          const stats = [...(energyData.stats[id] ?? [])];
-          if (showingToday) {
-            // Append current state if we are showing today
-            const currentStateWatts = getPowerFromState(states[id]);
-            if (currentStateWatts !== undefined) {
-              // getPowerFromState returns power in W; convert to kW for this graph
-              stats.push({
-                start: now,
-                end: now,
-                mean: currentStateWatts / 1000,
-              });
-            }
-          }
-          return stats;
-        }),
+        group.stats.map(getStatsWithCurrent),
         trackY
       );
 
-      seriesData[key] = { colorHex, rgb, positive, negative };
-    }
+      seriesData[group.id] = { rgb, positive, negative };
+    });
   });
 
   const pushSeries = (
-    key: string,
+    group: SeriesGroup,
     data: [number, number][],
     stack: "positive" | "negative",
     z: number
   ) => {
-    const { colorHex, rgb } = seriesData[key];
+    const { rgb } = seriesData[group.id];
 
     datasets.push({
       ...commonSeriesOptions,
-      id: stack === "positive" ? key : `${key}-negative`,
-      name: statIds[key].name,
-      color: colorHex,
+      id: stack === "positive" ? group.id : `${group.id}-negative`,
+      name: stack === "positive" ? group.positiveName : group.negativeName,
+      color: group.colorHex,
       stack,
       areaStyle: {
         color: new LinearGradient(
@@ -225,42 +402,58 @@ export function generatePowerSourcesGraphData(
   };
 
   // Draw in reverse order so 0 value lines are overwritten
-  ["solar", "battery", "grid"].forEach((key, i) => {
-    const series = seriesData[key];
-    if (series) {
-      pushSeries(key, series.positive, "positive", 3 - i);
-    }
+  (["solar", "battery", "grid"] as const).forEach((type, i) => {
+    groups[type].forEach((group) => {
+      pushSeries(group, seriesData[group.id].positive, "positive", 3 - i);
+    });
   });
 
   // Draw in reverse order but above positive series
-  ["battery", "grid"].forEach((key, i) => {
-    const series = seriesData[key];
-    if (series) {
-      pushSeries(key, series.negative, "negative", 4 - i);
-    }
+  (["battery", "grid"] as const).forEach((type, i) => {
+    groups[type].forEach((group) => {
+      pushSeries(group, seriesData[group.id].negative, "negative", 4 - i);
+    });
   });
 
-  Object.keys(statIds).forEach((key) => {
-    const series = seriesData[key];
-    if (series) {
-      const { colorHex, rgb } = series;
+  legendOrder.forEach((type) => {
+    groups[type].forEach((group) => {
+      const { rgb } = seriesData[group.id];
 
       legendData!.push({
-        id: key,
-        secondaryIds: key !== "solar" ? [`${key}-negative`] : [],
-        name: statIds[key].name,
+        id: group.id,
+        secondaryIds: type !== "solar" ? [`${group.id}-negative`] : [],
+        name: group.name,
+        value: legendValues[group.id],
         itemStyle: {
           color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.75)`,
-          borderColor: colorHex,
+          borderColor: group.colorHex,
         },
       });
-    }
+    });
   });
 
   const start = energyData.start;
   const end = energyData.end || endOfToday();
 
   const chartData = fillLineGaps(datasets);
+
+  const homeStats = homeStatId
+    ? getStatsWithCurrent(homeStatId).filter((stat) => stat.mean != null)
+    : [];
+  homeStats.forEach((stat) => trackY(stat.mean!));
+  let homeIdx = 0;
+  // Home reading covering timestamp x (its bucket, or the live point)
+  const homeAt = (x: number): number | undefined => {
+    while (
+      homeIdx < homeStats.length - 1 &&
+      homeStats[homeIdx + 1].start <= x
+    ) {
+      homeIdx++;
+    }
+    const stat = homeStats[homeIdx];
+    return stat && stat.start <= x && x <= stat.end ? stat.mean! : undefined;
+  };
+
   const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
 
   const usageData: NonNullable<LineSeriesOption["data"]> = [];
@@ -298,7 +491,11 @@ export function generatePowerSourcesGraphData(
       // Consumption can't be negative; sources unaccounted for in the
       // configuration (e.g. solar exporting to grid without a configured
       // solar source) would otherwise drag the usage line below zero.
-      usageData[i] = [x, Math.max(0, sum)];
+      usageData[i] = [x, Math.max(0, homeAt(x) ?? sum)];
+    }
+  } else {
+    for (const stat of homeStats) {
+      usageData.push([(stat.start + stat.end) / 2, Math.max(0, stat.mean!)]);
     }
   }
   chartData.push({
@@ -316,6 +513,7 @@ export function generatePowerSourcesGraphData(
   legendData!.push({
     id: "usage",
     name: localize("ui.panel.lovelace.cards.energy.power_graph.usage"),
+    value: legendValues.usage,
     itemStyle: {
       color: computedStyles.getPropertyValue("--primary-text-color"),
     },

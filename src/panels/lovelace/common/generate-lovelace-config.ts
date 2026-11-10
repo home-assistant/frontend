@@ -2,9 +2,7 @@ import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { splitByGroups } from "../../../common/entity/split_by_groups";
-import { stripPrefixFromEntityName } from "../../../common/entity/strip_prefix_from_entity_name";
 import { orderCompare, stringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { AreasDisplayValue } from "../../../components/ha-areas-display-editor";
@@ -121,25 +119,26 @@ export const computeSection = (
   ...sectionOptions,
 });
 
+interface ComputeCardsOptions {
+  renderFooterEntities?: boolean;
+  entityName?: EntityConfig["name"];
+}
+
 export const computeCards = (
   hass: HomeAssistant,
   entityIds: string[],
   entityCardOptions: Partial<EntitiesCardConfig>,
-  renderFooterEntities = true
+  options: ComputeCardsOptions = {}
 ): LovelaceCardConfig[] => {
+  const { renderFooterEntities = true, entityName } = options;
   const cards: LovelaceCardConfig[] = [];
   const states = hass.states;
   // For entity card
   const entitiesConf: (string | EntityConfig)[] = [];
 
-  const titlePrefix = entityCardOptions.title
-    ? entityCardOptions.title.toLowerCase()
-    : undefined;
-
   const footerEntities: ButtonsHeaderFooterConfig["entities"] = [];
 
   for (const entityId of entityIds) {
-    const stateObj = states[entityId];
     const domain = computeDomain(entityId);
 
     if (domain === "alarm_control_panel") {
@@ -209,39 +208,17 @@ export const computeCards = (
       renderFooterEntities &&
       (domain === "scene" || domain === "script")
     ) {
-      const conf: (typeof footerEntities)[0] = {
+      footerEntities.push({
         entity: entityId,
         show_icon: true,
         show_name: true,
-      };
-      let name: string | undefined;
-      if (
-        titlePrefix &&
-        stateObj &&
-        (name = stripPrefixFromEntityName(
-          computeStateName(stateObj),
-          titlePrefix
-        ))
-      ) {
-        conf.name = name;
-      }
-      footerEntities.push(conf);
+      });
     } else {
-      let name: string | undefined;
-      const entityConf =
-        titlePrefix &&
-        stateObj &&
-        (name = stripPrefixFromEntityName(
-          computeStateName(stateObj),
-          titlePrefix
-        ))
-          ? {
-              entity: entityId,
-              name,
-            }
-          : entityId;
-
-      entitiesConf.push(entityConf);
+      entitiesConf.push(
+        entityName !== undefined
+          ? { entity: entityId, name: entityName }
+          : entityId
+      );
     }
   }
 
@@ -263,14 +240,14 @@ export const computeCards = (
     return stringCompare(
       typeof a === "string"
         ? states[a]
-          ? computeStateName(states[a])
+          ? hass.formatEntityName(states[a])
           : ""
         : states[a.entity]
           ? hass.formatEntityName(states[a.entity], a.name)
           : "",
       typeof b === "string"
         ? states[b]
-          ? computeStateName(states[b])
+          ? hass.formatEntityName(states[b])
           : ""
         : states[b.entity]
           ? hass.formatEntityName(states[b.entity], b.name)
@@ -281,7 +258,10 @@ export const computeCards = (
   // If we ended up with footer entities but no normal entities,
   // render the footer entities as normal entities.
   if (entitiesConf.length === 0 && footerEntities.length > 0) {
-    return computeCards(hass, entityIds, entityCardOptions, false);
+    return computeCards(hass, entityIds, entityCardOptions, {
+      ...options,
+      renderFooterEntities: false,
+    });
   }
 
   if (entitiesConf.length > 0 || footerEntities.length > 0) {
@@ -395,9 +375,7 @@ export const generateViewConfig = (
               ).trim()
             );
           }
-          const initials = computeUserInitials(
-            stateObj.attributes.friendly_name || ""
-          );
+          const initials = computeUserInitials(hass.formatEntityName(stateObj));
           image = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50' width='50' height='50' style='background-color:${backgroundColor}'%3E%3Cg%3E%3Ctext font-family='roboto' x='50%25' y='50%25' text-anchor='middle' stroke='${foregroundColor}' font-size='1.3em' dy='.3em'%3E${initials}%3C/text%3E%3C/g%3E%3C/svg%3E`;
         }
 
@@ -456,8 +434,8 @@ export const generateViewConfig = (
           hass,
           ungroupedEntitites[domain].sort((a, b) =>
             stringCompare(
-              computeStateName(entities[a]),
-              computeStateName(entities[b])
+              hass.formatEntityName(entities[a]),
+              hass.formatEntityName(entities[b])
             )
           ),
           {
@@ -538,7 +516,7 @@ export const generateDefaultViewConfig = (
   for (const groupEntity of splittedByGroups.groups) {
     groupCards.push(
       ...computeCards(hass, groupEntity.attributes.entity_id, {
-        title: computeStateName(groupEntity),
+        title: hass.formatEntityName(groupEntity),
         show_header_toggle: groupEntity.attributes.control !== "hidden",
       })
     );
@@ -609,7 +587,8 @@ export const generateDefaultViewConfig = (
                 `ui.panel.config.devices.type.${device.entry_type || "device"}`
               ),
             }),
-        }
+        },
+        { entityName: { type: "entity" } }
       )
     );
   }

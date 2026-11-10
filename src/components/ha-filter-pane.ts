@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
+import { highlightElement } from "../common/dom/highlight-element";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { haStyleScrollbar } from "../resources/styles";
 import "./ha-adaptive-dialog";
@@ -113,6 +114,10 @@ export class HaFilterPane extends LitElement {
     `;
   }
 
+  public highlight() {
+    highlightElement(this);
+  }
+
   private _close() {
     fireEvent(this, "close-filter-pane");
   }
@@ -133,6 +138,7 @@ export class HaFilterPane extends LitElement {
           box-sizing: border-box;
           overflow: hidden;
           border-inline-end: 1px solid var(--divider-color);
+          outline-offset: calc(-1 * var(--ha-border-width-md));
         }
 
         /* The bottom sheet positions itself, so the pane takes no space. */
@@ -149,7 +155,6 @@ export class HaFilterPane extends LitElement {
           height: 56px;
           flex-shrink: 0;
           padding: 0 16px;
-          background: var(--primary-background-color);
           border-bottom: 1px solid var(--divider-color);
         }
 

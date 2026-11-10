@@ -6,7 +6,6 @@ import { sanitizeNavigationPath } from "../../common/url/sanitize-navigation-pat
 import "../../components/ha-alert";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
-import "../../components/ha-top-app-bar-fixed";
 import type { EnergyFrontendSystemData } from "../../data/frontend";
 import { fetchFrontendSystemData } from "../../data/frontend";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
@@ -15,8 +14,6 @@ import type { HomeAssistant, PanelInfo } from "../../types";
 import { generateLovelaceDashboardStrategy } from "../lovelace/strategies/get-strategy";
 import "../lovelace/hui-root";
 import type { Lovelace } from "../lovelace/types";
-import "../lovelace/views/hui-view";
-import "../lovelace/views/hui-view-container";
 import { DEFAULT_POWER_COLLECTION_KEY } from "../../data/energy";
 
 @customElement("ha-panel-energy")
@@ -96,7 +93,10 @@ class PanelEnergy extends LitElement {
     const validPaths = views.map((view) => view.path);
     const viewPath: string | undefined = this.route!.path.split("/")[1];
     if (!viewPath || !validPaths.includes(viewPath)) {
-      navigate(`${this.route!.prefix}/${validPaths[0]}`, { replace: true });
+      navigate(`${this.route!.prefix}/${validPaths[0]}${location.search}`, {
+        replace: true,
+        keepDialogs: true,
+      });
     } else {
       // Force hui-root to re-process the route by creating a new route object
       this.route = { ...this.route! };

@@ -1,12 +1,11 @@
 import { ensureArray } from "../common/array/ensure-array";
 import { formatNumericDuration } from "../common/datetime/format_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
-import { computeStateName } from "../common/entity/compute_state_name";
 import { formatListWithAnds } from "../common/string/format-list";
 import { isTemplate } from "../common/string/has-template";
 import type { HomeAssistant } from "../types";
 import type { Condition } from "./automation";
-import { describeCondition } from "./automation_i18n";
+import { describeCondition, type DescribeOptions } from "./automation_i18n";
 import { localizeDeviceAutomationAction } from "./device/device_automation";
 import type { EntityRegistryEntry } from "./entity/entity_registry";
 import { domainToName } from "./integration";
@@ -47,7 +46,7 @@ export const describeAction = <T extends ActionType>(
   entityRegistry: EntityRegistryEntry[],
   action: ActionTypes[T],
   actionType?: T,
-  ignoreAlias = false,
+  options?: DescribeOptions,
   manifests?: DomainManifestLookup
 ): string => {
   try {
@@ -56,7 +55,7 @@ export const describeAction = <T extends ActionType>(
       entityRegistry,
       action,
       actionType,
-      ignoreAlias,
+      options,
       manifests
     );
     if (typeof description !== "string") {
@@ -66,11 +65,10 @@ export const describeAction = <T extends ActionType>(
   } catch (error: any) {
     // eslint-disable-next-line no-console
     console.error(error);
-    let msg = "Error in describing action";
-    if (error.message) {
-      msg += ": " + error.message;
-    }
-    return msg;
+    return hass.localize(
+      "ui.panel.config.automation.editor.actions.describe_error",
+      { error: error?.message || String(error) }
+    );
   }
 };
 
@@ -79,10 +77,10 @@ const tryDescribeAction = <T extends ActionType>(
   entityRegistry: EntityRegistryEntry[],
   action: ActionTypes[T],
   actionType?: T,
-  ignoreAlias = false,
+  options?: DescribeOptions,
   manifests?: DomainManifestLookup
 ): string => {
-  if (action.alias && !ignoreAlias) {
+  if (action.alias && !options?.ignoreAlias) {
     return action.alias;
   }
   if (!actionType) {
@@ -127,23 +125,10 @@ const tryDescribeAction = <T extends ActionType>(
           descriptionPlaceholders
         ) || hass.services[domain]?.[serviceName]?.name;
 
-      if (config.metadata) {
-        if (service && shouldShowDomainPrefix(domain, manifests)) {
-          return `${domainToName(hass.localize, domain)}: ${service}`;
-        }
-        return service || config.action;
+      if (service && shouldShowDomainPrefix(domain, manifests)) {
+        return `${domainToName(hass.localize, domain)}: ${service}`;
       }
-
-      return hass.localize(
-        `${actionTranslationBaseKey}.service.description.service_based_on_name_no_targets`,
-        {
-          name: service
-            ? shouldShowDomainPrefix(domain, manifests)
-              ? `${domainToName(hass.localize, domain)}: ${service}`
-              : service
-            : config.action,
-        }
-      );
+      return service || config.action;
     }
     return hass.localize(
       `${actionTranslationBaseKey}.service.description.service`
@@ -322,7 +307,12 @@ const tryDescribeAction = <T extends ActionType>(
     return hass.localize(
       `${actionTranslationBaseKey}.check_condition.description.full`,
       {
-        condition: describeCondition(action as Condition, hass, entityRegistry),
+        condition: describeCondition(
+          action as Condition,
+          hass,
+          entityRegistry,
+          options
+        ),
       }
     );
   }
@@ -337,29 +327,29 @@ const tryDescribeAction = <T extends ActionType>(
     const localized = localizeDeviceAutomationAction(
       hass.localize,
       hass.states,
+      hass.formatEntityName,
       entityRegistry,
       config
     );
     if (localized) {
       return localized;
     }
-    const stateObj = hass.states[config.entity_id];
+    const stateObj = config.entity_id
+      ? hass.states[config.entity_id]
+      : undefined;
     if (config.type) {
       return `${config.type} ${
-        stateObj ? computeStateName(stateObj) : config.entity_id
+        stateObj ? hass.formatEntityName(stateObj) : config.entity_id
       }`;
     }
     return hass.localize(
-      `${actionTranslationBaseKey}.device_id.description.perform_device_action`,
-      {
-        device: stateObj ? computeStateName(stateObj) : config.entity_id,
-      }
+      `${actionTranslationBaseKey}.device_id.description.no_device`
     );
   }
 
   if (actionType === "sequence") {
     const config = action as SequenceAction;
-    const numActions = ensureArray(config.sequence).length;
+    const numActions = ensureArray(config.sequence ?? []).length;
     return hass.localize(
       `${actionTranslationBaseKey}.sequence.description.full`,
       { number: numActions }

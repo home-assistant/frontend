@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { expandHex, hexBlend } from "../../../src/common/color/hex";
+import {
+  cssColorToHex,
+  expandHex,
+  hexBlend,
+} from "../../../src/common/color/hex";
 
 describe("expandHex", () => {
   it("should expand a 3-digit hex code to 6 digits", () => {
@@ -26,5 +30,28 @@ describe("hexBlend", () => {
 
   it("should return the second color if blend is 0", () => {
     expect(hexBlend("#ff0000", "#0000ff", 0)).toBe("#0000ff");
+  });
+});
+
+describe("cssColorToHex", () => {
+  it("converts a CSS color name to hex", () => {
+    expect(cssColorToHex("Gold")).toBe("#ffd700");
+  });
+
+  it("converts other opaque CSS colors to hex", () => {
+    expect(cssColorToHex("#FFF")).toBe("#ffffff");
+    expect(cssColorToHex("rgb(10, 20, 30)")).toBe("#0a141e");
+    expect(cssColorToHex("hsl(120 100% 50%)")).toBe("#00ff00");
+  });
+
+  it("rejects invalid colors, theme color names and CSS-wide values", () => {
+    expect(cssColorToHex("not-a-color")).toBeUndefined();
+    expect(cssColorToHex("primary")).toBeUndefined();
+    expect(cssColorToHex("inherit")).toBeUndefined();
+  });
+
+  it("rejects colors with transparency", () => {
+    expect(cssColorToHex("rgba(255, 0, 0, 0.5)")).toBeUndefined();
+    expect(cssColorToHex("transparent")).toBeUndefined();
   });
 });

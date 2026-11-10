@@ -32,13 +32,13 @@ jobs:
           persist-credentials: false
 
       - name: Prepare dependencies
-        uses: ./.github/actions/prepare-dependencies
+        uses: $/.github/actions/prepare-dependencies
 
   prepare-container-dependencies:
     name: Prepare container dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.62.1-noble
+      image: mcr.microsoft.com/playwright:v1.65.0-noble@sha256:6e3fb709361521eb27161606e6da6d2674e5e89fa16516cb37d6fdd91372273d
       options: --user 1001
     defaults:
       run:
@@ -50,7 +50,7 @@ jobs:
           persist-credentials: false
 
       - name: Prepare dependencies
-        uses: ./.github/actions/prepare-dependencies
+        uses: $/.github/actions/prepare-dependencies
         with:
           node-modules-cache-key: node-modules-container-v1
 
@@ -66,19 +66,19 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node with shared dependencies
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           node-modules-cache: true
 
       - name: Build demo
-        uses: ./.github/actions/build
+        uses: $/.github/actions/build
         with:
           target: build-demo-e2e
           github-token: ${{ secrets.GITHUB_TOKEN }}
           is-test: true
 
       - name: Upload demo build
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: demo-dist
           path: demo/dist/
@@ -97,19 +97,19 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node with shared dependencies
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           node-modules-cache: true
 
       - name: Build e2e test app
-        uses: ./.github/actions/build
+        uses: $/.github/actions/build
         with:
           target: build-e2e-test-app-e2e
           github-token: ${{ secrets.GITHUB_TOKEN }}
           is-test: true
 
       - name: Upload e2e test app build
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: e2e-test-app-dist
           path: test/e2e/app/dist/
@@ -128,19 +128,19 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node with shared dependencies
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           node-modules-cache: true
 
       - name: Build gallery
-        uses: ./.github/actions/build
+        uses: $/.github/actions/build
         with:
           target: build-gallery
           github-token: ${{ secrets.GITHUB_TOKEN }}
           is-test: true
 
       - name: Upload gallery build
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: gallery-dist
           path: gallery/dist/
@@ -155,7 +155,7 @@ jobs:
       - prepare-container-dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.62.1-noble
+      image: mcr.microsoft.com/playwright:v1.65.0-noble@sha256:6e3fb709361521eb27161606e6da6d2674e5e89fa16516cb37d6fdd91372273d
       options: --user 1001 --ipc=host
     defaults:
       run:
@@ -176,23 +176,23 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node with shared dependencies
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           node-modules-cache: true
           node-modules-cache-key: node-modules-container-v1
 
       - name: Download demo build
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: demo-dist
           path: demo/dist/
 
       - name: Run Playwright demo tests
-        run: yarn test:e2e:demo --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm run test:e2e:demo --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         timeout-minutes: 15
 
       - name: Upload demo blob report
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: blob-report-demo-${{ matrix.shardIndex }}
@@ -207,7 +207,7 @@ jobs:
       - prepare-container-dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.62.1-noble
+      image: mcr.microsoft.com/playwright:v1.65.0-noble@sha256:6e3fb709361521eb27161606e6da6d2674e5e89fa16516cb37d6fdd91372273d
       options: --user 1001 --ipc=host
     defaults:
       run:
@@ -230,23 +230,23 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node with shared dependencies
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           node-modules-cache: true
           node-modules-cache-key: node-modules-container-v1
 
       - name: Download e2e test app build
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: e2e-test-app-dist
           path: test/e2e/app/dist/
 
       - name: Run Playwright app tests
-        run: yarn test:e2e:app --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm run test:e2e:app --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         timeout-minutes: 15
 
       - name: Upload app blob report
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: blob-report-app-${{ matrix.shardIndex }}
@@ -261,7 +261,7 @@ jobs:
       - prepare-container-dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.62.1-noble
+      image: mcr.microsoft.com/playwright:v1.65.0-noble@sha256:6e3fb709361521eb27161606e6da6d2674e5e89fa16516cb37d6fdd91372273d
       options: --user 1001 --ipc=host
     defaults:
       run:
@@ -284,23 +284,23 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node with shared dependencies
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           node-modules-cache: true
           node-modules-cache-key: node-modules-container-v1
 
       - name: Download gallery build
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: gallery-dist
           path: gallery/dist/
 
       - name: Run Playwright gallery tests
-        run: yarn test:e2e:gallery --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm run test:e2e:gallery --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         timeout-minutes: 15
 
       - name: Upload gallery blob report
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: blob-report-gallery-${{ matrix.shardIndex }}
@@ -326,26 +326,26 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node with shared dependencies
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           node-modules-cache: true
 
       - name: Download demo blob reports
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         continue-on-error: true
         with:
           pattern: blob-report-demo-*
           path: test/e2e/reports/demo/
 
       - name: Download app blob reports
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         continue-on-error: true
         with:
           pattern: blob-report-app-*
           path: test/e2e/reports/app/
 
       - name: Download gallery blob reports
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         continue-on-error: true
         with:
           pattern: blob-report-gallery-*
@@ -359,7 +359,7 @@ jobs:
 
       - name: Upload merged HTML report
         id: upload-report
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: playwright-report
           path: test/e2e/reports/combined/

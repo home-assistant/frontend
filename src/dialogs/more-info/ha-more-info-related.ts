@@ -1,9 +1,9 @@
 import { mdiDevices, mdiTextureBox } from "@mdi/js";
-import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -82,7 +82,7 @@ class HaMoreInfoRelated extends LitElement {
       ? (domain as ItemType)
       : "entity";
 
-    const { floor, area, device } = getEntityContext(
+    const { floor, area, device, parentDevice } = getEntityContext(
       this._stateObj,
       this.hass.entities,
       this.hass.devices,
@@ -91,8 +91,11 @@ class HaMoreInfoRelated extends LitElement {
     );
     const floorName = floor ? computeFloorName(floor) : undefined;
     const areaName = area ? (computeAreaName(area) ?? area.area_id) : undefined;
+    const parentDeviceName = parentDevice
+      ? computeDeviceNameDisplay(parentDevice, this.hass.localize)
+      : undefined;
     const deviceName = device
-      ? computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
+      ? computeDeviceNameDisplay(device, this.hass.localize)
       : undefined;
     const integrationName = this.entry?.platform
       ? this.hass.localize(`component.${this.entry.platform}.title`) ||
@@ -122,6 +125,14 @@ class HaMoreInfoRelated extends LitElement {
         icon: area.icon
           ? html`<ha-icon slot="end" .icon=${area.icon}></ha-icon>`
           : html`<ha-svg-icon slot="end" .path=${mdiTextureBox}></ha-svg-icon>`,
+      });
+    }
+    if (parentDevice && parentDeviceName) {
+      contextEntries.push({
+        translationKey: "ui.dialogs.more_info_control.parent_device",
+        value: parentDeviceName,
+        href: `/config/devices/device/${parentDevice.id}`,
+        icon: html`<ha-svg-icon slot="end" .path=${mdiDevices}></ha-svg-icon>`,
       });
     }
     if (device && deviceName) {
@@ -196,7 +207,6 @@ class HaMoreInfoRelated extends LitElement {
             : nothing
         }
         <ha-related-items
-          .hass=${this.hass}
           .itemId=${this.params.entityId}
           .itemType=${itemType}
           .exclude=${itemType === "entity" ? CONTEXT_SECTIONS : undefined}

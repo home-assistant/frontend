@@ -132,7 +132,7 @@ const copyFavoriteOptionsToEntities = async (
   if (selected?.entity) {
     const result = await Promise.allSettled(
       selected.entity.map((entityId: string) =>
-        updateEntityRegistryEntry(hass, entityId, {
+        updateEntityRegistryEntry(hass.callWS, entityId, {
           options_domain: domain,
           options,
         })
@@ -148,8 +148,10 @@ const copyFavoriteOptionsToEntities = async (
         }),
         text: html`<pre>
 ${rejected
-  .map((item) => item.reason.message || item.reason.code || item.reason)
-  .join("\r\n")}</pre>`,
+            .map(
+              (item) => item.reason.message || item.reason.code || item.reason
+            )
+            .join("\r\n")}</pre>`,
       });
     }
   }

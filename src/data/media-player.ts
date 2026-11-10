@@ -48,10 +48,14 @@ interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
   media_content_id?: string;
   media_content_type?: string;
   media_artist?: string;
+  media_album_name?: string;
+  media_album_artist?: string;
+  media_track?: number;
   media_playlist?: string;
   media_series_title?: string;
   media_season?: any;
   media_episode?: any;
+  app_id?: string;
   app_name?: string;
   media_position_updated_at?: string | number | Date;
   media_duration?: number;
@@ -196,12 +200,12 @@ export interface MediaPlayerItem {
 }
 
 export const browseMediaPlayer = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   entityId: string,
   mediaContentId?: string,
   mediaContentType?: string
 ): Promise<MediaPlayerItem> =>
-  hass.callWS<MediaPlayerItem>({
+  callWS<MediaPlayerItem>({
     type: "media_player/browse_media",
     entity_id: entityId,
     media_content_id: mediaContentId,
@@ -213,14 +217,14 @@ export interface SearchMediaResult {
 }
 
 export const searchMediaPlayer = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   entityId: string,
   searchQuery: string,
   mediaContentId?: string,
   mediaContentType?: string,
   mediaFilterClasses?: string[]
 ): Promise<SearchMediaResult> =>
-  hass.callWS<SearchMediaResult>({
+  callWS<SearchMediaResult>({
     type: "media_player/search_media",
     entity_id: entityId,
     search_query: searchQuery,
@@ -353,35 +357,18 @@ export const computeMediaControls = (
 
   if (
     !assumedState &&
-    ((state === "playing" &&
-      (supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE) ||
-        supportsFeature(stateObj, MediaPlayerEntityFeature.STOP))) ||
-      ((state === "paused" || state === "idle") &&
-        supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)) ||
-      (state === "on" &&
-        (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY) ||
-          supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE))))
+    state === "on" &&
+    (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY) ||
+      supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE))
   ) {
     buttons.push({
-      icon:
-        state === "on"
-          ? mdiPlayPause
-          : state !== "playing"
-            ? mdiPlay
-            : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
-              ? mdiPause
-              : mdiStop,
-      action:
-        state !== "playing"
-          ? "media_play"
-          : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
-            ? "media_pause"
-            : "media_stop",
+      icon: mdiPlayPause,
+      action: "media_play",
     });
   }
 
   if (
-    assumedState &&
+    (assumedState || state === "paused" || state === "idle") &&
     supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)
   ) {
     buttons.push({
@@ -391,7 +378,7 @@ export const computeMediaControls = (
   }
 
   if (
-    assumedState &&
+    (assumedState || state === "playing") &&
     supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
   ) {
     buttons.push({
@@ -401,7 +388,7 @@ export const computeMediaControls = (
   }
 
   if (
-    assumedState &&
+    (assumedState || state === "playing" || state === "paused") &&
     supportsFeature(stateObj, MediaPlayerEntityFeature.STOP)
   ) {
     buttons.push({
@@ -437,6 +424,27 @@ export const computeMediaControls = (
   }
 
   return buttons.length > 0 ? buttons : undefined;
+};
+
+/**
+ * Removes stop when play or pause is available, as stop is then only shown as
+ * a secondary control in the more-info dialog. Assumed state players keep
+ * play, pause and stop together as main controls.
+ */
+export const removeSecondaryStopControl = (
+  stateObj: MediaPlayerEntity,
+  controls: ControlButton[] | undefined
+): ControlButton[] | undefined => {
+  if (
+    !controls ||
+    stateObj.attributes.assumed_state === true ||
+    !controls.some(
+      (c) => c.action === "media_play" || c.action === "media_pause"
+    )
+  ) {
+    return controls;
+  }
+  return controls.filter((c) => c.action !== "media_stop");
 };
 
 export const formatMediaTime = (seconds: number | undefined): string => {
@@ -541,10 +549,12 @@ export const mediaPlayerPlayMedia = (
 };
 
 export const mediaPlayerJoin = (
-  hass: HomeAssistant,
+  callService: HomeAssistant["callService"],
   entity_id: string,
   group_members: string[]
-) => hass.callService("media_player", "join", { group_members }, { entity_id });
+) => callService("media_player", "join", { group_members }, { entity_id });
 
-export const mediaPlayerUnjoin = (hass: HomeAssistant, entity_id: string) =>
-  hass.callService("media_player", "unjoin", {}, { entity_id });
+export const mediaPlayerUnjoin = (
+  callService: HomeAssistant["callService"],
+  entity_id: string
+) => callService("media_player", "unjoin", {}, { entity_id });

@@ -43,17 +43,21 @@ describe("withMapTilesToken", () => {
   it("makes relative URLs absolute", async () => {
     const { withMapTilesToken } = await load();
 
-    expect(withMapTilesToken("/api/map_tiles/tilejson.json")).toBe(
+    expect(withMapTilesToken("/api/map_tiles/tilejson.json").url).toBe(
       `${location.origin}/api/map_tiles/tilejson.json`
     );
   });
 
-  it("adds the token to proxy URLs once there is one", async () => {
+  // A token in the URL is part of the browser's cache key, so a rotation
+  // empties the tile cache; in a header the URL survives it.
+  it("sends the token as a header once there is one", async () => {
     const { ensureMapTilesToken, withMapTilesToken } = await load();
     await ensureMapTilesToken(connectionWith({}, "abc123"));
 
-    const url = new URL(withMapTilesToken("/api/map_tiles/vector/1/0/0.mvt"));
-    expect(url.searchParams.get("token")).toBe("abc123");
+    const request = withMapTilesToken("/api/map_tiles/vector/1/0/0.mvt");
+    expect(request.headers).toEqual({ "X-Map-Tiles-Token": "abc123" });
+    const url = new URL(request.url);
+    expect(url.searchParams.get("token")).toBeNull();
     expect(url.pathname).toBe("/api/map_tiles/vector/1/0/0.mvt");
   });
 
@@ -62,7 +66,7 @@ describe("withMapTilesToken", () => {
     await ensureMapTilesToken(connectionWith({}, "abc123"));
 
     const url = new URL(
-      withMapTilesToken("https://example.com/tiles/1/0/0.png")
+      withMapTilesToken("https://example.com/tiles/1/0/0.png").url
     );
     expect(url.searchParams.get("token")).toBeNull();
     expect(url.href).toBe("https://example.com/tiles/1/0/0.png");
@@ -72,7 +76,7 @@ describe("withMapTilesToken", () => {
     const { withMapTilesToken } = await load();
 
     expect(
-      withMapTilesToken("/api/map_tiles/fonts/noto_sans_regular/0-255.pbf")
+      withMapTilesToken("/api/map_tiles/fonts/noto_sans_regular/0-255.pbf").url
     ).toBe(
       `${location.origin}/api/map_tiles/fonts/noto_sans_regular/0-255.pbf`
     );
@@ -168,10 +172,8 @@ describe("recovering a stale token", () => {
     await refreshMapTilesToken();
 
     expect(
-      new URL(
-        withMapTilesToken("/api/map_tiles/vector/1/0/0.mvt")
-      ).searchParams.get("token")
-    ).toBe("first");
+      withMapTilesToken("/api/map_tiles/vector/1/0/0.mvt").headers
+    ).toEqual({ "X-Map-Tiles-Token": "first" });
   });
 });
 
@@ -243,9 +245,22 @@ describe("resolving against the instance", () => {
       connectionWith({ hassUrl: "https://instance.local:8123" }, "abc123")
     );
 
-    const url = new URL(withMapTilesToken("/api/map_tiles/tilejson.json"));
+    const url = new URL(withMapTilesToken("/api/map_tiles/tilejson.json").url);
     expect(url.origin).toBe("https://instance.local:8123");
     expect(url.searchParams.get("token")).toBe("abc123");
+  });
+
+  // A custom header on a cross-origin request costs a CORS preflight per tile,
+  // which is a worse trade than the cache key.
+  it("keeps the token in the query when the instance is elsewhere", async () => {
+    const { ensureMapTilesToken, withMapTilesToken } = await load();
+    await ensureMapTilesToken(
+      connectionWith({ hassUrl: "https://instance.local:8123" }, "abc123")
+    );
+
+    const request = withMapTilesToken("/api/map_tiles/vector/1/0/0.mvt");
+    expect(request.headers).toBeUndefined();
+    expect(new URL(request.url).searchParams.get("token")).toBe("abc123");
   });
 
   // MapLibre resolves the style's paths against the document before handing
@@ -259,6 +274,7 @@ describe("resolving against the instance", () => {
     expect(
       new URL(
         withMapTilesToken(`${location.origin}/api/map_tiles/vector/1/0/0.mvt`)
+          .url
       ).origin
     ).toBe("https://instance.local:8123");
   });

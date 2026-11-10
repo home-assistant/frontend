@@ -1,7 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../src/common/dom/fire_event";
-import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../src/components/ha-select";
 import "../../../../src/components/ha-switch";
@@ -121,12 +120,14 @@ const demoWebhooks: Webhook[] = [
     domain: "automation",
     name: "Front door motion",
     local_only: false,
+    allowed_methods: ["POST", "PUT"],
   },
   {
     webhook_id: "demo_companion_app",
     domain: "mobile_app",
     name: "Companion app",
     local_only: false,
+    allowed_methods: ["POST", "PUT"],
   },
 ];
 
@@ -155,12 +156,13 @@ const buildCloudStatus = (scenario: CloudDemoScenario): CloudStatusLoggedIn => {
     : {};
   return {
     logged_in: true,
+    auto_login: null,
     cloud: "connected",
     cloud_last_disconnect_reason: null,
     email: "demo@home-assistant.io",
     google_registered: scenario.google,
+    google_local_connected: false,
     google_entities: emptyFilter(),
-    google_domains: ["light", "switch", "climate", "cover"],
     alexa_registered: scenario.alexa,
     alexa_entities: emptyFilter(),
     remote_domain: "demo-instance.ui.nabu.casa",
@@ -181,10 +183,11 @@ const buildCloudStatus = (scenario: CloudDemoScenario): CloudStatusLoggedIn => {
       alexa_enabled: scenario.alexa,
       remote_enabled: scenario.remote,
       remote_allow_remote_enable: true,
-      strict_connection: "disabled",
-      google_secure_devices_pin: undefined,
+      google_secure_devices_pin: null,
       cloudhooks,
+      alexa_default_expose: null,
       alexa_report_state: true,
+      google_default_expose: null,
       google_report_state: true,
       tts_default_voice: ["en-US", "JennyNeural"],
       cloud_ice_servers_enabled: scenario.webrtc,
@@ -384,13 +387,12 @@ export class DemoMiscCloudAccount
 
   private _toggle(label: string, field: keyof CloudDemoScenario) {
     return html`
-      <ha-formfield .label=${label}>
-        <ha-switch
-          .checked=${this._scenario[field] as boolean}
-          data-field=${field}
-          @change=${this._switchChanged}
-        ></ha-switch>
-      </ha-formfield>
+      <ha-switch
+        .checked=${this._scenario[field] as boolean}
+        data-field=${field}
+        @change=${this._switchChanged}
+        >${label}</ha-switch
+      >
     `;
   }
 

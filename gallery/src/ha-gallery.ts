@@ -9,6 +9,8 @@ import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
 import type { HASSDomEvent } from "../../src/common/dom/fire_event";
+import { listenMediaQuery } from "../../src/common/dom/media_query";
+import { computeEntityNameDisplayWithoutContext } from "../../src/common/entity/compute_entity_name_display";
 import { setDirectionStyles } from "../../src/common/util/compute_rtl";
 import "../../src/components/ha-button";
 import "../../src/components/ha-drawer";
@@ -30,6 +32,7 @@ import {
   floorsContext,
   formattersContext,
   internationalizationContext,
+  reducedMotionContext,
   registriesContext,
   servicesContext,
   statesContext,
@@ -160,6 +163,13 @@ class HaGallery extends LitElement {
     floors: new ContextProvider(this, { context: floorsContext }),
   };
 
+  private _reducedMotionProvider = new ContextProvider(this, {
+    context: reducedMotionContext,
+    initialValue: false,
+  });
+
+  private _unsubReducedMotion?: () => void;
+
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     // Refresh the fallback contexts before each render so theme/page changes in
@@ -232,7 +242,6 @@ class HaGallery extends LitElement {
               ${
                 isSettingsPage
                   ? html`<gallery-settings
-                      .hass=${this._galleryHass}
                       .themeSettings=${this._themeSettings}
                       .narrow=${this._narrow}
                       .rtl=${this._rtl}
@@ -266,6 +275,10 @@ class HaGallery extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     mql.addEventListener("change", this._systemDarkChanged);
+    this._unsubReducedMotion = listenMediaQuery(
+      "(prefers-reduced-motion: reduce)",
+      (matches) => this._reducedMotionProvider.setValue(matches)
+    );
   }
 
   firstUpdated(changedProps: PropertyValues<this>) {
@@ -299,6 +312,8 @@ class HaGallery extends LitElement {
     super.disconnectedCallback();
     mql.removeEventListener("change", this._systemDarkChanged);
     window.removeEventListener("hashchange", this._hashChanged);
+    this._unsubReducedMotion?.();
+    this._unsubReducedMotion = undefined;
   }
 
   private _hashChanged = () => {
@@ -682,10 +697,7 @@ class HaGallery extends LitElement {
       formatEntityAttributeName: (_stateObj, attribute) => attribute,
       formatEntityAttributeValue: (stateObj, attribute, value) =>
         value != null ? value : (stateObj.attributes[attribute] ?? ""),
-      formatEntityName: (stateObj, type) =>
-        typeof type === "string"
-          ? type
-          : (stateObj.attributes.friendly_name ?? stateObj.entity_id),
+      formatEntityName: computeEntityNameDisplayWithoutContext,
     } as unknown as HomeAssistant;
   }
 

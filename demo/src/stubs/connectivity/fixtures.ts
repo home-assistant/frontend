@@ -1,21 +1,33 @@
+import { lorawanFixtures } from "./lorawan/fixtures";
 import { bluetoothFixtures } from "./bluetooth/fixtures";
-import { serialFixtures } from "./serial/fixtures";
-import { mqttFixtures } from "./mqtt/fixtures";
-import { matterFixtures } from "./matter/fixtures";
 import { infraredFixtures } from "./infrared/fixtures";
-import { zwaveJsFixtures } from "./zwave_js/fixtures";
+import { matterFixtures } from "./matter/fixtures";
+import { modbusFixtures } from "./modbus/fixtures";
+import { mqttFixtures } from "./mqtt/fixtures";
+import { radioFrequencyFixtures } from "./radio_frequency/fixtures";
+import { serialFixtures } from "./serial/fixtures";
+import { tagsFixtures } from "./tags/fixtures";
+import { threadFixtures } from "./thread/fixtures";
 import type { ConnectivityFixtures } from "./types";
+import { zhaFixtures } from "./zha/fixtures";
+import { zwaveJsFixtures } from "./zwave_js/fixtures";
 
 // Every integration reachable from Settings > Connectivity that has frontend
 // data to mock. Each owns its own fixtures, so they can be added and removed
 // one at a time.
 const INTEGRATIONS: ConnectivityFixtures[] = [
+  lorawanFixtures,
   bluetoothFixtures,
   serialFixtures,
+  modbusFixtures,
   mqttFixtures,
   matterFixtures,
   infraredFixtures,
   zwaveJsFixtures,
+  zhaFixtures,
+  radioFrequencyFixtures,
+  tagsFixtures,
+  threadFixtures,
 ];
 
 const collect = <T>(

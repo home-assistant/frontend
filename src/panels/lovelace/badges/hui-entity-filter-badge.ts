@@ -28,6 +28,8 @@ export class HuiEntityFilterBadge
 
   private _elements?: HuiBadge[];
 
+  private _placeholderBadge?: HTMLElement;
+
   private _configEntities?: EntityFilterEntityConfig[];
 
   private _oldEntities?: EntityFilterEntityConfig[];
@@ -56,6 +58,7 @@ export class HuiEntityFilterBadge
       this.removeChild(this.lastChild);
     }
     this._elements = undefined;
+    this._placeholderBadge = undefined;
 
     this._configEntities = processConfigEntities(config.entities);
     this._oldEntities = undefined;
@@ -69,6 +72,7 @@ export class HuiEntityFilterBadge
   protected shouldUpdate(changedProperties: PropertyValues): boolean {
     if (
       changedProperties.has("_config") ||
+      changedProperties.has("preview") ||
       (changedProperties.has("hass") &&
         this._haveEntitiesChanged(
           changedProperties.get("hass") as HomeAssistant | undefined
@@ -112,33 +116,42 @@ export class HuiEntityFilterBadge
     });
 
     if (entitiesList.length === 0) {
-      this.style.display = "none";
       this._oldEntities = entitiesList;
-      return;
-    }
 
-    const isSame =
-      this._oldEntities &&
-      entitiesList.length === this._oldEntities.length &&
-      entitiesList.every((entity, idx) => entity === this._oldEntities![idx]);
-
-    if (!isSame) {
-      this._elements = [];
-      for (const badgeConfig of entitiesList) {
-        const element = document.createElement("hui-badge");
-        element.hass = this.hass;
-        element.preview = this.preview;
-        element.config = {
-          type: "entity",
-          ...badgeConfig,
-        };
-        element.load();
-        this._elements.push(element);
+      if (!this.preview) {
+        this._placeholderBadge = undefined;
+        this.style.display = "none";
+        return;
       }
-      this._oldEntities = entitiesList;
+
+      this._placeholderBadge ??= document.createElement("ha-badge");
+    } else {
+      this._placeholderBadge = undefined;
+
+      const isSame =
+        !changedProperties.has("preview") &&
+        this._oldEntities &&
+        entitiesList.length === this._oldEntities.length &&
+        entitiesList.every((entity, idx) => entity === this._oldEntities![idx]);
+
+      if (!isSame) {
+        this._elements = [];
+        for (const badgeConfig of entitiesList) {
+          const element = document.createElement("hui-badge");
+          element.hass = this.hass;
+          element.preview = this.preview;
+          element.config = {
+            type: "entity",
+            ...badgeConfig,
+          };
+          element.load();
+          this._elements.push(element);
+        }
+        this._oldEntities = entitiesList;
+      }
     }
 
-    if (!this._elements) {
+    if (!this._elements && !this._placeholderBadge) {
       return;
     }
 
@@ -146,8 +159,12 @@ export class HuiEntityFilterBadge
       this.removeChild(this.lastChild);
     }
 
-    for (const element of this._elements) {
-      this.appendChild(element);
+    if (this._placeholderBadge) {
+      this.appendChild(this._placeholderBadge);
+    } else {
+      for (const element of this._elements!) {
+        this.appendChild(element);
+      }
     }
 
     this.style.display = "flex";

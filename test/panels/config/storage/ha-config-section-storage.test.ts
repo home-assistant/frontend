@@ -31,14 +31,6 @@ vi.mock("../../../../src/components/ha-segmented-bar", () => {
   customElements.define("ha-segmented-bar", class extends HTMLElement {});
   return {};
 });
-vi.mock("../../../../src/components/ha-list", () => {
-  customElements.define("ha-list", class extends HTMLElement {});
-  return {};
-});
-vi.mock("../../../../src/components/ha-list-item", () => {
-  customElements.define("ha-list-item", class extends HTMLElement {});
-  return {};
-});
 vi.mock("../../../../src/components/ha-card", () => {
   customElements.define("ha-card", class extends HTMLElement {});
   return {};

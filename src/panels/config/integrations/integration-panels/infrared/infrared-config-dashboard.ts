@@ -9,9 +9,9 @@ import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-nav";
 import type { InfraredDevice } from "../../../../../data/infrared";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
@@ -82,8 +82,12 @@ export class InfraredConfigDashboard extends LitElement {
               ${this.hass.localize("ui.panel.config.infrared.my_devices")}
             </div>
             <div class="card-content network-card-content">
-              <ha-md-list>
-                <ha-md-list-item type="link" href="/config/infrared/devices">
+              <ha-list-nav
+                .ariaLabel=${this.hass.localize(
+                  "ui.panel.config.infrared.my_devices"
+                )}
+              >
+                <ha-list-item-button href="/config/infrared/devices">
                   <ha-svg-icon slot="start" .path=${mdiRemote}></ha-svg-icon>
                   <div slot="headline">
                     ${this.hass.localize(
@@ -92,8 +96,8 @@ export class InfraredConfigDashboard extends LitElement {
                     )}
                   </div>
                   <ha-icon-next slot="end"></ha-icon-next>
-                </ha-md-list-item>
-              </ha-md-list>
+                </ha-list-item-button>
+              </ha-list-nav>
             </div>
           </ha-card>
         </div>
@@ -106,21 +110,16 @@ export class InfraredConfigDashboard extends LitElement {
       haStyle,
       css`
         .container {
-          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+          padding: var(--ha-space-2) var(--ha-content-gutter) var(--ha-space-4);
         }
 
         ha-card {
           margin: 0px auto var(--ha-space-4);
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
         }
 
         .content {
           margin-top: var(--ha-space-6);
-        }
-
-        ha-md-list {
-          background: none;
-          padding: 0;
         }
 
         .network-card {

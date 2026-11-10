@@ -11,7 +11,7 @@ import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { formatNumericDuration } from "../common/datetime/format_duration";
 import type { FormatEntityStateFunc } from "../common/translations/entity-state";
 import type { HaDurationData } from "../components/ha-duration-input";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
 import type { FrontendLocaleData } from "./translation";
 
 export type TimerEntity = HassEntityBase & {
@@ -48,8 +48,11 @@ export interface TimerMutableParams {
 export const fetchTimer = (hass: HomeAssistant) =>
   hass.callWS<Timer[]>({ type: "timer/list" });
 
-export const createTimer = (hass: HomeAssistant, values: TimerMutableParams) =>
-  hass.callWS<Timer>({
+export const createTimer = (
+  callWS: HomeAssistantApi["callWS"],
+  values: TimerMutableParams
+) =>
+  callWS<Timer>({
     type: "timer/create",
     ...values,
   });

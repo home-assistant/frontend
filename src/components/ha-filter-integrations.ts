@@ -1,30 +1,48 @@
-import type { SelectedDetail } from "@material/mwc-list";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiFilterVariantRemove } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { createRef, ref } from "lit/directives/ref";
 import { repeat } from "lit/directives/repeat";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import {
   FilterPanelController,
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import { arrayWith, arrayWithout } from "../common/array/array-with";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { internationalizationContext, manifestsContext } from "../data/context";
 import type { IntegrationManifest } from "../data/integration";
 import { domainToName } from "../data/integration";
-import { haStyleScrollbar } from "../resources/styles";
-import "./ha-check-list-item";
 import "./ha-domain-icon";
 import "./ha-expansion-panel";
-import "./ha-list";
+import "./ha-badge";
+import "./ha-svg-icon";
+import "./ha-tooltip";
+import "./item/ha-list-item-option";
+import type { HaListItemOption } from "./item/ha-list-item-option";
+import "./list/ha-list-selectable";
+import type { HaListSelectable } from "./list/ha-list-selectable";
 import "./input/ha-input-search";
 import type { HaInputSearch } from "./input/ha-input-search";
+
+export interface IntegrationFilterCount {
+  key: string;
+  path: string;
+  count: number;
+  label: string;
+  color?: string;
+}
 
 @customElement("ha-filter-integrations")
 export class HaFilterIntegrations extends LitElement {
@@ -34,6 +52,13 @@ export class HaFilterIntegrations extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
+  /** Counts to show beside each integration, by domain. */
+  @property({ attribute: false }) public counts?: Record<
+    string,
+    IntegrationFilterCount[]
+  >;
+
+  @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
 
@@ -90,43 +115,74 @@ export class HaFilterIntegrations extends LitElement {
                         @input=${this._handleSearchChange}
                       >
                       </ha-input-search>
-                      <ha-list
-                        class="ha-scrollbar"
-                        @selected=${this._itemSelected}
+                      <ha-list-selectable
                         multi
+                        aria-label=${this._localize(
+                          "ui.panel.config.integrations.caption"
+                        )}
+                        @ha-list-item-selected=${this._handleItemToggled}
+                        @ha-list-item-deselected=${this._handleItemToggled}
                       >
                         ${repeat(
                           this._integrations(
                             this._localize,
                             manifests,
                             this._filter,
-                            this.value,
                             this._i18n.locale.language
                           ),
                           (i) => i.domain,
                           (integration) =>
-                            html`<ha-check-list-item
+                            html`<ha-list-item-option
+                              appearance="checkbox"
+                              selection-position="end"
                               .value=${integration.domain}
-                              .selected=${(this.value || []).includes(
-                                integration.domain
-                              )}
-                              graphic="icon"
+                              .selected=${
+                                this.value?.includes(integration.domain) ??
+                                false
+                              }
                             >
                               <ha-domain-icon
-                                slot="graphic"
+                                slot="start"
                                 .domain=${integration.domain}
                                 brand-fallback
                               ></ha-domain-icon>
-                              ${integration.name}
-                            </ha-check-list-item>`
+                              <span slot="headline">${integration.name}</span>
+                              ${this._renderCounts(integration.domain)}
+                            </ha-list-item-option>`
                         )}
-                      </ha-list>`
+                      </ha-list-selectable>`
                   : nothing
               }
             </div>`
           : nothing
       }
     `;
+  }
+
+  private _renderCounts(domain: string): TemplateResult | typeof nothing {
+    const counts = this.counts?.[domain];
+
+    if (!counts?.length) {
+      return nothing;
+    }
+
+    return html`<span slot="supporting-text" class="counts">
+      ${counts.map(
+        (item) =>
+          html`<ha-badge
+              id="count-${domain}-${item.key}"
+              role="img"
+              aria-label=${item.label}
+              style=${styleMap({ "--badge-color": item.color })}
+            >
+              <ha-svg-icon slot="icon" .path=${item.path}></ha-svg-icon>
+              ${item.count}
+            </ha-badge>
+            <ha-tooltip for="count-${domain}-${item.key}">
+              ${item.label}
+            </ha-tooltip>`
+      )}
+    </span>`;
   }
 
   private _expandedChanged(ev) {
@@ -142,7 +198,6 @@ export class HaFilterIntegrations extends LitElement {
       localize: LocalizeFunc,
       manifest: IntegrationManifest[],
       filter: string | undefined,
-      _value: string[] | undefined,
       language: string
     ) =>
       manifest
@@ -163,26 +218,20 @@ export class HaFilterIntegrations extends LitElement {
         .sort((a, b) => stringCompare(a.name, b.name, language))
   );
 
-  private _itemSelected(ev: CustomEvent<SelectedDetail<Set<number>>>) {
-    if (!this._manifests) {
+  private _handleItemToggled(
+    ev: HASSDomEvent<number> & HASSDomCurrentTargetEvent<HaListSelectable>
+  ) {
+    const domain = (
+      ev.currentTarget.items[ev.detail] as HaListItemOption | undefined
+    )?.value;
+    if (!domain) {
       return;
     }
 
-    const integrations = this._integrations(
-      this._localize,
-      this._manifestList(this._manifests),
-      this._filter,
-      this.value,
-      this._i18n.locale.language
-    );
-
-    const visibleDomains = new Set(integrations.map((i) => i.domain));
-    const preserved = (this.value || []).filter((d) => !visibleDomains.has(d));
-    const selected = [...ev.detail.index]
-      .map((i) => integrations[i]?.domain)
-      .filter((d): d is string => !!d);
-
-    this.value = [...preserved, ...selected];
+    this.value =
+      ev.type === "ha-list-item-selected"
+        ? arrayWith(this.value, domain)
+        : arrayWithout(this.value, domain);
 
     fireEvent(this, "data-table-filter-changed", {
       value: this.value.length ? this.value : undefined,
@@ -206,10 +255,14 @@ export class HaFilterIntegrations extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyleScrollbar,
       filterPanelStyles,
       css`
-        ha-list {
+        ha-list-selectable {
+          display: flex;
+          flex: 1;
+          min-height: 0;
+        }
+        ha-list-selectable::part(base) {
           flex: 1;
           min-height: 0;
         }
@@ -220,9 +273,6 @@ export class HaFilterIntegrations extends LitElement {
         .header ha-icon-button {
           margin-inline-start: auto;
           margin-inline-end: 8px;
-        }
-        ha-check-list-item {
-          --mdc-list-item-graphic-margin: var(--ha-space-4);
         }
         .badge {
           display: inline-block;
@@ -243,6 +293,15 @@ export class HaFilterIntegrations extends LitElement {
         ha-input-search {
           display: block;
           padding: var(--ha-space-1) var(--ha-space-2) 0;
+        }
+        .counts {
+          display: flex;
+          flex-wrap: wrap;
+          gap: var(--ha-space-1);
+          margin-top: var(--ha-space-1);
+          --ha-badge-size: 22px;
+          --ha-badge-icon-size: 14px;
+          --ha-badge-font-size: var(--ha-font-size-xs);
         }
       `,
     ];

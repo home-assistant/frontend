@@ -4,15 +4,17 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_event";
+import { stopKeydownEnterSpacePropagation } from "../../../../../common/dom/stop_propagation";
 import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-base";
 import type {
   BluetoothAllocationsData,
   BluetoothScannerState,
@@ -31,6 +33,7 @@ import {
   getConfigEntries,
 } from "../../../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
+import { domainToName } from "../../../../../data/integration";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-subpage";
@@ -48,6 +51,10 @@ export class BluetoothAdapterInfoPage extends LitElement {
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @state() private _configEntries: ConfigEntry[] = [];
+
+  // Config entries of the integrations that provide remote scanners
+  // (for example ESPHome Bluetooth proxies), keyed by entry ID.
+  @state() private _sourceConfigEntries: Record<string, ConfigEntry> = {};
 
   @state() private _connectionAllocationData: BluetoothAllocationsData[] = [];
 
@@ -72,9 +79,45 @@ export class BluetoothAdapterInfoPage extends LitElement {
   }
 
   private async _loadConfigEntries(): Promise<void> {
-    this._configEntries = await getConfigEntries(this.hass, {
-      domain: "bluetooth",
-    });
+    const configEntries = await getConfigEntries(this.hass);
+    const bluetoothEntries: ConfigEntry[] = [];
+    const sourceEntries: Record<string, ConfigEntry> = {};
+    for (const configEntry of configEntries) {
+      if (configEntry.domain === "bluetooth") {
+        bluetoothEntries.push(configEntry);
+      } else {
+        sourceEntries[configEntry.entry_id] = configEntry;
+      }
+    }
+    this._configEntries = bluetoothEntries;
+    this._sourceConfigEntries = sourceEntries;
+  }
+
+  /**
+   * Remote scanners (such as ESPHome Bluetooth proxies) are configured by the
+   * integration that provides them. The Bluetooth integration creates its own
+   * device for a remote scanner, linked through `via_device_id` to the device
+   * of the integration that provides it, so look there for that
+   * integration's config entry.
+   */
+  private _getSourceConfigEntry(
+    device: DeviceRegistryEntry
+  ): ConfigEntry | undefined {
+    const sourceDevice = device.via_device_id
+      ? this.hass.devices[device.via_device_id]
+      : undefined;
+    if (!sourceDevice) {
+      return undefined;
+    }
+    if (
+      sourceDevice.primary_config_entry &&
+      sourceDevice.primary_config_entry in this._sourceConfigEntries
+    ) {
+      return this._sourceConfigEntries[sourceDevice.primary_config_entry];
+    }
+    return sourceDevice.config_entries
+      .map((id) => this._sourceConfigEntries[id])
+      .find((e) => e !== undefined);
   }
 
   private async _subscribeBluetoothConnectionAllocations(): Promise<void> {
@@ -191,7 +234,7 @@ export class BluetoothAdapterInfoPage extends LitElement {
       >
         <div class="container">
           <ha-card>
-            <ha-md-list>
+            <ha-list-base>
               ${this._renderAdaptersList(enabledDevices)}
               ${disabledDevices.map(({ device, entry }) => {
                 const areaName =
@@ -205,7 +248,7 @@ export class BluetoothAdapterInfoPage extends LitElement {
                   .filter(Boolean)
                   .join(" · ");
                 return html`
-                  <ha-md-list-item class="disabled">
+                  <ha-list-item-base class="disabled">
                     <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
                     <div slot="headline">
                       ${computeDeviceName(device) || entry.title}
@@ -218,12 +261,12 @@ export class BluetoothAdapterInfoPage extends LitElement {
                     >
                       ${this.hass.localize("ui.common.enable")}
                     </ha-button>
-                  </ha-md-list-item>
+                  </ha-list-item-base>
                 `;
               })}
               ${disabledEntriesWithoutDevice.map(
                 (entry) => html`
-                  <ha-md-list-item class="disabled">
+                  <ha-list-item-base class="disabled">
                     <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
                     <div slot="headline">${entry.title}</div>
                     <div slot="supporting-text">
@@ -238,10 +281,10 @@ export class BluetoothAdapterInfoPage extends LitElement {
                     >
                       ${this.hass.localize("ui.common.enable")}
                     </ha-button>
-                  </ha-md-list-item>
+                  </ha-list-item-base>
                 `
               )}
-            </ha-md-list>
+            </ha-list-base>
             <div class="card-actions">
               <ha-button
                 appearance="plain"
@@ -262,13 +305,13 @@ export class BluetoothAdapterInfoPage extends LitElement {
     devices: { device: DeviceRegistryEntry; entry: ConfigEntry }[]
   ) {
     if (devices.length === 0) {
-      return html`<ha-md-list-item>
+      return html`<ha-list-item-base>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.bluetooth.no_scanner_state_available"
           )}
         </div>
-      </ha-md-list-item>`;
+      </ha-list-item-base>`;
     }
 
     return devices.map(({ device, entry }) => {
@@ -287,6 +330,10 @@ export class BluetoothAdapterInfoPage extends LitElement {
       const scannerType: HaScannerType =
         scannerDetails?.scanner_type ?? "unknown";
       const isRemoteScanner = scannerType === "remote";
+      // Remote scanners are configured through the integration providing them.
+      const optionsEntry = isRemoteScanner
+        ? this._getSourceConfigEntry(device)
+        : entry;
       const hasMismatch = scannerState && isScannerStateMismatch(scannerState);
 
       const allocations = scannerDetails
@@ -314,28 +361,42 @@ export class BluetoothAdapterInfoPage extends LitElement {
       );
 
       return html`
-        <ha-md-list-item
-          type="link"
+        <ha-list-item-button
           href=${`/config/bluetooth/connection-monitor?source=${btAddress}`}
         >
           <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
           <div slot="headline">${deviceName}</div>
           <div slot="supporting-text">${supportingParts.join(" · ")}</div>
           ${
-            !isRemoteScanner
+            optionsEntry &&
+            (!isRemoteScanner ||
+              (optionsEntry.supports_options && !optionsEntry.disabled_by))
               ? html`<ha-icon-button
                   slot="end"
                   .path=${mdiCogOutline}
-                  .entry=${entry}
+                  .entry=${optionsEntry}
                   @click=${this._openOptionFlow}
-                  .label=${this.hass.localize(
-                    "ui.panel.config.bluetooth.option_flow"
-                  )}
+                  @keydown=${stopKeydownEnterSpacePropagation}
+                  .label=${
+                    isRemoteScanner
+                      ? this.hass.localize(
+                          "ui.panel.config.bluetooth.source_option_flow",
+                          {
+                            integration: domainToName(
+                              this.hass.localize,
+                              optionsEntry.domain
+                            ),
+                          }
+                        )
+                      : this.hass.localize(
+                          "ui.panel.config.bluetooth.option_flow"
+                        )
+                  }
                 ></ha-icon-button>`
               : nothing
           }
           <ha-icon-next slot="end"></ha-icon-next>
-        </ha-md-list-item>
+        </ha-list-item-button>
         ${
           hasMismatch && scannerDetails
             ? this._renderScannerMismatchWarning(
@@ -491,30 +552,22 @@ export class BluetoothAdapterInfoPage extends LitElement {
       haStyle,
       css`
         .container {
-          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+          padding: var(--ha-space-2) var(--ha-content-gutter) var(--ha-space-4);
         }
 
         ha-card {
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
           margin: 0 auto var(--ha-space-4);
         }
 
-        ha-md-list {
-          background: none;
-          padding: 0;
-        }
-
-        ha-md-list-item {
-          --md-item-overflow: visible;
-        }
-
-        ha-md-list-item ha-svg-icon[slot="start"] {
+        ha-list-item-button ha-svg-icon[slot="start"],
+        ha-list-item-base ha-svg-icon[slot="start"] {
           color: var(--secondary-text-color);
         }
 
-        ha-md-list-item.disabled ha-svg-icon[slot="start"],
-        ha-md-list-item.disabled [slot="headline"],
-        ha-md-list-item.disabled [slot="supporting-text"] {
+        ha-list-item-base.disabled ha-svg-icon[slot="start"],
+        ha-list-item-base.disabled [slot="headline"],
+        ha-list-item-base.disabled [slot="supporting-text"] {
           opacity: 0.5;
         }
 

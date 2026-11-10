@@ -1,6 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
-  mdiAppleKeyboardCommand,
   mdiCog,
   mdiContentSave,
   mdiDebugStepOver,
@@ -79,6 +78,7 @@ import {
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import { renderCtrlOrCmd } from "../../../common/keyboard/ctrl-or-cmd";
 
 @customElement("ha-script-editor")
 export class HaScriptEditor extends SubscribeMixin(
@@ -166,9 +166,7 @@ export class HaScriptEditor extends SubscribeMixin(
       : undefined;
 
     const useBlueprint = "use_blueprint" in this.config;
-    const shortcutIcon = isMac
-      ? html`<ha-svg-icon .path=${mdiAppleKeyboardCommand}></ha-svg-icon>`
-      : this.hass.localize("ui.panel.config.automation.editor.ctrl");
+    const shortcutIcon = renderCtrlOrCmd(this.hass.localize);
 
     return html`
       <hass-subpage
@@ -430,7 +428,18 @@ export class HaScriptEditor extends SubscribeMixin(
                               .saving=${this.saving}
                               @value-changed=${this._valueChanged}
                               @save-script=${this._handleSaveScript}
-                            ></blueprint-script-editor>
+                            >
+                              ${
+                                this.errors
+                                  ? html`<ha-alert
+                                      alert-type="error"
+                                      slot="alerts"
+                                    >
+                                      ${this.errors}
+                                    </ha-alert>`
+                                  : nothing
+                              }
+                            </blueprint-script-editor>
                           `
                         : html`
                             <manual-script-editor
@@ -590,12 +599,13 @@ export class HaScriptEditor extends SubscribeMixin(
       if (!initData || !("use_blueprint" in initData)) {
         baseConfig.sequence = [];
       }
-      this.config = {
-        ...baseConfig,
-        ...initData,
-      } as ScriptConfig;
+      // Spread the init data first, so a duplicated script keeps its key
+      // order. The defaults only fill in what is missing.
+      const missingDefaults =
+        initData && "sequence" in initData ? {} : baseConfig;
+      this.config = { ...initData, ...missingDefaults } as ScriptConfig;
       this._initDirtyTracking(
-        { type: "deep" },
+        { type: "deep", compareKeyOrder: true },
         {
           config: baseConfig as ScriptConfig,
           entityRegistryUpdate: this.entityRegistryUpdate,
@@ -612,7 +622,7 @@ export class HaScriptEditor extends SubscribeMixin(
       getScriptStateConfig(this.hass, this.entityId).then((c) => {
         this.config = normalizeScriptConfig(c.config);
         this._initDirtyTracking(
-          { type: "deep" },
+          { type: "deep", compareKeyOrder: true },
           {
             config: this.config,
             entityRegistryUpdate: this.entityRegistryUpdate,
@@ -669,7 +679,7 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   private async _runScript() {
-    if (hasScriptFields(this.hass, this.currentEntityId!)) {
+    if (hasScriptFields(this.hass.services, this.currentEntityId!)) {
       showMoreInfoDialog(this, {
         entityId: this.currentEntityId!,
       });
@@ -777,13 +787,14 @@ export class HaScriptEditor extends SubscribeMixin(
     this.errors = undefined;
   }
 
-  protected async confirmUnsavedChanged(): Promise<boolean> {
+  protected async confirmUnsavedChanged(addHistory = true): Promise<boolean> {
     if (!this.isDirtyState) {
       return true;
     }
 
     return new Promise<boolean>((resolve) => {
       showAutomationSaveDialog(this, {
+        addHistory,
         config: this.config!,
         domain: "script",
         updateConfig: async (config, entityRegistryUpdate) => {
@@ -874,11 +885,7 @@ export class HaScriptEditor extends SubscribeMixin(
       this.currentEntityId = undefined;
       showScriptEditor({
         ...this.config,
-        alias: this.readOnly
-          ? this.config?.alias
-          : `${this.config?.alias} (${this.hass.localize(
-              "ui.panel.config.script.picker.duplicate"
-            )})`,
+        alias: this.readOnly ? this.config?.alias : undefined,
       });
     }
   }
@@ -1025,7 +1032,7 @@ export class HaScriptEditor extends SubscribeMixin(
         }
 
         if (entityId) {
-          await updateEntityRegistryEntry(this.hass, entityId, {
+          await updateEntityRegistryEntry(this.hass.callWS, entityId, {
             categories: {
               script: this.entityRegistryUpdate.category || null,
             },
@@ -1058,6 +1065,36 @@ export class HaScriptEditor extends SubscribeMixin(
       z: () => this._undo(),
       Z: () => this._redo(),
       y: () => this._redo(),
+    };
+  }
+
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    if (this._manualEditor?.sidebarOpen) {
+      return this._manualEditor.canToggleSidebarYamlMode
+        ? { Y: () => this._manualEditor?.toggleSidebarYamlMode() }
+        : {};
+    }
+    return {
+      Y: () => this._toggleYamlMode(),
+    };
+  }
+
+  private async _toggleYamlMode() {
+    if (this.mode === "gui") {
+      this.switchYamlMode();
+      await this.updateComplete;
+      this._yamlEditor?.focus();
+    } else {
+      this.switchUiMode();
+    }
+  }
+
+  protected supportedSingleKeyShortcuts(): SupportedShortcuts {
+    if (!this._manualEditor?.sidebarOpen) {
+      return {};
+    }
+    return {
+      Escape: () => this._manualEditor?.triggerCloseSidebar(),
     };
   }
 
@@ -1142,11 +1179,7 @@ export class HaScriptEditor extends SubscribeMixin(
         this._takeControl();
         break;
       case "toggle_yaml_mode":
-        if (this.mode === "gui") {
-          this.switchYamlMode();
-          break;
-        }
-        this.switchUiMode();
+        this._toggleYamlMode();
         break;
       case "delete":
         this._deleteConfirm();

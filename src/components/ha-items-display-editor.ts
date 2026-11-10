@@ -13,13 +13,14 @@ import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { orderCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { afterNextRender } from "../common/util/render-status";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-icon-next";
-import "./ha-md-list";
-import "./ha-md-list-item";
 import "./ha-sortable";
 import "./ha-svg-icon";
+import "./item/ha-list-item-button";
+import "./list/ha-list-base";
 
 export interface DisplayItem {
   icon?: string | Promise<string | undefined>;
@@ -35,6 +36,9 @@ export interface DisplayValue {
   order: string[];
   hidden: string[];
 }
+
+// Rows and drag handles get their index set as `.idx` in the template
+type IndexedElement = HTMLElement & { idx: number };
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -92,7 +96,7 @@ export class HaItemDisplayEditor extends LitElement {
         handle-selector=".handle"
         @item-moved=${this._itemMoved}
       >
-        <ha-md-list>
+        <ha-list-base>
           ${repeat(
             allItems,
             (item) => item.value,
@@ -108,8 +112,7 @@ export class HaItemDisplayEditor extends LitElement {
                 disableHiding,
               } = item;
               return html`
-                <ha-md-list-item
-                  type="button"
+                <ha-list-item-button
                   @click=${
                     this.showNavigationButton ? this._navigate : undefined
                   }
@@ -207,19 +210,22 @@ export class HaItemDisplayEditor extends LitElement {
                         `
                       : html`<ha-svg-icon slot="end"></ha-svg-icon>`
                   }
-                </ha-md-list-item>
+                </ha-list-item-button>
               `;
             }
           )}
-        </ha-md-list>
+        </ha-list-base>
       </ha-sortable>
     `;
   }
 
-  private _toggle(ev) {
+  private _toggle(ev: MouseEvent) {
     ev.stopPropagation();
     this._dragIndex = null;
-    const value = ev.currentTarget.value;
+    const button = ev.currentTarget as HTMLElement & { value: string };
+    const value = button.value;
+    // Keyboard-triggered clicks have no click count
+    const fromKeyboard = ev.detail === 0;
 
     const hiddenItems = this._hiddenItems(this.items, this.value.hidden);
 
@@ -243,6 +249,12 @@ export class HaItemDisplayEditor extends LitElement {
       order: newOrder,
     };
     fireEvent(this, "value-changed", { value: this.value });
+
+    // Hiding or showing moves the row, which can drop focus. Wait for the
+    // parent to pass the new value back before refocusing.
+    if (fromKeyboard) {
+      afterNextRender(() => button.focus());
+    }
   }
 
   private _itemMoved(ev: CustomEvent): void {
@@ -317,30 +329,26 @@ export class HaItemDisplayEditor extends LitElement {
       ).length - 1
   );
 
-  private _keyActivatedMove = (ev: KeyboardEvent, clearDragIndex = false) => {
-    const oldIndex = this._dragIndex;
-
-    if (ev.key === "ArrowUp") {
-      this._dragIndex = Math.max(0, this._dragIndex! - 1);
-    } else {
-      this._dragIndex = Math.min(
-        this._maxSortableIndex(this.items, this.value.hidden),
-        this._dragIndex! + 1
-      );
+  private _keyActivatedMove = (ev: KeyboardEvent, oldIndex: number) => {
+    const newIndex =
+      ev.key === "ArrowUp"
+        ? Math.max(0, oldIndex - 1)
+        : Math.min(
+            this._maxSortableIndex(this.items, this.value.hidden),
+            oldIndex + 1
+          );
+    this._moveItem(oldIndex, newIndex);
+    if (this._dragIndex !== null) {
+      this._dragIndex = newIndex;
     }
-    this._moveItem(oldIndex, this._dragIndex);
 
     // refocus the item after the sort
-    setTimeout(async () => {
-      await this.updateComplete;
+    afterNextRender(() => {
       // eslint-disable-next-line lit/prefer-query-decorators
       const selectedElement = this.shadowRoot?.querySelector(
-        `ha-md-list-item:nth-child(${this._dragIndex! + 1})`
+        `ha-list-item-button:nth-child(${newIndex + 1})`
       ) as HTMLElement | null;
       selectedElement?.focus();
-      if (clearDragIndex) {
-        this._dragIndex = null;
-      }
     });
   };
 
@@ -350,7 +358,7 @@ export class HaItemDisplayEditor extends LitElement {
       (ev.key === "ArrowUp" || ev.key === "ArrowDown")
     ) {
       ev.preventDefault();
-      this._keyActivatedMove(ev);
+      this._keyActivatedMove(ev, this._dragIndex);
     } else if (this._dragIndex !== null && ev.key === "Escape") {
       ev.preventDefault();
       ev.stopPropagation();
@@ -362,11 +370,10 @@ export class HaItemDisplayEditor extends LitElement {
   private _listElementKeydown = (ev: KeyboardEvent) => {
     if (ev.altKey && (ev.key === "ArrowUp" || ev.key === "ArrowDown")) {
       ev.preventDefault();
-      this._dragIndex = (ev.target as any).idx;
-      this._keyActivatedMove(ev, true);
+      this._keyActivatedMove(ev, (ev.currentTarget as IndexedElement).idx);
     } else if (
-      (!this.showNavigationButton && ev.key === "Enter") ||
-      ev.key === " "
+      ev.target === ev.currentTarget &&
+      ((!this.showNavigationButton && ev.key === "Enter") || ev.key === " ")
     ) {
       this._dragHandleKeydown(ev);
     }
@@ -377,7 +384,7 @@ export class HaItemDisplayEditor extends LitElement {
       ev.preventDefault();
       ev.stopPropagation();
       if (this._dragIndex === null) {
-        this._dragIndex = (ev.target as any).idx;
+        this._dragIndex = (ev.target as IndexedElement).idx;
         this.addEventListener("keydown", this._sortKeydown);
       } else {
         this.removeEventListener("keydown", this._sortKeydown);
@@ -406,35 +413,28 @@ export class HaItemDisplayEditor extends LitElement {
       height: 21px;
       margin: 0 -4px;
     }
-    ha-md-list {
-      padding: 0;
+    ha-list-item-button {
+      --ha-row-item-padding-block: 0;
+      --ha-row-item-padding-inline: var(--ha-space-2);
     }
-    ha-md-list-item {
-      --md-list-item-top-space: 0;
-      --md-list-item-bottom-space: 0;
-      --md-list-item-leading-space: 8px;
-      --md-list-item-trailing-space: 8px;
-      --md-list-item-two-line-container-height: 48px;
-      --md-list-item-one-line-container-height: 48px;
+    ha-list-item-button::part(start),
+    ha-list-item-button::part(end) {
+      color: var(--ha-color-text-secondary);
     }
-    ha-md-list-item.drag-selected {
-      --md-focus-ring-color: rgba(var(--rgb-accent-color), 0.6);
-      border-radius: var(--ha-border-radius-md);
-      outline: solid;
+    ha-list-item-button::part(end) {
+      gap: var(--ha-space-4);
+    }
+    ha-list-item-button.drag-selected::part(base) {
       outline-color: rgba(var(--rgb-accent-color), 0.6);
-      outline-offset: -2px;
-      outline-width: 2px;
       background-color: rgba(var(--rgb-accent-color), 0.08);
     }
-    ha-md-list-item ha-icon-button {
+    ha-list-item-button ha-icon-button {
       margin-left: -12px;
       margin-right: -12px;
     }
-    ha-md-list-item.hidden {
-      --md-list-item-label-text-color: var(--disabled-text-color);
-      --md-list-item-supporting-text-color: var(--disabled-text-color);
-    }
-    ha-md-list-item.hidden .icon {
+    ha-list-item-button.hidden,
+    ha-list-item-button.hidden::part(supporting-text),
+    ha-list-item-button.hidden .icon {
       color: var(--disabled-text-color);
     }
   `;

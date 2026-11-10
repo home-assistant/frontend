@@ -1,6 +1,6 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../common/array/ensure-array";
@@ -10,8 +10,6 @@ import type { HaEntityPickerEntityFilterFunc } from "../data/entity/entity";
 import { entityTypeFilterFunc } from "../data/entity/entity_type";
 import type { EntitySources } from "../data/entity/entity_sources";
 import type { HomeAssistant } from "../types";
-import "./ha-filter-entity-types";
-import "./ha-filter-integrations";
 import "./ha-target-picker";
 
 /**
@@ -38,6 +36,16 @@ export const countTargets = (target: HassServiceTarget): number =>
     (count, key) => count + (target[key] ? ensureArray(target[key]).length : 0),
     0
   );
+
+/** Sets one filter from the value of its `data-table-filter-changed` event. */
+export const setSourceFilter = <T extends SourceFilters>(
+  filters: T,
+  key: keyof T,
+  value: DataTableFiltersValue
+): T => ({
+  ...filters,
+  [key]: Array.isArray(value) && value.length ? value : undefined,
+});
 
 /** Number of filters that have at least one option selected. */
 export const countSourceFilters = (filters: SourceFilters): number =>
@@ -92,8 +100,8 @@ export const applySourceFilters = (
 };
 
 /**
- * Picker for what a page shows: the targets to include, narrowed down by
- * entity type and integration. Meant to be placed in an `ha-filter-pane`.
+ * Picks the targets a page shows. Meant to be placed in an `ha-filter-pane`,
+ * above the filters the page narrows them down with.
  *
  * The pages resolve every entity of a target, secondary ones included, so the
  * target picker counts them too.
@@ -104,6 +112,7 @@ export class HaSourcesPicker extends LitElement {
 
   @property({ attribute: false }) public value: HassServiceTarget = {};
 
+  /** The filters the page applies, so the picker counts what they keep. */
   @property({ attribute: false }) public filters: SourceFilters = {};
 
   @property({ attribute: false })
@@ -115,10 +124,6 @@ export class HaSourcesPicker extends LitElement {
   @property() public description?: string;
 
   @property({ type: Boolean }) public disabled = false;
-
-  // Only one filter panel is expanded at a time, so that the expanded one can
-  // use the height that is left in the pane.
-  @state() private _expandedFilter?: keyof SourceFilters;
 
   protected render() {
     const noTargets = countTargets(this.value) === 0;
@@ -144,70 +149,14 @@ export class HaSourcesPicker extends LitElement {
         .disabled=${this.disabled}
         @value-changed=${this._targetsChanged}
       ></ha-target-picker>
-      <div
-        class=${classMap({ filters: true, expanded: !!this._expandedFilter })}
-      >
-        <ha-filter-entity-types
-          .value=${this.filters.types}
-          .expanded=${this._expandedFilter === "types"}
-          @data-table-filter-changed=${this._typesChanged}
-          @expanded-changed=${this._typesExpanded}
-        ></ha-filter-entity-types>
-        <ha-filter-integrations
-          .value=${this.filters.integrations}
-          .expanded=${this._expandedFilter === "integrations"}
-          @data-table-filter-changed=${this._integrationsChanged}
-          @expanded-changed=${this._integrationsExpanded}
-        ></ha-filter-integrations>
-      </div>
     `;
   }
 
   private _activeFilter = memoizeOne(sourceFilterFunc);
 
-  protected firstUpdated() {
-    // The filter panels label themselves with keys from the config panel.
-    this.hass.loadFragmentTranslation("config");
-  }
-
   private _targetsChanged(ev: CustomEvent) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", { value: ev.detail.value || {} });
-  }
-
-  private _typesChanged(ev: CustomEvent) {
-    this._filterChanged("types", ev);
-  }
-
-  private _integrationsChanged(ev: CustomEvent) {
-    this._filterChanged("integrations", ev);
-  }
-
-  private _filterChanged(key: keyof SourceFilters, ev: CustomEvent) {
-    ev.stopPropagation();
-    const value = ev.detail.value as DataTableFiltersValue;
-    fireEvent(this, "source-filters-changed", {
-      value: {
-        ...this.filters,
-        [key]: Array.isArray(value) && value.length ? value : undefined,
-      },
-    });
-  }
-
-  private _typesExpanded(ev: CustomEvent) {
-    this._filterExpanded("types", ev);
-  }
-
-  private _integrationsExpanded(ev: CustomEvent) {
-    this._filterExpanded("integrations", ev);
-  }
-
-  private _filterExpanded(key: keyof SourceFilters, ev: CustomEvent) {
-    if (ev.detail.expanded) {
-      this._expandedFilter = key;
-    } else if (this._expandedFilter === key) {
-      this._expandedFilter = undefined;
-    }
   }
 
   static styles = css`
@@ -241,27 +190,28 @@ export class HaSourcesPicker extends LitElement {
     ha-target-picker.no-padding-top {
       padding-top: 0;
     }
-
-    .filters {
-      display: flex;
-      flex-direction: column;
-      flex: 1 0 auto;
-      border-top: 1px solid var(--divider-color);
-    }
-
-    /* An expanded panel sizes itself to the space that is left over. */
-    .filters.expanded {
-      flex: 1 1 auto;
-      min-height: 0;
-    }
   `;
 }
+
+/** Lays out the filters that follow the picker in the pane. */
+export const sourceFiltersStyles = css`
+  .filters {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    border-top: 1px solid var(--divider-color);
+  }
+
+  /* An expanded panel sizes itself to the space that is left over, but
+       keeps room for its list when the targets fill the pane. */
+  .filters.expanded {
+    flex: 1 1 auto;
+    min-height: min(360px, 100%);
+  }
+`;
 
 declare global {
   interface HTMLElementTagNameMap {
     "ha-sources-picker": HaSourcesPicker;
-  }
-  interface HASSDomEvents {
-    "source-filters-changed": { value: SourceFilters };
   }
 }

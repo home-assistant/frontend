@@ -4,8 +4,10 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
+import {
+  computeEntityNameParts,
+  computeEntitySearchLabels,
+} from "../../../../common/entity/compute_entity_name_display";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-combo-box-item";
@@ -14,7 +16,10 @@ import type { PickerComboBoxItem } from "../../../../components/ha-picker-combo-
 import type { PickerValueRenderer } from "../../../../components/ha-picker-field";
 import "../../../../components/ha-svg-icon";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
-import { computeEnergyLabel } from "../../../../data/energy";
+import {
+  computeAmbiguousEnergyDevices,
+  computeEnergyLabel,
+} from "../../../../data/energy";
 import { domainToName } from "../../../../data/integration";
 import {
   getStatisticLabel,
@@ -31,6 +36,7 @@ const SEARCH_KEYS = [
   { name: "search_labels.entityName", weight: 10 },
   { name: "search_labels.friendlyName", weight: 9 },
   { name: "search_labels.deviceName", weight: 8 },
+  { name: "search_labels.parentDeviceName", weight: 6 },
   { name: "search_labels.areaName", weight: 6 },
   { name: "search_labels.domainName", weight: 4 },
   { name: "id", weight: 2 },
@@ -53,50 +59,56 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
   @property({ attribute: false })
   public possibleParents: DeviceConsumptionEnergyPreference[] = [];
 
+  // Every device of this type, not just the selectable ones, so a device is
+  // labelled the same here as in the device list.
+  @property({ attribute: false })
+  public devices: DeviceConsumptionEnergyPreference[] = [];
+
   @property({ attribute: false })
   public statsMetadata?: Record<string, StatisticsMetaData>;
 
+  private _ambiguousStatisticIds = memoizeOne(
+    (
+      states: HomeAssistant["states"],
+      formatEntityName: HomeAssistant["formatEntityName"],
+      devices: DeviceConsumptionEnergyPreference[]
+    ) => computeAmbiguousEnergyDevices(states, formatEntityName, devices)
+  );
+
   private _computeItem = (statisticId: string): UpstreamDeviceComboBoxItem => {
     // Use the energy config's custom display name when the user has set one.
-    const name = this.possibleParents.find(
-      (parent) => parent.stat_consumption === statisticId
+    const name = this.devices.find(
+      (device) => device.stat_consumption === statisticId
     )?.name;
     const stateObj = this.hass.states[statisticId];
 
     if (stateObj) {
-      const [entityName, deviceName, areaName] = computeEntityNameList(
-        stateObj,
-        [{ type: "entity" }, { type: "device" }, { type: "area" }],
-        this.hass.entities,
-        this.hass.devices,
-        this.hass.areas,
-        this.hass.floors
-      );
-
-      const friendlyName = computeStateName(stateObj); // Keep this for search
+      const { area: areaName } = computeEntityNameParts(stateObj, this.hass);
 
       return {
         id: statisticId,
         // Match the label shown in the device list and the graphs.
         primary: computeEnergyLabel(
-          this.hass,
+          this.hass.states,
+          this.hass.formatEntityName,
           statisticId,
           this.statsMetadata?.[statisticId],
-          name
+          name,
+          this._ambiguousStatisticIds(
+            this.hass.states,
+            this.hass.formatEntityName,
+            this.devices
+          ).has(statisticId)
         ),
         secondary: areaName,
         stateObj,
-        search_labels: {
-          entityName: entityName || null,
-          deviceName: deviceName || null,
-          areaName: areaName || null,
-          friendlyName,
-        },
+        search_labels: computeEntitySearchLabels(stateObj, this.hass),
       };
     }
 
     const label = getStatisticLabel(
-      this.hass,
+      this.hass.states,
+      this.hass.formatEntityName,
       statisticId,
       this.statsMetadata?.[statisticId]
     );
@@ -130,6 +142,7 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
       _hass: HomeAssistant,
       _value: string | undefined,
       _possibleParents: DeviceConsumptionEnergyPreference[],
+      _devices: DeviceConsumptionEnergyPreference[],
       _statsMetadata?: Record<string, StatisticsMetaData>
     ): UpstreamDeviceComboBoxItem[] => {
       const items = this.possibleParents.map((parent) =>
@@ -151,6 +164,7 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
       this.hass,
       this.value,
       this.possibleParents,
+      this.devices,
       this.statsMetadata
     );
 
@@ -158,11 +172,7 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
     ${
       item.stateObj
         ? html`
-            <state-badge
-              slot="start"
-              .stateObj=${item.stateObj}
-              .hass=${this.hass}
-            ></state-badge>
+            <state-badge slot="start" .stateObj=${item.stateObj}></state-badge>
           `
         : item.icon_path
           ? html`
@@ -186,7 +196,7 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
     item,
     index
   ) => html`
-    <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
+    <ha-combo-box-item .borderTop=${index !== 0}>
       ${this._renderItem(item)}
     </ha-combo-box-item>
   `;
@@ -200,7 +210,6 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
   protected render() {
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         use-top-label
         .label=${this.label}
         .helper=${this.helper}

@@ -1,7 +1,7 @@
-import { consume } from "@lit/context";
 import { mdiDevices, mdiMicrophone } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import type { CloudStatus } from "../../../data/cloud";
 import { entitiesContext } from "../../../data/context";
 import type { ExposeEntitySettings } from "../../../data/expose";

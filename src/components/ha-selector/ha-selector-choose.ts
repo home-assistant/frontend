@@ -11,6 +11,22 @@ import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-button-toggle-group";
 import "./ha-selector";
 
+/**
+ * A copy of the value with each choice's value under its key. A plain value,
+ * like a duration without active_choice, belongs to the active choice.
+ */
+export const computeChooseValues = (
+  value: any,
+  activeChoice: string
+): Record<string, any> => {
+  if (value === null || value === undefined) {
+    return {};
+  }
+  return typeof value === "object" && "active_choice" in value
+    ? { ...value }
+    : { [activeChoice]: value };
+};
+
 @customElement("ha-selector-choose")
 export class HaChooseSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -22,6 +38,8 @@ export class HaChooseSelector extends LitElement {
   @property() public label?: string;
 
   @property() public helper?: string;
+
+  @property({ attribute: false }) public context?: Record<string, any>;
 
   @property({ attribute: false })
   public localizeValue?: (key: string) => string;
@@ -45,8 +63,11 @@ export class HaChooseSelector extends LitElement {
     }
     if (
       changedProperties.has("value") &&
-      changedProperties.get("value")?.active_choice &&
-      changedProperties.get("value")?.active_choice !== this._activeChoice
+      typeof this.value === "object" &&
+      this.value !== null &&
+      "active_choice" in this.value &&
+      this.value.active_choice in this.selector.choose.choices &&
+      this.value.active_choice !== this._activeChoice
     ) {
       this._setActiveChoice();
     }
@@ -70,6 +91,7 @@ export class HaChooseSelector extends LitElement {
             this._localize
           )}
           .active=${this._activeChoice}
+          .disabled=${this.disabled}
           @value-changed=${this._choiceChanged}
         ></ha-button-toggle-group>
       </div>
@@ -79,6 +101,7 @@ export class HaChooseSelector extends LitElement {
         .value=${value}
         .disabled=${this.disabled}
         .required=${this.required}
+        .context=${this.context}
         @value-changed=${this._handleValueChanged}
         .helper=${this.helper}
         .localizeValue=${this.localizeValue}
@@ -102,12 +125,7 @@ export class HaChooseSelector extends LitElement {
 
   private _choiceChanged(ev) {
     ev.stopPropagation();
-    const value =
-      typeof this.value === "object"
-        ? this.value
-        : {
-            [this._activeChoice!]: this.value,
-          };
+    const value = computeChooseValues(this.value, this._activeChoice!);
     const choice = ev.detail?.value || ev.target.value;
     this._activeChoice = choice;
     if (choice && "constant" in this.selector.choose.choices[choice].selector) {
@@ -124,7 +142,7 @@ export class HaChooseSelector extends LitElement {
 
   private _handleValueChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const value = typeof this.value === "object" ? this.value : {};
+    const value = computeChooseValues(this.value, this._activeChoice!);
     fireEvent(this, "value-changed", {
       value: {
         ...value,
@@ -150,14 +168,14 @@ export class HaChooseSelector extends LitElement {
     if (this.value === null || this.value === undefined) {
       return undefined;
     }
-    return typeof this.value === "object"
+    return typeof this.value === "object" && "active_choice" in this.value
       ? this.value[choice || this.value.active_choice]
       : this.value;
   }
 
   private _setActiveChoice() {
     if (this.value) {
-      if (typeof this.value === "object") {
+      if (typeof this.value === "object" && "active_choice" in this.value) {
         if (this.value.active_choice in this.selector.choose.choices) {
           this._activeChoice = this.value.active_choice;
           return;
@@ -196,6 +214,22 @@ export class HaChooseSelector extends LitElement {
         if (typeofValue === "string" && selectorTypes.includes("text")) {
           this._activeChoice = Object.keys(this.selector.choose.choices)[
             selectorTypes.indexOf("text")
+          ];
+          return;
+        }
+        if (
+          typeofValue === "object" &&
+          !Array.isArray(this.value) &&
+          Object.keys(this.value).length > 0 &&
+          Object.keys(this.value).every((key) =>
+            ["days", "hours", "minutes", "seconds", "milliseconds"].includes(
+              key
+            )
+          ) &&
+          selectorTypes.includes("duration")
+        ) {
+          this._activeChoice = Object.keys(this.selector.choose.choices)[
+            selectorTypes.indexOf("duration")
           ];
           return;
         }

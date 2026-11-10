@@ -1,13 +1,11 @@
-import { bench, describe } from "vitest";
+import { describe, test } from "vitest";
 import { HistoryStream } from "../../src/data/history";
 import type { HistoryStreamMessage } from "../../src/data/history";
 import { generateNumericSensorStates } from "../fixtures/history-states";
-import { createMockHass } from "../fixtures/hass";
 
 // HistoryStream purges against the real clock, so these fixtures are
 // anchored relative to Date.now() at module load (never use fake timers in
 // benchmarks — tinybench needs the real clock).
-const hass = createMockHass();
 const HOURS_TO_SHOW = 24;
 const nowMs = Date.now();
 const windowStartMs = nowMs - HOURS_TO_SHOW * 60 * 60 * 1000;
@@ -48,15 +46,18 @@ for (let i = 0; i < 20; i++) {
 }
 
 describe("HistoryStream.processMessage", () => {
-  bench(
-    "initial chunk + 20 incremental updates (5 entities, 25k states)",
-    () => {
-      const stream = new HistoryStream(hass, HOURS_TO_SHOW);
-      stream.processMessage(initialMessage);
-      for (const message of incrementalMessages) {
-        stream.processMessage(message);
+  test("initial chunk + 20 incremental updates (5 entities, 25k states)", async ({
+    bench,
+  }) => {
+    await bench(
+      "initial chunk + 20 incremental updates (5 entities, 25k states)",
+      () => {
+        const stream = new HistoryStream(HOURS_TO_SHOW);
+        stream.processMessage(initialMessage);
+        for (const message of incrementalMessages) {
+          stream.processMessage(message);
+        }
       }
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    ).run({ time: 1000, warmupIterations: 2 });
+  });
 });

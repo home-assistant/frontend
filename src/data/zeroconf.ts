@@ -9,7 +9,7 @@ import type { DataTableRowData } from "../components/data-table/ha-data-table";
 export interface ZeroconfDiscoveryData extends DataTableRowData {
   name: string;
   type: string;
-  port: number;
+  port: number | null;
   properties: Record<string, unknown>;
   ip_addresses: string[];
 }

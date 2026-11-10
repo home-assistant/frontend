@@ -271,7 +271,6 @@ class HaConfigSectionGeneral extends LitElement {
           </div>
           <div>
             <ha-currency-picker
-              .hass=${this.hass}
               .label=${this.hass.localize(
                 "ui.panel.config.core.section.core.core_config.currency"
               )}
@@ -291,7 +290,6 @@ class HaConfigSectionGeneral extends LitElement {
             >
           </div>
           <ha-country-picker
-            .hass=${this.hass}
             .label=${this.hass.localize(
               "ui.panel.config.core.section.core.core_config.country"
             )}
@@ -301,7 +299,6 @@ class HaConfigSectionGeneral extends LitElement {
             @value-changed=${this._handleValueChanged}
           ></ha-country-picker>
           <ha-language-picker
-            .hass=${this.hass}
             native-name
             .label=${this.hass.localize(
               "ui.panel.config.core.section.core.core_config.language"
@@ -454,13 +451,12 @@ class HaConfigSectionGeneral extends LitElement {
     haStyle,
     css`
       .content {
-        padding: var(--ha-space-7) var(--ha-space-5) 0;
-        max-width: 1040px;
+        padding: var(--ha-space-7) var(--ha-content-gutter) 0;
+        max-width: var(--ha-content-width-narrow);
         margin: 0 auto;
       }
       ha-card {
-        max-width: 600px;
-        margin: 0 auto var(--ha-space-6);
+        margin-bottom: var(--ha-space-6);
       }
       .card-content {
         display: flex;

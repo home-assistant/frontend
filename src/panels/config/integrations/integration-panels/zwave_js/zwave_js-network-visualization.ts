@@ -22,6 +22,7 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
+import { isChildDevice } from "../../../../../data/device/device_registry";
 import type {
   RssiError,
   ZWaveJSNodeStatisticsUpdatedMessage,
@@ -80,6 +81,9 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
 
     Object.values(this.hass.devices).forEach((device) => {
       if (!device.config_entries.includes(this.configEntryId)) {
+        return;
+      }
+      if (isChildDevice(device)) {
         return;
       }
       const nodeId = getNodeIdFromDevice(device);
@@ -151,7 +155,6 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
             : nothing
         }
         <ha-network-graph
-          .hass=${this.hass}
           .searchFilter=${this._searchFilter}
           .data=${this._getNetworkData(
             this._nodeStatuses,

@@ -37,7 +37,6 @@ class SupervisorAppConfigDashboard extends LitElement {
           (hasConfiguration || this.addon.network || this.addon.audio)
             ? html`
                 <supervisor-app-system-managed
-                  .hass=${this.hass}
                   .narrow=${this.narrow}
                   .hideButton=${this.controlEnabled}
                 ></supervisor-app-system-managed>
@@ -102,8 +101,8 @@ class SupervisorAppConfigDashboard extends LitElement {
       css`
         .content {
           margin: auto;
-          padding: var(--ha-space-2);
-          max-width: 1024px;
+          padding: var(--ha-space-2) var(--ha-content-gutter);
+          max-width: var(--ha-content-width-narrow);
         }
         supervisor-app-network,
         supervisor-app-audio,

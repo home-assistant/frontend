@@ -2,7 +2,7 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
 
 interface InputSelectEntityAttributes extends HassEntityAttributeBase {
   options: string[];
@@ -28,11 +28,11 @@ export interface InputSelectMutableParams {
 }
 
 export const setInputSelectOption = (
-  hass: HomeAssistant,
+  callService: HomeAssistant["callService"],
   entity: string,
   option: string
 ) =>
-  hass.callService("input_select", "select_option", {
+  callService("input_select", "select_option", {
     option,
     entity_id: entity,
   });
@@ -41,10 +41,10 @@ export const fetchInputSelect = (hass: HomeAssistant) =>
   hass.callWS<InputSelect[]>({ type: "input_select/list" });
 
 export const createInputSelect = (
-  hass: HomeAssistant,
+  callWS: HomeAssistantApi["callWS"],
   values: InputSelectMutableParams
 ) =>
-  hass.callWS<InputSelect>({
+  callWS<InputSelect>({
     type: "input_select/create",
     ...values,
   });

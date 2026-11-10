@@ -5,6 +5,7 @@ import mapStream from "map-stream";
 import transform from "gulp-json-transform";
 import { LokaliseApi } from "@lokalise/node-api";
 import JSZip from "jszip";
+import { SERVICE_DOMAINS } from "./gen-demo-core-data.js";
 
 const inDir = "translations";
 const inDirFrontend = `${inDir}/frontend`;
@@ -51,15 +52,34 @@ function convertBackendTranslations(data, _file) {
   if (!data.component) {
     return output;
   }
+  // Keep the entity domains and the domains with automation triggers or
+  // conditions, so the demo can show states and describe automations. Only
+  // keep the services of the domains whose services the demo mocks.
   Object.keys(data.component).forEach((domain) => {
-    if (!("entity_component" in data.component[domain])) {
+    const {
+      entity_component,
+      services,
+      triggers,
+      conditions,
+      selector,
+      title,
+    } = data.component[domain];
+    if (
+      !entity_component &&
+      !triggers &&
+      !conditions &&
+      !SERVICE_DOMAINS.includes(domain)
+    ) {
       return;
     }
-    output.component[domain] = { entity_component: {} };
-    Object.keys(data.component[domain].entity_component).forEach((key) => {
-      output.component[domain].entity_component[key] =
-        data.component[domain].entity_component[key];
-    });
+    output.component[domain] = {
+      entity_component,
+      services: SERVICE_DOMAINS.includes(domain) ? services : undefined,
+      triggers,
+      conditions,
+      selector,
+      title,
+    };
   });
   return output;
 }
@@ -155,8 +175,9 @@ gulp.task("fetch-lokalise", async function () {
     fs.mkdir(inDirBackend, { recursive: true }),
   ]);
 
-  // The backend project only provides entity_component translations, which are
-  // merged into the demo, gallery, cast and e2e builds. The shipped app fetches
+  // The backend project only provides the translations the mocked backend
+  // needs (see convertBackendTranslations), which are merged into the demo,
+  // gallery, cast and e2e builds. The shipped app fetches
   // them live from core, so builds that only produce the app (release, release
   // landing-page) can skip this second, whole-project export to save time.
   const projects = Object.entries(lokaliseProjects).filter(

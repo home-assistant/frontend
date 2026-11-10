@@ -2,8 +2,8 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableSettingsController } from "../../../../../common/controllers/data-table-settings-controller";
 import { navigate } from "../../../../../common/navigate";
-import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type {
@@ -50,6 +50,8 @@ export class RadioFrequencyDevicesPage extends LitElement {
     },
   ];
 
+  private _tableSettings = new DataTableSettingsController(this, {});
+
   private _columns = memoizeOne(
     (localize: LocalizeFunc): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<RadioFrequencyTransmitterRow> = {
@@ -64,6 +66,7 @@ export class RadioFrequencyDevicesPage extends LitElement {
         },
         type: {
           title: localize("ui.panel.config.radio_frequency.type"),
+          urlName: "type",
           sortable: true,
           filterable: true,
           groupable: true,
@@ -81,7 +84,6 @@ export class RadioFrequencyDevicesPage extends LitElement {
           template: (transmitter) =>
             transmitter.last_used
               ? html`<ha-relative-time
-                  .hass=${this.hass}
                   .datetime=${transmitter.last_used}
                   capitalize
                 ></ha-relative-time>`
@@ -97,6 +99,7 @@ export class RadioFrequencyDevicesPage extends LitElement {
     (
       transmitters: RadioFrequencyTransmitter[],
       states: HomeAssistant["states"],
+      formatEntityName: HomeAssistant["formatEntityName"],
       localize: LocalizeFunc,
       locale: HomeAssistant["locale"]
     ): RadioFrequencyTransmitterRow[] =>
@@ -114,7 +117,7 @@ export class RadioFrequencyDevicesPage extends LitElement {
             : undefined;
         return {
           id: transmitter.entity_id,
-          name: stateObj ? computeStateName(stateObj) : transmitter.entity_id,
+          name: stateObj ? formatEntityName(stateObj) : transmitter.entity_id,
           type: localize("component.radio_frequency.entity_component._.name"),
           frequencies: formatFrequencyRanges(
             transmitter.supported_frequency_ranges,
@@ -138,6 +141,7 @@ export class RadioFrequencyDevicesPage extends LitElement {
         .data=${this._data(
           this.transmitters,
           this.hass.states,
+          this.hass.formatEntityName,
           this.hass.localize,
           this.hass.locale
         )}
@@ -145,7 +149,10 @@ export class RadioFrequencyDevicesPage extends LitElement {
           "ui.panel.config.radio_frequency.no_devices"
         )}
         @row-click=${this._handleRowClicked}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
         clickable
+        sync-url
       ></hass-tabs-subpage-data-table>
     `;
   }

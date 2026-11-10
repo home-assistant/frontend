@@ -1,10 +1,11 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { createRef, ref } from "lit/directives/ref";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import {
   FilterPanelController,
   filterPanelStyles,
@@ -19,7 +20,6 @@ import {
   apiContext,
   devicesContext,
   internationalizationContext,
-  statesContext,
 } from "../data/context";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
@@ -41,10 +41,6 @@ export class HaFilterDevices extends LitElement {
   @consumeLocalize()
   private _localize!: LocalizeFunc;
 
-  @consume({ context: statesContext, subscribe: true })
-  @state()
-  private _states!: ContextType<typeof statesContext>;
-
   @consume({ context: devicesContext, subscribe: true })
   @state()
   private _devicesReg!: ContextType<typeof devicesContext>;
@@ -60,6 +56,9 @@ export class HaFilterDevices extends LitElement {
 
   @property() public type?: keyof RelatedResult;
 
+  @property({ type: Boolean, attribute: "include-disabled-entities" })
+  public includeDisabledEntities = false;
+
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
   @property({ type: Boolean }) public narrow = false;
@@ -73,6 +72,8 @@ export class HaFilterDevices extends LitElement {
 
   private _panel = new FilterPanelController(this, this._content);
 
+  private _relatedRequestId = 0;
+
   public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
 
@@ -81,6 +82,15 @@ export class HaFilterDevices extends LitElement {
       !deepEqual(this.value, properties.get("value"))
     ) {
       this._findRelated();
+    }
+  }
+
+  protected updated(properties: PropertyValues<this>) {
+    super.updated(properties);
+
+    // The rows don't change with the value, so render the selection again
+    if (properties.has("value")) {
+      this._listElement?.requestRowsUpdate();
     }
   }
 
@@ -121,7 +131,6 @@ export class HaFilterDevices extends LitElement {
                   this._devicesReg,
                   this._filter || "",
                   this._localize,
-                  this._states,
                   this._i18n.locale.language
                 )}
                 .rowRenderer=${this._renderItem}
@@ -154,7 +163,6 @@ export class HaFilterDevices extends LitElement {
         this._devicesReg,
         this._filter || "",
         this._localize,
-        this._states,
         this._i18n.locale.language
       )[ev.detail].id,
     ];
@@ -165,7 +173,6 @@ export class HaFilterDevices extends LitElement {
       this._devicesReg,
       this._filter || "",
       this._localize,
-      this._states,
       this._i18n.locale.language
     )[ev.detail].id;
     this.value = (this.value ?? []).filter((deviceId) => deviceId !== id);
@@ -192,7 +199,6 @@ export class HaFilterDevices extends LitElement {
       devices: ContextType<typeof devicesContext>,
       filter: string,
       localize: LocalizeFunc,
-      states: ContextType<typeof statesContext>,
       language: string | undefined
     ): HaFilterDevicesItem[] => {
       const values = Object.values(devices);
@@ -200,7 +206,7 @@ export class HaFilterDevices extends LitElement {
         .map((device) => ({
           id: device.id,
           interactive: true,
-          name: computeDeviceNameDisplay(device, localize, states),
+          name: computeDeviceNameDisplay(device, localize),
         }))
         .filter(
           ({ name }) =>
@@ -211,6 +217,7 @@ export class HaFilterDevices extends LitElement {
   );
 
   private async _findRelated() {
+    const requestId = ++this._relatedRequestId;
     const relatedPromises: Promise<RelatedResult>[] = [];
 
     if (!this.value?.length) {
@@ -227,10 +234,23 @@ export class HaFilterDevices extends LitElement {
     for (const deviceId of this.value) {
       value.push(deviceId);
       if (this.type) {
-        relatedPromises.push(findRelated(this._api, "device", deviceId));
+        relatedPromises.push(
+          findRelated(
+            this._api,
+            "device",
+            deviceId,
+            this.includeDisabledEntities
+          )
+        );
       }
     }
     const results = await Promise.all(relatedPromises);
+
+    // The value changed while this lookup ran
+    if (requestId !== this._relatedRequestId) {
+      return;
+    }
+
     const items = new Set<string>();
     for (const result of results) {
       if (result[this.type!]) {
@@ -258,7 +278,6 @@ export class HaFilterDevices extends LitElement {
       value: undefined,
       items: undefined,
     });
-    this._listElement?.clearSelection();
   }
 
   static styles = [

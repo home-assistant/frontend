@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
 
 export interface InputNumber {
   id: string;
@@ -9,6 +9,7 @@ export interface InputNumber {
   mode: "box" | "slider";
   icon?: string;
   initial?: number;
+  device_class?: string;
   unit_of_measurement?: string;
 }
 
@@ -20,6 +21,7 @@ export interface InputNumberMutableParams {
   max: number;
   step: number;
   mode: "box" | "slider";
+  device_class?: string;
   unit_of_measurement?: string;
 }
 
@@ -27,10 +29,10 @@ export const fetchInputNumber = (hass: HomeAssistant) =>
   hass.callWS<InputNumber[]>({ type: "input_number/list" });
 
 export const createInputNumber = (
-  hass: HomeAssistant,
+  callWS: HomeAssistantApi["callWS"],
   values: InputNumberMutableParams
 ) =>
-  hass.callWS<InputNumber>({
+  callWS<InputNumber>({
     type: "input_number/create",
     ...values,
   });

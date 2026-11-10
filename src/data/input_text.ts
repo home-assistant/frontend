@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
 
 export interface InputText {
   id: string;
@@ -9,6 +9,7 @@ export interface InputText {
   max?: number;
   pattern?: string;
   mode?: "text" | "password";
+  unit_of_measurement?: string;
 }
 
 export interface InputTextMutableParams {
@@ -21,8 +22,12 @@ export interface InputTextMutableParams {
   mode: "text" | "password";
 }
 
-export const setValue = (hass: HomeAssistant, entity: string, value: string) =>
-  hass.callService(entity.split(".", 1)[0], "set_value", {
+export const setValue = (
+  callService: HomeAssistant["callService"],
+  entity: string,
+  value: string
+) =>
+  callService(entity.split(".", 1)[0], "set_value", {
     value,
     entity_id: entity,
   });
@@ -31,10 +36,10 @@ export const fetchInputText = (hass: HomeAssistant) =>
   hass.callWS<InputText[]>({ type: "input_text/list" });
 
 export const createInputText = (
-  hass: HomeAssistant,
+  callWS: HomeAssistantApi["callWS"],
   values: InputTextMutableParams
 ) =>
-  hass.callWS<InputText>({
+  callWS<InputText>({
     type: "input_text/create",
     ...values,
   });

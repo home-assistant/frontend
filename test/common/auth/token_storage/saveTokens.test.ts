@@ -8,11 +8,12 @@ const HASS_URL = `${location.protocol}//${location.host}`;
 
 describe("token_storage.saveTokens", () => {
   beforeEach(() => {
-    window.localStorage = new FallbackStorage();
+    vi.stubGlobal("localStorage", new FallbackStorage());
     vi.stubGlobal("__HASS_URL__", HASS_URL);
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     vi.resetModules();
     vi.resetAllMocks();
   });

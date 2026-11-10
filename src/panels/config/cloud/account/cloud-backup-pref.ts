@@ -11,9 +11,9 @@ import { relativeTime } from "../../../../common/datetime/relative_time";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-spinner";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/item/ha-list-item-base";
+import "../../../../components/list/ha-list-base";
 import type { BackupConfig, BackupInfo } from "../../../../data/backup";
 import {
   CLOUD_AGENT,
@@ -137,8 +137,8 @@ export class CloudBackupPref extends LitElement {
         )}
       >
         <div class="card-content">
-          <ha-md-list>
-            <ha-md-list-item>
+          <ha-list-base>
+            <ha-list-item-base>
               <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
               <span slot="headline">
                 ${
@@ -159,11 +159,11 @@ export class CloudBackupPref extends LitElement {
                       )
                 }
               </span>
-            </ha-md-list-item>
+            </ha-list-item-base>
             ${
               cloudAgent
                 ? html`
-                    <ha-md-list-item>
+                    <ha-list-item-base>
                       <ha-svg-icon
                         slot="start"
                         .path=${mdiHarddisk}
@@ -171,8 +171,8 @@ export class CloudBackupPref extends LitElement {
                       <span slot="headline">
                         ${bytesToString(cloudAgent.size)}
                       </span>
-                    </ha-md-list-item>
-                    <ha-md-list-item>
+                    </ha-list-item-base>
+                    <ha-list-item-base>
                       <ha-svg-icon
                         slot="start"
                         .path=${mdiShieldLock}
@@ -188,11 +188,11 @@ export class CloudBackupPref extends LitElement {
                               )
                         }
                       </span>
-                    </ha-md-list-item>
+                    </ha-list-item-base>
                   `
                 : nothing
             }
-            <ha-md-list-item>
+            <ha-list-item-base>
               <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
               <span slot="headline">
                 ${
@@ -213,8 +213,8 @@ export class CloudBackupPref extends LitElement {
                       )
                 }
               </span>
-            </ha-md-list-item>
-          </ha-md-list>
+            </ha-list-item-base>
+          </ha-list-base>
         </div>
         <div class="card-actions">
           <ha-button appearance="filled" href="/config/backup?historyBack=1">
@@ -308,15 +308,12 @@ export class CloudBackupPref extends LitElement {
         display: flex;
         justify-content: flex-end;
       }
-      ha-md-list {
-        background: none;
-        --md-list-item-leading-space: 0;
-        --md-list-item-trailing-space: 0;
+      ha-list-base {
+        --ha-row-item-padding-inline: 0;
       }
-      ha-md-list-item {
-        --md-list-item-top-space: var(--ha-space-2);
-        --md-list-item-bottom-space: var(--ha-space-2);
-        --md-list-item-one-line-container-height: 40px;
+      ha-list-item-base {
+        --ha-row-item-padding-block: var(--ha-space-2);
+        --ha-row-item-min-height: 40px;
       }
       ha-svg-icon[slot="start"] {
         color: var(--secondary-text-color);

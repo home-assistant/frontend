@@ -1,21 +1,21 @@
-import { consume, type ContextType } from "@lit/context";
-import { mdiChevronRight } from "@mdi/js";
+import type { ContextType } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { consume } from "../../../../../common/decorators/consume";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
 } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-list";
+import "../../../../../components/ha-icon-button-next";
 import "../../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 import "../../../../../components/item/ha-list-item-base";
 import "../../../../../components/item/ha-list-item-option";
 import type { HaListItemOption } from "../../../../../components/item/ha-list-item-option";
+import "../../../../../components/list/ha-list-base";
 import "../../../../../components/list/ha-list-selectable";
 import type { HaListSelectable } from "../../../../../components/list/ha-list-selectable";
 import {
@@ -26,6 +26,7 @@ import type {
   ZHADeviceEndpoint,
   ZHAEntityReference,
 } from "../../../../../data/zha";
+import { computeZHAEntityName } from "../../../../../data/zha";
 
 export interface DeviceEndpointRowData {
   id: string;
@@ -123,14 +124,14 @@ export class ZHADeviceEndpointList extends LitElement {
                         </ha-list-selectable>
                       `
                     : html`
-                        <ha-list>
+                        <ha-list-base>
                           ${repeat(
                             deviceEndpoints,
                             (deviceEndpoint) => deviceEndpoint.id,
                             (deviceEndpoint) =>
                               this._renderReadonlyListRow(deviceEndpoint)
                           )}
-                        </ha-list>
+                        </ha-list-base>
                       `
                 }
               `
@@ -186,15 +187,14 @@ export class ZHADeviceEndpointList extends LitElement {
         ${
           this.showDeviceLink
             ? html`
-                <ha-icon-button
+                <ha-icon-button-next
                   slot="end"
-                  .path=${mdiChevronRight}
                   .href=${`/config/devices/device/${deviceEndpoint.dev_id}`}
                   .label=${this._i18n.localize(
                     "ui.panel.config.zha.groups.open_device"
                   )}
                   @click=${this._stopPropagation}
-                ></ha-icon-button>
+                ></ha-icon-button-next>
               `
             : nothing
         }
@@ -214,14 +214,13 @@ export class ZHADeviceEndpointList extends LitElement {
         ${
           this.showDeviceLink
             ? html`
-                <ha-icon-button
+                <ha-icon-button-next
                   slot="end"
-                  .path=${mdiChevronRight}
                   .href=${`/config/devices/device/${deviceEndpoint.dev_id}`}
                   .label=${this._i18n.localize(
                     "ui.panel.config.zha.groups.open_device"
                   )}
-                ></ha-icon-button>
+                ></ha-icon-button-next>
               `
             : nothing
         }
@@ -254,8 +253,8 @@ export class ZHADeviceEndpointList extends LitElement {
   private _deviceEndpointDetails(
     deviceEndpoint: DeviceEndpointRowData
   ): string {
-    const entityNames = deviceEndpoint.entities.map(
-      (entity) => entity.name || entity.original_name || entity.entity_id
+    const entityNames = deviceEndpoint.entities.map((entity) =>
+      computeZHAEntityName(entity, deviceEndpoint.name)
     );
     const entitySummary = entityNames.length
       ? entityNames.length > 2
@@ -370,7 +369,7 @@ export class ZHADeviceEndpointList extends LitElement {
           padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-2);
         }
 
-        ha-list,
+        ha-list-base,
         ha-list-selectable {
           display: block;
           width: 100%;
@@ -378,11 +377,12 @@ export class ZHADeviceEndpointList extends LitElement {
           padding: 0;
         }
 
+        ha-list-base::part(base),
         ha-list-selectable::part(base) {
           width: 100%;
         }
 
-        ha-card.scrollable ha-list,
+        ha-card.scrollable ha-list-base,
         ha-card.scrollable ha-list-selectable {
           overflow-y: auto;
         }

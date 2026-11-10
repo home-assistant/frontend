@@ -10,9 +10,12 @@
     "group:monorepos",
     "group:recommended"
   ],
-  "enabledManagers": ["npm", "nvm", "custom.regex"],
+  "enabledManagers": ["npm", "nvm", "custom.regex", "github-actions"],
   "minimumReleaseAge": "3 days",
-  "postUpdateOptions": ["yarnDedupeHighest"],
+  "postUpdateOptions": ["pnpmDedupe"],
+  "constraints": {
+    "ghActionsLock": "v0.4.1"
+  },
   "lockFileMaintenance": {
     "description": ["Run after patch releases but before next beta"],
     "enabled": true,
@@ -60,11 +63,25 @@
       "extractVersionTemplate": "^v(?<version>.+)$"
     },
     {
+      "description": "Keep gh-actions-lock in CI and Renovate's lockfile generator on the same version",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/actions-lock\\.yaml$/",
+        "/^renovate\\.json$/"
+      ],
+      "matchStrings": [
+        "GH_ACTIONS_LOCK_VERSION: (?<currentValue>v\\d+\\.\\d+\\.\\d+)",
+        "\"ghActionsLock\": \"(?<currentValue>v\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "github/gh-actions-lock",
+      "datasourceTemplate": "github-releases"
+    },
+    {
       "description": "Keep Playwright CI container image up to date",
       "customType": "regex",
       "managerFilePatterns": ["/^\\.github/workflows/e2e\\.yaml$/"],
       "matchStrings": [
-        "mcr\\.microsoft\\.com/playwright:(?<currentValue>v\\d+\\.\\d+\\.\\d+-noble)"
+        "mcr\\.microsoft\\.com/playwright:(?<currentValue>v\\d+\\.\\d+\\.\\d+-noble)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?"
       ],
       "depNameTemplate": "mcr.microsoft.com/playwright",
       "datasourceTemplate": "docker",
@@ -72,6 +89,11 @@
     }
   ],
   "packageRules": [
+    {
+      "description": "Keep semver ranges for peer dependencies of published packages, pinning them would force consumers onto one exact version",
+      "matchDepTypes": ["peerDependencies"],
+      "rangeStrategy": "widen"
+    },
     {
       "description": "Group all Python version updates from home-assistant/core",
       "matchDepNames": ["python"],
@@ -99,6 +121,11 @@
       "matchPackageNames": ["date-fns", "date-fns-tz"]
     },
     {
+      "description": "Group ECharts with zrender, which we import directly and must match the version echarts depends on",
+      "groupName": "echarts",
+      "matchPackageNames": ["echarts", "zrender"]
+    },
+    {
       "description": "Group formatjs monorepo package",
       "groupName": "formatjs",
       "matchPackageNames": ["@formatjs/**"]
@@ -108,6 +135,57 @@
       "groupName": "Playwright",
       "matchPackageNames": ["@playwright/test", "mcr.microsoft.com/playwright"],
       "minimumGroupSize": 5
+    },
+    {
+      "description": "MCR returns no release timestamps, so the minimum release age would keep the Playwright container pending forever. The npm package still gates the group.",
+      "matchPackageNames": ["mcr.microsoft.com/playwright"],
+      "minimumReleaseAge": null
+    },
+    {
+      "description": "GitHub Actions: weekly, with a 7 day cooldown, like Dependabot did",
+      "matchManagers": ["github-actions"],
+      "addLabels": ["GitHub Actions"],
+      "schedule": ["before 8am on monday"],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "Leave runner labels and action version inputs alone, Dependabot never updated those",
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["github-runner", "uses-with"],
+      "enabled": false
+    },
+    {
+      "description": "The Playwright container is already managed by the custom regex manager. Extracting it twice would break the minimumGroupSize count of the Playwright group.",
+      "matchManagers": ["github-actions"],
+      "matchPackageNames": ["mcr.microsoft.com/playwright"],
+      "enabled": false
+    },
+    {
+      "description": "Group the github/codeql-action subactions into one PR (they share a release)",
+      "matchPackageNames": ["/^github\\/codeql-action(?:\\/|$)/"],
+      "groupName": "github/codeql-action",
+      "groupSlug": "codeql-action"
+    },
+    {
+      "description": "Group the actions/cache subactions into one PR (they share a release)",
+      "matchPackageNames": ["/^actions\\/cache(?:\\/|$)/"],
+      "groupName": "actions/cache",
+      "groupSlug": "actions-cache"
+    },
+    {
+      "description": "First-party packages and actions are reviewed and published by us, so skip the release delay. Keep in sync with minimumReleaseAgeExclude in pnpm-workspace.yaml",
+      "matchPackageNames": [
+        "home-assistant-js-websocket",
+        "@home-assistant/**",
+        "home-assistant/**"
+      ],
+      "minimumReleaseAge": null
+    },
+    {
+      "description": "Follow webawesome fork releases (X.Y.Z-ha.N) across upstream versions, and skip the plain upstream syncs",
+      "matchPackageNames": ["@home-assistant/webawesome"],
+      "allowedVersions": "/-ha\\.\\d+$/",
+      "ignoreUnstable": false
     }
   ]
 }

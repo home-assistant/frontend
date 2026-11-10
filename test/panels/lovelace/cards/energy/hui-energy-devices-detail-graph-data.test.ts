@@ -3,14 +3,17 @@
  * devices-detail graph data transform. Do NOT update these snapshots to make
  * an optimization pass — see test/benchmarks/README.md.
  */
+import type { CallbackDataParams } from "echarts/types/dist/shared";
 import { assert, describe, expect, it } from "vitest";
 import type {
   DeviceConsumptionEnergyPreference,
   EnergyPreferences,
 } from "../../../../../src/data/energy";
-import type { HomeAssistant } from "../../../../../src/types";
 import type { EnergyDevicesDetailGraphCardConfig } from "../../../../../src/panels/lovelace/cards/types";
-import { generateEnergyDevicesDetailGraphData } from "../../../../../src/panels/lovelace/cards/energy/energy-devices-detail-graph-data";
+import {
+  generateEnergyDevicesDetailGraphData,
+  limitTooltipParams,
+} from "../../../../../src/panels/lovelace/cards/energy/energy-devices-detail-graph-data";
 import { createMockComputedStyle } from "../../../../fixtures/computed-style";
 import { digestResult } from "../../../../fixtures/digest";
 import { createMockHass } from "../../../../fixtures/hass";
@@ -23,11 +26,7 @@ const computedStyles = createMockComputedStyle({
   "--history-unknown-color": "#888888",
 });
 
-// createMockHass omits `themes`; getEnergyColor reads hass.themes.darkMode.
-const hass = {
-  ...createMockHass(),
-  themes: { darkMode: false },
-} as unknown as HomeAssistant;
+const { localize, locale, states, formatEntityName } = createMockHass();
 
 // Fixed `now` (end fallback) and `untrackedOrder` (untracked dataset id
 // suffix, `untracked-<order>`) for deterministic output. In the live card
@@ -58,7 +57,11 @@ const config: EnergyDevicesDetailGraphCardConfig = {
 };
 
 const baseParams = {
-  hass,
+  localize,
+  locale,
+  states,
+  formatEntityName,
+  darkMode: false,
   config,
   computedStyles,
   now,
@@ -308,5 +311,146 @@ describe("generateEnergyDevicesDetailGraphData", () => {
       assert.isTrue(legend!.noLabelClick);
       assert.deepEqual(legend!.secondaryIds, [`compare-${negative!.id}`]);
     });
+  });
+
+  it("clamps a parent's untracked part when it was added mid-bucket", () => {
+    // The parent started reporting partway through the second day, so its
+    // change for that day is smaller than its child's full-day change.
+    const dayMs = 24 * 60 * 60 * 1000;
+    const start = new Date("2025-09-01T00:00:00Z");
+    const day1 = start.getTime() + 27 * dayMs;
+    const day2 = day1 + dayMs;
+    const bucket = (ts: number, change: number) => ({
+      start: ts,
+      end: ts + dayMs,
+      change,
+    });
+    const gridPrefs = generateEnergyPreferences({ grid: true });
+    const energyData = {
+      ...generateEnergyData(1, { days: 1, prefs: gridPrefs }),
+      start,
+      end: new Date(start.getTime() + 30 * dayMs),
+      prefs: {
+        ...gridPrefs,
+        energy_sources: gridPrefs.energy_sources.map((s) =>
+          s.type === "grid" ? { ...s, stat_energy_to: null } : s
+        ),
+        device_consumption: [
+          { stat_consumption: "sensor.server_rack" },
+          {
+            stat_consumption: "sensor.server",
+            included_in_stat: "sensor.server_rack",
+          },
+        ],
+      },
+      stats: {
+        "sensor.grid_consumption": [bucket(day1, 30), bucket(day2, 30.62)],
+        "sensor.server": [bucket(day1, 4), bucket(day2, 4.01)],
+        "sensor.server_rack": [bucket(day2, 1.64)],
+      },
+    };
+    const result = generateEnergyDevicesDetailGraphData({
+      ...baseParams,
+      energyData,
+    });
+
+    const points = (d: (typeof result.chartData)[number]) =>
+      (d.data as any[]).map((p) => p.value ?? p);
+    const parent = result.chartData.find(
+      (d) => typeof d.id === "string" && d.id.startsWith("sensor.server_rack")
+    );
+    assert.exists(parent);
+    assert.isTrue(points(parent!).every(([, y]) => y >= 0));
+
+    // The stack still adds up to the grid usage for that day.
+    const day2Total = result.chartData
+      .flatMap(points)
+      .filter(([, , ts]) => ts === day2)
+      .reduce((acc, [, y]) => acc + y, 0);
+    assert.closeTo(day2Total, 30.62, 1e-9);
+    assert.isFalse(
+      result.chartData.some(
+        (d) => typeof d.id === "string" && d.id.includes("untracked-negative")
+      )
+    );
+  });
+});
+
+describe("limitTooltipParams", () => {
+  const param = (seriesId: string, value: number) =>
+    ({
+      seriesId,
+      seriesName: seriesId,
+      color: "#000",
+      value: [1000, value, 900],
+    }) as CallbackDataParams;
+  const otherName = (count: number) => `${count} others`;
+  const devices = (count: number, prefix = "") =>
+    Array.from({ length: count }, (_, i) =>
+      param(`${prefix}sensor.device_${i}-${i}`, i + 1)
+    );
+  const summary = (params: CallbackDataParams[]) =>
+    params.map((p) => [p.seriesName, (p.value as number[])[1]]);
+
+  it("sorts devices largest first without folding up to one extra row", () => {
+    const result = limitTooltipParams(devices(4), 3, otherName);
+    expect(result.map((p) => p.seriesId)).toEqual([
+      "sensor.device_3-3",
+      "sensor.device_2-2",
+      "sensor.device_1-1",
+      "sensor.device_0-0",
+    ]);
+  });
+
+  it("folds the smallest devices and keeps untracked and zero rows", () => {
+    const params = [
+      param("untracked-1", 0.5),
+      param("untracked-negative-1", -0.2),
+      param("sensor.off-99", 0),
+      ...devices(6),
+    ];
+    const result = limitTooltipParams(params, 3, otherName);
+    expect(summary(result)).toEqual([
+      ["sensor.device_5-5", 6],
+      ["sensor.device_4-4", 5],
+      ["sensor.device_3-3", 4],
+      ["3 others", 6],
+      ["untracked-1", 0.5],
+      ["untracked-negative-1", -0.2],
+      ["sensor.off-99", 0],
+    ]);
+    expect(result[3]).toMatchObject({
+      seriesId: "other-devices",
+      color: "transparent",
+      value: [1000, 6, 900],
+    });
+  });
+
+  it("does not fold devices the formatter hides as 0", () => {
+    const params = [
+      ...Array.from({ length: 10 }, (_, i) =>
+        param(`sensor.a_${i}-${i}`, 0.00049)
+      ),
+      param("sensor.b_0-0", 0.0004),
+      param("sensor.b_1-1", 0.0004),
+      ...devices(2),
+    ];
+    const result = limitTooltipParams(params, 2, otherName);
+    expect(result.map((p) => p.seriesId)).not.toContain("other-devices");
+  });
+
+  it("limits the compare period on its own", () => {
+    const result = limitTooltipParams(
+      [...devices(2), ...devices(5, "compare-")],
+      2,
+      otherName
+    );
+    expect(result.map((p) => p.seriesId)).toEqual([
+      "sensor.device_1-1",
+      "sensor.device_0-0",
+      "compare-sensor.device_4-4",
+      "compare-sensor.device_3-3",
+      "compare-other-devices",
+    ]);
   });
 });

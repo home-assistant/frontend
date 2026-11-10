@@ -91,7 +91,11 @@ export class HaSwitch extends Switch {
 
         label {
           position: relative;
-          height: max(var(--thumb-size), var(--wa-form-control-toggle-size));
+          /* min-height so a wrapping or multi-line label grows the host */
+          min-height: max(
+            var(--thumb-size),
+            var(--wa-form-control-toggle-size)
+          );
         }
         label::before {
           content: "";
@@ -215,8 +219,15 @@ export class HaSwitch extends Switch {
         }
 
         label.disabled {
-          opacity: var(--ha-switch-disabled-opacity, 0.3);
+          opacity: 1;
           cursor: not-allowed;
+        }
+        /* Dim only the control, so a slotted label stays legible */
+        label.disabled .switch {
+          opacity: var(--ha-switch-disabled-opacity, 0.3);
+        }
+        label.disabled [part~="label"] {
+          color: var(--disabled-text-color);
         }
 
         /* Focus */

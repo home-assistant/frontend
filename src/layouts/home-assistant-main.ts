@@ -5,6 +5,8 @@ import { customElement, property, state } from "lit/decorators";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { listenMediaQuery } from "../common/dom/media_query";
+import { storage } from "../common/decorators/storage";
+import { DEBUG_SAFE_AREA_TOOL_STORAGE_KEY } from "../common/util/debug-safe-area";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/ha-drawer";
 import { narrowViewportContext } from "../data/context";
@@ -37,6 +39,13 @@ export class HomeAssistantMain extends LitElement {
 
   @state() private _drawerOpen = false;
 
+  @storage({
+    key: DEBUG_SAFE_AREA_TOOL_STORAGE_KEY,
+    state: true,
+    subscribe: true,
+  })
+  private _debugSafeAreaTool = false;
+
   private _narrowViewportProvider = new ContextProvider(this, {
     context: narrowViewportContext,
     initialValue: this.narrow,
@@ -57,7 +66,7 @@ export class HomeAssistantMain extends LitElement {
       this.hass.panels && this.hass.userData && this.hass.systemData;
 
     return html`
-      <ha-snowflakes .hass=${this.hass} .narrow=${this.narrow}></ha-snowflakes>
+      <ha-snowflakes .narrow=${this.narrow}></ha-snowflakes>
       <ha-drawer
         .type=${sidebarNarrow ? "modal" : ""}
         .open=${sidebarNarrow ? this._drawerOpen : false}
@@ -80,6 +89,11 @@ export class HomeAssistantMain extends LitElement {
             : nothing
         }
       </ha-drawer>
+      ${
+        this._debugSafeAreaTool
+          ? html`<ha-debug-safe-area-tool></ha-debug-safe-area-tool>`
+          : nothing
+      }
     `;
   }
 
@@ -135,6 +149,10 @@ export class HomeAssistantMain extends LitElement {
     if (changedProps.has("route") && this._sidebarNarrow) {
       this._drawerOpen = false;
     }
+
+    if (this._debugSafeAreaTool) {
+      import("../components/ha-debug-safe-area-tool");
+    }
   }
 
   protected updated(changedProps: PropertyValues<this>) {
@@ -162,6 +180,13 @@ export class HomeAssistantMain extends LitElement {
       color: var(--primary-text-color);
       /* remove the grey tap highlights in iOS on the fullscreen touch targets */
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      /* Keep the negative z-index panel backgrounds (the resolver's ::before
+         and the Lovelace view background) in this host's stacking context.
+         Isolating the conditionally rendered partial-panel-resolver instead
+         can intermittently leave the Android WebView (Chromium 109-124)
+         accessibility tree with an empty panel subtree while the page paints
+         normally, which breaks UI automation such as the companion app E2E. */
+      isolation: isolate;
       --ha-sidebar-width: calc(56px + var(--safe-area-inset-left, 0px));
       --ha-top-app-bar-width: calc(100% - var(--ha-sidebar-width));
       --safe-area-content-inset-left: 0px;
@@ -179,6 +204,19 @@ export class HomeAssistantMain extends LitElement {
     ha-sidebar {
       /* allow a light tap highlight on the actual interface elements  */
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    }
+    partial-panel-resolver {
+      display: block;
+      height: 100%;
+    }
+    partial-panel-resolver::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: var(--ha-panel-background, var(--primary-background-color));
+      background-attachment: scroll !important;
     }
   `;
 }

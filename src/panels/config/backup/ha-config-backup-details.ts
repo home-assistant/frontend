@@ -160,14 +160,12 @@ class HaConfigBackupDetails extends LitElement {
                     <ha-backup-details-summary
                       .backup=${this._backup}
                       .hass=${this.hass}
-                      .localize=${this.hass.localize}
                       .isHassio=${isHassio}
                     ></ha-backup-details-summary>
                     <ha-backup-details-restore
                       .backup=${this._backup}
                       @backup-restore=${this._restore}
                       .hass=${this.hass}
-                      .localize=${this.hass.localize}
                     ></ha-backup-details-restore>
                     <ha-card>
                       <div class="card-header">
@@ -363,8 +361,8 @@ class HaConfigBackupDetails extends LitElement {
 
   static styles = css`
     .content {
-      padding: 28px 20px 0;
-      max-width: 690px;
+      padding: 28px var(--ha-content-gutter) 0;
+      max-width: var(--ha-content-width-narrow);
       margin: 0 auto;
       gap: var(--ha-space-6);
       display: grid;

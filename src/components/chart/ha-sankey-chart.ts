@@ -7,12 +7,11 @@ import memoizeOne from "memoize-one";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import SankeyChart from "../../resources/echarts/components/sankey/install";
-import type { HomeAssistant } from "../../types";
 import type { HaECOption } from "../../resources/echarts/echarts";
 import { measureTextWidth } from "../../util/text";
+import { fitLabelFontSize } from "./fit-label-font-size";
 import "./ha-chart-base";
 import "./ha-chart-tooltip-marker";
-import { NODE_SIZE } from "../trace/hat-graph-const";
 import "../ha-alert";
 
 export interface Node {
@@ -23,6 +22,8 @@ export interface Node {
   color?: string;
   passThrough?: boolean;
   entityId?: string;
+  // Nodes of one group take a single position when ordering their children
+  group?: string;
 }
 export interface Link {
   source: string;
@@ -43,17 +44,61 @@ const OVERFLOW_MARGIN = 5;
 const FONT_SIZE = 12;
 const NODE_GAP = 6;
 const LABEL_DISTANCE = 5;
+const NODE_SIZE = 30;
+const LABEL_MIN_MARGIN = 5;
+const BIDI_MARKS = /[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g;
+
+// Links without a value take the remaining capacity of their nodes, in order.
+export const fillSankeyLinkValues = (
+  nodes: Node[],
+  rawLinks: Link[]
+): ProcessedLink[] => {
+  const accountedIn = new Map<string, number>();
+  const accountedOut = new Map<string, number>();
+  const links: ProcessedLink[] = [];
+  rawLinks.forEach((link) => {
+    const sourceNode = nodes.find((n) => n.id === link.source);
+    const targetNode = nodes.find((n) => n.id === link.target);
+    if (!sourceNode || !targetNode) {
+      return;
+    }
+    const sourceAccounted = accountedOut.get(sourceNode.id) || 0;
+    const targetAccounted = accountedIn.get(targetNode.id) || 0;
+
+    // if no value is provided, we infer it from the remaining capacity of the source and target nodes
+    const sourceRemaining = sourceNode.value - sourceAccounted;
+    const targetRemaining = targetNode.value - targetAccounted;
+    // ensure the value is not greater than the remaining capacity of the nodes
+    const value = Math.min(
+      link.value ?? sourceRemaining,
+      sourceRemaining,
+      targetRemaining
+    );
+
+    accountedIn.set(targetNode.id, targetAccounted + value);
+    accountedOut.set(sourceNode.id, sourceAccounted + value);
+
+    if (value > 0) {
+      links.push({
+        ...link,
+        value,
+      });
+    }
+  });
+  return links;
+};
 
 @customElement("ha-sankey-chart")
 export class HaSankeyChart extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public data: SankeyChartData = {
     nodes: [],
     links: [],
   };
 
   @property({ type: Boolean }) public vertical = false;
+
+  @property({ type: Boolean, attribute: "show-values" }) public showValues =
+    false;
 
   @property({ attribute: false }) public valueFormatter?: (
     value: number
@@ -83,8 +128,11 @@ export class HaSankeyChart extends LitElement {
     };
 
     return html`<ha-chart-base
-      .hass=${this.hass}
-      .data=${this._createData(this.data, this._sizeController.value?.width)}
+      .data=${this._createData(
+        this.data,
+        this._sizeController.value?.width,
+        this.showValues
+      )}
       .options=${options}
       height="100%"
       .extraComponents=${[SankeyChart]}
@@ -142,7 +190,11 @@ export class HaSankeyChart extends LitElement {
     }
   };
 
-  private _createData = memoizeOne((data: SankeyChartData, width = 0) => {
+  private _computeData = (
+    data: SankeyChartData,
+    width = 0,
+    showValues = false
+  ) => {
     const filteredNodes = data.nodes.filter((n) => n.value > 0);
     const indexes = [...new Set(filteredNodes.map((n) => n.index))].sort();
     const depthMap = new Map<number, number>();
@@ -180,9 +232,13 @@ export class HaSankeyChart extends LitElement {
         );
       }
     });
-    const links = this._processLinks(filteredNodes, data.links);
+    const links = fillSankeyLinkValues(filteredNodes, data.links);
     const sectionWidth = width / indexes.length;
     const labelSpace = sectionWidth - NODE_SIZE - LABEL_DISTANCE;
+    // Two-line values can wrap the unit onto a third line; keep that text inside the chart.
+    const verticalBottom = showValues
+      ? LABEL_DISTANCE + FONT_SIZE * 3 + OVERFLOW_MARGIN
+      : 25;
 
     return {
       id: "sankey",
@@ -209,114 +265,112 @@ export class HaSankeyChart extends LitElement {
       layoutIterations: 0,
       animationDuration: 500,
       label: {
-        formatter: (params) =>
-          data.nodes.find((node) => node.id === (params.data as Node).id)
-            ?.label ?? (params.data as Node).id,
+        formatter: (params) => {
+          const nodeData = params.data as { id: string; value: number };
+          const node = data.nodes.find((n) => n.id === nodeData.id);
+          const label = node?.label ?? nodeData.id;
+          if (!showValues || !nodeData.id) return label;
+          const formatted = this.valueFormatter
+            ? this.valueFormatter(nodeData.value).trim()
+            : String(nodeData.value);
+          // LRM keeps numeric values LTR on the canvas without creating wrap points.
+          return `${label}\n\u200E${formatted}`;
+        },
         position: this.vertical ? "bottom" : "right",
         distance: LABEL_DISTANCE,
-        minMargin: 5,
+        minMargin: LABEL_MIN_MARGIN,
         overflow: "break",
+        lineOverflow: this.vertical ? "truncate" : "none",
       },
       labelLayout: (params) => {
+        // params.rect is already zoomed, only the gap slack needs scaling
         if (this.vertical) {
           // reduce the label font size so the longest word fits on one line
           const longestWord = params.text
-            .split(" ")
-            .reduce(
-              (longest, current) =>
-                longest.length > current.length ? longest : current,
-              ""
-            );
-          const wordWidth = measureTextWidth(longestWord, FONT_SIZE);
-          const availableWidth = (params.rect.width + 6) * this._currentZoom;
+            .replace(BIDI_MARKS, "")
+            .split(/[ \n]+/)
+            .reduce((longest, current) => {
+              if (!current) {
+                return longest;
+              }
+              if (!longest) {
+                return current;
+              }
+              return measureTextWidth(current, FONT_SIZE) >
+                measureTextWidth(longest, FONT_SIZE)
+                ? current
+                : longest;
+            }, "");
+          const wordWidth = measureTextWidth(longestWord, FONT_SIZE) || 1;
+          const availableWidth = params.rect.width + 6 * this._currentZoom;
+          // minMargin is applied as padding on the label box, so words must
+          // fit in the inner wrap width or overflow:break splits them.
+          const wrapWidth = Math.max(availableWidth - LABEL_MIN_MARGIN, 1);
           const fontSize = Math.min(
             FONT_SIZE,
-            (availableWidth / wordWidth) * FONT_SIZE
+            (wrapWidth / wordWidth) * FONT_SIZE
           );
           return {
-            fontSize: fontSize > 1 ? fontSize : 0,
+            fontSize,
+            // Safari draws a 0px canvas font at its default size, so hide
+            // unreadable labels by dropping all of their lines instead.
+            height: fontSize > 1 ? undefined : 0,
             width: availableWidth,
             align: "center",
             dy: -2, // shift up or the lowest row labels may be cut off
           };
         }
 
-        const availableHeight = (params.rect.height + 8) * this._currentZoom; // account for the margin
-        const fontSize = Math.min(
-          (availableHeight / params.labelRect.height) * FONT_SIZE,
-          FONT_SIZE
-        );
+        const availableHeight = params.rect.height + 8 * this._currentZoom; // account for the margin
         return {
-          fontSize,
-          lineHeight: fontSize,
+          // labelRect is measured before the width is applied, so unwrapped
+          fontSize: fitLabelFontSize(params.text, {
+            fontSize: FONT_SIZE,
+            width: labelSpace,
+            height: availableHeight,
+            unwrappedHeight: params.labelRect.height,
+          }),
           width: labelSpace,
           height: params.rect.height,
         };
       },
       top: this.vertical ? 0 : OVERFLOW_MARGIN,
-      bottom: this.vertical ? 25 : OVERFLOW_MARGIN,
+      bottom: this.vertical ? verticalBottom : OVERFLOW_MARGIN,
       left: this.vertical ? OVERFLOW_MARGIN : 0,
       right: this.vertical ? OVERFLOW_MARGIN : labelSpace + LABEL_DISTANCE,
       emphasis: {
         focus: "adjacency",
       },
     } as SankeySeriesOption;
-  });
+  };
 
-  private _processLinks(nodes: Node[], rawLinks: Link[]) {
-    const accountedIn = new Map<string, number>();
-    const accountedOut = new Map<string, number>();
-    const links: ProcessedLink[] = [];
-    rawLinks.forEach((link) => {
-      const sourceNode = nodes.find((n) => n.id === link.source);
-      const targetNode = nodes.find((n) => n.id === link.target);
-      if (!sourceNode || !targetNode) {
-        return;
-      }
-      const sourceAccounted = accountedOut.get(sourceNode.id) || 0;
-      const targetAccounted = accountedIn.get(targetNode.id) || 0;
-
-      // if no value is provided, we infer it from the remaining capacity of the source and target nodes
-      const sourceRemaining = sourceNode.value - sourceAccounted;
-      const targetRemaining = targetNode.value - targetAccounted;
-      // ensure the value is not greater than the remaining capacity of the nodes
-      const value = Math.min(
-        link.value ?? sourceRemaining,
-        sourceRemaining,
-        targetRemaining
-      );
-
-      accountedIn.set(targetNode.id, targetAccounted + value);
-      accountedOut.set(sourceNode.id, sourceAccounted + value);
-
-      if (value > 0) {
-        links.push({
-          ...link,
-          value,
-        });
-      }
-    });
-    return links;
-  }
+  private _createData = memoizeOne(this._computeData);
 
   private _findParentIndex(id: string, links: Link[], sections: Node[][]) {
     const parents = links.filter((l) => l.target === id).map((l) => l.source);
     if (parents.length === 0) {
       return -1;
     }
+    const countedGroups = new Set<string>();
     let sum = 0;
     let count = 0;
     for (const parent of parents) {
       let offset = 0;
       for (let i = sections.length - 1; i >= 0; i--) {
-        const section = sections[i];
-        const index = section.findIndex((n) => n.id === parent);
-        if (index !== -1) {
-          sum += offset + index;
+        const positions = [...new Set(sections[i].map((n) => n.group ?? n.id))];
+        const node = sections[i].find((n) => n.id === parent);
+        if (node) {
+          if (node.group !== undefined) {
+            if (countedGroups.has(node.group)) {
+              break;
+            }
+            countedGroups.add(node.group);
+          }
+          sum += offset + positions.indexOf(node.group ?? node.id);
           count++;
           break;
         }
-        offset += section.length;
+        offset += positions.length;
       }
     }
     return count > 0 ? sum / count : -1;

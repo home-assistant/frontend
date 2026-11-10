@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
 
 export interface InputBoolean {
   id: string;
@@ -17,10 +17,10 @@ export const fetchInputBoolean = (hass: HomeAssistant) =>
   hass.callWS<InputBoolean[]>({ type: "input_boolean/list" });
 
 export const createInputBoolean = (
-  hass: HomeAssistant,
+  callWS: HomeAssistantApi["callWS"],
   values: InputBooleanMutableParams
 ) =>
-  hass.callWS<InputBoolean>({
+  callWS<InputBoolean>({
     type: "input_boolean/create",
     ...values,
   });

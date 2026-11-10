@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
@@ -6,20 +5,18 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { consume } from "../../../../common/decorators/consume";
+import { ensureArray } from "../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
-import {
-  getValueFromDynamic,
-  isDynamic,
-  type Trigger,
-  type TriggerList,
-} from "../../../../data/automation";
+import type { Trigger } from "../../../../data/automation";
 import { triggerDescriptionsContext } from "../../../../data/context";
 import type { TriggerDescriptions } from "../../../../data/trigger";
 import { isTriggerList } from "../../../../data/trigger";
+import { createTrigger } from "../automation-element-config";
 import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
   getAddAutomationElementTargetFromQuery,
@@ -28,6 +25,7 @@ import {
 } from "../show-add-automation-element-dialog";
 import { AutomationSortableListMixin } from "../ha-automation-sortable-list-mixin";
 import { automationRowsStyles } from "../styles";
+import { stripGeneratedTriggerIds } from "./automation-trigger-id";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
 
@@ -93,6 +91,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
                 @duplicate=${this.duplicateItem}
                 @paste=${this.pasteItem}
                 @insert-after=${this.insertAfter}
+                @replace-item=${this.replaceItem}
                 @move-down=${this.moveDown}
                 @move-up=${this.moveUp}
                 @value-changed=${this.itemChanged}
@@ -164,28 +163,12 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
   }
 
   private _addTrigger = (value: string, target?: HassServiceTarget) => {
-    let triggers: Trigger[];
-    if (value === PASTE_VALUE) {
-      triggers = this.triggers.concat(deepClone(this._clipboard!.trigger!));
-    } else if (isDynamic(value)) {
-      triggers = this.triggers.concat({
-        trigger: getValueFromDynamic(value),
-        target,
-      });
-    } else {
-      const trigger = value as Exclude<Trigger, TriggerList>["trigger"];
-      const elClass = customElements.get(
-        `ha-automation-trigger-${trigger}`
-      ) as CustomElementConstructor & {
-        defaultConfig: Trigger;
-      };
-      triggers = this.triggers.concat({
-        ...elClass.defaultConfig,
-        ...(target?.entity_id ? { entity_id: target.entity_id } : {}),
-      });
-    }
+    const trigger =
+      value === PASTE_VALUE
+        ? stripGeneratedTriggerIds(deepClone(this._clipboard!.trigger!))
+        : createTrigger(value, target);
     this.focusLastItemOnChange = true;
-    fireEvent(this, "value-changed", { value: triggers });
+    fireEvent(this, "value-changed", { value: this.triggers.concat(trigger) });
   };
 
   protected updated(changedProps: PropertyValues<this>) {
@@ -233,12 +216,6 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
       row.updateComplete.then(() => {
         if (this.optionsInSidebar) {
           row.openSidebar();
-          if (this.narrow) {
-            row.scrollIntoView({
-              block: "start",
-              behavior: "smooth",
-            });
-          }
         } else {
           row.expand();
           row.focus();
@@ -255,6 +232,47 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
       )!;
     triggerRows.forEach((row) => {
       row.expand();
+    });
+  }
+
+  protected override duplicateItem(ev: CustomEvent) {
+    ev.stopPropagation();
+    const index = (ev.target as any).index;
+    fireEvent(this, "value-changed", {
+      // @ts-expect-error Requires library bump to ES2023
+      value: this.items.toSpliced(
+        index + 1,
+        0,
+        stripGeneratedTriggerIds(deepClone(this.items[index]))
+      ),
+    });
+  }
+
+  protected override pasteItem(ev: CustomEvent) {
+    ev.stopPropagation();
+    if (!ev.detail.item) return;
+
+    const index = (ev.target as any).index;
+    const clonedItem = stripGeneratedTriggerIds(deepClone(ev.detail.item));
+
+    this.setHighlightedItems(ensureArray(clonedItem));
+
+    fireEvent(this, "value-changed", {
+      // @ts-expect-error Requires library bump to ES2023
+      value: this.items.toSpliced(index + 1, 0, clonedItem),
+    });
+  }
+
+  protected override insertAfter(ev: CustomEvent) {
+    ev.stopPropagation();
+    const index = (ev.target as any).index;
+    const inserted = ensureArray(ev.detail.value).map((item) =>
+      stripGeneratedTriggerIds(deepClone(item))
+    );
+    this.setHighlightedItems(inserted);
+    fireEvent(this, "value-changed", {
+      // @ts-expect-error Requires library bump to ES2023
+      value: this.items.toSpliced(index + 1, 0, ...inserted),
     });
   }
 

@@ -62,7 +62,8 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
             "ui.panel.config.tools.tabs.statistics.fix_issue.units_changed.info_text_1",
             {
               name: getStatisticLabel(
-                this.hass,
+                this.hass.states,
+                this.hass.formatEntityName,
                 this._params.issue.data.statistic_id,
                 undefined
               ),

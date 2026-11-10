@@ -3,6 +3,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import type { ConfigPath } from "../../../common/util/config-path";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-alert";
@@ -22,7 +23,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property({ type: Number }) public index?: number;
+  @property({ attribute: false }) public path?: ConfigPath;
 
   @property({ attribute: false }) public isStrategy = false;
 
@@ -96,7 +97,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
   }
 
   private _addCard(): void {
-    fireEvent(this, "ll-create-card");
+    fireEvent(this, "ll-create-card", { path: [...this.path!, "cards"] });
   }
 
   private _createCard(): void {
@@ -117,7 +118,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     const wrapper = document.createElement("hui-card-options");
     wrapper.hass = this.hass;
     wrapper.lovelace = this.lovelace;
-    wrapper.path = [this.index!, 0];
+    wrapper.path = [...this.path!, "cards", 0];
     wrapper.hidePosition = true;
     card.preview = true;
     wrapper.appendChild(card);

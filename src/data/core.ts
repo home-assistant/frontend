@@ -1,4 +1,3 @@
-import type { HassConfig } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
 
 export interface ConfigUpdateValues {
@@ -14,6 +13,7 @@ export interface ConfigUpdateValues {
   currency?: string | null;
   country?: string | null;
   language?: string | null;
+  update_units?: boolean;
 }
 
 export interface CheckConfigResult {
@@ -26,7 +26,7 @@ export const saveCoreConfig = (
   hass: HomeAssistant,
   values: Partial<ConfigUpdateValues>
 ) =>
-  hass.callWS<HassConfig>({
+  hass.callWS<undefined>({
     type: "config/core/update",
     ...values,
   });

@@ -145,7 +145,7 @@ export class HaSelect extends LitElement {
         type="button"
         class=${this._opened ? "opened" : ""}
         compact
-        aria-label=${ifDefined(this.label)}
+        aria-label=${ifDefined(this.ariaLabel || this.label)}
         @clear=${this._clearValue}
         .label=${this.label}
         .value=${valueLabel}
@@ -164,9 +164,7 @@ export class HaSelect extends LitElement {
 
   private _renderHelper() {
     return this.helper
-      ? html`<ha-input-helper-text .disabled=${this.disabled}
-          >${this.helper}</ha-input-helper-text
-        >`
+      ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
       : nothing;
   }
 

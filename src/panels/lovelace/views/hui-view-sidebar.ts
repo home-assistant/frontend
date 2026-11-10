@@ -2,12 +2,16 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import type { ConfigPath } from "../../../common/util/config-path";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { LovelaceViewSidebarConfig } from "../../../data/lovelace/config/view";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import type { HomeAssistant } from "../../../types";
-import { checkConditionsMet } from "../common/validate-condition";
 import "../sections/hui-section";
+import {
+  renderSectionContainer,
+  sectionContainerStyles,
+} from "../sections/section-container";
 import type { Lovelace } from "../types";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 
@@ -23,7 +27,7 @@ export class HuiViewSidebar extends ConditionalListenerMixin<LovelaceViewSidebar
 
   @property({ attribute: false }) public config?: LovelaceViewSidebarConfig;
 
-  @property({ attribute: false }) public viewIndex!: number;
+  @property({ attribute: false }) public path!: ConfigPath;
 
   private _visible = true;
 
@@ -37,14 +41,7 @@ export class HuiViewSidebar extends ConditionalListenerMixin<LovelaceViewSidebar
   protected _updateVisibility(conditionsMet?: boolean) {
     if (!this.hass || !this.config) return;
 
-    const visible =
-      conditionsMet ??
-      (!this.config.visibility ||
-        checkConditionsMet(
-          this.config.visibility,
-          this.hass,
-          this._conditionContext
-        ));
+    const visible = conditionsMet ?? this._conditionsVisible();
 
     if (visible !== this._visible) {
       this._visible = visible;
@@ -71,27 +68,34 @@ export class HuiViewSidebar extends ConditionalListenerMixin<LovelaceViewSidebar
         ${repeat(
           this.config?.sections ?? [],
           (section) => this._getSectionKey(section),
-          (section) => html`
-            <hui-section
-              .config=${section}
-              .hass=${this.hass}
-              .preview=${this.lovelace.editMode}
-              .viewIndex=${this.viewIndex}
-            ></hui-section>
-          `
+          (section, idx) => {
+            const sectionPath = [...this.path, "sidebar", "sections", idx];
+            const sectionElement = html`
+              <hui-section
+                .config=${section}
+                .hass=${this.hass}
+                .preview=${this.lovelace.editMode}
+                .path=${sectionPath}
+              ></hui-section>
+            `;
+            return renderSectionContainer(this.hass, section, sectionElement);
+          }
         )}
       </div>
     `;
   }
 
-  static styles = css`
-    .container {
-      display: flex;
-      flex-direction: column;
-      gap: var(--row-gap, 8px);
-      width: 100%;
-    }
-  `;
+  static styles = [
+    sectionContainerStyles,
+    css`
+      .container {
+        display: flex;
+        flex-direction: column;
+        gap: var(--row-gap, 8px);
+        width: 100%;
+      }
+    `,
+  ];
 }
 
 declare global {

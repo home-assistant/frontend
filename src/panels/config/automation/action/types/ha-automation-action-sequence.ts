@@ -35,7 +35,8 @@ export class HaSequenceAction extends LitElement implements ActionElement {
 
     return html`
       <ha-automation-action
-        .actions=${action.sequence}
+        path-key="sequence"
+        .actions=${action.sequence ?? []}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
         @value-changed=${this._actionsChanged}

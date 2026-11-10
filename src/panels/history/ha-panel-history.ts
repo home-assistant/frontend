@@ -3,6 +3,7 @@ import {
   mdiDotsVertical,
   mdiDownload,
   mdiImagePlus,
+  mdiRestart,
   mdiTuneVariant,
 } from "@mdi/js";
 import { differenceInHours } from "date-fns";
@@ -13,10 +14,14 @@ import type {
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
-import type { HASSDomEvent } from "../../common/dom/fire_event";
+import type {
+  HASSDomEvent,
+  HASSDomTargetEvent,
+} from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
@@ -31,16 +36,24 @@ import {
   removeSearchParam,
 } from "../../common/url/search-params";
 import { shallowEqual } from "../../common/util/shallow-equal";
-import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
+import {
+  DEFAULT_CHART_WIDTH,
+  MIN_TIME_BETWEEN_UPDATES,
+} from "../../components/chart/ha-chart-base";
+import "../../components/chart/ha-chart-zoom-slider";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
 import "../../components/date-picker/ha-date-range-nav";
 import "../../components/ha-button";
+import "../../components/ha-card";
 import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-empty-state";
 import "../../components/ha-filter-pane";
+import type { HaFilterPane } from "../../components/ha-filter-pane";
+import "../../components/ha-filter-entity-types";
+import "../../components/ha-filter-integrations";
 import "../../components/ha-filter-pane-chip";
 import "../../components/ha-icon-button";
 import type { SourceFilters } from "../../components/ha-sources-picker";
@@ -48,20 +61,29 @@ import {
   applySourceFilters,
   countSourceFilters,
   countTargets,
+  setSourceFilter,
+  sourceFiltersStyles,
 } from "../../components/ha-sources-picker";
 import "../../components/ha-spinner";
 import "../../components/ha-top-app-bar-fixed";
 import type { EntitySources } from "../../data/entity/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
 import { entityTypesNeedStates } from "../../data/entity/entity_type";
-import type { HistoryResult } from "../../data/history";
+import type { HistoryResult, HistoryStates } from "../../data/history";
 import {
   computeHistory,
+  computeHistoryUpdateDelay,
   convertStatisticsToHistory,
+  countHistoryStates,
   mergeHistoryResults,
   subscribeHistory,
 } from "../../data/history";
-import { fetchStatistics } from "../../data/recorder";
+import {
+  fetchStatistics,
+  getStatisticMetadata,
+  isExternalStatistic,
+  type StatisticsMetaData,
+} from "../../data/recorder";
 import { resolveEntityIDs } from "../../data/selector";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
@@ -97,7 +119,14 @@ class HaPanelHistory extends LitElement {
 
   @state() private _isLoading = false;
 
+  // The zoom window shared by all charts, in percent of their x-axis
+  @state() private _zoomRange: [number, number] = [0, 100];
+
   @state() private _filters: SourceFilters = {};
+
+  // Only one filter is expanded at a time, so that it can use the height
+  // that is left in the pane.
+  @state() private _expandedFilter?: string;
 
   @storage({
     key: "historySourceFilters",
@@ -107,6 +136,8 @@ class HaPanelHistory extends LitElement {
   private _storedFilters?: SourceFilters;
 
   @state() private _showSources?: boolean;
+
+  @query("ha-filter-pane") private _filterPane?: HaFilterPane;
 
   @state() private _entitySources?: EntitySources;
 
@@ -129,6 +160,10 @@ class HaPanelHistory extends LitElement {
   private _statsFetchId = 0;
 
   private _interval?: number;
+
+  private _historyUpdateTimer?: number;
+
+  private _historyGeneration = 0;
 
   public constructor() {
     super();
@@ -167,6 +202,7 @@ class HaPanelHistory extends LitElement {
       !!this._mungedStateHistory &&
       (this._mungedStateHistory.line.length > 0 ||
         this._mungedStateHistory.timeline.length > 0);
+    const showZoomBar = !loading && hasTargets && hasResults;
     const sourcesLabel = sourceCount
       ? this.hass.localize("ui.panel.history.sources_count", {
           count: entityIds.length,
@@ -223,8 +259,30 @@ class HaPanelHistory extends LitElement {
                         "ui.panel.history.no_targets"
                       )}
                       @value-changed=${this._targetsChanged}
-                      @source-filters-changed=${this._filtersChanged}
                     ></ha-sources-picker>
+                    <div
+                      class=${classMap({
+                        filters: true,
+                        expanded: !!this._expandedFilter,
+                      })}
+                    >
+                      <ha-filter-entity-types
+                        .value=${this._filters.types}
+                        .expanded=${
+                          this._expandedFilter === "ha-filter-entity-types"
+                        }
+                        @data-table-filter-changed=${this._typesChanged}
+                        @expanded-changed=${this._filterExpanded}
+                      ></ha-filter-entity-types>
+                      <ha-filter-integrations
+                        .value=${this._filters.integrations}
+                        .expanded=${
+                          this._expandedFilter === "ha-filter-integrations"
+                        }
+                        @data-table-filter-changed=${this._integrationsChanged}
+                        @expanded-changed=${this._filterExpanded}
+                      ></ha-filter-integrations>
+                    </div>
                   </ha-filter-pane>`
                 : nothing
             }
@@ -251,7 +309,11 @@ class HaPanelHistory extends LitElement {
                   @value-changed=${this._dateRangeChanged}
                 ></ha-date-range-nav>
               </div>
-              <div class="results ha-scrollbar">
+              <div
+                class="results ha-scrollbar ${classMap({
+                  "has-zoom-bar": showZoomBar,
+                })}"
+              >
                 ${
                   loading
                     ? html`<div class="progress-wrapper">
@@ -261,22 +323,67 @@ class HaPanelHistory extends LitElement {
                       ? this._renderEmptyState(hasTargets)
                       : html`
                           <state-history-charts
-                            .hass=${this.hass}
                             .historyData=${this._mungedStateHistory}
                             .startTime=${this._startDate}
                             .endTime=${this._endDate}
                             .narrow=${this.narrow}
                             sync-charts
+                            inside-labels
+                            @history-charts-zoom=${this._chartsZoomChanged}
                           >
                           </state-history-charts>
                         `
                 }
               </div>
+              ${
+                showZoomBar
+                  ? html`<ha-card class="zoom-bar">
+                      <ha-icon-button
+                        .disabled=${!this._isZoomed()}
+                        .label=${this.hass.localize(
+                          "ui.components.history_charts.zoom_reset"
+                        )}
+                        .path=${mdiRestart}
+                        @click=${this._resetZoom}
+                      ></ha-icon-button>
+                      <ha-chart-zoom-slider
+                        .start=${this._zoomRange[0]}
+                        .end=${this._zoomRange[1]}
+                        @zoom-slider-changed=${this._zoomSliderChanged}
+                        @zoom-slider-reset=${this._resetZoom}
+                      ></ha-chart-zoom-slider>
+                    </ha-card>`
+                  : nothing
+              }
             </div>
           </div>
         </div>
       </ha-top-app-bar-fixed>
     `;
+  }
+
+  private _isZoomed() {
+    const [start, end] = this._zoomRange;
+    return start !== 0 || end !== 100;
+  }
+
+  private _chartsZoomChanged(
+    ev: HASSDomEvent<HASSDomEvents["history-charts-zoom"]>
+  ) {
+    this._zoomRange = [ev.detail.start, ev.detail.end];
+  }
+
+  private _zoomSliderChanged(
+    ev: HASSDomEvent<HASSDomEvents["zoom-slider-changed"]>
+  ) {
+    const { start, end } = ev.detail;
+    this._zoomRange = [start, end];
+    this._stateHistoryCharts?.zoom(start, end);
+  }
+
+  private _resetZoom() {
+    this._zoomRange = [0, 100];
+    this._stateHistoryCharts?.zoom(0, 100);
   }
 
   private _renderEmptyState(hasTargets: boolean) {
@@ -294,19 +401,9 @@ class HaPanelHistory extends LitElement {
             : "ui.panel.history.start_search"
         )}
       >
-        ${
-          !this._sourcesShown()
-            ? html`
-                <ha-button appearance="plain" @click=${this._openSources}>
-                  ${this.hass.localize(
-                    hasTargets
-                      ? "ui.panel.history.change_sources"
-                      : "ui.panel.history.add_targets"
-                  )}
-                </ha-button>
-              `
-            : nothing
-        }
+        <ha-button appearance="plain" @click=${this._openSources}>
+          ${this.hass.localize("ui.panel.history.change_sources")}
+        </ha-button>
       </ha-empty-state>
     `;
   }
@@ -365,9 +462,13 @@ class HaPanelHistory extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    fetchEntitySourcesWithCache(this.hass).then((sources) => {
-      this._entitySources = sources;
-    });
+    // The filters label themselves with keys from the config panel.
+    this.hass.loadFragmentTranslation("config");
+    fetchEntitySourcesWithCache(this.hass.callWS, this.hass.states).then(
+      (sources) => {
+        this._entitySources = sources;
+      }
+    );
     const searchParams = extractSearchParamsObject();
     if (searchParams.back === "1" && history.length > 1) {
       this._showBack = true;
@@ -378,6 +479,11 @@ class HaPanelHistory extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
+    // On narrow screens, the sources sheet covers the results, so only fetch
+    // once it is closed instead of on every source change.
+    if (this.narrow && this._sourcesShown()) {
+      return;
+    }
     if (
       changedProps.has("_startDate") ||
       changedProps.has("_endDate") ||
@@ -397,6 +503,10 @@ class HaPanelHistory extends LitElement {
   }
 
   private _openSources() {
+    if (this._sourcesShown()) {
+      this._filterPane?.highlight();
+      return;
+    }
     this._showSources = true;
   }
 
@@ -404,11 +514,35 @@ class HaPanelHistory extends LitElement {
     this._showSources = false;
   }
 
-  private _filtersChanged(
-    ev: HASSDomEvent<HASSDomEvents["source-filters-changed"]>
+  private _typesChanged(
+    ev: HASSDomEvent<HASSDomEvents["data-table-filter-changed"]>
   ) {
-    this._filters = ev.detail.value;
+    this._setFilter("types", ev);
+  }
+
+  private _integrationsChanged(
+    ev: HASSDomEvent<HASSDomEvents["data-table-filter-changed"]>
+  ) {
+    this._setFilter("integrations", ev);
+  }
+
+  private _setFilter(
+    key: keyof SourceFilters,
+    ev: HASSDomEvent<HASSDomEvents["data-table-filter-changed"]>
+  ) {
+    this._filters = setSourceFilter(this._filters, key, ev.detail.value);
     this._storedFilters = this._filters;
+  }
+
+  private _filterExpanded(
+    ev: HASSDomEvent<HASSDomEvents["expanded-changed"]> &
+      HASSDomTargetEvent<HTMLElement>
+  ) {
+    if (ev.detail.expanded) {
+      this._expandedFilter = ev.target.localName;
+    } else if (this._expandedFilter === ev.target.localName) {
+      this._expandedFilter = undefined;
+    }
   }
 
   private _clearSources() {
@@ -424,8 +558,11 @@ class HaPanelHistory extends LitElement {
     this._fetchedEntityIds = statisticIds;
     const fetchId = ++this._statsFetchId;
 
+    // The previous statistics would otherwise show under the new selection
+    // until the request is done, and with only external statistics nothing
+    // else shows the loading.
+    this._statisticsHistory = undefined;
     if (statisticIds.length === 0) {
-      this._statisticsHistory = undefined;
       return;
     }
 
@@ -434,18 +571,32 @@ class HaPanelHistory extends LitElement {
     // graph to start at 7AM, need to fetch the statistic from 6AM.
     statsStartDate.setHours(statsStartDate.getHours() - 1);
 
+    const externalIds = statisticIds.filter(isExternalStatistic);
+
     let statistics;
+    let metadata: StatisticsMetaData[];
     try {
-      statistics = await fetchStatistics(
-        this.hass!,
-        statsStartDate,
-        this._endDate,
-        statisticIds,
-        "hour",
-        undefined,
-        ["mean", "state"]
-      );
+      [statistics, metadata] = await Promise.all([
+        fetchStatistics(
+          this.hass!.callWS,
+          statsStartDate,
+          this._endDate,
+          statisticIds,
+          "hour",
+          undefined,
+          ["mean", "state"]
+        ),
+        // External statistics take name and unit from the metadata. Without
+        // it they are still shown, under their ID.
+        externalIds.length
+          ? getStatisticMetadata(this.hass!.callWS, externalIds).catch(() => [])
+          : Promise.resolve([]),
+      ]);
     } catch (_err) {
+      // External statistics have no state history that would end the loading
+      if (fetchId === this._statsFetchId) {
+        this._statisticsHistory = { line: [], timeline: [] };
+      }
       return;
     }
 
@@ -457,23 +608,29 @@ class HaPanelHistory extends LitElement {
       this.hass!,
       statistics,
       statisticIds,
-      true
+      true,
+      Object.fromEntries(metadata.map((meta) => [meta.statistic_id, meta]))
     );
   }
 
   private async _getHistory() {
-    const entityIds = this._getEntityIds();
-    this._fetchedEntityIds = entityIds;
+    const sourceIds = this._getEntityIds();
+    this._fetchedEntityIds = sourceIds;
+    const entityIds = sourceIds.filter((id) => !isExternalStatistic(id));
 
     if (entityIds.length === 0) {
       // The running subscription would keep pushing the previous entities.
       this._unsubscribeHistory();
       this._stateHistory = undefined;
       this._isLoading = false;
+      // Charts of external statistics stay mounted, so reset their zoom too
+      this._resetZoom();
       return;
     }
 
     this._isLoading = true;
+    // The charts are rebuilt once loaded, so they start unzoomed.
+    this._zoomRange = [0, 100];
 
     if (this._subscribed) {
       this._unsubscribeHistory();
@@ -481,17 +638,60 @@ class HaPanelHistory extends LitElement {
 
     const now = new Date();
 
+    // The first message is applied right away, live updates to a large history are coalesced
+    const generation = this._historyGeneration;
+    let lastApplied = 0;
+    let pending: HistoryStates | undefined;
+    const applyHistory = (history: HistoryStates) => {
+      lastApplied = Date.now();
+      this._isLoading = false;
+      this._stateHistory = computeHistory(
+        this.hass,
+        history,
+        entityIds,
+        this.hass.localize,
+        true
+      );
+    };
+
     this._subscribed = subscribeHistory(
       this.hass,
       (history) => {
-        this._isLoading = false;
-        this._stateHistory = computeHistory(
-          this.hass,
-          history,
-          entityIds,
-          this.hass.localize,
-          true
-        );
+        // A replaced subscription can still deliver until its unsubscribe is acknowledged
+        if (generation !== this._historyGeneration) {
+          return;
+        }
+        const delay = lastApplied
+          ? computeHistoryUpdateDelay(
+              countHistoryStates(history),
+              Math.min(this._endDate.getTime(), Date.now()) -
+                this._startDate.getTime(),
+              (this._stateHistoryCharts?.clientWidth || DEFAULT_CHART_WIDTH) *
+                window.devicePixelRatio,
+              MIN_TIME_BETWEEN_UPDATES
+            )
+          : 0;
+        const wait = lastApplied + delay - Date.now();
+        if (wait <= 0) {
+          window.clearTimeout(this._historyUpdateTimer);
+          this._historyUpdateTimer = undefined;
+          pending = undefined;
+          applyHistory(history);
+          return;
+        }
+        // Every message carries the complete history, so the latest one wins.
+        pending = history;
+        this._stateHistoryCharts?.requestUpdate();
+        if (this._historyUpdateTimer === undefined) {
+          this._historyUpdateTimer = window.setTimeout(() => {
+            this._historyUpdateTimer = undefined;
+            if (pending) {
+              const latest = pending;
+              pending = undefined;
+              applyHistory(latest);
+            }
+          }, wait);
+        }
       },
       this._startDate,
       this._endDate,
@@ -528,6 +728,9 @@ class HaPanelHistory extends LitElement {
       clearInterval(this._interval);
       this._interval = undefined;
     }
+    window.clearTimeout(this._historyUpdateTimer);
+    this._historyUpdateTimer = undefined;
+    this._historyGeneration++;
     if (this._subscribed) {
       this._subscribed.then((unsub) => unsub?.()).catch(() => undefined);
       this._subscribed = undefined;
@@ -724,27 +927,27 @@ class HaPanelHistory extends LitElement {
         entities,
       },
     ];
-    addEntitiesToLovelaceView(
-      this,
-      this.hass,
-      cards,
-      {
+    addEntitiesToLovelaceView(this, this.hass, {
+      cardConfig: cards,
+      sectionConfig: {
         title: this.hass.localize("panel.history"),
         cards,
       },
-      entities
-    );
+      entities,
+    });
   }
 
   static get styles() {
     return [
       haStyle,
+      sourceFiltersStyles,
       haStyleScrollbar,
       css`
         :host {
           /* The target picker chips need more room than a plain filter list. */
           --ha-filter-pane-width: 340px;
         }
+
         ha-top-app-bar-fixed {
           height: 100vh;
           overflow-x: hidden;
@@ -782,10 +985,15 @@ class HaPanelHistory extends LitElement {
         }
 
         .content-column {
+          position: relative;
           display: flex;
           flex-direction: column;
           flex: 1;
           min-width: 0;
+          --zoom-bar-bottom: var(--ha-space-10);
+        }
+        :host([narrow]) .content-column {
+          --zoom-bar-bottom: var(--ha-space-2);
         }
 
         .toolbar {
@@ -796,7 +1004,6 @@ class HaPanelHistory extends LitElement {
           height: 56px;
           flex-shrink: 0;
           padding: 0 16px;
-          background: var(--primary-background-color);
           border-bottom: 1px solid var(--divider-color);
           direction: var(--direction);
           overflow-x: auto;
@@ -815,7 +1022,43 @@ class HaPanelHistory extends LitElement {
           flex: 1;
           min-width: 0;
           overflow: hidden auto;
-          padding: 16px;
+          padding: var(--ha-space-4);
+        }
+
+        /* Room to scroll the last chart out from under the zoom bar */
+        .results.has-zoom-bar {
+          padding-bottom: calc(
+            56px + var(--zoom-bar-bottom) + var(--ha-space-4)
+          );
+        }
+
+        /* Floats like the energy dashboard's date bar */
+        .zoom-bar {
+          position: absolute;
+          inset-inline: var(--ha-space-4);
+          bottom: var(--zoom-bar-bottom);
+          z-index: 1;
+          max-width: 600px;
+          height: 56px;
+          margin-inline: auto;
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+          padding: 0 var(--ha-space-4);
+          --ha-card-box-shadow: var(--ha-box-shadow-l);
+        }
+        :host([narrow]) .zoom-bar {
+          inset-inline: var(--ha-space-2);
+        }
+        .zoom-bar ha-chart-zoom-slider {
+          flex: 1;
+          min-width: 0;
+        }
+
+        /* Narrow screens: keep the vertical rhythm but give the charts the
+           horizontal space back. */
+        :host([narrow]) .results {
+          padding-inline: var(--ha-space-2);
         }
 
         .progress-wrapper {

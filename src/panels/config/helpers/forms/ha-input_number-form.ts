@@ -1,32 +1,31 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-device-class-picker";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/radio/ha-radio-group";
 import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
 import "../../../../components/radio/ha-radio-option";
-import "../../../../components/ha-selector/ha-selector-select";
+import "../../../../components/ha-selector/ha-selector-unit-of-measurement";
 import "../../../../components/input/ha-input";
 import type { InputNumber } from "../../../../data/input_number";
-import { unitOfMeasurementOptions } from "../../../../data/number";
-import type { SelectSelector } from "../../../../data/selector";
+import type { UnitOfMeasurementSelector } from "../../../../data/selector";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { ValueChangedEvent } from "../../../../types";
 
-const UNIT_SELECTOR: SelectSelector = {
-  select: {
-    mode: "dropdown",
-    translation_key: "sensor_unit_of_measurement",
-    custom_value: true,
-    sort: true,
-    options: unitOfMeasurementOptions,
-  },
-} as const;
+const UNIT_SELECTOR: UnitOfMeasurementSelector = {
+  unit_of_measurement: {},
+};
 
 @customElement("ha-input_number-form")
 class HaInputNumberForm extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ type: Boolean }) public new = false;
 
@@ -47,6 +46,9 @@ class HaInputNumberForm extends LitElement {
   @state() private _step?: number;
 
   // eslint-disable-next-line: variable-name
+  @state() private _device_class?: string;
+
+  // eslint-disable-next-line: variable-name
   @state() private _unit_of_measurement?: string;
 
   @query("[dialogInitialFocus]") private _focusElement?: HTMLElement;
@@ -62,6 +64,7 @@ class HaInputNumberForm extends LitElement {
       this._min = item.min ?? 0;
       this._mode = item.mode || "slider";
       this._step = item.step ?? 1;
+      this._device_class = item.device_class;
       this._unit_of_measurement = item.unit_of_measurement;
     } else {
       this._item = {
@@ -82,7 +85,7 @@ class HaInputNumberForm extends LitElement {
   }
 
   protected render() {
-    if (!this.hass) {
+    if (!this._localize) {
       return nothing;
     }
 
@@ -92,12 +95,10 @@ class HaInputNumberForm extends LitElement {
           .value=${this._name}
           .configValue=${"name"}
           @input=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.name"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.generic.name")}
           auto-validate
           required
-          .validationMessage=${this.hass!.localize(
+          .validationMessage=${this._localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           dialogInitialFocus
@@ -107,9 +108,7 @@ class HaInputNumberForm extends LitElement {
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.icon"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.generic.icon")}
           .disabled=${this.disabled}
         ></ha-icon-picker>
         <ha-input
@@ -118,7 +117,7 @@ class HaInputNumberForm extends LitElement {
           type="number"
           step="any"
           @input=${this._valueChanged}
-          .label=${this.hass!.localize(
+          .label=${this._localize(
             "ui.dialogs.helper_settings.input_number.min"
           )}
           .disabled=${this.disabled}
@@ -129,7 +128,7 @@ class HaInputNumberForm extends LitElement {
           type="number"
           step="any"
           @input=${this._valueChanged}
-          .label=${this.hass!.localize(
+          .label=${this._localize(
             "ui.dialogs.helper_settings.input_number.max"
           )}
           .disabled=${this.disabled}
@@ -138,7 +137,7 @@ class HaInputNumberForm extends LitElement {
         <ha-radio-group
           orientation="horizontal"
           class="mode"
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.dialogs.helper_settings.input_number.mode"
           )}
           .value=${this._mode}
@@ -147,12 +146,10 @@ class HaInputNumberForm extends LitElement {
           @change=${this._modeChanged}
         >
           <ha-radio-option value="slider">
-            ${this.hass.localize(
-              "ui.dialogs.helper_settings.input_number.slider"
-            )}
+            ${this._localize("ui.dialogs.helper_settings.input_number.slider")}
           </ha-radio-option>
           <ha-radio-option value="box">
-            ${this.hass.localize("ui.dialogs.helper_settings.input_number.box")}
+            ${this._localize("ui.dialogs.helper_settings.input_number.box")}
           </ha-radio-option>
         </ha-radio-group>
         <ha-input
@@ -161,26 +158,58 @@ class HaInputNumberForm extends LitElement {
           type="number"
           step="any"
           @input=${this._valueChanged}
-          .label=${this.hass!.localize(
+          .label=${this._localize(
             "ui.dialogs.helper_settings.input_number.step"
           )}
           .disabled=${this.disabled}
         ></ha-input>
 
-        <ha-selector-select
-          .hass=${this.hass}
-          .label=${this.hass!.localize(
+        <ha-device-class-picker
+          domain="number"
+          .value=${this._device_class}
+          .disabled=${this.disabled}
+          .configValue=${"device_class"}
+          @value-changed=${this._pickerValueChanged}
+        ></ha-device-class-picker>
+        <ha-selector-unit_of_measurement
+          .label=${this._localize(
             "ui.dialogs.helper_settings.input_number.unit_of_measurement"
           )}
           .selector=${UNIT_SELECTOR}
+          .context=${this._unitContext(this._device_class)}
           .disabled=${this.disabled}
-          .value=${this._unit_of_measurement || ""}
+          .required=${false}
+          .value=${this._unit_of_measurement}
           .configValue=${"unit_of_measurement"}
-          @value-changed=${this._valueChanged}
-        >
-        </ha-selector-select>
+          @value-changed=${this._pickerValueChanged}
+        ></ha-selector-unit_of_measurement>
       </div>
     `;
+  }
+
+  private _unitContext = memoizeOne((deviceClass?: string) => ({
+    filter_device_class: deviceClass,
+  }));
+
+  private _pickerValueChanged(ev: ValueChangedEvent<string | undefined>) {
+    if (!this.new && !this._item) {
+      return;
+    }
+    ev.stopPropagation();
+    const configValue = (ev.target as any).configValue;
+    const value = ev.detail.value;
+    if (this[`_${configValue}`] === value) {
+      return;
+    }
+    const newValue = { ...this._item };
+    if (value) {
+      newValue[configValue] = value;
+    } else {
+      delete newValue[configValue];
+    }
+    fireEvent(this, "value-changed", {
+      value: newValue,
+    });
   }
 
   private _modeChanged(ev: Event) {
@@ -230,6 +259,7 @@ class HaInputNumberForm extends LitElement {
         }
 
         ha-icon-picker,
+        ha-device-class-picker,
         ha-input:not([required]) {
           display: block;
           margin-bottom: var(--ha-space-5);
