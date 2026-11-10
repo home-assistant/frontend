@@ -4,13 +4,15 @@ import type { Connection } from "home-assistant-js-websocket";
 import { subscribeServices as subscribeRegisteredServices } from "home-assistant-js-websocket";
 import type { HassService, HassServices } from "../../src/data/service";
 import {
-  applyServicesEvent,
   getServiceCallEntityIds,
   getServicePlaceholders,
   getServiceResponseVariableMode,
   serviceRejectsResponseVariable,
-  subscribeServices,
 } from "../../src/data/service";
+import {
+  applyServicesEvent,
+  subscribeServices,
+} from "../../src/data/ws-services";
 import { UNKNOWN_PLACEHOLDERS } from "../../src/common/translations/localize";
 
 describe("getServiceCallEntityIds", () => {
