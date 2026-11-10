@@ -162,14 +162,14 @@ const DRAFTS_ACCEPTED_KEYS = [
   "ui.components.rooms.keywords",
 ];
 
-async function exportTranslations(lokaliseApi, projectId, filterData) {
+async function exportTranslations(lokaliseApi, projectId) {
   const exportProcess = await lokaliseApi.files().async_download(projectId, {
     format: "json",
     original_filenames: false,
     replace_breaks: false,
     json_unescaped_slashes: true,
     export_empty_as: "skip",
-    ...(filterData && { filter_data: filterData }),
+    filter_data: ["verified"],
   });
 
   const finishedProcess = await pollProcess(
@@ -206,27 +206,47 @@ async function exportTranslations(lokaliseApi, projectId, filterData) {
   return files;
 }
 
-function acceptDrafts(files, draftFiles) {
-  Object.entries(draftFiles).forEach(([filename, content]) => {
-    const draftData = JSON.parse(content);
-    const data = files[filename] ? JSON.parse(files[filename]) : {};
-    let changed = false;
-    DRAFTS_ACCEPTED_KEYS.forEach((key) => {
-      const keys = key.split(".");
-      const drafts = keys.reduce((obj, part) => obj?.[part], draftData);
-      if (!drafts) {
-        return;
-      }
-      const parent = keys.slice(0, -1).reduce((obj, part) => {
-        obj[part] ??= {};
-        return obj[part];
-      }, data);
-      parent[keys.at(-1)] = drafts;
-      changed = true;
-    });
-    if (changed) {
-      files[filename] = JSON.stringify(data, null, 2);
-    }
+async function fetchDrafts(lokaliseApi, projectId) {
+  const english = JSON.parse(
+    await fs.readFile("src/translations/en.json", { encoding })
+  );
+  const keyNames = DRAFTS_ACCEPTED_KEYS.flatMap((key) => {
+    const keys = key.split(".");
+    const drafts = keys.reduce((obj, part) => obj?.[part], english) ?? {};
+    return Object.keys(drafts).map((name) => [...keys, name].join("::"));
+  });
+  if (!keyNames.length) {
+    return [];
+  }
+  const { items } = await lokaliseApi.keys().list({
+    project_id: projectId,
+    filter_keys: keyNames.join(","),
+    include_translations: 1,
+    limit: keyNames.length,
+  });
+  return items.flatMap((key) =>
+    key.translations
+      .filter(({ translation }) => translation)
+      .map(({ language_iso, translation }) => ({
+        filename: `${language_iso}.json`,
+        path: key.key_name.web.split("::"),
+        translation,
+      }))
+  );
+}
+
+function acceptDrafts(files, drafts) {
+  const data = {};
+  drafts.forEach(({ filename, path: keyPath, translation }) => {
+    data[filename] ??= files[filename] ? JSON.parse(files[filename]) : {};
+    const parent = keyPath.slice(0, -1).reduce((obj, part) => {
+      obj[part] ??= {};
+      return obj[part];
+    }, data[filename]);
+    parent[keyPath.at(-1)] = translation;
+  });
+  Object.entries(data).forEach(([filename, content]) => {
+    files[filename] = JSON.stringify(content, null, 2);
   });
 }
 
@@ -266,14 +286,14 @@ gulp.task("fetch-lokalise", async function () {
   await Promise.all(
     projects.map(async ([project, projectId]) => {
       try {
-        const [files, draftFiles] = await Promise.all([
-          exportTranslations(lokaliseApi, projectId, ["verified"]),
+        const [files, drafts] = await Promise.all([
+          exportTranslations(lokaliseApi, projectId),
           project === "frontend"
-            ? exportTranslations(lokaliseApi, projectId)
+            ? fetchDrafts(lokaliseApi, projectId)
             : undefined,
         ]);
-        if (draftFiles) {
-          acceptDrafts(files, draftFiles);
+        if (drafts) {
+          acceptDrafts(files, drafts);
         }
 
         await mkdirPromise;
