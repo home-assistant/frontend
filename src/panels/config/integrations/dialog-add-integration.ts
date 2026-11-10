@@ -302,7 +302,7 @@ class AddIntegrationDialog extends LitElement {
             iot_standards: supportedIntegration.iot_standards,
             supported_by: integration.supported_by,
             is_built_in: supportedIntegration.is_built_in !== false,
-            overwrites_built_in: integration.overwrites_built_in,
+            overwrites_built_in: supportedIntegration.overwrites_built_in,
             installation_type: supportedIntegration.installation_type,
             cloud: supportedIntegration.iot_class?.startsWith("cloud_"),
             single_config_entry: integration.single_config_entry,
