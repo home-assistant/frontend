@@ -28,10 +28,6 @@ export class HuiGraphBase extends LitElement {
 
   @property({ attribute: false }) public gradient?: HuiGraphGradient;
 
-  // off for values at instants, such as a forecast, which change between
-  // their points instead of holding until the next one
-  @property({ attribute: false }) public holdAcrossGaps = true;
-
   private _uniqueId = `graph-${Math.random().toString(36).substring(2, 9)}`;
 
   @state()
@@ -52,8 +48,7 @@ export class HuiGraphBase extends LitElement {
     const { width, height } = this._size ?? this._measureSize();
     const yAxisOrigin = this.yAxisOrigin ?? height;
     const path =
-      (this._displayCoordinates &&
-        getPath(this._displayCoordinates, this.holdAcrossGaps)) ??
+      (this._displayCoordinates && getPath(this._displayCoordinates)) ??
       (this.loading ? `M 0,${height / 2} L ${width},${height / 2}` : undefined);
     const lastX = this._displayCoordinates?.length
       ? this._displayCoordinates[this._displayCoordinates.length - 1][0]

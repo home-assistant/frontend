@@ -1,6 +1,5 @@
 import { downSampleLineData } from "../../../../components/chart/down-sample";
 import type { EntityHistoryState } from "../../../../data/history";
-import { findGaps, GAP_WIDTH } from "./get-path";
 
 export interface GraphSize {
   width: number;
@@ -69,99 +68,6 @@ const calcPoints = (
   return { points, yAxisOrigin };
 };
 
-// Checks each gap getPath will find against the raw history. Where the sensor
-// really went quiet, puts back the raw point before the widest raw step: the
-// state it settled on. Where readings carry on, the gap only comes from two
-// frames keeping points at their far ends, so puts back the reading nearest
-// its middle to break it up.
-const checkGapsAgainstHistory = (
-  history: [number, number][],
-  points: [number, number][],
-  maxX: number
-): [number, number][] => {
-  // calcPoints closes the graph at maxX with the last value, so getPath sees
-  // that stretch too
-  const closed = [...points, [maxX, points[points.length - 1][1]]];
-  const gaps = findGaps(closed);
-
-  if (!gaps.length) {
-    return points;
-  }
-
-  const minQuiet = GAP_WIDTH * (maxX - closed[0][0]);
-  const result: [number, number][] = [];
-  let from = 0;
-
-  for (const [index] of gaps) {
-    result.push(...points.slice(from, index));
-    from = index;
-
-    const before = closed[index - 1];
-    const afterX = closed[index][0];
-    const middleX = (before[0] + afterX) / 2;
-    let previous = before;
-    let settled = before;
-    let widest = 0;
-    let middle: [number, number] | undefined;
-
-    for (const point of history) {
-      if (point[0] > before[0] && point[0] < afterX) {
-        if (point[0] - previous[0] > widest) {
-          widest = point[0] - previous[0];
-          settled = previous;
-        }
-        if (
-          !middle ||
-          Math.abs(point[0] - middleX) < Math.abs(middle[0] - middleX)
-        ) {
-          middle = point;
-        }
-        previous = point;
-      }
-    }
-    if (afterX - previous[0] > widest) {
-      widest = afterX - previous[0];
-      settled = previous;
-    }
-
-    if (middle && widest <= minQuiet) {
-      result.push(middle);
-    } else if (settled[0] !== before[0] || settled[1] !== before[1]) {
-      result.push(settled as [number, number]);
-    }
-  }
-
-  result.push(...points.slice(from));
-  return result.length === points.length ? points : result;
-};
-
-// Sampling keeps the lowest and highest value of each frame, or their mean, so
-// it can drop the state a sensor settled on before it went quiet, and can make
-// a stretch with readings all through it look like a gap. getPath holds the
-// point before a gap across the whole gap, so only a stretch the sensor was
-// really quiet for may be a gap, and the point before it has to be the last
-// real state.
-const keepLastStateBeforeGaps = (
-  history: [number, number][],
-  sampled: [number, number][],
-  maxX = sampled[sampled.length - 1]?.[0]
-): [number, number][] => {
-  if (sampled === history || !sampled.length) {
-    return sampled;
-  }
-
-  // a point put back changes the distances getPath compares, which can turn
-  // another stretch into a gap, so repeat until nothing changes
-  let points = sampled;
-  let next = checkGapsAgainstHistory(history, points, maxX);
-  while (next !== points) {
-    points = next;
-    next = checkGapsAgainstHistory(history, points, maxX);
-  }
-
-  return points;
-};
-
 export const coordinates = (
   history: [number, number][],
   width: number,
@@ -179,12 +85,140 @@ export const coordinates = (
     limits?.maxX,
     useMean
   );
-  return calcPoints(
-    keepLastStateBeforeGaps(history, sampledData, limits?.maxX),
-    width,
-    height,
-    limits
+  return calcPoints(sampledData, width, height, limits);
+};
+
+// State history only holds changes, so a sensor that does not change sends
+// nothing and two readings can be hours apart. A curve from one to the other
+// shows a trend that never happened: the value held until the later reading.
+// A stretch without readings counts as quiet when it is both this many times
+// the average distance between the other readings and this much of the graph.
+const QUIET_DISTANCE = 3;
+const QUIET_WIDTH = 0.1;
+
+// Finds the readings the sensor went quiet after, counting the stretch from
+// the last reading to the end of the graph.
+const findQuietStretches = (
+  history: [number, number][],
+  maxX: number,
+  startsAtWindow: boolean
+): number[] => {
+  const width = maxX - history[0][0];
+
+  if (history.length < 2 || width <= 0) {
+    return [];
+  }
+
+  const quiet: number[] = [];
+
+  for (let i = 0; i < history.length; i++) {
+    const nextX = i + 1 < history.length ? history[i + 1][0] : maxX;
+    const distance = nextX - history[i][0];
+    // averaged over the other readings only, so that the stretch does not
+    // raise the bar it has to clear, and a tenth of it when there are none
+    const spacing =
+      Math.max((width - distance) / (history.length - 1), 0) || distance / 10;
+
+    if (
+      distance > QUIET_DISTANCE * spacing &&
+      // the first reading is the state at the start of the window, which moves
+      // on with every redraw: holding it only while it covers a tenth of the
+      // graph would snap the hold back into a curve as it scrolls out
+      (distance > QUIET_WIDTH * width || (i === 0 && startsAtWindow))
+    ) {
+      quiet.push(i);
+    }
+  }
+
+  return quiet;
+};
+
+// Holds the state across each quiet stretch. Sampling keeps the lowest and
+// highest value of each frame, or their mean, so the reading before a stretch
+// is put back first, and the one after it too unless the graph shows means,
+// where one raw reading would stand out as a spike. The held line starts one
+// average distance after the earlier reading and ends with points two and one
+// before the later one, because each curve reaches halfway to its neighbours:
+// that keeps the curves into and out of the stretch as tight as anywhere else.
+const holdQuietStretches = (
+  history: [number, number][],
+  sampled: [number, number][],
+  useMean: boolean,
+  limits?: { minX?: number; maxX?: number }
+): [number, number][] => {
+  if (!history.length) {
+    return sampled;
+  }
+
+  const maxX = limits?.maxX ?? history[history.length - 1][0];
+  // the graphs move the state the window starts in to its start on every redraw
+  const quiet = findQuietStretches(
+    history,
+    maxX,
+    limits?.minX !== undefined && history[0][0] <= limits.minX
   );
+
+  if (!quiet.length) {
+    return sampled;
+  }
+
+  const ends = quiet.map((index) => history[index + 1]?.[0] ?? maxX);
+  const quietWidth = quiet.reduce(
+    (sum, index, i) => sum + ends[i] - history[index][0],
+    0
+  );
+  const spacing =
+    (maxX - history[0][0] - quietWidth) / Math.max(sampled.length - 1, 1);
+
+  const result: [number, number][] = [];
+  let next = 0;
+
+  quiet.forEach((index, i) => {
+    const settled = history[index];
+    const resumed = history[index + 1] as [number, number] | undefined;
+    const endX = ends[i];
+    const step = Math.min(
+      spacing || (endX - settled[0]) / 10,
+      (endX - settled[0]) / 4
+    );
+
+    while (next < sampled.length && sampled[next][0] <= settled[0]) {
+      result.push(sampled[next++]);
+    }
+    const last = result[result.length - 1];
+    if (!last || last[0] !== settled[0] || last[1] !== settled[1]) {
+      result.push(settled);
+    }
+    // nothing was recorded here, but the mean of a frame with readings on both
+    // sides can land inside: it stands for the readings after the stretch, so
+    // it moves to where they start
+    const moved: [number, number][] = [];
+    while (next < sampled.length && sampled[next][0] < endX) {
+      moved.push([endX, sampled[next++][1]]);
+    }
+
+    result.push(
+      [settled[0] + step, settled[1]],
+      [endX - 2 * step, settled[1]],
+      [endX - step, settled[1]],
+      ...moved
+    );
+
+    const kept = sampled[next];
+    if (
+      resumed &&
+      !useMean &&
+      (!kept || kept[0] !== resumed[0] || kept[1] !== resumed[1])
+    ) {
+      result.push(resumed);
+    }
+  });
+
+  while (next < sampled.length) {
+    result.push(sampled[next++]);
+  }
+
+  return result;
 };
 
 export const coordinatesMinimalResponseCompressedState = (
@@ -198,12 +232,27 @@ export const coordinatesMinimalResponseCompressedState = (
   if (!history?.length) {
     return { points: [], yAxisOrigin: 0 };
   }
-  const mappedHistory: [number, number][] = history.map((item) => [
-    // With minimal response and compressed state, we don't have last_changed,
-    // so we use last_updated since its always the same as last_changed since
-    // we already filtered out states that are the same.
-    item.lu * 1000,
-    Number(item.s),
-  ]);
-  return coordinates(mappedHistory, width, height, maxDetails, limits, useMean);
+  const mappedHistory: [number, number][] = history
+    .map((item): [number, number] => [
+      // With minimal response and compressed state, we don't have last_changed,
+      // so we use last_updated since its always the same as last_changed since
+      // we already filtered out states that are the same.
+      item.lu * 1000,
+      Number(item.s),
+    ])
+    .filter((item) => !Number.isNaN(item[1]));
+
+  const sampledData: [number, number][] = downSampleLineData(
+    mappedHistory,
+    maxDetails,
+    limits?.minX,
+    limits?.maxX,
+    useMean
+  );
+  return calcPoints(
+    holdQuietStretches(mappedHistory, sampledData, useMean, limits),
+    width,
+    height,
+    limits
+  );
 };

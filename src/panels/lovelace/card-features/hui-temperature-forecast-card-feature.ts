@@ -266,7 +266,6 @@ class HuiTemperatureForecastCardFeature
               .coordinates=${hourly.coordinates}
               .yAxisOrigin=${hourly.yAxisOrigin}
               .gradient=${customColor ? undefined : hourly.gradient}
-              .holdAcrossGaps=${false}
               style=${graphStyle}
             ></hui-graph-base>
           </div>
