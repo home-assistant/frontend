@@ -1,5 +1,5 @@
 import type { ReactiveControllerHost } from "lit";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { CoverEntity } from "../../../src/data/cover";
 import { CoverEntityFeature } from "../../../src/data/cover";
 import { CoverRequestController } from "../../../src/state-control/cover/cover-request-controller";
@@ -33,12 +33,7 @@ describe("CoverRequestController", () => {
   let controller: CoverRequestController;
 
   beforeEach(() => {
-    vi.useFakeTimers();
     controller = new CoverRequestController(createHost());
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
   });
 
   it("keeps the request until the cover reaches the value", () => {
@@ -69,7 +64,6 @@ describe("CoverRequestController", () => {
       positionCover("open", 100)
     );
     controller.stateChanged(positionCover("open", 100));
-    vi.advanceTimersByTime(60000);
     expect(controller.request).toEqual({ mode: "position", value: 40 });
   });
 
@@ -83,18 +77,12 @@ describe("CoverRequestController", () => {
     expect(controller.request).toBeUndefined();
   });
 
-  it("waits for the position to settle when the cover never reports moving", () => {
+  it("drops the request when the position changes without the cover reporting moving", () => {
     controller.commandSent(
       { mode: "position", action: "set", value: 40 },
       positionCover("open", 100)
     );
     controller.stateChanged(positionCover("open", 80));
-    vi.advanceTimersByTime(1500);
-    controller.stateChanged(positionCover("open", 60));
-    vi.advanceTimersByTime(1500);
-    expect(controller.request).toEqual({ mode: "position", value: 40 });
-
-    vi.advanceTimersByTime(500);
     expect(controller.request).toBeUndefined();
   });
 
