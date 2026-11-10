@@ -214,15 +214,19 @@ class HaHsColorPicker extends LitElement {
       this._mc.add(new Tap({ event: "singletap" }));
 
       let savedPosition;
+      let savedValue: [number, number] | undefined;
       this._mc.on("panstart", (e) => {
         if (this.disabled) return;
         this._pressed = e.pointerType;
         savedPosition = this._cursorPosition;
+        savedValue = this._localValue;
       });
       this._mc.on("pancancel", () => {
         if (this.disabled) return;
         this._pressed = undefined;
         this._cursorPosition = savedPosition;
+        this._localValue = savedValue;
+        fireEvent(this, "cursor-moved", { value: undefined });
       });
       this._mc.on("panmove", (e) => {
         if (this.disabled) return;
