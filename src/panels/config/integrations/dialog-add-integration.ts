@@ -367,6 +367,7 @@ class AddIntegrationDialog extends LitElement {
           config_flow: integration.config_flow,
           is_helper: true,
           is_built_in: integration.is_built_in !== false,
+          overwrites_built_in: integration.overwrites_built_in,
           installation_type: integration.installation_type,
           cloud: integration.iot_class?.startsWith("cloud_"),
         }));
