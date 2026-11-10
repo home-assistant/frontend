@@ -8192,6 +8192,7 @@
             "source": "Source",
             "source_yaml": "YAML",
             "source_discovery": "Discovery (no origin)",
+            "source_subentries": "Subentries",
             "device": "Device",
             "child_device": "Child device",
             "no_linked_device": "No linked device",

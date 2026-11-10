@@ -58,6 +58,7 @@ import {
   parseTopicNodeId,
   SOURCE_PREFIX,
   sourceName,
+  SUBENTRIES_NODE_ID,
   TOPIC_PREFIX,
 } from "./mqtt-network-data";
 import "./mqtt-config-view";
@@ -102,6 +103,7 @@ interface SelectedTopic {
 
 const isFocusable = (id: string): boolean =>
   id === BROKER_NODE_ID ||
+  id === SUBENTRIES_NODE_ID ||
   [
     SOURCE_PREFIX,
     DEVICE_PREFIX,
@@ -846,6 +848,26 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
                 >${source.sw_version}`
             : nothing
         }<br />${localize("ui.panel.config.mqtt.device_count", {
+          count: devices,
+        })}<br />${localize("ui.panel.config.mqtt.entity_count", {
+          count: entities,
+        })}`;
+    }
+    if (id === SUBENTRIES_NODE_ID) {
+      const subentrySourceIds = new Set(
+        this._structure.sources
+          .filter((s) => s.type === "subentry")
+          .map((s) => s.id)
+      );
+      const devices = this._structure.devices.filter((d) =>
+        d.sources.some((source) => subentrySourceIds.has(source))
+      ).length;
+      const entities = this._structure.entities.filter(
+        (e) => e.source && subentrySourceIds.has(e.source)
+      ).length;
+      return html`<b
+          >${localize("ui.panel.config.mqtt.visualization.source_subentries")}</b
+        ><br />${localize("ui.panel.config.mqtt.device_count", {
           count: devices,
         })}<br />${localize("ui.panel.config.mqtt.entity_count", {
           count: entities,

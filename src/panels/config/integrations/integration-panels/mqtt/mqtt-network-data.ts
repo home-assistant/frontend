@@ -22,6 +22,8 @@ import { mdiMqttLogo } from "../../../../../resources/mqtt-logo-svg";
 import type { HomeAssistant } from "../../../../../types";
 
 export const BROKER_NODE_ID = "broker";
+// The subentries share one node, the device of each subentry hangs under it
+export const SUBENTRIES_NODE_ID = "subentries";
 export const SOURCE_PREFIX = "source:";
 export const DEVICE_PREFIX = "device:";
 export const NO_DEVICE_PREFIX = "no_device:";
@@ -139,11 +141,7 @@ export function createMQTTNetworkChartData(
   const color = (name: string) => style.getPropertyValue(name).trim();
   const iconColor = color("--text-primary-color");
   const brokerColor = MQTT_LOGO_COLOR;
-  const sourceColors: Record<MQTTExplorerSource["type"], string> = {
-    yaml: color("--orange-color"),
-    subentry: color("--purple-color"),
-    discovery: color("--orange-color"),
-  };
+  const sourceColor = color("--orange-color");
   const deviceColor = color("--indigo-color");
   const childDeviceColor = color("--light-blue-color");
   const entityColor = color("--green-color");
@@ -228,7 +226,7 @@ export function createMQTTNetworkChartData(
     {
       name: localize("source"),
       symbol: "roundRect",
-      itemStyle: { color: sourceColors.discovery },
+      itemStyle: { color: sourceColor },
     },
     {
       name: localize("device"),
@@ -288,37 +286,63 @@ export function createMQTTNetworkChartData(
   };
   const hidden = new Set(hiddenSources);
   const visibleSources = structure.sources.filter((s) => !hidden.has(s.id));
-  visibleSources.forEach((source) => {
-    const sourceColor = sourceColors[source.type];
-    const id = `${SOURCE_PREFIX}${source.id}`;
+  const addSourceNode = (
+    id: string,
+    name: string,
+    type: MQTTExplorerSource["type"],
+    context?: string
+  ) => {
     nodes.push({
       id,
-      name: sourceName(source, hass.localize),
-      context: source.sw_version ?? undefined,
+      name,
+      context,
       category: MQTTNodeCategory.Source,
       value: 3,
       symbolSize: isMobileSize ? SOURCE_SYMBOL_SIZE_MOBILE : SOURCE_SYMBOL_SIZE,
-      symbol: iconSymbol(sourceColor, iconColor, sourceIcons[source.type]),
+      symbol: iconSymbol(sourceColor, iconColor, sourceIcons[type]),
       itemStyle: { color: sourceColor },
       label: ROOT_LABEL,
       polarDistance: 0.25,
     });
-    nodeIcons.set(id, { color: sourceColor, path: sourceIcons[source.type] });
+    nodeIcons.set(id, { color: sourceColor, path: sourceIcons[type] });
     links.push({
       source: BROKER_NODE_ID,
       target: id,
       value: 3,
       symbol: "none",
-      // Links are half transparent by default, which turns the light purple
-      // of a subentry gray
+      // Links are half transparent by default
       lineStyle: { width: SOURCE_LINK_WIDTH, color: sourceColor, opacity: 1 },
     });
+  };
+  visibleSources.forEach((source) => {
+    if (source.type !== "subentry") {
+      addSourceNode(
+        `${SOURCE_PREFIX}${source.id}`,
+        sourceName(source, hass.localize),
+        source.type,
+        source.sw_version ?? undefined
+      );
+    }
   });
+  if (visibleSources.some((source) => source.type === "subentry")) {
+    addSourceNode(
+      SUBENTRIES_NODE_ID,
+      localize("source_subentries"),
+      "subentry"
+    );
+  }
 
   const sourceIds = new Set(visibleSources.map((s) => s.id));
+  const subentrySourceIds = new Set(
+    visibleSources.filter((s) => s.type === "subentry").map((s) => s.id)
+  );
   // Link to the broker if a source is missing, so no link points to nothing
-  const sourceNode = (source: string) =>
-    sourceIds.has(source) ? `${SOURCE_PREFIX}${source}` : BROKER_NODE_ID;
+  const sourceNode = (source: string) => {
+    if (subentrySourceIds.has(source)) {
+      return SUBENTRIES_NODE_ID;
+    }
+    return sourceIds.has(source) ? `${SOURCE_PREFIX}${source}` : BROKER_NODE_ID;
+  };
   // Only items of the sources that are shown
   const devices = structure.devices.filter((d) =>
     d.sources.some((source) => sourceIds.has(source))
