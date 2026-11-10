@@ -12,6 +12,7 @@ import {
   TimeZone,
 } from "../../src/data/translation";
 import {
+  calculateGridNetCost,
   computeConsumptionSingle,
   computeEnergyLabel,
   computeEnergyDeviceLabels,
@@ -32,6 +33,7 @@ import {
 import type {
   EnergyData,
   EnergyPreferences,
+  GridSourceTypeEnergyPreference,
   EnergySource,
   EnergySumData,
 } from "../../src/data/energy";
@@ -2565,5 +2567,77 @@ describe("computeConsumptionData with a home meter", () => {
 
   it("never changes the measured grid value", () => {
     assert.equal(consumption.used_grid[1], baseline.used_grid[1]);
+  });
+});
+
+describe("calculateGridNetCost", () => {
+  const grid = (
+    overrides: Partial<GridSourceTypeEnergyPreference>
+  ): GridSourceTypeEnergyPreference => ({
+    type: "grid",
+    stat_energy_from: "sensor.import",
+    stat_energy_to: "sensor.export",
+    stat_cost: null,
+    entity_energy_price: null,
+    number_energy_price: null,
+    stat_compensation: null,
+    entity_energy_price_export: null,
+    number_energy_price_export: null,
+    cost_adjustment_day: 0,
+    ...overrides,
+  });
+  const series = (...changes: (number | null)[]) =>
+    changes.map((change, i) => ({ start: i, end: i + 1, change }));
+  const info = {
+    cost_sensors: {
+      "sensor.import": "sensor.import_cost",
+      "sensor.export": "sensor.export_compensation",
+    },
+    solar_forecast_domains: [],
+  };
+
+  it("subtracts export compensation from import cost", () => {
+    assert.equal(
+      calculateGridNetCost([grid({})], info, {
+        "sensor.import": series(2, 3),
+        "sensor.import_cost": series(1, 1.5),
+        "sensor.export": series(4),
+        "sensor.export_compensation": series(0.5),
+      }),
+      2
+    );
+  });
+
+  it("prefers configured cost statistics over generated cost sensors", () => {
+    assert.equal(
+      calculateGridNetCost(
+        [grid({ stat_cost: "sensor.my_cost", stat_energy_to: null })],
+        info,
+        {
+          "sensor.import": series(2),
+          "sensor.import_cost": series(9),
+          "sensor.my_cost": series(1.25),
+        }
+      ),
+      1.25
+    );
+  });
+
+  it("returns undefined without cost statistics or period data", () => {
+    assert.isUndefined(
+      calculateGridNetCost(
+        [grid({})],
+        { ...info, cost_sensors: {} },
+        {
+          "sensor.import": series(2),
+        }
+      )
+    );
+    assert.isUndefined(
+      calculateGridNetCost([grid({})], info, {
+        "sensor.import": series(null),
+        "sensor.import_cost": series(null),
+      })
+    );
   });
 });

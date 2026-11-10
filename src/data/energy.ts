@@ -42,6 +42,7 @@ import type {
   StatisticValue,
 } from "./recorder";
 import {
+  calculateStatisticSumGrowth,
   fetchStatistics,
   getDisplayUnit,
   getStatisticLabel,
@@ -339,6 +340,38 @@ export interface EnergySourceByType {
 
 export const energySourcesByType = (prefs: EnergyPreferences) =>
   groupBy(prefs.energy_sources, (item) => item.type) as EnergySourceByType;
+
+/** Import cost minus export compensation, or undefined without cost data. */
+export const calculateGridNetCost = (
+  sources: GridSourceTypeEnergyPreference[],
+  info: EnergyInfo,
+  stats: Statistics
+): number | undefined => {
+  let total: number | undefined;
+  const add = (
+    energyStatId: string | null,
+    costStatId: string | null,
+    sign: 1 | -1
+  ) => {
+    if (!energyStatId) {
+      return;
+    }
+    const statId = costStatId || info.cost_sensors[energyStatId];
+    if (!statId) {
+      return;
+    }
+    const cost = calculateStatisticSumGrowth(stats[statId]);
+    if (calculateStatisticSumGrowth(stats[energyStatId]) === null && !cost) {
+      return;
+    }
+    total = (total ?? 0) + sign * (cost ?? 0);
+  };
+  for (const source of sources) {
+    add(source.stat_energy_from, source.stat_cost, 1);
+    add(source.stat_energy_to, source.stat_compensation, -1);
+  }
+  return total;
+};
 
 const ENERGY_DEVICE_NAME = [
   { type: "parent_device" },
