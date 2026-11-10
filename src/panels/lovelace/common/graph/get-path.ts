@@ -76,12 +76,12 @@ const midPoint = (
   return [zX, zY];
 };
 
-export const getPath = (points: number[][]): string => {
+export const getPath = (points: number[][], holdAcrossGaps = true): string => {
   if (!points.length) {
     return "";
   }
 
-  const coords = holdValueAcrossGaps(points);
+  const coords = holdAcrossGaps ? holdValueAcrossGaps(points) : points;
 
   let next: number[];
   let Z: number[];

@@ -215,6 +215,20 @@ describe("getPath", () => {
     );
   });
 
+  // Values at instants, such as a forecast, change between their points, so
+  // holding them would be as wrong as the bend is for history.
+  it("curves across a gap when holding is off", () => {
+    const coords = [
+      [0, 30],
+      [100, 0],
+      [120, 0],
+    ];
+
+    expect(getPath(coords, false)).toBe(
+      "M 0,30 0,30 Q0,30 50,15 Q100,0 110,0 Q120,0 120,0"
+    );
+  });
+
   it("handles coordinates sharing an x value", () => {
     const coords = [
       [0, 10],
