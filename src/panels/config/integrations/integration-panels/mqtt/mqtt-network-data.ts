@@ -100,6 +100,54 @@ const iconSymbol = (
   return `image://data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 };
 
+const TREE_COLUMN_WIDTH = 240;
+const TREE_ROW_HEIGHT = 36;
+
+// Places the nodes in columns from the broker on the left, each node level
+// with the middle of its children. A node with more than one parent goes under
+// the first one found, and the nodes the legend hides fold onto their parent.
+const placeInTree = (
+  nodesById: Map<string, NetworkNode>,
+  childIds: Map<string, string[]>,
+  isShown: (id: string) => boolean
+) => {
+  const treeChildren = new Map<string, string[]>();
+  const treeParent = new Map<string, string>();
+  const order = [BROKER_NODE_ID];
+  // The loop also visits the children it adds, breadth first
+  for (const parentId of order) {
+    const children = (childIds.get(parentId) ?? []).filter(
+      (id) => id !== BROKER_NODE_ID && !treeParent.has(id)
+    );
+    children.forEach((id) => treeParent.set(id, parentId));
+    treeChildren.set(parentId, children);
+    order.push(...children);
+  }
+  let row = 0;
+  const place = (id: string, depth: number): number => {
+    const children = (treeChildren.get(id) ?? []).filter(isShown);
+    const childRows = children.map((childId) => place(childId, depth + 1));
+    const y = childRows.length
+      ? (childRows[0] + childRows[childRows.length - 1]) / 2
+      : row++ * TREE_ROW_HEIGHT;
+    const node = nodesById.get(id)!;
+    node.x = depth * TREE_COLUMN_WIDTH;
+    node.y = y;
+    return y;
+  };
+  place(BROKER_NODE_ID, 0);
+  // The hidden nodes still need a position, for when the legend shows them
+  order.forEach((id) => {
+    const node = nodesById.get(id)!;
+    if (node.x == null) {
+      const parentId = treeParent.get(id);
+      const parent = parentId ? nodesById.get(parentId) : undefined;
+      node.x = (parent?.x ?? 0) + TREE_COLUMN_WIDTH;
+      node.y = parent?.y ?? 0;
+    }
+  });
+};
+
 export const enum MQTTNodeCategory {
   Broker = 0,
   Source = 1,
@@ -135,7 +183,9 @@ export function createMQTTNetworkChartData(
   focusedNode?: string,
   searchFilter = "",
   // Names of the legend categories that are switched off
-  hiddenCategories: string[] = []
+  hiddenCategories: string[] = [],
+  // Place the nodes in a tree from left to right
+  treeLayout = false
 ): NetworkData {
   const style = getComputedStyle(element);
   const color = (name: string) => style.getPropertyValue(name).trim();
@@ -627,7 +677,6 @@ export function createMQTTNetworkChartData(
       )
       .map((node) => node.id)
   );
-  const isHidden = (node: NetworkNode) => hiddenNodeIds.has(node.id);
   const nodesById = new Map(nodes.map((node) => [node.id, node]));
   const childIds = new Map<string, string[]>();
   links.forEach((link) => {
@@ -636,6 +685,28 @@ export function createMQTTNetworkChartData(
       link.target,
     ]);
   });
+  // A focused device shows its own items, also when the legend switches their
+  // category off. A focused item shows only itself with its topics, so the
+  // other items of its device do not crowd them.
+  const revealedNodeIds = new Set<string>();
+  if (focusedNode && nodesById.has(focusedNode)) {
+    revealedNodeIds.add(focusedNode);
+    if (
+      focusedNode.startsWith(DEVICE_PREFIX) ||
+      focusedNode.startsWith(NO_DEVICE_PREFIX)
+    ) {
+      (childIds.get(focusedNode) ?? []).forEach((childId) => {
+        if (
+          !childId.startsWith(DEVICE_PREFIX) &&
+          !childId.startsWith(NO_DEVICE_PREFIX)
+        ) {
+          revealedNodeIds.add(childId);
+        }
+      });
+    }
+  }
+  const isHidden = (node: NetworkNode) =>
+    hiddenNodeIds.has(node.id) && !revealedNodeIds.has(node.id);
   const shownBelow = new Map<string, boolean>();
   // Whether a node has a node below it that the legend shows
   const hasShownBelow = (id: string): boolean => {
@@ -655,8 +726,10 @@ export function createMQTTNetworkChartData(
     // The legend hides the nodes of its unselected categories with their
     // links. A hidden node with shown nodes below it would leave those
     // unlinked, so it stays without a category, faded like the nodes outside
-    // a focus.
-    if (isHidden(node) && hasShownBelow(node.id)) {
+    // a focus. A revealed node loses its category too, so the legend keeps it.
+    if (hiddenNodeIds.has(node.id) && revealedNodeIds.has(node.id)) {
+      node.category = undefined;
+    } else if (isHidden(node) && hasShownBelow(node.id)) {
       if (!fadedNodes.has(node.id)) {
         fadeNode(node);
       }
@@ -670,6 +743,13 @@ export function createMQTTNetworkChartData(
       link.lineStyle = { ...link.lineStyle, opacity: FADED_OPACITY };
     }
   });
+
+  if (treeLayout) {
+    placeInTree(nodesById, childIds, (id) => {
+      const node = nodesById.get(id);
+      return !!node && !(isHidden(node) && !hasShownBelow(id));
+    });
+  }
 
   return { nodes, links, categories: shownCategories };
 }

@@ -8182,6 +8182,7 @@
           "visualization": {
             "header": "MQTT map",
             "filter_sources": "Filter sources",
+            "toggle_tree_layout": "Toggle tree view",
             "open_details": "Open details",
             "show_config": "Show configuration",
             "not_loaded": "MQTT is not loaded.",

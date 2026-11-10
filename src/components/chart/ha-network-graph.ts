@@ -184,6 +184,19 @@ export class HaNetworkGraph extends LitElement {
    */
   @property({ attribute: false }) public nodeClickRadius = 0;
 
+  /**
+   * Place the nodes at the x and y of the data, without the force layout or
+   * positions saved from it.
+   */
+  @property({ attribute: false }) public fixedLayout = false;
+
+  /**
+   * Names of the legend categories that are switched off. Keep it up to date
+   * with `network-legend-changed`, or leave it out to let the legend keep its
+   * own selection.
+   */
+  @property({ attribute: false }) public hiddenCategories?: string[];
+
   @state() @consumeLocalize() private _localize!: LocalizeFunc;
 
   @state() private _highlightedNodes?: Set<string>;
@@ -324,28 +337,38 @@ export class HaNetworkGraph extends LitElement {
     return html`<ha-chart-base
       .data=${this._getSeries(
         this.data,
-        this._physicsEnabled ?? false,
+        !this.fixedLayout && (this._physicsEnabled ?? false),
         this._reducedMotion,
         this._showLabels,
         isMobile,
         hasHighlightedNodes,
         this.selectedNode,
-        this.hoverFocus
+        this.hoverFocus,
+        this.fixedLayout
       )}
-      .options=${this._createOptions(this.data?.categories)}
+      .options=${this._createOptions(
+        this.data?.categories,
+        this.hiddenCategories
+      )}
       height="100%"
       .extraComponents=${[GraphChart]}
       @chart-setup=${this._handleChartSetup}
     >
       <slot name="search" slot="search"></slot>
       <slot name="button" slot="button"></slot>
-      <ha-icon-button
-        slot="button"
-        class=${this._physicsEnabled ? "active" : "inactive"}
-        .path=${mdiGoogleCirclesGroup}
-        @click=${this._togglePhysics}
-        label=${this._localize("ui.panel.config.common.graph.toggle_physics")}
-      ></ha-icon-button>
+      ${
+        this.fixedLayout
+          ? nothing
+          : html`<ha-icon-button
+              slot="button"
+              class=${this._physicsEnabled ? "active" : "inactive"}
+              .path=${mdiGoogleCirclesGroup}
+              @click=${this._togglePhysics}
+              label=${this._localize(
+                "ui.panel.config.common.graph.toggle_physics"
+              )}
+            ></ha-icon-button>`
+      }
       <ha-icon-button
         slot="button"
         class=${this._showLabels ? "active" : "inactive"}
@@ -357,7 +380,10 @@ export class HaNetworkGraph extends LitElement {
   }
 
   private _createOptions = memoizeOne(
-    (categories?: NetworkData["categories"]): HaECOption => ({
+    (
+      categories?: NetworkData["categories"],
+      hiddenCategories?: string[]
+    ): HaECOption => ({
       tooltip: {
         trigger: "item",
         confine: true,
@@ -369,6 +395,15 @@ export class HaNetworkGraph extends LitElement {
           ...category,
           icon: category.symbol,
         })),
+        // Every category, as a category left out keeps its last selection
+        ...(hiddenCategories && {
+          selected: Object.fromEntries(
+            (categories ?? []).map((category) => [
+              category.name,
+              !hiddenCategories.includes(category.name),
+            ])
+          ),
+        }),
         bottom: 8,
       },
       dataZoom: {
@@ -447,7 +482,8 @@ export class HaNetworkGraph extends LitElement {
       isMobile: boolean,
       hasHighlightedNodes?: boolean,
       selectedNode?: string,
-      hoverFocus = true
+      hoverFocus = true,
+      fixedLayout = false
     ) => ({
       id: "network",
       type: "graph",
@@ -496,7 +532,7 @@ export class HaNetworkGraph extends LitElement {
       data: this._getSeriesData(
         data.nodes,
         data.links,
-        this._nodePositions,
+        fixedLayout ? {} : this._nodePositions,
         selectedNode
       ),
       links: data.links.map((link) => ({

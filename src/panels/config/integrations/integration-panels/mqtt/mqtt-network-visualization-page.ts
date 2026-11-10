@@ -1,4 +1,9 @@
-import { mdiCodeBraces, mdiListStatus, mdiOpenInNew } from "@mdi/js";
+import {
+  mdiCodeBraces,
+  mdiFileTree,
+  mdiListStatus,
+  mdiOpenInNew,
+} from "@mdi/js";
 import type {
   CallbackDataParams,
   TopLevelFormatterParams,
@@ -74,6 +79,13 @@ const MAX_LIVE_MESSAGES = 100;
 const PUBLISH_TOPIC_QOS = 2;
 
 const SUBENTRY_SOURCE_PREFIX = "subentry:";
+
+// A focused device shows its items, so these start switched off in the legend
+const DEFAULT_HIDDEN_CATEGORIES = [
+  "entity",
+  "artifact_device_trigger",
+  "artifact_tag",
+];
 
 // Distance in pixels between the center of the focused node and its actions
 const NODE_ACTIONS_OFFSET = 18;
@@ -152,11 +164,20 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
   })
   private _hiddenSources: string[] = [];
 
+  @state()
+  @storage({
+    key: "mqtt-visualization-tree-layout",
+    state: true,
+    subscribe: false,
+  })
+  private _treeLayout = false;
+
   // The device or entity node that is centered, while the rest is faded
   @state() private _focusedNode?: string;
 
-  // The legend categories that are switched off, whose nodes are faded
-  @state() private _hiddenCategories: string[] = [];
+  // The legend categories that are switched off, whose nodes are faded.
+  // Until the legend is used, the entities, triggers and tags are off.
+  @state() private _hiddenCategories?: string[];
 
   @state() private _selectedTopic?: SelectedTopic;
 
@@ -499,12 +520,23 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
         .selectedNode=${this._focusedNode}
         .hoverFocus=${false}
         .nodeClickRadius=${NODE_CLICK_RADIUS}
+        .fixedLayout=${this._treeLayout}
+        .hiddenCategories=${this._legendHiddenCategories()}
         .tooltipFormatter=${this._tooltipFormatter}
         @chart-click=${this._handleChartClick}
         @chart-zoom-reset=${this._clearFocus}
         @network-legend-changed=${this._handleLegendChange}
       >
         ${!this.narrow ? this._renderInputSearch("search") : nothing}
+        <ha-icon-button
+          slot="button"
+          class=${this._treeLayout ? "active" : ""}
+          .path=${mdiFileTree}
+          .label=${this.hass.localize(
+            "ui.panel.config.mqtt.visualization.toggle_tree_layout"
+          )}
+          @click=${this._toggleTreeLayout}
+        ></ha-icon-button>
         <ha-dropdown slot="button" placement="bottom-end">
           <ha-icon-button
             slot="trigger"
@@ -582,7 +614,8 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
       this._hiddenSources,
       this._focusedNode,
       this._searchFilter,
-      this._hiddenCategories,
+      this._legendHiddenCategories(),
+      this._treeLayout,
       this.hass.themes,
       this.hass.localize
     );
@@ -596,6 +629,7 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
       focusedNode: string | undefined,
       searchFilter: string,
       hiddenCategories: string[],
+      treeLayout: boolean,
       // The colors and names follow the theme and the language
       _themes: HomeAssistant["themes"],
       _localize: HomeAssistant["localize"]
@@ -609,9 +643,28 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
         hiddenSources,
         focusedNode,
         searchFilter,
-        hiddenCategories
+        hiddenCategories,
+        treeLayout
       )
   );
+
+  private _legendHiddenCategories(): string[] {
+    return (
+      this._hiddenCategories ??
+      this._defaultHiddenCategories(this.hass.localize)
+    );
+  }
+
+  private _defaultHiddenCategories = memoizeOne(
+    (localize: HomeAssistant["localize"]) =>
+      DEFAULT_HIDDEN_CATEGORIES.map((key) =>
+        localize(`ui.panel.config.mqtt.visualization.${key}` as LocalizeKeys)
+      )
+  );
+
+  private _toggleTreeLayout(): void {
+    this._treeLayout = !this._treeLayout;
+  }
 
   private _handleLegendChange(
     ev: HASSDomEvent<HASSDomEvents["network-legend-changed"]>
