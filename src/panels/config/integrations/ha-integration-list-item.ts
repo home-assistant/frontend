@@ -3,6 +3,7 @@ import {
   mdiFileCodeOutline,
   mdiPackageVariant,
   mdiWeb,
+  mdiStore,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, nothing } from "lit";
@@ -31,6 +32,9 @@ export class HaIntegrationListItem extends HaListItemButton {
       !integration.config_flow &&
       !integration.integrations &&
       !integration.iot_standards;
+    const marketplace =
+      integration.installation_type === "marketplace" &&
+      !integration.overwrites_built_in;
     return html`
       <div part="start" class="start">
         ${
@@ -73,15 +77,21 @@ export class HaIntegrationListItem extends HaListItemButton {
             ? html`<ha-svg-icon
                   id="icon-custom"
                   class=${
-                    integration.overwrites_built_in ? "overwrites" : "custom"
+                    integration.overwrites_built_in
+                      ? "overwrites"
+                      : marketplace
+                        ? "marketplace"
+                        : "custom"
                   }
-                  .path=${mdiPackageVariant}
+                  .path=${marketplace ? mdiStore : mdiPackageVariant}
                 ></ha-svg-icon>
                 <ha-tooltip for="icon-custom" placement="left">
                   ${this._localize(
                     integration.overwrites_built_in
                       ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
-                      : "ui.panel.config.integrations.config_entry.custom_integration"
+                      : marketplace
+                        ? "ui.panel.config.integrations.config_entry.marketplace_integration"
+                        : "ui.panel.config.integrations.config_entry.custom_integration"
                   )}
                 </ha-tooltip>`
             : nothing
@@ -126,6 +136,9 @@ export class HaIntegrationListItem extends HaListItemButton {
       }
       .end .custom {
         color: var(--warning-color);
+      }
+      .end .marketplace {
+        color: var(--marketplace-color, #7c4dff);
       }
       .end .overwrites {
         color: var(--error-color);

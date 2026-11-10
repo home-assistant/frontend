@@ -37,6 +37,7 @@ import {
   fetchConfigFlowInProgress,
 } from "../../../data/config_flow";
 import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
+import type { InstallationType } from "../../../data/integration";
 import {
   domainToName,
   fetchIntegrationManifest,
@@ -80,6 +81,7 @@ export interface IntegrationListItem extends HaListVirtualizedItem {
   cloud?: boolean;
   is_built_in?: boolean;
   overwrites_built_in?: boolean;
+  installation_type?: InstallationType;
   is_add?: boolean;
   single_config_entry?: boolean;
   is_discovered?: boolean;
@@ -301,6 +303,7 @@ class AddIntegrationDialog extends LitElement {
             supported_by: integration.supported_by,
             is_built_in: supportedIntegration.is_built_in !== false,
             overwrites_built_in: integration.overwrites_built_in,
+            installation_type: supportedIntegration.installation_type,
             cloud: supportedIntegration.iot_class?.startsWith("cloud_"),
             single_config_entry: integration.single_config_entry,
           });
@@ -336,6 +339,7 @@ class AddIntegrationDialog extends LitElement {
             config_flow: integration.config_flow,
             is_built_in: integration.is_built_in !== false,
             overwrites_built_in: integration.overwrites_built_in,
+            installation_type: integration.installation_type,
             cloud: integration.iot_class?.startsWith("cloud_"),
           });
         }

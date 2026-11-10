@@ -11,6 +11,7 @@ import {
   mdiPlus,
   mdiTextBoxOutline,
   mdiWeb,
+  mdiStore,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -318,6 +319,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     this._domainEntities = entitiesByDomain;
   }
 
+  private get _isMarketplace(): boolean {
+    return (
+      this._manifest?.installation_type === "marketplace" &&
+      !this._manifest.overwrites_built_in
+    );
+  }
+
   protected updated(changed: PropertyValues) {
     super.updated(changed);
     if (
@@ -616,10 +624,16 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           class=${`integration-info ${
                             this._manifest.overwrites_built_in
                               ? "error"
-                              : "warn"
+                              : this._isMarketplace
+                                ? "marketplace"
+                                : "warn"
                           }`}
                         >
-                          <ha-svg-icon path=${mdiPackageVariant}></ha-svg-icon>
+                          <ha-svg-icon
+                            .path=${
+                              this._isMarketplace ? mdiStore : mdiPackageVariant
+                            }
+                          ></ha-svg-icon>
                           <a
                             href=${documentationUrl(
                               this.hass,
@@ -631,7 +645,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                             ${this.hass.localize(
                               this._manifest.overwrites_built_in
                                 ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
-                                : "ui.panel.config.integrations.config_entry.custom_integration"
+                                : this._isMarketplace
+                                  ? "ui.panel.config.integrations.config_entry.marketplace_integration"
+                                  : "ui.panel.config.integrations.config_entry.custom_integration"
                             )}
                           </a>
                         </div>`
@@ -1826,6 +1842,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .integration-info ha-svg-icon {
           min-width: 24px;
           color: var(--mdc-theme-text-icon-on-background);
+        }
+        .integration-info.marketplace ha-svg-icon {
+          color: var(--marketplace-color, #7c4dff);
         }
         .integration-info.warn ha-svg-icon {
           color: var(--warning-color);
