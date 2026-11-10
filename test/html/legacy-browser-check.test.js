@@ -58,6 +58,10 @@ const fakeElement = (tag) => {
       el.children.push(child);
       return child;
     },
+    removeChild: (child) => {
+      el.children = el.children.filter((c) => c !== child);
+      return child;
+    },
     addEventListener: (type, listener) => {
       el.listeners[type] = listener;
     },
@@ -125,7 +129,8 @@ const run = ({
       (button) => [button.textContent, button.listeners.click]
     )
   );
-  return { started, box, store, buttons };
+  const shown = box.children.map((child) => child.tag);
+  return { started, box, store, buttons, shown };
 };
 
 describe("index.html legacy browser check", () => {
@@ -146,12 +151,14 @@ describe("index.html legacy browser check", () => {
     buttons["Continue anyway"]();
     expect(started).toEqual([ENTRY]);
     expect(store[ACCEPTED_KEY]).toBe(String(NOW));
-    expect(box.children).toEqual([]);
+    // The message stays up while the app loads.
+    expect(box.children.map((child) => child.tag)).toEqual(["p"]);
   });
 
   it("does not ask again within a month", () => {
-    const stored = String(NOW - 29 * DAY);
-    expect(run({ stored }).started).toEqual([ENTRY]);
+    const { started, shown } = run({ stored: String(NOW - 29 * DAY) });
+    expect(started).toEqual([ENTRY]);
+    expect(shown).toEqual(["p"]);
   });
 
   it("reminds after a month, and can be turned off", () => {
