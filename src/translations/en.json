@@ -7549,6 +7549,11 @@
               "require_client_certificate": "Require client certificates",
               "require_client_certificate_secondary": "Require the client certificate configured in network settings for remote connections.",
               "require_client_certificate_not_configured": "To require client certificates for remote connections, configure a client certificate in network settings.",
+              "require_client_certificate_confirm": {
+                "title": "Restart remote access",
+                "text": "Remote access will restart to apply this change. Open remote sessions will be disconnected briefly.",
+                "confirm": "Restart remote access"
+              },
               "certificate_info": "Certificate information",
               "certificate_expire": "Certificate renewal at {date}",
               "more_info": "More details",

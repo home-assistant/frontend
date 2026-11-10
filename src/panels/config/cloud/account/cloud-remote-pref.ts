@@ -23,6 +23,7 @@ import {
 } from "../../../../data/cloud";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import { obfuscateUrl } from "../../../../util/url";
@@ -319,6 +320,22 @@ export class CloudRemotePref extends LitElement {
 
   private async _toggleRequireClientCertificateChanged(ev) {
     const toggle = ev.target as HaSwitch;
+
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.cloud.account.remote.require_client_certificate_confirm.title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.cloud.account.remote.require_client_certificate_confirm.text"
+      ),
+      confirmText: this.hass.localize(
+        "ui.panel.config.cloud.account.remote.require_client_certificate_confirm.confirm"
+      ),
+    });
+    if (!confirmed) {
+      toggle.checked = !toggle.checked;
+      return;
+    }
 
     try {
       await updateCloudPref(this.hass, {
