@@ -172,6 +172,35 @@ describe("getPath", () => {
     expect(yAt(getPath(points), 6)).toBeCloseTo(settledY);
   });
 
+  // Sampling keeps each frame's lowest and highest value, which can land at
+  // opposite ends of two frames and look like a gap while readings carry on.
+  it("does not hold across readings that sampling skipped", () => {
+    // frames are 100 wide: the first keeps its lowest and highest reading at
+    // its start, the second at its end, and the rest at their starts again
+    const valueAt = (x: number): number => {
+      if (x === 180 || (x !== 100 && x % 100 === 0)) {
+        return 0;
+      }
+      if (x === 190 || (x !== 110 && x % 100 === 10)) {
+        return 100;
+      }
+      return 40 + ((x / 10) % 3);
+    };
+    const history = Array.from(
+      { length: 100 },
+      (_, index): [number, number] => [index * 10, valueAt(index * 10)]
+    );
+    const { points } = coordinates(history, 100, 120, 10, {
+      minX: 0,
+      maxX: 1000,
+      minY: 0,
+      maxY: 100,
+    });
+
+    // with these limits a value is drawn at 110 - y
+    expect(110 - yAt(getPath(points), 9.5)).toBeCloseTo(41, -1);
+  });
+
   // Points that are far apart but evenly spread are a slow sensor, not a gap.
   it("keeps curving through evenly spread points that are far apart", () => {
     const coords = [

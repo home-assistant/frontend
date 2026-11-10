@@ -1,6 +1,6 @@
 import { downSampleLineData } from "../../../../components/chart/down-sample";
 import type { EntityHistoryState } from "../../../../data/history";
-import { findGaps } from "./get-path";
+import { findGaps, GAP_WIDTH } from "./get-path";
 
 export interface GraphSize {
   width: number;
@@ -69,10 +69,12 @@ const calcPoints = (
   return { points, yAxisOrigin };
 };
 
-// Puts back, in front of each gap getPath will find, the raw point before the
-// widest step between the raw points the gap spans: the state the sensor
-// settled on before it went quiet.
-const putBackLastStates = (
+// Checks each gap getPath will find against the raw history. Where the sensor
+// really went quiet, puts back the raw point before the widest raw step: the
+// state it settled on. Where readings carry on, the gap only comes from two
+// frames keeping points at their far ends, so puts back the reading nearest
+// its middle to break it up.
+const checkGapsAgainstHistory = (
   history: [number, number][],
   points: [number, number][],
   maxX: number
@@ -86,6 +88,7 @@ const putBackLastStates = (
     return points;
   }
 
+  const minQuiet = GAP_WIDTH * (maxX - closed[0][0]);
   const result: [number, number][] = [];
   let from = 0;
 
@@ -95,9 +98,11 @@ const putBackLastStates = (
 
     const before = closed[index - 1];
     const afterX = closed[index][0];
+    const middleX = (before[0] + afterX) / 2;
     let previous = before;
     let settled = before;
     let widest = 0;
+    let middle: [number, number] | undefined;
 
     for (const point of history) {
       if (point[0] > before[0] && point[0] < afterX) {
@@ -105,14 +110,23 @@ const putBackLastStates = (
           widest = point[0] - previous[0];
           settled = previous;
         }
+        if (
+          !middle ||
+          Math.abs(point[0] - middleX) < Math.abs(middle[0] - middleX)
+        ) {
+          middle = point;
+        }
         previous = point;
       }
     }
     if (afterX - previous[0] > widest) {
+      widest = afterX - previous[0];
       settled = previous;
     }
 
-    if (settled[0] !== before[0] || settled[1] !== before[1]) {
+    if (middle && widest <= minQuiet) {
+      result.push(middle);
+    } else if (settled[0] !== before[0] || settled[1] !== before[1]) {
       result.push(settled as [number, number]);
     }
   }
@@ -122,8 +136,10 @@ const putBackLastStates = (
 };
 
 // Sampling keeps the lowest and highest value of each frame, or their mean, so
-// it can drop the state a sensor settled on before it went quiet. getPath holds
-// the point before a gap across the whole gap, so that point has to be the last
+// it can drop the state a sensor settled on before it went quiet, and can make
+// a stretch with readings all through it look like a gap. getPath holds the
+// point before a gap across the whole gap, so only a stretch the sensor was
+// really quiet for may be a gap, and the point before it has to be the last
 // real state.
 const keepLastStateBeforeGaps = (
   history: [number, number][],
@@ -137,10 +153,10 @@ const keepLastStateBeforeGaps = (
   // a point put back changes the distances getPath compares, which can turn
   // another stretch into a gap, so repeat until nothing changes
   let points = sampled;
-  let next = putBackLastStates(history, points, maxX);
+  let next = checkGapsAgainstHistory(history, points, maxX);
   while (next !== points) {
     points = next;
-    next = putBackLastStates(history, points, maxX);
+    next = checkGapsAgainstHistory(history, points, maxX);
   }
 
   return points;

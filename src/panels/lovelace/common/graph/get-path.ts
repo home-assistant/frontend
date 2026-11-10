@@ -4,7 +4,7 @@
 // arrived. A stretch counts as such a gap when it is both this many times the
 // average distance between the other points and this much of the drawn width.
 const GAP_DISTANCE = 3;
-const GAP_WIDTH = 0.1;
+export const GAP_WIDTH = 0.1;
 
 // Finds the gaps among the coordinates, as the index of the point after each
 // gap paired with the average distance between the other points.
