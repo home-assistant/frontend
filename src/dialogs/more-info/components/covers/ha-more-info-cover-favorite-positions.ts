@@ -8,6 +8,7 @@ import { consumeLocalize } from "../../../../common/decorators/consume-context-e
 import { transform } from "../../../../common/decorators/transform";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { clamp } from "../../../../common/number/clamp";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-control-button";
 import { apiContext, configContext } from "../../../../data/context";
@@ -124,10 +125,8 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
       return;
     }
     fireEvent(this, "cover-command", {
-      service:
-        this.mode === "position"
-          ? "set_cover_position"
-          : "set_cover_tilt_position",
+      mode: this.mode,
+      action: "set",
       value: favorite,
     });
   }
@@ -161,7 +160,7 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
       return undefined;
     }
 
-    return Math.max(0, Math.min(100, number));
+    return clamp(number, 0, 100);
   }
 
   private async _addFavorite(): Promise<void> {

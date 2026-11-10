@@ -1,4 +1,5 @@
 import { svg } from "lit";
+import { clamp } from "../../../common/number/clamp";
 import type { CoverShape } from "./shared";
 import { FRAME, ghost, headrail, valueAxis } from "./shared";
 
@@ -42,11 +43,12 @@ const restWave = (t: number, phase: number, delay = 0) =>
 
 export const curtainShape: CoverShape = {
   opens: "left",
-  render: ({ position, wave, id }) => {
+  usesWave: true,
+  render: ({ position, wave }) => {
     const { left, top, bottom } = FRAME;
     const open = position / 100;
     const width = freeEdge.coordAt(position) - left;
-    const velocity = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, -wave.velocity));
+    const velocity = clamp(-wave.velocity, -MAX_SPEED, MAX_SPEED);
     const phase = wave.phase;
     const swing =
       Math.min(MAX_SWING, Math.abs(velocity) * SWING_PER_SPEED) *
@@ -94,7 +96,7 @@ export const curtainShape: CoverShape = {
         <path class="fabric" d=${`${toPath([[left, top], ...hem, [left, bottom]])} Z`}></path>
         ${stripes.map((d) => svg`<path class="stripe" d=${d}></path>`)}
       `,
-      front: headrail(id, 6.4),
+      front: headrail(6.4),
     };
   },
   handleAt: (value) => [freeEdge.coordAt(value), FRAME.centerY],

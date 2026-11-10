@@ -12,20 +12,11 @@ export const DEFAULT_COVER_FAVORITE_POSITIONS = [0, 25, 75, 100];
 
 export type CoverControlMode = "position" | "tilt";
 
-export type CoverService =
-  | "open_cover"
-  | "close_cover"
-  | "stop_cover"
-  | "set_cover_position"
-  | "open_cover_tilt"
-  | "close_cover_tilt"
-  | "stop_cover_tilt"
-  | "set_cover_tilt_position";
+export type CoverAction = "open" | "close" | "stop";
 
-export interface CoverCommand {
-  service: CoverService;
-  value?: number;
-}
+export type CoverCommand =
+  | { mode: CoverControlMode; action: CoverAction }
+  | { mode: CoverControlMode; action: "set"; value: number };
 
 export interface CoverRequest {
   mode: CoverControlMode;
@@ -50,6 +41,14 @@ export const coverSupportsTiltPosition = (stateObj: CoverEntity) =>
 
 export const coverSupportsAnyPosition = (stateObj: CoverEntity) =>
   coverSupportsPosition(stateObj) || coverSupportsTiltPosition(stateObj);
+
+export const coverSupportsSetValue = (
+  stateObj: CoverEntity,
+  mode: CoverControlMode
+) =>
+  mode === "tilt"
+    ? coverSupportsTiltPosition(stateObj)
+    : coverSupportsPosition(stateObj);
 
 const POSITION_FEATURES = [
   CoverEntityFeature.OPEN,
@@ -79,17 +78,39 @@ export const defaultCoverMode = (stateObj: CoverEntity): CoverControlMode =>
 export const coverModeAttribute = (mode: CoverControlMode) =>
   mode === "tilt" ? "current_tilt_position" : "current_position";
 
-export const coverServiceData = (
+const COVER_SERVICES: Record<
+  CoverControlMode,
+  Record<CoverCommand["action"], string>
+> = {
+  position: {
+    open: "open_cover",
+    close: "close_cover",
+    stop: "stop_cover",
+    set: "set_cover_position",
+  },
+  tilt: {
+    open: "open_cover_tilt",
+    close: "close_cover_tilt",
+    stop: "stop_cover_tilt",
+    set: "set_cover_tilt_position",
+  },
+};
+
+export const coverCommandService = ({ mode, action }: CoverCommand) =>
+  COVER_SERVICES[mode][action];
+
+export const coverCommandData = (
   stateObj: CoverEntity,
-  { service, value }: CoverCommand
+  command: CoverCommand
 ): Record<string, unknown> => {
-  if (service === "set_cover_position") {
-    return { entity_id: stateObj.entity_id, position: value };
+  const data = { entity_id: stateObj.entity_id };
+  if (command.action !== "set") {
+    return data;
   }
-  if (service === "set_cover_tilt_position") {
-    return { entity_id: stateObj.entity_id, tilt_position: value };
+  if (command.mode === "tilt") {
+    return { ...data, tilt_position: command.value };
   }
-  return { entity_id: stateObj.entity_id };
+  return { ...data, position: command.value };
 };
 
 export function isFullyOpen(stateObj: CoverEntity) {

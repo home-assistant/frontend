@@ -16,13 +16,14 @@ import type {
   CoverEntity,
 } from "../../../data/cover";
 import {
+  coverCommandData,
+  coverCommandService,
   coverCurrentValue,
   coverHasPositionControls,
   coverHasTiltControls,
   coverModeAttribute,
-  coverServiceData,
   coverSupportsPosition,
-  coverSupportsTiltPosition,
+  coverSupportsSetValue,
   defaultCoverMode,
 } from "../../../data/cover";
 import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -71,8 +72,7 @@ class MoreInfoCover extends LitElement {
     if (!changedProps.has("stateObj") || !this.stateObj) {
       return;
     }
-    const oldStateObj = changedProps.get("stateObj") as CoverEntity | undefined;
-    if (oldStateObj?.entity_id !== this.stateObj.entity_id) {
+    if (changedProps.get("stateObj")?.entity_id !== this.stateObj.entity_id) {
       this._mode = defaultCoverMode(this.stateObj);
       this._requests.clear();
       this._drag = undefined;
@@ -89,14 +89,15 @@ class MoreInfoCover extends LitElement {
   private _handleCommand(ev: HASSDomEvent<CoverCommand>) {
     ev.stopPropagation();
     const stateObj = this.stateObj!;
+    const command = ev.detail;
     this._api
       .callService(
         "cover",
-        ev.detail.service,
-        coverServiceData(stateObj, ev.detail)
+        coverCommandService(command),
+        coverCommandData(stateObj, command)
       )
       .catch(() => this._requests.clear());
-    this._requests.commandSent(ev.detail, stateObj);
+    this._requests.commandSent(command, stateObj);
   }
 
   private _handleDrag(ev: HASSDomEvent<HASSDomEvents["cover-drag-changed"]>) {
@@ -139,8 +140,8 @@ class MoreInfoCover extends LitElement {
     const stateDisplay = this._formatters.formatEntityState(stateObj);
     const mode: CoverControlMode =
       stateObj.attributes.current_position == null ? "tilt" : "position";
-    const value = coverCurrentValue(stateObj, mode);
-    if (!value || Math.round(value) === 0) {
+    const value = Math.round(coverCurrentValue(stateObj, mode) ?? 0);
+    if (value === 0) {
       return stateDisplay;
     }
     return `${stateDisplay} · ${this._formatValue(mode, value)}`;
@@ -175,9 +176,7 @@ class MoreInfoCover extends LitElement {
     if (!this.entry) {
       return false;
     }
-    return this._mode === "tilt"
-      ? coverSupportsTiltPosition(stateObj)
-      : coverSupportsPosition(stateObj);
+    return coverSupportsSetValue(stateObj, this._mode);
   }
 
   protected render() {

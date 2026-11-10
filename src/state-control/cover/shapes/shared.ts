@@ -1,5 +1,6 @@
 import type { SVGTemplateResult } from "lit";
 import { nothing, svg } from "lit";
+import { clamp } from "../../../common/number/clamp";
 
 export const VIEWBOX_SIZE = 200;
 
@@ -23,7 +24,6 @@ export interface CoverShapeInput {
   position: number;
   tilt: number;
   wave: CoverWave;
-  id: string;
 }
 
 type Part = SVGTemplateResult | SVGTemplateResult[] | typeof nothing;
@@ -39,17 +39,17 @@ export type OpeningDirection = "up" | "down" | "left";
 export interface CoverShape {
   opens: OpeningDirection;
   handle?: "pill" | "gauge";
+  usesWave?: boolean;
   render(input: CoverShapeInput): CoverShapeParts;
   handleAt(value: number): [number, number];
   valueAt(x: number, y: number): number;
   targetLine?(value: number): string;
-  targetShape?(value: number, id: string): SVGTemplateResult;
+  targetShape?(value: number): SVGTemplateResult;
 }
 
 export const isHorizontal = (shape: CoverShape) => shape.opens === "left";
 
-export const clampPercent = (value: number) =>
-  Math.max(0, Math.min(100, value));
+export const clampPercent = (value: number) => clamp(value, 0, 100);
 
 export const valueAxis = (atEmpty: number, atFull: number) => ({
   coordAt: (value: number) => atEmpty + ((atFull - atEmpty) * value) / 100,
@@ -74,8 +74,12 @@ export const ghost = (shape: SVGTemplateResult, opacity = 0.22) =>
 export const horizontalLine = (y: number, inset = 0) =>
   `M${FRAME.left + inset} ${y.toFixed(1)} H${FRAME.right - inset}`;
 
-export const headrail = (id: string, height: number) =>
-  svg`<rect class="fabric" x=${FRAME.left} y=${FRAME.top} width=${FRAME.width} height=${height} filter=${`url(#${id}-box)`}></rect>`;
+export const headrail = (height: number) => svg`
+  <filter id="headrail-shadow" x="-5%" y="-50%" width="110%" height="300%">
+    <feDropShadow dx="0" dy="1.2" stdDeviation="1.2" flood-color="#000" flood-opacity="0.18"></feDropShadow>
+  </filter>
+  <rect class="fabric" x=${FRAME.left} y=${FRAME.top} width=${FRAME.width} height=${height} filter="url(#headrail-shadow)"></rect>
+`;
 
 export const slat = (top: number, thickness: number) => {
   const face = Math.max(0.4, thickness * 0.114);

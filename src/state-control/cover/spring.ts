@@ -1,3 +1,5 @@
+import { clamp } from "../../common/number/clamp";
+
 const STEP = 0.016;
 const REST_DISTANCE = 0.05;
 const REST_VELOCITY = 0.5;
@@ -40,7 +42,7 @@ export class PercentSpring {
         step;
       this.value += this.velocity * step;
       if (this.value < 0 || this.value > 100) {
-        this.value = Math.max(0, Math.min(100, this.value));
+        this.value = clamp(this.value, 0, 100);
         this.velocity = 0;
       }
     }

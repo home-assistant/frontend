@@ -16,27 +16,7 @@ const roundedCurrentValue = (stateObj: CoverEntity, mode: CoverControlMode) => {
   return value === undefined ? undefined : Math.round(value);
 };
 
-const requestFromCommand = ({
-  service,
-  value,
-}: CoverCommand): CoverRequest | undefined => {
-  switch (service) {
-    case "open_cover":
-      return { mode: "position", value: 100 };
-    case "close_cover":
-      return { mode: "position", value: 0 };
-    case "set_cover_position":
-      return value === undefined ? undefined : { mode: "position", value };
-    case "open_cover_tilt":
-      return { mode: "tilt", value: 100 };
-    case "close_cover_tilt":
-      return { mode: "tilt", value: 0 };
-    case "set_cover_tilt_position":
-      return value === undefined ? undefined : { mode: "tilt", value };
-    default:
-      return undefined;
-  }
-};
+const END_VALUES = { open: 100, close: 0 };
 
 export class CoverRequestController implements ReactiveController {
   private _request?: CoverRequest;
@@ -64,20 +44,17 @@ export class CoverRequestController implements ReactiveController {
   }
 
   public commandSent(command: CoverCommand, stateObj: CoverEntity): void {
-    const { service } = command;
-    if (
-      (service === "stop_cover" && this._request?.mode === "position") ||
-      (service === "stop_cover_tilt" && this._request?.mode === "tilt")
-    ) {
-      this._setRequest(undefined);
+    const { mode } = command;
+    if (command.action === "stop") {
+      if (this._request?.mode === mode) {
+        this._setRequest(undefined);
+      }
       return;
     }
-    const request = requestFromCommand(command);
-    if (!request) {
-      return;
-    }
-    const startValue = roundedCurrentValue(stateObj, request.mode);
-    this._setRequest(startValue === request.value ? undefined : request);
+    const value =
+      command.action === "set" ? command.value : END_VALUES[command.action];
+    const startValue = roundedCurrentValue(stateObj, mode);
+    this._setRequest(startValue === value ? undefined : { mode, value });
     this._startValue = startValue;
   }
 

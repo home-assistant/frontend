@@ -24,7 +24,7 @@ const outline = (bottom: number) =>
 
 export const awningShape: CoverShape = {
   opens: "down",
-  render: ({ position, id }) => {
+  render: ({ position }) => {
     const bottom = hemY(position);
     return {
       cover: svg`
@@ -35,12 +35,14 @@ export const awningShape: CoverShape = {
             svg`<rect class="seam faint" x=${(FRAME.left + (index + 1) * SCALLOP_WIDTH - 0.3).toFixed(1)} y=${FRAME.top} width="0.6" height=${(bottom - FRAME.top).toFixed(1)}></rect>`
         )}
       `,
-      front: headrail(id, 10.4),
+      front: headrail(10.4),
     };
   },
   handleAt: (value) => [FRAME.centerX, hemY(value)],
   valueAt: (_x, y) => hem.valueAt(y),
-  targetLine: (value) =>
-    `M${FRAME.right},${hemY(value)}${scallops(hemY(value))}`,
+  targetLine: (value) => {
+    const bottom = hemY(value);
+    return `M${FRAME.right},${bottom}${scallops(bottom)}`;
+  },
   targetShape: (value) => ghost(svg`<path d=${outline(hemY(value))}></path>`),
 };

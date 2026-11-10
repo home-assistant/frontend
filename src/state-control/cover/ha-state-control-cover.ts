@@ -7,6 +7,7 @@ import { consume } from "../../common/decorators/consume";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
+import { mainWindow } from "../../common/dom/get_main_window";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import {
@@ -19,7 +20,6 @@ import type {
   CoverDrag,
   CoverEntity,
   CoverRequest,
-  CoverService,
   CoverSwipe,
 } from "../../data/cover";
 import {
@@ -27,37 +27,35 @@ import {
   coverCurrentValue,
   coverHasTiltControls,
   coverModeAttribute,
+  coverSupportsPosition,
+  coverSupportsSetValue,
+  coverSupportsTiltPosition,
   isMoving,
   isOpening,
 } from "../../data/cover";
 import { UNAVAILABLE } from "../../data/entity/entity";
 import type { HomeAssistantFormatters, HomeAssistantUI } from "../../types";
 import { coverDrawingStyles } from "./cover-drawing-styles";
+import { coverShape } from "./shapes";
 import { PointerDragController } from "./pointer-drag-controller";
-import { awningShape } from "./shapes/awning";
-import { curtainShape } from "./shapes/curtain";
-import { doorShape } from "./shapes/door";
-import { hopperShape } from "./shapes/hopper";
-import { garageShape, rollerShape, shutterShape } from "./shapes/roller";
-import { sashShape } from "./shapes/sash";
-import type { CoverShape, CoverWave, OpeningDirection } from "./shapes/shared";
+import type { CoverShape, OpeningDirection } from "./shapes/shared";
 import {
   FRAME,
   VIEWBOX_SIZE,
   clampPercent,
   isHorizontal,
 } from "./shapes/shared";
-import { slatsShape } from "./shapes/slats";
-import { slideShape } from "./shapes/slide";
-import { venetianShape } from "./shapes/venetian";
 import type { SpringOptions } from "./spring";
 import { PercentSpring } from "./spring";
+import { WaveMotion } from "./wave";
 
 type HandleMotion = "follow" | "drag" | "swipe" | "request" | "return";
 
 type ModeSprings = Record<CoverControlMode, PercentSpring>;
 
-const SWIPE_SPRING: SpringOptions = { stiffness: 22, damping: 0.55 };
+type ModeMotions = Record<CoverControlMode, HandleMotion>;
+
+const SWIPE_SPRING: SpringOptions = { stiffness: 22, damping: 0.8 };
 const KEY_COMMIT_DELAY = 500;
 const SWIPE_RESISTANCE = 20;
 const GAUGE_WIDTH = 16;
@@ -69,7 +67,7 @@ const MOVING_HINT_ANGLE: Record<OpeningDirection, number> = {
   left: -90,
 };
 
-const SKY_LAYERS = ["sky", "warm", "cool"];
+const SKY_LAYERS = ["sky", "sky-warm", "sky-cool"];
 
 const pillHandle = (cx: number, cy: number, vertical: boolean) =>
   vertical
@@ -82,6 +80,11 @@ const swipeResistance = (distance: number) =>
 const modeSprings = (): ModeSprings => ({
   position: new PercentSpring(),
   tilt: new PercentSpring(),
+});
+
+const modeMotions = (): ModeMotions => ({
+  position: "follow",
+  tilt: "follow",
 });
 
 @customElement("ha-state-control-cover")
@@ -120,16 +123,9 @@ export class HaStateControlCover extends LitElement {
 
   private _handleSprings = modeSprings();
 
-  private _wave: CoverWave & { position: number } = {
-    position: 0,
-    velocity: 0,
-    phase: 0,
-  };
+  private _handleMotions = modeMotions();
 
-  private _returning: Record<CoverControlMode, boolean> = {
-    position: false,
-    tilt: false,
-  };
+  private _wave = new WaveMotion();
 
   private _frame?: number;
 
@@ -139,13 +135,11 @@ export class HaStateControlCover extends LitElement {
 
   private _pointer = new PointerDragController(this);
 
-  private _id = Math.random().toString(36).slice(2);
-
-  private _isRtl = false;
-
   public connectedCallback(): void {
     super.connectedCallback();
-    this._readDirection();
+    if (this.stateObj) {
+      this._startLoop();
+    }
   }
 
   public disconnectedCallback(): void {
@@ -155,6 +149,7 @@ export class HaStateControlCover extends LitElement {
       this._frame = undefined;
     }
     clearTimeout(this._keyCommitTimer);
+    this._keyCommitTimer = undefined;
   }
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
@@ -162,15 +157,11 @@ export class HaStateControlCover extends LitElement {
     if (!this.stateObj) {
       return;
     }
-    const oldStateObj = changedProps.get("stateObj") as CoverEntity | undefined;
     if (
       changedProps.has("stateObj") &&
-      oldStateObj?.entity_id !== this.stateObj.entity_id
+      changedProps.get("stateObj")?.entity_id !== this.stateObj.entity_id
     ) {
       this._resetMotion();
-    }
-    if (changedProps.has("request")) {
-      this._requestChanged(changedProps.get("request") as CoverRequest);
     }
     this._startLoop();
   }
@@ -181,35 +172,26 @@ export class HaStateControlCover extends LitElement {
       this._coverSprings[mode].jumpTo(value);
       this._handleSprings[mode].jumpTo(value);
     }
-    this._wave = {
-      position: this._coverSprings.position.value,
-      velocity: 0,
-      phase: 0,
-    };
+    this._handleMotions = modeMotions();
+    this._wave.reset(this._coverSprings.position.value);
   }
 
-  private _requestChanged(oldRequest: CoverRequest | undefined) {
-    if (oldRequest && !this.request) {
-      this._returning[oldRequest.mode] = true;
-    }
-    if (this.request) {
-      this._returning[this.request.mode] = false;
-    }
+  private get _shape(): CoverShape {
+    return coverShape(this.stateObj.attributes.device_class, this.mode);
+  }
+
+  private get _isRtl(): boolean {
+    return mainWindow.document.dir === "rtl";
   }
 
   private get _canSetValue(): boolean {
-    return supportsFeature(
-      this.stateObj,
-      this.mode === "tilt"
-        ? CoverEntityFeature.SET_TILT_POSITION
-        : CoverEntityFeature.SET_POSITION
-    );
+    return coverSupportsSetValue(this.stateObj, this.mode);
   }
 
   private get _openCloseOnly(): boolean {
     return (
       this.mode === "position" &&
-      !supportsFeature(this.stateObj, CoverEntityFeature.SET_POSITION) &&
+      !coverSupportsPosition(this.stateObj) &&
       (supportsFeature(this.stateObj, CoverEntityFeature.OPEN) ||
         supportsFeature(this.stateObj, CoverEntityFeature.CLOSE))
     );
@@ -238,10 +220,7 @@ export class HaStateControlCover extends LitElement {
     if (value !== undefined) {
       return clampPercent(value);
     }
-    if (
-      mode === "tilt" &&
-      !supportsFeature(this.stateObj, CoverEntityFeature.SET_TILT_POSITION)
-    ) {
+    if (mode === "tilt" && !coverSupportsTiltPosition(this.stateObj)) {
       return 50;
     }
     return this._coverSprings[mode].value;
@@ -252,37 +231,6 @@ export class HaStateControlCover extends LitElement {
       return this.request.value;
     }
     return Math.round(this._drawingGoal(mode));
-  }
-
-  private _shape(): CoverShape {
-    const deviceClass = this.stateObj.attributes.device_class;
-    if (this.mode === "tilt") {
-      return deviceClass === "window" ? hopperShape : slatsShape;
-    }
-    switch (deviceClass) {
-      case "awning":
-        return awningShape;
-      case "curtain":
-        return curtainShape;
-      case "door":
-        return doorShape;
-      case "gate":
-        return slideShape;
-      case "window":
-        return sashShape;
-      case "blind":
-        return venetianShape;
-      case "shutter":
-        return shutterShape;
-      case "garage":
-        return garageShape;
-      default:
-        return rollerShape;
-    }
-  }
-
-  private _readDirection() {
-    this._isRtl = getComputedStyle(this).direction === "rtl";
   }
 
   private _startLoop() {
@@ -303,7 +251,7 @@ export class HaStateControlCover extends LitElement {
       changed = this._moveSpring(this._coverSprings[mode], goal, dt) || changed;
       changed = this._moveHandle(mode, goal, dt) || changed;
     }
-    if (this._shape() === curtainShape) {
+    if (this._shape.usesWave) {
       changed = this._moveWave(dt) || changed;
     }
     if (changed) {
@@ -324,26 +272,12 @@ export class HaStateControlCover extends LitElement {
   }
 
   private _moveWave(dt: number): boolean {
-    const wave = this._wave;
     const position = this._coverSprings.position.value;
     if (this._reducedMotion) {
-      wave.position = position;
-      wave.velocity = 0;
+      this._wave.jumpTo(position);
       return false;
     }
-    const frames = Math.max(0.01, (dt * 1000) / 16.7);
-    const keep = 0.9 ** frames;
-    const instant = (position - wave.position) / frames;
-    wave.velocity = wave.velocity * keep + instant * (1 - keep);
-    if (Math.abs(wave.velocity) < 0.015 && Math.abs(instant) < 0.001) {
-      wave.velocity = 0;
-    }
-    wave.position = position;
-    if (!wave.velocity) {
-      return false;
-    }
-    wave.phase += (0.06 + Math.abs(wave.velocity) * 0.03) * frames;
-    return true;
+    return this._wave.moveTo(position, dt);
   }
 
   private _handleMotion(mode: CoverControlMode): HandleMotion {
@@ -353,9 +287,12 @@ export class HaStateControlCover extends LitElement {
     if (this.request?.mode === mode) {
       return "request";
     }
-    const handle = this._handleSprings[mode].value;
-    const cover = this._coverSprings[mode].value;
-    if (this._returning[mode] && Math.abs(handle - cover) > 0.5) {
+    const previous = this._handleMotions[mode];
+    const afterRequest = previous === "request" || previous === "return";
+    const distance = Math.abs(
+      this._handleSprings[mode].value - this._coverSprings[mode].value
+    );
+    if (afterRequest && distance > 0.5) {
       return "return";
     }
     return "follow";
@@ -368,9 +305,7 @@ export class HaStateControlCover extends LitElement {
   ): boolean {
     const handle = this._handleSprings[mode];
     const motion = this._handleMotion(mode);
-    if (motion === "follow") {
-      this._returning[mode] = false;
-    }
+    this._handleMotions[mode] = motion;
     switch (motion) {
       case "drag":
         return handle.jumpTo(this._drag!.value);
@@ -403,15 +338,8 @@ export class HaStateControlCover extends LitElement {
     }
   }
 
-  private _sendCommand(service: CoverService, value?: number) {
-    fireEvent(this, "cover-command", { service, value });
-  }
-
   private _sendValue(value: number) {
-    this._sendCommand(
-      this.mode === "tilt" ? "set_cover_tilt_position" : "set_cover_position",
-      value
-    );
+    fireEvent(this, "cover-command", { mode: this.mode, action: "set", value });
   }
 
   private _pointerValue(ev: PointerEvent, shape: CoverShape) {
@@ -431,8 +359,8 @@ export class HaStateControlCover extends LitElement {
     if (!this._interactive || ev.button !== 0) {
       return;
     }
-    const shape = this._shape();
-    this._readDirection();
+    this._commitKeyValue();
+    const shape = this._shape;
     this._pointerFocus = true;
     this._control?.focus({ preventScroll: true });
     ev.preventDefault();
@@ -505,7 +433,6 @@ export class HaStateControlCover extends LitElement {
     ) {
       return;
     }
-    const service = closing ? "close_cover" : "open_cover";
     const direction = closing ? -1 : 1;
     this._pointer.start(ev, {
       move: (e) => {
@@ -534,13 +461,13 @@ export class HaStateControlCover extends LitElement {
         const passedHalfway = Boolean(this._drag?.swipe?.passedHalfway);
         this._setDrag(undefined);
         if (passedHalfway) {
-          this._sendCommand(service);
+          fireEvent(this, "cover-command", { mode: "position", action });
         }
       },
       tap: (e) => {
         const pointer = this._pointerValue(e, shape);
         if (pointer !== undefined && pointer >= 50 !== closing) {
-          this._sendCommand(service);
+          fireEvent(this, "cover-command", { mode: "position", action });
         }
       },
       cancel: () => this._setDrag(undefined),
@@ -549,6 +476,7 @@ export class HaStateControlCover extends LitElement {
 
   private _onBlur() {
     this._pointerFocus = false;
+    this._commitKeyValue();
   }
 
   private _onKeyDown(ev: KeyboardEvent) {
@@ -556,40 +484,51 @@ export class HaStateControlCover extends LitElement {
     if (!this._interactive || !this._canSetValue) {
       return;
     }
-    this._readDirection();
-    const value = this._valueForKey(ev);
-    if (value === undefined) {
+    const step = this._keyStep(ev);
+    if (step === undefined) {
       return;
     }
     ev.preventDefault();
-    this._setDrag({ value });
+    const current = this._drag?.value ?? this._handleGoal(this.mode);
+    this._setDrag({ value: clampPercent(current + step) });
     clearTimeout(this._keyCommitTimer);
-    this._keyCommitTimer = window.setTimeout(() => {
-      this._setDrag(undefined);
-      this._sendValue(value);
-    }, KEY_COMMIT_DELAY);
+    this._keyCommitTimer = window.setTimeout(
+      this._commitKeyValue,
+      KEY_COMMIT_DELAY
+    );
   }
 
-  private _valueForKey(ev: KeyboardEvent): number | undefined {
-    const current = this._drag?.value ?? this._handleGoal(this.mode);
+  private _commitKeyValue = () => {
+    if (this._keyCommitTimer === undefined) {
+      return;
+    }
+    clearTimeout(this._keyCommitTimer);
+    this._keyCommitTimer = undefined;
+    const value = this._drag?.value;
+    this._setDrag(undefined);
+    if (value !== undefined) {
+      this._sendValue(value);
+    }
+  };
+
+  private _keyStep(ev: KeyboardEvent): number | undefined {
     const step = ev.shiftKey ? 10 : 1;
-    const arrowRightStep =
-      isHorizontal(this._shape()) && !this._isRtl ? -step : step;
+    const horizontalSign = isHorizontal(this._shape) && !this._isRtl ? -1 : 1;
     switch (ev.key) {
       case "ArrowUp":
-        return clampPercent(current + step);
+        return step;
       case "ArrowDown":
-        return clampPercent(current - step);
+        return -step;
       case "ArrowRight":
-        return clampPercent(current + arrowRightStep);
+        return step * horizontalSign;
       case "ArrowLeft":
-        return clampPercent(current - arrowRightStep);
+        return -step * horizontalSign;
       case "PageUp":
-        return clampPercent(current + 10);
+        return 10;
       case "PageDown":
-        return clampPercent(current - 10);
+        return -10;
       case "Home":
-        return 0;
+        return -100;
       case "End":
         return 100;
       default:
@@ -647,32 +586,19 @@ export class HaStateControlCover extends LitElement {
     const { left, top, width, height } = FRAME;
     return svg`
       <defs>
-        <linearGradient id="${this._id}-sky" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" class="sky-top"></stop>
           <stop offset="1" class="sky-bottom"></stop>
         </linearGradient>
-        <radialGradient id="${this._id}-warm" cx="22%" cy="14%" r="58%">
+        <radialGradient id="sky-warm" cx="22%" cy="14%" r="58%">
           <stop offset="0" class="sky-warm" stop-opacity="0.55"></stop>
           <stop offset="1" class="sky-warm" stop-opacity="0"></stop>
         </radialGradient>
-        <radialGradient id="${this._id}-cool" cx="82%" cy="92%" r="62%">
+        <radialGradient id="sky-cool" cx="82%" cy="92%" r="62%">
           <stop offset="0" class="sky-cool" stop-opacity="0.45"></stop>
           <stop offset="1" class="sky-cool" stop-opacity="0"></stop>
         </radialGradient>
-        <linearGradient id="${this._id}-grass" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" class="grass-top"></stop>
-          <stop offset="1" class="grass-bottom"></stop>
-        </linearGradient>
-        <filter id="${this._id}-box" x="-5%" y="-50%" width="110%" height="300%">
-          <feDropShadow
-            dx="0"
-            dy="1.2"
-            stdDeviation="1.2"
-            flood-color="#000"
-            flood-opacity="0.18"
-          ></feDropShadow>
-        </filter>
-        <clipPath id="${this._id}-clip">
+        <clipPath id="opening-clip">
           <rect x=${left} y=${top} width=${width} height=${height} rx="12"></rect>
         </clipPath>
       </defs>
@@ -688,7 +614,7 @@ export class HaStateControlCover extends LitElement {
           y=${top}
           width=${width}
           height=${height}
-          fill="url(#${this._id}-${layer})"
+          fill="url(#${layer})"
         ></rect>
       `
     );
@@ -696,7 +622,7 @@ export class HaStateControlCover extends LitElement {
 
   private _renderTarget(shape: CoverShape, value: number) {
     return svg`
-      ${shape.targetShape?.(value, this._id) ?? nothing}
+      ${shape.targetShape?.(value) ?? nothing}
       ${shape.targetLine ? svg`<path class="target-line" d=${shape.targetLine(value)}></path>` : nothing}
     `;
   }
@@ -741,7 +667,9 @@ export class HaStateControlCover extends LitElement {
       ),
       valueNow: String(value),
       valueText: this._valueText(value),
-      orientation: isHorizontal(shape) ? "horizontal" : "vertical",
+      orientation: isHorizontal(shape)
+        ? ("horizontal" as const)
+        : ("vertical" as const),
     };
   }
 
@@ -749,7 +677,7 @@ export class HaStateControlCover extends LitElement {
     if (!this.stateObj) {
       return nothing;
     }
-    const shape = this._shape();
+    const shape = this._shape;
     const mode = this.mode;
     const unknown = this._valueUnknown;
     const interactive = this._interactive;
@@ -762,7 +690,6 @@ export class HaStateControlCover extends LitElement {
       position: this._coverSprings.position.value,
       tilt: this._drawnTilt(),
       wave: this._wave,
-      id: this._id,
     });
     const flip = isHorizontal(shape) && this._isRtl;
     const movingHintAngle = this._movingHintAngle(shape);
@@ -803,7 +730,7 @@ export class HaStateControlCover extends LitElement {
           <g
             transform=${ifDefined(flip ? `translate(${VIEWBOX_SIZE} 0) scale(-1 1)` : undefined)}
           >
-            <g clip-path="url(#${this._id}-clip)">
+            <g clip-path="url(#opening-clip)">
               ${this._renderSky()} ${parts.back ?? nothing}
               ${unknown ? nothing : parts.cover} ${parts.front ?? nothing}
               ${withTarget ? this._renderTarget(shape, handle) : nothing}

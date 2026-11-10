@@ -8,13 +8,16 @@ import {
   computeOpenIcon,
 } from "../../../../common/entity/cover_icon";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../../common/translations/localize";
 import "../../../../components/ha-control-button";
 import "../../../../components/ha-svg-icon";
 import type {
+  CoverAction,
   CoverControlMode,
   CoverEntity,
-  CoverService,
 } from "../../../../data/cover";
 import {
   CoverEntityFeature,
@@ -27,12 +30,61 @@ import {
 } from "../../../../data/cover";
 
 interface CoverButton {
-  service: CoverService;
-  icon: string;
-  text: string;
-  label: string;
-  disabled: boolean;
+  action: CoverAction;
+  feature: CoverEntityFeature;
+  icon: (stateObj: CoverEntity) => string;
+  label: LocalizeKeys;
+  enabled: (stateObj: CoverEntity) => boolean;
 }
+
+const BUTTONS: Record<CoverControlMode, CoverButton[]> = {
+  position: [
+    {
+      action: "open",
+      feature: CoverEntityFeature.OPEN,
+      icon: computeOpenIcon,
+      label: "ui.card.cover.open_cover",
+      enabled: canOpen,
+    },
+    {
+      action: "stop",
+      feature: CoverEntityFeature.STOP,
+      icon: () => mdiStop,
+      label: "ui.card.cover.stop_cover",
+      enabled: canStop,
+    },
+    {
+      action: "close",
+      feature: CoverEntityFeature.CLOSE,
+      icon: computeCloseIcon,
+      label: "ui.card.cover.close_cover",
+      enabled: canClose,
+    },
+  ],
+  tilt: [
+    {
+      action: "open",
+      feature: CoverEntityFeature.OPEN_TILT,
+      icon: () => mdiArrowTopRight,
+      label: "ui.card.cover.open_tilt_cover",
+      enabled: canOpenTilt,
+    },
+    {
+      action: "stop",
+      feature: CoverEntityFeature.STOP_TILT,
+      icon: () => mdiStop,
+      label: "ui.card.cover.stop_cover",
+      enabled: canStopTilt,
+    },
+    {
+      action: "close",
+      feature: CoverEntityFeature.CLOSE_TILT,
+      icon: () => mdiArrowBottomLeft,
+      label: "ui.card.cover.close_tilt_cover",
+      enabled: canCloseTilt,
+    },
+  ],
+};
 
 @customElement("ha-more-info-cover-buttons")
 export class HaMoreInfoCoverButtons extends LitElement {
@@ -44,88 +96,20 @@ export class HaMoreInfoCoverButtons extends LitElement {
   @consumeLocalize()
   private _localize!: LocalizeFunc;
 
-  private _shortText(key: "open" | "close" | "stop") {
-    return this._localize(`ui.dialogs.more_info_control.cover.${key}`);
-  }
-
-  private _tiltButtons(): CoverButton[] {
-    const stateObj = this.stateObj;
-    const buttons: CoverButton[] = [];
-    if (supportsFeature(stateObj, CoverEntityFeature.OPEN_TILT)) {
-      buttons.push({
-        service: "open_cover_tilt",
-        icon: mdiArrowTopRight,
-        text: this._shortText("open"),
-        label: this._localize("ui.card.cover.open_tilt_cover"),
-        disabled: !canOpenTilt(stateObj),
-      });
-    }
-    if (supportsFeature(stateObj, CoverEntityFeature.STOP_TILT)) {
-      buttons.push({
-        service: "stop_cover_tilt",
-        icon: mdiStop,
-        text: this._shortText("stop"),
-        label: this._localize("ui.card.cover.stop_cover"),
-        disabled: !canStopTilt(stateObj),
-      });
-    }
-    if (supportsFeature(stateObj, CoverEntityFeature.CLOSE_TILT)) {
-      buttons.push({
-        service: "close_cover_tilt",
-        icon: mdiArrowBottomLeft,
-        text: this._shortText("close"),
-        label: this._localize("ui.card.cover.close_tilt_cover"),
-        disabled: !canCloseTilt(stateObj),
-      });
-    }
-    return buttons;
-  }
-
-  private _positionButtons(): CoverButton[] {
-    const stateObj = this.stateObj;
-    const buttons: CoverButton[] = [];
-    if (supportsFeature(stateObj, CoverEntityFeature.OPEN)) {
-      buttons.push({
-        service: "open_cover",
-        icon: computeOpenIcon(stateObj),
-        text: this._shortText("open"),
-        label: this._localize("ui.card.cover.open_cover"),
-        disabled: !canOpen(stateObj),
-      });
-    }
-    if (supportsFeature(stateObj, CoverEntityFeature.STOP)) {
-      buttons.push({
-        service: "stop_cover",
-        icon: mdiStop,
-        text: this._shortText("stop"),
-        label: this._localize("ui.card.cover.stop_cover"),
-        disabled: !canStop(stateObj),
-      });
-    }
-    if (supportsFeature(stateObj, CoverEntityFeature.CLOSE)) {
-      buttons.push({
-        service: "close_cover",
-        icon: computeCloseIcon(stateObj),
-        text: this._shortText("close"),
-        label: this._localize("ui.card.cover.close_cover"),
-        disabled: !canClose(stateObj),
-      });
-    }
-    return buttons;
-  }
-
   private _handleClick(ev: Event) {
-    const service = (ev.currentTarget as HTMLElement).dataset
-      .service as CoverService;
-    fireEvent(this, "cover-command", { service });
+    const action = (ev.currentTarget as HTMLElement).dataset
+      .action as CoverAction;
+    fireEvent(this, "cover-command", { mode: this.mode, action });
   }
 
   protected render() {
     if (!this.stateObj) {
       return nothing;
     }
-    const buttons =
-      this.mode === "tilt" ? this._tiltButtons() : this._positionButtons();
+    const stateObj = this.stateObj;
+    const buttons = BUTTONS[this.mode].filter((button) =>
+      supportsFeature(stateObj, button.feature)
+    );
     if (!buttons.length) {
       return nothing;
     }
@@ -133,14 +117,18 @@ export class HaMoreInfoCoverButtons extends LitElement {
       ${buttons.map(
         (button) => html`
           <ha-control-button
-            .label=${button.label}
-            .disabled=${button.disabled}
-            data-service=${button.service}
+            .label=${this._localize(button.label)}
+            .disabled=${!button.enabled(stateObj)}
+            data-action=${button.action}
             @click=${this._handleClick}
           >
             <div class="content">
-              <ha-svg-icon .path=${button.icon}></ha-svg-icon>
-              <span>${button.text}</span>
+              <ha-svg-icon .path=${button.icon(stateObj)}></ha-svg-icon>
+              <span>
+                ${this._localize(
+                  `ui.dialogs.more_info_control.cover.${button.action}`
+                )}
+              </span>
             </div>
           </ha-control-button>
         `

@@ -25,7 +25,7 @@ const GRASS = (() => {
 
 export const slideShape: CoverShape = {
   opens: "left",
-  render: ({ position, id }) => {
+  render: ({ position }) => {
     const left = gateLeft(position);
     return {
       cover: svg`
@@ -37,7 +37,13 @@ export const slideShape: CoverShape = {
         <rect class="metal" x=${left} y=${GATE_TOP} width=${POST_WIDTH} height=${GATE_HEIGHT} rx="2"></rect>
         <rect class="metal" x=${left + FRAME.width - POST_WIDTH} y=${GATE_TOP} width=${POST_WIDTH} height=${GATE_HEIGHT} rx="2"></rect>
       `,
-      front: svg`<path d=${GRASS} fill=${`url(#${id}-grass)`}></path>`,
+      front: svg`
+        <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" class="grass-top"></stop>
+          <stop offset="1" class="grass-bottom"></stop>
+        </linearGradient>
+        <path d=${GRASS} fill="url(#grass)"></path>
+      `,
     };
   },
   handleAt: (value) => [leadingEdge.coordAt(value), GATE_TOP + GATE_HEIGHT / 2],

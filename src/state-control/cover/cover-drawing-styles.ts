@@ -17,10 +17,8 @@ export const coverDrawingStyles = css`
     --cover-drawing-seam: #bdbdbd;
     --cover-drawing-lift: #f5f5f5;
     --cover-drawing-stripe: #ffffff;
-    --cover-drawing-door: #fbf9f6;
     --cover-drawing-slot: #cfe8fb;
     --cover-drawing-ghost: #e1e1e1;
-    --cover-drawing-glass: rgba(255, 255, 255, 0.3);
     --cover-drawing-metal: #6f7a84;
     --cover-drawing-grass-top: #a8d49a;
     --cover-drawing-grass-bottom: #7fb071;
@@ -39,10 +37,8 @@ export const coverDrawingStyles = css`
     --cover-drawing-seam: #464b53;
     --cover-drawing-lift: #6e757e;
     --cover-drawing-stripe: #676e78;
-    --cover-drawing-door: #6b727c;
     --cover-drawing-slot: #3b5f96;
     --cover-drawing-ghost: #9aa3ad;
-    --cover-drawing-glass: rgba(255, 255, 255, 0.08);
     --cover-drawing-metal: #9aa5b0;
     --cover-drawing-grass-top: #3f6b45;
     --cover-drawing-grass-bottom: #2b4a31;
@@ -108,19 +104,6 @@ export const coverDrawingStyles = css`
   .panel-shadow {
     fill: #000;
   }
-  .floor {
-    fill: var(--cover-drawing-seam);
-    opacity: 0.55;
-  }
-  .door {
-    fill: var(--cover-drawing-door);
-  }
-  .door-frame {
-    fill: none;
-    stroke: var(--cover-drawing-seam);
-    stroke-width: 5;
-    stroke-linejoin: round;
-  }
   .ghost {
     fill: var(--cover-drawing-ghost);
   }
@@ -133,22 +116,6 @@ export const coverDrawingStyles = css`
   }
   .metal {
     fill: var(--cover-drawing-metal);
-  }
-  .window-frame {
-    fill: none;
-    stroke: var(--cover-drawing-frame-edge);
-    stroke-width: 8;
-  }
-  .glass {
-    fill: var(--cover-drawing-glass);
-  }
-  .sash {
-    stroke: var(--cover-drawing-fabric-edge);
-    stroke-width: 5;
-  }
-  .mullion {
-    stroke: var(--cover-drawing-fabric-edge);
-    stroke-width: 3;
   }
   .gauge-rail {
     fill: var(--cover-drawing-gauge);

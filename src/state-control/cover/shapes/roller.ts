@@ -6,6 +6,7 @@ import { FRAME, ghost, headrail, horizontalLine, valueAxis } from "./shared";
 const HEADRAIL = 10.4;
 const ROLL = 10;
 const BOTTOM_BAR = 4;
+const PANEL_EDGE = 2;
 const HANDLE_INSET = 2;
 const SHUTTER_SLAT = 12;
 const GARAGE_PANELS = 5;
@@ -28,19 +29,24 @@ export const rollingGeometry: Pick<
     ),
 };
 
+const fabric = (bottom: number) =>
+  svg`<rect class="fabric" x=${FRAME.left} y=${FRAME.top} width=${FRAME.width} height=${(bottom - FRAME.top).toFixed(1)}></rect>`;
+
+const bottomBar = (bottom: number, height: number) =>
+  svg`<rect class="bottom-bar" x=${FRAME.left} y=${(bottom - height).toFixed(1)} width=${FRAME.width} height=${height}></rect>`;
+
 const rollingShape = (
   details: (bottom: number, position: number) => SVGTemplateResult[] = () => []
 ): CoverShape => ({
   ...rollingGeometry,
-  render: ({ position, id }) => {
+  render: ({ position }) => {
     const bottom = coverBottom.coordAt(position);
     return {
       cover: svg`
-        <rect class="fabric" x=${FRAME.left} y=${FRAME.top} width=${FRAME.width} height=${(bottom - FRAME.top).toFixed(1)}></rect>
-        ${details(bottom, position)}
-        <rect class="bottom-bar" x=${FRAME.left} y=${(bottom - BOTTOM_BAR).toFixed(1)} width=${FRAME.width} height=${BOTTOM_BAR}></rect>
+        ${fabric(bottom)} ${details(bottom, position)}
+        ${bottomBar(bottom, BOTTOM_BAR)}
       `,
-      front: headrail(id, HEADRAIL),
+      front: headrail(HEADRAIL),
     };
   },
 });
@@ -87,6 +93,16 @@ const garagePanels = (bottom: number) => {
 };
 
 export const rollerShape = rollingShape();
+
+export const panelShape: CoverShape = {
+  ...rollingGeometry,
+  render: ({ position }) => {
+    const bottom = coverBottom.coordAt(position);
+    return {
+      cover: svg`${fabric(bottom)} ${bottomBar(bottom, PANEL_EDGE)}`,
+    };
+  },
+};
 
 export const shutterShape = rollingShape(shutterSlats);
 
