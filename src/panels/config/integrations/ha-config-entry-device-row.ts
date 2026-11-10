@@ -350,8 +350,9 @@ class HaConfigEntryDeviceRow extends LitElement {
 
   private _handleDeleteDevice = async () => {
     const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize("ui.panel.config.devices.confirm_delete_title"),
       text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
-      confirmText: this.hass.localize("ui.common.delete"),
+      confirmText: this.hass.localize("ui.common.remove"),
       dismissText: this.hass.localize("ui.common.cancel"),
       destructive: true,
     });
