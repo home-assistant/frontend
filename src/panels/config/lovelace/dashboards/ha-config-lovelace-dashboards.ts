@@ -616,7 +616,12 @@ export class HaConfigLovelaceDashboards extends LitElement {
         this.hass.connection,
         item.url_path,
         false
-      );
+      ).catch((err) => {
+        if (err.code === "config_not_found") {
+          return undefined;
+        }
+        throw err;
+      });
 
       const title = this.hass.localize(
         "ui.panel.config.lovelace.dashboards.duplicate_title",
