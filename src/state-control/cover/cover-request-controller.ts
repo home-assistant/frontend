@@ -1,4 +1,4 @@
-import type { ReactiveController, ReactiveControllerHost } from "lit";
+import type { ReactiveControllerHost } from "lit";
 import type {
   CoverCommand,
   CoverControlMode,
@@ -14,18 +14,14 @@ const roundedCurrentValue = (stateObj: CoverEntity, mode: CoverControlMode) => {
 
 const END_VALUES = { open: 100, close: 0 };
 
-export class CoverRequestController implements ReactiveController {
+export class CoverRequestController {
   private _request?: CoverRequest;
 
   private _startValue?: number;
 
   private _moving = false;
 
-  constructor(private readonly _host: ReactiveControllerHost) {
-    this._host.addController(this);
-  }
-
-  public hostUpdate = (): void => undefined;
+  constructor(private readonly _host: ReactiveControllerHost) {}
 
   public get request(): CoverRequest | undefined {
     return this._request;
