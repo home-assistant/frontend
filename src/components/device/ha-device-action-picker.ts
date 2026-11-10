@@ -14,6 +14,12 @@ class HaDeviceActionPicker extends HaDeviceAutomationPicker<DeviceAction> {
     );
   }
 
+  protected get NOT_SUPPORTED_TEXT() {
+    return this._i18n.localize(
+      "ui.panel.config.devices.automation.actions.not_supported"
+    );
+  }
+
   protected get UNKNOWN_AUTOMATION_TEXT() {
     return this._i18n.localize(
       "ui.panel.config.devices.automation.actions.unknown_action"

@@ -17,6 +17,7 @@ import { ensureArray } from "../../../../../common/array/ensure-array";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { StateCondition } from "../../../../../data/automation";
 import { STATE_CONDITION_HIDDEN_ATTRIBUTES } from "../../../../../data/entity/entity_attributes";
@@ -71,6 +72,10 @@ const SCHEMA = memoizeOne(
 
 @customElement("ha-automation-condition-state")
 export class HaStateCondition extends LitElement implements ConditionElement {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["entity_id", "attribute", "state", "for"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public condition!: StateCondition;
@@ -118,6 +123,7 @@ export class HaStateCondition extends LitElement implements ConditionElement {
 
     return html`
       <ha-form
+        .error=${this._fieldErrors.fields}
         .hass=${this.hass}
         .data=${data}
         .schema=${SCHEMA(hasAttribute)}
