@@ -141,16 +141,15 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         );
         this.renderRoot.appendChild(this._startupProgressEl);
       }
-      this._startupProgressEl.hass = this.hass!;
       this._startupProgressEl.progress = computeStartupProgress(
         this._startupProgress,
         this.hass!.config.state
       );
     }
 
+    // Keeps the subscription, so the completion toast still reflects late failures.
     private _hideStartupProgress() {
       this._startupProgressVisible = false;
-      this._unsubscribeBootstrapProgress();
       this._startupProgressEl?.remove();
       this._startupProgressEl = undefined;
     }
@@ -161,6 +160,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         this.hass!.config.state
       );
       this._hideStartupProgress();
+      this._unsubscribeBootstrapProgress();
       const issues = failed.length + retrying.length;
       showToast(this, {
         id: SERVER_STARTUP_TOAST_ID,

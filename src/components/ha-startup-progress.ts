@@ -1,63 +1,73 @@
 import { mdiChevronDown, mdiChevronUp, mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
+import type { LocalizeFunc } from "../common/translations/localize";
 import type { StartupProgressView } from "../data/bootstrap_integrations";
 import { domainToName } from "../data/integration";
-import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
+import "./ha-svg-icon";
 import "./progress/ha-progress-bar";
 
 const MAX_ACTIVE = 8;
 
 @customElement("ha-startup-progress")
 export class HaStartupProgress extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public progress!: StartupProgressView;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state() private _expanded = false;
 
   protected render() {
-    const { localize } = this.hass;
+    const localize = this._localize;
     const progress = this.progress;
     const issues = progress.failed.length + progress.retrying.length;
     return html`
       <div class="card" role="status">
         <div class="header">
-          <div class="text">
-            <span class="phase">
-              ${localize(`ui.startup_progress.phase.${progress.phase}`)}
-            </span>
-            <span class="secondary">
-              ${
-                progress.total === null
-                  ? localize("ui.startup_progress.integrations_unknown")
-                  : localize("ui.startup_progress.integrations", {
-                      done: progress.done,
-                      total: progress.total,
-                    })
-              }
-              ${
-                issues
-                  ? html` ·
-                    ${localize("ui.startup_progress.issues", {
-                      count: issues,
-                    })}`
-                  : nothing
-              }
-            </span>
-          </div>
-          <ha-icon-button
-            .label=${localize(
+          <button
+            class="toggle"
+            aria-expanded=${this._expanded ? "true" : "false"}
+            aria-controls="details"
+            .title=${localize(
               this._expanded
                 ? "ui.startup_progress.hide_details"
                 : "ui.startup_progress.show_details"
             )}
-            .path=${this._expanded ? mdiChevronUp : mdiChevronDown}
-            aria-expanded=${this._expanded ? "true" : "false"}
             @click=${this._toggle}
-          ></ha-icon-button>
+          >
+            <span class="text">
+              <span class="phase">
+                ${localize(`ui.startup_progress.phase.${progress.phase}`)}
+              </span>
+              <span class="secondary">
+                ${
+                  progress.total === null
+                    ? localize("ui.startup_progress.integrations_unknown")
+                    : localize("ui.startup_progress.integrations", {
+                        done: progress.done,
+                        total: progress.total,
+                      })
+                }
+                ${
+                  issues
+                    ? html` ·
+                      ${localize("ui.startup_progress.issues", {
+                        count: issues,
+                      })}`
+                    : nothing
+                }
+              </span>
+            </span>
+            <ha-svg-icon
+              aria-hidden="true"
+              .path=${this._expanded ? mdiChevronUp : mdiChevronDown}
+            ></ha-svg-icon>
+          </button>
           <ha-icon-button
             .label=${localize("ui.notification_toast.dismiss")}
             .path=${mdiClose}
@@ -75,11 +85,11 @@ export class HaStartupProgress extends LitElement {
   }
 
   private _renderDetails() {
-    const { localize } = this.hass;
+    const localize = this._localize;
     const progress = this.progress;
     const active = progress.active.slice(0, MAX_ACTIVE);
     return html`
-      <div class="details">
+      <div class="details" id="details">
         ${
           progress.elapsed
             ? html`<div class="secondary">
@@ -131,7 +141,7 @@ export class HaStartupProgress extends LitElement {
     if (!domains.length) {
       return nothing;
     }
-    const { localize } = this.hass;
+    const localize = this._localize;
     return html`
       <div class="section">${localize(`ui.startup_progress.${key}`)}</div>
       <div class="secondary">
@@ -155,7 +165,7 @@ export class HaStartupProgress extends LitElement {
       inset-block-end: calc(
         var(--safe-area-inset-bottom, 0px) + var(--ha-space-4)
       );
-      transform: translateX(-50%);
+      transform: translateX(calc(-50% * var(--scale-direction, 1)));
       z-index: 8;
       width: min(420px, calc(100vw - var(--ha-space-8)));
     }
@@ -174,6 +184,25 @@ export class HaStartupProgress extends LitElement {
       align-items: center;
       gap: var(--ha-space-1);
     }
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-2);
+      flex: 1;
+      min-width: 0;
+      padding: var(--ha-space-1);
+      margin: calc(var(--ha-space-1) * -1);
+      border: none;
+      border-radius: var(--ha-border-radius-sm);
+      background: none;
+      color: inherit;
+      font: inherit;
+      text-align: start;
+      cursor: pointer;
+    }
+    .toggle:focus-visible {
+      outline: 2px solid var(--ha-color-focus);
+    }
     .text {
       display: flex;
       flex-direction: column;
@@ -185,7 +214,8 @@ export class HaStartupProgress extends LitElement {
       font-weight: var(--ha-font-weight-medium);
     }
     .secondary {
-      color: var(--ha-color-on-neutral-quiet);
+      /* The card is dark in both themes, so the themed quiet color lacks contrast. */
+      color: var(--ha-color-neutral-70);
       font-size: var(--ha-font-size-s);
     }
     ha-icon-button {
