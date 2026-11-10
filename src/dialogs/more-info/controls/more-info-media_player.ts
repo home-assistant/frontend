@@ -124,7 +124,12 @@ class MoreInfoMediaPlayer extends LitElement {
   private _volumeController = new VolumeSliderController({
     getSlider: () => this._volumeSlider,
     step: this._volumeStep,
-    onSetVolume: (value) => this._setVolume(value),
+    onSetVolume: (value) => {
+      // The final value is set right away, so drop the pending update from
+      // the input events before it, or the same value is sent twice
+      this._debouncedVolumeSet.cancel();
+      this._setVolume(value);
+    },
     onSetVolumeDebounced: (value) => this._debouncedVolumeSet(value),
   });
 

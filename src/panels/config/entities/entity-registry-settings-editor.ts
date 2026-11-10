@@ -1414,7 +1414,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
 
     const result = await updateEntityRegistryEntry(
-      this.hass!,
+      this.hass!.callWS,
       this.entry.entity_id,
       params
     );
@@ -1591,9 +1591,17 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private async _restoreEntityId(): Promise<void> {
-    const entityIds = await getAutomaticEntityIds(this.hass, [
-      this._origEntityId,
-    ]);
+    // use the unsaved name and area, as they are part of the entity ID
+    const entityIds = await getAutomaticEntityIds(
+      this.hass.callWS,
+      [this._origEntityId],
+      {
+        [this._origEntityId]: {
+          name: this._computeName(),
+          area_id: this._computeAreaId(),
+        },
+      }
+    );
     this._entityId = entityIds[this._origEntityId] || this._origEntityId;
   }
 
@@ -1813,7 +1821,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
     showDeviceRegistryDetailDialog(this, {
       device: this._device!,
       updateEntry: async (updates) => {
-        await updateDeviceRegistryEntry(this.hass, this._device!.id, updates);
+        await updateDeviceRegistryEntry(
+          this.hass.callWS,
+          this._device!.id,
+          updates
+        );
       },
     });
   }
@@ -1923,8 +1935,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
           margin-inline-start: 0;
         }
 
-        ha-row-item.main-entity::part(supporting-text),
-        ha-row-item.device-area::part(supporting-text) {
+        ha-row-item::part(supporting-text),
+        ha-list-item-button::part(supporting-text) {
           white-space: normal;
         }
         ha-row-item {

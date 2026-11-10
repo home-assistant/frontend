@@ -5,7 +5,7 @@
 <meta property="og:type" content="website" />
 <meta
   property="og:description"
-  content="Show Home Assistant on your Chromecast or Google Assistant devices with a screen."
+  content="Show Home Assistant on your Chromecast or Google Home devices with a screen."
 />
 <meta
   property="og:image"
@@ -16,7 +16,7 @@
 <meta name="twitter:title" content="Home Assistant Cast" />
 <meta
   name="twitter:description"
-  content="Show Home Assistant on your Chromecast or Google Assistant devices with a screen."
+  content="Show Home Assistant on your Chromecast or Google Home devices with a screen."
 />
 <meta
   name="twitter:image"

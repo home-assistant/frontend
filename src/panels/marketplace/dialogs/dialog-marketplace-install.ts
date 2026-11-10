@@ -433,25 +433,22 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
               <ha-button appearance="plain" @click=${this._loadReleases}>
                 ${this._i18n.localize("ui.panel.marketplace.common.retry")}
               </ha-button>`
-          : this._releases === undefined
+          : this._releases?.length === 0
             ? this._i18n.localize(
-                "ui.panel.marketplace.dialog_install.fetching_releases"
+                "ui.panel.marketplace.dialog_install.no_releases"
               )
-            : this._releases.length === 0
-              ? this._i18n.localize(
-                  "ui.panel.marketplace.dialog_install.no_releases"
-                )
-              : html`<ha-generic-picker
-                  .label=${this._i18n.localize(
-                    "ui.panel.marketplace.dialog_install.release"
-                  )}
-                  .value=${this._selectedVersion}
-                  .getItems=${this._getReleaseItems}
-                  .rowRenderer=${this._releaseRowRenderer}
-                  hide-clear-icon
-                  no-sort
-                  @value-changed=${this._versionChanged}
-                ></ha-generic-picker>`
+            : html`<ha-generic-picker
+                .label=${this._i18n.localize(
+                  "ui.panel.marketplace.dialog_install.release"
+                )}
+                .value=${this._selectedVersion}
+                .getItems=${this._getReleaseItems}
+                .rowRenderer=${this._releaseRowRenderer}
+                .loading=${this._releases === undefined}
+                hide-clear-icon
+                no-sort
+                @value-changed=${this._versionChanged}
+              ></ha-generic-picker>`
       }
     </div>`;
   }

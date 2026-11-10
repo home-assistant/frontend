@@ -1,5 +1,6 @@
 import { endOfToday, isToday, startOfToday } from "date-fns";
 import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -84,6 +85,13 @@ export class HuiEnergySolarGraphCard
 
   @state() private _total?: number;
 
+  @state() private _data?: {
+    energyData: EnergyData;
+    forecasts: EnergySolarForecasts | undefined;
+  };
+
+  private _forecastsRequest = 0;
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: HomeAssistantInternationalization;
@@ -111,7 +119,7 @@ export class HuiEnergySolarGraphCard
     super();
     new EnergyCollectionController(this, {
       config: () => this._config,
-      onData: (data) => this._getStatistics(data),
+      onData: (data) => this._fetchForecasts(data),
     });
   }
 
@@ -124,6 +132,12 @@ export class HuiEnergySolarGraphCard
       validateEnergyCollectionKey(config.collection_key);
     }
     this._config = config;
+  }
+
+  protected willUpdate(changedProps: PropertyValues) {
+    if (changedProps.has("_config") || changedProps.has("_data")) {
+      this._processStatistics();
+    }
   }
 
   protected render() {
@@ -221,11 +235,18 @@ export class HuiEnergySolarGraphCard
       )
   );
 
-  private async _getStatistics(energyData: EnergyData): Promise<void> {
+  private async _fetchForecasts(energyData: EnergyData): Promise<void> {
+    const request = ++this._forecastsRequest;
     const solarSources: SolarSourceTypeEnergyPreference[] =
       energyData.prefs.energy_sources.filter(
         (source) => source.type === "solar"
       ) as SolarSourceTypeEnergyPreference[];
+
+    // A settings-only re-publish keeps the same statistics and forecasts
+    if (this._data && energyData.stats === this._data.energyData.stats) {
+      this._data = { energyData, forecasts: this._data.forecasts };
+      return;
+    }
 
     let forecasts: EnergySolarForecasts | undefined;
     if (
@@ -238,6 +259,17 @@ export class HuiEnergySolarGraphCard
       }
     }
 
+    if (request === this._forecastsRequest) {
+      this._data = { energyData, forecasts };
+    }
+  }
+
+  private _processStatistics() {
+    if (!this._config || !this._data) {
+      return;
+    }
+    const { energyData, forecasts } = this._data;
+
     const result = generateEnergySolarGraphData({
       localize: this._i18n.localize,
       states: this._states,
@@ -247,6 +279,8 @@ export class HuiEnergySolarGraphCard
       forecasts,
       computedStyles: getComputedStyle(this),
       now: endOfToday(),
+      combineSources:
+        this._config.combine_sources ?? energyData.combineSources ?? false,
     });
 
     this._start = result.start;

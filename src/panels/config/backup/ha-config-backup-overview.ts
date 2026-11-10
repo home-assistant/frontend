@@ -216,7 +216,7 @@ class HaConfigBackupOverview extends LitElement {
         back-path="/config/system"
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${this.hass.localize("ui.panel.config.backup.overview.header")}
+        .header=${this.hass.localize("ui.panel.config.backup.caption")}
       >
         <ha-dropdown
           slot="toolbar-icon"

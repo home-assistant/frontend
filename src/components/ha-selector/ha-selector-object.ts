@@ -162,7 +162,7 @@ export class HaObjectSelector extends LitElement {
       description = this._formatField(item, descriptionField);
     }
 
-    const reorderable = this.selector.object!.multiple || false;
+    const reorderable = this._reorderable;
     const multiple = this.selector.object!.multiple || false;
     return html`
       <ha-list-item-base class="item">
@@ -212,6 +212,7 @@ export class HaObjectSelector extends LitElement {
           ${this.label ? html`<label>${this.label}</label>` : nothing}
           <div class="items-container">
             <ha-sortable
+              .disabled=${!this._reorderable}
               handle-selector=".handle"
               draggable-selector=".item"
               @item-moved=${this._itemMoved}
@@ -291,11 +292,18 @@ export class HaObjectSelector extends LitElement {
     }));
   });
 
+  private get _reorderable(): boolean {
+    return (
+      (this.selector.object?.multiple ?? false) &&
+      this.selector.object?.reorder !== false
+    );
+  }
+
   private _itemMoved(ev) {
     ev.stopPropagation();
     const newIndex = ev.detail.newIndex;
     const oldIndex = ev.detail.oldIndex;
-    if (!this.selector.object!.multiple) {
+    if (!this._reorderable) {
       return;
     }
     const newValue = ensureArray(this.value ?? []).concat();

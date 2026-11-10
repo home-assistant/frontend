@@ -78,7 +78,12 @@ import {
   mergeHistoryResults,
   subscribeHistory,
 } from "../../data/history";
-import { fetchStatistics } from "../../data/recorder";
+import {
+  fetchStatistics,
+  getStatisticMetadata,
+  isExternalStatistic,
+  type StatisticsMetaData,
+} from "../../data/recorder";
 import { resolveEntityIDs } from "../../data/selector";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
@@ -553,8 +558,11 @@ class HaPanelHistory extends LitElement {
     this._fetchedEntityIds = statisticIds;
     const fetchId = ++this._statsFetchId;
 
+    // The previous statistics would otherwise show under the new selection
+    // until the request is done, and with only external statistics nothing
+    // else shows the loading.
+    this._statisticsHistory = undefined;
     if (statisticIds.length === 0) {
-      this._statisticsHistory = undefined;
       return;
     }
 
@@ -563,18 +571,32 @@ class HaPanelHistory extends LitElement {
     // graph to start at 7AM, need to fetch the statistic from 6AM.
     statsStartDate.setHours(statsStartDate.getHours() - 1);
 
+    const externalIds = statisticIds.filter(isExternalStatistic);
+
     let statistics;
+    let metadata: StatisticsMetaData[];
     try {
-      statistics = await fetchStatistics(
-        this.hass!.callWS,
-        statsStartDate,
-        this._endDate,
-        statisticIds,
-        "hour",
-        undefined,
-        ["mean", "state"]
-      );
+      [statistics, metadata] = await Promise.all([
+        fetchStatistics(
+          this.hass!.callWS,
+          statsStartDate,
+          this._endDate,
+          statisticIds,
+          "hour",
+          undefined,
+          ["mean", "state"]
+        ),
+        // External statistics take name and unit from the metadata. Without
+        // it they are still shown, under their ID.
+        externalIds.length
+          ? getStatisticMetadata(this.hass!.callWS, externalIds).catch(() => [])
+          : Promise.resolve([]),
+      ]);
     } catch (_err) {
+      // External statistics have no state history that would end the loading
+      if (fetchId === this._statsFetchId) {
+        this._statisticsHistory = { line: [], timeline: [] };
+      }
       return;
     }
 
@@ -586,19 +608,23 @@ class HaPanelHistory extends LitElement {
       this.hass!,
       statistics,
       statisticIds,
-      true
+      true,
+      Object.fromEntries(metadata.map((meta) => [meta.statistic_id, meta]))
     );
   }
 
   private async _getHistory() {
-    const entityIds = this._getEntityIds();
-    this._fetchedEntityIds = entityIds;
+    const sourceIds = this._getEntityIds();
+    this._fetchedEntityIds = sourceIds;
+    const entityIds = sourceIds.filter((id) => !isExternalStatistic(id));
 
     if (entityIds.length === 0) {
       // The running subscription would keep pushing the previous entities.
       this._unsubscribeHistory();
       this._stateHistory = undefined;
       this._isLoading = false;
+      // Charts of external statistics stay mounted, so reset their zoom too
+      this._resetZoom();
       return;
     }
 

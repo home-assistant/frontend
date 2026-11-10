@@ -100,7 +100,6 @@ export class EntitySettingsHelperTab extends LitElement {
             : html`
                 <span @value-changed=${this._valueChanged}>
                   ${dynamicElement(`ha-${this.entry.platform}-form`, {
-                    hass: this.hass,
                     item: this._item,
                     entry: this.entry,
                     disabled: this._item === null,

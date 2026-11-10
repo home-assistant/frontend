@@ -1,6 +1,7 @@
 import type {
   DataTableFilter,
   DataTableFilters,
+  FloorAreasFilterValue,
 } from "../../data/data_table_filters";
 import { dataTableQueryParamConfig } from "./data-table-query-params";
 import {
@@ -25,6 +26,7 @@ export const scriptsFilterQueryParamConfig = {
     "assistants",
     "blueprint",
   ],
+  boolean: [{ key: "no_area", trueValue: "1" }],
 } as const satisfies QueryParamConfig;
 
 export type ScriptsFilterQueryParams = QueryParamValues<
@@ -36,7 +38,7 @@ const list = (filter: DataTableFilter | undefined): string[] | undefined =>
 
 const floorAreas = (
   filter: DataTableFilter | undefined
-): Record<string, string[]> | undefined =>
+): FloorAreasFilterValue | undefined =>
   filter?.value && !Array.isArray(filter.value) ? filter.value : undefined;
 
 export const scriptsFilterQueryParams = (
@@ -44,6 +46,7 @@ export const scriptsFilterQueryParams = (
 ): ScriptsFilterQueryParams => ({
   floor: floorAreas(filters["ha-filter-floor-areas"])?.floors,
   area: floorAreas(filters["ha-filter-floor-areas"])?.areas,
+  no_area: floorAreas(filters["ha-filter-floor-areas"])?.no_area,
   device: list(filters["ha-filter-devices"]),
   entity: list(filters["ha-filter-entities"]),
   label: list(filters["ha-filter-labels"]),
@@ -57,7 +60,7 @@ export const scriptsFilterQueryParams = (
 // filter list sends back what it was given in its own order.
 export const scriptsFilterQueryString = (filters: DataTableFilters): string => {
   const params = scriptsFilterQueryParams(filters);
-  const sorted: ScriptsFilterQueryParams = {};
+  const sorted: ScriptsFilterQueryParams = { ...params };
 
   for (const key of scriptsFilterQueryParamConfig.list) {
     sorted[key] = params[key] && [...params[key]].sort();
@@ -89,8 +92,9 @@ export const scriptsLinkFromUrl = (
 
   const { search } = decodeQueryParams(searchParams, dataTableQueryParamConfig);
 
-  const values = (key: keyof ScriptsFilterQueryParams): string[] =>
-    params[key]?.filter(Boolean) ?? [];
+  const values = (
+    key: (typeof scriptsFilterQueryParamConfig.list)[number]
+  ): string[] => params[key]?.filter(Boolean) ?? [];
 
   const filter = (value: DataTableFilter["value"]): DataTableFilter => ({
     value,
@@ -104,7 +108,9 @@ export const scriptsLinkFromUrl = (
     search: search ?? "",
     filters: {
       "ha-filter-floor-areas": filter(
-        floors.length || areas.length ? { floors, areas } : undefined
+        floors.length || areas.length || params.no_area
+          ? { floors, areas, no_area: params.no_area }
+          : undefined
       ),
       "ha-filter-devices": filter(values("device")),
       "ha-filter-entities": filter(values("entity")),

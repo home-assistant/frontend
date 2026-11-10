@@ -1,6 +1,7 @@
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { ConfigPath } from "../../../common/util/config-path";
 import { deepEqual } from "../../../common/util/deep-equal";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -21,7 +22,6 @@ import type { HuiBadge } from "../badges/hui-badge";
 import "../cards/hui-card";
 import type { HuiCard } from "../cards/hui-card";
 import { createSectionElement } from "../create-element/create-section-element";
-import type { LovelacePath } from "../editor/lovelace-path";
 import {
   checkStrategyShouldRegenerate,
   generateLovelaceSectionStrategy,
@@ -52,7 +52,7 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
 
   @property({ attribute: false }) public insideStrategy = false;
 
-  @property({ attribute: false }) public path!: LovelacePath;
+  @property({ attribute: false }) public path!: ConfigPath;
 
   @state() private _cards: HuiCard[] = [];
 

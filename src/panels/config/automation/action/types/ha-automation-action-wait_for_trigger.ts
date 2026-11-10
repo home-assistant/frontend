@@ -106,6 +106,7 @@ export class HaWaitForTriggerAction
       ${
         this.indent || (!this.inSidebar && !this.indent)
           ? html`<ha-automation-trigger
+                path-key="wait_for_trigger"
                 class=${!this.inSidebar && !this.indent ? "expansion-panel" : ""}
                 .triggers=${ensureArray(this.action.wait_for_trigger)}
                 .hass=${this.hass}
@@ -133,6 +134,7 @@ export class HaWaitForTriggerAction
                         )}:
                       </h4>
                       <ha-automation-action
+                        path-key="on_complete"
                         .actions=${ensureArray(this.action.on_complete ?? [])}
                         .disabled=${this.disabled}
                         @value-changed=${this._onCompleteChanged}
@@ -146,6 +148,7 @@ export class HaWaitForTriggerAction
                         )}:
                       </h4>
                       <ha-automation-action
+                        path-key="on_timeout"
                         .actions=${ensureArray(this.action.on_timeout ?? [])}
                         .disabled=${this.disabled}
                         @value-changed=${this._onTimeoutChanged}

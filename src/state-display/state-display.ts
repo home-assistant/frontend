@@ -25,6 +25,7 @@ import {
 import type { UpdateEntity } from "../data/update";
 import { computeUpdateStateDisplay } from "../data/update";
 import "../panels/lovelace/components/hui-timestamp-display";
+import type { TimestampRenderingFormat } from "../panels/lovelace/components/types";
 import type {
   HomeAssistantFormatters,
   HomeAssistantInternationalization,
@@ -77,7 +78,13 @@ const TIMESTAMP_STATE_PROPS = ["last_updated", "last_changed"];
 
 const TIMESTAMP_CONTENTS = [...TIMESTAMP_STATE_PROPS, "last_triggered"];
 
-const TIMESTAMP_DOMAIN_CONTENTS: Record<string, string[] | undefined> = {
+type TimestampDomainContent =
+  string | { attribute: string; format: TimestampRenderingFormat };
+
+const TIMESTAMP_DOMAIN_CONTENTS: Record<
+  string,
+  TimestampDomainContent[] | undefined
+> = {
   calendar: ["start_time", "end_time"],
   input_datetime: ["timestamp"],
   sun: [
@@ -88,7 +95,16 @@ const TIMESTAMP_DOMAIN_CONTENTS: Record<string, string[] | undefined> = {
     "next_rising",
     "next_setting",
   ],
+  timer: [{ attribute: "finishes_at", format: "datetime" }],
 };
+
+const findTimestampDomainContent = (
+  domain: string,
+  content: string
+): TimestampDomainContent | undefined =>
+  TIMESTAMP_DOMAIN_CONTENTS[domain]?.find(
+    (c) => (typeof c === "string" ? c : c.attribute) === content
+  );
 
 export const stateContentHasTimestamp = (
   entityId?: string,
@@ -115,11 +131,11 @@ export const stateContentHasTimestamp = (
       }
     }
   }
-  const domainContents = TIMESTAMP_DOMAIN_CONTENTS[domain];
   return (
     !!content &&
-    !!domainContents &&
-    contentArray.some((c) => domainContents.includes(c))
+    contentArray.some(
+      (c) => findTimestampDomainContent(domain, c) !== undefined
+    )
   );
 };
 
@@ -223,6 +239,7 @@ class StateDisplay extends LitElement {
     }
 
     let relativeDateTime: string | number | undefined;
+    const domainContent = findTimestampDomainContent(domain, content);
 
     if (TIMESTAMP_STATE_PROPS.includes(content)) {
       relativeDateTime = stateObj[content];
@@ -230,7 +247,7 @@ class StateDisplay extends LitElement {
       relativeDateTime = stateObj.attributes.timestamp * 1000;
     } else if (
       TIMESTAMP_CONTENTS.includes(content) ||
-      TIMESTAMP_DOMAIN_CONTENTS[domain]?.includes(content)
+      domainContent !== undefined
     ) {
       relativeDateTime = stateObj.attributes[content];
     }
@@ -238,7 +255,10 @@ class StateDisplay extends LitElement {
     if (relativeDateTime || relativeDateTime === 0) {
       return html`<hui-timestamp-display
         .ts=${new Date(relativeDateTime)}
-        .format=${this.timeFormat}
+        .format=${
+          this.timeFormat ||
+          (typeof domainContent === "object" ? domainContent.format : undefined)
+        }
         capitalize
         .tooltip=${this.timestampTooltip}
       ></hui-timestamp-display>`;

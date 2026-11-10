@@ -1,7 +1,9 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-switch";
@@ -9,11 +11,12 @@ import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/input/ha-input";
 import type { Counter } from "../../../../data/counter";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-counter-form")
 class HaCounterForm extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ type: Boolean }) public new = false;
 
@@ -63,7 +66,7 @@ class HaCounterForm extends LitElement {
   }
 
   protected render() {
-    if (!this.hass) {
+    if (!this._localize) {
       return nothing;
     }
 
@@ -73,12 +76,10 @@ class HaCounterForm extends LitElement {
           .value=${this._name}
           .configValue=${"name"}
           @input=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.name"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.generic.name")}
           auto-validate
           required
-          .validationMessage=${this.hass!.localize(
+          .validationMessage=${this._localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           dialogInitialFocus
@@ -88,9 +89,7 @@ class HaCounterForm extends LitElement {
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.icon"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.generic.icon")}
           .disabled=${this.disabled}
         ></ha-icon-picker>
         <ha-input
@@ -98,9 +97,7 @@ class HaCounterForm extends LitElement {
           .configValue=${"minimum"}
           type="number"
           @input=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.counter.minimum"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.counter.minimum")}
           .disabled=${this.disabled}
         ></ha-input>
         <ha-input
@@ -108,9 +105,7 @@ class HaCounterForm extends LitElement {
           .configValue=${"maximum"}
           type="number"
           @input=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.counter.maximum"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.counter.maximum")}
           .disabled=${this.disabled}
         ></ha-input>
         <ha-input
@@ -118,13 +113,11 @@ class HaCounterForm extends LitElement {
           .configValue=${"initial"}
           type="number"
           @input=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.counter.initial"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.counter.initial")}
           .disabled=${this.disabled}
         ></ha-input>
         <ha-expansion-panel
-          header=${this.hass.localize(
+          header=${this._localize(
             "ui.dialogs.helper_settings.generic.more_options"
           )}
           outlined
@@ -134,9 +127,7 @@ class HaCounterForm extends LitElement {
             .configValue=${"step"}
             type="number"
             @input=${this._valueChanged}
-            .label=${this.hass!.localize(
-              "ui.dialogs.helper_settings.counter.step"
-            )}
+            .label=${this._localize("ui.dialogs.helper_settings.counter.step")}
             .disabled=${this.disabled}
           ></ha-input>
           <div class="row">
@@ -148,9 +139,7 @@ class HaCounterForm extends LitElement {
             >
             </ha-switch>
             <div>
-              ${this.hass.localize(
-                "ui.dialogs.helper_settings.counter.restore"
-              )}
+              ${this._localize("ui.dialogs.helper_settings.counter.restore")}
             </div>
           </div>
         </ha-expansion-panel>

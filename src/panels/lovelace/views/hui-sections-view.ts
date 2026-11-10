@@ -8,6 +8,7 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import type { ConfigPath } from "../../../common/util/config-path";
 import { clamp } from "../../../common/number/clamp";
 import { getHistoryState, updateHistoryState } from "../../../common/navigate";
 import "../../../components/ha-icon-button";
@@ -28,7 +29,6 @@ import type { HuiBadge } from "../badges/hui-badge";
 import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-section-edit-mode";
 import { addSection } from "../editor/config-util";
-import type { LovelacePath } from "../editor/lovelace-path";
 import { getAtPath, moveAtPath } from "../editor/lovelace-path";
 import { showCreateSectionDialog } from "../editor/section-editor/show-create-section-dialog";
 import type { HuiSection } from "../sections/hui-section";
@@ -51,7 +51,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property({ attribute: false }) public path?: LovelacePath;
+  @property({ attribute: false }) public path?: ConfigPath;
 
   @property({ attribute: false }) public isStrategy = false;
 
@@ -78,6 +78,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   @state() private _sidebarTabActive = false;
 
   @state() private _sidebarVisible = true;
+
+  // Set on connecting, so that the next update reads the sidebar tab from the
+  // page's history state, once `lovelace` has been set
+  private _readSidebarTab = false;
 
   private _contentScrollTop = 0;
 
@@ -142,7 +146,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       "section-visibility-changed",
       this._sectionVisibilityChanged
     );
-    this._sidebarTabActive = Boolean(getHistoryState()?.sidebar);
+    this._readSidebarTab = true;
+    this.requestUpdate();
   }
 
   disconnectedCallback(): void {
@@ -154,6 +159,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   willUpdate(changedProperties: PropertyValues<this>): void {
+    // An embedded dashboard leaves the page's history state alone
+    if (this._readSidebarTab) {
+      this._readSidebarTab = false;
+      this._sidebarTabActive =
+        !this.lovelace?.embedded && Boolean(getHistoryState()?.sidebar);
+    }
     if (changedProperties.has("sections")) {
       this._computeSectionsCount();
     }
@@ -416,7 +427,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     ev.stopPropagation();
     // The dropped node only serves as a drop target, the new section renders the card from the config
     (ev.detail.item as HTMLElement).remove();
-    const oldPath = ev.detail.data as LovelacePath;
+    const oldPath = ev.detail.data as ConfigPath;
     const config = this.lovelace!.config;
     const cardConfig = getAtPath<LovelaceCardConfig>(config, oldPath);
     if (!cardConfig) {
@@ -491,6 +502,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   private _toggleView() {
+    // The page around an embedded dashboard owns the window's history and
+    // scroll position
+    if (this.lovelace?.embedded) {
+      this._sidebarTabActive = !this._sidebarTabActive;
+
+      return;
+    }
+
     // Save current scroll position
     if (this._sidebarTabActive) {
       this._sidebarScrollTop = window.scrollY;

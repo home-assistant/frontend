@@ -219,6 +219,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     if (this._searchFieldElement) {
       this._searchFieldElement.value = value;
     }
+    this._applySearch(value);
   }
 
   protected get scrollableElement(): HTMLElement | null {
@@ -477,6 +478,12 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
                 .section-id=${section.id}
                 .selected=${this._selectedSection === section.id}
                 .label=${section.label}
+                aria-label=${
+                  this.i18n?.localize?.(
+                    "ui.components.combo-box.filter_by_section",
+                    { section: section.label }
+                  ) || section.label
+                }
               >
               </ha-filter-chip>`
         )}
@@ -685,7 +692,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _filterChanged = (ev: InputEvent) => {
     const textfield = ev.target as HaInputSearch;
-    const searchString = (textfield.value ?? "").trim();
+    this._applySearch(textfield.value ?? "");
+  };
+
+  private _applySearch(value: string) {
+    const searchString = value.trim();
     this._search = searchString;
 
     if (this.sections?.length) {
@@ -730,7 +741,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
     this._resetSelectedItem();
     this._resetListScroll();
-  };
+  }
 
   // Keep focus in the search field, so a focus change doesn't scroll the
   // list to the active row and make the click miss.

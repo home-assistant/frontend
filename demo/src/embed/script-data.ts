@@ -15,3 +15,17 @@ export const readScriptData = (element: HTMLElement): unknown => {
     ? load(script.textContent!)
     : JSON.parse(script.textContent!);
 };
+
+/** The data of a script child that holds an object, such as a config. */
+export type ScriptObject = object;
+
+/** The object in a script child, see `readScriptData`, if it holds one. */
+export const readScriptObject = (
+  element: HTMLElement
+): ScriptObject | undefined => {
+  const data = readScriptData(element);
+
+  return typeof data === "object" && data !== null && !Array.isArray(data)
+    ? data
+    : undefined;
+};

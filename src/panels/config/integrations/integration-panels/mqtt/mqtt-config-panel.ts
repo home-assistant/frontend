@@ -440,6 +440,10 @@ export class MQTTConfigPanel extends LitElement {
           margin: 0 auto var(--ha-space-4);
           max-width: var(--ha-content-width-narrow);
         }
+        ha-list-item-button::part(headline),
+        ha-list-item-button::part(supporting-text) {
+          white-space: normal;
+        }
         ha-select {
           width: 96px;
           margin: 0 8px;
