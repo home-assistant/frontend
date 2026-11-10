@@ -1,6 +1,7 @@
 import {
   mdiCodeBraces,
   mdiFileTree,
+  mdiHubOutline,
   mdiListStatus,
   mdiOpenInNew,
 } from "@mdi/js";
@@ -531,7 +532,7 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
         <ha-icon-button
           slot="button"
           class=${this._treeLayout ? "active" : ""}
-          .path=${mdiFileTree}
+          .path=${this._treeLayout ? mdiHubOutline : mdiFileTree}
           .label=${this.hass.localize(
             "ui.panel.config.mqtt.visualization.toggle_tree_layout"
           )}
