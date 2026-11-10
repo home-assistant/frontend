@@ -1,5 +1,7 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import type * as HaWebsocket from "home-assistant-js-websocket";
 import type { Connection } from "home-assistant-js-websocket";
+import { subscribeServices as subscribeRegisteredServices } from "home-assistant-js-websocket";
 import type { HassService, HassServices } from "../../src/data/service";
 import {
   applyServicesEvent,
@@ -113,7 +115,17 @@ describe("applyServicesEvent", () => {
   });
 });
 
+vi.mock("home-assistant-js-websocket", async (importOriginal) => ({
+  ...(await importOriginal<typeof HaWebsocket>()),
+  subscribeServices: vi.fn(() => () => undefined),
+}));
+
 describe("subscribeServices", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.mocked(subscribeRegisteredServices).mockClear();
+  });
+
   const createConnection = () => {
     const listeners: Record<string, (() => void)[]> = {};
     let callback: ((event: unknown) => void) | undefined;
@@ -160,6 +172,30 @@ describe("subscribeServices", () => {
     expect(onChange).toHaveBeenLastCalledWith({
       fan: { oscillate: { fields: {} } },
     });
+    expect(subscribeRegisteredServices).not.toHaveBeenCalled();
+  });
+
+  it("keeps the registered services for old cores only when backwards compatible", () => {
+    const onChange = vi.fn();
+    const oldCore = { haVersion: "2026.11.0" } as Connection;
+
+    subscribeServices(
+      { ...oldCore, ...createConnection().conn } as Connection,
+      onChange
+    );
+    expect(subscribeRegisteredServices).not.toHaveBeenCalled();
+
+    vi.stubGlobal("__BACKWARDS_COMPAT__", true);
+    subscribeServices(oldCore, onChange);
+    expect(subscribeRegisteredServices).toHaveBeenCalledWith(oldCore, onChange);
+
+    const { conn, subscribeMessage } = createConnection();
+    subscribeServices(
+      { ...conn, haVersion: "2026.12.0" } as Connection,
+      onChange
+    );
+    expect(subscribeRegisteredServices).toHaveBeenCalledOnce();
+    expect(subscribeMessage).toHaveBeenCalled();
   });
 });
 

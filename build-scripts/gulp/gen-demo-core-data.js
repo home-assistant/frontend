@@ -385,7 +385,7 @@ gulp.task("gen-demo-core-data", async () => {
   await Promise.all([
     writeTs(
       "src/fake_data/demo_services.ts",
-      `import type { HassServices } from "home-assistant-js-websocket";
+      `import type { HassServices } from "../data/service";
 
 // Core sends more than the HassServices type covers, like sections and list
 // examples.

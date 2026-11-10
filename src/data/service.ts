@@ -3,9 +3,13 @@ import type {
   HassService as HassServiceBase,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
-import { getCollection } from "home-assistant-js-websocket";
+import {
+  getCollection,
+  subscribeServices as subscribeRegisteredServices,
+} from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
 import { ensureArray } from "../common/array/ensure-array";
+import { atLeastVersion } from "../common/config/version";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
 import type { LocalizeValues } from "../common/translations/localize";
 import { UNKNOWN_PLACEHOLDERS } from "../common/translations/localize";
@@ -90,12 +94,15 @@ export const subscribeServices = (
   conn: Connection,
   onChange: (services: HassServices) => void
 ) =>
-  getCollection<HassServices>(
-    conn,
-    "_services",
-    undefined,
-    subscribeServicesUpdates
-  ).subscribe(onChange);
+  // For Cast, old instances can connect to it.
+  __BACKWARDS_COMPAT__ && !atLeastVersion(conn.haVersion, 2026, 12)
+    ? subscribeRegisteredServices(conn, onChange)
+    : getCollection<HassServices>(
+        conn,
+        "_services",
+        undefined,
+        subscribeServicesUpdates
+      ).subscribe(onChange);
 
 export type ServiceResponseVariableMode = "hidden" | "optional" | "required";
 
