@@ -177,93 +177,141 @@ const errorItemPath = (config: unknown, path: ConfigPath): ConfigPath => {
   return path.slice(0, end);
 };
 
-/** The config items that have an error, to recognize them after edits. */
-export interface KnownErrorItems {
-  paths: ConfigPath[];
-  items: WeakSet<object>;
-  contents: Set<string>;
+/** A config item with an error, to recognize it after edits. */
+export interface KnownErrorItem {
+  path: ConfigPath;
+  item?: object;
+  content?: string;
 }
+
+const knownItemAt = (config: unknown, path: ConfigPath): KnownErrorItem => {
+  const item = valueAt(config, path);
+  return isConfigObject(item)
+    ? { path, item, content: JSON.stringify(item) }
+    : { path };
+};
 
 export const knownErrorItems = (
   config: unknown,
   errors: ConfigValidationError[]
-): KnownErrorItems => {
-  const items = new WeakSet<object>();
-  const contents = new Set<string>();
-  const paths = errors.map((error) => {
+): KnownErrorItem[] => {
+  const known: KnownErrorItem[] = [];
+  errors.forEach((error) => {
     const path = errorItemPath(config, error.path);
-    const item = valueAt(config, path);
-    if (isConfigObject(item)) {
-      items.add(item);
-      contents.add(JSON.stringify(item));
+    if (!known.some((entry) => pathEquals(entry.path, path))) {
+      known.push(knownItemAt(config, path));
     }
-    return path;
   });
-  return { paths, items, contents };
+  return known;
 };
 
-const walkConfigObjects = (
-  value: unknown,
-  path: ConfigPath,
-  visit: (item: object, path: ConfigPath) => void
-) => {
-  if (typeof value !== "object" || value === null) {
-    return;
-  }
-  visit(value, path);
-  Object.entries(value).forEach(([key, child]) => {
-    walkConfigObjects(
-      child,
-      [...path, Array.isArray(value) ? Number(key) : key],
-      visit
-    );
-  });
+interface ConfigItems {
+  paths: Map<object, ConfigPath>;
+  contents: Map<string, ConfigPath[]>;
+}
+
+// The list entries that are objects, the items rows show
+const configItems = (config: unknown): ConfigItems => {
+  const items: ConfigItems = { paths: new Map(), contents: new Map() };
+  const walk = (value: unknown, path: ConfigPath) => {
+    if (typeof value !== "object" || value === null) {
+      return;
+    }
+    if (typeof path[path.length - 1] === "number" && isConfigObject(value)) {
+      items.paths.set(value, path);
+      const content = JSON.stringify(value);
+      items.contents.set(content, [
+        ...(items.contents.get(content) ?? []),
+        path,
+      ]);
+    }
+    Object.entries(value).forEach(([key, child]) => {
+      walk(child, [...path, Array.isArray(value) ? Number(key) : key]);
+    });
+  };
+  walk(config, []);
+  return items;
 };
 
-/**
- * Follows known items through edits and moves: the item now at a known path
- * is known by identity too, and the path a known item moved to is added.
- * Adds to the identity set of `known` in place, as a WeakSet can't be copied.
- */
-export const followKnownErrorItems = (
-  known: KnownErrorItems,
+const followItem = (
+  entry: KnownErrorItem,
+  previous: ConfigItems,
+  current: ConfigItems,
   config: unknown
-): KnownErrorItems => {
-  known.paths.forEach((path) => {
-    const item = valueAt(config, path);
-    if (isConfigObject(item)) {
-      known.items.add(item);
-    }
-  });
-  const paths = [...known.paths];
-  walkConfigObjects(config, [], (item, path) => {
-    if (
-      known.items.has(item) &&
-      !paths.some((knownPath) => pathEquals(knownPath, path))
-    ) {
-      paths.push(path);
-    }
-  });
-  return { ...known, paths };
+): KnownErrorItem | undefined => {
+  // Unchanged or moved
+  const path = entry.item && current.paths.get(entry.item);
+  if (path) {
+    return { ...entry, path };
+  }
+  // Moved after the YAML was parsed again
+  const samePaths = entry.content
+    ? current.contents.get(entry.content)
+    : undefined;
+  if (samePaths?.length === 1) {
+    return knownItemAt(config, samePaths[0]);
+  }
+  const now = valueAt(config, entry.path);
+  if (!isConfigObject(now)) {
+    return undefined;
+  }
+  // An item that was already there took the place, e.g. after a delete
+  const before =
+    previous.paths.get(now) ?? previous.contents.get(JSON.stringify(now))?.[0];
+  if (before && !pathEquals(before, entry.path)) {
+    return undefined;
+  }
+  // Edited in place
+  return knownItemAt(config, entry.path);
+};
+
+/** Follows known items from `previous` to `config` through moves and edits. */
+export const followKnownErrorItems = (
+  known: KnownErrorItem[],
+  previous: unknown,
+  config: unknown
+): KnownErrorItem[] => {
+  const previousItems = configItems(previous);
+  const currentItems = configItems(config);
+  return known
+    .map((entry) => followItem(entry, previousItems, currentItems, config))
+    .filter((entry): entry is KnownErrorItem => entry !== undefined);
 };
 
 /**
- * The errors on items that already had one. An item is found by its path, or
- * after a move by identity or, once the YAML is parsed again, by content.
+ * Moves errors of `previous` to where their items are in `config`. Errors of
+ * items that are gone are dropped.
  */
+export const followErrors = (
+  errors: ConfigValidationError[],
+  previous: unknown,
+  config: unknown
+): ConfigValidationError[] => {
+  const previousItems = configItems(previous);
+  const currentItems = configItems(config);
+  return errors.flatMap((error) => {
+    const path = errorItemPath(previous, error.path);
+    const moved = followItem(
+      knownItemAt(previous, path),
+      previousItems,
+      currentItems,
+      config
+    );
+    return moved
+      ? [{ ...error, path: [...moved.path, ...error.path.slice(path.length)] }]
+      : [];
+  });
+};
+
+/** The errors on items that already had one. */
 export const errorsOnKnownItems = (
-  known: KnownErrorItems,
+  known: KnownErrorItem[],
   config: unknown,
   errors: ConfigValidationError[]
 ): ConfigValidationError[] =>
   errors.filter((error) => {
     const path = errorItemPath(config, error.path);
-    const item = valueAt(config, path);
-    return (
-      known.paths.some((knownPath) => pathEquals(knownPath, path)) ||
-      (isConfigObject(item) &&
-        (known.items.has(item) || known.contents.has(JSON.stringify(item))))
-    );
+    return known.some((entry) => pathEquals(entry.path, path));
   });
 
 export const targetErrorText = (

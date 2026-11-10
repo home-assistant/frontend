@@ -1077,6 +1077,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   private async _saveAutomation(id): Promise<void> {
     this.saving = true;
+    const config = this.config!;
 
     let entityRegPromise: Promise<EntityRegistryEntry> | undefined;
     if (this.entityRegistryUpdate !== undefined && !this.currentEntityId) {
@@ -1087,7 +1088,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     }
 
     try {
-      await saveAutomationConfig(this.hass, id, this.config!);
+      await saveAutomationConfig(this.hass, id, config);
 
       if (this.entityRegistryUpdate !== undefined) {
         let entityId = this.currentEntityId;
@@ -1136,7 +1137,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       this.deprecatedConfigMigrated = false;
       this.clearConfigErrors();
     } catch (errors: unknown) {
-      this.showSaveErrors(errors);
+      this.showSaveErrors(errors, config);
       throw errors;
     } finally {
       this.saving = false;
