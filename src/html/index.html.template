@@ -90,7 +90,7 @@
             var box = document.getElementById("ha-launch-screen-info-box");
             var message = document.createElement("p");
             message.textContent =
-              "This browser is too old to run Home Assistant. You can continue at your own risk, but some parts may not work.";
+              "This browser is no longer supported. Some parts of Home Assistant may not work.";
             box.appendChild(message);
 
             // Stored: "always", or when the user last continued (ms).
