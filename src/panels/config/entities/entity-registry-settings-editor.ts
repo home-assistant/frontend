@@ -168,7 +168,7 @@ export interface EntitySettingsState {
   entityId: string;
   areaId: string | null;
   labels: string[];
-  deviceClass: string | undefined;
+  deviceClass: string | null;
   disabledBy: EntityRegistryEntry["disabled_by"];
   hiddenBy: EntityRegistryEntry["hidden_by"];
   unitOfMeasurement: string | null | undefined;
@@ -275,7 +275,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @state() private _entityId!: EntitySettingsState["entityId"];
 
-  @state() private _deviceClass?: EntitySettingsState["deviceClass"];
+  @state() private _deviceClass: EntitySettingsState["deviceClass"] = null;
 
   @state() private _switchAsDomain: EntitySettingsState["switchAsDomain"] =
     "switch";
@@ -345,7 +345,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._name = this.entry.name || this._originalName;
     this._isMainEntity = !!this._device && !this._entryName;
     this._icon = this.entry.icon || "";
-    this._deviceClass = this.entry.device_class || this._originalDeviceClass;
+    this._deviceClass =
+      this.entry.device_class === this._originalDeviceClass
+        ? null
+        : (this.entry.device_class ?? null);
     this._origEntityId = this.entry.entity_id;
     this._areaId = this.entry.area_id;
     this._mainEntityWithOwnArea = this._isMainEntity && !!this.entry.area_id;
@@ -478,19 +481,19 @@ export class EntityRegistrySettingsEditor extends LitElement {
     if (changedProps.has("_deviceClass")) {
       const domain = computeDomain(this.entry.entity_id);
 
-      if (domain === "number" && this._deviceClass) {
+      if (domain === "number" && this._effectiveDeviceClass) {
         const { units } = await getNumberDeviceClassConvertibleUnits(
           this.hass,
-          this._deviceClass
+          this._effectiveDeviceClass
         );
         this._numberDeviceClassConvertibleUnits = units;
       } else {
         this._numberDeviceClassConvertibleUnits = [];
       }
-      if (domain === "sensor" && this._deviceClass) {
+      if (domain === "sensor" && this._effectiveDeviceClass) {
         const { units } = await getSensorDeviceClassConvertibleUnits(
           this.hass,
-          this._deviceClass
+          this._effectiveDeviceClass
         );
         this._sensorDeviceClassConvertibleUnits = units;
       } else {
@@ -531,7 +534,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
     const defaultPrecision =
       this.entry.options?.sensor?.suggested_display_precision ?? undefined;
     const defaultName = this._originalName;
-    const previewStateObj = this._previewStateObj(stateObj, this._deviceClass);
+    const previewStateObj = this._previewStateObj(
+      stateObj,
+      this._effectiveDeviceClass
+    );
 
     return html`
       ${
@@ -655,14 +661,15 @@ export class EntityRegistrySettingsEditor extends LitElement {
               @selected=${this._switchAsDomainChanged}
               value=${this._switchAsLabel(
                 this._switchAsDomain,
-                this._deviceClass
+                this._effectiveDeviceClass
               )}
             >
               <ha-dropdown-item
                 value="switch"
                 .selected=${
                   this._switchAsDomain === "switch" &&
-                  (!this._deviceClass || this._deviceClass === "switch")
+                  (!this._effectiveDeviceClass ||
+                    this._effectiveDeviceClass === "switch")
                 }
               >
                 ${domainToName(this.hass.localize, "switch")}
@@ -671,7 +678,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 value="outlet"
                 .selected=${
                   this._switchAsDomain === "switch" &&
-                  this._deviceClass === "outlet"
+                  this._effectiveDeviceClass === "outlet"
                 }
               >
                 ${this.hass.localize(
@@ -758,7 +765,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       ${this._renderDeviceClassSelect(domain)}
       ${
         domain === "number" &&
-        this._deviceClass &&
+        this._effectiveDeviceClass &&
         stateObj?.attributes.unit_of_measurement &&
         this._numberDeviceClassConvertibleUnits?.includes(
           stateObj?.attributes.unit_of_measurement
@@ -847,7 +854,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       }
       ${
         domain === "sensor" &&
-        this._deviceClass &&
+        this._effectiveDeviceClass &&
         stateObj?.attributes.unit_of_measurement &&
         this._sensorDeviceClassConvertibleUnits?.includes(
           stateObj?.attributes.unit_of_measurement
@@ -872,7 +879,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
         domain === "sensor" &&
         // Allow customizing the precision for a sensor with numerical device class,
         // a unit of measurement or state class
-        (isNumericSensorDeviceClass(this._deviceClass) ||
+        (isNumericSensorDeviceClass(this._effectiveDeviceClass) ||
           stateObj?.attributes.unit_of_measurement ||
           stateObj?.attributes.state_class)
           ? html`
@@ -1318,14 +1325,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
       new_entity_id: this._entityId.trim(),
     };
 
-    const savedDeviceClass =
-      this.entry.device_class || this._originalDeviceClass;
-    if (this._deviceClass !== savedDeviceClass) {
-      const hasDefaultDeviceClass =
-        this._deviceClass === this._originalDeviceClass;
-      params.device_class = hasDefaultDeviceClass
-        ? null
-        : (this._deviceClass ?? null);
+    if (this._deviceClass !== (this.entry.device_class ?? null)) {
+      params.device_class = this._deviceClass;
     }
 
     const stateObj: HassEntity | undefined =
@@ -1621,8 +1622,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   private _deviceClassChanged(ev: HaSelectSelectEvent): void {
     const value = ev.detail.value;
-    this._deviceClass =
-      value === DEFAULT_DEVICE_CLASS ? this._originalDeviceClass : value;
+    this._deviceClass = value === DEFAULT_DEVICE_CLASS ? null : value;
   }
 
   private _unitChanged(ev: HaSelectSelectEvent): void {
@@ -1684,7 +1684,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
         value === "outlet") ||
       value === "switch"
     ) {
-      this._deviceClass = value;
+      this._deviceClass = value === this._originalDeviceClass ? null : value;
     }
   }
 
@@ -1798,6 +1798,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
     return this.entry.original_device_class || undefined;
   }
 
+  private get _effectiveDeviceClass(): string | undefined {
+    return this._deviceClass || this._originalDeviceClass;
+  }
+
   private _renderDeviceClassSelect(domain: string) {
     if (!this._showDeviceClassSelect(domain)) {
       return nothing;
@@ -1808,14 +1812,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
       this.hass.localize,
       this.hass.locale.language
     );
-    const allOptions = [
+    const selectedValue = this._deviceClass || DEFAULT_DEVICE_CLASS;
+    const selectedOption = [
       options.defaultOption,
       ...options.related,
       ...options.others,
-    ];
-    const selectedOption = allOptions.find(
-      (option) => option.deviceClass === this._deviceClass
-    );
+    ].find((option) => option.value === selectedValue);
 
     return html`
       <ha-select
@@ -1844,7 +1846,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     return html`
       <ha-dropdown-item
         .value=${option.value}
-        .selected=${option.deviceClass === this._deviceClass}
+        .selected=${option.value === (this._deviceClass || DEFAULT_DEVICE_CLASS)}
       >
         <ha-domain-icon
           slot="icon"
