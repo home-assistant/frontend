@@ -200,31 +200,29 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
     );
   }
 
-  private _renderFavoriteButton: HaMoreInfoFavorites["renderItem"] = (
-    favorite,
-    _index,
-    editMode
-  ) => {
-    const active = coverCurrentValue(this.stateObj, this.mode) === favorite;
-    const label = this._localizeFavorite(editMode ? "edit" : "set", {
-      value: `${favorite as number}%`,
-    });
+  private _favoriteButtonRenderer(): HaMoreInfoFavorites["renderItem"] {
+    return (favorite, _index, editMode) => {
+      const active = coverCurrentValue(this.stateObj, this.mode) === favorite;
+      const label = this._localizeFavorite(editMode ? "edit" : "set", {
+        value: `${favorite as number}%`,
+      });
 
-    return html`
-      <ha-control-button
-        class=${classMap({ active })}
-        style=${styleMap({
-          "--control-button-border-radius": "var(--ha-border-radius-pill)",
-          width: "72px",
-          height: "36px",
-        })}
-        .label=${label}
-        .disabled=${this.stateObj.state === UNAVAILABLE}
-      >
-        ${favorite as number}%
-      </ha-control-button>
-    `;
-  };
+      return html`
+        <ha-control-button
+          class=${classMap({ active })}
+          style=${styleMap({
+            "--control-button-border-radius": "var(--ha-border-radius-pill)",
+            width: "72px",
+            height: "36px",
+          })}
+          .label=${label}
+          .disabled=${this.stateObj.state === UNAVAILABLE}
+        >
+          ${favorite as number}%
+        </ha-control-button>
+      `;
+    };
+  }
 
   private _deleteLabel: HaMoreInfoFavorites["deleteLabel"] = (index) =>
     this._localizeFavorite("delete", { number: index + 1 });
@@ -290,7 +288,7 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
     return html`
       <ha-more-info-favorites
         .items=${this._favorites}
-        .renderItem=${this._renderFavoriteButton}
+        .renderItem=${this._favoriteButtonRenderer()}
         .deleteLabel=${this._deleteLabel}
         .editMode=${this.editMode ?? false}
         .disabled=${this.stateObj.state === UNAVAILABLE}
