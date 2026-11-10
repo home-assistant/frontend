@@ -17,6 +17,7 @@ import {
 } from "../data/context";
 import { getServiceIcons } from "../data/icons";
 import { domainToName } from "../data/integration";
+import { getServicePlaceholders } from "../data/service";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-combo-box-item";
 import "./ha-generic-picker";
@@ -120,8 +121,9 @@ class HaServicePicker extends LitElement {
           `;
         }
 
-        const descriptionPlaceholders =
-          services[domain][service].description_placeholders;
+        const descriptionPlaceholders = getServicePlaceholders(
+          services[domain][service]
+        );
 
         const serviceName =
           localize(
@@ -197,8 +199,9 @@ class HaServicePicker extends LitElement {
             const serviceId = `${domain}.${service}`;
             const domainName = domainToName(localize, domain);
 
-            const descriptionPlaceholders =
-              services[domain][service].description_placeholders;
+            const descriptionPlaceholders = getServicePlaceholders(
+              services[domain][service]
+            );
 
             const name =
               localize(

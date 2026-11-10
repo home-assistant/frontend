@@ -64,7 +64,7 @@ const callToAction = (
   if (Object.keys(data).length) {
     action.data = data;
   }
-  if (service !== undefined && "response" in service) {
+  if (service?.response) {
     action.response_variable = "action_response";
   }
   return action;
@@ -232,7 +232,7 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
         service_data,
         undefined,
         true,
-        "response" in this._services[domain][service]
+        !!this._services[domain][service].response
       );
     } catch {
       button.actionError();

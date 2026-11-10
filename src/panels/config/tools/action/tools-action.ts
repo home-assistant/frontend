@@ -1,5 +1,4 @@
 import { mdiHelpCircleOutline } from "@mdi/js";
-import type { HassService } from "home-assistant-js-websocket";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { dump, JSON_SCHEMA, load } from "js-yaml";
 import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
@@ -40,8 +39,10 @@ import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { forwardHaptic } from "../../../../data/haptics";
 import type { Action, ServiceAction } from "../../../../data/script";
 import { migrateAutomationAction } from "../../../../data/script";
+import type { HassService } from "../../../../data/service";
 import {
   callExecuteScript,
+  getServicePlaceholders,
   serviceCallWillDisconnect,
 } from "../../../../data/service";
 import { haStyle } from "../../../../resources/styles";
@@ -155,10 +156,11 @@ class HaPanelDevAction extends MatchMinHeightMixin(
       ? computeObjectId(this._serviceData?.action)
       : undefined;
 
-    const descriptionPlaceholders =
+    const descriptionPlaceholders = getServicePlaceholders(
       domain && serviceName
-        ? this.hass.services[domain]?.[serviceName]?.description_placeholders
-        : undefined;
+        ? this.hass.services[domain]?.[serviceName]
+        : undefined
+    );
 
     return html`
       <div class="content">
@@ -524,10 +526,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(
     }
     const [domain, service] = this._serviceData!.action!.split(".", 2);
     const script: Action[] = [];
-    if (
-      this.hass.services?.[domain]?.[service] &&
-      "response" in this.hass.services[domain][service]
-    ) {
+    if (this.hass.services?.[domain]?.[service]?.response) {
       script.push({
         ...this._serviceData!,
         response_variable: "service_result",
@@ -720,10 +719,11 @@ class HaPanelDevAction extends MatchMinHeightMixin(
           value =
             this.hass.localize(
               `component.${domain}.services.${serviceName}.fields.${field.key}.example`,
-              domain && serviceName
-                ? this.hass.services[domain][serviceName]
-                    .description_placeholders
-                : undefined
+              getServicePlaceholders(
+                domain && serviceName
+                  ? this.hass.services[domain][serviceName]
+                  : undefined
+              )
             ) || field.example;
         }
         example[field.key] = value;

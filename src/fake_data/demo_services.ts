@@ -1,6 +1,6 @@
 // This file is auto-generated from Home Assistant Core. Do not edit by hand.
 // Regenerate with `script/gen_demo_core_data`.
-import type { HassServices } from "home-assistant-js-websocket";
+import type { HassServices } from "../data/service";
 
 // Core sends more than the HassServices type covers, like sections and list
 // examples.

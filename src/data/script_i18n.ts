@@ -8,6 +8,7 @@ import type { Condition } from "./automation";
 import { describeCondition, type DescribeOptions } from "./automation_i18n";
 import { localizeDeviceAutomationAction } from "./device/device_automation";
 import type { EntityRegistryEntry } from "./entity/entity_registry";
+import { getServicePlaceholders } from "./service";
 import { domainToName } from "./integration";
 import type { DomainManifestLookup } from "./integration";
 import type {
@@ -117,8 +118,9 @@ const tryDescribeAction = <T extends ActionType>(
 
     if (config.action) {
       const [domain, serviceName] = config.action.split(".", 2);
-      const descriptionPlaceholders =
-        hass.services[domain]?.[serviceName]?.description_placeholders;
+      const descriptionPlaceholders = getServicePlaceholders(
+        hass.services[domain]?.[serviceName]
+      );
       const service =
         hass.localize(
           `component.${domain}.services.${serviceName}.name`,

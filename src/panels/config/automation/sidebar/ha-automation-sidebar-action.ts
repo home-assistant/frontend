@@ -49,6 +49,7 @@ import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 import "./ha-automation-sidebar-card";
 import "../action/ha-automation-action-editor";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
+import { getServicePlaceholders } from "../../../../data/service";
 
 @customElement("ha-automation-sidebar-action")
 export default class HaAutomationSidebarAction extends LitElement {
@@ -122,7 +123,7 @@ export default class HaAutomationSidebarAction extends LitElement {
       const serviceName =
         this.hass.localize(
           `component.${domain}.services.${service}.name`,
-          this.hass.services[domain]?.[service]?.description_placeholders
+          getServicePlaceholders(this.hass.services[domain]?.[service])
         ) ||
         this.hass.services[domain]?.[service]?.name ||
         title;
