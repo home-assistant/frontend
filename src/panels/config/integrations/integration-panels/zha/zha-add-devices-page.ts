@@ -1,3 +1,4 @@
+import type { Connection } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -41,6 +42,8 @@ class ZHAAddDevicesPage extends LitElement {
   private _subscribed?: Promise<() => Promise<void>>;
 
   private _wakeLock?: Promise<WakeLockSentinel>;
+
+  private _connection?: Connection;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -194,8 +197,17 @@ class ZHAAddDevicesPage extends LitElement {
     }
   }
 
+  // The backend ends the subscription when the connection drops, and it is not
+  // sent again, so end the search here and show "Search again"
+  private _connectionLost = () => {
+    this._subscribed = undefined;
+    this._unsubscribe();
+  };
+
   private _unsubscribe(): Promise<void> {
     this._active = false;
+    this._connection?.removeEventListener("disconnected", this._connectionLost);
+    this._connection = undefined;
     if (this._addDevicesTimeoutHandle) {
       clearTimeout(this._addDevicesTimeoutHandle);
     }
@@ -222,6 +234,8 @@ class ZHAAddDevicesPage extends LitElement {
       data.ieee = this._ieeeAddress;
     }
     const connection = this.hass.connection;
+    this._connection = connection;
+    connection.addEventListener("disconnected", this._connectionLost);
     this._subscribed = unsubscribed
       // A failed unsubscribe leaves nothing to wait for
       .catch(() => undefined)
