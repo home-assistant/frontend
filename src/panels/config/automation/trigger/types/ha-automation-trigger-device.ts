@@ -29,9 +29,18 @@ import {
 } from "../../../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../../types";
+import {
+  deviceAutomationErrorText,
+  deviceErrorText,
+} from "../../automation-errors";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 
 @customElement("ha-automation-trigger-device")
 export class HaDeviceTrigger extends LitElement {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["device_id", "domain"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Object }) public trigger!: DeviceTrigger;
@@ -136,12 +145,20 @@ export class HaDeviceTrigger extends LitElement {
   }
 
   protected render() {
+    const deviceError = this._fieldErrors.fieldError("device_id");
+    const automationError = this._fieldErrors.fieldError("domain");
     const deviceId = this._deviceId || this.trigger.device_id;
 
     return html`
       <ha-device-picker
         .value=${deviceId}
         .replacementDeviceIds=${this._replacementDeviceIds}
+        .invalid=${!!deviceError}
+        .errorMessage=${
+          deviceError
+            ? deviceErrorText(this.hass.localize, deviceError)
+            : undefined
+        }
         @value-changed=${this._devicePicked}
         .disabled=${this.disabled}
         .label=${this.hass.localize(
@@ -149,6 +166,16 @@ export class HaDeviceTrigger extends LitElement {
         )}
       ></ha-device-picker>
       <ha-device-trigger-picker
+        .invalid=${!!automationError}
+        .errorMessage=${
+          automationError
+            ? deviceAutomationErrorText(
+                this.hass.localize,
+                "triggers",
+                automationError
+              )
+            : undefined
+        }
         .value=${this.trigger}
         .deviceId=${deviceId}
         @value-changed=${this._deviceTriggerPicked}

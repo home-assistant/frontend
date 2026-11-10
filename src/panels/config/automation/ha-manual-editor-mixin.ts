@@ -2,8 +2,8 @@ import { provide } from "@lit/context";
 import { mdiContentSave } from "@mdi/js";
 import {
   html,
+  nothing,
   type LitElement,
-  type nothing,
   type PropertyValues,
   type TemplateResult,
 } from "lit";
@@ -16,6 +16,7 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { replaceCurrentUrl } from "../../../common/navigate";
 import { constructUrlCurrentPath } from "../../../common/url/construct-url";
+import { nextRender } from "../../../common/util/render-status";
 import {
   extractSearchParam,
   removeSearchParam,
@@ -24,6 +25,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
 import type { SidebarConfig } from "../../../data/automation";
+import type { ConfigValidationError } from "../../../data/config";
 import {
   dirtyStateContext,
   type DirtyStateContext,
@@ -34,10 +36,19 @@ import type {
   ValueChangedEvent,
 } from "../../../types";
 import { showToast } from "../../../util/toast";
+import "../../../components/ha-alert";
+import {
+  automationErrorsContext,
+  errorOwner,
+  errorText,
+  NO_ERRORS,
+} from "./automation-errors";
 import {
   AutomationRowRegistry,
   automationRowRegistryContext,
+  type AutomationPathRow,
 } from "./automation-path";
+import { scrollRowIntoView } from "./scroll-row-into-view";
 import "./ha-automation-sidebar";
 import type HaAutomationSidebar from "./ha-automation-sidebar";
 
@@ -90,6 +101,10 @@ export const ManualEditorMixin = <TConfig>(
     @provide({ context: automationRowRegistryContext })
     protected rowRegistry = new AutomationRowRegistry();
 
+    @provide({ context: automationErrorsContext })
+    @property({ attribute: false })
+    public configErrors: ConfigValidationError[] = NO_ERRORS;
+
     declare protected collapsableElements?: NodeListOf<
       Element & {
         expandAll(): void;
@@ -103,14 +118,42 @@ export const ManualEditorMixin = <TConfig>(
       throw new Error("Not implemented");
     };
 
+    private _unsubscribeRows?: () => void;
+
+    // Rows register while they render, so errors only count as without a
+    // row once the rows had a frame to render
+    @state() private _rowsRendered = false;
+
     public connectedCallback() {
       super.connectedCallback();
       window.addEventListener("paste", this.handlePaste);
+      // Which errors have a row changes as rows render
+      this._unsubscribeRows = this.rowRegistry.subscribe(() => {
+        if (this.configErrors.length) {
+          this.requestUpdate();
+        }
+      });
     }
 
     public disconnectedCallback() {
       window.removeEventListener("paste", this.handlePaste);
+      this._unsubscribeRows?.();
+      this._unsubscribeRows = undefined;
       super.disconnectedCallback();
+    }
+
+    private _renderUnownedErrors() {
+      if (!this._rowsRendered) {
+        return nothing;
+      }
+      const unowned = this.configErrors.filter(
+        (error) => !errorOwner(this.rowRegistry, error)
+      );
+      return unowned.length
+        ? html`<ha-alert alert-type="error" class="unowned-errors">
+            ${unowned.map((error) => html`<p>${errorText(error)}</p>`)}
+          </ha-alert>`
+        : nothing;
     }
 
     protected renderContent(): TemplateResult | typeof nothing {
@@ -141,7 +184,7 @@ export const ManualEditorMixin = <TConfig>(
           >
             <div class="content">
               <slot name="alerts"></slot>
-              ${this.renderContent()}
+              ${this._renderUnownedErrors()} ${this.renderContent()}
             </div>
             <div class="fab-positioner">
               <ha-button
@@ -179,6 +222,9 @@ export const ManualEditorMixin = <TConfig>(
 
     protected firstUpdated(changedProps: PropertyValues<this>): void {
       super.firstUpdated(changedProps);
+      nextRender().then(() => {
+        this._rowsRendered = true;
+      });
 
       this.style.setProperty(
         "--sidebar-dynamic-width",
@@ -301,6 +347,54 @@ export const ManualEditorMixin = <TConfig>(
         message: "",
         duration: 0,
       });
+    }
+
+    /**
+     * Expands the rows along the path of every error, then scrolls to the
+     * first one and opens it in the sidebar. Does nothing while a row with an
+     * error is open, so the user stays where they are.
+     */
+    public async revealErrors() {
+      await this.updateComplete;
+      const errorRows = () =>
+        this.configErrors.map((error) =>
+          this.rowRegistry.rowsAlong(error.path)
+        );
+      const owners = (rows: AutomationPathRow[][]) =>
+        rows
+          .map((along) => along[along.length - 1])
+          .filter((owner) => owner !== undefined);
+      let rows = errorRows();
+      if (owners(rows).some((owner) => owner.selected)) {
+        return;
+      }
+      const depthOf = (along: AutomationPathRow[][]) =>
+        along.reduce((sum, path) => sum + path.length, 0);
+      // Collapsed rows don't render their children, so expand one level at a
+      // time until no deeper row shows up
+      let depth = -1;
+      while (depthOf(rows) > depth) {
+        depth = depthOf(rows);
+        rows.flat().forEach((row) => row.expand());
+        // eslint-disable-next-line no-await-in-loop
+        await nextRender();
+        rows = errorRows();
+      }
+      // Errors aren't in config order, so take the topmost row
+      const first = owners(rows).reduce<AutomationPathRow | undefined>(
+        (top, row) =>
+          !top ||
+          row.getBoundingClientRect().top < top.getBoundingClientRect().top
+            ? row
+            : top,
+        undefined
+      );
+      if (!first) {
+        return;
+      }
+      first.openSidebar();
+      await nextRender();
+      scrollRowIntoView(first);
     }
 
     public expandAll() {

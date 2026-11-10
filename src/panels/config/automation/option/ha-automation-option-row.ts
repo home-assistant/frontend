@@ -65,6 +65,7 @@ import {
 import "../trigger/ha-automation-trigger-references";
 import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 import { AutomationPathController } from "../automation-path";
+import { renderRowErrorIcon } from "../automation-row-error-icon";
 
 @customElement("ha-automation-option-row")
 export default class HaAutomationOptionRow extends LitElement {
@@ -272,6 +273,11 @@ export default class HaAutomationOptionRow extends LitElement {
         }
       </h3>
 
+      ${renderRowErrorIcon(
+        this.pathController.errors,
+        this.pathController.path,
+        this.hass.localize("ui.panel.config.automation.editor.errors.label")
+      )}
       <slot name="icons" slot="icons"></slot>
 
       ${
@@ -502,6 +508,7 @@ export default class HaAutomationOptionRow extends LitElement {
                 .collapsed=${this._collapsed}
                 .selected=${this._selected}
                 .sortSelected=${this.sortSelected}
+                .error=${this.pathController.errors.length > 0}
                 @click=${this._toggleSidebar}
                 @toggle-collapsed=${this._toggleCollapse}
                 @delete-row=${this._removeOption}
