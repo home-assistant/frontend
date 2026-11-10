@@ -303,7 +303,7 @@ class StepFlowCreateEntry extends LitElement {
     if (Object.keys(this._deviceUpdate).length) {
       const deviceUpdates = Object.entries(this._deviceUpdate).map(
         ([deviceId, update]) =>
-          updateDeviceRegistryEntry(this.hass, deviceId, {
+          updateDeviceRegistryEntry(this.hass.callWS, deviceId, {
             name_by_user: update.name,
             area_id: update.area,
           }).catch((err: unknown) => {
@@ -340,7 +340,7 @@ class StepFlowCreateEntry extends LitElement {
       Object.entries(entityIdsMapping).forEach(([oldEntityId, newEntityId]) => {
         if (newEntityId) {
           entityUpdates.push(
-            updateEntityRegistryEntry(this.hass, oldEntityId, {
+            updateEntityRegistryEntry(this.hass.callWS, oldEntityId, {
               new_entity_id: newEntityId,
             }).catch((err) =>
               showAlertDialog(this, {

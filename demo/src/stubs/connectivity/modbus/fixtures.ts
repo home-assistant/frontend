@@ -10,19 +10,26 @@ export const FRONIUS_ENTRY_ID = "mock-fronius";
 export const RS485_PORT = "/dev/ttyUSB1";
 
 export const modbusFixtures: ConnectivityFixtures = {
-  components: ["modbus"],
+  components: ["modbus", "flexit", "solaredge_modbus", "fronius"],
   commands: ["modbus/"],
   manifests: [
+    manifest("modbus", "Modbus", {
+      config_flow: false,
+      iot_class: "local_polling",
+    }),
     manifest("flexit", "Flexit", {
       integration_type: "device",
+      dependencies: ["modbus"],
       iot_class: "local_polling",
     }),
     manifest("solaredge_modbus", "SolarEdge Modbus", {
       integration_type: "device",
+      dependencies: ["modbus"],
       iot_class: "local_polling",
     }),
     manifest("fronius", "Fronius", {
       integration_type: "device",
+      dependencies: ["modbus"],
       iot_class: "local_polling",
     }),
   ],

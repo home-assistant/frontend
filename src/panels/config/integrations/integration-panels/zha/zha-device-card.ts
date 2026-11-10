@@ -129,7 +129,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     const oldDeviceName = device.user_given_name || device.name;
     const newDeviceName = (event.target as HaInput).value;
     this.device.user_given_name = newDeviceName;
-    await updateDeviceRegistryEntry(this.hass, device.device_reg_id, {
+    await updateDeviceRegistryEntry(this.hass.callWS, device.device_reg_id, {
       name_by_user: newDeviceName,
     });
 
@@ -155,7 +155,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
         return undefined;
       }
 
-      return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
+      return updateEntityRegistryEntry(this.hass!.callWS, entity.entity_id, {
         new_entity_id: newEntityId,
       });
     });
@@ -173,9 +173,13 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
 
     const area = ev.detail.value;
     try {
-      await updateDeviceRegistryEntry(this.hass, this.device!.device_reg_id, {
-        area_id: area,
-      });
+      await updateDeviceRegistryEntry(
+        this.hass.callWS,
+        this.device!.device_reg_id,
+        {
+          area_id: area,
+        }
+      );
       this.device!.area_id = area;
     } catch (err: any) {
       showAlertDialog(this, {

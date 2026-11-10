@@ -915,7 +915,7 @@ class DialogZWaveJSAddNode extends LitElement {
       const nameChanged = this._device.name !== this._deviceOptions?.name;
       if (nameChanged || this._deviceOptions?.area) {
         try {
-          await updateDeviceRegistryEntry(this.hass, this._device.id, {
+          await updateDeviceRegistryEntry(this.hass.callWS, this._device.id, {
             name_by_user: this._deviceOptions!.name,
             area_id: this._deviceOptions!.area,
           });
@@ -938,9 +938,13 @@ class DialogZWaveJSAddNode extends LitElement {
                   return undefined;
                 }
 
-                return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-                  new_entity_id: newEntityId,
-                });
+                return updateEntityRegistryEntry(
+                  this.hass!.callWS,
+                  entity.entity_id,
+                  {
+                    new_entity_id: newEntityId,
+                  }
+                );
               })
             );
           }

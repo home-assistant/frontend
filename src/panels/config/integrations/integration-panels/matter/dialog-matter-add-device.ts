@@ -309,7 +309,7 @@ class DialogMatterAddDevice extends LitElement {
       const areaChanged = area !== origArea;
 
       if (nameChanged || areaChanged) {
-        await updateDeviceRegistryEntry(this.hass, device.id, {
+        await updateDeviceRegistryEntry(this.hass.callWS, device.id, {
           ...(nameChanged && { name_by_user: name || null }),
           ...(areaChanged && { area_id: area || null }),
         }).catch((err: Error) =>
@@ -336,7 +336,7 @@ class DialogMatterAddDevice extends LitElement {
             Object.entries(mapping)
               .filter((entry): entry is [string, string] => !!entry[1])
               .map(([oldId, newId]) =>
-                updateEntityRegistryEntry(this.hass, oldId, {
+                updateEntityRegistryEntry(this.hass.callWS, oldId, {
                   new_entity_id: newId,
                 }).catch((err: Error) =>
                   showAlertDialog(this, {
@@ -358,7 +358,7 @@ class DialogMatterAddDevice extends LitElement {
           undefined;
         if (deviceClass !== origClass) {
           await updateEntityRegistryEntry(
-            this.hass,
+            this.hass.callWS,
             this._mainEntity.entity_id,
             { device_class: deviceClass || null }
           ).catch((err: Error) =>

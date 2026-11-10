@@ -95,7 +95,7 @@ export const regenerateEntityIds = async (
         entityIdsEntries
           .filter(([oldId, newId]) => newId && oldId !== newId)
           .forEach(([oldEntityId, newEntityId]) =>
-            updateEntityRegistryEntry(hass, oldEntityId, {
+            updateEntityRegistryEntry(hass.callWS, oldEntityId, {
               new_entity_id: newEntityId!,
             }).catch((err: any) => {
               showAlertDialog(element, {

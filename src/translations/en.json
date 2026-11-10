@@ -1630,6 +1630,12 @@
         "go_to_line": {
           "label": "Go to line",
           "go": "Go"
+        },
+        "fold": {
+          "fold_line": "Fold line",
+          "unfold_line": "Unfold line",
+          "folded_code": "Folded code",
+          "unfold": "Unfold"
         }
       },
       "state-class-picker": {
@@ -7891,7 +7897,8 @@
             "entries_virtual": "[%key:ui::panel::config::integrations::integration_page::entries%]",
             "entries_entity": "[%key:ui::panel::config::integrations::integration_page::entries%]",
             "no_entries": "No entries",
-            "yaml_entry": "This integration was not set up via the UI, you have either set it up in YAML or it is a dependency set up by another integration. If you want to configure it, you will need to do so in your configuration.yaml file.",
+            "used_by": "Used by",
+            "yaml_entry": "This integration was not set up via the UI; you have either set it up in YAML, or it is a dependency set up by another integration. If you want to configure it, you will need to do so in your configuration.yaml file.",
             "attention_entries": "Needs attention",
             "add_entry": "Add entry",
             "add_device": "Add device",
@@ -13241,7 +13248,11 @@
           "no_repositories": "You have not added any repositories from a link yet.",
           "remove_title": "Remove {name} from the list?",
           "remove_text": "It no longer shows in the Marketplace. You can add it again later.",
-          "remove_installed": "Uninstall it first"
+          "remove_installed": "Uninstall it first",
+          "remove_selected_title": "Remove selected repositories?",
+          "remove_selected_text": "{count, plural,\n  one {The selected repository no longer shows in the Marketplace. You can add it again later.}\n  other {The {count} selected repositories no longer show in the Marketplace. You can add them again later.}\n}",
+          "remove_failed_title": "Remove failed",
+          "remove_failed": "Some repositories could not be removed."
         },
         "dialog_install": {
           "loading": "Loading repository",

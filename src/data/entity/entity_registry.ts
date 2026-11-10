@@ -284,11 +284,11 @@ export const getExtendedEntityRegistryEntries = (
   });
 
 export const updateEntityRegistryEntry = (
-  hass: Pick<HomeAssistant, "callWS">,
+  callWS: HomeAssistantApi["callWS"],
   entityId: string,
   updates: Partial<EntityRegistryEntryUpdateParams>
 ): Promise<UpdateEntityRegistryEntryResult> =>
-  hass.callWS({
+  callWS({
     type: "config/entity_registry/update",
     entity_id: entityId,
     ...updates,
@@ -409,7 +409,7 @@ export const updateEntitiesArea = async (
 ): Promise<Record<string, string>> => {
   await Promise.all(
     entityIds.map((entityId) =>
-      updateEntityRegistryEntry({ callWS }, entityId, { area_id: areaId })
+      updateEntityRegistryEntry(callWS, entityId, { area_id: areaId })
     )
   );
   const newEntityIds = await getAutomaticEntityIds(callWS, entityIds);
@@ -418,7 +418,7 @@ export const updateEntitiesArea = async (
     const newEntityId = newEntityIds[entityId];
     if (newEntityId) {
       // eslint-disable-next-line no-await-in-loop
-      await updateEntityRegistryEntry({ callWS }, entityId, {
+      await updateEntityRegistryEntry(callWS, entityId, {
         new_entity_id: newEntityId,
       });
     }

@@ -401,9 +401,13 @@ export class HaDataTable extends LitElement {
     }
 
     if (properties.has("data")) {
-      // Clean up checked rows that no longer exist in the data
+      // Clean up checked rows that no longer exist or can no longer be selected
       if (this._checkedRows.length) {
-        const validIds = new Set(this.data.map((row) => String(row[this.id])));
+        const validIds = new Set(
+          this.data
+            .filter((row) => row.selectable !== false)
+            .map((row) => String(row[this.id]))
+        );
         const validCheckedRows = this._checkedRows.filter((id) =>
           validIds.has(id)
         );
