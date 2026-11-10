@@ -56,6 +56,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../dashboard/ha-config-updates";
+import "./updates/ha-config-upgrade-check";
 import { showJoinBetaDialog } from "./updates/show-dialog-join-beta";
 
 interface UpdateGroup {
@@ -412,6 +413,16 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
                             </div>
                           </ha-card>
                         `
+                  }
+                  ${
+                    isComponentLoaded(
+                      this.hass.config,
+                      "homeassistant_upgrade_check"
+                    )
+                      ? html`<ha-config-upgrade-check
+                          .hass=${this.hass}
+                        ></ha-config-upgrade-check>`
+                      : nothing
                   }
                 </div>
               `

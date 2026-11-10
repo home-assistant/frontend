@@ -1945,6 +1945,12 @@
         },
         "update": {
           "release_announcement": "Read release announcement",
+          "upgrade_check": {
+            "affects": "{count, plural, one {One change in this update affects your integrations.} other {# changes in this update affect your integrations.}}",
+            "breaking": "{count, plural, one {One of them is backward-incompatible.} other {# of them are backward-incompatible.}}",
+            "nothing_applies": "None of the changes in this update affect your integrations.",
+            "show": "Show what changes for you"
+          },
           "skip": "Skip",
           "clear_skipped": "Clear skipped",
           "install": "Install",
@@ -3152,6 +3158,25 @@
           "skipped": "Skipped",
           "update_in_progress": "Update in progress",
           "no_area": "No area",
+          "upgrade_check": {
+            "title": "Before you upgrade",
+            "subtitle": "Upgrading from {from} to {to}: changes that affect your integrations",
+            "no_releases": "No releases newer than {version} are available yet.",
+            "unavailable": "Unable to read the release notes right now. Try again later.",
+            "nothing_applies": "None of the changes in the newer releases affect your integrations.",
+            "count": "{count, plural, one {# item} other {# items}}",
+            "global": "General changes",
+            "related": "Also mentions your integrations:",
+            "tier_reached": "{integration} reached {tier}",
+            "thanks": "Thanks to {users}",
+            "removed_in": "Removed in {version}",
+            "category": {
+              "breaking": "Backward-incompatible changes",
+              "noteworthy": "Noteworthy improvements",
+              "quality_scale": "Quality scale changes",
+              "removed": "Removed integrations"
+            }
+          },
           "backup_in_progress": {
             "title": {
               "create_backup": "[%key:ui::panel::config::backup::overview::progress::heading::create_backup%]",
