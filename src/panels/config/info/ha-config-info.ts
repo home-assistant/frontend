@@ -207,13 +207,12 @@ class HaConfigInfo extends LitElement {
           <ha-card outlined class="pages">
             <ha-list-base>
               <ha-list-item-button @click=${this._showShortcuts}>
-                <div
+                <ha-svg-icon
                   slot="start"
                   class="icon-background"
                   style="background-color: #9e4dd1;"
-                >
-                  <ha-svg-icon .path=${mdiKeyboard}></ha-svg-icon>
-                </div>
+                  .path=${mdiKeyboard}
+                ></ha-svg-icon>
                 <span slot="headline"
                   >${this.hass.localize("ui.panel.config.info.shortcuts")}</span
                 >
@@ -226,13 +225,12 @@ class HaConfigInfo extends LitElement {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <div
+                    <ha-svg-icon
                       slot="start"
                       class="icon-background"
                       style=${`background-color: ${page.iconColor};`}
-                    >
-                      <ha-svg-icon .path=${page.iconPath}></ha-svg-icon>
-                    </div>
+                      .path=${page.iconPath}
+                    ></ha-svg-icon>
                     <span slot="headline">
                       ${this.hass.localize(
                         `ui.panel.config.info.items.${page.name}`
@@ -398,18 +396,10 @@ class HaConfigInfo extends LitElement {
           padding: 4px 0;
         }
 
-        .icon-background ha-svg-icon {
-          height: 24px;
-          width: 24px;
-          color: #fff;
-        }
-
         .icon-background {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 40px;
-          height: 40px;
+          color: #fff;
+          /* 24px icon + padding = 40px circle */
+          padding: var(--ha-space-2);
           border-radius: var(--ha-border-radius-circle);
         }
 

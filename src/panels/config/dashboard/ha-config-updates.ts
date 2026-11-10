@@ -60,9 +60,10 @@ class HaConfigUpdates extends LitElement {
   })
   private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
 
-  private _renderUpdateProgress(entity: UpdateEntity) {
+  private _renderUpdateProgress(entity: UpdateEntity, slot?: string) {
     if (entity.attributes.update_percentage != null) {
       return html`<ha-progress-ring
+        slot=${ifDefined(slot)}
         size="small"
         .value=${entity.attributes.update_percentage}
         .label=${this._localize("ui.panel.config.updates.update_in_progress")}
@@ -71,6 +72,7 @@ class HaConfigUpdates extends LitElement {
 
     if (entity.attributes.in_progress) {
       return html`<ha-spinner
+        slot=${ifDefined(slot)}
         size="small"
         .ariaLabel=${this._localize(
           "ui.panel.config.updates.update_in_progress"
@@ -78,7 +80,7 @@ class HaConfigUpdates extends LitElement {
       ></ha-spinner>`;
     }
 
-    return html`<ha-icon-next></ha-icon-next>`;
+    return html`<ha-icon-next slot=${ifDefined(slot)}></ha-icon-next>`;
   }
 
   protected render() {
@@ -150,9 +152,7 @@ class HaConfigUpdates extends LitElement {
               </span>
               ${
                 !this.narrow
-                  ? html`<div slot="end">
-                      ${this._renderUpdateProgress(entity)}
-                    </div>`
+                  ? this._renderUpdateProgress(entity, "end")
                   : nothing
               }
             </ha-list-item-button>

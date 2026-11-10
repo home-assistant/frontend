@@ -84,19 +84,21 @@ export class HaRowItem extends LitElement {
   }
 
   protected _renderInner(): TemplateResult {
+    return html`
+      ${this._renderStart()}${this._renderContent()}${this._renderEnd()}
+    `;
+  }
+
+  protected _renderContent(): TemplateResult {
     const hasContent = this._slotController.test("content");
 
-    return html`
-      ${this._renderStart()}
-      <div part="content" class="content">
-        ${
-          hasContent
-            ? html`<slot name="content"></slot>`
-            : this._renderDefaultContent()
-        }
-      </div>
-      ${this._renderEnd()}
-    `;
+    return html`<div part="content" class="content">
+      ${
+        hasContent
+          ? html`<slot name="content"></slot>`
+          : this._renderDefaultContent()
+      }
+    </div>`;
   }
 
   protected _renderStart(): TemplateResult {
