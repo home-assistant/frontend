@@ -101,8 +101,11 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
       }
     };
 
+    // pointercancel is how the browser says it took over the touch, e.g. to
+    // scroll a nested scroller whose scroll event never reaches the document.
     [
       "touchcancel",
+      "pointercancel",
       "mouseout",
       "mouseup",
       "mousewheel",

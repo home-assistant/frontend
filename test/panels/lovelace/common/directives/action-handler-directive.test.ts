@@ -260,6 +260,23 @@ describe("action-handler touch movement", () => {
     el.dispatchEvent(touch("touchend", { x: 10, y: 10 }));
     expect(actions).toEqual([]);
   });
+
+  it("drops the press when the browser takes over the touch", () => {
+    // A nested scroller: its scroll event never reaches the document, but the
+    // composed pointercancel does.
+    const host = document.createElement("div");
+    const inner = document.createElement("div");
+    host.attachShadow({ mode: "open" }).appendChild(inner);
+    el.appendChild(host);
+    el.dispatchEvent(touch("touchstart", { x: 10, y: 10 }));
+    el.dispatchEvent(touch("touchmove", { x: 14, y: 14 }));
+    inner.dispatchEvent(
+      new Event("pointercancel", { bubbles: true, composed: true })
+    );
+    el.dispatchEvent(touch("touchend", { x: 14, y: 14 }));
+    vi.advanceTimersByTime(500);
+    expect(actions).toEqual([]);
+  });
 });
 
 describe("action-handler keyboard-only bindings", () => {
