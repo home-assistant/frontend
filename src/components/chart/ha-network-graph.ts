@@ -346,9 +346,6 @@ export class HaNetworkGraph extends LitElement {
           !reducedMotion &&
           this._countVisibleNodes(data, hiddenCategories) <
             LAYOUT_ANIMATION_THRESHOLD,
-        // Added by our ECharts patch: with reduced motion only the dragged
-        // node moves
-        dragAnimation: !reducedMotion,
       },
       edgeSymbol: ["none", "arrow"],
       edgeSymbolSize: 10,
