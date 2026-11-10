@@ -36,6 +36,10 @@ declare global {
 
 const DOUBLE_CLICK_TIME = 250;
 
+// How far (px) a finger may move before a press counts as a drag or scroll,
+// in line with the touch slop of the native platforms.
+const TOUCH_SLOP = 10;
+
 // The coordinates of the pointer that changed: for touch events the finger
 // that just went down/up (touches[0] would be the *first* finger during a
 // multi-touch), for mouse events the pointer itself.
@@ -58,6 +62,9 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
   protected held = false;
 
   private cancelled = false;
+
+  // Where the finger of the touch in flight went down.
+  private touchStart?: { x: number; y: number };
 
   private dblClickTimeout?: number;
 
@@ -85,28 +92,44 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
       transition: "transform 180ms ease-in-out",
     });
 
+    const cancel = () => {
+      this.cancelled = true;
+      if (this.timer) {
+        this._stopAnimation();
+        clearTimeout(this.timer);
+        this.timer = undefined;
+      }
+    };
+
     [
       "touchcancel",
       "mouseout",
       "mouseup",
-      "touchmove",
       "mousewheel",
       "wheel",
       "scroll",
     ].forEach((ev) => {
-      document.addEventListener(
-        ev,
-        () => {
-          this.cancelled = true;
-          if (this.timer) {
-            this._stopAnimation();
-            clearTimeout(this.timer);
-            this.timer = undefined;
-          }
-        },
-        { passive: true }
-      );
+      document.addEventListener(ev, cancel, { passive: true });
     });
+
+    // A finger always moves a little while it is down, so only movement past
+    // the touch slop turns a tap or hold into a drag.
+    document.addEventListener(
+      "touchmove",
+      (ev: TouchEvent) => {
+        if (this.touchStart && activeTouchCount(ev) <= 1) {
+          const { x, y } = eventCoordinates(ev);
+          if (
+            Math.hypot(x - this.touchStart.x, y - this.touchStart.y) <=
+            TOUCH_SLOP
+          ) {
+            return;
+          }
+        }
+        cancel();
+      },
+      { passive: true }
+    );
   }
 
   public bind(
@@ -166,6 +189,7 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
     element.actionHandler.start = (ev: Event) => {
       this.cancelled = false;
       const { x, y } = eventCoordinates(ev);
+      this.touchStart = ev.type === "touchstart" ? { x, y } : undefined;
 
       if (options.resolve) {
         this.resolved = undefined;
