@@ -7950,7 +7950,7 @@
             "known_issues": "Known issues",
             "delete": "Delete",
             "delete_confirm_title": "Delete {title}?",
-            "delete_confirm_text": "Its devices and entities will be permanently removed.",
+            "delete_confirm_text": "Its devices and entities will be permanently deleted.",
             "enable_debug_logging": "Enable debug logging",
             "reconfigure": "Reconfigure",
             "reload": "Reload",
