@@ -208,14 +208,6 @@ class ZHAAddDevicesPage extends LitElement {
     return unsubscribed;
   }
 
-  private _deactivate(): void {
-    this._active = false;
-    if (this._addDevicesTimeoutHandle) {
-      clearTimeout(this._addDevicesTimeoutHandle);
-    }
-    this._wakeLock?.then((wakeLock) => wakeLock.release());
-  }
-
   private _subscribe(): void {
     if (!this.hass) {
       return;
@@ -234,13 +226,17 @@ class ZHAAddDevicesPage extends LitElement {
       // A failed unsubscribe leaves nothing to wait for
       .catch(() => undefined)
       .then(() =>
+        // Each subscription opens the network for joining and turns on ZHA
+        // debug logging, so don't send it again after a reconnect
         connection.subscribeMessage(
           (message) => this._handleMessage(message),
-          data
+          data,
+          { resubscribe: false }
         )
       );
     this._addDevicesTimeoutHandle = setTimeout(
-      () => this._deactivate(),
+      // End the subscription with the search, so debug logging ends too
+      () => this._unsubscribe(),
       254000
     );
     if ("wakeLock" in navigator) {
