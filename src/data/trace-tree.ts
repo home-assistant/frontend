@@ -618,7 +618,8 @@ export class TraceTree {
         result?.wait &&
         !(
           "wait_for_trigger" in action &&
-          (action.on_complete || action.on_timeout)
+          (ensureArray(action.on_complete ?? []).length ||
+            ensureArray(action.on_timeout ?? []).length)
         )
       ) {
         return true;
