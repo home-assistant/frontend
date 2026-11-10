@@ -87,6 +87,11 @@ const SELECTED_NODE_MAX_ZOOM = 2;
 // Keeps neighbors clear of the search field, buttons and legend
 const SELECTED_NODE_FIT_MARGIN = 72;
 
+// In a fixed layout, the place of the selected node as a part of the width,
+// and the room for the labels of the neighbors to its right
+const FIXED_LAYOUT_SELECTED_NODE_X = 0.25;
+const FIXED_LAYOUT_LABEL_ROOM = 240;
+
 const FOLLOW_ROAM = "follow-selected-node";
 
 // Every event of a change of the legend selection, each with the whole
@@ -186,7 +191,8 @@ export class HaNetworkGraph extends LitElement {
 
   /**
    * Place the nodes at the x and y of the data, without the force layout or
-   * positions saved from it.
+   * positions saved from it. The layout is taken to grow to the right, like a
+   * tree, so the selected node is kept left with room for its children.
    */
   @property({ attribute: false }) public fixedLayout = false;
 
@@ -1036,10 +1042,20 @@ export class HaNetworkGraph extends LitElement {
       chart.convertToPixel({ seriesId: "network" }, point);
     const [x, y] = toPixel(position);
     const zoom = series.coordinateSystem.getRoamTransform()[0];
-    const centerX = chart.getWidth() / 2;
+    const width = chart.getWidth();
+    // A fixed layout grows to the right, like a tree from left to right
+    const anchorX = this.fixedLayout
+      ? width * FIXED_LAYOUT_SELECTED_NODE_X
+      : width / 2;
     const centerY = chart.getHeight() / 2;
     // Zoom so the neighbors stay in view
-    const fitX = Math.max(centerX - SELECTED_NODE_FIT_MARGIN, centerX / 2);
+    const fitLeft = Math.max(anchorX - SELECTED_NODE_FIT_MARGIN, anchorX / 2);
+    const rightRoom = width - anchorX;
+    const fitRight = Math.max(
+      rightRoom -
+        (this.fixedLayout ? FIXED_LAYOUT_LABEL_ROOM : SELECTED_NODE_FIT_MARGIN),
+      rightRoom / 2
+    );
     const fitY = Math.max(centerY - SELECTED_NODE_FIT_MARGIN, centerY / 2);
     let targetZoom = SELECTED_NODE_MAX_ZOOM;
     for (const edge of node.edges) {
@@ -1048,6 +1064,9 @@ export class HaNetworkGraph extends LitElement {
       ).getLayout();
       if (neighbor) {
         const [neighborX, neighborY] = toPixel(neighbor);
+        // In a fixed layout only the children to the right have to fit
+        const fitX =
+          neighborX > x ? fitRight : this.fixedLayout ? Infinity : fitLeft;
         targetZoom = Math.min(
           targetZoom,
           (zoom * fitX) / Math.abs(neighborX - x),
@@ -1058,17 +1077,17 @@ export class HaNetworkGraph extends LitElement {
     const zoomChanged = Math.abs(zoom - targetZoom) >= 1e-3;
     if (
       !zoomChanged &&
-      Math.abs(centerX - x) < 0.5 &&
+      Math.abs(anchorX - x) < 0.5 &&
       Math.abs(centerY - y) < 0.5
     ) {
       return undefined;
     }
     return {
-      dx: centerX - x,
+      dx: anchorX - x,
       dy: centerY - y,
       // Any zoom, even 1, rescales every node and edge
       zoom: zoomChanged ? targetZoom / zoom : undefined,
-      originX: centerX,
+      originX: anchorX,
       originY: centerY,
     };
   }

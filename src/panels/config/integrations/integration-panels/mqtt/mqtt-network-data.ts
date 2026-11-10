@@ -211,6 +211,7 @@ export function createMQTTNetworkChartData(
   const publishColor = color("--deep-orange-color");
   const unavailableColor = color("--disabled-color");
   const backgroundColor = color("--card-background-color");
+  const selectedBorderColor = color("--primary-text-color");
   // A faded node is mixed with the background instead of made transparent,
   // so the links behind it do not show through
   const graphBackgroundColor = color("--primary-background-color");
@@ -651,6 +652,15 @@ export function createMQTTNetworkChartData(
         fadeNode(node);
       }
     });
+  }
+  // The selected node gets the ring of the theme, also an entity with a border
+  // of its own
+  const selectedNode = nodes.find((node) => node.id === focusedNode);
+  if (selectedNode && !fadedNodes.has(selectedNode.id)) {
+    selectedNode.itemStyle = {
+      ...selectedNode.itemStyle,
+      borderColor: selectedBorderColor,
+    };
   }
 
   // Only show the categories that are in the graph, and renumber the nodes.
