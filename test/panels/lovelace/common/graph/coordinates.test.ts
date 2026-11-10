@@ -48,7 +48,7 @@ describe("scaleCoordinates", () => {
   });
 });
 
-const states = (readings: [number, number][]): EntityHistoryState[] =>
+const states = (readings: [number, number | string][]): EntityHistoryState[] =>
   readings.map(([x, value]) => ({ lu: x / 1000, s: String(value), a: {} }));
 
 const every = (from: number, to: number, value: (x: number) => number) =>
@@ -63,7 +63,11 @@ const every = (from: number, to: number, value: (x: number) => number) =>
 // 100 px wide and 120 high over 0 to 1000 with values 0 to 100, which calcPoints
 // pads by 10%, so a reading at x is drawn at x / 10 and a value v at 110 - v
 const LIMITS = { minX: 0, maxX: 1000, minY: 0, maxY: 100 };
-const draw = (readings: [number, number][], maxDetails = 50, useMean = false) =>
+const draw = (
+  readings: [number, number | string][],
+  maxDetails = 50,
+  useMean = false
+) =>
   coordinatesMinimalResponseCompressedState(
     states(readings),
     100,
@@ -202,22 +206,56 @@ describe("coordinatesMinimalResponseCompressedState", () => {
     expect(valueAt(points, 40)).toBeCloseTo(0);
   });
 
-  // History that starts late in the window lets a stretch be narrower than a
-  // sampling frame, so one frame mean can stand for readings on both sides of
-  // it and land inside it. It must not be lost with the hold.
-  it("keeps a frame mean that spans a stretch", () => {
-    const readings: [number, number][] = [
-      [700, 20],
-      [710, 20],
-      [760, 90],
-      ...every(770, 1000, () => 25),
-    ];
-    const points = draw(readings, 10, true);
-    // the mean of the first frame, 700 to 800
-    const frameMean = (20 + 20 + 90 + 25 * 3) / 6;
+  // The stretch the window starts with can be narrower than a sampling frame,
+  // so one frame mean can stand for readings on both sides of it and land
+  // inside it. It must not be lost with the hold.
+  it("keeps a frame mean that spans the stretch at the start", () => {
+    const points = draw(
+      [[0, 20], [60, 90], [70, 25], ...every(100, 1000, () => 25)],
+      10,
+      true
+    );
+    // the mean of the first frame, 0 to 100
+    const frameMean = (20 + 90 + 25) / 3;
 
-    expect(valueAt(points, 735)).toBeCloseTo(20);
-    expect(points).toContainEqual([76, 110 - frameMean]);
+    expect(valueAt(points, 30)).toBeCloseTo(20);
+    expect(points).toContainEqual([6, 110 - frameMean]);
+  });
+
+  // A stretch narrower than a sampling frame is finer than the graph itself,
+  // and holding it can leave the readings after it with nothing to show them.
+  it("does not hold a stretch narrower than a sampling frame", () => {
+    const readings: [number, number][] = [
+      ...Array.from({ length: 7 }, (_, i): [number, number] => [900 + i, i]),
+      [936, 100],
+      [966, 20],
+      [984, 21],
+      [999, 20],
+    ];
+
+    for (const useMean of [false, true]) {
+      expect(draw(readings, 10, useMean)).toEqual(
+        plainCoordinates(readings, 100, 120, 10, LIMITS, useMean).points
+      );
+    }
+  });
+
+  // an unavailable state means the value is unknown from there, not held
+  it("does not hold across a state that is not a number", () => {
+    const readings: [number, number | string][] = [
+      ...every(0, 300, () => 50),
+      [300, 0],
+      [310, "unavailable"],
+      [800, 50],
+      ...every(810, 1000, () => 50),
+    ];
+    const numbers = readings.filter(
+      (reading): reading is [number, number] => typeof reading[1] === "number"
+    );
+
+    expect(draw(readings)).toEqual(
+      plainCoordinates(numbers, 100, 120, 50, LIMITS).points
+    );
   });
 
   // calcPoints closes the graph at the end with the last value, which is the

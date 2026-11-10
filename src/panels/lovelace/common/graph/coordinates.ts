@@ -97,10 +97,15 @@ const QUIET_DISTANCE = 3;
 const QUIET_WIDTH = 0.1;
 
 // Finds the readings the sensor went quiet after, counting the stretch from
-// the last reading to the end of the graph.
+// the last reading to the end of the graph. A stretch also has to be wider than
+// a sampling frame, so holds never get finer than the graph itself. A reading
+// followed by a state that is not a number, such as unavailable, starts no
+// quiet stretch: the value is unknown from there, not held.
 const findQuietStretches = (
   history: [number, number][],
+  unknownAfter: boolean[],
   maxX: number,
+  frame: number,
   startsAtWindow: boolean
 ): number[] => {
   const width = maxX - history[0][0];
@@ -120,11 +125,13 @@ const findQuietStretches = (
       Math.max((width - distance) / (history.length - 1), 0) || distance / 10;
 
     if (
+      !unknownAfter[i] &&
       distance > QUIET_DISTANCE * spacing &&
       // the first reading is the state at the start of the window, which moves
-      // on with every redraw: holding it only while it covers a tenth of the
-      // graph would snap the hold back into a curve as it scrolls out
-      (distance > QUIET_WIDTH * width || (i === 0 && startsAtWindow))
+      // on with every redraw: holding it only while it is wide enough would
+      // snap the hold back into a curve as it scrolls out
+      ((i === 0 && startsAtWindow) ||
+        (distance > QUIET_WIDTH * width && distance > frame))
     ) {
       quiet.push(i);
     }
@@ -142,7 +149,9 @@ const findQuietStretches = (
 // that keeps the curves into and out of the stretch as tight as anywhere else.
 const holdQuietStretches = (
   history: [number, number][],
+  unknownAfter: boolean[],
   sampled: [number, number][],
+  maxDetails: number,
   useMean: boolean,
   limits?: { minX?: number; maxX?: number }
 ): [number, number][] => {
@@ -150,11 +159,16 @@ const holdQuietStretches = (
     return sampled;
   }
 
+  const minX = limits?.minX ?? history[0][0];
   const maxX = limits?.maxX ?? history[history.length - 1][0];
-  // the graphs move the state the window starts in to its start on every redraw
   const quiet = findQuietStretches(
     history,
+    unknownAfter,
     maxX,
+    // the widest frame downSampleLineData can use for this range
+    Math.ceil((maxX - minX) / Math.max(Math.floor(maxDetails), 1)),
+    // the graphs move the state the window starts in to its start on every
+    // redraw
     limits?.minX !== undefined && history[0][0] <= limits.minX
   );
 
@@ -232,15 +246,22 @@ export const coordinatesMinimalResponseCompressedState = (
   if (!history?.length) {
     return { points: [], yAxisOrigin: 0 };
   }
-  const mappedHistory: [number, number][] = history
-    .map((item): [number, number] => [
-      // With minimal response and compressed state, we don't have last_changed,
-      // so we use last_updated since its always the same as last_changed since
-      // we already filtered out states that are the same.
-      item.lu * 1000,
-      Number(item.s),
-    ])
-    .filter((item) => !Number.isNaN(item[1]));
+  const mappedHistory: [number, number][] = [];
+  const unknownAfter: boolean[] = [];
+  for (const item of history) {
+    const value = Number(item.s);
+    if (Number.isNaN(value)) {
+      if (unknownAfter.length) {
+        unknownAfter[unknownAfter.length - 1] = true;
+      }
+      continue;
+    }
+    // With minimal response and compressed state, we don't have last_changed,
+    // so we use last_updated since its always the same as last_changed since
+    // we already filtered out states that are the same.
+    mappedHistory.push([item.lu * 1000, value]);
+    unknownAfter.push(false);
+  }
 
   const sampledData: [number, number][] = downSampleLineData(
     mappedHistory,
@@ -250,7 +271,14 @@ export const coordinatesMinimalResponseCompressedState = (
     useMean
   );
   return calcPoints(
-    holdQuietStretches(mappedHistory, sampledData, useMean, limits),
+    holdQuietStretches(
+      mappedHistory,
+      unknownAfter,
+      sampledData,
+      maxDetails,
+      useMean,
+      limits
+    ),
     width,
     height,
     limits
