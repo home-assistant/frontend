@@ -1,13 +1,11 @@
 import type { PropertyValues } from "lit";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { BootstrapProgress } from "../data/bootstrap_integrations";
 import {
-  STATE_NOT_RUNNING,
-  STATE_RUNNING,
-  STATE_STARTING,
-} from "home-assistant-js-websocket";
-import type { BootstrapIntegrationsTimings } from "../data/bootstrap_integrations";
-import { subscribeBootstrapIntegrations } from "../data/bootstrap_integrations";
-import { domainToName } from "../data/integration";
+  computeStartupProgress,
+  startupTransition,
+  subscribeBootstrapProgress,
+} from "../data/bootstrap_integrations";
 import type { Constructor } from "../types";
 import { HOST_ACTION_TOAST_ID, showToast } from "../util/toast";
 import type { HassBaseEl } from "./hass-base-mixin";
@@ -18,7 +16,13 @@ const SERVER_STARTUP_TOAST_ID = "server-startup";
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
-    private _subscribedBootstrapIntegrations?: Promise<UnsubscribeFunc>;
+    private _subscribedBootstrapProgress?: Promise<UnsubscribeFunc>;
+
+    private _startupProgress?: BootstrapProgress;
+
+    private _startupProgressVisible = false;
+
+    private _startupProgressEl?: HTMLElementTagNameMap["ha-startup-progress"];
 
     private _disconnectedTimeout?: number;
 
@@ -26,6 +30,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       super.firstUpdated(changedProps);
       // Need to load in advance because when disconnected, can't dynamically load code.
       setTimeout(() => import("../managers/notification-manager"), 5000);
+      setTimeout(() => import("../components/ha-startup-progress"), 5000);
     }
 
     updated(changedProperties: PropertyValues<this>) {
@@ -35,38 +40,17 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         return;
       }
       if (oldHass?.config?.state !== this.hass!.config.state) {
-        if (this.hass!.config.state === STATE_NOT_RUNNING) {
-          showToast(this, {
-            id: SERVER_STARTUP_TOAST_ID,
-            message:
-              this.hass!.localize("ui.notification_toast.starting") ||
-              "Home Assistant is starting. Not everything will be available until it is finished.",
-            duration: -1,
-            dismissable: false,
-            action: {
-              text:
-                this.hass!.localize("ui.notification_toast.dismiss") ||
-                "Dismiss",
-              action: () => {
-                this._unsubscribeBootstrapIntegrations();
-              },
-            },
-          });
-          this._subscribeBootstrapIntegrations();
-        } else if (
-          oldHass?.config &&
-          oldHass.config.state === STATE_NOT_RUNNING &&
-          (this.hass!.config.state === STATE_STARTING ||
-            this.hass!.config.state === STATE_RUNNING)
-        ) {
-          this._unsubscribeBootstrapIntegrations();
-          showToast(this, {
-            id: SERVER_STARTUP_TOAST_ID,
-            message: this.hass!.localize("ui.notification_toast.started"),
-            duration: 5000,
-          });
+        const transition = startupTransition(
+          oldHass?.config?.state,
+          this.hass!.config.state
+        );
+        if (transition === "show") {
+          this._showStartupProgress();
+        } else if (transition === "finish") {
+          this._finishStartupProgress();
         }
       }
+      this._updateStartupProgress();
       if (
         this.hass!.config.safe_mode &&
         oldHass?.config?.safe_mode !== this.hass!.config.safe_mode
@@ -126,70 +110,79 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }, 1000);
     }
 
-    private _handleMessage(message: BootstrapIntegrationsTimings): void {
-      if (this.hass!.config.state !== STATE_NOT_RUNNING) {
+    private _showStartupProgress() {
+      this._unsubscribeBootstrapProgress();
+      this._startupProgress = undefined;
+      this._startupProgressVisible = true;
+      this._subscribedBootstrapProgress = subscribeBootstrapProgress(
+        this.hass!,
+        (message) => {
+          this._startupProgress = message;
+          this._updateStartupProgress();
+        }
+      );
+      this._updateStartupProgress();
+    }
+
+    private async _updateStartupProgress() {
+      if (!this._startupProgressVisible) {
         return;
       }
-
-      if (Object.keys(message).length === 0) {
-        showToast(this, {
-          id: SERVER_STARTUP_TOAST_ID,
-          message:
-            this.hass!.localize("ui.notification_toast.wrapping_up_startup") ||
-            `Wrapping up startup. Not everything will be available until it is finished.`,
-          duration: -1,
-          dismissable: false,
-          action: {
-            text:
-              this.hass!.localize("ui.notification_toast.dismiss") || "Dismiss",
-            action: () => {
-              this._unsubscribeBootstrapIntegrations();
-            },
-          },
-        });
+      await import("../components/ha-startup-progress");
+      // Hidden or finished while the component was loading.
+      if (!this._startupProgressVisible) {
         return;
       }
+      if (!this._startupProgressEl) {
+        this._startupProgressEl = document.createElement("ha-startup-progress");
+        this._startupProgressEl.addEventListener(
+          "startup-progress-dismissed",
+          () => this._hideStartupProgress()
+        );
+        this.renderRoot.appendChild(this._startupProgressEl);
+      }
+      this._startupProgressEl.hass = this.hass!;
+      this._startupProgressEl.progress = computeStartupProgress(
+        this._startupProgress,
+        this.hass!.config.state
+      );
+    }
 
-      // Show the integration that has been starting for the longest time
-      const integration = Object.entries(message).sort(
-        ([, a], [, b]) => b - a
-      )[0][0];
+    private _hideStartupProgress() {
+      this._startupProgressVisible = false;
+      this._unsubscribeBootstrapProgress();
+      this._startupProgressEl?.remove();
+      this._startupProgressEl = undefined;
+    }
 
+    private _finishStartupProgress() {
+      const { failed, retrying } = computeStartupProgress(
+        this._startupProgress,
+        this.hass!.config.state
+      );
+      this._hideStartupProgress();
+      const issues = failed.length + retrying.length;
       showToast(this, {
         id: SERVER_STARTUP_TOAST_ID,
-        message:
-          this.hass!.localize("ui.notification_toast.integration_starting", {
-            integration: domainToName(this.hass!.localize, integration),
-          }) ||
-          `Starting ${integration}. Not everything will be available until it is finished.`,
-        duration: -1,
-        dismissable: false,
-        action: {
-          text:
-            this.hass!.localize("ui.notification_toast.dismiss") || "Dismiss",
-          action: () => {
-            this._unsubscribeBootstrapIntegrations();
-          },
-        },
+        message: issues
+          ? this.hass!.localize("ui.notification_toast.started_with_issues", {
+              count: issues,
+            })
+          : this.hass!.localize("ui.notification_toast.started"),
+        duration: issues ? 10000 : 5000,
+        action: issues
+          ? {
+              text: this.hass!.localize("ui.notification_toast.show"),
+              action: () => navigate("/config/integrations/dashboard"),
+            }
+          : undefined,
       });
     }
 
-    private _unsubscribeBootstrapIntegrations() {
-      if (this._subscribedBootstrapIntegrations) {
-        this._subscribedBootstrapIntegrations.then((unsub) => unsub());
-        this._subscribedBootstrapIntegrations = undefined;
+    private _unsubscribeBootstrapProgress() {
+      if (this._subscribedBootstrapProgress) {
+        this._subscribedBootstrapProgress.then((unsub) => unsub());
+        this._subscribedBootstrapProgress = undefined;
       }
-    }
-
-    private _subscribeBootstrapIntegrations() {
-      if (!this.hass) {
-        return;
-      }
-      this._subscribedBootstrapIntegrations = subscribeBootstrapIntegrations(
-        this.hass!,
-        (message) => {
-          this._handleMessage(message);
-        }
-      );
     }
   };
