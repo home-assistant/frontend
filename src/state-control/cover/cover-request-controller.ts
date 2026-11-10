@@ -25,6 +25,8 @@ export class CoverRequestController implements ReactiveController {
     this._host.addController(this);
   }
 
+  public hostUpdate = (): void => undefined;
+
   public get request(): CoverRequest | undefined {
     return this._request;
   }
