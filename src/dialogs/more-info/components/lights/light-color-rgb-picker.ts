@@ -15,6 +15,7 @@ import {
 import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { PendingValueSync } from "../../../../common/util/pending-value-sync";
 import { throttle } from "../../../../common/util/throttle";
 import "../../../../components/ha-hs-color-picker";
 import "../../../../components/ha-icon";
@@ -58,6 +59,8 @@ class LightRgbColorPicker extends LitElement {
   @state() private _hsPickerValue?: [number, number];
 
   @state() private _isInteracting?: boolean;
+
+  private _pendingSync = new PendingValueSync();
 
   protected render() {
     if (!this.stateObj) {
@@ -181,23 +184,29 @@ class LightRgbColorPicker extends LitElement {
     `;
   }
 
+  private _updateBrightnessAdjusted() {
+    const stateObj = this.stateObj;
+
+    this._brightnessAdjusted = undefined;
+    if (
+      stateObj.attributes.color_mode === LightColorMode.RGB &&
+      stateObj.attributes.rgb_color &&
+      !lightSupportsColorMode(stateObj, LightColorMode.RGBWW) &&
+      !lightSupportsColorMode(stateObj, LightColorMode.RGBW)
+    ) {
+      const maxVal = Math.max(...stateObj.attributes.rgb_color);
+
+      if (maxVal < 255) {
+        this._brightnessAdjusted = maxVal;
+      }
+    }
+  }
+
   private _updateSliderValues() {
     const stateObj = this.stateObj;
 
     if (stateObj.state === "on") {
-      this._brightnessAdjusted = undefined;
-      if (
-        stateObj.attributes.color_mode === LightColorMode.RGB &&
-        stateObj.attributes.rgb_color &&
-        !lightSupportsColorMode(stateObj, LightColorMode.RGBWW) &&
-        !lightSupportsColorMode(stateObj, LightColorMode.RGBW)
-      ) {
-        const maxVal = Math.max(...stateObj.attributes.rgb_color);
-
-        if (maxVal < 255) {
-          this._brightnessAdjusted = maxVal;
-        }
-      }
+      this._updateBrightnessAdjusted();
 
       this._wvSliderValue =
         stateObj.attributes.color_mode === LightColorMode.RGBW &&
@@ -235,11 +244,23 @@ class LightRgbColorPicker extends LitElement {
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
-    if (this._isInteracting || !changedProps.has("stateObj")) {
+    if (!changedProps.has("stateObj")) {
       return;
     }
 
-    this._updateSliderValues();
+    const oldStateObj = changedProps.get("stateObj") as LightEntity | undefined;
+    if (oldStateObj?.entity_id !== this.stateObj?.entity_id) {
+      this._throttleUpdateColor.cancel();
+      this._pendingSync.reset();
+      this._isInteracting = false;
+      this._updateSliderValues();
+    } else if (!this._isInteracting && this._pendingSync.shouldSync()) {
+      this._updateSliderValues();
+    } else if (this.stateObj.state === "on") {
+      // Keep the picker values, but the brightness normalization has to
+      // follow the reported state, as it is applied to the next color sent.
+      this._updateBrightnessAdjusted();
+    }
   }
 
   private _hsColorCursorMoved(ev: CustomEvent) {
@@ -250,6 +271,7 @@ class LightRgbColorPicker extends LitElement {
       return;
     }
     this._hsPickerValue = color;
+    this._pendingSync.schedule();
 
     this._throttleUpdateColor();
   }
@@ -312,13 +334,23 @@ class LightRgbColorPicker extends LitElement {
       this._colorBrightnessSliderValue = hsv[2] / 2.55;
     }
 
+    this._pendingSync.schedule();
     this._throttleUpdateColor();
   }
 
   private _hsColorChanged(ev: CustomEvent) {
+    this._isInteracting = false;
     if (!ev.detail.value) {
+      // Nothing is sent, so stop blocking state updates.
+      this._throttleUpdateColor.cancel();
+      this._pendingSync.reset();
+      this._updateSliderValues();
       return;
     }
+
+    // A pending throttled call would otherwise send an older color after the
+    // final one.
+    this._throttleUpdateColor.cancel();
     this._hsPickerValue = ev.detail.value;
 
     this._updateColor();
@@ -366,11 +398,15 @@ class LightRgbColorPicker extends LitElement {
 
   private _applyColor(color: LightColor, params?: Record<string, any>) {
     fireEvent(this, "color-changed", color);
-    this._api.callService("light", "turn_on", {
-      entity_id: this.stateObj!.entity_id,
-      ...color,
-      ...params,
-    });
+    return this._pendingSync.run(
+      () =>
+        this._api.callService("light", "turn_on", {
+          entity_id: this.stateObj!.entity_id,
+          ...color,
+          ...params,
+        }),
+      () => this._updateSliderValues()
+    );
   }
 
   private _colorBrightnessSliderChanged(ev: CustomEvent) {

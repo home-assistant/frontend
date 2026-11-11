@@ -90,6 +90,7 @@ export class HaWaitForTriggerAction
       ${
         this.indent || (!this.inSidebar && !this.indent)
           ? html`<ha-automation-trigger
+              path-key="wait_for_trigger"
               class=${!this.inSidebar && !this.indent ? "expansion-panel" : ""}
               .triggers=${ensureArray(this.action.wait_for_trigger)}
               .hass=${this.hass}

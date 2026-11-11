@@ -93,7 +93,7 @@ class IntegrationsStartupTime extends LitElement {
   }
 
   private async _fetchSetups() {
-    const setups = await fetchIntegrationSetups(this.hass);
+    const setups = await fetchIntegrationSetups(this.hass.callWS);
     this._setups = setups.sort((a, b) => {
       if (a.seconds === b.seconds) {
         return 0;

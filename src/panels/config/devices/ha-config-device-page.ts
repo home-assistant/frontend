@@ -1173,6 +1173,9 @@ export class HaConfigDevicePage extends LitElement {
         buttons.push({
           action: async () => {
             const confirmed = await showConfirmationDialog(this, {
+              title: this.hass.localize(
+                "ui.panel.config.devices.confirm_delete_title"
+              ),
               text:
                 this._integrations(device, this.entries, this.manifests)
                   .length > 1
@@ -1188,7 +1191,7 @@ export class HaConfigDevicePage extends LitElement {
                   : this.hass.localize(
                       `ui.panel.config.devices.confirm_delete`
                     ),
-              confirmText: this.hass.localize("ui.common.delete"),
+              confirmText: this.hass.localize("ui.common.remove"),
               dismissText: this.hass.localize("ui.common.cancel"),
               destructive: true,
             });
@@ -1600,7 +1603,11 @@ export class HaConfigDevicePage extends LitElement {
           delete updates.disabled_by;
         }
         try {
-          await updateDeviceRegistryEntry(this.hass, this.deviceId, updates);
+          await updateDeviceRegistryEntry(
+            this.hass.callWS,
+            this.deviceId,
+            updates
+          );
         } catch (err: unknown) {
           showAlertDialog(this, {
             title: this.hass.localize(
@@ -1616,7 +1623,7 @@ export class HaConfigDevicePage extends LitElement {
   };
 
   private async _enableDevice(): Promise<void> {
-    await updateDeviceRegistryEntry(this.hass, this.deviceId, {
+    await updateDeviceRegistryEntry(this.hass.callWS, this.deviceId, {
       disabled_by: null,
     });
   }

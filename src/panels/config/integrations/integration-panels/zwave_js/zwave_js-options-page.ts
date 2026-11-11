@@ -149,6 +149,11 @@ class ZWaveJSOptionsPage extends LitElement {
           max-width: var(--ha-content-width-narrow);
           margin: auto;
         }
+
+        ha-list-item-base::part(headline),
+        ha-list-item-base::part(supporting-text) {
+          white-space: normal;
+        }
       `,
     ];
   }

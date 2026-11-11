@@ -414,12 +414,15 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (this.__loadedFragmentTranslations.has(fragment)) {
         return this.hass!.localize;
       }
-      const promise = getTranslation(fragment, language).then((result) =>
-        this._updateResources(language, result.data).finally(() => {
+      const promise = getTranslation(fragment, language)
+        .then((result) =>
+          this._updateResources(language, result.data).finally(() => {
+            this.__loadedFragmentTranslations.add(fragment);
+          })
+        )
+        .finally(() => {
           this.__inflightFragmentTranslations.delete(fragment);
-          this.__loadedFragmentTranslations.add(fragment);
-        })
-      );
+        });
       this.__inflightFragmentTranslations.set(fragment, promise);
       return promise;
     }

@@ -1,7 +1,7 @@
 import { expect, type Page } from "@playwright/test";
 import type { HaDrawer } from "../../../src/components/ha-drawer";
 import type { ThemeSettings } from "../../../src/types";
-import { NAVIGATION_TIMEOUT, SHELL_TIMEOUT } from "../helpers";
+import { NAVIGATION_TIMEOUT, PANEL_TIMEOUT, SHELL_TIMEOUT } from "../helpers";
 
 export const DEMO_THEME_STORAGE_KEY = "demo_theme";
 
@@ -104,4 +104,15 @@ export async function activateDemoSidebarPanel(page: Page, panel: string) {
   await expect(page).toHaveURL(new RegExp(`/${panel}(?:/|$)`), {
     timeout: SHELL_TIMEOUT,
   });
+}
+
+export async function openEnergyDatePicker(page: Page) {
+  await page.clock.setFixedTime(new Date("2026-11-20T12:00:00Z"));
+  await loadDemo(page, "/#/energy/overview");
+  const selector = page.locator("hui-energy-period-selector");
+  await expect(selector).toBeVisible({ timeout: PANEL_TIMEOUT });
+  await selector.locator(".date-range").click();
+  const picker = page.locator("date-range-picker");
+  await expect(picker).toBeVisible();
+  return { selector, picker };
 }

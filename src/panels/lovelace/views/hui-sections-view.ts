@@ -8,6 +8,7 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import type { ConfigPath } from "../../../common/util/config-path";
 import { clamp } from "../../../common/number/clamp";
 import { getHistoryState, updateHistoryState } from "../../../common/navigate";
 import "../../../components/ha-icon-button";
@@ -28,7 +29,6 @@ import type { HuiBadge } from "../badges/hui-badge";
 import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-section-edit-mode";
 import { addSection } from "../editor/config-util";
-import type { LovelacePath } from "../editor/lovelace-path";
 import { getAtPath, moveAtPath } from "../editor/lovelace-path";
 import { showCreateSectionDialog } from "../editor/section-editor/show-create-section-dialog";
 import type { HuiSection } from "../sections/hui-section";
@@ -51,7 +51,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property({ attribute: false }) public path?: LovelacePath;
+  @property({ attribute: false }) public path?: ConfigPath;
 
   @property({ attribute: false }) public isStrategy = false;
 
@@ -427,7 +427,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     ev.stopPropagation();
     // The dropped node only serves as a drop target, the new section renders the card from the config
     (ev.detail.item as HTMLElement).remove();
-    const oldPath = ev.detail.data as LovelacePath;
+    const oldPath = ev.detail.data as ConfigPath;
     const config = this.lovelace!.config;
     const cardConfig = getAtPath<LovelaceCardConfig>(config, oldPath);
     if (!cardConfig) {
