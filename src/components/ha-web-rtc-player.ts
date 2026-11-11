@@ -529,8 +529,11 @@ export class HaWebRtcPlayer extends LitElement {
   private _retryOrFail(error: WebRtcPlayerError) {
     if (
       this._retries >= MAX_RETRIES ||
-      // Handled by starting again without the microphone
-      (this._localReturnAudioTrack && this._microphoneConnecting)
+      // A microphone connect the user started is handled by starting again
+      // without the microphone. A retry keeps the microphone of the stream.
+      (this._localReturnAudioTrack &&
+        this._microphoneConnecting &&
+        this._retries === 0)
     ) {
       this._failStart(error);
       return;
@@ -699,8 +702,13 @@ export class HaWebRtcPlayer extends LitElement {
   }
 
   private _failStart(error: WebRtcPlayerError) {
-    // The camera can reject the microphone, keep the video running without it
-    if (this._localReturnAudioTrack && this._microphoneConnecting) {
+    // The camera can reject the microphone, keep the video running without it.
+    // After retries it is the connection that failed, not the microphone.
+    if (
+      this._localReturnAudioTrack &&
+      this._microphoneConnecting &&
+      this._retries === 0
+    ) {
       showToast(this, {
         message: this._localize(
           "ui.components.web-rtc-player.microphone_connect_failed",
