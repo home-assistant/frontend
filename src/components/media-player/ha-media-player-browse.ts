@@ -125,11 +125,11 @@ export class HaMediaPlayerBrowseListItem extends HaListItemButton {
   @property() public thumbnail?: string;
 
   // The "not shown" row is plain text, not a button
-  protected override _renderBase(inner: TemplateResult): TemplateResult {
+  protected override _renderControl(content: TemplateResult): TemplateResult {
     if (!this.interactive) {
-      return html`<div part="base" class="base" id="item">${inner}</div>`;
+      return content;
     }
-    return super._renderBase(inner);
+    return super._renderControl(content);
   }
 
   // Always reserve the graphic, so titles line up across rows
