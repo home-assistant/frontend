@@ -169,9 +169,18 @@ export class HaTargetPicker extends LitElement {
   @consume({ context: labelsContext, subscribe: true })
   private _labelRegistry!: LabelRegistryEntry[];
 
-  @state()
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<HomeAssistant["states"], boolean>({
+    transformer: function (this: HaTargetPicker, states) {
+      return !!this._pendingEntityId && !!states?.[this._pendingEntityId];
+    },
+    watch: ["_pendingEntityId"],
+  })
+  private _pendingEntityLoaded = false;
 
   @state()
   @consume({ context: registriesContext, subscribe: true })
@@ -340,11 +349,7 @@ export class HaTargetPicker extends LitElement {
       this._exclusions.resolve();
     }
 
-    if (
-      this._pendingEntityId &&
-      changedProps.has("_states") &&
-      this._states?.[this._pendingEntityId]
-    ) {
+    if (this._pendingEntityId && this._pendingEntityLoaded) {
       this._addTarget(this._pendingEntityId, "entity");
       this._pendingEntityId = undefined;
     }
