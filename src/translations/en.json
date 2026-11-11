@@ -1926,6 +1926,7 @@
         "logbook": "Activity",
         "device_info": "[%key:ui::panel::config::devices::device_info_heading%]",
         "service_info": "[%key:ui::panel::config::devices::service_info_heading%]",
+        "directions": "[%key:ui::panel::lovelace::cards::map::overview::directions%]",
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "show_more": "Show more",
