@@ -74,6 +74,7 @@ import type { NewDashboardSelection } from "../../dashboard/show-dialog-new-dash
 import { showNewDashboardDialog } from "../../dashboard/show-dialog-new-dashboard";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardConfigureStrategyDialog } from "./show-dialog-lovelace-dashboard-configure-strategy";
+import { replaceDashboardLinks } from "./replace-dashboard-links";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
 import { showPanelDetailDialog } from "./show-dialog-panel-detail";
 
@@ -628,10 +629,13 @@ export class HaConfigLovelaceDashboards extends LitElement {
         { title: item.title }
       );
 
-      this._openDetailDialog(undefined, undefined, config, {
-        title,
-        icon: item.icon,
-      });
+      this._openDetailDialog(
+        undefined,
+        undefined,
+        config,
+        { title, icon: item.icon },
+        item.url_path
+      );
     } catch {
       showAlertDialog(this, {
         text: this.hass.localize(
@@ -684,7 +688,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
     dashboard?: LovelaceDashboard,
     urlPath?: string,
     defaultConfig?: LovelaceRawConfig,
-    fieldSuggestions?: LovelaceDashboardSuggestions
+    fieldSuggestions?: LovelaceDashboardSuggestions,
+    duplicateOfUrlPath?: string
   ): Promise<void> {
     const defaultPanel = this.hass.systemData?.default_panel || DEFAULT_PANEL;
     showDashboardDetailDialog(this, {
@@ -706,7 +711,17 @@ export class HaConfigLovelaceDashboards extends LitElement {
             )
         );
         if (defaultConfig) {
-          await saveConfig(this.hass!, created.url_path, defaultConfig);
+          await saveConfig(
+            this.hass!,
+            created.url_path,
+            duplicateOfUrlPath
+              ? replaceDashboardLinks(
+                  defaultConfig,
+                  duplicateOfUrlPath,
+                  created.url_path
+                )
+              : defaultConfig
+          );
         }
       },
       updateDashboard: async (values) => {
