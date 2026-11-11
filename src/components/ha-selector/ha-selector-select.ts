@@ -17,6 +17,10 @@ import "../ha-checkbox";
 import "../ha-dropdown-item";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
+import type {
+  PickerComboBoxItem,
+  PickerComboBoxSearchFn,
+} from "../ha-picker-combo-box";
 import "../ha-button";
 import "../ha-input-helper-text";
 import "../ha-select";
@@ -25,6 +29,27 @@ import "../ha-sortable";
 import "../ha-svg-icon";
 import "../radio/ha-radio-group";
 import "../radio/ha-radio-option";
+
+// A single-choice dropdown with more options than this gets a search field.
+// Shorter lists fit on screen without scrolling and keep the plain dropdown.
+const SEARCH_MIN_OPTIONS = 12;
+
+// Search what the user sees: the label, not the option's value.
+const SEARCH_KEYS = [{ name: "primary", weight: 1 }];
+
+// Without `sort`, the order of the options is the integration's own (nearest
+// first, most used first), so matches keep it instead of the match score.
+const keepOptionOrder: PickerComboBoxSearchFn<PickerComboBoxItem> = (
+  _search,
+  filteredItems,
+  allItems
+) => {
+  const position = new Map(allItems.map((item, index) => [item.id, index]));
+  return [...filteredItems].sort(
+    (a, b) =>
+      (position.get(a.id) ?? Infinity) - (position.get(b.id) ?? Infinity)
+  );
+};
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
@@ -256,6 +281,28 @@ export class HaSelectSelector extends LitElement {
       `;
     }
 
+    if (options.length > SEARCH_MIN_OPTIONS) {
+      return html`
+        <ha-generic-picker
+          no-sort
+          .label=${this.label}
+          .helper=${this.helper}
+          .disabled=${this.disabled}
+          .required=${this.required}
+          .getItems=${this._getItems(options)}
+          .value=${
+            ["string", "number"].includes(typeof this.value)
+              ? String(this.value)
+              : undefined
+          }
+          .valueRenderer=${this._valueRenderer(options)}
+          .searchKeys=${SEARCH_KEYS}
+          .searchFn=${this.selector.select?.sort ? undefined : keepOptionOrder}
+          @value-changed=${this._comboBoxValueChanged}
+        ></ha-generic-picker>
+      `;
+    }
+
     return html`
       <ha-select
         .label=${this.label ?? ""}
@@ -306,8 +353,16 @@ export class HaSelectSelector extends LitElement {
           id: option.value,
           primary: option.label,
           sorting_label: option.label,
+          disabled: option.disabled,
         }));
     }
+  );
+
+  private _valueRenderer = memoizeOne(
+    (options: SelectOption[]) => (value: string) =>
+      html`<span slot="headline"
+        >${options.find((option) => option.value === value)?.label ?? value}</span
+      >`
   );
 
   private get _mode(): "list" | "dropdown" | "box" {
