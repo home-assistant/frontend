@@ -1384,6 +1384,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         "name",
         "manufacturer",
         "model",
+        "model_id",
         "sw_version",
         "area",
       ];
@@ -1393,6 +1394,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         name: device.name_by_user || device.name || "",
         manufacturer: device.manufacturer || "",
         model: device.model || "",
+        model_id: device.model_id || "",
         sw_version: device.sw_version || "",
         area: device.area_id ? areas[device.area_id]?.name || "" : "",
       });
