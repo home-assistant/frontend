@@ -1,16 +1,14 @@
 import {
-  mdiAlertCircleOutline,
   mdiBatteryAlertVariantOutline,
-  mdiCheck,
-  mdiCheckCircleOutline,
-  mdiLanDisconnect,
+  mdiClockOutline,
+  mdiHelpCircleOutline,
   mdiPackageUp,
-  mdiProgressAlert,
   mdiSignalCellular1,
   mdiSignalCellular2,
   mdiSignalCellular3,
   mdiSignalCellularOutline,
 } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -23,6 +21,7 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-relative-time";
 import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-state-icon";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/item/ha-list-item-base";
 import "../../../../../components/item/ha-list-item-button";
@@ -67,13 +66,23 @@ const BAND_ICON: Record<SignalBand, string> = {
   unknown: mdiSignalCellularOutline,
 };
 
-const FINDING_ICON: Record<FindingKey, string> = {
-  offline: mdiLanDisconnect,
-  setup_unfinished: mdiProgressAlert,
+const FINDING_ICON: Partial<Record<FindingKey, string>> = {
   weak_signal: mdiSignalCellular1,
   low_battery: mdiBatteryAlertVariantOutline,
   firmware_update: mdiPackageUp,
 };
+
+/** Domains whose icon tells what a device is, most telling first. */
+const PRIMARY_DOMAINS = [
+  "light",
+  "switch",
+  "cover",
+  "climate",
+  "lock",
+  "fan",
+  "binary_sensor",
+  "sensor",
+];
 
 /** Same cadence as the device page, so availability and signal do not freeze while the page is open. */
 const DEVICE_REFRESH_INTERVAL = 60000;
@@ -279,36 +288,17 @@ class ZHANetworkHealthPage extends LitElement {
   }
 
   private _renderSnapshotCard(devices: ZHADevice[]): TemplateResult {
-    const offline = devices.filter((device) => !device.available).length;
     const counts = countBands(devices, this._links(this._devices!));
     const rated = counts.strong + counts.fair + counts.weak + counts.offline;
-    // A single sleeping device is everyday life, not an outage: the network is
-    // only down once nothing answers at all. Matches the ZHA dashboard.
-    const online = offline < devices.length || devices.length === 0;
 
     return html`
       <ha-card>
-        <div class="status">
-          <div class="icon ${online ? "success" : "error"}">
-            <ha-svg-icon
-              .path=${online ? mdiCheck : mdiAlertCircleOutline}
-            ></ha-svg-icon>
-          </div>
-          <div class="status-text">
-            <h2>${this._t(`status_${online ? "online" : "offline"}`)}</h2>
-            <p>
-              ${
-                offline
-                  ? this._t("some_offline", { count: devices.length, offline })
-                  : this._t("all_online", { count: devices.length })
-              }
-            </p>
-          </div>
-        </div>
-        ${
-          rated
-            ? html`
-                <div class="distribution">
+        <div class="card-body">
+          <h2 class="card-title">${this._t("network_title")}</h2>
+          <p class="description">${this._t("snapshot")}</p>
+          ${
+            rated
+              ? html`
                   ${this._renderBar(counts)}
                   <div class="legend">
                     ${BAR_BANDS.map(
@@ -320,15 +310,15 @@ class ZHANetworkHealthPage extends LitElement {
                       `
                     )}
                   </div>
-                </div>
-              `
-            : nothing
-        }
-        <div class="snapshot">
-          <p>${this._t("snapshot")}</p>
+                `
+              : nothing
+          }
           <p class="updated">
-            ${this._t("updated")}
-            <ha-relative-time .datetime=${this._updatedAt}></ha-relative-time>
+            <ha-svg-icon .path=${mdiClockOutline}></ha-svg-icon>
+            <span>
+              ${this._t("updated")}
+              <ha-relative-time .datetime=${this._updatedAt}></ha-relative-time>
+            </span>
           </p>
         </div>
       </ha-card>
@@ -337,88 +327,143 @@ class ZHANetworkHealthPage extends LitElement {
 
   private _renderAttentionCard(found: Record<FindingKey, ZHADevice[]>) {
     const count = attentionCount(found);
+    // One row per device: an offline device whose setup did not finish is
+    // listed as offline, the more pressing of the two.
+    const rows = new Map<string, { key: FindingKey; device: ZHADevice }>();
+    for (const key of NEEDS_ATTENTION) {
+      for (const device of found[key]) {
+        if (!rows.has(device.ieee)) {
+          rows.set(device.ieee, { key, device });
+        }
+      }
+    }
+    const sorted = this._sorted([...rows.values()].map((row) => row.device));
+
     return html`
       <ha-card>
-        <h2 class="card-title">
-          ${this._t("needs_attention")}${count ? html` · ${count}` : nothing}
+        <h2 class="card-title header">
+          ${
+            count
+              ? this._t("attention_title", { count })
+              : this._t("nothing_needs_attention")
+          }
         </h2>
         ${
           count
-            ? NEEDS_ATTENTION.filter((key) => found[key].length).map(
-                (key) => html`
-                  <div class="finding">
-                    <ha-svg-icon .path=${FINDING_ICON[key]}></ha-svg-icon>
-                    <div>
-                      <h3>${this._t(key)} · ${found[key].length}</h3>
-                      <p>${this._t(`${key}_advice`)}</p>
-                    </div>
-                  </div>
-                  <ha-list-nav .ariaLabel=${this._t(key)}>
-                    ${this._sorted(found[key]).map((device) =>
-                      this._renderAttentionDevice(key, device)
-                    )}
-                  </ha-list-nav>
-                `
-              )
-            : html`
-                <div class="all-good">
-                  <ha-svg-icon .path=${mdiCheckCircleOutline}></ha-svg-icon>
-                  ${this._t("nothing_needs_attention")}
-                </div>
+            ? html`
+                <ha-list-nav
+                  .ariaLabel=${this._t("attention_title", { count })}
+                >
+                  ${sorted.map((device) =>
+                    this._renderAttentionDevice(
+                      rows.get(device.ieee)!.key,
+                      device
+                    )
+                  )}
+                </ha-list-nav>
               `
+            : nothing
         }
       </ha-card>
     `;
+  }
+
+  /** The entity that best stands for the device, for its icon. */
+  private _primaryState(device: ZHADevice): HassEntity | undefined {
+    const states = device.entities
+      .map((entity) =>
+        entity.entity_id ? this.hass.states[entity.entity_id] : undefined
+      )
+      .filter((stateObj): stateObj is HassEntity => stateObj !== undefined);
+    for (const domain of PRIMARY_DOMAINS) {
+      const match = states.find((stateObj) =>
+        stateObj.entity_id.startsWith(`${domain}.`)
+      );
+      if (match) {
+        return match;
+      }
+    }
+    return undefined;
   }
 
   private _renderAttentionDevice(
     key: FindingKey,
     device: ZHADevice
   ): TemplateResult {
+    const stateObj = this._primaryState(device);
     const power = powerSource(device);
     const seen = lastSeenAt(device);
-    const details = [
-      this._areaName(device),
-      // A mains device that is offline is often just switched off at the wall.
-      key === "offline" && power ? this._t(`power_${power}`) : device.model,
-      key === "offline" && seen
-        ? this._t("last_seen", {
-            time: relativeTime(seen, this.hass.locale),
-          })
-        : undefined,
-    ].filter(Boolean);
+    const created = this.hass.devices[device.device_reg_id]?.created_at;
+    const details =
+      key === "offline"
+        ? [
+            // A mains device that is offline is often just switched off at
+            // the wall.
+            power ? this._t(`power_${power}`) : undefined,
+            this._areaName(device),
+            seen
+              ? this._t("last_seen", {
+                  time: relativeTime(seen, this.hass.locale),
+                })
+              : undefined,
+          ]
+        : [
+            this._areaName(device),
+            created
+              ? this._t("joined", {
+                  time: relativeTime(
+                    new Date(created * 1000),
+                    this.hass.locale
+                  ),
+                })
+              : undefined,
+          ];
 
     return html`
       <ha-list-item-button href=${`/config/zha/device/${device.ieee}`}>
-        <ha-svg-icon
-          slot="start"
-          class="muted"
-          .path=${FINDING_ICON[key]}
-        ></ha-svg-icon>
+        ${
+          stateObj
+            ? html`<ha-state-icon
+                slot="start"
+                .hass=${this.hass}
+                .stateObj=${stateObj}
+              ></ha-state-icon>`
+            : html`<ha-svg-icon
+                slot="start"
+                .path=${mdiHelpCircleOutline}
+              ></ha-svg-icon>`
+        }
         <span slot="headline">${this._deviceName(device)}</span>
-        <span slot="supporting-text">${details.join(" · ")}</span>
+        <span slot="supporting-text">
+          <span class="status">${this._t(key)}</span>${details
+            .filter(Boolean)
+            .map((detail) => ` · ${detail}`)}
+        </span>
         <ha-icon-next slot="end"></ha-icon-next>
       </ha-list-item-button>
     `;
   }
 
   private _renderWorthALookCard(found: Record<FindingKey, ZHADevice[]>) {
+    const keys = WORTH_A_LOOK.filter((key) => found[key].length);
+    if (!keys.length) {
+      return nothing;
+    }
     return html`
       <ha-card>
-        <h2 class="card-title">${this._t("worth_a_look")}</h2>
+        <h2 class="card-title header">${this._t("worth_a_look")}</h2>
         <ha-list-nav .ariaLabel=${this._t("worth_a_look")}>
-          ${WORTH_A_LOOK.map(
+          ${keys.map(
             (key) => html`
               <ha-list-item-button href=${`${BASE_PATH}/${key}`}>
                 <ha-svg-icon
                   slot="start"
                   .path=${FINDING_ICON[key]}
                 ></ha-svg-icon>
-                <span slot="headline">${this._t(key)}</span>
-                <span slot="supporting-text"
-                  >${this._t(`${key}_secondary`)}</span
-                >
-                <span slot="end" class="value">${found[key].length}</span>
+                <span slot="headline">
+                  ${this._t(`${key}_count`, { count: found[key].length })}
+                </span>
+                <span slot="supporting-text">${this._t(`${key}_advice`)}</span>
                 <ha-icon-next slot="end"></ha-icon-next>
               </ha-list-item-button>
             `
@@ -531,75 +576,36 @@ class ZHANetworkHealthPage extends LitElement {
           padding: var(--ha-space-8);
         }
 
-        /* Snapshot card. The heading mirrors the status card of the ZHA
-           dashboard page. */
-        .status {
-          display: flex;
-          align-items: center;
-          gap: var(--ha-space-4);
-          padding: var(--ha-space-4);
-        }
-
-        .icon {
-          position: relative;
-          border-radius: var(--ha-border-radius-2xl);
-          width: 40px;
-          height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          overflow: hidden;
-          flex-shrink: 0;
-          --icon-color: var(--primary-color);
-        }
-
-        .icon.success {
-          --icon-color: var(--success-color);
-        }
-
-        .icon.error {
-          --icon-color: var(--error-color);
-        }
-
-        .icon::before {
-          display: block;
-          content: "";
-          position: absolute;
-          inset: 0;
-          background-color: var(--icon-color);
-          opacity: 0.2;
-        }
-
-        .icon ha-svg-icon {
-          color: var(--icon-color);
-          width: 24px;
-          height: 24px;
-        }
-
-        .status-text h2 {
+        .card-title {
           margin: 0;
-          font-size: var(--ha-font-size-xl);
+          font-size: var(--ha-font-size-2xl);
           font-weight: var(--ha-font-weight-normal);
           line-height: var(--ha-line-height-condensed);
           color: var(--primary-text-color);
         }
 
-        .status-text p {
-          margin: 0;
-          color: var(--secondary-text-color);
-          font-size: var(--ha-font-size-s);
+        .card-title.header {
+          padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-2);
         }
 
-        .distribution {
-          padding: 0 var(--ha-space-4) var(--ha-space-4);
+        /* Snapshot card */
+        .card-body {
+          padding: var(--ha-space-4);
+        }
+
+        .description {
+          margin: var(--ha-space-2) 0 var(--ha-space-4);
+          color: var(--secondary-text-color);
+          font-size: var(--ha-font-size-m);
+          line-height: 1.5;
         }
 
         .bar {
           display: flex;
+          gap: 2px;
           height: 8px;
           border-radius: 4px;
           overflow: hidden;
-          background-color: var(--divider-color);
         }
 
         .segment {
@@ -611,9 +617,10 @@ class ZHANetworkHealthPage extends LitElement {
           background-color: var(--success-color);
         }
 
+        /* A lighter shade of strong: fair is fine, just not as robust. */
         .segment.fair,
         .dot.fair {
-          background-color: var(--info-color);
+          background-color: color-mix(in srgb, var(--success-color) 45%, white);
         }
 
         .segment.weak,
@@ -632,7 +639,7 @@ class ZHANetworkHealthPage extends LitElement {
           gap: var(--ha-space-1) var(--ha-space-4);
           margin-top: var(--ha-space-2);
           color: var(--secondary-text-color);
-          font-size: var(--ha-font-size-s);
+          font-size: var(--ha-font-size-m);
         }
 
         .legend-item {
@@ -648,65 +655,27 @@ class ZHANetworkHealthPage extends LitElement {
           flex-shrink: 0;
         }
 
-        .snapshot {
-          padding: var(--ha-space-3) var(--ha-space-4) var(--ha-space-4);
-          border-top: 1px solid var(--divider-color);
-          color: var(--secondary-text-color);
-          font-size: var(--ha-font-size-s);
-          line-height: 1.4;
-        }
-
-        .snapshot p {
-          margin: 0;
-        }
-
-        .snapshot .updated {
-          margin-top: var(--ha-space-1);
-        }
-
-        /* Needs attention / worth a look */
-        .card-title {
-          margin: 0;
-          padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-2);
-          font-size: var(--ha-font-size-l);
-          font-weight: var(--ha-font-weight-normal);
-        }
-
-        .finding {
-          display: flex;
-          gap: var(--ha-space-4);
-          padding: var(--ha-space-2) var(--ha-space-4) 0;
-          color: var(--secondary-text-color);
-        }
-
-        .finding ha-svg-icon {
-          color: var(--error-color);
-          flex-shrink: 0;
-        }
-
-        .finding h3 {
-          margin: 0;
-          color: var(--primary-text-color);
-          font-size: var(--ha-font-size-m);
-          font-weight: var(--ha-font-weight-medium);
-        }
-
-        .finding p {
-          margin: var(--ha-space-1) 0 0;
-          font-size: var(--ha-font-size-s);
-          line-height: 1.4;
-        }
-
-        .all-good {
+        .updated {
           display: flex;
           align-items: center;
-          gap: var(--ha-space-4);
-          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+          gap: var(--ha-space-2);
+          margin: var(--ha-space-4) 0 0;
+          color: var(--secondary-text-color);
+          font-size: var(--ha-font-size-m);
+        }
+
+        .updated ha-svg-icon {
+          --mdc-icon-size: 18px;
+        }
+
+        /* Device lists */
+        ha-state-icon[slot="start"],
+        ha-svg-icon[slot="start"] {
           color: var(--secondary-text-color);
         }
 
-        .all-good ha-svg-icon {
-          color: var(--success-color);
+        .status {
+          color: var(--error-color);
         }
 
         .advice {
@@ -715,10 +684,6 @@ class ZHANetworkHealthPage extends LitElement {
           color: var(--secondary-text-color);
           font-size: var(--ha-font-size-s);
           line-height: 1.4;
-        }
-
-        .muted {
-          color: var(--secondary-text-color);
         }
 
         .value {
@@ -732,7 +697,7 @@ class ZHANetworkHealthPage extends LitElement {
         }
 
         .signal.fair {
-          color: var(--info-color);
+          color: var(--success-color);
         }
 
         .signal.weak,

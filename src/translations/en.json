@@ -8558,37 +8558,33 @@
           "network_health": {
             "title": "Network health",
             "loading_error": "Failed to load the device list",
-            "status_online": "[%key:ui::panel::config::zha::configuration_page::status_online%]",
-            "status_offline": "[%key:ui::panel::config::zha::configuration_page::status_offline%]",
-            "all_online": "{count, plural,\n  one {# device}\n  other {# devices}\n} · all online",
-            "some_offline": "{count, plural,\n  one {# device}\n  other {# devices}\n} · {offline} offline",
+            "network_title": "Your Zigbee network",
+            "snapshot": "Snapshot of your Zigbee network. Signal strength changes often, so a single weak value is not a problem.",
             "signal_strong": "{count} strong",
             "signal_fair": "{count} fair",
             "signal_weak": "{count} weak",
             "signal_offline": "{count} offline",
-            "snapshot": "A snapshot of what your devices last reported. It refreshes every minute while this page is open.",
             "updated": "Updated",
-            "needs_attention": "Needs attention",
-            "nothing_needs_attention": "All devices are online and set up",
+            "attention_title": "{count, plural,\n  one {# device needs attention}\n  other {# devices need attention}\n}",
+            "nothing_needs_attention": "No devices need attention",
             "worth_a_look": "Worth a look",
             "no_devices": "No devices",
             "via_router": "via {router}",
             "last_seen": "last seen {time}",
-            "power_mains": "Mains-powered",
-            "power_battery": "Battery-powered",
+            "joined": "joined {time}",
+            "power_mains": "mains",
+            "power_battery": "battery",
             "offline": "Offline",
-            "offline_advice": "Check that the device has power. A mains-powered device may be switched off at the wall; wake a battery device with a short button press.",
             "setup_unfinished": "Setup not finished",
-            "setup_unfinished_advice": "The device joined, but its setup stopped before anything could be added. Wake it and reconfigure it from its device page, or remove it and add it again.",
             "weak_signal": "Weak signal",
-            "weak_signal_secondary": "At the edge of radio range",
-            "weak_signal_advice": "Usually harmless, but a command can go unanswered. A mains-powered device halfway steadies the link.",
+            "weak_signal_count": "{count, plural,\n  one {# device with a weak signal}\n  other {# devices with a weak signal}\n}",
+            "weak_signal_advice": "Usually harmless. A mains-powered device in between helps.",
             "low_battery": "Low battery",
-            "low_battery_secondary": "20% or less remaining",
-            "low_battery_advice": "Replace the battery before the device drops off the network.",
+            "low_battery_count": "{count, plural,\n  one {# device with a low battery}\n  other {# devices with a low battery}\n}",
+            "low_battery_advice": "Replace the battery before the device goes offline.",
             "firmware_update": "Firmware update",
-            "firmware_update_secondary": "A newer firmware is available",
-            "firmware_update_advice": "Firmware updates are installed over the air from the device's update entity. Battery devices may need a button press to start."
+            "firmware_update_count": "{count, plural,\n  one {# device with a firmware update}\n  other {# devices with a firmware update}\n}",
+            "firmware_update_advice": "Install it from the device page. Battery devices may need a button press."
           },
           "add_device_page": {
             "spinner": "Waiting for Zigbee devices to join…",
@@ -11640,11 +11636,11 @@
               },
               "time_format": "[%key:ui::panel::profile::time_format::dropdown_label%]",
               "time_formats": {
+                "12": "[%key:ui::panel::profile::time_format::formats::12%]",
+                "24": "[%key:ui::panel::profile::time_format::formats::24%]",
                 "auto": "Use user settings",
                 "language": "[%key:ui::panel::profile::time_format::formats::language%]",
-                "system": "[%key:ui::panel::profile::time_format::formats::system%]",
-                "24": "[%key:ui::panel::profile::time_format::formats::24%]",
-                "12": "[%key:ui::panel::profile::time_format::formats::12%]"
+                "system": "[%key:ui::panel::profile::time_format::formats::system%]"
               },
               "time_zone": "[%key:ui::panel::profile::time_zone::dropdown_label%]",
               "time_zones": {
@@ -12588,10 +12584,10 @@
           "dropdown_label": "Time format",
           "description": "Choose how times are formatted.",
           "formats": {
-            "language": "Auto (use language setting)",
-            "system": "Use system locale",
             "12": "12 hours (AM/PM)",
-            "24": "24 hours"
+            "24": "24 hours",
+            "language": "Auto (use language setting)",
+            "system": "Use system locale"
           }
         },
         "time_zone": {
@@ -13210,13 +13206,13 @@
         "load_failed": "The Marketplace could not load its data: {error}",
         "warning": {
           "title": "Before you install from the Marketplace",
-          "intro": "Marketplace items are made by community contributors and are not reviewed by the Home\u00a0Assistant project. Treat them like plugins for any other software.",
+          "intro": "Marketplace items are made by community contributors and are not reviewed by the Home Assistant project. Treat them like plugins for any other software.",
           "risks_title": "Anything you install can",
           "risks": {
-            "access": "Access and control everything in Home\u00a0Assistant",
+            "access": "Access and control everything in Home Assistant",
             "internet": "Connect to the internet",
             "data": "Share your data with others",
-            "stability": "Slow down or crash Home\u00a0Assistant"
+            "stability": "Slow down or crash Home Assistant"
           },
           "mindful_title": "So be mindful",
           "mindful": {
