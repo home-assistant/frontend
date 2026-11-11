@@ -134,9 +134,6 @@ class PanelHome extends SubscribeMixin(LitElement) {
 
     // Locale changed: regenerate to refresh translated content
     if (oldHass.localize !== this.hass.localize) {
-      // A pending registry debounce would otherwise still fire later and
-      // trigger a redundant second regeneration on top of this one.
-      this._debounceRegenerateStrategy.cancel();
       this._setLovelace();
       return;
     }

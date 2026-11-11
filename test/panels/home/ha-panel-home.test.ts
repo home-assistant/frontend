@@ -2,10 +2,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type * as FrontendDataModule from "../../../src/data/frontend";
 import type { HomeFrontendSystemData } from "../../../src/data/frontend";
 import type * as GetStrategyModule from "../../../src/panels/lovelace/strategies/get-strategy";
-import type { HomeAssistant } from "../../../src/types";
+import type { HomeAssistant, Route } from "../../../src/types";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import { createMockHass } from "../../fixtures/hass";
+import { mockArea } from "../../common/entity/context/context-mock";
 import "../../../src/panels/home/ha-panel-home";
+import { navigate } from "../../../src/common/navigate";
 import { saveFrontendSystemData } from "../../../src/data/frontend";
 import { generateLovelaceDashboardStrategy } from "../../../src/panels/lovelace/strategies/get-strategy";
 
@@ -65,14 +67,19 @@ vi.mock("../../../src/data/frontend", async (importOriginal) => {
     subscribeFrontendSystemData: vi.fn(() => () => undefined),
   };
 });
+vi.mock("../../../src/common/navigate", () => ({ navigate: vi.fn() }));
+
 const mockedGenerateLovelaceDashboardStrategy = vi.mocked(
   generateLovelaceDashboardStrategy
 );
 
 const mockedSaveFrontendSystemData = vi.mocked(saveFrontendSystemData);
 
+const mockedNavigate = vi.mocked(navigate);
+
 interface TestPanelHome extends HTMLElement {
   hass: HomeAssistant;
+  route?: Route;
   hasUpdated: boolean;
   _lovelace?: { config: unknown };
   willUpdate(changedProps: Map<string, unknown>): void;
@@ -108,10 +115,21 @@ const getPreviewConfig = (el: TestPanelHome) =>
     >
   )._previewConfig;
 
-// A registry the strategy depends on changes, as willUpdate() sees it.
-const changeAreaRegistry = (el: TestPanelHome) => {
+// The area registry now holds exactly these areas, as willUpdate() sees it.
+const setAreas = (el: TestPanelHome, areas: HomeAssistant["areas"]) => {
   const oldHass = el.hass;
-  el.hass = { ...oldHass, areas: { ...oldHass.areas } };
+  el.hass = { ...oldHass, areas };
+  el.willUpdate(new Map([["hass", oldHass]]));
+};
+
+// A registry the strategy depends on changes, as willUpdate() sees it.
+const changeAreaRegistry = (el: TestPanelHome) =>
+  setAreas(el, { ...el.hass.areas });
+
+// The user switches language, as willUpdate() sees it.
+const changeLocale = (el: TestPanelHome) => {
+  const oldHass = el.hass;
+  el.hass = { ...oldHass, localize: ((key: string) => key) as any };
   el.willUpdate(new Map([["hass", oldHass]]));
 };
 
@@ -357,28 +375,78 @@ describe("ha-panel-home stale strategy regeneration guard", () => {
 
     expect(getPreviewConfig(el)).toBeUndefined();
   });
+});
 
-  it("cancels a pending registry debounce before a locale-driven regeneration", async () => {
-    const el = createPanel();
+describe("ha-panel-home deleted area view redirect", () => {
+  beforeEach(() => {
+    // Registry changes schedule a real 200ms debounce. Fake timers keep it
+    // from ever firing on its own, so each test decides when it runs.
+    vi.useFakeTimers();
+    mockedGenerateLovelaceDashboardStrategy.mockReset();
     mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
       views: [],
     } as any);
+    mockedNavigate.mockReset();
+  });
+
+  afterEach(() => {
+    vi.clearAllTimers();
+    vi.useRealTimers();
+  });
+
+  const kitchen = mockArea({ area_id: "kitchen", name: "kitchen" });
+  const living = mockArea({ area_id: "living_room", name: "living_room" });
+
+  // An updated panel showing the kitchen area view.
+  const createKitchenViewPanel = () => {
+    const el = document.createElement(
+      "ha-panel-home"
+    ) as unknown as TestPanelHome;
+    el.hass = createMockHass({}, { areas: { kitchen, living_room: living } });
+    el.route = { prefix: "/home", path: "/areas-kitchen" };
     el.hasUpdated = true;
+    return el;
+  };
 
-    // A registry change schedules the 200ms debounce...
-    changeAreaRegistry(el);
+  // Protects the registry debounce redirect: leaving a deleted area's view
+  // for the overview instead of regenerating a dashboard without it.
+  it("redirects to the overview once the debounce fires after the current area is deleted", async () => {
+    const el = createKitchenViewPanel();
 
-    // ...but the locale changes before it fires.
-    const oldHass = el.hass;
-    el.hass = { ...oldHass, localize: ((key: string) => key) as any };
-    el.willUpdate(new Map([["hass", oldHass]]));
-
-    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
-
-    // Advancing past the debounce's original window must not add a second,
-    // now-redundant regeneration.
+    setAreas(el, { living_room: living });
     await vi.advanceTimersByTimeAsync(200);
+
+    expect(mockedNavigate).toHaveBeenCalledTimes(1);
+    expect(mockedNavigate).toHaveBeenCalledWith("/home");
+    expect(mockedGenerateLovelaceDashboardStrategy).not.toHaveBeenCalled();
+  });
+
+  // Protects the redirect check from firing for an area other than the one
+  // being viewed: the dashboard just regenerates.
+  it("regenerates without redirecting when another area is deleted", async () => {
+    const el = createKitchenViewPanel();
+
+    setAreas(el, { kitchen });
+    await vi.advanceTimersByTimeAsync(200);
+
+    expect(mockedNavigate).not.toHaveBeenCalled();
     expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
+  });
+
+  // Protects the redirect from being dropped by a locale change that lands
+  // inside the registry debounce window.
+  it("still redirects when the locale changes before the debounce fires", async () => {
+    const el = createKitchenViewPanel();
+
+    setAreas(el, { living_room: living });
+    changeLocale(el);
+    // The locale change regenerates at once, without waiting for the timer.
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(200);
+
+    expect(mockedNavigate).toHaveBeenCalledTimes(1);
+    expect(mockedNavigate).toHaveBeenCalledWith("/home");
   });
 });
 
