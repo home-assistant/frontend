@@ -83,16 +83,20 @@ export const findSecurityEntities = (sources: EntityFilterSources): string[] =>
   findFilteredEntities(sources, securityEntityFilters);
 
 export const isSecurityPanelEntity = (
-  hass: EntityFilterSources,
+  states: HomeAssistant["states"],
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  areas: HomeAssistant["areas"],
+  floors: HomeAssistant["floors"],
   stateObj: HassEntity
 ): boolean =>
   securityEntityFilters.some((filter) =>
     generateEntityFilter(
-      hass.states,
-      hass.entities,
-      hass.devices,
-      hass.areas,
-      hass.floors,
+      states,
+      entities,
+      devices,
+      areas,
+      floors,
       filter
     )(stateObj.entity_id)
   );
@@ -188,7 +192,14 @@ export class SecurityViewStrategy extends ReactiveElement {
     const favoriteEntities = (config.favorite_entities ?? []).filter(
       (entityId) =>
         hass.states[entityId] &&
-        isSecurityPanelEntity(hass, hass.states[entityId])
+        isSecurityPanelEntity(
+          hass.states,
+          hass.entities,
+          hass.devices,
+          hass.areas,
+          hass.floors,
+          hass.states[entityId]
+        )
     );
 
     if (favoriteEntities.length > 0) {
