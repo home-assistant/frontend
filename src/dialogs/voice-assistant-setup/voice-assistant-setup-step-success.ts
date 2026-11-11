@@ -351,7 +351,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
   private async _done() {
     if (this._deviceName) {
       try {
-        updateDeviceRegistryEntry(this.hass, this.deviceId, {
+        updateDeviceRegistryEntry(this.hass.callWS, this.deviceId, {
           name_by_user: this._deviceName,
         });
       } catch (error: any) {

@@ -46,6 +46,7 @@ export class HaIfAction extends LitElement implements ActionElement {
         )}:
       </h4>
       <ha-automation-condition
+        path-key="if"
         .conditions=${action.if ?? []}
         .disabled=${this.disabled}
         @value-changed=${this._ifChanged}
@@ -60,6 +61,7 @@ export class HaIfAction extends LitElement implements ActionElement {
         )}:
       </h4>
       <ha-automation-action
+        path-key="then"
         .actions=${action.then ?? []}
         .disabled=${this.disabled}
         @value-changed=${this._thenChanged}
@@ -73,6 +75,7 @@ export class HaIfAction extends LitElement implements ActionElement {
         )}:
       </h4>
       <ha-automation-action
+        path-key="else"
         .actions=${action.else || []}
         .disabled=${this.disabled}
         @value-changed=${this._elseChanged}

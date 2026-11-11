@@ -5,7 +5,7 @@ import memoizeOne from "memoize-one";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { debounce } from "../../common/util/debounce";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, HomeAssistantApi } from "../../types";
 import type { FanDirection } from "../fan";
 import type { LightColor } from "../light";
 import type { NextNamePart, RegistryEntry } from "../registry";
@@ -298,11 +298,11 @@ export const getExtendedEntityRegistryEntries = (
   });
 
 export const updateEntityRegistryEntry = (
-  hass: Pick<HomeAssistant, "callWS">,
+  callWS: HomeAssistantApi["callWS"],
   entityId: string,
   updates: Partial<EntityRegistryEntryUpdateParams>
 ): Promise<UpdateEntityRegistryEntryResult> =>
-  hass.callWS({
+  callWS({
     type: "config/entity_registry/update",
     entity_id: entityId,
     ...updates,
@@ -396,13 +396,20 @@ export const getEntityPlatformLookup = (
   return entityLookup;
 };
 
+export interface AutomaticEntityIdOverrides {
+  name?: string | null;
+  area_id?: string | null;
+}
+
 export const getAutomaticEntityIds = (
-  hass: HomeAssistant,
-  entity_ids: string[]
+  callWS: HomeAssistantApi["callWS"],
+  entity_ids: string[],
+  overrides?: Record<string, AutomaticEntityIdOverrides>
 ) =>
-  hass.callWS<Record<string, string | null>>({
+  callWS<Record<string, string | null>>({
     type: "config/entity_registry/get_automatic_entity_ids",
     entity_ids,
+    ...(overrides && { overrides }),
   });
 
 /**
@@ -410,22 +417,22 @@ export const getAutomaticEntityIds = (
  * the area. Returns the entity ID of each entity after the change.
  */
 export const updateEntitiesArea = async (
-  hass: HomeAssistant,
+  callWS: HomeAssistantApi["callWS"],
   entityIds: string[],
   areaId: string
 ): Promise<Record<string, string>> => {
   await Promise.all(
     entityIds.map((entityId) =>
-      updateEntityRegistryEntry(hass, entityId, { area_id: areaId })
+      updateEntityRegistryEntry(callWS, entityId, { area_id: areaId })
     )
   );
-  const newEntityIds = await getAutomaticEntityIds(hass, entityIds);
+  const newEntityIds = await getAutomaticEntityIds(callWS, entityIds);
   const result: Record<string, string> = {};
   for (const entityId of entityIds) {
     const newEntityId = newEntityIds[entityId];
     if (newEntityId) {
       // eslint-disable-next-line no-await-in-loop
-      await updateEntityRegistryEntry(hass, entityId, {
+      await updateEntityRegistryEntry(callWS, entityId, {
         new_entity_id: newEntityId,
       });
     }

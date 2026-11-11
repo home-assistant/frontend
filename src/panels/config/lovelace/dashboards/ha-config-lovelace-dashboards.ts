@@ -6,6 +6,7 @@ import {
   mdiHomeEdit,
   mdiPencil,
   mdiPlus,
+  mdiContentDuplicate,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -38,6 +39,7 @@ import type { LovelaceRawConfig } from "../../../../data/lovelace/config/types";
 import {
   isStrategyDashboard,
   saveConfig,
+  fetchConfig,
 } from "../../../../data/lovelace/config/types";
 import { fetchResources } from "../../../../data/lovelace/resource";
 import type {
@@ -72,6 +74,7 @@ import type { NewDashboardSelection } from "../../dashboard/show-dialog-new-dash
 import { showNewDashboardDialog } from "../../dashboard/show-dialog-new-dashboard";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardConfigureStrategyDialog } from "./show-dialog-lovelace-dashboard-configure-strategy";
+import { replaceDashboardLinks } from "./replace-dashboard-links";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
 import { showPanelDetailDialog } from "./show-dialog-panel-detail";
 
@@ -317,6 +320,13 @@ export class HaConfigLovelaceDashboards extends LitElement {
                         "ui.panel.config.lovelace.dashboards.picker.edit"
                       ),
                       action: () => this._handleEdit(dashboard),
+                    },
+                    {
+                      path: mdiContentDuplicate,
+                      label: this.hass.localize(
+                        "ui.panel.config.lovelace.dashboards.picker.duplicate"
+                      ),
+                      action: () => this._handleDuplicate(dashboard),
                     },
                     {
                       label: this.hass.localize(
@@ -601,6 +611,40 @@ export class HaConfigLovelaceDashboards extends LitElement {
     this._deleteDashboard(dashboard);
   };
 
+  private _handleDuplicate = async (item: DataTableItem) => {
+    try {
+      const config = await fetchConfig(
+        this.hass.connection,
+        item.url_path,
+        false
+      ).catch((err) => {
+        if (err.code === "config_not_found") {
+          return undefined;
+        }
+        throw err;
+      });
+
+      const title = this.hass.localize(
+        "ui.panel.config.lovelace.dashboards.duplicate_title",
+        { title: item.title }
+      );
+
+      this._openDetailDialog(
+        undefined,
+        undefined,
+        config,
+        { title, icon: item.icon },
+        item.url_path
+      );
+    } catch {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.lovelace.dashboards.duplicate_failed"
+        ),
+      });
+    }
+  };
+
   private async _addDashboard() {
     showNewDashboardDialog(this, {
       selectConfig: async ({ config }: NewDashboardSelection) => {
@@ -644,7 +688,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
     dashboard?: LovelaceDashboard,
     urlPath?: string,
     defaultConfig?: LovelaceRawConfig,
-    fieldSuggestions?: LovelaceDashboardSuggestions
+    fieldSuggestions?: LovelaceDashboardSuggestions,
+    duplicateOfUrlPath?: string
   ): Promise<void> {
     const defaultPanel = this.hass.systemData?.default_panel || DEFAULT_PANEL;
     showDashboardDetailDialog(this, {
@@ -666,7 +711,17 @@ export class HaConfigLovelaceDashboards extends LitElement {
             )
         );
         if (defaultConfig) {
-          await saveConfig(this.hass!, created.url_path, defaultConfig);
+          await saveConfig(
+            this.hass!,
+            created.url_path,
+            duplicateOfUrlPath
+              ? replaceDashboardLinks(
+                  defaultConfig,
+                  duplicateOfUrlPath,
+                  created.url_path
+                )
+              : defaultConfig
+          );
         }
       },
       updateDashboard: async (values) => {

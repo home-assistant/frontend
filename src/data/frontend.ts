@@ -51,6 +51,10 @@ export interface SecurityFrontendSystemData {
   favorite_entities?: string[];
 }
 
+export interface MaintenanceFrontendSystemData {
+  hidden_entities?: string[];
+}
+
 export interface EnergyFrontendSystemData {
   // Stable "<view>.<card-type>" keys of energy dashboard cards the user has
   // hidden. An absent key or array means nothing is hidden (all cards visible),
@@ -69,6 +73,7 @@ declare global {
     home: HomeFrontendSystemData;
     energy: EnergyFrontendSystemData;
     security: SecurityFrontendSystemData;
+    maintenance: MaintenanceFrontendSystemData;
   }
 }
 
@@ -144,6 +149,32 @@ export const saveFrontendSystemData = async <
     key,
     value,
   });
+
+const pendingSystemDataSaves = new Map<ValidSystemDataKey, Promise<void>>();
+
+export const queueFrontendSystemDataSave = <
+  SystemDataKey extends ValidSystemDataKey,
+>(
+  conn: Connection,
+  key: SystemDataKey,
+  value: FrontendSystemData[SystemDataKey]
+): Promise<void> => {
+  const save = (pendingSystemDataSaves.get(key) ?? Promise.resolve())
+    .catch(() => undefined)
+    .then(() => saveFrontendSystemData(conn, key, value));
+  pendingSystemDataSaves.set(key, save);
+  return save;
+};
+
+export const fetchFrontendSystemDataAfterSaves = async <
+  SystemDataKey extends ValidSystemDataKey,
+>(
+  conn: Connection,
+  key: SystemDataKey
+): Promise<FrontendSystemData[SystemDataKey] | null> => {
+  await pendingSystemDataSaves.get(key)?.catch(() => undefined);
+  return fetchFrontendSystemData(conn, key);
+};
 
 export const subscribeFrontendSystemData = <
   SystemDataKey extends ValidSystemDataKey,

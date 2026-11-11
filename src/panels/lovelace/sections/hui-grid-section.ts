@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
+import type { ConfigPath } from "../../../common/util/config-path";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
@@ -17,7 +18,6 @@ import type { HomeAssistant } from "../../../types";
 import type { HuiCard } from "../cards/hui-card";
 import { computeCardGridSize } from "../common/compute-card-grid-size";
 import "../components/hui-card-edit-mode";
-import type { LovelacePath } from "../editor/lovelace-path";
 import { moveAtPath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 
@@ -44,7 +44,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property({ attribute: false }) public path?: LovelacePath;
+  @property({ attribute: false }) public path?: ConfigPath;
 
   @property({ attribute: false }) public isStrategy = false;
 
@@ -111,7 +111,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
               const { rows, columns } = computeCardGridSize(gridOptions);
 
-              const cardPath: LovelacePath | undefined = editMode
+              const cardPath: ConfigPath | undefined = editMode
                 ? [...this.path!, "cards", idx]
                 : undefined;
               return html`
@@ -190,7 +190,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
   private _cardAdded(ev) {
     ev.stopPropagation();
     const { index, data } = ev.detail;
-    const newConfig = moveAtPath(this.lovelace!.config, data as LovelacePath, [
+    const newConfig = moveAtPath(this.lovelace!.config, data as ConfigPath, [
       ...this.path!,
       "cards",
       index,

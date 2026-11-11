@@ -36,6 +36,8 @@ export class LazyContextProvider<
 
   private _subscribing = false;
 
+  private _attempt = 0;
+
   private _connection?: Connection;
 
   private _unsubscribe?: UnsubscribeFunc;
@@ -253,23 +255,38 @@ export class LazyContextProvider<
       return;
     }
     this._subscribing = true;
+    const attempt = ++this._attempt;
 
-    const result = this._subscribeFn(this._connection, (value: T) => {
-      this._loaded = true;
-      this._subscribing = false;
+    const onError = (err: unknown) => {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      if (attempt === this._attempt) {
+        this._subscribing = false;
+      }
+    };
 
-      // Set the value on the real provider — this updates all existing subscribers
-      this._provider.setValue(value as ContextType<C>);
+    let result: UnsubscribeFunc | Promise<UnsubscribeFunc>;
+    try {
+      result = this._subscribeFn(this._connection, (value: T) => {
+        this._loaded = true;
+        this._subscribing = false;
 
-      // Flush any pending callbacks that were buffered before data loaded
-      this._flushPendingCallbacks();
-    });
+        // Set the value on the real provider — this updates all existing subscribers
+        this._provider.setValue(value as ContextType<C>);
+
+        // Flush any pending callbacks that were buffered before data loaded
+        this._flushPendingCallbacks();
+      });
+    } catch (err) {
+      onError(err);
+      return;
+    }
 
     // Handle async unsubscribe (Promise<UnsubscribeFunc>)
     if (result instanceof Promise) {
       result.then((unsub) => {
         this._unsubscribe = unsub;
-      });
+      }, onError);
     } else {
       this._unsubscribe = result;
     }
@@ -283,8 +300,12 @@ export class LazyContextProvider<
     const pending = [...this._pendingCallbacks];
     this._pendingCallbacks = [];
 
-    // Re-add each pending callback to the provider now that it has data
+    // Re-add each pending callback to the provider now that it has data,
+    // skipping consumers that disconnected while waiting.
     for (const { callback, consumerHost, subscribe } of pending) {
+      if (!consumerHost.isConnected) {
+        continue;
+      }
       (
         this._provider as unknown as {
           addCallback: (
@@ -294,6 +315,10 @@ export class LazyContextProvider<
           ) => void;
         }
       ).addCallback(callback, consumerHost, subscribe);
+    }
+
+    if (this._subscriberCount === 0) {
+      this._scheduleTeardown();
     }
   }
 }

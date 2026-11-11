@@ -149,7 +149,7 @@ const copyFavoriteOptionsToEntities = async (
   if (selected?.entity) {
     const result = await Promise.allSettled(
       selected.entity.map((entityId: string) =>
-        updateEntityRegistryEntry(hass, entityId, {
+        updateEntityRegistryEntry(hass.callWS, entityId, {
           options_domain: domain,
           options,
         })

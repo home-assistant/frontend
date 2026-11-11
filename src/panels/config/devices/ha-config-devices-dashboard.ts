@@ -474,6 +474,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           name: computeDeviceNameDisplay(device, this.hass.localize),
           model:
             device.model ||
+            device.model_id ||
             `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
           manufacturer:
             device.manufacturer ||
@@ -1167,7 +1168,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     const promises: Promise<DeviceRegistryEntry>[] = [];
     this._selected.forEach((deviceId) => {
       promises.push(
-        updateDeviceRegistryEntry(this.hass, deviceId, {
+        updateDeviceRegistryEntry(this.hass.callWS, deviceId, {
           area_id: area,
         })
       );
@@ -1219,7 +1220,7 @@ ${rejected
     const promises: Promise<DeviceRegistryEntry>[] = [];
     this._selected.forEach((deviceId) => {
       promises.push(
-        updateDeviceRegistryEntry(this.hass, deviceId, {
+        updateDeviceRegistryEntry(this.hass.callWS, deviceId, {
           labels:
             action === "add"
               ? this.hass.devices[deviceId].labels.concat(label)

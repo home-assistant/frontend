@@ -1,22 +1,39 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
+import { transform } from "../common/decorators/transform";
 import "../components/entity/state-info";
+import { apiContext, formattersContext } from "../data/context";
 import HassMediaPlayerEntity from "../util/hass-media-player-model";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistantApi, HomeAssistantFormatters } from "../types";
 import { haStyle } from "../resources/styles";
 
 @customElement("state-card-media_player")
 class StateCardMediaPlayer extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityState"] | undefined
+  >({
+    transformer: (formatters) => formatters?.formatEntityState,
+  })
+  private _formatEntityState?: HomeAssistantFormatters["formatEntityState"];
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
   @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
 
   protected render(): TemplateResult {
-    const playerObj = new HassMediaPlayerEntity(this.hass, this.stateObj);
+    const playerObj = new HassMediaPlayerEntity(
+      this._api.callService,
+      this.stateObj
+    );
     return html`
       <div class="horizontal justified layout">
         <state-info
@@ -33,9 +50,9 @@ class StateCardMediaPlayer extends LitElement {
     `;
   }
 
-  private _computePrimaryText(playerObj) {
+  private _computePrimaryText(playerObj: HassMediaPlayerEntity) {
     return (
-      playerObj.primaryTitle || this.hass.formatEntityState(playerObj.stateObj)
+      playerObj.primaryTitle || this._formatEntityState?.(playerObj.stateObj)
     );
   }
 

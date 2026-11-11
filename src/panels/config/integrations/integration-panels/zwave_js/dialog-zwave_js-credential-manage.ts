@@ -229,9 +229,11 @@ class DialogZwaveCredentialManage extends LitElement {
                         data-user-id=${user.user_id}
                         @click=${this._handleUserClick}
                       >
-                        <div slot="start" class="icon-background">
-                          <ha-svg-icon .path=${mdiAccountKey}></ha-svg-icon>
-                        </div>
+                        <ha-svg-icon
+                          slot="start"
+                          class="icon-background"
+                          .path=${mdiAccountKey}
+                        ></ha-svg-icon>
                         <div slot="headline">
                           ${
                             user.user_name ||
@@ -430,11 +432,8 @@ class DialogZwaveCredentialManage extends LitElement {
           border-radius: var(--ha-border-radius-circle);
           background-color: var(--primary-color);
           color: #fff;
-          display: flex;
-          width: 40px;
-          height: 40px;
-          align-items: center;
-          justify-content: center;
+          /* 24px icon + padding = 40px circle */
+          padding: var(--ha-space-2);
         }
         .credential-count {
           margin-inline-start: var(--ha-space-2);
