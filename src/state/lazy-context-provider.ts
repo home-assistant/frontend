@@ -257,7 +257,9 @@ export class LazyContextProvider<
     this._subscribing = true;
     const attempt = ++this._attempt;
 
-    const onError = () => {
+    const onError = (err: unknown) => {
+      // eslint-disable-next-line no-console
+      console.error(err);
       if (attempt === this._attempt) {
         this._subscribing = false;
       }
@@ -275,8 +277,8 @@ export class LazyContextProvider<
         // Flush any pending callbacks that were buffered before data loaded
         this._flushPendingCallbacks();
       });
-    } catch {
-      onError();
+    } catch (err) {
+      onError(err);
       return;
     }
 

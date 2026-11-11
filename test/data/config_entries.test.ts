@@ -31,4 +31,17 @@ describe("ConfigEntryStream", () => {
     expect(removed).not.toBe(updated);
     expect(removed.map((e) => e.entry_id)).toEqual(["b", "c"]);
   });
+
+  it("replaces the list when a new snapshot arrives", () => {
+    const stream = new ConfigEntryStream();
+    stream.processMessage([
+      { type: null, entry: entry("a") },
+      { type: null, entry: entry("b") },
+    ]);
+    const resubscribed = stream.processMessage([
+      { type: null, entry: entry("b") },
+      { type: null, entry: entry("c") },
+    ]);
+    expect(resubscribed.map((e) => e.entry_id)).toEqual(["b", "c"]);
+  });
 });
