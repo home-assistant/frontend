@@ -1371,7 +1371,7 @@
         },
         "filter_media_type": "Filter by media type",
         "no_items": "No items",
-        "not_shown": "{count} {count, plural,\n one {item}\n other {items}\n} incompatible with the currently selected player {count, plural,\n one {is}\n other {are}\n} hidden",
+        "not_shown": "{count} {count, plural,\n  one {item}\n  other {items}\n} incompatible with the currently selected player {count, plural,\n  one {is}\n  other {are}\n} hidden",
         "choose_player": "Choose player",
         "media-player-browser": "Media",
         "web-browser": "Web browser",
@@ -1394,8 +1394,8 @@
           "highlight_button": "Click here to upload your first media",
           "upload_failed": "Upload failed: {reason}",
           "add_media": "Add media",
-          "uploading": "Uploading {count} {count, plural,\n one {file}\n other {files}\n}",
-          "confirm_delete": "Do you want to delete {count} {count, plural,\n one {file}\n other {files}\n}?",
+          "uploading": "Uploading {count} {count, plural,\n  one {file}\n  other {files}\n}",
+          "confirm_delete": "Do you want to delete {count} {count, plural,\n  one {file}\n  other {files}\n}?",
           "delete": "Delete {count}",
           "deleting": "Deleting {count}",
           "deselect_all": "Deselect all",
@@ -2273,10 +2273,10 @@
           "confirm_delete": "Deleting \"{entity_name}\" is an irreversible action. Are you sure you want to continue?",
           "confirm_delete_related": "This entity is part of {items}. If you delete it, you will need to update those manually.",
           "confirm_delete_count": {
-            "automation": "{count} {count, plural,\n one {automation}\n other {automations}\n}",
-            "script": "{count} {count, plural,\n one {script}\n other {scripts}\n}",
-            "group": "{count} {count, plural,\n one {group}\n other {groups}\n}",
-            "scene": "{count} {count, plural,\n one {scene}\n other {scenes}\n}"
+            "automation": "{count} {count, plural,\n  one {automation}\n  other {automations}\n}",
+            "script": "{count} {count, plural,\n  one {script}\n  other {scripts}\n}",
+            "group": "{count} {count, plural,\n  one {group}\n  other {groups}\n}",
+            "scene": "{count} {count, plural,\n  one {scene}\n  other {scenes}\n}"
           },
           "update": "Update",
           "note": "Note: This might not work yet with all integrations.",
@@ -2309,11 +2309,11 @@
       "recreate_entity_ids": {
         "confirm_rename_title": "Are you sure you want to recreate your entity IDs?",
         "confirm_rename_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to manually edit them yourself to use the new entity IDs!",
-        "will_rename": "{count} {count, plural,\n one {entity ID}\n other {entity IDs}\n} will be renamed",
+        "will_rename": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} will be renamed",
         "new": "New",
         "old": "Old",
-        "cant_rename": "{count} {count, plural,\n one {entity ID}\n other {entity IDs}\n} cannot be regenerated because they are not available",
-        "wont_change": "{count} {count, plural,\n one {entity ID}\n other {entity IDs}\n} will not change",
+        "cant_rename": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} cannot be regenerated because they are not available",
+        "wont_change": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} will not change",
         "update_entity_error": "Updating the entity ID of {entityId} failed",
         "confirm_no_renamable_entity_ids": "No renamable entity IDs"
       },
@@ -2601,8 +2601,8 @@
         "no_entity_debug_info": "No entity debug info",
         "no_trigger_debug_info": "No trigger debug info",
         "payload_display": "Payload display",
-        "recent_messages": "{n} most recently received {n, plural,\n one {message}\n other {messages}\n}",
-        "recent_tx_messages": "{n} most recently transmitted {n, plural,\n one {message}\n other {messages}\n}",
+        "recent_messages": "{n} most recently received {n, plural,\n  one {message}\n  other {messages}\n}",
+        "recent_tx_messages": "{n} most recently transmitted {n, plural,\n  one {message}\n  other {messages}\n}",
         "show_as_yaml": "Show as YAML",
         "triggers": "Triggers"
       },
@@ -2846,22 +2846,24 @@
       },
       "integrations": "{done} of {total} integrations set up",
       "integrations_unknown": "Not everything is available until startup is finished",
-      "issues": "{count, plural,\n one {# needs attention}\n other {# need attention}\n}",
-      "show_details": "Show details",
-      "hide_details": "Hide details",
-      "elapsed": "Setting up integrations for {seconds} s",
+      "issues": "{count, plural,\n  one {# needs attention}\n  other {# need attention}\n}",
+      "details": "Startup details",
+      "elapsed": "Starting for {seconds} s",
       "active": "Setting up now",
       "seconds": "{seconds} s",
-      "more": "and {count} more",
       "failed": "Failed to set up",
-      "retrying": "Retrying in the background"
+      "retrying": "Retrying in the background",
+      "started": "Home Assistant started in {seconds} s.",
+      "started_with_issues": "Home Assistant started in {seconds} s. {count, plural,\n  one {# integration needs}\n  other {# integrations need}\n} attention.",
+      "slowest": "Slowest integrations",
+      "open_integrations": "Open integrations"
     },
     "notification_toast": {
       "action_failed": "Failed to perform the action {service}.",
       "connection_lost": "Connection lost. Reconnecting…",
       "started": "Home Assistant has started!",
-      "started_with_issues": "Home Assistant has started. {count, plural,\n one {# integration needs}\n other {# integrations need}\n} attention.",
-      "show": "Show",
+      "started_with_issues": "Home Assistant has started. {count, plural,\n  one {# integration needs}\n  other {# integrations need}\n} attention.",
+      "details": "Details",
       "triggered": "Triggered {name}",
       "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}",
@@ -3118,12 +3120,12 @@
         },
         "common": {
           "quick_links": {
-            "devices": "{count} {count, plural,\n one {device}\n other {devices}\n}",
-            "entities": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
-            "helpers": "{count} {count, plural,\n one {helper}\n other {helpers}\n}",
-            "automations": "{count} {count, plural,\n one {automation}\n other {automations}\n}",
-            "scenes": "{count} {count, plural,\n one {scene}\n other {scenes}\n}",
-            "scripts": "{count} {count, plural,\n one {script}\n other {scripts}\n}"
+            "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+            "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
+            "helpers": "{count} {count, plural,\n  one {helper}\n  other {helpers}\n}",
+            "automations": "{count} {count, plural,\n  one {automation}\n  other {automations}\n}",
+            "scenes": "{count} {count, plural,\n  one {scene}\n  other {scenes}\n}",
+            "scripts": "{count} {count, plural,\n  one {script}\n  other {scripts}\n}"
           },
           "editor": {
             "confirm_unsaved": "You have unsaved changes. Are you sure you want to leave?"
@@ -3157,11 +3159,11 @@
           },
           "check_updates": "Check for updates",
           "no_new_updates": "No new updates found",
-          "updates_refreshed": "State of {count} {count, plural,\n one {update}\n other {updates}\n} refreshed",
+          "updates_refreshed": "State of {count} {count, plural,\n  one {update}\n  other {updates}\n} refreshed",
           "checking_updates": "Checking for updates...",
-          "title": "{count} {count, plural,\n one {update}\n other {updates}\n}",
-          "title_not_installable": "{count} not installable {count, plural,\n one {update}\n other {updates}\n}",
-          "title_skipped": "{count} skipped {count, plural,\n one {update}\n other {updates}\n}",
+          "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
+          "title_not_installable": "{count} not installable {count, plural,\n  one {update}\n  other {updates}\n}",
+          "title_skipped": "{count} skipped {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
           "more_updates": "Show all updates",
           "show": "show",
@@ -3186,7 +3188,7 @@
         "repairs": {
           "caption": "Repairs",
           "description": "Find and fix issues with your Home Assistant instance",
-          "title": "{count} {count, plural,\n one {repair}\n other {repairs}\n}",
+          "title": "{count} {count, plural,\n  one {repair}\n  other {repairs}\n}",
           "no_repairs": "There are currently no repairs pending",
           "more_repairs": "Show all repairs",
           "show_ignored": "Show ignored repairs",
@@ -3223,7 +3225,7 @@
             "unknown_error": "Unknown error",
             "aliases_section": "Aliases",
             "no_aliases": "No configured aliases",
-            "configured_aliases": "{count} configured {count, plural,\n one {alias}\n other {aliases}\n}",
+            "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
             "aliases_description": "Aliases are alternative names used in voice assistants to refer to this floor.",
             "areas_section": "Areas",
             "areas_description": "Specify the areas that are on this floor.",
@@ -3280,7 +3282,7 @@
             "not_available": "Not available"
           },
           "installed": {
-            "search": "Search {number} {number, plural,\n one {app}\n other {apps}\n}",
+            "search": "Search {number} {number, plural,\n  one {app}\n  other {apps}\n}",
             "no_apps": "You don't have any apps installed yet. Click here to browse available apps.",
             "add_app": "Install app",
             "app_stopped": "App is stopped",
@@ -3291,7 +3293,7 @@
             "title": "App store",
             "check_updates": "Check for updates",
             "checking_updates": "Checking for app updates...",
-            "updates_available": "{count} {count, plural,\n one {app update}\n other {app updates}\n} available",
+            "updates_available": "{count} {count, plural,\n  one {app update}\n  other {app updates}\n} available",
             "no_updates": "No app updates available",
             "repositories": "Repositories",
             "registries": "Registry credentials",
@@ -3573,7 +3575,7 @@
           "confirm_delete_title": "Delete label?",
           "confirm_delete": "Are you sure you want to delete label {label}? It will be removed from all areas, devices, and entities.",
           "confirm_delete_selected_title": "Delete selected labels?",
-          "confirm_delete_selected": "{count, plural,\n one {The selected label will be removed from all areas, devices, and entities.}\n other {The {count} selected labels will be removed from all areas, devices, and entities.}\n}",
+          "confirm_delete_selected": "{count, plural,\n  one {The selected label will be removed from all areas, devices, and entities.}\n  other {The {count} selected labels will be removed from all areas, devices, and entities.}\n}",
           "delete_failed_title": "Delete failed",
           "delete_failed": "Some labels could not be deleted. Check system logs for more information."
         },
@@ -3649,7 +3651,7 @@
             "no_linked_entities": "There are no entities directly linked to this area.",
             "aliases_section": "Aliases",
             "no_aliases": "No configured aliases",
-            "configured_aliases": "{count} configured {count, plural,\n one {alias}\n other {aliases}\n}",
+            "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
             "aliases_description": "Aliases are alternative names used in voice assistants to refer to this area.",
             "temperature_entity": "Temperature sensor",
             "temperature_entity_description": "Sensor that represents the area temperature.",
@@ -4239,7 +4241,7 @@
           "confirm_delete_title": "Delete tag?",
           "confirm_delete": "The tag ''{tag}'' will be permanently deleted.",
           "confirm_delete_selected_title": "Delete selected tags?",
-          "confirm_delete_selected": "{count, plural,\n one {The selected tag will be permanently deleted.}\n other {The {count} selected tags will be permanently deleted.}\n}",
+          "confirm_delete_selected": "{count, plural,\n  one {The selected tag will be permanently deleted.}\n  other {The {count} selected tags will be permanently deleted.}\n}",
           "delete_failed_title": "Delete failed",
           "delete_failed": "Some tags could not be deleted. Check system logs for more information.",
           "automation_title": "Tag {name} is scanned",
@@ -4314,7 +4316,7 @@
               "fire_event": "Fire event",
               "event_fired": "Event {name} fired at {time}",
               "active_listeners": "Active listeners",
-              "count_listeners": "({count} {count, plural,\n one {listener}\n other {listeners}\n})",
+              "count_listeners": "({count} {count, plural,\n  one {listener}\n  other {listeners}\n})",
               "listen_to_events": "Listen to events",
               "filter_events": "Filter events",
               "filter_helper": "Only capture events containing the filter string.",
@@ -4485,7 +4487,7 @@
               "delete_selected": "Delete selected statistics",
               "multi_delete": {
                 "title": "Delete selected statistics",
-                "info_text": "Do you want to permanently delete the long term statistics {statistic_count, plural,\n one {of this entity}\n other {of {statistic_count} entities}\n} from your database?"
+                "info_text": "Do you want to permanently delete the long term statistics {statistic_count, plural,\n  one {of this entity}\n  other {of {statistic_count} entities}\n} from your database?"
               },
               "mean_type": {
                 "0": "None",
@@ -4980,7 +4982,7 @@
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
-            "search": "Search {number} {number, plural,\n one {helper}\n other {helpers}\n}",
+            "search": "Search {number} {number, plural,\n  one {helper}\n  other {helpers}\n}",
             "error_information": "Error information",
             "delete_confirm_title": "Delete helper?",
             "delete_confirm_text": "Are you sure you want to delete {name}?",
@@ -5326,7 +5328,7 @@
             "confirm_delete_title": "Delete {dashboard_title}?",
             "confirm_delete_text": "This dashboard will be permanently deleted.",
             "confirm_delete_selected_title": "Delete selected dashboards?",
-            "confirm_delete_selected": "{count, plural,\n one {The selected dashboard will be permanently deleted.}\n other {The {count} selected dashboards will be permanently deleted.}\n}",
+            "confirm_delete_selected": "{count, plural,\n  one {The selected dashboard will be permanently deleted.}\n  other {The {count} selected dashboards will be permanently deleted.}\n}",
             "confirm_delete_selected_partly": "You can only delete {deletable} of the {selected} dashboards. The others are built-in or configured in YAML.",
             "delete_failed_title": "Delete failed",
             "delete_failed": "Some dashboards could not be deleted. Check system logs for more information.",
@@ -5411,7 +5413,7 @@
               "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]",
               "add_assistant": "Add assistant",
               "exposed_entities": "[%key:ui::panel::config::cloud::account::google::exposed_entities%]",
-              "assist_devices": "{number} Assist {number, plural,\n one {device}\n other {devices}\n}",
+              "assist_devices": "{number} Assist {number, plural,\n  one {device}\n  other {devices}\n}",
               "delete": {
                 "confirm_title": "Delete {name}?",
                 "confirm_text": "{name} will be permanently deleted.",
@@ -5576,7 +5578,7 @@
             "expose_dialog": {
               "header": "Expose entities",
               "expose_to": "to {assistants}",
-              "expose_entities": "Expose {count} {count, plural,\n one {entity}\n other {entities}\n}"
+              "expose_entities": "Expose {count} {count, plural,\n  one {entity}\n  other {entities}\n}"
             },
             "expose_new_entities": "Expose new entities",
             "expose_new_entities_info": "Should new entities be exposed? Exposes supported devices that are not classified as security devices."
@@ -5719,7 +5721,7 @@
             "assign_category": "Assign category",
             "no_category_support": "You can't assign a category to this automation",
             "no_category_entity_reg": "To assign a category to an automation it needs to have a unique ID.",
-            "search": "Search {number} {number, plural,\n one {automation}\n other {automations}\n}",
+            "search": "Search {number} {number, plural,\n  one {automation}\n  other {automations}\n}",
             "headers": {
               "toggle": "Enable/disable",
               "name": "Name",
@@ -5892,7 +5894,7 @@
             "entity_hidden": "[%key:ui::panel::config::devices::entities::hidden%]",
             "target_summary": {
               "no_target": "No target set",
-              "targets": "{count} {count, plural,\n one {target}\n other {targets}\n}",
+              "targets": "{count} {count, plural,\n  one {target}\n  other {targets}\n}",
               "invalid": "Invalid target",
               "all_entities": "All entities",
               "none_entities": "No entities",
@@ -6218,7 +6220,7 @@
                   "label": "List",
                   "description": {
                     "no_trigger": "When any trigger matches",
-                    "full": "When any of {count} {count, plural,\n one {trigger}\n other {triggers}\n} triggers"
+                    "full": "When any of {count} {count, plural,\n  one {trigger}\n other {triggers}\n} triggers"
                   }
                 }
               }
@@ -6340,7 +6342,7 @@
                   "description": {
                     "picker": "Tests if any condition is true.",
                     "no_conditions": "If any condition matches",
-                    "full": "If any of {count} {count, plural,\n one {condition}\n other {conditions}\n} matches"
+                    "full": "If any of {count} {count, plural,\n  one {condition}\n other {conditions}\n} matches"
                   }
                 },
                 "state": {
@@ -6836,7 +6838,7 @@
               "script": "scripts"
             },
             "error": "{path} could not be loaded",
-            "used_count": "{count, plural,\n  =0 {Not in use}\n one {Used once}\n other {Used {count} times}\n}",
+            "used_count": "{count, plural,\n  =0 {Not in use}\n  one {Used once}\n  other {Used {count} times}\n}",
             "blueprint_in_use_title": "This blueprint is in use and cannot be deleted",
             "blueprint_in_use_text": "Please remove all below {type} that use this blueprint before deleting it. {list}",
             "blueprint_in_use_view_automation": "View automations",
@@ -6844,7 +6846,7 @@
             "confirm_delete_title": "Delete blueprint?",
             "confirm_delete_text": "{name} will be permanently deleted.",
             "confirm_delete_selected_title": "Delete selected blueprints?",
-            "confirm_delete_selected": "{count, plural,\n one {The selected blueprint will be permanently deleted.}\n other {The {count} selected blueprints will be permanently deleted.}\n}",
+            "confirm_delete_selected": "{count, plural,\n  one {The selected blueprint will be permanently deleted.}\n  other {The {count} selected blueprints will be permanently deleted.}\n}",
             "confirm_delete_selected_partly": "You can only delete {deletable} of the {selected} blueprints. The others are in use by automations or scripts.",
             "delete_none_deletable_title": "Blueprints in use",
             "delete_none_deletable": "None of the selected blueprints can be deleted because they are all in use.",
@@ -6919,7 +6921,7 @@
             "duplicate": "[%key:ui::common::duplicate%]",
             "empty_header": "Create your first script",
             "empty_text": "A script is a sequence of actions that can be run from a dashboard, an automation, or be triggered by voice. For example, a ''Wake-up routine'' script that gradually turns on the light in the bedroom and opens the blinds after a delay.",
-            "search": "Search {number} {number, plural,\n one {script}\n other {scripts}\n}",
+            "search": "Search {number} {number, plural,\n  one {script}\n  other {scripts}\n}",
             "migrate_script": "Migrate script?",
             "migrate_script_description": "You can migrate this script, so it can be edited from the UI. After it is migrated and you have saved it, you will have to manually delete your old script from your configuration. Do you want to migrate this script?"
           },
@@ -7048,7 +7050,7 @@
             "no_category_entity_reg": "To assign a category to a scene it needs to have a unique ID.",
             "empty_header": "Create your first scene",
             "empty_text": "Scenes capture entities' states, so you can re-experience the same scene later on. For example, a ''Watching TV'' scene that dims the living room lights, sets a warm white color and turns on the TV.",
-            "search": "Search {number} {number, plural,\n one {scene}\n other {scenes}\n}"
+            "search": "Search {number} {number, plural,\n  one {scene}\n  other {scenes}\n}"
           },
           "editor": {
             "review_mode": "Review Mode",
@@ -7408,7 +7410,7 @@
               "devices_pin": "Security devices PIN",
               "enter_pin_hint": "Enter a PIN to use security devices",
               "show_entities": "Show entities",
-              "exposed_entities": "{number} {number, plural,\n one {entity}\n other {entities}\n} exposed",
+              "exposed_entities": "{number} {number, plural,\n  one {entity}\n  other {entities}\n} exposed",
               "manual_config": "Editing which entities are exposed via the UI is disabled because you have configured entity filters in configuration.yaml.",
               "enter_pin_error": "Unable to store PIN:",
               "not_configured_title": "Continue setting up Google Home",
@@ -7594,7 +7596,7 @@
             "config": "Configuration",
             "none": "This device has no entities",
             "show_less": "Show less",
-            "disabled_entities": "+{count} disabled {count, plural,\n one {entity}\n other {entities}\n}",
+            "disabled_entities": "+{count} disabled {count, plural,\n  one {entity}\n  other {entities}\n}",
             "disabled_entities_list": "Disabled entities",
             "hidden": "Hidden"
           },
@@ -7623,7 +7625,7 @@
           "confirm_delete_integration": "Are you sure you want to remove this device from {integration}?",
           "error_delete": "Error deleting device",
           "picker": {
-            "search": "Search {number} {number, plural,\n one {device}\n other {devices}\n}",
+            "search": "Search {number} {number, plural,\n  one {device}\n  other {devices}\n}",
             "state": "Status",
             "bulk_actions": {
               "move_area": "Move to area",
@@ -7645,14 +7647,14 @@
             "encryption_key_description": "This is the encryption key for your ESPHome device. Keep it in a safe place, as you may need it when transferring devices between Home Assistant instances.",
             "setup_title": "Set up your ESPHome device",
             "setup_continue_title": "Continue setup for {name}",
-            "setup_intro": "{count, plural,\n one {This device unlocks one capability in Home Assistant. Set it up now, or come back to this checklist any time.}\n other {This device unlocks {count} simultaneous capabilities in Home Assistant. Set them up now, or come back to this checklist any time.}\n}",
+            "setup_intro": "{count, plural,\n  one {This device unlocks one capability in Home Assistant. Set it up now, or come back to this checklist any time.}\n  other {This device unlocks {count} simultaneous capabilities in Home Assistant. Set them up now, or come back to this checklist any time.}\n}",
             "setup_action": "Set up",
             "setup_later": "Later",
             "setup_learn_more": "Learn more",
-            "setup_reminder_remaining": "Set up {count} more {count, plural,\n one {capability}\n other {capabilities}\n}",
+            "setup_reminder_remaining": "Set up {count} more {count, plural,\n  one {capability}\n  other {capabilities}\n}",
             "setup_reminder_done": "Everything is set up",
-            "setup_reminder_intro": "{count, plural,\n one {This device unlocks one capability in Home Assistant.}\n other {This device unlocks {count} simultaneous capabilities in Home Assistant.}\n}",
-            "setup_reminder_done_intro": "{count, plural,\n one {This capability is configured.}\n other {All {count} simultaneous capabilities are configured.}\n}",
+            "setup_reminder_intro": "{count, plural,\n  one {This device unlocks one capability in Home Assistant.}\n  other {This device unlocks {count} simultaneous capabilities in Home Assistant.}\n}",
+            "setup_reminder_done_intro": "{count, plural,\n  one {This capability is configured.}\n  other {All {count} simultaneous capabilities are configured.}\n}",
             "setup_capability_bluetooth_title": "Bluetooth proxy",
             "setup_capability_bluetooth_short": "Extend Bluetooth range",
             "setup_capability_bluetooth_description": "Add nearby Bluetooth devices into Home Assistant. Adding multiple Bluetooth proxies allows for better connectivity with devices across your home.",
@@ -7708,7 +7710,7 @@
             "header": "Entities",
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant.",
-            "search": "Search {number} {number, plural,\n one {entity}\n other {entities}\n}",
+            "search": "Search {number} {number, plural,\n  one {entity}\n  other {entities}\n}",
             "unnamed_entity": "Unnamed entity",
             "filtering_by_config_entry": "Filtering by config entry",
             "status": {
@@ -7737,23 +7739,23 @@
             "selected": "{number} selected",
             "enable_selected": {
               "button": "Enable selected",
-              "confirm_title": "Do you want to enable {number} {number, plural,\n one {entity}\n other {entities}\n}?",
+              "confirm_title": "Do you want to enable {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
               "confirm_text": "This will make them available in Home Assistant again if they are now disabled."
             },
             "disable_selected": {
               "button": "Disable selected",
-              "confirm_title": "Do you want to disable {number} {number, plural,\n one {entity}\n other {entities}\n}?",
+              "confirm_title": "Do you want to disable {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
               "confirm_text": "Disabled entities will not be added to Home Assistant."
             },
             "expose_selected": {
               "button": "Expose to voice assistant",
               "all_assistants": "All assistants",
               "no_entities": "None of the selected entities can be exposed.",
-              "toast": "Exposed {count} {count, plural,\n one {entity}\n other {entities}\n} to {assistants}"
+              "toast": "Exposed {count} {count, plural,\n  one {entity}\n  other {entities}\n} to {assistants}"
             },
             "unexpose_selected": {
               "button": "Stop exposing to voice assistant",
-              "toast": "Stopped exposing {count} {count, plural,\n one {entity}\n other {entities}\n} to {assistants}"
+              "toast": "Stopped exposing {count} {count, plural,\n  one {entity}\n  other {entities}\n} to {assistants}"
             },
             "restore_entity_id_selected": {
               "button": "Recreate entity IDs of selected",
@@ -7769,7 +7771,7 @@
             },
             "hide_selected": {
               "button": "Hide selected",
-              "confirm_title": "Do you want to hide {number} {number, plural,\n one {entity}\n other {entities}\n}?",
+              "confirm_title": "Do you want to hide {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
               "confirm": "Hidden entities will not be shown on your dashboard. Their history is still tracked and you can still interact with them with actions."
             },
             "unhide_selected": {
@@ -7948,13 +7950,13 @@
               "edit": "Edit device",
               "delete": "Remove device"
             },
-            "devices": "{count} {count, plural,\n one {device}\n other {devices}\n}",
-            "entities": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
-            "services": "{count} {count, plural,\n one {service}\n other {services}\n}",
-            "entries": "{count} {count, plural,\n one {entry}\n other {entries}\n}",
+            "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+            "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
+            "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
+            "entries": "{count} {count, plural,\n  one {entry}\n  other {entries}\n}",
             "attention": {
-              "some": "{attention} of {count} {count, plural,\n one {entry}\n other {entries}\n} {state, select,\n  setup_error {failed to set up}\n  setup_retry {failed to set up, retrying}\n  migration_error {failed to migrate}\n  failed_unload {failed to unload}\n  not_loaded {{attention, plural,\n    one {is}\n    other {are}\n  } not loaded}\n other {{attention, plural,\n    one {needs}\n    other {need}\n  } attention}\n}",
-              "all": "{count} {count, plural,\n one {entry}\n other {entries}\n} {state, select,\n  setup_error {failed to set up}\n  setup_retry {failed to set up, retrying}\n  migration_error {failed to migrate}\n  failed_unload {failed to unload}\n  not_loaded {{count, plural,\n    one {is}\n    other {are}\n  } not loaded}\n other {{count, plural,\n    one {needs}\n    other {need}\n  } attention}\n}"
+              "some": "{attention} of {count} {count, plural,\n  one {entry}\n  other {entries}\n} {state, select,\n  setup_error {failed to set up}\n  setup_retry {failed to set up, retrying}\n  migration_error {failed to migrate}\n  failed_unload {failed to unload}\n  not_loaded {{attention, plural,\n    one {is}\n    other {are}\n  } not loaded}\n  other {{attention, plural,\n    one {needs}\n    other {need}\n  } attention}\n}",
+              "all": "{count} {count, plural,\n  one {entry}\n  other {entries}\n} {state, select,\n  setup_error {failed to set up}\n  setup_retry {failed to set up, retrying}\n  migration_error {failed to migrate}\n  failed_unload {failed to unload}\n  not_loaded {{count, plural,\n    one {is}\n    other {are}\n  } not loaded}\n  other {{count, plural,\n    one {needs}\n    other {need}\n  } attention}\n}"
             },
             "no_devices_or_entities": "No devices or entities",
             "devices_without_subentry": "Devices that don't belong to a sub-entry",
@@ -7987,9 +7989,9 @@
               "entities": "{available} of {total} entities available",
               "entities_link": "View entities",
               "and_more": "and {count} more",
-              "repairs": "{count, plural,\n  =0 {No open repairs for {integration}}\n one {1 open repair for {integration}}\n other {# open repairs for {integration}}\n}",
+              "repairs": "{count, plural,\n  =0 {No open repairs for {integration}}\n  one {1 open repair for {integration}}\n  other {# open repairs for {integration}}\n}",
               "repairs_link": "View repairs",
-              "logs": "{errors, plural,\n one {1 error}\n other {# errors}\n} and {warnings, plural,\n one {1 warning}\n other {# warnings}\n} from {integration} in the recent log",
+              "logs": "{errors, plural,\n  one {1 error}\n  other {# errors}\n} and {warnings, plural,\n  one {1 warning}\n  other {# warnings}\n} from {integration} in the recent log",
               "logs_link": "View logs",
               "setup_time": "{integration} took {seconds} s to start",
               "setup_time_fast": "{integration} took less than 0.1 s to start"
@@ -8210,7 +8212,7 @@
             },
             "remove_selected": {
               "button": "Delete selected",
-              "confirm_title": "Do you want to delete {number} {number, plural,\n one {credential}\n other {credentials}\n}?",
+              "confirm_title": "Do you want to delete {number} {number, plural,\n  one {credential}\n  other {credentials}\n}?",
               "confirm_text": "Application credentials in use by an integration may not be deleted.",
               "error_title": "Deleting application credentials failed"
             },
@@ -8230,9 +8232,9 @@
           "status_online": "Online",
           "status_offline": "Offline",
           "my_network_title": "My network",
-          "devices": "{count, plural,\n one {# device}\n other {# devices}\n}",
-          "device_count": "{count, plural,\n one {# device}\n other {# devices}\n}",
-          "entity_count": "{count, plural,\n one {# entity}\n other {# entities}\n}",
+          "devices": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
+          "device_count": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
+          "entity_count": "{count, plural,\n  one {# entity}\n  other {# entities}\n}",
           "description_publish": "Publish a packet",
           "topic": "Topic",
           "payload": "Payload (template allowed)",
@@ -8254,7 +8256,7 @@
           "status_offline": "Offline",
           "devices_online_summary": "{online}/{total} devices online",
           "my_devices": "My devices",
-          "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
+          "devices_count": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
           "devices_navigation": "Devices",
           "name": "Name",
           "type": "Type",
@@ -8263,9 +8265,9 @@
         },
         "bluetooth": {
           "title": "Bluetooth",
-          "adapters_count": "{count} {count, plural,\n one {adapter}\n other {adapters}\n}",
-          "connections_count": "{count} {count, plural,\n one {connection}\n other {connections}\n}",
-          "advertisements_count": "{count} {count, plural,\n one {advertisement}\n other {advertisements}\n}",
+          "adapters_count": "{count} {count, plural,\n  one {adapter}\n  other {adapters}\n}",
+          "connections_count": "{count} {count, plural,\n  one {connection}\n  other {connections}\n}",
+          "advertisements_count": "{count} {count, plural,\n  one {advertisement}\n  other {advertisements}\n}",
           "status_online": "Online",
           "status_warning": "Warning",
           "status_offline": "Offline",
@@ -8329,7 +8331,7 @@
           "status_online": "Online",
           "status_offline": "Offline",
           "devices_online_summary": "{online}/{total} devices online",
-          "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
+          "devices_count": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
           "no_devices": "No radio frequency devices found",
           "loading_error": "Failed to load radio frequency devices",
           "name": "Name",
@@ -8424,12 +8426,12 @@
           "confirm_delete_dataset_text": "This network will be removed from Home Assistant.",
           "no_border_routers": "No border routers found",
           "no_preferred_router": "No preferred border router defined",
-          "border_routers": "{count} border {count, plural,\n one {router}\n other {routers}\n}",
+          "border_routers": "{count} border {count, plural,\n  one {router}\n  other {routers}\n}",
           "managed_by_home_assistant": "Managed by Home Assistant",
           "operational_dataset": "Operational dataset",
           "change_channel": "Change channel",
           "change_channel_initiated_title": "Channel change in progress",
-          "change_channel_initiated_text": "The channel change has been initiated and will complete in {delay} {delay, plural,\n one {minute}\n other {minutes}\n}.",
+          "change_channel_initiated_text": "The channel change has been initiated and will complete in {delay} {delay, plural,\n  one {minute}\n  other {minutes}\n}.",
           "change_channel_invalid": "Invalid channel",
           "change_channel_label": "Channel",
           "change_channel_multiprotocol_enabled_title": "The Thread adapter has multiprotocol enabled",
@@ -8739,11 +8741,11 @@
             "server_version": "Server version",
             "home_id": "Home ID",
             "server_url": "Server URL",
-            "devices": "{count} {count, plural,\n one {device}\n other {devices}\n}",
-            "device_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
-            "entity_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
+            "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+            "device_count": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+            "entity_count": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
             "provisioned_devices": "Provisioned devices",
-            "provisioned_count": "{count} {count, plural,\n one {provisioned device}\n other {provisioned devices}\n}",
+            "provisioned_count": "{count} {count, plural,\n  one {provisioned device}\n  other {provisioned devices}\n}",
             "not_included": "{count} not included",
             "not_ready": "{count} not ready",
             "devices_offline": "{count} offline",
@@ -9260,7 +9262,7 @@
               "type": "Type",
               "no_users": "No users configured",
               "unnamed_user": "User {index}",
-              "credential_count": "{count, plural,\n one {# credential}\n other {# credentials}\n}",
+              "credential_count": "{count, plural,\n  one {# credential}\n  other {# credentials}\n}",
               "user_types": {
                 "general": {
                   "label": "General",
@@ -9330,9 +9332,9 @@
             "devices_offline": "{count} offline",
             "my_network_title": "My network",
             "show_map": "[%key:ui::panel::config::bluetooth::show_map%]",
-            "devices": "{count, plural,\n one {# device}\n other {# devices}\n}",
-            "device_count": "{count, plural,\n one {# device}\n other {# devices}\n}",
-            "entity_count": "{count, plural,\n one {# entity}\n other {# entities}\n}",
+            "devices": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
+            "device_count": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
+            "entity_count": "{count, plural,\n  one {# entity}\n  other {# entities}\n}",
             "options_title": "Options",
             "options_description": "Adding devices and network settings",
             "mobile_app_commisioning": "Add with Companion app",
@@ -10197,7 +10199,7 @@
             "drag_and_drop": "Drag and drop",
             "delete_item": "Delete item",
             "delete_confirm_title": "Remove completed items?",
-            "delete_confirm_text": "{number} {number, plural,\n one {item}\n other {items}\n} will be permanently removed from the to-do list."
+            "delete_confirm_text": "{number} {number, plural,\n  one {item}\n  other {items}\n} will be permanently removed from the to-do list."
           },
           "picture-elements": {
             "hold": "Hold:",
@@ -13204,7 +13206,7 @@
           }
         },
         "dashboard": {
-          "search": "Search {number} {number, plural,\n one {repository}\n other {repositories}\n}",
+          "search": "Search {number} {number, plural,\n  one {repository}\n  other {repositories}\n}",
           "empty_header": "Nothing in the Marketplace yet",
           "empty_text": "The Marketplace gets its list from the community catalog, which could not be reached yet. The list shows up here once it loads.",
           "no_data": "No repositories matching search and filters",
@@ -13269,7 +13271,7 @@
           "remove_text": "It no longer shows in the Marketplace. You can add it again later.",
           "remove_installed": "Uninstall it first",
           "remove_selected_title": "Remove selected repositories?",
-          "remove_selected_text": "{count, plural,\n one {The selected repository no longer shows in the Marketplace. You can add it again later.}\n other {The {count} selected repositories no longer show in the Marketplace. You can add them again later.}\n}",
+          "remove_selected_text": "{count, plural,\n  one {The selected repository no longer shows in the Marketplace. You can add it again later.}\n  other {The {count} selected repositories no longer show in the Marketplace. You can add them again later.}\n}",
           "remove_failed_title": "Remove failed",
           "remove_failed": "Some repositories could not be removed."
         },
@@ -13310,7 +13312,7 @@
           "discover": "Discover",
           "browse": "Browse",
           "installed": "Installed",
-          "updates": "{count, plural,\n one {# update}\n other {# updates}\n}",
+          "updates": "{count, plural,\n  one {# update}\n  other {# updates}\n}",
           "add_from_link": "Add from link"
         },
         "repository": {
@@ -13322,12 +13324,12 @@
           },
           "community": {
             "title": "Made by the community",
-            "made_by": "Made by {authors}, {count, plural,\n one {one of the many people}\n other {some of the many people}\n} sharing their work with the Home Assistant community. It is not tested or reviewed by the Home Assistant project.",
+            "made_by": "Made by {authors}, {count, plural,\n  one {one of the many people}\n  other {some of the many people}\n} sharing their work with the Home Assistant community. It is not tested or reviewed by the Home Assistant project.",
             "made_by_community": "Made by one of the many people sharing their work with the Home Assistant community. It is not tested or reviewed by the Home Assistant project.",
             "last_change": "Last change on GitHub {time}",
-            "downloads": "{number, plural,\n one {Downloaded {count} time}\n other {Downloaded {count} times}\n}",
-            "stars": "{number, plural,\n one {{count} star on GitHub}\n other {{count} stars on GitHub}\n}",
-            "open_issues_and_prs": "{number, plural,\n one {{count} open issue or pull request on GitHub}\n other {{count} open issues and pull requests on GitHub}\n}",
+            "downloads": "{number, plural,\n  one {Downloaded {count} time}\n  other {Downloaded {count} times}\n}",
+            "stars": "{number, plural,\n  one {{count} star on GitHub}\n  other {{count} stars on GitHub}\n}",
+            "open_issues_and_prs": "{number, plural,\n  one {{count} open issue or pull request on GitHub}\n  other {{count} open issues and pull requests on GitHub}\n}",
             "no_open_issues_and_prs": "No open issues or pull requests on GitHub"
           },
           "details": {
@@ -13389,7 +13391,7 @@
           },
           "dismiss_new": {
             "title": "Dismiss new repositories?",
-            "text": "{count, plural,\n one {The new repository will no longer be marked as new.}\n other {The {count} new repositories will no longer be marked as new.}\n}",
+            "text": "{count, plural,\n  one {The new repository will no longer be marked as new.}\n  other {The {count} new repositories will no longer be marked as new.}\n}",
             "confirm": "Dismiss"
           },
           "reload": {
@@ -13405,7 +13407,7 @@
             "title": "Uninstall {name}?",
             "message": "This removes the files the Marketplace installed for it.",
             "selected_title": "Uninstall selected repositories?",
-            "selected": "{count, plural,\n one {The selected repository will be uninstalled. This removes the files the Marketplace installed for it.}\n other {The {count} selected repositories will be uninstalled. This removes the files the Marketplace installed for them.}\n}",
+            "selected": "{count, plural,\n  one {The selected repository will be uninstalled. This removes the files the Marketplace installed for it.}\n  other {The {count} selected repositories will be uninstalled. This removes the files the Marketplace installed for them.}\n}",
             "selected_in_use": "{count, plural, one {The selected repository} other {The {count} selected repositories}} will be uninstalled. {in_use, plural, one {The setup of one of them} other {The setups of # of them}} will be deleted with their devices and entities. This cannot be undone.",
             "check_failed_title": "Unable to check repositories",
             "check_failed": "The setups of some selected repositories could not be verified.",

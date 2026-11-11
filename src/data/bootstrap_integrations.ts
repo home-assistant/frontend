@@ -1,10 +1,9 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { Connection, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   STATE_NOT_RUNNING,
   STATE_RUNNING,
   STATE_STARTING,
 } from "home-assistant-js-websocket";
-import type { HomeAssistant } from "../types";
 
 export type BootstrapIntegrationsTimings = Record<string, number>;
 
@@ -50,19 +49,15 @@ export interface StartupProgressView {
 export type StartupTransition = "show" | "finish" | "none";
 
 export const subscribeBootstrapIntegrations = (
-  hass: HomeAssistant,
+  connection: Connection,
   callback: (message: BootstrapIntegrationsTimings) => void
-) => {
-  const unsubProm =
-    hass.connection.subscribeMessage<BootstrapIntegrationsTimings>(
-      (message) => callback(message),
-      {
-        type: "subscribe_bootstrap_integrations",
-      }
-    );
-
-  return unsubProm;
-};
+) =>
+  connection.subscribeMessage<BootstrapIntegrationsTimings>(
+    (message) => callback(message),
+    {
+      type: "subscribe_bootstrap_integrations",
+    }
+  );
 
 export const legacyTimingsToProgress = (
   timings: BootstrapIntegrationsTimings
@@ -76,10 +71,10 @@ export const legacyTimingsToProgress = (
 });
 
 export const subscribeBootstrapProgress = (
-  hass: HomeAssistant,
+  connection: Connection,
   callback: (message: BootstrapProgress) => void
 ): Promise<UnsubscribeFunc> =>
-  hass.connection
+  connection
     .subscribeMessage<BootstrapProgress>(callback, {
       type: "subscribe_bootstrap_progress",
     })
@@ -88,7 +83,7 @@ export const subscribeBootstrapProgress = (
         throw err;
       }
       // Older cores only report the integrations that are setting up.
-      return subscribeBootstrapIntegrations(hass, (timings) =>
+      return subscribeBootstrapIntegrations(connection, (timings) =>
         callback(legacyTimingsToProgress(timings))
       );
     });
@@ -132,8 +127,8 @@ export const computeStartupProgress = (
         : undefined,
     done,
     total,
-    // Counts from integration setup and stops updating once bootstrap is done.
-    elapsed: phase === "setup" ? progress?.elapsed || undefined : undefined,
+    // Older cores do not report it.
+    elapsed: progress?.elapsed || undefined,
     active: Object.entries(progress?.active ?? {}).sort(
       ([, a], [, b]) => b - a
     ),

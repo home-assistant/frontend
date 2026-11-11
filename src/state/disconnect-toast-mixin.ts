@@ -10,6 +10,7 @@ import type { Constructor } from "../types";
 import { HOST_ACTION_TOAST_ID, showToast } from "../util/toast";
 import type { HassBaseEl } from "./hass-base-mixin";
 import { navigate } from "../common/navigate";
+import { showStartupProgressDialog } from "../dialogs/startup-progress/show-dialog-startup-progress";
 
 const CONNECTION_LOST_TOAST_ID = "connection-lost";
 const SERVER_STARTUP_TOAST_ID = "server-startup";
@@ -117,7 +118,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this._startupProgress = undefined;
       this._startupProgressVisible = true;
       this._subscribedBootstrapProgress = subscribeBootstrapProgress(
-        this.hass!,
+        this.hass!.connection,
         (message) => {
           this._startupProgress = message;
           this._updateStartupProgress();
@@ -186,14 +187,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
             })
           : this.hass!.localize("ui.notification_toast.started"),
         duration: issues ? 10000 : 5000,
-        // The integrations dashboard is only available to admins.
-        action:
-          issues && this.hass!.user?.is_admin
-            ? {
-                text: this.hass!.localize("ui.notification_toast.show"),
-                action: () => navigate("/config/integrations/dashboard"),
-              }
-            : undefined,
+        action: {
+          text: this.hass!.localize("ui.notification_toast.details"),
+          action: () => showStartupProgressDialog(this),
+        },
       });
     }
 

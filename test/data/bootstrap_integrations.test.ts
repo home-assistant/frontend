@@ -55,7 +55,7 @@ describe("computeStartupProgress", () => {
       STATE_NOT_RUNNING
     );
     expect(view.percent).toBeUndefined();
-    expect(view.elapsed).toBeUndefined();
+    expect(view.elapsed).toBe(12.4);
     expect(view.done).toBe(40);
     expect(view.finished).toBe(false);
   });
@@ -109,6 +109,7 @@ describe("computeStartupProgress", () => {
     expect(view.phase).toBe("setup");
     expect(view.total).toBeNull();
     expect(view.percent).toBeUndefined();
+    expect(view.elapsed).toBeUndefined();
     expect(view.active).toEqual([["hue", 3]]);
     expect(legacyTimingsToProgress({}).phase).toBe("wrap_up");
   });
