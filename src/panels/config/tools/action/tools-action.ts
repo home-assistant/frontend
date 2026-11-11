@@ -197,6 +197,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(
                     .value=${this._serviceData?.action}
                     @value-changed=${this._serviceChanged}
                     show-service-id
+                    loaded-only
                   ></ha-service-picker>
                   <ha-yaml-editor
                     id="yaml-editor"
