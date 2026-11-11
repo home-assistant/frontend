@@ -220,9 +220,11 @@ export class ConfigEntryStream {
   private _entries: ConfigEntry[] = [];
 
   processMessage(message: ConfigEntryUpdate[]) {
-    let entries = message.some((configEntry) => configEntry.type === null)
-      ? []
-      : [...this._entries];
+    let entries =
+      message.length === 0 ||
+      message.some((configEntry) => configEntry.type === null)
+        ? []
+        : [...this._entries];
     message.forEach((configEntry) => {
       if (configEntry.type === null || configEntry.type === "added") {
         entries.push(configEntry.entry);

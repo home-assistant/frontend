@@ -44,4 +44,10 @@ describe("ConfigEntryStream", () => {
     ]);
     expect(resubscribed.map((e) => e.entry_id)).toEqual(["b", "c"]);
   });
+
+  it("clears the list when an empty snapshot arrives", () => {
+    const stream = new ConfigEntryStream();
+    stream.processMessage([{ type: null, entry: entry("a") }]);
+    expect(stream.processMessage([])).toEqual([]);
+  });
 });
