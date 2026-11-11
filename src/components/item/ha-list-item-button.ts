@@ -2,6 +2,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { keyed } from "lit/directives/keyed";
 import { isInteractiveElement } from "../../common/dom/is-interactive-element";
 import "../ha-ripple";
 import { HaListItemBase } from "./ha-list-item-base";
@@ -59,9 +60,12 @@ export class HaListItemButton extends HaListItemBase {
   }
 
   protected _renderBase(content: TemplateResult): TemplateResult {
+    // The ripple binds to #item on connect, so render it after the control and
+    // recreate it with the control
     return html`<div part="base" class="base" @click=${this._handleBaseClick}>
-      ${this._renderRipple()}${this._renderStart()}${this._renderControl(
-        content
+      ${this._renderStart()}${this._renderControl(content)}${keyed(
+        `${this.href !== undefined}-${this.interactive}`,
+        this._renderRipple()
       )}${this._renderEnd()}
     </div>`;
   }
