@@ -51,6 +51,7 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import { fileDownload } from "../../../../../util/file_download";
 import { renderConfigEntryError } from "../../ha-config-integration-page";
+import { attentionCount, findings, managedDevices } from "./network-health";
 
 @customElement("zha-config-dashboard")
 class ZHAConfigDashboard extends LitElement {
@@ -67,6 +68,8 @@ class ZHAConfigDashboard extends LitElement {
   @state() private _configuration?: ZHAConfiguration;
 
   @state() private _offlineDevices = 0;
+
+  @state() private _healthAttention = 0;
 
   @state() private _totalGroups?: number;
 
@@ -347,10 +350,22 @@ class ZHAConfigDashboard extends LitElement {
                 )}
               </div>
               <div slot="supporting-text">
-                ${this.hass.localize(
-                  "ui.panel.config.zha.configuration_page.network_health_description"
-                )}
+                ${
+                  this._healthAttention
+                    ? this.hass.localize(
+                        "ui.panel.config.zha.configuration_page.network_health_attention",
+                        { count: this._healthAttention }
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.zha.configuration_page.network_health_description"
+                      )
+                }
               </div>
+              ${
+                this._healthAttention
+                  ? html`<span slot="end" class="attention-dot"></span>`
+                  : nothing
+              }
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-list-item-button>
             ${dynamicSections.map(
@@ -516,6 +531,14 @@ class ZHAConfigDashboard extends LitElement {
       this._offlineDevices = devicesResult.value.filter(
         (d) => !d.available
       ).length;
+      // Only the findings that need attention count here, and they come from
+      // the device list alone.
+      this._healthAttention = attentionCount(
+        findings(managedDevices(devicesResult.value), {
+          batteryLevel: () => null,
+          firmwareUpdate: () => null,
+        })
+      );
     } else {
       this._error = devicesResult.reason?.message || devicesResult.reason;
     }
@@ -532,6 +555,13 @@ class ZHAConfigDashboard extends LitElement {
       haStyle,
       animationStyles,
       css`
+        .attention-dot {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background-color: var(--error-color);
+        }
+
         ha-card {
           margin: auto;
           margin-top: var(--ha-space-4);

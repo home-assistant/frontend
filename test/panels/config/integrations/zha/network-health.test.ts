@@ -1,16 +1,18 @@
 import { describe, expect, it } from "vitest";
 import type { ZHADevice } from "../../../../../src/data/zha";
 import { ZHADeviceType } from "../../../../../src/data/zha";
+import type { DeviceReadings } from "../../../../../src/panels/config/integrations/integration-panels/zha/network-health";
 import {
+  attentionCount,
   countBands,
-  groupByArea,
-  healthGroups,
-  isIncomplete,
-  managedDevices,
+  findings,
+  isSetupUnfinished,
   lastSeenAt,
-  minutesSince,
+  managedDevices,
   parentByIeee,
+  powerSource,
   signalBand,
+  sortByArea,
 } from "../../../../../src/panels/config/integrations/integration-panels/zha/network-health";
 
 const NOW = new Date("2026-01-01T12:00:00Z").getTime();
@@ -40,6 +42,11 @@ const device = (overrides: Partial<ZHADevice> & { ieee: string }): ZHADevice =>
     routes: [],
     ...overrides,
   }) as ZHADevice;
+
+const noReadings: DeviceReadings = {
+  batteryLevel: () => null,
+  firmwareUpdate: () => null,
+};
 
 describe("signalBand", () => {
   it("reads the link quality in three steps", () => {
@@ -108,17 +115,22 @@ describe("managedDevices", () => {
   });
 });
 
-describe("isIncomplete", () => {
+describe("isSetupUnfinished", () => {
   it("recognises a device that exposes nothing", () => {
-    expect(isIncomplete(device({ ieee: "a", entities: [] }))).toBe(true);
-    expect(isIncomplete(device({ ieee: "b" }))).toBe(false);
+    expect(isSetupUnfinished(device({ ieee: "a", entities: [] }))).toBe(true);
+    expect(isSetupUnfinished(device({ ieee: "b" }))).toBe(false);
   });
 });
 
-describe("minutesSince", () => {
-  it("measures against the given moment", () => {
-    expect(minutesSince(minutesAgo(90), NOW)).toBe(90);
-    expect(minutesSince(minutesAgo(0), NOW)).toBe(0);
+describe("powerSource", () => {
+  it("reads mains and battery, and does not guess otherwise", () => {
+    expect(powerSource(device({ ieee: "a", power_source: "Mains" }))).toBe(
+      "mains"
+    );
+    expect(
+      powerSource(device({ ieee: "b", power_source: "Battery or Unknown" }))
+    ).toBe("battery");
+    expect(powerSource(device({ ieee: "c" }))).toBeUndefined();
   });
 });
 
@@ -219,139 +231,104 @@ describe("parentByIeee", () => {
   });
 });
 
-describe("healthGroups", () => {
-  const noBattery = () => null;
+describe("findings", () => {
+  it("lists offline devices and devices whose setup did not finish", () => {
+    const found = findings(
+      [
+        device({ ieee: "off", available: false }),
+        device({ ieee: "empty", entities: [] }),
+        device({ ieee: "fine" }),
+      ],
+      noReadings
+    );
 
-  it("keeps the findings in a fixed order", () => {
-    expect(healthGroups([], noBattery, NOW).map((g) => g.key)).toEqual([
-      "incomplete",
-      "weak_signal",
-      "unreachable",
-      "low_battery",
-      "quiet",
-      "routers",
-    ]);
+    expect(found.offline.map((d) => d.ieee)).toEqual(["off"]);
+    expect(found.setup_unfinished.map((d) => d.ieee)).toEqual(["empty"]);
   });
 
   it("sorts weak devices worst first", () => {
-    const groups = healthGroups(
+    const found = findings(
       [
         device({ ieee: "a", lqi: 25 }),
         device({ ieee: "b", lqi: 5 }),
         device({ ieee: "c", lqi: 15 }),
       ],
-      noBattery,
-      NOW
+      noReadings
     );
 
-    const weak = groups.find((g) => g.key === "weak_signal")!;
-    expect(weak.devices.map((d) => d.ieee)).toEqual(["b", "c", "a"]);
+    expect(found.weak_signal.map((d) => d.ieee)).toEqual(["b", "c", "a"]);
   });
 
-  it("lists a device that has been quiet for longer than the limit", () => {
-    const groups = healthGroups(
-      [
-        device({ ieee: "recent", last_seen: minutesAgo(89) }),
-        device({ ieee: "quiet", last_seen: minutesAgo(91) }),
-      ],
-      noBattery,
-      NOW
-    );
+  it("lists an offline device only as offline, not by its last readings", () => {
+    const found = findings([device({ ieee: "a", lqi: 5, available: false })], {
+      ...noReadings,
+      batteryLevel: () => 3,
+    });
 
-    const quiet = groups.find((g) => g.key === "quiet")!;
-    expect(quiet.devices.map((d) => d.ieee)).toEqual(["quiet"]);
+    expect(found.offline.map((d) => d.ieee)).toEqual(["a"]);
+    expect(found.weak_signal).toEqual([]);
+    expect(found.low_battery).toEqual([]);
   });
 
   it("lists low batteries emptiest first and includes the threshold", () => {
     const levels: Record<string, number> = { a: 20, b: 5, c: 21 };
-    const groups = healthGroups(
+    const found = findings(
       [device({ ieee: "a" }), device({ ieee: "b" }), device({ ieee: "c" })],
-      (d) => levels[d.ieee],
-      NOW
+      { ...noReadings, batteryLevel: (d) => levels[d.ieee] }
     );
 
-    const battery = groups.find((g) => g.key === "low_battery")!;
-    expect(battery.devices.map((d) => d.ieee)).toEqual(["b", "a"]);
-    expect(battery.battery).toBe(true);
+    expect(found.low_battery.map((d) => d.ieee)).toEqual(["b", "a"]);
   });
 
   it("ignores devices without a battery sensor", () => {
-    const groups = healthGroups([device({ ieee: "a" })], noBattery, NOW);
-
-    expect(groups.find((g) => g.key === "low_battery")!.devices).toEqual([]);
+    expect(findings([device({ ieee: "a" })], noReadings).low_battery).toEqual(
+      []
+    );
   });
 
-  it("collects routers", () => {
-    const groups = healthGroups(
-      [
-        device({ ieee: "a", device_type: ZHADeviceType.Router }),
-        device({ ieee: "b", device_type: ZHADeviceType.EndDevice }),
-      ],
-      noBattery,
-      NOW
-    );
+  it("lists devices with a pending firmware update", () => {
+    const found = findings([device({ ieee: "a" }), device({ ieee: "b" })], {
+      ...noReadings,
+      firmwareUpdate: (d) =>
+        d.ieee === "a" ? { installed: "1.0", latest: "1.1" } : null,
+    });
 
-    expect(
-      groups.find((g) => g.key === "routers")!.devices.map((d) => d.ieee)
-    ).toEqual(["a"]);
-  });
-
-  it("lets a device appear in more than one finding", () => {
-    const groups = healthGroups(
-      [device({ ieee: "a", lqi: 5, available: false })],
-      noBattery,
-      NOW
-    );
-
-    const keys = groups.filter((g) => g.devices.length).map((g) => g.key);
-    expect(keys).toEqual(["weak_signal", "unreachable"]);
+    expect(found.firmware_update.map((d) => d.ieee)).toEqual(["a"]);
   });
 });
 
-describe("groupByArea", () => {
-  const areaName = (d: ZHADevice) => d.area_id ?? "No area";
-
-  it("puts the largest area first", () => {
-    const groups = groupByArea(
+describe("attentionCount", () => {
+  it("counts a device that is offline and not set up only once", () => {
+    const found = findings(
       [
-        device({ ieee: "a", area_id: "kitchen" }),
-        device({ ieee: "b", area_id: "office" }),
-        device({ ieee: "c", area_id: "office" }),
+        device({ ieee: "a", available: false, entities: [] }),
+        device({ ieee: "b", available: false }),
+        device({ ieee: "c", lqi: 5 }),
       ],
-      areaName
+      noReadings
     );
 
-    expect(groups.map((g) => [g.name, g.devices.length])).toEqual([
-      ["office", 2],
-      ["kitchen", 1],
-    ]);
+    expect(attentionCount(found)).toBe(2);
   });
+});
 
-  it("sorts areas of equal size by name", () => {
-    const groups = groupByArea(
+describe("sortByArea", () => {
+  const areas: Record<string, string> = { kitchen: "Kitchen", attic: "Attic" };
+  const areaName = (d: ZHADevice) => (d.area_id ? areas[d.area_id] : undefined);
+  const name = (d: ZHADevice) => d.name;
+
+  it("sorts by area, then by name, with unassigned devices last", () => {
+    const sorted = sortByArea(
       [
-        device({ ieee: "a", area_id: "office" }),
-        device({ ieee: "b", area_id: "bedroom" }),
+        device({ ieee: "z", name: "Zeta" }),
+        device({ ieee: "k2", name: "Lamp", area_id: "kitchen" }),
+        device({ ieee: "a", name: "Plug", area_id: "attic" }),
+        device({ ieee: "k1", name: "Bulb", area_id: "kitchen" }),
       ],
-      areaName
+      areaName,
+      name
     );
 
-    expect(groups.map((g) => g.name)).toEqual(["bedroom", "office"]);
-  });
-
-  it("keeps unassigned devices apart from an area of the same name", () => {
-    const groups = groupByArea(
-      [
-        device({ ieee: "a" }),
-        device({ ieee: "b", area_id: "area_1" }),
-        device({ ieee: "c", area_id: "area_1" }),
-      ],
-      () => "No area"
-    );
-
-    expect(groups.map((g) => [g.areaId, g.devices.length])).toEqual([
-      ["area_1", 2],
-      ["", 1],
-    ]);
+    expect(sorted.map((d) => d.ieee)).toEqual(["a", "k1", "k2", "z"]);
   });
 });

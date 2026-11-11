@@ -1,14 +1,10 @@
 import type { ZHADevice } from "../../../../../data/zha";
-import { ZHADeviceType } from "../../../../../data/zha";
 
 /** Link quality below which a device sits at the edge of its radio range. */
 export const WEAK_LQI = 30;
 
 /** Link quality from which a device is comfortably connected. */
 export const STRONG_LQI = 60;
-
-/** Minutes without contact after which a device is listed as quiet. */
-export const QUIET_MINUTES = 90;
 
 /** Battery percentage at or below which a device is listed as running low. */
 export const LOW_BATTERY = 20;
@@ -17,7 +13,7 @@ export const LOW_BATTERY = 20;
 export type SignalBand = "strong" | "fair" | "weak" | "unknown";
 
 /**
- * The bands of the distribution bar, worsening from left to right. A silent
+ * The bands of the distribution bar, worsening from left to right. An offline
  * device gets its own: its last link quality says nothing about how it is
  * doing now.
  */
@@ -27,31 +23,46 @@ export const BAR_BANDS: BarBand[] = ["strong", "fair", "weak", "offline"];
 
 export type BandCounts = Record<BarBand | "unknown", number>;
 
-/** The findings, in the order they are listed. */
-export type HealthGroupKey =
-  | "incomplete"
+/** What the page reports on a device. */
+export type FindingKey =
+  | "offline"
+  | "setup_unfinished"
   | "weak_signal"
-  | "unreachable"
   | "low_battery"
-  | "quiet"
-  | "routers";
+  | "firmware_update";
 
-export interface HealthGroup {
-  key: HealthGroupKey;
-  devices: ZHADevice[];
-  /** Show the battery level instead of the link quality on each row. */
-  battery?: boolean;
+/**
+ * Findings that stop a device from working. Listed with their devices right
+ * on the page, like repairs.
+ */
+export const NEEDS_ATTENTION: FindingKey[] = ["offline", "setup_unfinished"];
+
+/**
+ * Findings that are worth knowing but do not stop anything. Each has its own
+ * subpage, reached from a single row on the page.
+ */
+export const WORTH_A_LOOK: FindingKey[] = [
+  "weak_signal",
+  "low_battery",
+  "firmware_update",
+];
+
+export type Findings = Record<FindingKey, ZHADevice[]>;
+
+export interface FirmwareUpdate {
+  installed: string | null;
+  latest: string | null;
 }
 
-export interface AreaGroup {
-  /** Empty for devices that are not assigned to an area. */
-  areaId: string;
-  name: string;
-  devices: ZHADevice[];
+/** Readings that live in entity states rather than in the device list. */
+export interface DeviceReadings {
+  /** Battery percentage, or null when the device has no battery sensor. */
+  batteryLevel: (device: ZHADevice) => number | null;
+  /** The pending firmware update, or null when there is none. */
+  firmwareUpdate: (device: ZHADevice) => FirmwareUpdate | null;
 }
 
-/** Battery percentage of a device, or null when it has no battery sensor. */
-export type BatteryLevel = (device: ZHADevice) => number | null;
+export type PowerSource = "mains" | "battery";
 
 /** The devices the page reports on: everything except the coordinator. */
 export const managedDevices = (devices: ZHADevice[]): ZHADevice[] =>
@@ -82,12 +93,23 @@ export const countBands = (devices: ZHADevice[]): BandCounts => {
 };
 
 /**
- * A device that joined the network but never finished its interview: it is
- * known to the coordinator, yet exposes nothing to control or read.
+ * ZHA reports "Mains" for mains-powered devices and "Battery or Unknown" for
+ * everything else, so only mains is certain.
+ */
+export const powerSource = (device: ZHADevice): PowerSource | undefined => {
+  if (device.power_source === "Mains") {
+    return "mains";
+  }
+  return device.power_source?.startsWith("Battery") ? "battery" : undefined;
+};
+
+/**
+ * A device that joined the network but never finished its setup: it is known
+ * to the coordinator, yet exposes nothing to control or read.
  * `pairing_status` would say so directly, but it only travels with the
  * pairing events, not with the device list this page is built on.
  */
-export const isIncomplete = (device: ZHADevice): boolean =>
+export const isSetupUnfinished = (device: ZHADevice): boolean =>
   device.entities.length === 0;
 
 /** When the device was last heard from, or undefined for an empty or malformed stamp. */
@@ -98,9 +120,6 @@ export const lastSeenAt = (device: ZHADevice): Date | undefined => {
   const at = new Date(device.last_seen);
   return isNaN(at.getTime()) ? undefined : at;
 };
-
-export const minutesSince = (lastSeen: string, now = Date.now()): number =>
-  Math.round((now - new Date(lastSeen).getTime()) / 60000);
 
 /**
  * Map each device to the router that lists it as a child, so a weak device
@@ -123,78 +142,54 @@ export const parentByIeee = (devices: ZHADevice[]): Record<string, string> => {
   return parents;
 };
 
-export const healthGroups = (
+export const findings = (
   devices: ZHADevice[],
-  batteryLevel: BatteryLevel,
-  now = Date.now()
-): HealthGroup[] => [
-  {
-    key: "incomplete",
-    devices: devices.filter(isIncomplete),
-  },
-  {
-    key: "weak_signal",
-    devices: devices
+  readings: DeviceReadings
+): Findings => {
+  // An offline device has no current signal or battery reading, so it is only
+  // listed as offline.
+  const online = devices.filter((device) => device.available);
+  return {
+    offline: devices.filter((device) => !device.available),
+    setup_unfinished: devices.filter(isSetupUnfinished),
+    weak_signal: online
       .filter((device) => signalBand(device) === "weak")
       .sort((a, b) => (a.lqi ?? 0) - (b.lqi ?? 0)),
-  },
-  {
-    key: "unreachable",
-    devices: devices.filter((device) => !device.available),
-  },
-  {
-    key: "low_battery",
-    devices: devices
+    low_battery: online
       .filter((device) => {
-        const level = batteryLevel(device);
+        const level = readings.batteryLevel(device);
         return level !== null && level <= LOW_BATTERY;
       })
-      .sort((a, b) => batteryLevel(a)! - batteryLevel(b)!),
-    battery: true,
-  },
-  {
-    key: "quiet",
-    devices: devices.filter(
-      (device) => minutesSince(device.last_seen, now) > QUIET_MINUTES
+      .sort((a, b) => readings.batteryLevel(a)! - readings.batteryLevel(b)!),
+    firmware_update: devices.filter(
+      (device) => readings.firmwareUpdate(device) !== null
     ),
-  },
-  {
-    key: "routers",
-    devices: devices.filter(
-      (device) => device.device_type === ZHADeviceType.Router
-    ),
-  },
-];
+  };
+};
 
 /**
- * Split devices by area, largest group first, so it is visible whether a
- * finding is spread over the house or concentrated in one room. Grouped by
- * id rather than by name: the name is a translated string, and unassigned
- * devices would otherwise fall in with an area that happens to carry the
- * same label.
+ * How many devices need attention. A device that is both offline and not set
+ * up is counted once.
  */
-export const groupByArea = (
-  devices: ZHADevice[],
-  areaName: (device: ZHADevice) => string
-): AreaGroup[] => {
-  const byArea = new Map<string, AreaGroup>();
-  for (const device of devices) {
-    const areaId = device.area_id ?? "";
-    const group = byArea.get(areaId);
-    if (group) {
-      group.devices.push(device);
-    } else {
-      byArea.set(areaId, {
-        areaId,
-        name: areaName(device),
-        devices: [device],
-      });
-    }
-  }
+export const attentionCount = (found: Findings): number =>
+  new Set(NEEDS_ATTENTION.flatMap((key) => found[key]).map((d) => d.ieee)).size;
 
-  return [...byArea.values()].sort((a, b) =>
-    a.devices.length === b.devices.length
-      ? a.name.localeCompare(b.name)
-      : b.devices.length - a.devices.length
-  );
-};
+/**
+ * Order devices by area, then by name, so devices in the same room sit
+ * together. Unassigned devices come last.
+ */
+export const sortByArea = (
+  devices: ZHADevice[],
+  areaName: (device: ZHADevice) => string | undefined,
+  deviceName: (device: ZHADevice) => string
+): ZHADevice[] =>
+  [...devices].sort((a, b) => {
+    const areaA = areaName(a);
+    const areaB = areaName(b);
+    if (areaA !== areaB) {
+      if (areaA === undefined) return 1;
+      if (areaB === undefined) return -1;
+      return areaA.localeCompare(areaB);
+    }
+    return deviceName(a).localeCompare(deviceName(b));
+  });
