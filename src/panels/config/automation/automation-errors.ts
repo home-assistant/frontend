@@ -251,14 +251,22 @@ const followItem = (
   if (samePaths?.length === 1) {
     return knownItemAt(config, samePaths[0]);
   }
+  // Identical items, e.g. two copies of a row, keep their place
+  if (samePaths?.some((other) => pathEquals(other, entry.path))) {
+    return knownItemAt(config, entry.path);
+  }
   const now = valueAt(config, entry.path);
   if (!isConfigObject(now)) {
     return undefined;
   }
   // An item that was already there took the place, e.g. after a delete
-  const before =
-    previous.paths.get(now) ?? previous.contents.get(JSON.stringify(now))?.[0];
-  if (before && !pathEquals(before, entry.path)) {
+  const beforePaths = previous.paths.has(now)
+    ? [previous.paths.get(now)!]
+    : (previous.contents.get(JSON.stringify(now)) ?? []);
+  if (
+    beforePaths.length &&
+    !beforePaths.some((other) => pathEquals(other, entry.path))
+  ) {
     return undefined;
   }
   // Edited in place
