@@ -91,7 +91,7 @@ export class HaFilterCategories extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (changedProps.get("scope") !== undefined) {
+    if (changedProps.has("scope") && this.scope !== this._categoriesScope) {
       this._categories = [];
     }
   }

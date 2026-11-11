@@ -3,6 +3,7 @@ import type {
   HassConfig,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
+import memoizeOne from "memoize-one";
 import {
   consumeContext,
   ContextController,
@@ -20,7 +21,16 @@ import {
   registriesContext,
   uiContext,
 } from "./context";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantRegistries } from "../types";
+
+type AreasAndDevices = Pick<HomeAssistantRegistries, "areas" | "devices">;
+
+const pickAreasAndDevices = memoizeOne(
+  (
+    areas: AreasAndDevices["areas"],
+    devices: AreasAndDevices["devices"]
+  ): AreasAndDevices => ({ areas, devices })
+);
 
 /**
  * Reactive controller that keeps `NavigationPathInfo` in sync with a
@@ -48,16 +58,12 @@ export class NavigationPathInfoController extends ContextController {
   @consumeContext({
     context: registriesContext,
     subscribe: true,
-    transform: ({ areas }) => areas,
+    transform: (registries) =>
+      registries
+        ? pickAreasAndDevices(registries.areas, registries.devices)
+        : undefined,
   })
-  private _areas?: HomeAssistant["areas"];
-
-  @consumeContext({
-    context: registriesContext,
-    subscribe: true,
-    transform: ({ devices }) => devices,
-  })
-  private _devices?: HomeAssistant["devices"];
+  private _registries?: AreasAndDevices;
 
   @consumeContext({
     context: configContext,
@@ -116,8 +122,8 @@ export class NavigationPathInfoController extends ContextController {
     if (
       !this._localize ||
       !this._panels ||
-      !this._areas ||
-      !this._devices ||
+      !this._registries?.areas ||
+      !this._registries.devices ||
       !this._config ||
       !this._connection
     ) {
@@ -128,8 +134,8 @@ export class NavigationPathInfoController extends ContextController {
       {
         localize: this._localize,
         panels: this._panels,
-        areas: this._areas,
-        devices: this._devices,
+        areas: this._registries.areas,
+        devices: this._registries.devices,
         config: this._config,
         connection: this._connection,
       },
