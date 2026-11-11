@@ -101,7 +101,7 @@ export const updateItem = (
     "update_item",
     {
       item: item.uid,
-      rename: item.summary?.trim() || undefined,
+      rename: item.summary || undefined,
       status: item.status,
       description: item.description,
       due_datetime: item.due?.includes("T") ? item.due : undefined,
