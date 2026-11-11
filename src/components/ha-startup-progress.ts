@@ -13,6 +13,9 @@ import "./progress/ha-progress-bar";
 export class HaStartupProgress extends LitElement {
   @property({ attribute: false }) public progress!: StartupProgressView;
 
+  // The launch screen render swap would remove a dialog opened before it.
+  @property({ attribute: false }) public detailsAvailable = false;
+
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
@@ -44,11 +47,15 @@ export class HaStartupProgress extends LitElement {
               ${count}${issuesText ? ` · ${issuesText}` : nothing}
             </span>
           </div>
-          <ha-icon-button
-            .label=${localize("ui.startup_progress.details")}
-            .path=${mdiInformationOutline}
-            @click=${this._showDetails}
-          ></ha-icon-button>
+          ${
+            this.detailsAvailable
+              ? html`<ha-icon-button
+                  .label=${localize("ui.startup_progress.details")}
+                  .path=${mdiInformationOutline}
+                  @click=${this._showDetails}
+                ></ha-icon-button>`
+              : nothing
+          }
           <ha-icon-button
             .label=${localize("ui.notification_toast.dismiss")}
             .path=${mdiClose}

@@ -58,17 +58,22 @@ class DialogStartupProgress extends DialogMixin(LitElement) {
 
   @state() private _setups?: IntegrationSetup[];
 
+  @state() private _legacy = false;
+
   private _unsubProgress?: Promise<UnsubscribeFunc>;
 
   private _computeProgress = memoizeOne(computeStartupProgress);
 
   connectedCallback() {
     super.connectedCallback();
-    // Core keeps the last progress, so this also works after startup.
+    // Core sends the last progress on subscribe, older cores do not.
     this._unsubProgress = subscribeBootstrapProgress(
       this._connection.connection,
       (progress) => {
         this._progress = progress;
+      },
+      () => {
+        this._legacy = true;
       }
     );
   }
@@ -98,9 +103,11 @@ class DialogStartupProgress extends DialogMixin(LitElement) {
 
   protected render() {
     const localize = this._i18n.localize;
-    const progress = this._progress
-      ? this._computeProgress(this._progress, this._config.config.state)
-      : undefined;
+    const progress =
+      this._progress ||
+      (this._legacy && this._config.config.state === STATE_RUNNING)
+        ? this._computeProgress(this._progress, this._config.config.state)
+        : undefined;
     const issues = progress
       ? progress.failed.length + progress.retrying.length
       : 0;

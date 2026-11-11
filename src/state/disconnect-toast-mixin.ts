@@ -23,6 +23,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     private _startupProgressVisible = false;
 
+    private _startupProgressLegacy = false;
+
+    private _startupFinishPending = false;
+
     private _startupProgressEl?: HTMLElementTagNameMap["ha-startup-progress"];
 
     private _startupProgressResize?: ResizeObserver;
@@ -50,7 +54,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         if (transition === "show") {
           this._showStartupProgress();
         } else if (transition === "finish") {
-          this._finishStartupProgress();
+          this._requestFinishStartupProgress();
         }
       }
       this._updateStartupProgress();
@@ -116,12 +120,24 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     private _showStartupProgress() {
       this._unsubscribeBootstrapProgress();
       this._startupProgress = undefined;
+      this._startupProgressLegacy = false;
+      this._startupFinishPending = false;
       this._startupProgressVisible = true;
       this._subscribedBootstrapProgress = subscribeBootstrapProgress(
         this.hass!.connection,
         (message) => {
           this._startupProgress = message;
+          if (this._startupFinishPending && message.phase === "running") {
+            this._finishStartupProgress();
+            return;
+          }
           this._updateStartupProgress();
+        },
+        () => {
+          this._startupProgressLegacy = true;
+          if (this._startupFinishPending) {
+            this._finishStartupProgress();
+          }
         }
       );
       this._updateStartupProgress();
@@ -155,6 +171,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (!this._startupProgressEl.isConnected) {
         this.renderRoot.appendChild(this._startupProgressEl);
       }
+      this._startupProgressEl.detailsAvailable =
+        !!this.renderRoot.querySelector("home-assistant-main");
       this._startupProgressEl.progress = computeStartupProgress(
         this._startupProgress,
         this.hass!.config.state
@@ -171,7 +189,20 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this._startupProgressEl = undefined;
     }
 
+    // Core can reach RUNNING before its final snapshot with the failures arrives.
+    private _requestFinishStartupProgress() {
+      if (
+        this._startupProgressLegacy ||
+        this._startupProgress?.phase === "running"
+      ) {
+        this._finishStartupProgress();
+      } else {
+        this._startupFinishPending = true;
+      }
+    }
+
     private _finishStartupProgress() {
+      this._startupFinishPending = false;
       const { failed, retrying } = computeStartupProgress(
         this._startupProgress,
         this.hass!.config.state

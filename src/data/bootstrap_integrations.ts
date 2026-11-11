@@ -72,7 +72,9 @@ export const legacyTimingsToProgress = (
 
 export const subscribeBootstrapProgress = (
   connection: Connection,
-  callback: (message: BootstrapProgress) => void
+  callback: (message: BootstrapProgress) => void,
+  // Older cores send no snapshot, so no final message after startup either.
+  onLegacy?: () => void
 ): Promise<UnsubscribeFunc> =>
   connection
     .subscribeMessage<BootstrapProgress>(callback, {
@@ -83,6 +85,7 @@ export const subscribeBootstrapProgress = (
         throw err;
       }
       // Older cores only report the integrations that are setting up.
+      onLegacy?.();
       return subscribeBootstrapIntegrations(connection, (timings) =>
         callback(legacyTimingsToProgress(timings))
       );
