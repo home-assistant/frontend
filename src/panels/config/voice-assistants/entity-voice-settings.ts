@@ -419,7 +419,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
     );
     if (this.entry) {
       const entry = await getExtendedEntityRegistryEntry(
-        this.hass,
+        this.hass.callWS,
         this.entityId
       );
       fireEvent(this, "entity-entry-updated", entry);
@@ -437,7 +437,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
     exposeEntities(this.hass, assistants, [this.entityId], ev.target.checked);
     if (this.entry) {
       const entry = await getExtendedEntityRegistryEntry(
-        this.hass,
+        this.hass.callWS,
         this.entityId
       );
       fireEvent(this, "entity-entry-updated", entry);

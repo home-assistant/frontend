@@ -99,7 +99,7 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
     }
     let entity: ExtEntityRegistryEntry | undefined;
     try {
-      entity = await getExtendedEntityRegistryEntry(this.hass, id);
+      entity = await getExtendedEntityRegistryEntry(this.hass.callWS, id);
     } catch {
       // not in the registry
     }

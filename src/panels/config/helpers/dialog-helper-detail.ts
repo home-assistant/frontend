@@ -601,7 +601,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     try {
       // The entity ID usually matches the helper ID, unless it was taken
       const entry = await getExtendedEntityRegistryEntry(
-        this._api,
+        this._api.callWS,
         `${domain}.${uniqueId}`
       ).catch(() => undefined);
       if (entry && isCreated(entry)) {
