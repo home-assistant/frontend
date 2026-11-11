@@ -51,3 +51,53 @@ export const limitIceServers = (
       }),
     };
   });
+
+// "turns:host" -> "turns:host:5349?transport=tcp", browsers report the URL of
+// a candidate with the port and transport that were left out
+const normalizeUrl = (url: string) => {
+  const scheme = url.slice(0, url.indexOf(":")).toLowerCase();
+  const port =
+    /:(\d+)(\?|$)/.exec(url)?.[1] ?? (scheme.endsWith("s") ? "5349" : "3478");
+  const transport =
+    /[?&]transport=(\w+)/i.exec(url)?.[1].toLowerCase() ??
+    (scheme === "turns" ? "tcp" : "udp");
+  return `${scheme}:${getHost(url)}:${port}?transport=${transport}`;
+};
+
+/** The network path a connection uses, without `relayUrl` it is direct. */
+export interface IcePath {
+  relayUrl?: string;
+}
+
+/**
+ * Reduces the ICE servers to what a new connection needs to take the same
+ * path as a connection that is already running: only the TURN URL it relays
+ * over, or no TCP TURN URLs when it is direct. The UDP TURN URLs stay, as
+ * browsers also use them to find their public address.
+ *
+ * Returns `undefined` if the relay is not part of the ICE servers.
+ */
+export const limitIceServersToPath = (
+  iceServers: RTCIceServer[] | undefined,
+  path: IcePath
+): RTCIceServer[] | undefined => {
+  const { relayUrl } = path;
+  if (relayUrl) {
+    const normalizedUrl = normalizeUrl(relayUrl);
+    for (const server of iceServers ?? []) {
+      const url = ensureArray(server.urls).find(
+        (serverUrl) => normalizeUrl(serverUrl) === normalizedUrl
+      );
+      if (url) {
+        return [{ ...server, urls: [url] }];
+      }
+    }
+    return undefined;
+  }
+  return limitIceServers(iceServers)
+    ?.map((server) => ({
+      ...server,
+      urls: ensureArray(server.urls).filter((url) => !isTcpTurn(url)),
+    }))
+    .filter((server) => server.urls.length);
+};

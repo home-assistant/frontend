@@ -95,8 +95,6 @@ export class HaCameraStream extends LitElement {
 
   private _webRtcFirstTimeout?: number;
 
-  private _webRtcConnected = false;
-
   private _capabilitiesRequest = 0;
 
   private _streamsStartedAt = 0;
@@ -260,7 +258,6 @@ export class HaCameraStream extends LitElement {
         .entityid=${this.stateObj.entity_id}
         .posterUrl=${this._posterUrl}
         @streams=${this._handleWebRtcStreams}
-        @web-rtc-connected=${this._handleWebRtcConnected}
         class=${stream.visible ? "" : "hidden"}
         .aspectRatio=${this.aspectRatio}
         .fitMode=${this.fitMode}
@@ -336,8 +333,8 @@ export class HaCameraStream extends LitElement {
     this._webRtcFirstTimeout = undefined;
     // Start HLS as well, WebRTC keeps connecting and takes over when it loads
     this._webRtcFirst = false;
-    if (!this._webRtcConnected && this.stateObj) {
-      // No network path yet, so don't wait for it the next time
+    if (this.stateObj) {
+      // Don't wait for it the next time, also when it never reports a result
       setWebRtcWorked(this.stateObj.entity_id, false);
     }
   };
@@ -346,7 +343,6 @@ export class HaCameraStream extends LitElement {
     clearTimeout(this._webRtcFirstTimeout);
     this._webRtcFirstTimeout = undefined;
     this._webRtcFirst = false;
-    this._webRtcConnected = false;
   }
 
   private async _getPosterUrl(): Promise<void> {
@@ -376,6 +372,7 @@ export class HaCameraStream extends LitElement {
     this._webRtcFirstTimeout = undefined;
     if (
       !ev.detail.hasVideo &&
+      !ev.detail.hasAudio &&
       this._capabilities?.frontend_stream_types.length === 1 &&
       typeof RTCPeerConnection !== "undefined"
     ) {
@@ -388,10 +385,6 @@ export class HaCameraStream extends LitElement {
         performance.now() - this._streamsStartedAt <= WEB_RTC_FIRST_TIMEOUT;
     }
     this._webRtcStreams = ev.detail;
-  }
-
-  private _handleWebRtcConnected() {
-    this._webRtcConnected = true;
   }
 
   private _streams = memoizeOne(
