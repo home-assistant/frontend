@@ -1333,6 +1333,7 @@
         "not_supported": "WebRTC is not supported in this browser.",
         "start_failed": "Failed to start the WebRTC stream: {message}",
         "connect_failed": "Failed to connect the WebRTC stream: {message}",
+        "no_connection": "Could not connect the WebRTC stream.",
         "microphone_failed": "Could not access the microphone: {message}",
         "microphone_connect_failed": "Could not connect the microphone to the camera: {message}"
       },
