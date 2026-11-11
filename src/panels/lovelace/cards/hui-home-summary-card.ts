@@ -191,12 +191,16 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
       }
       case "climate": {
         // Min/Max temperature of the areas
+        const hiddenEntities = new Set(this._config.hidden_entities);
         const areaSensors = Object.values(areas)
           .map((area) => area.temperature_entity_id)
-          .filter(Boolean);
+          .filter(
+            (entityId): entityId is string =>
+              !!entityId && !hiddenEntities.has(entityId)
+          );
 
         const sensorsValues = areaSensors
-          .map((entityId) => parseFloat(states[entityId!]?.state) || NaN)
+          .map((entityId) => parseFloat(states[entityId]?.state) || NaN)
           .filter((value) => !isNaN(value));
 
         if (sensorsValues.length === 0) {
