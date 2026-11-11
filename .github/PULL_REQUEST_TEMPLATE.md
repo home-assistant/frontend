@@ -47,13 +47,16 @@
 <!--
   Details are important, and help maintainers processing your PR.
   Please be sure to fill out additional details, if applicable.
+
+  Under "This PR belongs together with", list the pull requests that are
+  part of the same change, in any repository: the code this documents, its
+  documentation or brands, or code that has to be merged together with it.
+  List this pull request on theirs too. Mention other pull requests and
+  issues, like one this builds on or a revert, in the description above.
 -->
 
 - This PR fixes or closes issue: fixes #
-- This PR is related to issue or discussion:
-- Link to [documentation][docs-repository] pull request:
-- Link to [contributors documentation][contributors-repository] pull request:
-- Link to backend pull request:
+- This PR belongs together with:
 
 ## Checklist
 <!--
@@ -106,5 +109,4 @@ To help with the load of incoming pull requests:
   Below, some useful links you could explore:
 -->
 [docs-repository]: https://github.com/home-assistant/home-assistant.io
-[contributors-repository]: https://github.com/home-assistant/contributors.home-assistant.io
 [perfect-pr]: https://contributors.home-assistant.io/start/pull-requests/#before-you-open-it
