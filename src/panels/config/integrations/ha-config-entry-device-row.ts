@@ -76,7 +76,10 @@ class HaConfigEntryDeviceRow extends LitElement {
 
     const supportingText = [
       area ? html`<span class="area">${area.name}</span>` : undefined,
-      device.model || device.sw_version || device.manufacturer,
+      device.model ||
+        device.model_id ||
+        device.sw_version ||
+        device.manufacturer,
       entities.length
         ? bidiIsolate(
             this.hass.localize(
@@ -255,7 +258,11 @@ class HaConfigEntryDeviceRow extends LitElement {
     showDeviceRegistryDetailDialog(this, {
       device: this.device,
       updateEntry: async (updates) => {
-        await updateDeviceRegistryEntry(this.hass, this.device.id, updates);
+        await updateDeviceRegistryEntry(
+          this.hass.callWS,
+          this.device.id,
+          updates
+        );
       },
     });
   };
@@ -339,15 +346,16 @@ class HaConfigEntryDeviceRow extends LitElement {
       }
     }
 
-    await updateDeviceRegistryEntry(this.hass, this.device.id, {
+    await updateDeviceRegistryEntry(this.hass.callWS, this.device.id, {
       disabled_by: disable ? "user" : null,
     });
   };
 
   private _handleDeleteDevice = async () => {
     const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize("ui.panel.config.devices.confirm_delete_title"),
       text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
-      confirmText: this.hass.localize("ui.common.delete"),
+      confirmText: this.hass.localize("ui.common.remove"),
       dismissText: this.hass.localize("ui.common.cancel"),
       destructive: true,
     });

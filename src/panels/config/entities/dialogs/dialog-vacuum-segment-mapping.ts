@@ -114,7 +114,7 @@ export class DialogVacuumSegmentMapping
         last_seen_segments: mapper.lastSeenSegments,
       };
 
-      await updateEntityRegistryEntry(this.hass, this._params.entityId, {
+      await updateEntityRegistryEntry(this.hass.callWS, this._params.entityId, {
         options_domain: "vacuum",
         options: options,
       });

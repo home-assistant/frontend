@@ -28,7 +28,7 @@ import type {
   WaterGasResource,
 } from "../../../../data/energy";
 import {
-  computeEnergyLabel,
+  computeEnergyDeviceLabels,
   getEnergyGasUnitClass,
   getWaterGasDevices,
   getWaterGasDevicesKey,
@@ -90,6 +90,12 @@ export class EnergyDeviceSettingsWaterGas extends LitElement {
     const devices = this._devices;
     const validation =
       this.validationResult?.[getWaterGasDevicesKey(this.resource)];
+    const labels = computeEnergyDeviceLabels(
+      this.hass.states,
+      this.hass.formatEntityName,
+      devices,
+      this.statsMetadata
+    );
 
     return html`
       <ha-card>
@@ -138,7 +144,7 @@ export class EnergyDeviceSettingsWaterGas extends LitElement {
                                   .path=${mdiDragHorizontalVariant}
                                 ></ha-svg-icon>
                               </div>
-                              ${this._renderName(device)}
+                              ${this._renderName(device, labels)}
                               ${this._renderIssueIndicator(
                                 validation?.[index],
                                 index
@@ -174,14 +180,11 @@ export class EnergyDeviceSettingsWaterGas extends LitElement {
     `;
   }
 
-  private _renderName(device: DeviceConsumptionEnergyPreference) {
-    const name = computeEnergyLabel(
-      this.hass.states,
-      this.hass.formatEntityName,
-      device.stat_consumption,
-      this.statsMetadata?.[device.stat_consumption],
-      device.name
-    );
+  private _renderName(
+    device: DeviceConsumptionEnergyPreference,
+    labels: Record<string, string>
+  ) {
+    const name = labels[device.stat_consumption];
     const areaId = getEntityAreaId(
       device.stat_consumption,
       this.hass.entities,

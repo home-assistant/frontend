@@ -21,13 +21,17 @@ import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { QueryParamsController } from "../../../common/controllers/query-params-controller";
+import { ContextSubscriptionController } from "../../../common/decorators/consume";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
-import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import {
+  caseInsensitiveStringCompare,
+  stringCompare,
+} from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   integrationQueryParamConfig,
@@ -39,7 +43,9 @@ import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import "../../../components/ha-icon-next";
 import "../../../components/item/ha-list-item-base";
+import "../../../components/item/ha-list-item-button";
 import "../../../components/list/ha-list-base";
 import { getSignedPath } from "../../../data/auth";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
@@ -59,7 +65,9 @@ import {
   getCoreLogFileDownloadUnavailableReason,
   getErrorLogDownloadUrl,
 } from "../../../data/error_log";
+import { manifestsContext } from "../../../data/context";
 import type {
+  DomainManifestLookup,
   IntegrationLogInfo,
   IntegrationManifest,
 } from "../../../data/integration";
@@ -109,7 +117,7 @@ export interface ConfigEntryData {
 const AI_SETTINGS_DOMAINS = ["mcp", "mcp_server"];
 
 export const renderConfigEntryError = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "localize" | "loadBackendTranslation">,
   entry: ConfigEntry
 ): TemplateResult => {
   if (entry.reason) {
@@ -166,6 +174,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   @state() private _entities: EntityRegistryEntry[] = [];
 
   @state() private _manifest?: IntegrationManifest;
+
+  /** The manifests of all loaded integrations, to find the dependents. */
+  @state() private _loadedManifests?: DomainManifestLookup;
+
+  private _manifestsConsumer?: ContextSubscriptionController<DomainManifestLookup>;
 
   @state() private _extraConfigEntries?: ConfigEntry[];
 
@@ -263,6 +276,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.hass.loadBackendTranslation("config", [this.domain]);
       this.hass.loadBackendTranslation("config_subentries", [this.domain]);
       this._extraConfigEntries = undefined;
+      this._manifest = undefined;
       this._resetDebugLogReady();
       this._filter = "";
       this._subEntries = {};
@@ -415,6 +429,25 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.domain
     );
 
+    // Without the dependents, a dependency looks like a YAML integration.
+    const dependents =
+      this._manifest && !this._manifest.config_flow
+        ? this._getDependents(
+            this.domain,
+            this._loadedManifests,
+            this.hass.localize,
+            this.hass.locale.language
+          )
+        : [];
+    const showDependents = normalEntries.length === 0 && dependents.length > 0;
+    // Hold back the YAML texts and "Add entry" until the manifest and the
+    // dependents are known. Entries do not wait, so a failed request cannot
+    // hide them.
+    const dependentsLoading =
+      normalEntries.length === 0 &&
+      (!this._manifest ||
+        (!this._manifest.config_flow && !this._loadedManifests));
+
     const configPanel = isComponentLoaded(this.hass.config, this.domain)
       ? getConfigPanelPath(this.domain, this.hass.panels)
       : undefined;
@@ -425,6 +458,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
     const showAddEntry =
       this._manifest?.integration_type !== "hardware" &&
+      !showDependents &&
+      !dependentsLoading &&
       !setUpInPanel &&
       (!this._manifest?.single_config_entry ||
         (normalData.length === 0 && attentionData.length === 0));
@@ -614,6 +649,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   }
                   ${
                     normalEntries.length === 0 &&
+                    !showDependents &&
+                    !dependentsLoading &&
                     !setUpInPanel &&
                     this._manifest &&
                     !this._manifest.config_flow &&
@@ -726,7 +763,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               ${
                 configPanel
                   ? html`<ha-button
-                      .appearance=${setUpInPanel ? "accent" : "outlined"}
+                      .appearance=${
+                        showAddEntry || canAddDevice ? "outlined" : "accent"
+                      }
                       href=${`/${configPanel}`}
                     >
                       ${this.hass.localize(
@@ -975,7 +1014,21 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               : nothing
           }
           ${
-            setUpInPanel && normalEntries.length === 0
+            showDependents
+              ? html`<div class="section">
+                  <h3 class="section-header">
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.integration_page.used_by"
+                    )}
+                  </h3>
+                  ${this._renderDependents(dependents)}
+                </div>`
+              : nothing
+          }
+          ${
+            showDependents ||
+            dependentsLoading ||
+            (setUpInPanel && normalEntries.length === 0)
               ? nothing
               : html`<div class="section">
                   <h3 class="section-header">
@@ -1032,6 +1085,76 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     `;
   }
 
+  // Only an integration without a config flow needs the loaded manifests, so
+  // other integration pages do not make the context fetch them.
+  private _watchLoadedManifests(): void {
+    if (this._manifestsConsumer) {
+      return;
+    }
+    this._manifestsConsumer = new ContextSubscriptionController(
+      this,
+      manifestsContext,
+      (manifests) => {
+        this._loadedManifests = manifests;
+      }
+    );
+  }
+
+  private _getDependents = memoizeOne(
+    (
+      domain: string,
+      manifests: DomainManifestLookup | undefined,
+      localize: LocalizeFunc,
+      language: string
+    ) =>
+      Object.values(manifests ?? {})
+        .filter(
+          // System integrations, like Default Configuration, are not useful to list.
+          (manifest) =>
+            manifest.integration_type !== "system" &&
+            manifest.dependencies?.includes(domain)
+        )
+        // The manifests come in no fixed order.
+        .sort((a, b) =>
+          stringCompare(
+            domainToName(localize, a.domain, a),
+            domainToName(localize, b.domain, b),
+            language
+          )
+        )
+  );
+
+  private _renderDependents(dependents: IntegrationManifest[]) {
+    return html`<ha-list-base>
+      ${dependents.map(
+        (manifest) =>
+          html`<ha-list-item-button
+            class="dependent"
+            href=${`/config/integrations/integration/${manifest.domain}`}
+          >
+            <img
+              slot="start"
+              alt=""
+              src=${brandsUrl(
+                {
+                  domain: manifest.domain,
+                  type: "icon@2x",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"
+            />
+            <div slot="headline">
+              ${domainToName(this.hass.localize, manifest.domain, manifest)}
+            </div>
+            <ha-icon-next slot="end"></ha-icon-next>
+          </ha-list-item-button>`
+      )}
+    </ha-list-base>`;
+  }
+
   private _onImageLoad(ev) {
     ev.target.style.display = "inline-block";
   }
@@ -1072,6 +1195,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       return;
     }
     this._manifest = await fetchIntegrationManifest(this.hass, this.domain);
+    if (!this._manifest.config_flow) {
+      this._watchLoadedManifests();
+    }
     if (
       this._manifest.integration_type &&
       !["device", "hub", "service"].includes(this._manifest.integration_type)
@@ -1258,6 +1384,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         "name",
         "manufacturer",
         "model",
+        "model_id",
         "sw_version",
         "area",
       ];
@@ -1267,6 +1394,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         name: device.name_by_user || device.name || "",
         manufacturer: device.manufacturer || "",
         model: device.model || "",
+        model_id: device.model_id || "",
         sw_version: device.sw_version || "",
         area: device.area_id ? areas[device.area_id]?.name || "" : "",
       });
@@ -1747,6 +1875,17 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         ha-list-item-base.discovered {
           --ha-row-item-min-height: 72px;
+        }
+        ha-list-item-button.dependent {
+          --ha-row-item-min-height: 72px;
+        }
+        ha-list-item-button.dependent + ha-list-item-button.dependent {
+          border-top: var(--ha-border-width-sm) solid var(--divider-color);
+        }
+        ha-list-item-button.dependent img {
+          width: 40px;
+          height: 40px;
+          object-fit: contain;
         }
         ha-list-item-base.config_entry {
           position: relative;
