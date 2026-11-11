@@ -1,5 +1,6 @@
 import {
   mdiBatteryAlertVariantOutline,
+  mdiCheckCircleOutline,
   mdiClockOutline,
   mdiHelpCircleOutline,
   mdiPackageUp,
@@ -446,8 +447,18 @@ class ZHANetworkHealthPage extends LitElement {
 
   private _renderWorthALookCard(found: Record<FindingKey, ZHADevice[]>) {
     const keys = WORTH_A_LOOK.filter((key) => found[key].length);
+    // Kept when empty, so it is clear that signal, batteries and firmware
+    // were checked rather than left out.
     if (!keys.length) {
-      return nothing;
+      return html`
+        <ha-card>
+          <h2 class="card-title header">${this._t("worth_a_look")}</h2>
+          <p class="all-fine">
+            <ha-svg-icon .path=${mdiCheckCircleOutline}></ha-svg-icon>
+            ${this._t("worth_a_look_nothing")}
+          </p>
+        </ha-card>
+      `;
     }
     return html`
       <ha-card>
@@ -672,6 +683,19 @@ class ZHANetworkHealthPage extends LitElement {
         ha-state-icon[slot="start"],
         ha-svg-icon[slot="start"] {
           color: var(--secondary-text-color);
+        }
+
+        .all-fine {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-4);
+          margin: 0;
+          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+          color: var(--secondary-text-color);
+        }
+
+        .all-fine ha-svg-icon {
+          color: var(--success-color);
         }
 
         .status {

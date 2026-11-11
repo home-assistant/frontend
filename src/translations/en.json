@@ -8568,6 +8568,7 @@
             "attention_title": "{count, plural,\n  one {# device needs attention}\n  other {# devices need attention}\n}",
             "nothing_needs_attention": "No devices need attention",
             "worth_a_look": "Worth a look",
+            "worth_a_look_nothing": "Signal, batteries and firmware look fine",
             "no_devices": "No devices",
             "via_router": "via {router}",
             "last_seen": "last seen {time}",
