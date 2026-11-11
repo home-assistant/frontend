@@ -1,4 +1,5 @@
 import type { ZHADevice } from "../../../../../data/zha";
+import { ZHADeviceType } from "../../../../../data/zha";
 
 /** Link quality below which a device sits at the edge of its radio range. */
 export const WEAK_LQI = 30;
@@ -68,17 +69,76 @@ export type PowerSource = "mains" | "battery";
 export const managedDevices = (devices: ZHADevice[]): ZHADevice[] =>
   devices.filter((device) => !device.active_coordinator);
 
-export const signalBand = (device: ZHADevice): SignalBand => {
-  if (device.lqi === null || device.lqi === undefined) {
-    return "unknown";
+/** Link quality per device IEEE, as reported by its neighbours. */
+export type LinkQualities = Record<string, number>;
+
+/**
+ * The link quality the neighbour tables report for each device. The value of
+ * the last packet swings with every message; a neighbour table entry is the
+ * router's own running estimate of the link and reads much steadier. zigpy
+ * rescans the tables every few hours, so it can lag behind a sudden change.
+ *
+ * An end device uses the entry of the router it is a child of: that is the
+ * link it actually depends on. A router routes over the whole mesh, so it
+ * uses the best entry any neighbour reports: a router with one good link is
+ * still reachable. This also keeps routers clear of the near-zero values some
+ * firmware reports for every neighbour, and of "Child" entries between
+ * routers, which say nothing about the link they rely on. Unavailable
+ * routers are skipped, as their tables may be stale.
+ */
+export const neighborLinkQualities = (devices: ZHADevice[]): LinkQualities => {
+  const endDevices = new Set(
+    devices
+      .filter((device) => device.device_type === ZHADeviceType.EndDevice)
+      .map((device) => device.ieee)
+  );
+  const best: LinkQualities = {};
+  const parent: LinkQualities = {};
+  for (const router of devices) {
+    if (!router.available) {
+      continue;
+    }
+    for (const neighbor of router.neighbors) {
+      const lqi = Number(neighbor.lqi);
+      if (neighbor.lqi === "" || isNaN(lqi)) {
+        continue;
+      }
+      if (neighbor.relationship === "Child" && endDevices.has(neighbor.ieee)) {
+        parent[neighbor.ieee] = lqi;
+      }
+      best[neighbor.ieee] = Math.max(best[neighbor.ieee] ?? -1, lqi);
+    }
   }
-  if (device.lqi < WEAK_LQI) {
-    return "weak";
-  }
-  return device.lqi < STRONG_LQI ? "fair" : "strong";
+  return { ...best, ...parent };
 };
 
-export const countBands = (devices: ZHADevice[]): BandCounts => {
+/**
+ * The link quality shown for a device: from the neighbour tables when they
+ * list it, otherwise from its last packet.
+ */
+export const linkQuality = (
+  device: ZHADevice,
+  links: LinkQualities = {}
+): number | null => links[device.ieee] ?? device.lqi ?? null;
+
+export const signalBand = (
+  device: ZHADevice,
+  links: LinkQualities = {}
+): SignalBand => {
+  const lqi = linkQuality(device, links);
+  if (lqi === null) {
+    return "unknown";
+  }
+  if (lqi < WEAK_LQI) {
+    return "weak";
+  }
+  return lqi < STRONG_LQI ? "fair" : "strong";
+};
+
+export const countBands = (
+  devices: ZHADevice[],
+  links: LinkQualities = {}
+): BandCounts => {
   const counts: BandCounts = {
     strong: 0,
     fair: 0,
@@ -87,7 +147,7 @@ export const countBands = (devices: ZHADevice[]): BandCounts => {
     unknown: 0,
   };
   for (const device of devices) {
-    counts[device.available ? signalBand(device) : "offline"]++;
+    counts[device.available ? signalBand(device, links) : "offline"]++;
   }
   return counts;
 };
@@ -144,7 +204,8 @@ export const parentByIeee = (devices: ZHADevice[]): Record<string, string> => {
 
 export const findings = (
   devices: ZHADevice[],
-  readings: DeviceReadings
+  readings: DeviceReadings,
+  links: LinkQualities = {}
 ): Findings => {
   // An offline device has no current signal or battery reading, so it is only
   // listed as offline.
@@ -153,8 +214,10 @@ export const findings = (
     offline: devices.filter((device) => !device.available),
     setup_unfinished: devices.filter(isSetupUnfinished),
     weak_signal: online
-      .filter((device) => signalBand(device) === "weak")
-      .sort((a, b) => (a.lqi ?? 0) - (b.lqi ?? 0)),
+      .filter((device) => signalBand(device, links) === "weak")
+      .sort(
+        (a, b) => (linkQuality(a, links) ?? 0) - (linkQuality(b, links) ?? 0)
+      ),
     low_battery: online
       .filter((device) => {
         const level = readings.batteryLevel(device);

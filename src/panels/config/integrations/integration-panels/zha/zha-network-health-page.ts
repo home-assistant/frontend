@@ -49,7 +49,9 @@ import {
   countBands,
   findings,
   lastSeenAt,
+  linkQuality,
   managedDevices,
+  neighborLinkQualities,
   NEEDS_ATTENTION,
   parentByIeee,
   powerSource,
@@ -157,6 +159,12 @@ class ZHANetworkHealthPage extends LitElement {
   /** Built once per device list rather than per rendered row. */
   private _parentByIeee = memoizeOne(parentByIeee);
 
+  /**
+   * Built from the full device list: the coordinator is the parent of many
+   * devices, so its neighbour table counts too.
+   */
+  private _links = memoizeOne(neighborLinkQualities);
+
   private _readings: DeviceReadings = {
     batteryLevel: (device) => {
       for (const entity of device.entities) {
@@ -243,7 +251,7 @@ class ZHANetworkHealthPage extends LitElement {
     }
 
     const devices = this._managedDevices(this._devices);
-    const found = findings(devices, this._readings);
+    const found = findings(devices, this._readings, this._links(this._devices));
 
     if (subpage) {
       return this._renderSubpage(subpage, found[subpage]);
@@ -272,7 +280,7 @@ class ZHANetworkHealthPage extends LitElement {
 
   private _renderSnapshotCard(devices: ZHADevice[]): TemplateResult {
     const offline = devices.filter((device) => !device.available).length;
-    const counts = countBands(devices);
+    const counts = countBands(devices, this._links(this._devices!));
     const rated = counts.strong + counts.fair + counts.weak + counts.offline;
     // A single sleeping device is everyday life, not an outage: the network is
     // only down once nothing answers at all. Matches the ZHA dashboard.
@@ -464,10 +472,11 @@ class ZHANetworkHealthPage extends LitElement {
       icon = mdiPackageUp;
       value = [update.installed, update.latest].filter(Boolean).join(" → ");
     } else {
-      const band = signalBand(device);
+      const links = this._links(this._devices!);
+      const band = signalBand(device, links);
       icon = BAND_ICON[band];
       iconClass = `signal ${band}`;
-      value = `LQI ${device.lqi}`;
+      value = `LQI ${linkQuality(device, links) ?? "—"}`;
     }
 
     const parent =

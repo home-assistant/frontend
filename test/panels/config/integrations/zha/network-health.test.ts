@@ -8,7 +8,9 @@ import {
   findings,
   isSetupUnfinished,
   lastSeenAt,
+  linkQuality,
   managedDevices,
+  neighborLinkQualities,
   parentByIeee,
   powerSource,
   signalBand,
@@ -330,5 +332,89 @@ describe("sortByArea", () => {
     );
 
     expect(sorted.map((d) => d.ieee)).toEqual(["a", "k1", "k2", "z"]);
+  });
+});
+
+describe("neighborLinkQualities", () => {
+  const entry = (
+    ieee: string,
+    lqi: string,
+    relationship: "Child" | "Sibling" | "Parent" = "Sibling"
+  ) => ({ ieee, nwk: "1", lqi, depth: "1", relationship });
+
+  it("takes an end device's link from the router it is a child of", () => {
+    const links = neighborLinkQualities([
+      device({
+        ieee: "parent",
+        neighbors: [entry("child", "40", "Child")],
+      }),
+      device({ ieee: "other", neighbors: [entry("child", "200")] }),
+      device({ ieee: "child" }),
+    ]);
+
+    expect(links.child).toBe(40);
+  });
+
+  it("takes a router's best link from any neighbour", () => {
+    const links = neighborLinkQualities([
+      device({ ieee: "a", neighbors: [entry("router", "35")] }),
+      device({ ieee: "b", neighbors: [entry("router", "120")] }),
+      device({ ieee: "router", device_type: ZHADeviceType.Router }),
+    ]);
+
+    expect(links.router).toBe(120);
+  });
+
+  it("ignores a router listed as another router's child", () => {
+    // Seen on a real network: a plug listed a well-connected plug as its
+    // child with LQI 9, while the coordinator heard it at 105.
+    const links = neighborLinkQualities([
+      device({
+        ieee: "plug-2",
+        device_type: ZHADeviceType.Router,
+        neighbors: [entry("plug-1", "9", "Child")],
+      }),
+      device({
+        ieee: "coordinator",
+        active_coordinator: true,
+        device_type: ZHADeviceType.Coordinator,
+        neighbors: [entry("plug-1", "105")],
+      }),
+      device({ ieee: "plug-1", device_type: ZHADeviceType.Router }),
+    ]);
+
+    expect(links["plug-1"]).toBe(105);
+  });
+
+  it("skips unavailable routers and unreadable values", () => {
+    const links = neighborLinkQualities([
+      device({
+        ieee: "gone",
+        available: false,
+        neighbors: [entry("x", "250", "Child")],
+      }),
+      device({ ieee: "a", neighbors: [entry("x", ""), entry("y", "n/a")] }),
+    ]);
+
+    expect(links).toEqual({});
+  });
+});
+
+describe("linkQuality", () => {
+  it("prefers the neighbour table and falls back to the last packet", () => {
+    const d = device({ ieee: "a", lqi: 200 });
+
+    expect(linkQuality(d, { a: 20 })).toBe(20);
+    expect(linkQuality(d, {})).toBe(200);
+    expect(linkQuality(device({ ieee: "b", lqi: null as any }))).toBeNull();
+  });
+
+  it("rates a device weak by its neighbour-table link", () => {
+    const found = findings([device({ ieee: "a", lqi: 200 })], noReadings, {
+      a: 12,
+    });
+
+    expect(found.weak_signal.map((d) => d.ieee)).toEqual(["a"]);
+    expect(signalBand(device({ ieee: "a", lqi: 200 }), { a: 12 })).toBe("weak");
   });
 });
