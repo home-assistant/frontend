@@ -2207,6 +2207,8 @@
           "visibility_unit": "Visibility unit",
           "wind_speed_unit": "Wind speed unit",
           "device_class": "Show as",
+          "type": "Type",
+          "type_default": "Default ({type})",
           "switch_as_x": "Show switch as",
           "invert": {
             "label": "Invert state",
