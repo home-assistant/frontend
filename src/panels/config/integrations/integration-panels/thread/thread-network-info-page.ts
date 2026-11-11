@@ -159,7 +159,7 @@ class ThreadNetworkInfoPage extends LitElement {
     if (value === null) {
       return nothing;
     }
-    return html`<ha-list-item-base>
+    return html`<ha-list-item-base wrap-supporting-text>
       <span slot="headline">${label}</span>
       <span slot="supporting-text">${value}</span>
     </ha-list-item-base>`;
@@ -180,7 +180,6 @@ class ThreadNetworkInfoPage extends LitElement {
 
         ha-list-item-base::part(supporting-text) {
           font-size: var(--ha-font-size-m);
-          white-space: normal;
           overflow-wrap: anywhere;
         }
       `,

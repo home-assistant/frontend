@@ -239,7 +239,7 @@ class HaBackupConfigData extends LitElement {
     return html`
       ${this._renderSizeEstimate()}
       <ha-list-base>
-        <ha-list-item-base>
+        <ha-list-item-base wrap-headline wrap-supporting-text>
           <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
           <span slot="headline">
             ${this.hass.localize("ui.panel.config.backup.data.ha_settings")}
@@ -266,7 +266,7 @@ class HaBackupConfigData extends LitElement {
 
         ${
           this._showDbOption
-            ? html`<ha-list-item-base>
+            ? html`<ha-list-item-base wrap-headline wrap-supporting-text>
                 <ha-svg-icon slot="start" .path=${mdiChartBox}></ha-svg-icon>
                 <span slot="headline">
                   ${this.hass.localize("ui.panel.config.backup.data.history")}
@@ -288,7 +288,7 @@ class HaBackupConfigData extends LitElement {
         ${
           isHassio
             ? html`
-                <ha-list-item-base>
+                <ha-list-item-base wrap-headline wrap-supporting-text>
                   <ha-svg-icon
                     slot="start"
                     .path=${mdiPlayBoxMultiple}
@@ -309,7 +309,7 @@ class HaBackupConfigData extends LitElement {
                   ></ha-switch>
                 </ha-list-item-base>
 
-                <ha-list-item-base>
+                <ha-list-item-base wrap-headline wrap-supporting-text>
                   <ha-svg-icon slot="start" .path=${mdiFolder}></ha-svg-icon>
                   <span slot="headline">
                     ${this.hass.localize(
@@ -332,7 +332,7 @@ class HaBackupConfigData extends LitElement {
                 ${
                   this._hasLocalAddons(this._addons)
                     ? html`
-                        <ha-list-item-base>
+                        <ha-list-item-base wrap-headline wrap-supporting-text>
                           <ha-svg-icon
                             slot="start"
                             .path=${mdiFolder}
@@ -360,7 +360,7 @@ class HaBackupConfigData extends LitElement {
                 ${
                   this._addons.length
                     ? html`
-                        <ha-list-item-base>
+                        <ha-list-item-base wrap-headline wrap-supporting-text>
                           <ha-svg-icon
                             slot="start"
                             .path=${mdiPuzzle}
@@ -565,10 +565,6 @@ class HaBackupConfigData extends LitElement {
     }
     ha-list-base {
       --ha-row-item-padding-inline: 0;
-    }
-    ha-list-item-base::part(headline),
-    ha-list-item-base::part(supporting-text) {
-      white-space: wrap;
     }
     ha-list-item-base::part(start) {
       color: var(--ha-color-text-secondary);

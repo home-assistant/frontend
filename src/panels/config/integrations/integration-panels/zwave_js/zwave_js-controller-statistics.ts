@@ -78,7 +78,7 @@ class ZWaveJSControllerStatistics extends SubscribeMixin(LitElement) {
 
   private _renderStat(key: string) {
     return html`
-      <ha-list-item-base>
+      <ha-list-item-base wrap-headline wrap-supporting-text>
         <span slot="headline">
           ${this.hass.localize(
             `ui.panel.config.zwave_js.dashboard.statistics.${key}.label`
@@ -102,11 +102,6 @@ class ZWaveJSControllerStatistics extends SubscribeMixin(LitElement) {
           margin: auto;
           margin-top: var(--ha-space-4);
           max-width: var(--ha-content-width-narrow);
-        }
-
-        ha-list-item-base::part(headline),
-        ha-list-item-base::part(supporting-text) {
-          white-space: normal;
         }
 
         span[slot="end"] {

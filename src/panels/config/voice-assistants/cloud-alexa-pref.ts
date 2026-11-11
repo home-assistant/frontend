@@ -139,7 +139,7 @@ export class CloudAlexaPref extends LitElement {
                         </ha-alert>`
                       : nothing
                   }
-                  <ha-row-item>
+                  <ha-row-item wrap-headline wrap-supporting-text>
                     <span slot="headline"
                       >${this.hass!.localize(
                         "ui.panel.config.cloud.account.alexa.expose_new_entities"
@@ -160,7 +160,7 @@ export class CloudAlexaPref extends LitElement {
                   ${
                     alexa_registered
                       ? html`
-                          <ha-row-item>
+                          <ha-row-item wrap-headline wrap-supporting-text>
                             <span slot="headline"
                               >${this.hass!.localize(
                                 "ui.panel.config.cloud.account.alexa.enable_state_reporting"
@@ -264,10 +264,6 @@ export class CloudAlexaPref extends LitElement {
     }
     ha-row-item {
       --ha-row-item-padding-inline: 0;
-    }
-    ha-row-item::part(headline),
-    ha-row-item::part(supporting-text) {
-      white-space: normal;
     }
     .header-actions {
       position: absolute;

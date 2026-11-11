@@ -138,7 +138,7 @@ export class CloudGooglePref extends LitElement {
                         `
                       : nothing
                   }
-                  <ha-row-item>
+                  <ha-row-item wrap-headline wrap-supporting-text>
                     <span slot="headline"
                       >${this.hass!.localize(
                         "ui.panel.config.cloud.account.google.expose_new_entities"
@@ -183,7 +183,7 @@ export class CloudGooglePref extends LitElement {
                                 `
                               : nothing
                           }
-                          <ha-row-item>
+                          <ha-row-item wrap-headline wrap-supporting-text>
                             <span slot="headline"
                               >${this.hass!.localize(
                                 "ui.panel.config.cloud.account.google.enable_state_reporting"
@@ -201,7 +201,7 @@ export class CloudGooglePref extends LitElement {
                             ></ha-switch>
                           </ha-row-item>
 
-                          <ha-row-item>
+                          <ha-row-item wrap-headline wrap-supporting-text>
                             <span slot="headline"
                               >${this.hass.localize(
                                 "ui.panel.config.cloud.account.google.security_devices"
@@ -346,10 +346,6 @@ export class CloudGooglePref extends LitElement {
     }
     ha-row-item {
       --ha-row-item-padding-inline: 0;
-    }
-    ha-row-item::part(headline),
-    ha-row-item::part(supporting-text) {
-      white-space: normal;
     }
     ha-input {
       width: 250px;
