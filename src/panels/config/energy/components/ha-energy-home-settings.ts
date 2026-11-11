@@ -5,7 +5,6 @@ import memoizeOne from "memoize-one";
 import { customElement, property, state } from "lit/decorators";
 import type { ContextType } from "@lit/context";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { navigate } from "../../../../common/navigate";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/automation/ha-automation-row";
 import "../../../../components/ha-card";
@@ -122,7 +121,8 @@ export class EnergyHomeSettings extends LitElement {
                         <ha-card outlined>
                           <ha-automation-row
                             .source=${source}
-                            @click=${this._editSource}
+                            .href=${this._editorHref(source)}
+                            @click=${this.listPath ? nothing : this._editSource}
                           >
                             ${
                               entityState?.attributes.icon
@@ -162,7 +162,8 @@ export class EnergyHomeSettings extends LitElement {
             homeSources.length === 0
               ? html`
                   <ha-button
-                    @click=${this._addSource}
+                    .href=${this._editorHref()}
+                    @click=${this.listPath ? nothing : this._addSource}
                     appearance="filled"
                     size="s"
                   >
@@ -192,13 +193,13 @@ export class EnergyHomeSettings extends LitElement {
   }
 
   private _openEditor(source?: HomeSourceTypeEnergyPreference) {
-    if (this.listPath) {
-      navigate(
-        `${this.listPath}/home/${source ? encodeURIComponent(source.stat_energy_to) : "new"}`
-      );
-    } else {
-      showEnergySettingsDialog(this, { editor: this._editorConfig(source) });
-    }
+    showEnergySettingsDialog(this, { editor: this._editorConfig(source) });
+  }
+
+  private _editorHref(source?: HomeSourceTypeEnergyPreference) {
+    return this.listPath
+      ? `${this.listPath}/home/${source ? encodeURIComponent(source.stat_energy_to) : "new"}`
+      : undefined;
   }
 
   private _editorConfig(

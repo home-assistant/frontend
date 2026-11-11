@@ -1,6 +1,6 @@
 import type { Connection } from "home-assistant-js-websocket";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, HomeAssistantApi } from "../../types";
 import type { ConfigEntry } from "../config_entries";
 import type {
   EntityRegistryDisplayEntry,
@@ -231,11 +231,11 @@ export const devicesInArea = (devices: DeviceRegistryEntry[], areaId: string) =>
   devices.filter((device) => device.area_id === areaId);
 
 export const updateDeviceRegistryEntry = (
-  hass: HomeAssistant,
+  callWS: HomeAssistantApi["callWS"],
   deviceId: string,
   updates: Partial<DeviceRegistryEntryMutableParams>
 ) =>
-  hass.callWS<DeviceRegistryEntry>({
+  callWS<DeviceRegistryEntry>({
     type: "config/device_registry/update",
     device_id: deviceId,
     ...updates,

@@ -4,7 +4,6 @@ import { html, LitElement, nothing } from "lit";
 import memoizeOne from "memoize-one";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { navigate } from "../../../../common/navigate";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/automation/ha-automation-row";
 import "../../../../components/ha-card";
@@ -127,7 +126,8 @@ export class EnergyBatterySettings extends LitElement {
                         <ha-card outlined>
                           <ha-automation-row
                             .source=${source}
-                            @click=${this._editSource}
+                            .href=${this._editorHref(source)}
+                            @click=${this.listPath ? nothing : this._editSource}
                           >
                             ${
                               toEntityState?.attributes.icon
@@ -175,7 +175,12 @@ export class EnergyBatterySettings extends LitElement {
                 `
               : nothing
           }
-          <ha-button @click=${this._addSource} appearance="filled" size="s">
+          <ha-button
+            .href=${this._editorHref()}
+            @click=${this.listPath ? nothing : this._addSource}
+            appearance="filled"
+            size="s"
+          >
             <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.config.energy.battery.add_battery_system"
@@ -213,15 +218,15 @@ export class EnergyBatterySettings extends LitElement {
   }
 
   private _openEditor(source?: BatterySourceTypeEnergyPreference) {
-    if (this.listPath) {
-      navigate(
-        `${this.listPath}/battery/${source ? encodeURIComponent(getBatteryPrimaryStat(source)) : "new"}`
-      );
-    } else {
-      showEnergySettingsDialog(this, {
-        editor: this._editorConfig(this.preferences, source),
-      });
-    }
+    showEnergySettingsDialog(this, {
+      editor: this._editorConfig(this.preferences, source),
+    });
+  }
+
+  private _editorHref(source?: BatterySourceTypeEnergyPreference) {
+    return this.listPath
+      ? `${this.listPath}/battery/${source ? encodeURIComponent(getBatteryPrimaryStat(source)) : "new"}`
+      : undefined;
   }
 
   private _editorConfig(

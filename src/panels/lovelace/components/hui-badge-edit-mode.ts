@@ -11,6 +11,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import type { ConfigPath } from "../../../common/util/config-path";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -22,7 +23,6 @@ import "../../../components/ha-svg-icon";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import { haStyle } from "../../../resources/styles";
 import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
-import type { LovelacePath } from "../editor/lovelace-path";
 import {
   appendAtPath,
   getAtPath,
@@ -34,7 +34,7 @@ import type { Lovelace } from "../types";
 export class HuiBadgeEditMode extends LitElement {
   @property({ attribute: false }) public lovelace!: Lovelace;
 
-  @property({ attribute: false }) public path!: LovelacePath;
+  @property({ attribute: false }) public path!: ConfigPath;
 
   @property({ attribute: "hidden-overlay", type: Boolean })
   public hiddenOverlay = false;

@@ -299,6 +299,11 @@ export class MatterConfigDashboard extends LitElement {
           max-width: var(--ha-content-width-narrow);
         }
 
+        ha-list-item-button::part(headline),
+        ha-list-item-button::part(supporting-text) {
+          white-space: normal;
+        }
+
         .nav-card {
           overflow: hidden;
         }

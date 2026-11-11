@@ -20,10 +20,13 @@ import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import "../../../../components/animation/ha-fade-in";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import "../../../../components/item/ha-list-item-button";
 import "../../../../components/list/ha-list-base";
+import "../../../../components/skeleton/ha-skeleton";
+import "../../../../components/skeleton/ha-skeleton-text";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import {
   configEntriesContext,
@@ -52,6 +55,8 @@ export class HaAutomationAddItems extends LitElement {
   @property({ attribute: false }) public items?: ItemsSection[];
 
   @property() public error?: string;
+
+  @property({ attribute: false }) public loadingLabel?: string;
 
   @property({ attribute: "select-label" }) public selectLabel!: string;
 
@@ -121,7 +126,9 @@ export class HaAutomationAddItems extends LitElement {
     return html`<div
         class=${classMap({
           items: true,
-          blank: this.error || !this.items || !this.items.length,
+          blank:
+            !this.loadingLabel &&
+            (this.error || !this.items || !this.items.length),
           error: this.error,
           scrolled: this._itemsScrolled,
           "ha-scrollbar": this.scrollable,
@@ -129,24 +136,37 @@ export class HaAutomationAddItems extends LitElement {
         @scroll=${this._onItemsScroll}
       >
         ${
-          !this.items && !this.error
-            ? this.selectLabel
-            : this.error
-              ? html`${this.error}
-                  <div>${this._renderCurrentTarget()}</div>`
-              : this.items && !this.items.length
-                ? html`${this.emptyLabel}
-                  ${
-                    this.target
-                      ? html`<div>${this._renderCurrentTarget()}</div>`
-                      : nothing
-                  }`
-                : repeat(
-                    this.items,
-                    (_, index) => `item-group-${index}`,
-                    (itemGroup) =>
-                      this._renderItemList(itemGroup.title, itemGroup.items)
-                  )
+          this.loadingLabel
+            ? html`<ha-fade-in .duration=${300} easing="ease-in">
+                <div
+                  class="skeletons"
+                  role="progressbar"
+                  aria-label=${this.loadingLabel}
+                >
+                  <ha-skeleton-text></ha-skeleton-text>
+                  <ha-skeleton></ha-skeleton>
+                  <ha-skeleton></ha-skeleton>
+                  <ha-skeleton></ha-skeleton>
+                </div>
+              </ha-fade-in>`
+            : !this.items && !this.error
+              ? this.selectLabel
+              : this.error
+                ? html`${this.error}
+                    <div>${this._renderCurrentTarget()}</div>`
+                : this.items && !this.items.length
+                  ? html`${this.emptyLabel}
+                    ${
+                      this.target
+                        ? html`<div>${this._renderCurrentTarget()}</div>`
+                        : nothing
+                    }`
+                  : repeat(
+                      this.items,
+                      (_, index) => `item-group-${index}`,
+                      (itemGroup) =>
+                        this._renderItemList(itemGroup.title, itemGroup.items)
+                    )
         }
       </div>
       <slot></slot>`;
@@ -314,6 +334,18 @@ export class HaAutomationAddItems extends LitElement {
         flex: 1;
         min-width: 0;
         min-height: 0;
+      }
+      .skeletons {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ha-space-3);
+        padding: var(--ha-space-4);
+      }
+      .skeletons ha-skeleton-text {
+        width: 25%;
+      }
+      .skeletons ha-skeleton {
+        height: 54px;
       }
       .items.blank {
         border-radius: var(--ha-border-radius-xl);

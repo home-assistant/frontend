@@ -26,7 +26,10 @@ import {
   statesContext,
 } from "../../../../data/context";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
-import { computeEnergyLabel } from "../../../../data/energy";
+import {
+  computeAmbiguousEnergyDevices,
+  computeEnergyLabel,
+} from "../../../../data/energy";
 import { domainToName } from "../../../../data/integration";
 import {
   getStatisticLabel,
@@ -67,6 +70,11 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
   @property({ attribute: false })
   public possibleParents: DeviceConsumptionEnergyPreference[] = [];
 
+  // Every device of this type, not just the selectable ones, so a device is
+  // labelled the same here as in the device list.
+  @property({ attribute: false })
+  public devices: DeviceConsumptionEnergyPreference[] = [];
+
   @property({ attribute: false })
   public statsMetadata?: Record<string, StatisticsMetaData>;
 
@@ -90,10 +98,18 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
 
   @state() @consumeLocalize() private _localize!: LocalizeFunc;
 
+  private _ambiguousStatisticIds = memoizeOne(
+    (
+      states: ContextType<typeof statesContext>,
+      formatEntityName: HomeAssistantFormatters["formatEntityName"],
+      devices: DeviceConsumptionEnergyPreference[]
+    ) => computeAmbiguousEnergyDevices(states, formatEntityName, devices)
+  );
+
   private _computeItem = (statisticId: string): UpstreamDeviceComboBoxItem => {
     // Use the energy config's custom display name when the user has set one.
-    const name = this.possibleParents.find(
-      (parent) => parent.stat_consumption === statisticId
+    const name = this.devices.find(
+      (device) => device.stat_consumption === statisticId
     )?.name;
     const stateObj = this._states[statisticId];
 
@@ -111,7 +127,12 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
           this._formatEntityName,
           statisticId,
           this.statsMetadata?.[statisticId],
-          name
+          name,
+          this._ambiguousStatisticIds(
+            this._states,
+            this._formatEntityName,
+            this.devices
+          ).has(statisticId)
         ),
         secondary: areaName,
         stateObj,
@@ -158,6 +179,7 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
       _localize: LocalizeFunc,
       _value: string | undefined,
       _possibleParents: DeviceConsumptionEnergyPreference[],
+      _devices: DeviceConsumptionEnergyPreference[],
       _statsMetadata?: Record<string, StatisticsMetaData>
     ): UpstreamDeviceComboBoxItem[] => {
       const items = this.possibleParents.map((parent) =>
@@ -182,6 +204,7 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
       this._localize,
       this.value,
       this.possibleParents,
+      this.devices,
       this.statsMetadata
     );
 

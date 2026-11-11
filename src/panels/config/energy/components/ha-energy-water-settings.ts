@@ -4,7 +4,6 @@ import { html, LitElement, nothing } from "lit";
 import memoizeOne from "memoize-one";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { navigate } from "../../../../common/navigate";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/automation/ha-automation-row";
 import "../../../../components/ha-button";
@@ -121,7 +120,8 @@ export class EnergyWaterSettings extends LitElement {
                         <ha-card outlined>
                           <ha-automation-row
                             .source=${source}
-                            @click=${this._editSource}
+                            .href=${this._editorHref(source)}
+                            @click=${this.listPath ? nothing : this._editSource}
                           >
                             ${
                               entityState?.attributes.icon
@@ -157,7 +157,12 @@ export class EnergyWaterSettings extends LitElement {
                 `
               : nothing
           }
-          <ha-button @click=${this._addSource} appearance="filled" size="s">
+          <ha-button
+            .href=${this._editorHref()}
+            @click=${this.listPath ? nothing : this._addSource}
+            appearance="filled"
+            size="s"
+          >
             <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.config.energy.water.add_water_source"
@@ -189,15 +194,15 @@ export class EnergyWaterSettings extends LitElement {
   }
 
   private _openEditor(source?: WaterSourceTypeEnergyPreference) {
-    if (this.listPath) {
-      navigate(
-        `${this.listPath}/water/${source ? encodeURIComponent(source.stat_energy_from) : "new"}`
-      );
-    } else {
-      showEnergySettingsDialog(this, {
-        editor: this._editorConfig(this.preferences, source),
-      });
-    }
+    showEnergySettingsDialog(this, {
+      editor: this._editorConfig(this.preferences, source),
+    });
+  }
+
+  private _editorHref(source?: WaterSourceTypeEnergyPreference) {
+    return this.listPath
+      ? `${this.listPath}/water/${source ? encodeURIComponent(source.stat_energy_from) : "new"}`
+      : undefined;
   }
 
   private _editorConfig(

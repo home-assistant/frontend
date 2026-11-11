@@ -2,7 +2,9 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-device-class-picker";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/radio/ha-radio-group";
@@ -13,7 +15,7 @@ import "../../../../components/input/ha-input";
 import type { InputNumber } from "../../../../data/input_number";
 import type { UnitOfMeasurementSelector } from "../../../../data/selector";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type { ValueChangedEvent } from "../../../../types";
 
 const UNIT_SELECTOR: UnitOfMeasurementSelector = {
   unit_of_measurement: {},
@@ -21,7 +23,9 @@ const UNIT_SELECTOR: UnitOfMeasurementSelector = {
 
 @customElement("ha-input_number-form")
 class HaInputNumberForm extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ type: Boolean }) public new = false;
 
@@ -81,7 +85,7 @@ class HaInputNumberForm extends LitElement {
   }
 
   protected render() {
-    if (!this.hass) {
+    if (!this._localize) {
       return nothing;
     }
 
@@ -91,12 +95,10 @@ class HaInputNumberForm extends LitElement {
           .value=${this._name}
           .configValue=${"name"}
           @input=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.name"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.generic.name")}
           auto-validate
           required
-          .validationMessage=${this.hass!.localize(
+          .validationMessage=${this._localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           dialogInitialFocus
@@ -106,9 +108,7 @@ class HaInputNumberForm extends LitElement {
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.icon"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.generic.icon")}
           .disabled=${this.disabled}
         ></ha-icon-picker>
         <ha-input
@@ -117,7 +117,7 @@ class HaInputNumberForm extends LitElement {
           type="number"
           step="any"
           @input=${this._valueChanged}
-          .label=${this.hass!.localize(
+          .label=${this._localize(
             "ui.dialogs.helper_settings.input_number.min"
           )}
           .disabled=${this.disabled}
@@ -128,7 +128,7 @@ class HaInputNumberForm extends LitElement {
           type="number"
           step="any"
           @input=${this._valueChanged}
-          .label=${this.hass!.localize(
+          .label=${this._localize(
             "ui.dialogs.helper_settings.input_number.max"
           )}
           .disabled=${this.disabled}
@@ -137,7 +137,7 @@ class HaInputNumberForm extends LitElement {
         <ha-radio-group
           orientation="horizontal"
           class="mode"
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.dialogs.helper_settings.input_number.mode"
           )}
           .value=${this._mode}
@@ -146,12 +146,10 @@ class HaInputNumberForm extends LitElement {
           @change=${this._modeChanged}
         >
           <ha-radio-option value="slider">
-            ${this.hass.localize(
-              "ui.dialogs.helper_settings.input_number.slider"
-            )}
+            ${this._localize("ui.dialogs.helper_settings.input_number.slider")}
           </ha-radio-option>
           <ha-radio-option value="box">
-            ${this.hass.localize("ui.dialogs.helper_settings.input_number.box")}
+            ${this._localize("ui.dialogs.helper_settings.input_number.box")}
           </ha-radio-option>
         </ha-radio-group>
         <ha-input
@@ -160,7 +158,7 @@ class HaInputNumberForm extends LitElement {
           type="number"
           step="any"
           @input=${this._valueChanged}
-          .label=${this.hass!.localize(
+          .label=${this._localize(
             "ui.dialogs.helper_settings.input_number.step"
           )}
           .disabled=${this.disabled}
@@ -174,7 +172,7 @@ class HaInputNumberForm extends LitElement {
           @value-changed=${this._pickerValueChanged}
         ></ha-device-class-picker>
         <ha-selector-unit_of_measurement
-          .label=${this.hass!.localize(
+          .label=${this._localize(
             "ui.dialogs.helper_settings.input_number.unit_of_measurement"
           )}
           .selector=${UNIT_SELECTOR}

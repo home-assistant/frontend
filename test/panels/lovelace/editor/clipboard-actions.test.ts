@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import type { ConfigPath } from "../../../../src/common/util/config-path";
 
 import type { LovelaceCardConfig } from "../../../../src/data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../src/data/lovelace/config/types";
@@ -8,7 +9,6 @@ import {
   performPaste,
 } from "../../../../src/panels/lovelace/editor/clipboard-actions";
 import { takeCardHighlight } from "../../../../src/panels/lovelace/editor/card-highlight";
-import type { LovelacePath } from "../../../../src/panels/lovelace/editor/lovelace-path";
 import { getAtPath } from "../../../../src/panels/lovelace/editor/lovelace-path";
 import type { Lovelace } from "../../../../src/panels/lovelace/types";
 
@@ -182,7 +182,7 @@ describe("performPaste", () => {
     });
     const saved = saveConfig.mock.calls[0][0] as LovelaceConfig;
     return {
-      cardsAt: (cardsPath: LovelacePath) =>
+      cardsAt: (cardsPath: ConfigPath) =>
         getAtPath<LovelaceCardConfig[]>(saved, cardsPath)!,
       showToast: lovelace.showToast,
     };

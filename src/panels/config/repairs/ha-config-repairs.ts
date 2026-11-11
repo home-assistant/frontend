@@ -194,9 +194,6 @@ class HaConfigRepairs extends LitElement {
   }
 
   static styles = css`
-    :host {
-      --mdc-list-vertical-padding: 0;
-    }
     .ignored {
       opacity: var(--light-secondary-opacity);
     }

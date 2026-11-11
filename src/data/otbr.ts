@@ -21,8 +21,9 @@ export const findOTBRInfoForDataset = (
   }
 
   const preferredAddress = dataset.preferred_extended_address;
-  if (preferredAddress && otbrInfo[preferredAddress]) {
-    return otbrInfo[preferredAddress];
+  const preferred = preferredAddress ? otbrInfo[preferredAddress] : undefined;
+  if (preferred?.extended_pan_id === dataset.extended_pan_id) {
+    return preferred;
   }
 
   return Object.values(otbrInfo).find(
