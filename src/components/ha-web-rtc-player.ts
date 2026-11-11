@@ -383,16 +383,19 @@ export class HaWebRtcPlayer extends LitElement {
     this._logEvent("end clientConfig", this._clientConfig);
 
     const { iceServers } = this._clientConfig.configuration;
+    const allIceServers = this._allIceServers || this._retries >= MAX_RETRIES;
 
     this._peerConnection = new RTCPeerConnection({
       ...this._clientConfig.configuration,
       // The last attempt uses all ICE servers, in case a removed URL is the
       // only one that works in this network
+      // A known relay is taken from all of them. A direct path is not, as
+      // the URL it needs can be one that is removed.
       iceServers:
-        (icePath && limitIceServersToPath(iceServers, icePath)) ??
-        (this._allIceServers || this._retries >= MAX_RETRIES
-          ? iceServers
-          : limitIceServers(iceServers)),
+        (icePath &&
+          (icePath.relayUrl || !allIceServers) &&
+          limitIceServersToPath(iceServers, icePath)) ||
+        (allIceServers ? iceServers : limitIceServers(iceServers)),
     });
 
     if (this._clientConfig.dataChannel) {
