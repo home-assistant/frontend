@@ -13,6 +13,7 @@ import {
   queueFrontendSystemDataSave,
   type MaintenanceFrontendSystemData,
 } from "../../data/frontend";
+import type { LovelaceConfig } from "../../data/lovelace/config/types";
 import type { LovelaceStrategyViewConfig } from "../../data/lovelace/config/view";
 import { ChildPanelReady } from "../../layouts/panel-ready";
 import { haStyle } from "../../resources/styles";
@@ -42,7 +43,7 @@ class PanelMaintenance extends LitElement {
 
   @state() private _config?: MaintenanceFrontendSystemData;
 
-  @state() private _editVisibility = false;
+  @state() private _editMode = false;
 
   @state() private _searchParams = new URLSearchParams(window.location.search);
 
@@ -122,7 +123,7 @@ class PanelMaintenance extends LitElement {
       if (revision !== this._loadConfigRevision) {
         return;
       }
-      this._editVisibility = false;
+      this._editMode = false;
       // eslint-disable-next-line no-console
       console.error("Failed to load maintenance configuration:", err);
       showToast(this, {
@@ -152,12 +153,12 @@ class PanelMaintenance extends LitElement {
         ${
           !this.hass.user?.is_admin
             ? nothing
-            : this._editVisibility
+            : this._editMode
               ? html`<ha-button
                   slot="actionItems"
                   appearance="filled"
                   size="s"
-                  @click=${this._stopEditVisibility}
+                  @click=${this._exitEditMode}
                 >
                   ${this.hass.localize("ui.panel.lovelace.menu.exit_edit_mode")}
                 </ha-button>`
@@ -166,7 +167,7 @@ class PanelMaintenance extends LitElement {
                     slot="actionItems"
                     .path=${mdiPencil}
                     .label=${this.hass.localize("ui.panel.maintenance.editor.title")}
-                    @click=${this._startEditVisibility}
+                    @click=${this._enterEditMode}
                   ></ha-icon-button>`
                 : nothing
         }
@@ -201,8 +202,9 @@ class PanelMaintenance extends LitElement {
       {
         strategy: {
           ...MAINTENANCE_LOVELACE_VIEW_CONFIG.strategy,
-          hidden_entities: this._config?.hidden_entities,
-          edit_visibility: this._editVisibility || undefined,
+          hidden_entities: this._editMode
+            ? undefined
+            : this._config?.hidden_entities,
         },
       },
       this.hass
@@ -212,40 +214,61 @@ class PanelMaintenance extends LitElement {
       return;
     }
 
-    const config = { views: [viewConfig] };
-    const rawConfig = { views: [MAINTENANCE_LOVELACE_VIEW_CONFIG] };
+    const config =
+      !force &&
+      this._lovelace &&
+      deepEqual(viewConfig, this._lovelace.config.views[0])
+        ? this._lovelace.config
+        : { views: [viewConfig] };
 
-    if (!force && deepEqual(config, this._lovelace?.config)) {
+    if (
+      config === this._lovelace?.config &&
+      this._lovelace.editMode === this._editMode &&
+      deepEqual(
+        this._lovelace.entityVisibility?.hiddenEntities,
+        this._config?.hidden_entities ?? []
+      )
+    ) {
       return;
     }
 
     this._childPanelReady ??= new ChildPanelReady(this);
-    this._lovelace = {
+    this._lovelace = this._createLovelace(config);
+  }
+
+  private _createLovelace(config: LovelaceConfig): Lovelace {
+    return {
       config: config,
-      rawConfig: rawConfig,
-      editMode: false,
+      rawConfig: { views: [MAINTENANCE_LOVELACE_VIEW_CONFIG] },
+      editMode: this._editMode,
+      entityVisibility: {
+        hiddenEntities: this._config?.hidden_entities ?? [],
+      },
       urlPath: "maintenance",
       mode: "generated",
       locale: this.hass.locale,
       enableFullEditMode: () => undefined,
       saveConfig: async () => undefined,
       deleteConfig: async () => undefined,
-      setEditMode: () => undefined,
+      setEditMode: this._setEditMode,
       showToast: () => undefined,
     };
   }
 
-  private _startEditVisibility = () => {
-    this._editVisibility = true;
-    this._setLovelace();
-  };
-
-  private _stopEditVisibility = () => {
-    this._editVisibility = false;
-    if (!this._config) {
+  private _setEditMode = (editMode: boolean) => {
+    this._editMode = editMode;
+    if (!editMode && !this._config) {
       this._loadConfigPromise = this._loadConfig();
     }
     this._setLovelace();
+  };
+
+  private _enterEditMode = () => {
+    this._setEditMode(true);
+  };
+
+  private _exitEditMode = () => {
+    this._setEditMode(false);
   };
 
   private _visibilityChanged = (
@@ -265,6 +288,9 @@ class PanelMaintenance extends LitElement {
       ...this._config,
       hidden_entities: hiddenEntities.length ? hiddenEntities : undefined,
     });
+    if (this._lovelace) {
+      this._lovelace = this._createLovelace(this._lovelace.config);
+    }
   };
 
   private _saveConfig(config: MaintenanceFrontendSystemData): Promise<void> {

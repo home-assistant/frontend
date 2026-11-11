@@ -13,6 +13,7 @@ import {
   sectionContainerStyles,
 } from "../sections/section-container";
 import type { Lovelace } from "../types";
+import { isLayoutEditMode } from "../types";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 
 export const DEFAULT_VIEW_SIDEBAR_LAYOUT = "start";
@@ -74,7 +75,7 @@ export class HuiViewSidebar extends ConditionalListenerMixin<LovelaceViewSidebar
               <hui-section
                 .config=${section}
                 .hass=${this.hass}
-                .preview=${this.lovelace.editMode}
+                .preview=${isLayoutEditMode(this.lovelace)}
                 .path=${sectionPath}
               ></hui-section>
             `;

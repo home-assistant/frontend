@@ -66,6 +66,7 @@ import {
   generateLovelaceViewStrategy,
 } from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
+import { isLayoutEditMode } from "../types";
 import { PANEL_VIEW_LAYOUT, SIDEBAR_VIEW_LAYOUT } from "./const";
 import { getViewType } from "./get-view-type";
 
@@ -378,7 +379,7 @@ export class HUIView extends ReactiveElement {
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
     element.hass = this.hass;
-    element.preview = this.lovelace.editMode;
+    element.preview = isLayoutEditMode(this.lovelace);
     element.config = cardConfig;
     element.addEventListener("card-updated", (ev: Event) => {
       ev.stopPropagation();
@@ -391,7 +392,7 @@ export class HUIView extends ReactiveElement {
   public createBadgeElement(badgeConfig: LovelaceBadgeConfig) {
     const element = document.createElement("hui-badge");
     element.hass = this.hass;
-    element.preview = this.lovelace.editMode;
+    element.preview = isLayoutEditMode(this.lovelace);
     element.config = badgeConfig;
     element.addEventListener("badge-updated", (ev: Event) => {
       ev.stopPropagation();
@@ -407,7 +408,7 @@ export class HUIView extends ReactiveElement {
     element.hass = this.hass;
     element.lovelace = this.lovelace;
     element.config = sectionConfig;
-    element.preview = this.lovelace.editMode;
+    element.preview = isLayoutEditMode(this.lovelace);
     element.addEventListener(
       "ll-rebuild",
       (ev: Event) => {
@@ -516,16 +517,16 @@ export class HUIView extends ReactiveElement {
           try {
             element.hass = this.hass;
             element.lovelace = this.lovelace;
-            element.preview = this.lovelace.editMode;
+            element.preview = isLayoutEditMode(this.lovelace);
           } catch (e: any) {
             this._rebuildSection(element, createErrorSectionConfig(e.message));
           }
         });
         this._cards.forEach((element) => {
-          element.preview = this.lovelace.editMode;
+          element.preview = isLayoutEditMode(this.lovelace);
         });
         this._badges.forEach((element) => {
-          element.preview = this.lovelace.editMode;
+          element.preview = isLayoutEditMode(this.lovelace);
         });
       }
       if (changedProperties.has("_cards")) {
