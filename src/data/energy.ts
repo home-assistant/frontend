@@ -198,6 +198,7 @@ export interface BatterySourceTypeEnergyPreference {
   power_config?: PowerConfig;
   stat_soc?: string;
   capacity?: number; // usable capacity in kWh, used to weight the combined SOC
+  entity_capacity?: string; // sensor reporting usable capacity in an energy unit
   name?: string;
 }
 export interface GasSourceTypeEnergyPreference {

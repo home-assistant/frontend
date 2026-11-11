@@ -2,8 +2,16 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-statistic-picker";
+import "../../../../components/entity/ha-entity-picker";
+import "../../../../components/radio/ha-radio-group";
+import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
+import "../../../../components/radio/ha-radio-option";
+import { batteryCapacityUnits } from "../../../../data/energy-battery";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
@@ -41,7 +49,10 @@ import {
 import type { EnergySettingsBatteryDialogParams } from "./show-dialogs-energy";
 import type { HaInput } from "../../../../components/input/ha-input";
 
+type CapacityType = "manual" | "sensor";
+
 interface BatteryFormState {
+  capacityType: CapacityType;
   source: BatterySourceTypeEnergyPreference;
   powerType: PowerType;
   powerConfig: PowerConfig;
@@ -63,6 +74,8 @@ export class DialogEnergyBatterySettings
   @state() private _open = false;
 
   @state() private _source?: BatterySourceTypeEnergyPreference;
+
+  @state() private _capacityType: CapacityType = "manual";
 
   @state() private _powerType: PowerType = "none";
 
@@ -87,6 +100,8 @@ export class DialogEnergyBatterySettings
     this._source = params.source
       ? { ...params.source }
       : emptyBatteryEnergyPreference();
+
+    this._capacityType = params.source?.entity_capacity ? "sensor" : "manual";
 
     // Initialize power type and config from existing source
     this._powerType = getPowerTypeFromConfig(
@@ -125,6 +140,7 @@ export class DialogEnergyBatterySettings
     this._initDirtyTracking(
       { type: "deep" },
       {
+        capacityType: this._capacityType,
         source: this._source!,
         powerType: this._powerType,
         powerConfig: this._powerConfig,
@@ -259,24 +275,55 @@ export class DialogEnergyBatterySettings
           .disabled=${this._saving}
         ></ha-statistic-picker>
 
-        <ha-input
-          .value=${
-            this._source.capacity != null ? String(this._source.capacity) : ""
-          }
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.battery.dialog.capacity"
-          )}
-          .hint=${this.hass.localize(
-            "ui.panel.config.energy.battery.dialog.capacity_helper"
-          )}
-          type="number"
-          step="any"
-          min="0"
-          @input=${this._capacityChanged}
+        <ha-radio-group
+          .label=${this.hass.localize("ui.panel.config.energy.battery.dialog.capacity")}
+          .value=${this._capacityType}
           .disabled=${this._saving}
+          @change=${this._capacityTypeChanged}
         >
-          <span slot="end">kWh</span>
-        </ha-input>
+          <ha-radio-option value="manual">
+            ${this.hass.localize("ui.panel.config.energy.battery.dialog.capacity_manual")}
+          </ha-radio-option>
+          <ha-radio-option value="sensor">
+            ${this.hass.localize("ui.panel.config.energy.battery.dialog.capacity_use_sensor")}
+          </ha-radio-option>
+        </ha-radio-group>
+        ${
+          this._capacityType === "sensor"
+            ? html`
+                <ha-entity-picker
+                  .value=${this._source.entity_capacity}
+                  .includeDomains=${["sensor"]}
+                  .includeUnitOfMeasurement=${batteryCapacityUnits}
+                  .label=${this.hass.localize("ui.panel.config.energy.battery.dialog.capacity_sensor")}
+                  .helper=${this.hass.localize("ui.panel.config.energy.battery.dialog.capacity_sensor_helper")}
+                  .disabled=${this._saving}
+                  .allowCustomEntity=${false}
+                  required
+                  @value-changed=${this._capacitySensorChanged}
+                ></ha-entity-picker>
+              `
+            : html` <ha-input
+                .value=${
+                  this._source.capacity != null
+                    ? String(this._source.capacity)
+                    : ""
+                }
+                .label=${this.hass.localize(
+                  "ui.panel.config.energy.battery.dialog.capacity"
+                )}
+                .hint=${this.hass.localize(
+                  "ui.panel.config.energy.battery.dialog.capacity_helper"
+                )}
+                type="number"
+                step="any"
+                min="0"
+                @input=${this._capacityChanged}
+                .disabled=${this._saving}
+              >
+                <span slot="end">kWh</span>
+              </ha-input>`
+        }
 
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -309,6 +356,10 @@ export class DialogEnergyBatterySettings
       !!this._source?.[energy] ||
       pending.some((item) => item.energy === energy);
     if (!isProvided("stat_energy_from") || !isProvided("stat_energy_to")) {
+      return false;
+    }
+
+    if (this._capacityType === "sensor" && !this._source?.entity_capacity) {
       return false;
     }
 
@@ -372,10 +423,28 @@ export class DialogEnergyBatterySettings
 
   private _updateFormDirtyState(): void {
     this._updateDirtyState({
+      capacityType: this._capacityType,
       source: this._source!,
       powerType: this._powerType,
       powerConfig: this._powerConfig,
     });
+  }
+
+  private _capacityTypeChanged(ev: HASSDomCurrentTargetEvent<HaRadioGroup>) {
+    const value = ev.currentTarget.value;
+    if (value !== "manual" && value !== "sensor") {
+      return;
+    }
+    this._capacityType = value;
+    this._updateFormDirtyState();
+  }
+
+  private _capacitySensorChanged(ev: ValueChangedEvent<string>) {
+    this._source = {
+      ...this._source!,
+      entity_capacity: ev.detail.value || undefined,
+    };
+    this._updateFormDirtyState();
   }
 
   private _capacityChanged(ev: InputEvent) {
@@ -408,6 +477,7 @@ export class DialogEnergyBatterySettings
     // Closing or reopening the dialog replaces its state, but created helpers
     // must still be saved with the submitted source
     const params = this._params!;
+    const capacityType = this._capacityType;
     const powerType = this._powerType;
     const powerConfig = this._powerConfig;
     let draft = this._source!;
@@ -450,7 +520,9 @@ export class DialogEnergyBatterySettings
         source.stat_soc = draft.stat_soc;
       }
 
-      if (draft.capacity != null) {
+      if (capacityType === "sensor" && draft.entity_capacity) {
+        source.entity_capacity = draft.entity_capacity;
+      } else if (capacityType === "manual" && draft.capacity != null) {
         source.capacity = draft.capacity;
       }
 
@@ -514,6 +586,8 @@ export class DialogEnergyBatterySettings
       haStyle,
       haStyleDialog,
       css`
+        ha-radio-group,
+        ha-entity-picker,
         ha-statistic-picker,
         ha-energy-power-config {
           display: block;

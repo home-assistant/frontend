@@ -40,6 +40,7 @@ import {
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
+import { getBatteryCapacity } from "../../../../data/energy-battery";
 import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
 import type {
   HomeAssistant,
@@ -124,6 +125,9 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
         for (const source of energySourcesByType(data.prefs).battery ?? []) {
           if (source.stat_soc) {
             next[source.stat_soc] = states?.[source.stat_soc];
+          }
+          if (source.entity_capacity) {
+            next[source.entity_capacity] = states?.[source.entity_capacity];
           }
         }
       }
@@ -285,7 +289,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
             soc: source.stat_soc
               ? Number(this._entityStates?.[source.stat_soc]?.state)
               : NaN,
-            capacity: source.capacity,
+            capacity: getBatteryCapacity(source, this._entityStates),
           }))
           .filter((battery) => Number.isFinite(battery.soc));
         if (socBatteries.length) {
