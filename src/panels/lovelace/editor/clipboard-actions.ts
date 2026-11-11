@@ -1,4 +1,5 @@
 import deepClone from "deep-clone-simple";
+import type { ConfigPath } from "../../../common/util/config-path";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
@@ -8,7 +9,6 @@ import { LOVELACE_EDIT_TOAST_ID } from "../types";
 import { performDeleteBadge } from "./delete-badge";
 import { performDeleteCard } from "./delete-card";
 import { clearCardHighlight, setCardHighlight } from "./card-highlight";
-import type { LovelacePath } from "./lovelace-path";
 import { getParentPath, insertAtPath, setAtPath } from "./lovelace-path";
 
 interface ClipboardItemConfigs {
@@ -21,7 +21,7 @@ export type ClipboardItemType = keyof ClipboardItemConfigs;
 type DeleteFunction = (
   localize: LocalizeFunc,
   lovelace: Lovelace,
-  params: { path: LovelacePath; silent: boolean }
+  params: { path: ConfigPath; silent: boolean }
 ) => Promise<boolean>;
 
 const DELETE_FUNCTIONS: Record<ClipboardItemType, DeleteFunction> = {
@@ -35,7 +35,7 @@ const clipboardVersions = { card: 0, badge: 0 };
 
 export interface ClipboardActionParams<K extends ClipboardItemType> {
   type: K;
-  path: LovelacePath;
+  path: ConfigPath;
   config: ClipboardItemConfigs[K];
   setClipboard: (config: ClipboardItemConfigs[K]) => void;
 }
@@ -57,7 +57,7 @@ export function performCopy<K extends ClipboardItemType>(
 
 export interface PasteParams<K extends ClipboardItemType> {
   type: K;
-  path: LovelacePath;
+  path: ConfigPath;
   config: ClipboardItemConfigs[K];
   replace?: boolean;
 }

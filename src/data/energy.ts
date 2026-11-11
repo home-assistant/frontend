@@ -446,25 +446,41 @@ const ENERGY_DEVICE_NAME = [
   { type: "device" },
 ] satisfies EntityNameItem[];
 
+const ENERGY_DEVICE_ENTITY_NAME = [
+  { type: "parent_device" },
+  { type: "device" },
+  { type: "entity" },
+] satisfies EntityNameItem[];
+
 /**
  * Display name of an individual device. A name set by the user always wins;
  * otherwise the device is named like an entity without the entity part, so
  * the energy and power sensors of one device share a name. Entities without a
  * device and statistics without an entity keep the statistic label.
+ *
+ * `includeEntityName` adds the entity name back for devices that would
+ * otherwise share a name with another device in the same list, see
+ * `computeAmbiguousEnergyDevices`.
  */
 export const computeEnergyLabel = (
   states: HomeAssistant["states"],
   formatEntityName: HomeAssistant["formatEntityName"],
   statisticId: string,
   statisticsMetaData?: StatisticsMetaData,
-  customName?: string
+  customName?: string,
+  includeEntityName = false
 ): string => {
   if (customName) {
     return customName;
   }
 
   const entity = states[statisticId];
-  const deviceName = entity && formatEntityName(entity, ENERGY_DEVICE_NAME);
+  const deviceName =
+    entity &&
+    formatEntityName(
+      entity,
+      includeEntityName ? ENERGY_DEVICE_ENTITY_NAME : ENERGY_DEVICE_NAME
+    );
   if (deviceName) {
     return deviceName;
   }
@@ -513,6 +529,61 @@ export const computeEnergyStatisticArea = (
 };
 
 /**
+ * Statistic ids of the devices that would share their label with another
+ * device in the same list, which happens when one device has several meters of
+ * the same type. Those are named with the entity name as well, so they stay
+ * apart in the charts. Lists hold one type of device, so an energy meter and a
+ * water meter of one device never collide.
+ */
+export const computeAmbiguousEnergyDevices = (
+  states: HomeAssistant["states"],
+  formatEntityName: HomeAssistant["formatEntityName"],
+  devices: Partial<DeviceConsumptionEnergyPreference>[],
+  statisticKey: "stat_consumption" | "stat_rate" = "stat_consumption"
+): Set<string> => {
+  const statisticIdsByLabel = new Map<string, Set<string>>();
+  const named = new Set<string>();
+
+  for (const device of devices) {
+    const statisticId = device[statisticKey];
+    if (!statisticId) {
+      continue;
+    }
+    const entity = states[statisticId];
+    // A name set by the user is the label, so it counts towards a collision,
+    // but it is never the one that gives way. Statistics named after their
+    // entity or their metadata are distinct enough already.
+    const label =
+      device.name || (entity && formatEntityName(entity, ENERGY_DEVICE_NAME));
+    if (!label) {
+      continue;
+    }
+    if (device.name) {
+      named.add(statisticId);
+    }
+    const statisticIds = statisticIdsByLabel.get(label);
+    if (statisticIds) {
+      statisticIds.add(statisticId);
+    } else {
+      statisticIdsByLabel.set(label, new Set([statisticId]));
+    }
+  }
+
+  const ambiguous = new Set<string>();
+  for (const statisticIds of statisticIdsByLabel.values()) {
+    if (statisticIds.size > 1) {
+      for (const statisticId of statisticIds) {
+        if (!named.has(statisticId)) {
+          ambiguous.add(statisticId);
+        }
+      }
+    }
+  }
+
+  return ambiguous;
+};
+
+/**
  * Device labels keyed by statistic id. Cards that show live power or flow
  * key their nodes by `stat_rate` instead of `stat_consumption`; devices
  * without the requested statistic are left out.
@@ -525,6 +596,12 @@ export const computeEnergyDeviceLabels = (
   statisticKey: "stat_consumption" | "stat_rate" = "stat_consumption"
 ): Record<string, string> => {
   const labels: Record<string, string> = {};
+  const ambiguous = computeAmbiguousEnergyDevices(
+    states,
+    formatEntityName,
+    devices,
+    statisticKey
+  );
 
   for (const device of devices) {
     const statisticId = device[statisticKey];
@@ -534,7 +611,8 @@ export const computeEnergyDeviceLabels = (
         formatEntityName,
         statisticId,
         statsMetadata?.[statisticId],
-        device.name
+        device.name,
+        ambiguous.has(statisticId)
       );
     }
   }

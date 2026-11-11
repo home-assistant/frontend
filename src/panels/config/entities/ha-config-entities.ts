@@ -1388,7 +1388,7 @@ export class HaConfigEntities extends LitElement {
         const result = await Promise.allSettled(
           this._selected.map(async (entity) => {
             const updateResult = await updateEntityRegistryEntry(
-              this.hass,
+              this.hass.callWS,
               entity,
               {
                 disabled_by: null,
@@ -1453,7 +1453,7 @@ export class HaConfigEntities extends LitElement {
       dismissText: this.hass.localize("ui.common.cancel"),
       confirm: () => {
         this._selected.forEach((entity) =>
-          updateEntityRegistryEntry(this.hass, entity, {
+          updateEntityRegistryEntry(this.hass.callWS, entity, {
             disabled_by: "user",
           })
         );
@@ -1475,7 +1475,7 @@ export class HaConfigEntities extends LitElement {
       dismissText: this.hass.localize("ui.common.cancel"),
       confirm: () => {
         this._selected.forEach((entity) =>
-          updateEntityRegistryEntry(this.hass, entity, {
+          updateEntityRegistryEntry(this.hass.callWS, entity, {
             hidden_by: "user",
           })
         );
@@ -1486,7 +1486,7 @@ export class HaConfigEntities extends LitElement {
 
   private _unhideSelected = () => {
     this._selected.forEach((entity) =>
-      updateEntityRegistryEntry(this.hass, entity, {
+      updateEntityRegistryEntry(this.hass.callWS, entity, {
         hidden_by: null,
       })
     );
@@ -1523,7 +1523,7 @@ export class HaConfigEntities extends LitElement {
         return;
       }
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           labels:
             action === "add"
               ? entityReg.labels.concat(label)

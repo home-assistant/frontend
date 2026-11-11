@@ -64,10 +64,7 @@ class ThreadNetworkInfoPage extends LitElement {
 
     this._otbrLoading = true;
     const otbrInfo = await getOTBRInfo(this.hass).catch(() => undefined);
-    const otbr = findOTBRInfoForDataset(otbrInfo, this._dataset);
-    if (otbr?.active_dataset_tlvs?.includes(this._dataset.extended_pan_id)) {
-      this._otbrInfo = otbr;
-    }
+    this._otbrInfo = findOTBRInfoForDataset(otbrInfo, this._dataset);
     this._otbrLoading = false;
   }
 

@@ -11,7 +11,6 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { navigate } from "../../../../common/navigate";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { getEntityAreaId } from "../../../../common/entity/context/get_entity_context";
@@ -29,7 +28,7 @@ import type {
   EnergyValidationIssue,
 } from "../../../../data/energy";
 import {
-  computeEnergyLabel,
+  computeEnergyDeviceLabels,
   saveEnergyPreferences,
 } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
@@ -130,7 +129,12 @@ export class EnergyDeviceSettings extends LitElement {
                 `
               : nothing
           }
-          <ha-button @click=${this._addDevice} appearance="filled" size="s">
+          <ha-button
+            .href=${this._editorHref()}
+            @click=${this.listPath ? nothing : this._addDevice}
+            appearance="filled"
+            size="s"
+          >
             <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.config.energy.device_consumption.add_device"
@@ -155,7 +159,11 @@ export class EnergyDeviceSettings extends LitElement {
     const areaName = area ? computeAreaName(area) : undefined;
     return html`
       <ha-card outlined>
-        <ha-automation-row .device=${device} @click=${this._editDevice}>
+        <ha-automation-row
+          .device=${device}
+          .href=${this._editorHref(device)}
+          @click=${this.listPath ? nothing : this._editDevice}
+        >
           ${
             entityState?.attributes.icon
               ? html`<ha-icon
@@ -195,14 +203,15 @@ export class EnergyDeviceSettings extends LitElement {
     `;
   }
 
+  private _deviceLabels = memoizeOne(computeEnergyDeviceLabels);
+
   private _deviceName(device: DeviceConsumptionEnergyPreference) {
-    return computeEnergyLabel(
+    return this._deviceLabels(
       this.hass.states,
       this.hass.formatEntityName,
-      device.stat_consumption,
-      this.statsMetadata?.[device.stat_consumption],
-      device.name
-    );
+      this.preferences.device_consumption,
+      this.statsMetadata
+    )[device.stat_consumption];
   }
 
   private _renderIssueIndicator(
@@ -255,15 +264,15 @@ export class EnergyDeviceSettings extends LitElement {
   }
 
   private _openEditor(device?: DeviceConsumptionEnergyPreference) {
-    if (this.listPath) {
-      navigate(
-        `${this.listPath}/device/${device ? encodeURIComponent(device.stat_consumption) : "new"}`
-      );
-    } else {
-      showEnergySettingsDialog(this, {
-        editor: this._editorConfig(this.preferences, device),
-      });
-    }
+    showEnergySettingsDialog(this, {
+      editor: this._editorConfig(this.preferences, device),
+    });
+  }
+
+  private _editorHref(device?: DeviceConsumptionEnergyPreference) {
+    return this.listPath
+      ? `${this.listPath}/device/${device ? encodeURIComponent(device.stat_consumption) : "new"}`
+      : undefined;
   }
 
   private _editorConfig(

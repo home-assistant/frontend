@@ -25,6 +25,7 @@ import type {
   WaterGasResource,
 } from "../../../../data/energy";
 import {
+  computeAmbiguousEnergyDevices,
   computeEnergyLabel,
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
@@ -187,6 +188,52 @@ export class HaEnergyWaterGasDeviceEditor extends EnergyEditorMixin(
     }
   }
 
+  // Label the device would get without a display name, so the placeholder
+  // matches the device list and the charts.
+  private _namePlaceholder(): string {
+    const device = this._device;
+    if (!device) {
+      return "";
+    }
+    const statisticId = device.stat_consumption ?? device.stat_rate;
+    if (!statisticId) {
+      return "";
+    }
+    // Saving a draft without a consumption statistic creates the helper the
+    // device will be labelled by, so there is no entity to tell it apart yet.
+    if (!device.stat_consumption) {
+      return computeEnergyLabel(
+        this._states,
+        this._formatEntityName,
+        statisticId,
+        this.params.statsMetadata?.[statisticId]
+      );
+    }
+    // The saved entry of the device being edited is replaced by the draft
+    // without a display name, which is what the placeholder stands for. The
+    // draft may point at another statistic by now, so match the saved one.
+    const edited = this.params.device?.stat_consumption;
+    const devices = [
+      ...this.params.device_consumptions.filter(
+        (other) => other.stat_consumption !== edited
+      ),
+      { ...device, name: undefined },
+    ];
+
+    return computeEnergyLabel(
+      this._states,
+      this._formatEntityName,
+      statisticId,
+      this.params.statsMetadata?.[statisticId],
+      undefined,
+      computeAmbiguousEnergyDevices(
+        this._states,
+        this._formatEntityName,
+        devices
+      ).has(statisticId)
+    );
+  }
+
   private _computePossibleParents() {
     if (!this._device) {
       this._possibleParents = [];
@@ -225,8 +272,6 @@ export class HaEnergyWaterGasDeviceEditor extends EnergyEditorMixin(
   }
 
   protected render() {
-    const labelStatistic =
-      this._device?.stat_consumption ?? this._device?.stat_rate;
     const resource = this._resource;
     const pickableUnit = [
       ...(this.params.allowedUnitClass === "energy"
@@ -260,16 +305,7 @@ export class HaEnergyWaterGasDeviceEditor extends EnergyEditorMixin(
           type="text"
           .disabled=${!this._device || this._saving}
           .value=${this._device?.name || ""}
-          .placeholder=${
-            labelStatistic
-              ? computeEnergyLabel(
-                  this._states,
-                  this._formatEntityName,
-                  labelStatistic,
-                  this.params.statsMetadata?.[labelStatistic]
-                )
-              : ""
-          }
+          .placeholder=${this._namePlaceholder()}
           @input=${this._nameChanged}
         >
         </ha-input>
@@ -298,6 +334,7 @@ export class HaEnergyWaterGasDeviceEditor extends EnergyEditorMixin(
         .helper=${this._t("included_in_device_helper")}
         .value=${this._device?.included_in_stat}
         .possibleParents=${this._possibleParents}
+        .devices=${this.params.device_consumptions}
         .statsMetadata=${this.params.statsMetadata}
         .emptyLabel=${this._t("no_upstream_devices")}
         .disabled=${!this._device || this._saving}

@@ -122,7 +122,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { turnOnOffEntity } from "../../lovelace/common/entity/turn-on-off-entity";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
-import { renderCategoryGroupActions } from "../category/render-category-group-actions";
+import { categoryGroupActions } from "../category/category-group-actions";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import {
   getAreaTableColumn,
@@ -537,6 +537,12 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         }
         .columns=${this._columns(this.narrow, this.hass.localize, automations)}
         .initialGroupColumn=${this._tableSettings.grouping}
+        .renderGroupActions=${this._groupActions(
+          "automation",
+          this._categories,
+          this._tableSettings.grouping,
+          this._categoryDeleted
+        )}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._tableSettings.sorting}
         .columnOrder=${this._activeColumnOrder}
@@ -565,12 +571,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           .path=${mdiHelpCircleOutline}
           @click=${this._showHelp}
         ></ha-icon-button>
-        ${renderCategoryGroupActions(
-          "automation",
-          this._categories,
-          this._tableSettings.grouping,
-          this._categoryDeleted
-        )}
         <ha-filter-floor-areas
           .type=${"automation"}
           .value=${this._filters["ha-filter-floor-areas"]?.value}
@@ -941,6 +941,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     });
   };
 
+  private _groupActions = memoizeOne(categoryGroupActions);
+
   private _categoryDeleted = (categoryId: string) => {
     const value = this._filters["ha-filter-categories"]?.value;
 
@@ -1265,7 +1267,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           categories: { automation: category },
         })
       );
@@ -1304,7 +1306,7 @@ ${rejected
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           labels:
             action === "add"
               ? this.hass.entities[entityId].labels.concat(label)
@@ -1349,7 +1351,7 @@ ${rejected
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           area_id: area,
         })
       );

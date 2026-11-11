@@ -1,10 +1,10 @@
+import type { ConfigPath } from "../../../../common/util/config-path";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { Lovelace } from "../../types";
-import type { LovelacePath } from "../lovelace-path";
 
 export interface CreateSectionDialogParams {
   lovelace: Lovelace;
-  containerPath: LovelacePath;
+  containerPath: ConfigPath;
 }
 
 export const showCreateSectionDialog = (

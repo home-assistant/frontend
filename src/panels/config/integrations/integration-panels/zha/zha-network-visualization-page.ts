@@ -7,13 +7,11 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HASSDomTargetEvent } from "../../../../../common/dom/fire_event";
-import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/chart/ha-network-graph";
 import type { NetworkData } from "../../../../../components/chart/ha-network-graph";
 import "../../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
-import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZHADevice } from "../../../../../data/zha";
 import {
   fetchDevices,
@@ -27,6 +25,7 @@ import {
   computeZHADeviceType,
   formatAsPaddedHex,
   formatGreenPowerSrcId,
+  getZHADeviceAreaName,
 } from "./functions";
 import {
   createZHANetworkChartData,
@@ -199,11 +198,11 @@ export class ZHANetworkVisualizationPage extends MobileAwareMixin(LitElement) {
     if (!device) {
       return html`${name}`;
     }
-    const haDevice = this.hass.devices[device.device_reg_id] as
-      DeviceRegistryEntry | undefined;
-    const area = haDevice
-      ? getDeviceArea(haDevice, this.hass.areas, this.hass.devices)
-      : undefined;
+    const areaName = getZHADeviceAreaName(
+      device,
+      this.hass.areas,
+      this.hass.devices
+    );
     return html`<b>IEEE: </b>${device.ieee}<br /><b
         >${this.hass.localize("ui.panel.config.zha.visualization.device_type")}: </b
       >${computeZHADeviceType(device, this.hass.localize)}${
@@ -231,10 +230,10 @@ export class ZHANetworkVisualizationPage extends MobileAwareMixin(LitElement) {
                 )}</b
               >`
       }${
-        area
+        areaName
           ? html`<br /><b
                 >${this.hass.localize("ui.panel.config.zha.visualization.area")}: </b
-              >${area.name}`
+              >${areaName}`
           : nothing
       }`;
   };
