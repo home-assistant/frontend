@@ -41,6 +41,8 @@ export class HaAutomationTriggerReferences extends LitElement {
     const missingIds = selectedIds.filter(
       (id) => !options.some((option) => option.id === id)
     );
+    // Until a blueprint's triggers are known, an ID not listed may still exist.
+    const resolved = (this._triggers?.optionsStatus ?? "loaded") === "loaded";
 
     if (options.length && !selectedIds.length) {
       return html`<span class="trigger-reference no-selection">
@@ -87,17 +89,21 @@ export class HaAutomationTriggerReferences extends LitElement {
           </span>
         `
       ),
-      missingIds.map(
-        () => html`
-          <span class="trigger-reference missing">
-            <ha-svg-icon .path=${mdiLinkVariantOff}></ha-svg-icon>
-            <span>
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.type.trigger.missing_trigger"
-              )}
-            </span>
-          </span>
-        `
+      missingIds.map((id) =>
+        resolved
+          ? html`
+              <span class="trigger-reference missing">
+                <ha-svg-icon .path=${mdiLinkVariantOff}></ha-svg-icon>
+                <span>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.conditions.type.trigger.missing_trigger"
+                  )}
+                </span>
+              </span>
+            `
+          : html`<span class="trigger-reference">
+              <span class="trigger-reference-label">${id}</span>
+            </span>`
       ),
     ];
   }

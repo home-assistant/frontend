@@ -38,9 +38,18 @@ export interface TriggerIdOption {
   duplicate: boolean;
 }
 
+/**
+ * Whether options list every trigger. Only a blueprint automation is ever not
+ * "loaded": its triggers are fetched with its inputs substituted, and "failed"
+ * keeps the last triggers fetched, if any.
+ */
+export type TriggerOptionsStatus = "loaded" | "loading" | "failed";
+
 /** Controller-provided options and operations for editors, sidebars, and row summaries. */
 export interface AutomationTriggerContext {
   options: TriggerIdOption[];
+  /** Missing IDs can only be flagged once "loaded". */
+  optionsStatus: TriggerOptionsStatus;
   /** True while the user is editing a `triggered_by` condition; trigger rows show their index badges only in this state. */
   showIndices: boolean;
   /**

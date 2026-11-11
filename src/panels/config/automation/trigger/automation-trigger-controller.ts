@@ -10,6 +10,7 @@ import type {
 } from "../../../../data/automation";
 import { ContextSubscriptionController } from "../../../../common/decorators/consume";
 import { debounce } from "../../../../common/util/debounce";
+import { deepEqual } from "../../../../common/util/deep-equal";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { internationalizationContext } from "../../../../data/context";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -26,6 +27,7 @@ import {
   replaceLeafTrigger,
   updateTriggerCondition,
   type TriggerIdOption,
+  type TriggerOptionsStatus,
 } from "./automation-trigger-id";
 import { preserveAutomationRowKeys } from "../ha-automation-sortable-list-mixin";
 
@@ -74,6 +76,9 @@ export class AutomationTriggerController implements ReactiveController {
 
   private _blueprintTriggers?: Trigger | Trigger[];
 
+  /** "failed" while required inputs are empty; a refetch after a success stays "loaded". */
+  private _blueprintStatus: TriggerOptionsStatus = "loading";
+
   constructor(
     private _host: LitElement,
     private _options: AutomationTriggerControllerOptions
@@ -89,6 +94,7 @@ export class AutomationTriggerController implements ReactiveController {
       context: automationTriggerContext,
       initialValue: {
         options: [],
+        optionsStatus: "loaded",
         showIndices: false,
         select: this._selectTriggerIds,
         fixDuplicateIds: this._fixDuplicateTriggerIds,
@@ -110,14 +116,23 @@ export class AutomationTriggerController implements ReactiveController {
       return;
     }
     let options: TriggerIdOption[];
+    let optionsStatus: TriggerOptionsStatus = "loaded";
     if ("use_blueprint" in config && config.use_blueprint) {
       this._requestBlueprintTriggers(config.use_blueprint);
       options = this._getBlueprintTriggerIdOptions(this._blueprintTriggers);
+      optionsStatus = this._blueprintStatus;
     } else {
       options = this._getTriggerIdOptions(config.triggers);
     }
-    if (options !== this._provider.value.options) {
-      this._provider.setValue({ ...this._provider.value, options });
+    if (
+      options !== this._provider.value.options ||
+      optionsStatus !== this._provider.value.optionsStatus
+    ) {
+      this._provider.setValue({
+        ...this._provider.value,
+        options,
+        optionsStatus,
+      });
     }
   }
 
@@ -173,11 +188,13 @@ export class AutomationTriggerController implements ReactiveController {
   private _requestBlueprintTriggers(
     useBlueprint: BlueprintAutomationConfig["use_blueprint"]
   ) {
-    if (useBlueprint === this._blueprintRequested) {
+    // YAML mode parses a new object on every edit, so compare by value.
+    if (deepEqual(useBlueprint, this._blueprintRequested)) {
       return;
     }
     if (useBlueprint.path !== this._blueprintRequested?.path) {
       this._blueprintTriggers = undefined;
+      this._blueprintStatus = "loading";
     }
     this._blueprintRequested = useBlueprint;
     this._fetchBlueprintTriggers(useBlueprint);
@@ -189,13 +206,19 @@ export class AutomationTriggerController implements ReactiveController {
       try {
         triggers = await this._options.fetchBlueprintTriggers(useBlueprint);
       } catch (_err) {
-        // Inputs fail to substitute while they are incomplete; keep the last triggers.
+        // Inputs fail to substitute while they are incomplete. The last
+        // triggers stay listed; the status only hides missing-ID warnings.
+        if (useBlueprint === this._blueprintRequested) {
+          this._blueprintStatus = "failed";
+          this._host.requestUpdate();
+        }
         return;
       }
       if (useBlueprint !== this._blueprintRequested) {
         return;
       }
       this._blueprintTriggers = triggers;
+      this._blueprintStatus = "loaded";
       this._host.requestUpdate();
     },
     500,

@@ -53,16 +53,28 @@ export class HaTriggerCondition extends LitElement {
     const selectedIds = (ensureArray(this.condition.id) ?? []).filter(Boolean);
     const triggerIdOptions = this._triggers?.options ?? [];
     const missingIds = this._missingIds(this.condition.id, triggerIdOptions);
+    // Until a blueprint's triggers are known, an ID not listed may still exist.
+    const status = this._triggers?.optionsStatus ?? "loaded";
+    const resolved = status === "loaded";
 
     if (!triggerIdOptions.length && !selectedIds.length) {
-      return this.hass.localize(
-        "ui.panel.config.automation.editor.conditions.type.trigger.no_triggers"
-      );
+      switch (status) {
+        case "loading":
+          return this.hass.localize("ui.common.loading");
+        case "failed":
+          return this.hass.localize(
+            "ui.panel.config.automation.editor.conditions.type.trigger.blueprint_triggers_pending"
+          );
+        case "loaded":
+          return this.hass.localize(
+            "ui.panel.config.automation.editor.conditions.type.trigger.no_triggers"
+          );
+      }
     }
 
     return html`
       ${
-        missingIds.length
+        resolved && missingIds.length
           ? html`<ha-alert alert-type="warning">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.type.trigger.missing_triggers"
@@ -158,14 +170,22 @@ export class HaTriggerCondition extends LitElement {
               .disabled=${this.disabled}
               appearance="checkbox"
             >
-              <span slot="start" class="missing-trigger-badge">
-                <ha-svg-icon .path=${mdiLinkVariantOff}></ha-svg-icon>
-                <span class="missing-trigger-id">${id}</span>
-              </span>
+              ${
+                resolved
+                  ? html`<span slot="start" class="missing-trigger-badge">
+                      <ha-svg-icon .path=${mdiLinkVariantOff}></ha-svg-icon>
+                      <span class="missing-trigger-id">${id}</span>
+                    </span>`
+                  : nothing
+              }
               <span slot="headline">
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.conditions.type.trigger.missing_trigger"
-                )}
+                ${
+                  resolved
+                    ? this.hass.localize(
+                        "ui.panel.config.automation.editor.conditions.type.trigger.missing_trigger"
+                      )
+                    : id
+                }
               </span>
             </ha-list-item-option>
           `

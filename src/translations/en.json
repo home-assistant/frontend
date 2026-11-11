@@ -6371,6 +6371,7 @@
                   "label": "Triggered by",
                   "no_triggers": "There are no triggers in this automation. Add a trigger first.",
                   "no_triggers_selected": "No triggers selected.",
+                  "blueprint_triggers_pending": "Complete all of the blueprint's required inputs to see its triggers.",
                   "id": "Trigger",
                   "missing_trigger": "Missing trigger",
                   "missing_triggers": "This condition references a trigger that no longer exists. Uncheck it to clear it.",

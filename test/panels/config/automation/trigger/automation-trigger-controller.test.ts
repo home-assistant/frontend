@@ -35,12 +35,12 @@ const trigger = (id: string): Trigger => ({
 /** A fetch whose responses the test resolves or rejects in any order. */
 const createFetch = () => {
   const pending: {
-    resolve: (triggers: Trigger[]) => void;
+    resolve: (triggers: Trigger[] | undefined) => void;
     reject: (err: Error) => void;
   }[] = [];
   const fetch = vi.fn(
     () =>
-      new Promise<Trigger[]>((resolve, reject) => {
+      new Promise<Trigger[] | undefined>((resolve, reject) => {
         pending.push({ resolve, reject });
       })
   );
@@ -116,6 +116,42 @@ describe("AutomationTriggerController with a blueprint automation", () => {
     expect(ids()).toEqual(["motion_on", "motion_off"]);
   });
 
+  it("reports the options as loading until the triggers arrive", async () => {
+    update(blueprint("motion.yaml"));
+    expect(context().optionsStatus).toBe("loading");
+
+    fetch.pending[0].resolve([trigger("motion_on")]);
+    await settle();
+
+    expect(context().optionsStatus).toBe("loaded");
+  });
+
+  it("reports a blueprint without triggers as loaded", async () => {
+    update(blueprint("motion.yaml"));
+    fetch.pending[0].resolve(undefined);
+    await settle();
+
+    expect(context().optionsStatus).toBe("loaded");
+  });
+
+  it("reports a blueprint that never substituted as failed", async () => {
+    update(blueprint("motion.yaml"));
+    fetch.pending[0].reject(new Error("Missing input sensor"));
+    await settle();
+
+    expect(ids()).toEqual([]);
+    expect(context().optionsStatus).toBe("failed");
+  });
+
+  it("fetches again only when `use_blueprint` changes by value", async () => {
+    update(blueprint("motion.yaml", { wait: 1 }));
+    // YAML mode parses a new, equal object when another key is edited.
+    update({ ...blueprint("motion.yaml", { wait: 1 }), alias: "Hall" });
+    await vi.runAllTimersAsync();
+
+    expect(fetch.fetch).toHaveBeenCalledOnce();
+  });
+
   it("leaves a pick to the condition editor, since the condition is in an input", () => {
     expect(context().select(condition, ["motion_on"])).toBe(false);
     expect(commit).not.toHaveBeenCalled();
@@ -145,6 +181,7 @@ describe("AutomationTriggerController with a blueprint automation", () => {
     await settle();
 
     expect(ids()).toEqual(["motion_on"]);
+    expect(context().optionsStatus).toBe("failed");
   });
 
   it("drops the triggers of a blueprint that is no longer used", async () => {
@@ -173,6 +210,7 @@ describe("AutomationTriggerController with a blueprint automation", () => {
     });
 
     expect(ids()).toEqual(["own"]);
+    expect(context().optionsStatus).toBe("loaded");
     expect(context().select(condition, ["own"])).toBe(true);
     expect(commit).toHaveBeenCalledOnce();
   });
