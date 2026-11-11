@@ -492,7 +492,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       }
       if (domain === "sensor" && this._effectiveDeviceClass) {
         const { units } = await getSensorDeviceClassConvertibleUnits(
-          this.hass,
+          this.hass.callWS,
           this._effectiveDeviceClass
         );
         this._sensorDeviceClassConvertibleUnits = units;
@@ -1453,9 +1453,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
           ),
         })
       ) {
-        const configFlow = await createConfigFlow(this.hass, "switch_as_x");
+        const configFlow = await createConfigFlow(
+          this.hass.callApi,
+          "switch_as_x"
+        );
         const configFlowResult = (await handleConfigFlowStep(
-          this.hass,
+          this.hass.callApi,
           configFlow.flow_id,
           {
             entity_id: this._entityId.trim(),
@@ -1519,9 +1522,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
           showMoreInfoDialog(parent, { entityId: origEntityId });
           close = false;
         } else {
-          const configFlow = await createConfigFlow(this.hass, "switch_as_x");
+          const configFlow = await createConfigFlow(
+            this.hass.callApi,
+            "switch_as_x"
+          );
           const configFlowResult = (await handleConfigFlowStep(
-            this.hass,
+            this.hass.callApi,
             configFlow.flow_id,
             {
               entity_id: origEntityId,
