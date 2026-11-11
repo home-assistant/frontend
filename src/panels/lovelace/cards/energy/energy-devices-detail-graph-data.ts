@@ -34,6 +34,7 @@ import {
 } from "./common/energy-chart-options";
 import { getEnergyColor } from "./common/color";
 import type { FrontendLocaleData } from "../../../../data/translation";
+import { rgb2hex } from "../../../../common/color/convert-color";
 
 const UNIT = "kWh";
 export interface EnergyDevicesDetailGraphDataParams {
@@ -131,7 +132,9 @@ function processDataSet(
       );
       return;
     }
-    const color = getGraphColorByIndex(idx, computedStyle);
+    const color = source.color
+      ? rgb2hex(source.color)
+      : getGraphColorByIndex(idx, computedStyle);
 
     let prevStart: number | null = null;
 
