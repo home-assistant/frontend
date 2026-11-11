@@ -184,6 +184,18 @@ describe("automation errors", () => {
       )
     ).toEqual([forError(1)]);
 
+    // Identical items both keep their errors after the YAML is parsed again
+    const twice = { triggers: [a, { ...a }] };
+    const knownTwice = knownErrorItems(twice, [forError(0), forError(1)]);
+    const reparsedTwice = structuredClone(twice);
+    expect(
+      errorsOnKnownItems(
+        followKnownErrorItems(knownTwice, twice, reparsedTwice),
+        reparsedTwice,
+        [forError(0), forError(1)]
+      )
+    ).toEqual([forError(0), forError(1)]);
+
     // An item edited and then moved keeps its errors
     const knownC = knownErrorItems(before, [forError(2)]);
     const editedC = { ...c, for: "xyy" };

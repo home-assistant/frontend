@@ -249,8 +249,10 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
           ? followErrors(submittedErrors, submitted, this.config)
           : submittedErrors
       );
-      if (changed && this.configErrors.length) {
-        this._revalidate();
+      if (changed) {
+        // Followed errors miss items that were renamed and moved, so check
+        // everything again
+        await this._validateConfig(false);
       }
       this._showSaveFailedToast(
         errors.length === 1
@@ -349,9 +351,18 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     // Updates the errors of the items that had one, so fixed problems clear
     // while editing. New problems elsewhere, and errors outside the validated
     // sections like an invalid mode, wait for the next save.
-    private _revalidate = debounce(async () => {
+    private _revalidate = debounce(() => {
+      this._validateConfig(true);
+    }, REVALIDATE_DELAY);
+
+    /**
+     * Validates the sections of the current config. With `onlyKnown`, only
+     * errors on items that already had one are kept.
+     */
+    private async _validateConfig(onlyKnown: boolean) {
+      this._revalidate.cancel();
       const config = this.config;
-      if (!config || !this.configErrors.length) {
+      if (!config || (onlyKnown && !this.configErrors.length)) {
         return;
       }
       const sections = this.domainHooks.validationSections(config);
@@ -376,6 +387,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       if (run !== this._validationRun || config !== this.config) {
         return;
       }
+      const mapped = mapErrorsToConfig(config, sectionErrors);
       const validated = Object.keys(sections).map(
         (key) => sectionKeys[key] ?? key
       );
@@ -383,11 +395,9 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
         ...this.configErrors.filter(
           (error) => !validated.includes(error.path[0] as string)
         ),
-        ...errorsOnKnownItems(
-          this._knownErrorItems,
-          config,
-          mapErrorsToConfig(config, sectionErrors)
-        ),
+        ...(onlyKnown
+          ? errorsOnKnownItems(this._knownErrorItems, config, mapped)
+          : mapped),
       ];
       if (!errors.length) {
         this.clearConfigErrors();
@@ -397,7 +407,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
         config,
         errorsEqual(errors, this.configErrors) ? this.configErrors : errors
       );
-    }, REVALIDATE_DELAY);
+    }
 
     protected clearConfigErrors() {
       this._validationRun++;
