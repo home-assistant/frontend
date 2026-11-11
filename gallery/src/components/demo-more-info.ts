@@ -25,7 +25,6 @@ class DemoMoreInfo extends LitElement {
               !computeShowNewMoreInfo(state)
                 ? html`<state-card-content
                     .stateObj=${state}
-                    .hass=${this.hass}
                     in-dialog
                   ></state-card-content>`
                 : nothing
