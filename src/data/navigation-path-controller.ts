@@ -3,7 +3,6 @@ import type {
   HassConfig,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
-import memoizeOne from "memoize-one";
 import {
   consumeContext,
   ContextController,
@@ -22,15 +21,6 @@ import {
   uiContext,
 } from "./context";
 import type { HomeAssistant, HomeAssistantRegistries } from "../types";
-
-type AreasAndDevices = Pick<HomeAssistantRegistries, "areas" | "devices">;
-
-const pickAreasAndDevices = memoizeOne(
-  (
-    areas: AreasAndDevices["areas"],
-    devices: AreasAndDevices["devices"]
-  ): AreasAndDevices => ({ areas, devices })
-);
 
 /**
  * Reactive controller that keeps `NavigationPathInfo` in sync with a
@@ -55,15 +45,8 @@ export class NavigationPathInfoController extends ContextController {
   })
   private _panels?: HomeAssistant["panels"];
 
-  @consumeContext({
-    context: registriesContext,
-    subscribe: true,
-    transform: (registries) =>
-      registries
-        ? pickAreasAndDevices(registries.areas, registries.devices)
-        : undefined,
-  })
-  private _registries?: AreasAndDevices;
+  @consumeContext({ context: registriesContext, subscribe: true })
+  private _registries?: HomeAssistantRegistries | null;
 
   @consumeContext({
     context: configContext,
@@ -85,6 +68,8 @@ export class NavigationPathInfoController extends ContextController {
 
   private _path?: string;
 
+  private _resolvedInputs?: unknown[];
+
   get info(): NavigationPathInfo {
     return this._info;
   }
@@ -103,13 +88,31 @@ export class NavigationPathInfoController extends ContextController {
     this._unsubscribe();
   }
 
-  // The resolved info depends on every consumed value, so re-resolve.
   protected contextUpdated(): void {
+    const inputs = this._inputs();
+    if (
+      this._resolvedInputs &&
+      inputs.every((value, i) => value === this._resolvedInputs![i])
+    ) {
+      return;
+    }
     this._resolve();
+  }
+
+  private _inputs(): unknown[] {
+    return [
+      this._localize,
+      this._panels,
+      this._registries?.areas,
+      this._registries?.devices,
+      this._config,
+      this._connection,
+    ];
   }
 
   private _resolve(): void {
     this._unsubscribe();
+    this._resolvedInputs = this._inputs();
 
     if (!this._path) {
       if (this._info !== DEFAULT_NAVIGATION_PATH_INFO) {
