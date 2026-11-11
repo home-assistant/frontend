@@ -1,3 +1,4 @@
+import { ContextProvider } from "@lit/context";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { tinykeys } from "tinykeys";
@@ -5,6 +6,7 @@ import { consume } from "../../../common/decorators/consume";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { pathEquals } from "../../../common/util/config-path";
 import "../../../components/ha-snap-bottom-sheet";
 import type { HaSnapBottomSheet } from "../../../components/ha-snap-bottom-sheet";
 import {
@@ -22,6 +24,11 @@ import { manifestsContext } from "../../../data/context";
 import type { DomainManifestLookup } from "../../../data/integration";
 import { isTriggerList } from "../../../data/trigger";
 import type { HomeAssistant } from "../../../types";
+import {
+  automationPathContext,
+  automationRowRegistryContext,
+  type AutomationRowRegistry,
+} from "./automation-path";
 import "./sidebar/ha-automation-sidebar-action";
 import type HaAutomationSidebarAction from "./sidebar/ha-automation-sidebar-action";
 import "./sidebar/ha-automation-sidebar-condition";
@@ -61,6 +68,17 @@ export default class HaAutomationSidebar extends LitElement {
   @consume({ context: manifestsContext, subscribe: true })
   private _manifests?: DomainManifestLookup;
 
+  @consume({ context: automationRowRegistryContext })
+  private _registry?: AutomationRowRegistry;
+
+  // Editors in the sidebar are not inside their row, so they get its path here
+  private readonly _pathProvider = new ContextProvider(this, {
+    context: automationPathContext,
+    initialValue: [],
+  });
+
+  private _unsubscribeRegistry?: () => void;
+
   @query("ha-snap-bottom-sheet")
   private _bottomSheetElement?: HaSnapBottomSheet;
 
@@ -82,6 +100,28 @@ export default class HaAutomationSidebar extends LitElement {
   private _focusYamlEditor = false;
 
   private _tinykeysUnsub?: () => void;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    // A row dragged to another place while it is open changes its path
+    this._unsubscribeRegistry = this._registry?.subscribe(() =>
+      this._syncPath()
+    );
+  }
+
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has("config")) {
+      this._syncPath();
+    }
+  }
+
+  private _syncPath() {
+    const path = this.config ? (this._registry?.selectedPath() ?? []) : [];
+    if (!pathEquals(path, this._pathProvider.value)) {
+      this._pathProvider.setValue(path);
+    }
+  }
 
   protected updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
@@ -105,6 +145,8 @@ export default class HaAutomationSidebar extends LitElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    this._unsubscribeRegistry?.();
+    this._unsubscribeRegistry = undefined;
     this._unregisterResizeHandlers();
     this._tinykeysUnsub?.();
   }

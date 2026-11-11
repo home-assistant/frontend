@@ -4,16 +4,26 @@ import type {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { css, html } from "lit";
-import { property, state } from "lit/decorators";
+import { css, html, nothing } from "lit";
+import { ifDefined } from "lit/directives/if-defined";
+import { property, query, state } from "lit/decorators";
 import { consume } from "../../../common/decorators/consume";
 import { transform } from "../../../common/decorators/transform";
 import { goBack, navigate } from "../../../common/navigate";
+import { debounce } from "../../../common/util/debounce";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/animation/ha-fade-in";
+import "../../../components/ha-alert";
 import "../../../components/ha-spinner"; // used by renderLoading() provided to both editors
 import type { AutomationMigrationReport } from "../../../data/automation";
+import {
+  parseConfigSaveError,
+  validateConfigErrors,
+  type ConfigValidationError,
+  type ValidationSectionKeys,
+} from "../../../data/config";
 import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   showAlertDialog,
@@ -22,7 +32,28 @@ import {
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import type { Constructor, HomeAssistant, Route } from "../../../types";
+import { showToast } from "../../../util/toast";
+import {
+  errorsEqual,
+  errorsOnKnownItems,
+  errorText,
+  followErrors,
+  followKnownErrorItems,
+  knownErrorItems,
+  mapErrorsToConfig,
+  NO_ERRORS,
+  type KnownErrorItem,
+} from "./automation-errors";
 import type { EntityRegistryUpdate } from "./automation-save-dialog/show-dialog-automation-save";
+import { showEditorToast } from "./editor-toast";
+
+const CONFIG_ERRORS_TOAST_ID = "config-errors";
+
+const REVALIDATE_DELAY = 500;
+
+interface ErrorsEditorElement extends HTMLElement {
+  revealErrors(): Promise<void>;
+}
 
 /** Minimum config shape shared by both AutomationConfig and ScriptConfig. */
 interface BaseEditorConfig {
@@ -57,6 +88,10 @@ export const automationScriptEditorStyles: CSSResult = css`
   p {
     margin-bottom: 0;
   }
+  .config-errors p {
+    margin: 0;
+    white-space: pre-wrap;
+  }
   ha-button[slot="fab"] {
     position: fixed;
     right: calc(16px + var(--safe-area-inset-right, 0px));
@@ -82,7 +117,11 @@ export const automationScriptEditorStyles: CSSResult = css`
 export interface EditorDomainHooks<TConfig> {
   fetchFileConfig(hass: HomeAssistant, id: string): Promise<TConfig>;
   normalizeConfig(raw: TConfig, report?: AutomationMigrationReport): TConfig;
-  checkValidation(): Promise<void>;
+  /** The parts of the config `validate_config` checks, none for blueprints. */
+  validationSections(
+    config: TConfig
+  ): Partial<Record<"triggers" | "conditions" | "actions", unknown>>;
+  validationSectionKeys?: ValidationSectionKeys;
   domain: "automation" | "script";
 }
 
@@ -111,8 +150,6 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     @consume({ context: fullEntitiesContext, subscribe: true })
     entityRegistry?: EntityRegistryEntry[];
 
-    @state() protected errors?: string;
-
     @state() protected yamlErrors?: string;
 
     @state() protected currentEntityId?: string;
@@ -125,7 +162,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
 
     @state() protected deprecatedConfigMigrated = false;
 
-    @state() protected validationErrors?: (string | TemplateResult)[];
+    @state() protected configErrors: ConfigValidationError[] = NO_ERRORS;
 
     @state() protected config?: TConfig;
 
@@ -157,6 +194,14 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
 
     private _relatedContextAreaId?: string;
 
+    @query("manual-automation-editor, manual-script-editor")
+    private _errorsEditor?: ErrorsEditorElement;
+
+    // Validation responses of an older run are dropped
+    private _validationRun = 0;
+
+    private _knownErrorItems: KnownErrorItem[] = [];
+
     protected willUpdate(changedProps: PropertyValues): void {
       super.willUpdate(changedProps);
       if (
@@ -164,6 +209,212 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
         changedProps.has("entityRegistry")
       ) {
         this._setRelatedContext();
+      }
+    }
+
+    protected updated(changedProps: PropertyValues): void {
+      super.updated(changedProps);
+      if (changedProps.has("config") && this.configErrors.length) {
+        this._knownErrorItems = followKnownErrorItems(
+          this._knownErrorItems,
+          changedProps.get("config"),
+          this.config
+        );
+        this._revalidate();
+      }
+    }
+
+    public disconnectedCallback() {
+      super.disconnectedCallback();
+      this._revalidate.cancel();
+      if (this.configErrors.length) {
+        this._closeErrorsToast();
+      }
+    }
+
+    /** Shows the errors of saving `submitted`, the config sent to core. */
+    protected async showSaveErrors(err: unknown, submitted: TConfig) {
+      const { message, errors } = parseConfigSaveError(err);
+      if (!errors.length) {
+        this._showSaveFailedToast(message);
+        return;
+      }
+      this._validationRun++;
+      const submittedErrors = mapErrorsToConfig(submitted, errors);
+      // Edits made while saving moved or removed some of the items
+      const changed = submitted !== this.config;
+      this._setConfigErrors(
+        this.config,
+        changed
+          ? followErrors(submittedErrors, submitted, this.config)
+          : submittedErrors
+      );
+      if (changed) {
+        // Followed errors miss items that were renamed and moved, so check
+        // everything again
+        await this._validateConfig(false);
+      }
+      this._showSaveFailedToast(
+        errors.length === 1
+          ? errors[0].message
+          : this.hass.localize(
+              "ui.panel.config.automation.editor.errors.problems_found",
+              { count: errors.length }
+            )
+      );
+      await this._revealErrors();
+    }
+
+    protected async checkValidation() {
+      if (!this.currentEntityId || !this.config) {
+        return;
+      }
+      if (this.hass.states[this.currentEntityId]?.state !== UNAVAILABLE) {
+        return;
+      }
+      const config = this.config;
+      const sections = this.domainHooks.validationSections(config);
+      if (!Object.keys(sections).length) {
+        return;
+      }
+      const run = ++this._validationRun;
+      let errors: ConfigValidationError[];
+      try {
+        errors = await validateConfigErrors(
+          this.hass,
+          sections,
+          this.domainHooks.validationSectionKeys
+        );
+      } catch (_err: unknown) {
+        // The unavailable alert still shows, only the rows stay unmarked
+        return;
+      }
+      if (run !== this._validationRun || config !== this.config) {
+        return;
+      }
+      this._setConfigErrors(config, mapErrorsToConfig(config, errors));
+    }
+
+    private _setConfigErrors(
+      config: TConfig | undefined,
+      errors: ConfigValidationError[]
+    ) {
+      this.configErrors = errors;
+      this._knownErrorItems = knownErrorItems(config, errors);
+    }
+
+    private async _revealErrors() {
+      await this.updateComplete;
+      if (this.mode === "gui") {
+        await this._errorsEditor?.revealErrors();
+      }
+    }
+
+    /** All errors, for the editors that have no rows to show them on. */
+    protected renderConfigErrorsAlert(slot?: string) {
+      return this.configErrors.length
+        ? html`<ha-alert
+            alert-type="error"
+            class="config-errors"
+            slot=${ifDefined(slot)}
+          >
+            ${this.configErrors.map((error) => html`<p>${errorText(error)}</p>`)}
+          </ha-alert>`
+        : nothing;
+    }
+
+    private _showSaveFailedToast(problems: string) {
+      showEditorToast(this, {
+        id: CONFIG_ERRORS_TOAST_ID,
+        message: this.hass.localize(
+          "ui.panel.config.automation.editor.errors.save_failed",
+          { problems }
+        ),
+      });
+    }
+
+    private _closeErrorsToast() {
+      // A removed editor can't reach the toast manager by bubbling
+      const host = this.isConnected
+        ? this
+        : document.querySelector<HTMLElement>("home-assistant");
+      if (!host) {
+        return;
+      }
+      showToast(host, {
+        id: CONFIG_ERRORS_TOAST_ID,
+        message: "",
+        duration: 0,
+      });
+    }
+
+    // Updates the errors of the items that had one, so fixed problems clear
+    // while editing. New problems elsewhere, and errors outside the validated
+    // sections like an invalid mode, wait for the next save.
+    private _revalidate = debounce(() => {
+      this._validateConfig(true);
+    }, REVALIDATE_DELAY);
+
+    /**
+     * Validates the sections of the current config. With `onlyKnown`, only
+     * errors on items that already had one are kept.
+     */
+    private async _validateConfig(onlyKnown: boolean) {
+      this._revalidate.cancel();
+      const config = this.config;
+      if (!config || (onlyKnown && !this.configErrors.length)) {
+        return;
+      }
+      const sections = this.domainHooks.validationSections(config);
+      // Blueprint inputs can't be validated on their own, so their errors
+      // only last until the next edit
+      if (!Object.keys(sections).length) {
+        this.clearConfigErrors();
+        return;
+      }
+      const sectionKeys = this.domainHooks.validationSectionKeys ?? {};
+      const run = ++this._validationRun;
+      let sectionErrors: ConfigValidationError[];
+      try {
+        sectionErrors = await validateConfigErrors(
+          this.hass,
+          sections,
+          sectionKeys
+        );
+      } catch (_err: unknown) {
+        return;
+      }
+      if (run !== this._validationRun || config !== this.config) {
+        return;
+      }
+      const mapped = mapErrorsToConfig(config, sectionErrors);
+      const validated = Object.keys(sections).map(
+        (key) => sectionKeys[key] ?? key
+      );
+      const errors = [
+        ...this.configErrors.filter(
+          (error) => !validated.includes(error.path[0] as string)
+        ),
+        ...(onlyKnown
+          ? errorsOnKnownItems(this._knownErrorItems, config, mapped)
+          : mapped),
+      ];
+      if (!errors.length) {
+        this.clearConfigErrors();
+        return;
+      }
+      this._setConfigErrors(
+        config,
+        errorsEqual(errors, this.configErrors) ? this.configErrors : errors
+      );
+    }
+
+    protected clearConfigErrors() {
+      this._validationRun++;
+      this._revalidate.cancel();
+      if (this.configErrors.length) {
+        this.configErrors = NO_ERRORS;
+        this._closeErrorsToast();
       }
     }
 
@@ -277,6 +528,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     protected async loadConfig(id: string) {
       const hooks = this.domainHooks;
       const domain = hooks.domain;
+      this.clearConfigErrors();
       try {
         const config = await hooks.fetchFileConfig(this.hass, id);
         if (!this.isConnected) {
@@ -296,7 +548,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
             entityRegistryUpdate: this.entityRegistryUpdate,
           }
         );
-        hooks.checkValidation();
+        this.checkValidation();
       } catch (err: any) {
         if (!this.isConnected) {
           return;

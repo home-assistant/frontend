@@ -129,6 +129,7 @@ import "./types/ha-automation-action-wait_template";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 import { scrollRowIntoView } from "../scroll-row-into-view";
 import { AutomationPathController } from "../automation-path";
+import { renderRowErrorIcon } from "../automation-row-error-icon";
 
 export interface ActionElement extends LitElement {
   action: Action;
@@ -498,6 +499,11 @@ export default class HaAutomationActionRow extends LitElement {
         ${this._runResult?.title}
       </ha-automation-row-event-chip>
 
+      ${renderRowErrorIcon(
+        this.pathController.errors,
+        this.pathController.path,
+        this.hass.localize("ui.panel.config.automation.editor.errors.label")
+      )}
       <slot name="icons" slot="icons"></slot>
 
       <ha-dropdown
@@ -798,6 +804,7 @@ export default class HaAutomationActionRow extends LitElement {
                   ...ACTION_COMBINED_BLOCKS,
                 ].includes(blockType!)}
                 .sortSelected=${this.sortSelected}
+                .error=${this.pathController.errors.length > 0}
                 .dim=${this._running}
                 @click=${this._toggleSidebar}
                 @toggle-collapsed=${this._toggleCollapse}

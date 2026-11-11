@@ -124,6 +124,19 @@ export const rowStyles = css`
     white-space: pre-wrap;
     margin: 0;
   }
+
+  .error-indicator {
+    color: var(--ha-color-on-danger-quiet);
+    padding: var(--ha-space-3);
+  }
+  .error-indicator + ha-tooltip::part(body) {
+    cursor: default;
+    max-width: 300px;
+  }
+  .error-indicator + ha-tooltip p {
+    white-space: pre-wrap;
+    margin: 0;
+  }
 `;
 
 export const editorStyles = css`
@@ -279,6 +292,15 @@ export const manualEditorStyles = css`
   }
   .header a {
     color: var(--secondary-text-color);
+  }
+
+  .unowned-errors {
+    display: block;
+    margin-bottom: var(--ha-space-2);
+  }
+  .unowned-errors p {
+    margin: 0;
+    white-space: pre-wrap;
   }
 `;
 

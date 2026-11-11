@@ -1,3 +1,4 @@
+import { provide } from "@lit/context";
 import { mdiClose, mdiDotsVertical } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
@@ -12,6 +13,13 @@ import "../../../../components/ha-icon-button";
 import { ScrollableFadeMixin } from "../../../../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import "../../../../components/ha-alert";
+import { errorField, errorText } from "../automation-errors";
+import {
+  automationInlineErrorFieldsContext,
+  AutomationFieldErrorsController,
+  InlineErrorFields,
+} from "../automation-field-errors";
 import "../ha-automation-editor-warning";
 
 export interface SidebarOverflowMenuEntry {
@@ -44,11 +52,22 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
 
   @query(".card-content") private _contentElement!: HTMLDivElement;
 
+  private readonly _errors = new AutomationFieldErrorsController(this);
+
+  @provide({ context: automationInlineErrorFieldsContext })
+  protected inlineErrorFields = new InlineErrorFields(() =>
+    this.requestUpdate()
+  );
+
   protected get scrollableElement(): HTMLElement | null {
     return this._contentElement;
   }
 
   protected render() {
+    const errors = this._errors.rowErrors.filter((error) => {
+      const field = errorField(error, this._errors.path);
+      return field === undefined || !this.inlineErrorFields.has(field);
+    });
     return html`
       <ha-card
         outlined
@@ -88,6 +107,15 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
                 .warnings=${this.warnings}
               >
               </ha-automation-editor-warning>`
+            : nothing
+        }
+        ${
+          errors.length
+            ? html`<ha-alert alert-type="error" class="errors">
+                ${errors.map(
+                  (error) => html`<p>${errorText(error, this._errors.path)}</p>`
+                )}
+              </ha-alert>`
             : nothing
         }
         <div class="card-content ha-scrollbar">
@@ -146,6 +174,15 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
           margin-top: 0;
           padding-top: 0;
           padding-bottom: max(var(--safe-area-inset-bottom, 0px), 32px);
+        }
+
+        .errors {
+          margin: 0 var(--ha-space-4) var(--ha-space-4);
+        }
+
+        .errors p {
+          margin: 0;
+          white-space: pre-wrap;
         }
 
         .fade-top {

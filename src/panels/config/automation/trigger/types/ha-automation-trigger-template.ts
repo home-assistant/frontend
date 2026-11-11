@@ -3,6 +3,7 @@ import { customElement, property } from "lit/decorators";
 import type { TemplateTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-form/ha-form";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
@@ -25,6 +26,10 @@ const SCHEMA = [
 
 @customElement("ha-automation-trigger-template")
 export class HaTemplateTrigger extends LitElement {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["value_template", "for"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public trigger!: TemplateTrigger;
@@ -54,6 +59,7 @@ export class HaTemplateTrigger extends LitElement {
 
     return html`
       <ha-form
+        .error=${this._fieldErrors.fields}
         .hass=${this.hass}
         .data=${data}
         .schema=${SCHEMA}

@@ -23,6 +23,9 @@ import {
 } from "../../../../../data/trigger";
 import type { HomeAssistant } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
+import "../../../../../components/ha-input-helper-text";
+import { targetErrorText } from "../../automation-errors";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 import { targetExpandGroupContext } from "../../../../../components/target-picker/target-expand-group-context";
 
 const showOptionalToggle = (field: TriggerDescription["fields"][string]) =>
@@ -42,6 +45,10 @@ export class HaPlatformTrigger extends LitElement {
   // Triggers and conditions don't expand the groups their targets name.
   @provide({ context: targetExpandGroupContext })
   protected _targetExpandGroup = false;
+
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["target"],
+  });
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -226,6 +233,7 @@ export class HaPlatformTrigger extends LitElement {
             ></ha-selector>`
           : nothing
       }
+      ${this._renderTargetError()}
       ${
         shouldRenderDataYaml
           ? html`<ha-yaml-editor
@@ -248,6 +256,15 @@ export class HaPlatformTrigger extends LitElement {
             )
       }
     `;
+  }
+
+  private _renderTargetError() {
+    const error = this._fieldErrors.fieldError("target");
+    return error
+      ? html`<ha-input-helper-text class="target-error">
+          ${targetErrorText(this.hass.localize, error)}
+        </ha-input-helper-text>`
+      : nothing;
   }
 
   private _targetSelector = memoizeOne(
@@ -557,6 +574,10 @@ export class HaPlatformTrigger extends LitElement {
         --service-control-items-border-top,
         1px solid var(--divider-color)
       );
+    }
+    .target-error {
+      color: var(--ha-color-on-danger-quiet);
+      padding-bottom: var(--ha-space-2);
     }
     ha-yaml-editor {
       padding: var(--ha-space-4) 0;

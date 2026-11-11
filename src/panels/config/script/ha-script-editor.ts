@@ -35,7 +35,6 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import { substituteBlueprint } from "../../../data/blueprint";
-import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   type EntityRegistryEntry,
@@ -62,7 +61,6 @@ import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { Entries } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showEditorToast } from "../automation/editor-toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
@@ -99,7 +97,9 @@ export class HaScriptEditor extends SubscribeMixin(
     domain: "script",
     fetchFileConfig: fetchScriptFileConfig,
     normalizeConfig: normalizeScriptConfig,
-    checkValidation: () => this._checkValidation(),
+    validationSections: (config) =>
+      "use_blueprint" in config ? {} : { actions: config.sequence },
+    validationSectionKeys: { actions: "sequence" },
   };
 
   private _undoRedoController = new UndoRedoController<ScriptConfig>(this, {
@@ -429,16 +429,7 @@ export class HaScriptEditor extends SubscribeMixin(
                               @value-changed=${this._valueChanged}
                               @save-script=${this._handleSaveScript}
                             >
-                              ${
-                                this.errors
-                                  ? html`<ha-alert
-                                      alert-type="error"
-                                      slot="alerts"
-                                    >
-                                      ${this.errors}
-                                    </ha-alert>`
-                                  : nothing
-                              }
+                              ${this.renderConfigErrorsAlert("alerts")}
                             </blueprint-script-editor>
                           `
                         : html`
@@ -449,6 +440,7 @@ export class HaScriptEditor extends SubscribeMixin(
                               .config=${this.config}
                               .disabled=${this.readOnly}
                               .saving=${this.saving}
+                              .configErrors=${this.configErrors}
                               @value-changed=${this._valueChanged}
                               @editor-save=${this._handleSaveScript}
                               @save-script=${this._handleSaveScript}
@@ -456,26 +448,17 @@ export class HaScriptEditor extends SubscribeMixin(
                               <div class="alert-wrapper" slot="alerts">
                                 ${this._renderDeprecatedMigratedAlert()}
                                 ${
-                                  this.errors || stateObj?.state === UNAVAILABLE
+                                  stateObj?.state === UNAVAILABLE
                                     ? html`<ha-alert
                                         alert-type="error"
-                                        .title=${
-                                          stateObj?.state === UNAVAILABLE
-                                            ? this.hass.localize(
-                                                "ui.panel.config.script.editor.unavailable"
-                                              )
-                                            : undefined
-                                        }
+                                        .title=${this.hass.localize(
+                                          "ui.panel.config.script.editor.unavailable"
+                                        )}
                                       >
-                                        ${this.errors || this.validationErrors}
-                                        ${
-                                          stateObj?.state === UNAVAILABLE
-                                            ? html`<ha-svg-icon
-                                                slot="icon"
-                                                .path=${mdiRobotConfused}
-                                              ></ha-svg-icon>`
-                                            : nothing
-                                        }
+                                        <ha-svg-icon
+                                          slot="icon"
+                                          .path=${mdiRobotConfused}
+                                        ></ha-svg-icon>
                                       </ha-alert>`
                                     : nothing
                                 }
@@ -532,6 +515,7 @@ export class HaScriptEditor extends SubscribeMixin(
                 `
               : this.mode === "yaml"
                 ? html`${this._renderDeprecatedMigratedAlert()}
+                    ${this.renderConfigErrorsAlert()}
                     <ha-yaml-editor
                       .defaultValue=${this._preprocessYaml()}
                       .readOnly=${this.readOnly}
@@ -628,7 +612,7 @@ export class HaScriptEditor extends SubscribeMixin(
             entityRegistryUpdate: this.entityRegistryUpdate,
           }
         );
-        this._checkValidation();
+        this.checkValidation();
       });
       const regEntry = this.entityRegistry?.find(
         (ent) => ent.entity_id === this.entityId
@@ -641,37 +625,12 @@ export class HaScriptEditor extends SubscribeMixin(
     }
   }
 
-  private async _checkValidation() {
-    this.validationErrors = undefined;
-    if (!this.currentEntityId || !this.config) {
-      return;
-    }
-    const stateObj = this.hass.states[this.currentEntityId];
-    if (stateObj?.state !== UNAVAILABLE) {
-      return;
-    }
-    const validation = await validateConfig(this.hass, {
-      actions: this.config.sequence,
-    });
-    this.validationErrors = (
-      Object.entries(validation) as Entries<typeof validation>
-    ).map(([key, value]) =>
-      value.valid
-        ? ""
-        : html`${this.hass.localize(
-              `ui.panel.config.automation.editor.${key}.name`
-            )}:
-            ${value.error}<br />`
-    );
-  }
-
   private _valueChanged(ev) {
     if (this.config) {
       this._undoRedoController.commit(this.config);
     }
 
     this.config = ev.detail.value;
-    this.errors = undefined;
     this._updateDirtyState({
       config: this.config!,
       entityRegistryUpdate: this.entityRegistryUpdate,
@@ -784,7 +743,6 @@ export class HaScriptEditor extends SubscribeMixin(
       config: this.config!,
       entityRegistryUpdate: this.entityRegistryUpdate,
     });
-    this.errors = undefined;
   }
 
   protected async confirmUnsavedChanged(addHistory = true): Promise<boolean> {
@@ -864,9 +822,8 @@ export class HaScriptEditor extends SubscribeMixin(
         this._yamlEditor?.setValue(this.config);
       }
       this.readOnly = true;
-      this.errors = undefined;
     } catch (err: any) {
-      this.errors = err.message;
+      showEditorToast(this, { message: err.message });
     }
   }
 
@@ -982,6 +939,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private async _saveScript(id): Promise<void> {
     this.saving = true;
+    const config = this.config!;
 
     let entityRegPromise: Promise<EntityRegistryEntry> | undefined;
     if (this.entityRegistryUpdate !== undefined && !this.scriptId) {
@@ -992,11 +950,7 @@ export class HaScriptEditor extends SubscribeMixin(
     }
 
     try {
-      await this.hass!.callApi(
-        "POST",
-        "config/script/config/" + id,
-        this.config
-      );
+      await this.hass!.callApi("POST", "config/script/config/" + id, config);
 
       if (this.entityRegistryUpdate !== undefined) {
         let entityId = this.currentEntityId;
@@ -1044,11 +998,9 @@ export class HaScriptEditor extends SubscribeMixin(
 
       this._markDirtyStateClean();
       this.deprecatedConfigMigrated = false;
-    } catch (errors: any) {
-      this.errors = errors.body?.message || errors.error || errors.body;
-      showEditorToast(this, {
-        message: errors.body?.message || errors.error || errors.body,
-      });
+      this.clearConfigErrors();
+    } catch (errors: unknown) {
+      this.showSaveErrors(errors, config);
       throw errors;
     } finally {
       this.saving = false;

@@ -20,6 +20,7 @@ import { hasTemplate } from "../../../../../common/string/has-template";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { ANY_STATE_VALUE } from "../../../../../components/entity/const";
 import "../../../../../components/ha-form/ha-form";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 import type {
   HaFormSchema,
   SchemaUnion,
@@ -57,6 +58,10 @@ const stateTriggerStruct = assign(
 
 @customElement("ha-automation-trigger-state")
 export class HaStateTrigger extends LitElement implements TriggerElement {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["entity_id", "attribute", "from", "to", "for"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public trigger!: StateTrigger;
@@ -311,6 +316,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
 
     return html`
       <ha-form
+        .error=${this._fieldErrors.fields}
         .hass=${this.hass}
         .data=${data}
         .schema=${schema}
