@@ -154,6 +154,8 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Rect>()(
 
   private _closing = false;
 
+  private _shiftLocked = false;
+
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     if (!this._cropped) {
@@ -362,6 +364,7 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Rect>()(
                 ? html`
                     <cropper-canvas
                       background
+                      @actionmove=${this._handleCanvasActionMove}
                       style=${styleMap({
                         aspectRatio: `${this._imageSize.width} / ${this._imageSize.height}`,
                       })}
@@ -450,6 +453,12 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Rect>()(
     this._closing = true;
   }
 
+  private _handleCanvasActionMove(
+    ev: CustomEvent<{ relatedEvent?: PointerEvent }>
+  ) {
+    this._shiftLocked = ev.detail.relatedEvent?.shiftKey ?? false;
+  }
+
   private _handleSelectionChange(ev: CustomEvent<Rect>) {
     if (!this._cropReady || this._refitting) {
       return;
@@ -466,7 +475,7 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Rect>()(
       ev.preventDefault();
       const fitted = sameSize(next, selection)
         ? moveInto(next, bounds)
-        : this.params?.options.aspectRatio
+        : this.params?.options.aspectRatio || this._shiftLocked
           ? shrinkInto(selection, next, bounds)
           : intersect(next, bounds);
       this._selection!.$change(fitted.x, fitted.y, fitted.width, fitted.height);
