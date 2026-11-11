@@ -18,6 +18,7 @@ import {
   subscribeFrontendSystemData,
   type ClimateFrontendSystemData,
   type HomeFrontendSystemData,
+  type LightFrontendSystemData,
   type MaintenanceFrontendSystemData,
   type SecurityFrontendSystemData,
 } from "../../data/frontend";
@@ -60,6 +61,8 @@ class PanelHome extends SubscribeMixin(LitElement) {
 
   @state() private _climateConfig: ClimateFrontendSystemData = {};
 
+  @state() private _lightConfig: LightFrontendSystemData = {};
+
   @state() private _extraActionItems?: ExtraActionItem[];
 
   @query(".banner") private _banner?: HTMLElement;
@@ -71,6 +74,8 @@ class PanelHome extends SubscribeMixin(LitElement) {
   private _maintenanceConfigRevision = 0;
 
   private _climateConfigRevision = 0;
+
+  private _lightConfigRevision = 0;
 
   public hassSubscribe() {
     return [
@@ -114,6 +119,21 @@ class PanelHome extends SubscribeMixin(LitElement) {
             return;
           }
           this._climateConfig = config;
+          if (this.hasUpdated) {
+            this._setLovelace();
+          }
+        }
+      ),
+      subscribeFrontendSystemData(
+        this.hass.connection,
+        "light",
+        ({ value }) => {
+          this._lightConfigRevision++;
+          const config = value || {};
+          if (deepEqual(config, this._lightConfig)) {
+            return;
+          }
+          this._lightConfig = config;
           if (this.hasUpdated) {
             this._setLovelace();
           }
@@ -221,18 +241,21 @@ class PanelHome extends SubscribeMixin(LitElement) {
     const securityConfigRevision = this._securityConfigRevision;
     const maintenanceConfigRevision = this._maintenanceConfigRevision;
     const climateConfigRevision = this._climateConfigRevision;
+    const lightConfigRevision = this._lightConfigRevision;
     const [
       translationsResult,
       homeResult,
       securityResult,
       maintenanceResult,
       climateResult,
+      lightResult,
     ] = await Promise.allSettled([
       this.hass.loadFragmentTranslation("lovelace"),
       fetchFrontendSystemData(this.hass.connection, "home"),
       fetchFrontendSystemData(this.hass.connection, "security"),
       fetchFrontendSystemData(this.hass.connection, "maintenance"),
       fetchFrontendSystemData(this.hass.connection, "climate"),
+      fetchFrontendSystemData(this.hass.connection, "light"),
     ]);
 
     if (translationsResult.status === "rejected") {
@@ -288,6 +311,16 @@ class PanelHome extends SubscribeMixin(LitElement) {
       }
     } else if (climateConfigRevision === this._climateConfigRevision) {
       this._climateConfig = climateResult.value || {};
+    }
+
+    if (lightResult.status === "rejected") {
+      // eslint-disable-next-line no-console
+      console.error("Failed to load light configuration:", lightResult.reason);
+      if (lightConfigRevision === this._lightConfigRevision) {
+        this._lightConfig = {};
+      }
+    } else if (lightConfigRevision === this._lightConfigRevision) {
+      this._lightConfig = lightResult.value || {};
     }
   }
 
@@ -477,6 +510,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
         alert_entities: this._securityConfig.alert_entities,
         maintenance_hidden_entities: this._maintenanceConfig.hidden_entities,
         climate_hidden_entities: this._climateConfig.hidden_entities,
+        light_hidden_entities: this._lightConfig.hidden_entities,
         favorite_entities: this._config?.favorite_entities,
         home_panel: true,
         hide_welcome_message: this._config?.hide_welcome_message,
