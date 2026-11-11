@@ -16,17 +16,8 @@ export const getZHADeviceAreaName = (
   // device inherits its parent's area, matching the ZHA network
   // visualization.
   const haDevice = devices[device.device_reg_id];
-  if (haDevice) {
-    const area = getDeviceArea(haDevice, areas, devices);
-    return area ? computeAreaName(area) : undefined;
-  }
-  // Fall back to the area reported by ZHA itself, only when the device
-  // has no registry entry at all.
-  if (!device.area_id) {
-    return undefined;
-  }
-  const areaEntry = areas[device.area_id];
-  return areaEntry ? computeAreaName(areaEntry) : undefined;
+  const area = haDevice ? getDeviceArea(haDevice, areas, devices) : undefined;
+  return area ? computeAreaName(area) : undefined;
 };
 
 export const formatAsPaddedHex = (value: string | number): string => {
