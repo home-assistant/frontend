@@ -3,7 +3,7 @@ import Fuse from "fuse.js";
 import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, query, state } from "lit/decorators";
+import { customElement, query, queryAll, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -126,6 +126,9 @@ class AddIntegrationDialog extends LitElement {
 
   @state() private _narrow = false;
 
+  @queryAll(".categories ha-list-item-button")
+  private _categoryItems!: NodeListOf<HTMLElement>;
+
   @query("ha-list-virtualized") private _listElement?: HaListVirtualized;
 
   private _width?: number;
@@ -178,6 +181,10 @@ class AddIntegrationDialog extends LitElement {
 
   public closeDialog() {
     this._open = false;
+  }
+
+  private get _categoriesOnly() {
+    return this._narrow && !this._categoryOpen && !this._filter;
   }
 
   private _dialogClosed() {
@@ -439,28 +446,57 @@ class AddIntegrationDialog extends LitElement {
   private _availableCategories = memoizeOne((i: Brands): string[] => {
     const categories = new Set<string>();
     Object.values(i).forEach((integration) => {
-      const own =
-        "integration_type" in integration
-          ? integration.categories
-          : Object.values(integration.integrations ?? {}).flatMap(
-              (sub) => sub.categories ?? []
-            );
+      let own: string[] | undefined;
+      if ("integration_type" in integration) {
+        if (
+          integration.integration_type === "hardware" ||
+          !(
+            integration.config_flow ||
+            integration.iot_standards ||
+            integration.supported_by
+          )
+        ) {
+          return;
+        }
+        if (
+          integration.supported_by &&
+          !findIntegration(i, integration.supported_by)
+        ) {
+          return;
+        }
+        own = integration.categories;
+      } else if (
+        "iot_standards" in integration ||
+        "integrations" in integration
+      ) {
+        own = Object.values(integration.integrations ?? {}).flatMap(
+          (sub) => sub.categories ?? []
+        );
+      }
       own?.forEach((c) => categories.add(topCategory(c)));
     });
     return [...categories].sort();
   });
 
-  private _categoryClicked(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
+  private async _categoryClicked(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
     this._category = ev.currentTarget.dataset.category || undefined;
     if (this._narrow) {
       this._categoryOpen = true;
+      await this.updateComplete;
+      this._listElement?.focus();
+      return;
     }
     this._listElement?.scrollToIndex(0);
   }
 
-  private _backToCategories() {
+  private async _backToCategories() {
+    const previous = this._category ?? "";
     this._categoryOpen = false;
     this._category = undefined;
+    await this.updateComplete;
+    Array.from(this._categoryItems)
+      .find((item) => (item.dataset.category ?? "") === previous)
+      ?.focus();
   }
 
   private _renderCategories(integrations: Brands) {
@@ -475,6 +511,13 @@ class AddIntegrationDialog extends LitElement {
               (this._category ?? "") === category
                 ? "selected"
                 : ""
+            }
+            aria-current=${
+              !this._narrow &&
+              !this._filter &&
+              (this._category ?? "") === category
+                ? "true"
+                : nothing
             }
             @click=${this._categoryClicked}
           >
@@ -669,7 +712,7 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private _renderAll(integrations?: IntegrationListItem[]): TemplateResult {
-    const categoriesOnly = this._narrow && !this._categoryOpen && !this._filter;
+    const categoriesOnly = this._categoriesOnly;
     const showCategories = !!this._integrations;
     const showList = !categoriesOnly;
     const showBack = this._narrow && this._categoryOpen && !this._filter;
@@ -945,6 +988,9 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private _maybeSubmit(ev: KeyboardEvent) {
+    if (this._categoriesOnly) {
+      return;
+    }
     if (ev.key === "ArrowDown" && this._listElement) {
       ev.preventDefault();
       this._listElement.focus();
