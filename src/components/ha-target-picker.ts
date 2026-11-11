@@ -25,6 +25,7 @@ import {
 import { getConfigEntries, type ConfigEntry } from "../data/config_entries";
 import {
   apiContext,
+  brandsAccessTokenContext,
   configContext,
   connectionContext,
   internationalizationContext,
@@ -205,6 +206,10 @@ export class HaTargetPicker extends LitElement {
 
   @consume({ context: connectionContext, subscribe: true })
   private _connection?: ContextType<typeof connectionContext>;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  private _brandsAccessToken?: string;
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
@@ -544,7 +549,7 @@ export class HaTargetPicker extends LitElement {
           )}
           .selectedSection=${this._selectedSection}
           .popoverAnchor=${this._replaceTargetAnchor}
-          .rowRenderer=${this._renderRow}
+          .rowRenderer=${this._rowRenderer(this._brandsAccessToken)}
           .getItems=${this._getItems}
           @value-changed=${this._targetPicked}
           @picker-closed=${this._handlePickerClosed}
@@ -567,7 +572,7 @@ export class HaTargetPicker extends LitElement {
                     "ui.components.target-picker.no_targets"
                   )}
                   .selectedSection=${this._excludeSection}
-                  .rowRenderer=${this._renderRow}
+                  .rowRenderer=${this._rowRenderer(this._brandsAccessToken)}
                   .getItems=${this._getExcludeItems}
                   @value-changed=${this._excludePicked}
                 >
@@ -1330,6 +1335,13 @@ export class HaTargetPicker extends LitElement {
       value: this._withoutOrphanExclude(value),
     });
   }
+
+  // A new renderer when the brands token arrives, so open lists redraw icons.
+  private _rowRenderer = memoizeOne(
+    (_brandsAccessToken: string | undefined) =>
+      (item: Parameters<HaTargetPicker["_renderRow"]>[0]) =>
+        this._renderRow(item)
+  );
 
   private _renderRow = (
     item:

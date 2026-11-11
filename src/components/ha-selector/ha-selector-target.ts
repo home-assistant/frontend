@@ -8,6 +8,7 @@ import { ensureArray } from "../../common/array/ensure-array";
 import { consume } from "../../common/decorators/consume";
 import {
   apiContext,
+  connectionContext,
   devicesContext,
   entitiesContext,
   statesContext,
@@ -23,7 +24,7 @@ import {
   filterSelectorEntities,
 } from "../../data/selector";
 import type { HassServiceTargetWithExclude } from "../../data/target";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, HomeAssistantConnection } from "../../types";
 import "../ha-target-picker";
 
 type TargetSelectorFilters = NonNullable<TargetSelector["target"]>;
@@ -52,6 +53,10 @@ export class HaTargetSelector extends LitElement {
 
   @consume({ context: apiContext, subscribe: true })
   private _api?: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection?: ContextType<typeof connectionContext>;
 
   @consume({ context: statesContext, subscribe: true })
   private _states?: ContextType<typeof statesContext>;
@@ -82,8 +87,18 @@ export class HaTargetSelector extends LitElement {
     );
   }
 
-  protected updated(changedProperties: PropertyValues<this>): void {
+  protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
+    const oldConnection = changedProperties.get("_connection") as
+      HomeAssistantConnection | undefined;
+    if (
+      oldConnection &&
+      this._connection &&
+      (oldConnection.connection !== this._connection.connection ||
+        (!oldConnection.connected && this._connection.connected))
+    ) {
+      this._fetchedEntitySources = false;
+    }
     if (
       this._api &&
       !this._fetchedEntitySources &&
