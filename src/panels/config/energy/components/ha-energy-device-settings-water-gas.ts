@@ -12,7 +12,6 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { navigate } from "../../../../common/navigate";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
@@ -160,7 +159,12 @@ export class EnergyDeviceSettingsWaterGas extends LitElement {
                 `
               : nothing
           }
-          <ha-button @click=${this._addDevice} appearance="filled" size="s">
+          <ha-button
+            .href=${this._editorHref()}
+            @click=${this.listPath ? nothing : this._addDevice}
+            appearance="filled"
+            size="s"
+          >
             <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
             ${this._t("add_device")}
           </ha-button>
@@ -183,7 +187,11 @@ export class EnergyDeviceSettingsWaterGas extends LitElement {
     const areaName = area ? computeAreaName(area) : undefined;
     return html`
       <ha-card outlined>
-        <ha-automation-row .device=${device} @click=${this._editDevice}>
+        <ha-automation-row
+          .device=${device}
+          .href=${this._editorHref(device)}
+          @click=${this.listPath ? nothing : this._editDevice}
+        >
           ${
             entityState?.attributes.icon
               ? html`<ha-icon
@@ -283,15 +291,15 @@ export class EnergyDeviceSettingsWaterGas extends LitElement {
   }
 
   private _openEditor(device?: DeviceConsumptionEnergyPreference) {
-    if (this.listPath) {
-      navigate(
-        `${this.listPath}/device/${device ? encodeURIComponent(device.stat_consumption) : "new"}`
-      );
-    } else {
-      showEnergySettingsDialog(this, {
-        editor: this._editorConfig(this.preferences, device),
-      });
-    }
+    showEnergySettingsDialog(this, {
+      editor: this._editorConfig(this.preferences, device),
+    });
+  }
+
+  private _editorHref(device?: DeviceConsumptionEnergyPreference) {
+    return this.listPath
+      ? `${this.listPath}/device/${device ? encodeURIComponent(device.stat_consumption) : "new"}`
+      : undefined;
   }
 
   private _editorConfig(

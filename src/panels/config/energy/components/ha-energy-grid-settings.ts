@@ -5,7 +5,6 @@ import memoizeOne from "memoize-one";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
-import { navigate } from "../../../../common/navigate";
 import "../../../../components/automation/ha-automation-row";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
@@ -147,7 +146,8 @@ export class EnergyGridSettings extends LitElement {
                         <ha-card outlined>
                           <ha-automation-row
                             .source=${source}
-                            @click=${this._editSource}
+                            .href=${this._editorHref(source)}
+                            @click=${this.listPath ? nothing : this._editSource}
                           >
                             ${
                               entityState?.attributes.icon
@@ -199,7 +199,12 @@ export class EnergyGridSettings extends LitElement {
                 `
               : nothing
           }
-          <ha-button @click=${this._addSource} appearance="filled" size="s">
+          <ha-button
+            .href=${this._editorHref()}
+            @click=${this.listPath ? nothing : this._addSource}
+            appearance="filled"
+            size="s"
+          >
             <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
             ${this.hass.localize("ui.panel.config.energy.grid.add_connection")}
           </ha-button>
@@ -214,7 +219,9 @@ export class EnergyGridSettings extends LitElement {
               ? html`
                   <div class="items">
                     <ha-card outlined>
-                      <ha-automation-row @click=${this._openCO2Integration}>
+                      <ha-automation-row
+                        .href=${`/config/integrations/integration/${this._co2ConfigEntry.domain}`}
+                      >
                         <img
                           slot="leading-icon"
                           alt=""
@@ -292,12 +299,6 @@ export class EnergyGridSettings extends LitElement {
     });
   }
 
-  private _openCO2Integration() {
-    navigate(
-      `/config/integrations/integration/${this._co2ConfigEntry!.domain}`
-    );
-  }
-
   private async _removeCO2Sensor(ev: Event) {
     ev.stopPropagation();
     if (
@@ -321,15 +322,15 @@ export class EnergyGridSettings extends LitElement {
   }
 
   private _openEditor(source?: GridSourceTypeEnergyPreference) {
-    if (this.listPath) {
-      navigate(
-        `${this.listPath}/grid/${source ? encodeURIComponent(primaryStat(source)) : "new"}`
-      );
-    } else {
-      showEnergySettingsDialog(this, {
-        editor: this._editorConfig(this.preferences, source),
-      });
-    }
+    showEnergySettingsDialog(this, {
+      editor: this._editorConfig(this.preferences, source),
+    });
+  }
+
+  private _editorHref(source?: GridSourceTypeEnergyPreference) {
+    return this.listPath
+      ? `${this.listPath}/grid/${source ? encodeURIComponent(primaryStat(source)) : "new"}`
+      : undefined;
   }
 
   private _editorConfig(
