@@ -6,6 +6,7 @@ import {
   mdiHomeEdit,
   mdiPencil,
   mdiPlus,
+  mdiContentDuplicate,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -38,6 +39,7 @@ import type { LovelaceRawConfig } from "../../../../data/lovelace/config/types";
 import {
   isStrategyDashboard,
   saveConfig,
+  fetchConfig,
 } from "../../../../data/lovelace/config/types";
 import { fetchResources } from "../../../../data/lovelace/resource";
 import type {
@@ -317,6 +319,13 @@ export class HaConfigLovelaceDashboards extends LitElement {
                         "ui.panel.config.lovelace.dashboards.picker.edit"
                       ),
                       action: () => this._handleEdit(dashboard),
+                    },
+                    {
+                      path: mdiContentDuplicate,
+                      label: this.hass.localize(
+                        "ui.panel.config.lovelace.dashboards.picker.duplicate"
+                      ),
+                      action: () => this._handleDuplicate(dashboard),
                     },
                     {
                       label: this.hass.localize(
@@ -599,6 +608,37 @@ export class HaConfigLovelaceDashboards extends LitElement {
       return;
     }
     this._deleteDashboard(dashboard);
+  };
+
+  private _handleDuplicate = async (item: DataTableItem) => {
+    try {
+      const config = await fetchConfig(
+        this.hass.connection,
+        item.url_path,
+        false
+      ).catch((err) => {
+        if (err.code === "config_not_found") {
+          return undefined;
+        }
+        throw err;
+      });
+
+      const title = this.hass.localize(
+        "ui.panel.config.lovelace.dashboards.duplicate_title",
+        { title: item.title }
+      );
+
+      this._openDetailDialog(undefined, undefined, config, {
+        title,
+        icon: item.icon,
+      });
+    } catch {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.lovelace.dashboards.duplicate_failed"
+        ),
+      });
+    }
   };
 
   private async _addDashboard() {
