@@ -406,6 +406,8 @@ export class HaItemDisplayEditor extends LitElement {
       cursor: move;
       padding: 8px;
       margin: -8px;
+      /* Keep the handle above the row's hit area so dragging can start */
+      z-index: 1;
     }
     .separator {
       width: 1px;

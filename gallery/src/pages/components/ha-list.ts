@@ -2,10 +2,12 @@ import {
   mdiAccount,
   mdiChevronRight,
   mdiCog,
+  mdiDelete,
   mdiHome,
   mdiInformationOutline,
   mdiMapMarker,
   mdiOpenInNew,
+  mdiPencil,
   mdiViewDashboard,
   mdiWifi,
 } from "@mdi/js";
@@ -13,6 +15,8 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
 import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-icon-button";
+import "../../../../src/components/ha-icon-next";
 import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/item/ha-list-item-base";
 import "../../../../src/components/item/ha-list-item-button";
@@ -76,6 +80,8 @@ const treeKey = (group: TreeGroup, child: TreeChild) =>
 @customElement("demo-components-ha-list")
 export class DemoHaList extends LitElement {
   @state() private _buttonClicks = 0;
+
+  @state() private _lastAction = "none";
 
   @state() private _single: number | Set<number> = -1;
 
@@ -216,6 +222,51 @@ export class DemoHaList extends LitElement {
           </ha-list-item-button>
           <ha-list-item-button href="#nope" disabled>
             <span slot="headline">Disabled link</span>
+          </ha-list-item-button>
+        </ha-list-base>
+      </ha-card>
+
+      <ha-card header="Row with actions in the end slot">
+        <p class="card-text">
+          Last action: <code>${this._lastAction}</code>. The action buttons are
+          separate controls; icons and the divider activate the row.
+        </p>
+        <ha-list-base aria-label="Rows with actions">
+          <ha-list-item-button data-action="row" @click=${this._onActionClick}>
+            <ha-svg-icon slot="start" .path=${mdiHome}></ha-svg-icon>
+            <span slot="headline">Button row</span>
+            <span slot="supporting-text">Click the row or an action</span>
+            <ha-icon-next slot="end"></ha-icon-next>
+            <div slot="end" class="vertical-divider"></div>
+            <ha-icon-button
+              slot="end"
+              data-action="edit"
+              .path=${mdiPencil}
+              label="Edit"
+              @click=${this._onActionClick}
+            ></ha-icon-button>
+            <ha-icon-button
+              slot="end"
+              data-action="delete"
+              .path=${mdiDelete}
+              label="Delete"
+              @click=${this._onActionClick}
+            ></ha-icon-button>
+          </ha-list-item-button>
+          <ha-list-item-button href="#components/ha-list">
+            <ha-svg-icon slot="start" .path=${mdiMapMarker}></ha-svg-icon>
+            <span slot="headline">Link row</span>
+            <span slot="supporting-text"
+              >Cmd/Ctrl-click on the icon or chevron opens a new tab</span
+            >
+            <ha-icon-button
+              slot="end"
+              data-action="link-edit"
+              .path=${mdiPencil}
+              label="Edit"
+              @click=${this._onActionClick}
+            ></ha-icon-button>
+            <ha-icon-next slot="end"></ha-icon-next>
           </ha-list-item-button>
         </ha-list-base>
       </ha-card>
@@ -428,6 +479,12 @@ selected: ${JSON.stringify(this._toJson(this._multiCheckEnd))}</pre>
     return value instanceof Set ? [...value] : value;
   }
 
+  private _onActionClick = (ev: MouseEvent) => {
+    ev.stopPropagation();
+    this._lastAction =
+      (ev.currentTarget as HTMLElement).dataset.action ?? "none";
+  };
+
   private _onButtonClick = () => {
     this._buttonClicks++;
   };
@@ -541,6 +598,15 @@ selected: ${JSON.stringify(this._toJson(this._multiCheckEnd))}</pre>
     }
     ha-card {
       max-width: 560px;
+    }
+    .card-text {
+      margin: 0;
+      padding: 0 var(--ha-space-4) var(--ha-space-2);
+    }
+    .vertical-divider {
+      align-self: stretch;
+      width: 1px;
+      background: var(--divider-color);
     }
     pre {
       padding: var(--ha-space-4);

@@ -474,6 +474,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           name: computeDeviceNameDisplay(device, this.hass.localize),
           model:
             device.model ||
+            device.model_id ||
             `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
           manufacturer:
             device.manufacturer ||

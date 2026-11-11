@@ -145,7 +145,7 @@ export const computeExclusionsPerTarget = (
  * `expandGroup` follows what the target is used for.
  */
 export const resolveItemExclusions = async (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   item: TargetItem,
   exclude: HassServiceTarget | undefined,
   primaryEntitiesOnly?: boolean,
@@ -155,7 +155,7 @@ export const resolveItemExclusions = async (
     return [];
   }
   const explained = await explainTarget(
-    hass.callWS,
+    callWS,
     { [`${item.type}_id`]: [item.id], exclude },
     expandGroup,
     primaryEntitiesOnly

@@ -1,9 +1,11 @@
 import { LitElement, nothing } from "lit";
-import type { HassEntity } from "home-assistant-js-websocket";
-import { customElement, property } from "lit/decorators";
-import type { HomeAssistant } from "../types";
+import type { HassEntity, HassServices } from "home-assistant-js-websocket";
+import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
+import { consumeEntityStates } from "../common/decorators/consume-context-entry";
 import { dynamicElement } from "../common/dom/dynamic-element-directive";
 import { stateCardType } from "../common/entity/state_card_type";
+import { servicesContext } from "../data/context";
 import "./state-card-alert";
 import "./state-card-button";
 import "./state-card-climate";
@@ -32,26 +34,39 @@ import "./state-card-water_heater";
 
 @customElement("state-card-content")
 class StateCardContent extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj!: HassEntity;
 
   @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
 
+  @state()
+  @consume({ context: servicesContext, subscribe: true })
+  private _services?: HassServices | null;
+
+  @state()
+  @consumeEntityStates({
+    entityIdPath: ["stateObj", "attributes", "entity_id"],
+  })
+  private _memberStates?: Record<string, HassEntity>;
+
   protected render() {
     let stateCard: string;
-    if (!this.stateObj || !this.hass) return nothing;
+    if (!this.stateObj) return nothing;
     if (
       this.stateObj.attributes &&
       "custom_ui_state_card" in this.stateObj.attributes
     ) {
       stateCard = this.stateObj.attributes.custom_ui_state_card;
     } else {
-      stateCard = "state-card-" + stateCardType(this.hass, this.stateObj);
+      stateCard =
+        "state-card-" +
+        stateCardType(
+          this._memberStates ?? {},
+          this._services ?? {},
+          this.stateObj
+        );
     }
 
     return dynamicElement(stateCard, {
-      hass: this.hass,
       stateObj: this.stateObj,
       inDialog: this.inDialog,
     });

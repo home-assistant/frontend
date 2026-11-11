@@ -478,14 +478,13 @@ export class HaConfigEntryRow extends LitElement {
                             expanded: this._devicesExpanded,
                           })}"
                         >
-                          <ha-icon-button
-                            class="expand-button ${classMap({
+                          <ha-svg-icon
+                            class="expand-icon ${classMap({
                               expanded: this._devicesExpanded,
                             })}"
                             .path=${mdiChevronDown}
                             slot="start"
-                          >
-                          </ha-icon-button>
+                          ></ha-svg-icon>
                           <span slot="headline"
                             >${this.hass.localize(
                               "ui.panel.config.integrations.config_entry.devices_without_subentry"
@@ -890,6 +889,12 @@ export class HaConfigEntryRow extends LitElement {
         transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
       }
       .expand-button.expanded {
+        transform: rotate(180deg);
+      }
+      .expand-icon {
+        transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .expand-icon.expanded {
         transform: rotate(180deg);
       }
       .config-entry-wrapper {
