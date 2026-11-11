@@ -1,3 +1,4 @@
+import type { ContextType } from "@lit/context";
 import "@home-assistant/webawesome/dist/components/popover/popover";
 import { mdiPlaylistMinus, mdiPlus, mdiTextureBox } from "@mdi/js";
 import Fuse from "fuse.js";
@@ -8,6 +9,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { consume } from "../common/decorators/consume";
+import { transform } from "../common/decorators/transform";
 import { ensureArray } from "../common/array/ensure-array";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
@@ -21,7 +23,16 @@ import {
   type FloorComboBoxItem,
 } from "../data/area_floor_picker";
 import { getConfigEntries, type ConfigEntry } from "../data/config_entries";
-import { labelsContext } from "../data/context";
+import {
+  apiContext,
+  configContext,
+  connectionContext,
+  internationalizationContext,
+  labelsContext,
+  registriesContext,
+  statesContext,
+  uiContext,
+} from "../data/context";
 import {
   deviceComboBoxKeys,
   getDevices,
@@ -47,7 +58,6 @@ import {
   type TargetType,
   type TargetTypeFloorless,
 } from "../data/target";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { isHelperDomain } from "../panels/config/helpers/const";
 import { showHelperDetailDialog } from "../panels/config/helpers/show-dialog-helper-detail";
 import {
@@ -55,7 +65,11 @@ import {
   multiTermSortedSearch,
   type FuseWeightedKey,
 } from "../resources/fuseMultiTerm";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type {
+  HomeAssistant,
+  HomeAssistantUI,
+  ValueChangedEvent,
+} from "../types";
 import { brandsUrl } from "../util/brands-url";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-button";
@@ -89,9 +103,7 @@ const isTargetType = (value: string): value is TargetType =>
   value === "floor";
 
 @customElement("ha-target-picker")
-export class HaTargetPicker extends SubscribeMixin(LitElement) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
+export class HaTargetPicker extends LitElement {
   @property({ attribute: false }) public value?: HassServiceTargetWithExclude;
 
   @property() public helper?: string;
@@ -157,6 +169,34 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   @consume({ context: labelsContext, subscribe: true })
   private _labelRegistry!: LabelRegistryEntry[];
 
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, boolean | undefined>({
+    transformer: (ui) => ui?.themes?.darkMode,
+  })
+  private _darkMode?: boolean;
+
+  @consume({ context: configContext, subscribe: true })
+  private _config?: ContextType<typeof configContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api?: ContextType<typeof apiContext>;
+
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection?: ContextType<typeof connectionContext>;
+
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   @query("ha-generic-picker.exclude") private _excludePicker?: HaGenericPicker;
@@ -167,7 +207,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _getDevicesMemoized = memoizeOne(
     (
-      hass: HomeAssistant,
+      states: HomeAssistant["states"],
+      registries: ContextType<typeof registriesContext>,
+      i18n: ContextType<typeof internationalizationContext>,
       configEntryLookup: Record<string, ConfigEntry>,
       includeDomains?: string[],
       includeDeviceClasses?: string[],
@@ -178,13 +220,13 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       idPrefix?: string
     ) =>
       getDevices({
-        states: hass.states,
-        areas: hass.areas,
-        devices: hass.devices,
-        entities: hass.entities,
-        localize: hass.localize,
-        language: hass.locale.language,
-        translationMetadata: hass.translationMetadata,
+        states,
+        areas: registries.areas,
+        devices: registries.devices,
+        entities: registries.entities,
+        localize: i18n.localize,
+        language: i18n.locale.language,
+        translationMetadata: i18n.translationMetadata,
         configEntryLookup,
         includeDomains,
         includeDeviceClasses,
@@ -201,7 +243,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _getEntitiesMemoized = memoizeOne(
     (
-      hass: HomeAssistant,
+      states: HomeAssistant["states"],
+      registries: ContextType<typeof registriesContext>,
+      i18n: ContextType<typeof internationalizationContext>,
       includeDomains?: string[],
       excludeDomains?: string[],
       entityFilter?: HaEntityPickerEntityFilterFunc,
@@ -212,7 +256,15 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       value?: string,
       idPrefix?: string
     ) =>
-      getEntities(hass, {
+      getEntities({
+        states,
+        entities: registries.entities,
+        devices: registries.devices,
+        areas: registries.areas,
+        floors: registries.floors,
+        localize: i18n.localize,
+        language: i18n.language,
+        translationMetadata: i18n.translationMetadata,
         includeDomains,
         excludeDomains,
         entityFilter,
@@ -228,7 +280,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   private _getAreasAndFloorsMemoized = memoizeOne(getAreasAndFloors);
 
   private get _showEntityId() {
-    return this.hass.userData?.showEntityIdPicker;
+    return this._config?.userData?.showEntityIdPicker;
   }
 
   private _fuseIndexes = {
@@ -248,36 +300,34 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @state() private _pendingEntityId?: string;
 
-  public willUpdate(changedProps: PropertyValues<this>) {
+  public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
       this._loadConfigEntries();
     }
 
+    const devices = this._registries?.devices;
     const devicesChanged =
-      changedProps.has("hass") &&
-      this.hass.devices !== changedProps.get("hass")?.devices;
+      changedProps.has("_registries") &&
+      devices !==
+        (
+          changedProps.get("_registries") as
+            ContextType<typeof registriesContext> | undefined
+        )?.devices;
     if (
       (changedProps.has("value") || devicesChanged) &&
-      this.hass &&
+      devices &&
       this._compositeSplits === undefined &&
       !this._loadingCompositeSplits &&
       this.value?.device_id &&
-      ensureArray(this.value.device_id).some(
-        (deviceId) => !this.hass.devices[deviceId]
-      )
+      ensureArray(this.value.device_id).some((deviceId) => !devices[deviceId])
     ) {
       // A referenced device is missing from the registry; it might be a legacy
       // composite device that was split. Fetch the split map to offer a fix.
       this._loadCompositeSplits();
     }
 
-    const registriesChanged =
-      changedProps.has("hass") &&
-      (devicesChanged ||
-        this.hass.entities !== changedProps.get("hass")?.entities ||
-        this.hass.areas !== changedProps.get("hass")?.areas);
     if (
       changedProps.has("value") ||
       changedProps.has("allowExclude") ||
@@ -285,17 +335,15 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       changedProps.has("deviceFilter") ||
       changedProps.has("includeDomains") ||
       changedProps.has("includeDeviceClasses") ||
-      changedProps.has("entityFilter") ||
-      registriesChanged
+      changedProps.has("entityFilter")
     ) {
       this._exclusions.resolve();
     }
 
     if (
       this._pendingEntityId &&
-      changedProps.has("hass") &&
-      this.hass.states !== changedProps.get("hass")?.states &&
-      this.hass.states[this._pendingEntityId]
+      changedProps.has("_states") &&
+      this._states?.[this._pendingEntityId]
     ) {
       this._addTarget(this._pendingEntityId, "entity");
       this._pendingEntityId = undefined;
@@ -453,7 +501,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       return nothing;
     }
     return html`
-      <div class="exclusion-list-label">${this.hass.localize(label)}</div>
+      <div class="exclusion-list-label">${this._i18n.localize(label)}</div>
       <ha-list-base>
         ${items.map(
           (item) =>
@@ -486,7 +534,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           .helper=${this.helper}
           .sections=${sections}
           .notFoundLabel=${this._noTargetFoundLabel}
-          .emptyLabel=${this.hass.localize(
+          .emptyLabel=${this._i18n.localize(
             "ui.components.target-picker.no_targets"
           )}
           .selectedSection=${this._selectedSection}
@@ -495,7 +543,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           .getItems=${this._getItems}
           @value-changed=${this._targetPicked}
           @picker-closed=${this._handlePickerClosed}
-          .addButtonLabel=${this.hass.localize(
+          .addButtonLabel=${this._i18n.localize(
             "ui.components.target-picker.add_target"
           )}
           .getAdditionalItems=${this._getAdditionalItems}
@@ -510,7 +558,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .disabled=${this.disabled}
                   .sections=${sections}
                   .notFoundLabel=${this._noTargetFoundLabel}
-                  .emptyLabel=${this.hass.localize(
+                  .emptyLabel=${this._i18n.localize(
                     "ui.components.target-picker.no_targets"
                   )}
                   .selectedSection=${this._excludeSection}
@@ -529,7 +577,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                       .path=${mdiPlaylistMinus}
                       slot="start"
                     ></ha-svg-icon>
-                    ${this.hass.localize(
+                    ${this._i18n.localize(
                       "ui.components.target-picker.exclude_target"
                     )}
                   </ha-button>
@@ -545,20 +593,20 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     return [
       {
         id: "entity",
-        label: this.hass.localize("ui.components.target-picker.type.entities"),
+        label: this._i18n.localize("ui.components.target-picker.type.entities"),
       },
       {
         id: "device",
-        label: this.hass.localize("ui.components.target-picker.type.devices"),
+        label: this._i18n.localize("ui.components.target-picker.type.devices"),
       },
       {
         id: "area",
-        label: this.hass.localize("ui.components.target-picker.type.areas"),
+        label: this._i18n.localize("ui.components.target-picker.type.areas"),
       },
       "separator" as const,
       {
         id: "label",
-        label: this.hass.localize("ui.components.target-picker.type.labels"),
+        label: this._i18n.localize("ui.components.target-picker.type.labels"),
       },
     ];
   }
@@ -687,7 +735,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     this._excludeSection = section as TargetTypeFloorless | undefined;
 
     return this._getItemsMemoized(
-      this.hass.localize,
+      this._i18n,
       this._excludeEntityFilter(
         this.entityFilter,
         this._exclusions.includedEntities
@@ -699,7 +747,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       undefined,
       searchString,
       this._configEntryLookup,
-      this.hass.entities,
+      this._states,
+      this._registries,
       this._excludeSection,
       this._excludePickerIncludedDevices(this.value)
     );
@@ -816,7 +865,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       domain,
       dialogClosedCallback: (item) => {
         if (item.entityId) {
-          if (this.hass.states[item.entityId]) {
+          if (this._states?.[item.entityId]) {
             this._addTarget(item.entityId, "entity");
           } else {
             this._pendingEntityId = item.entityId;
@@ -903,7 +952,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     this._selectedSection = section as TargetTypeFloorless | undefined;
 
     return this._getItemsMemoized(
-      this.hass.localize,
+      this._i18n,
       this.entityFilter,
       this.deviceFilter,
       this.includeDomains,
@@ -912,14 +961,15 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       this._replaceTarget,
       searchString,
       this._configEntryLookup,
-      this.hass.entities,
+      this._states,
+      this._registries,
       this._selectedSection
     );
   };
 
   private _getItemsMemoized = memoizeOne(
     (
-      localize: HomeAssistant["localize"],
+      i18n: ContextType<typeof internationalizationContext>,
       entityFilter: this["entityFilter"],
       deviceFilter: this["deviceFilter"],
       includeDomains: this["includeDomains"],
@@ -928,11 +978,13 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       replaceTarget: TargetItem | undefined,
       searchTerm: string,
       configEntryLookup: Record<string, ConfigEntry>,
-      _entities: HomeAssistant["entities"],
+      states: HomeAssistant["states"],
+      registries: ContextType<typeof registriesContext>,
       filterType?: TargetTypeFloorless,
       // Hidden without hiding their child devices.
       hiddenDeviceIds?: string[]
     ) => {
+      const localize = i18n.localize;
       const replacingEntityId =
         replaceTarget?.type === "entity" ? replaceTarget.id : undefined;
       const replacingDeviceId =
@@ -950,7 +1002,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
       if (!filterType || filterType === "entity") {
         let entityItems = this._getEntitiesMemoized(
-          this.hass,
+          states,
+          registries,
+          i18n,
           includeDomains,
           undefined,
           entityFilter,
@@ -1004,7 +1058,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 ...(hiddenDeviceIds ?? []),
                 ...(selectedDeviceIds ?? []),
                 ...(selectedDeviceIds
-                  ? Object.values(this.hass.devices)
+                  ? Object.values(registries.devices)
                       .filter(
                         (device) =>
                           device.parent_device_id !== null &&
@@ -1015,7 +1069,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               ]
             : undefined;
         let deviceItems = this._getDevicesMemoized(
-          this.hass,
+          states,
+          registries,
+          i18n,
           configEntryLookup,
           includeDomains,
           includeDeviceClasses,
@@ -1066,11 +1122,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
       if (!filterType || filterType === "area") {
         let areasAndFloors = this._getAreasAndFloorsMemoized(
-          this.hass.states,
-          this.hass.floors,
-          this.hass.areas,
-          this.hass.devices,
-          this.hass.entities,
+          states,
+          registries.floors,
+          registries.areas,
+          registries.devices,
+          registries.entities,
           memoizeOne((value: AreaFloorValue): string =>
             [value.type, value.id].join(SEPARATOR)
           ),
@@ -1131,10 +1187,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
       if (!filterType || filterType === "label") {
         let labels = this._getLabelsMemoized(
-          this.hass.states,
-          this.hass.areas,
-          this.hass.devices,
-          this.hass.entities,
+          states,
+          registries.areas,
+          registries.devices,
+          registries.entities,
           this._labelRegistry,
           includeDomains,
           undefined,
@@ -1195,30 +1251,32 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _getAdditionalItems = () => this._getCreateItems(this.createDomains);
+  private _getAdditionalItems = () =>
+    this._getCreateItems(this.createDomains, this._i18n.localize);
 
   private _getCreateItems = memoizeOne(
-    (createDomains: this["createDomains"]) => {
+    (
+      createDomains: this["createDomains"],
+      localize: ContextType<typeof internationalizationContext>["localize"]
+    ) => {
       if (!createDomains?.length) {
         return [];
       }
 
       return createDomains.map((domain) => {
-        const primary = this.hass.localize(
+        const primary = localize(
           "ui.components.entity.entity-picker.create_helper",
           {
             domain: isHelperDomain(domain)
-              ? this.hass.localize(`ui.panel.config.helpers.types.${domain}`)
-              : domainToName(this.hass.localize, domain),
+              ? localize(`ui.panel.config.helpers.types.${domain}`)
+              : domainToName(localize, domain),
           }
         );
 
         return {
           id: CREATE_ID + domain,
           primary: primary,
-          secondary: this.hass.localize(
-            "ui.components.entity.entity-picker.new_entity"
-          ),
+          secondary: localize("ui.components.entity.entity-picker.new_entity"),
           icon_path: mdiPlus,
         } satisfies EntityComboBoxItem;
       });
@@ -1226,18 +1284,24 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   );
 
   private async _loadConfigEntries() {
-    const configEntries = await getConfigEntries(this.hass);
+    if (!this._api) {
+      return;
+    }
+    const configEntries = await getConfigEntries(this._api);
     this._configEntryLookup = Object.fromEntries(
       configEntries.map((entry) => [entry.entry_id, entry])
     );
   }
 
   private async _loadCompositeSplits() {
+    if (!this._api || !this._connection) {
+      return;
+    }
     this._loadingCompositeSplits = true;
     try {
       this._compositeSplits = await fetchDeviceCompositeSplits(
-        this.hass.connection,
-        this.hass.callWS
+        this._connection.connection,
+        this._api.callWS
       );
     } catch (_err) {
       this._compositeSplits = {};
@@ -1281,8 +1345,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       type === "device" && !!(item as DevicePickerItem).is_child;
     if (type === "area" || type === "floor" || isChildDeviceRow) {
       rtl = computeRTL(
-        this.hass.language,
-        this.hass.translationMetadata.translations
+        this._i18n.language,
+        this._i18n.translationMetadata.translations
       );
       hasFloor =
         type === "area" && !!(item as FloorComboBoxItem).area?.floor_id;
@@ -1348,9 +1412,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                           {
                             domain: (item as DevicePickerItem).domain!,
                             type: "icon",
-                            darkOptimized: this.hass.themes.darkMode,
+                            darkOptimized: this._darkMode,
                           },
-                          this.hass.auth.data.hassUrl
+                          this._config?.auth?.data.hassUrl
                         )}
                       />
                     `
@@ -1396,7 +1460,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   };
 
   private _noTargetFoundLabel = (search: string) =>
-    this.hass.localize("ui.components.target-picker.no_target_found", {
+    this._i18n.localize("ui.components.target-picker.no_target_found", {
       term: html`<b>‘${search}’</b>`,
     });
 
@@ -1404,7 +1468,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     caseInsensitiveStringCompare(
       (entityA as PickerComboBoxItem).sorting_label!,
       (entityB as PickerComboBoxItem).sorting_label!,
-      this.hass?.locale.language ?? navigator.language
+      this._i18n?.locale.language ?? navigator.language
     );
 
   static styles = css`

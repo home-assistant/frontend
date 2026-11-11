@@ -3,14 +3,24 @@ import memoizeOne from "memoize-one";
 import {
   consumeContext,
   ContextController,
+  ContextSubscriptionController,
 } from "../../common/decorators/consume";
+import {
+  apiContext,
+  registriesContext,
+  statesContext,
+} from "../../data/context";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import {
   explainTarget,
   type HassServiceTargetWithExclude,
   type TargetItem,
 } from "../../data/target";
-import type { HomeAssistant } from "../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantRegistries,
+} from "../../types";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
 import { filterTargetEntries } from "./filter-target-entries";
 import { targetExpandGroupContext } from "./target-expand-group-context";
@@ -26,7 +36,6 @@ import {
 
 export type TargetExclusionsHost = ReactiveControllerHost &
   HTMLElement & {
-    hass: HomeAssistant;
     value?: HassServiceTargetWithExclude;
     allowExclude: boolean;
     primaryEntitiesOnly?: boolean;
@@ -55,11 +64,31 @@ export class TargetExclusionsController extends ContextController {
   @consumeContext({ context: targetExpandGroupContext, subscribe: true })
   private _expandGroup?: boolean;
 
+  @consumeContext({ context: registriesContext, subscribe: true })
+  private _registries?: HomeAssistantRegistries;
+
+  @consumeContext({
+    context: apiContext,
+    subscribe: true,
+    transform: (api) => api?.callWS,
+  })
+  private _callWS?: HomeAssistantApi["callWS"];
+
+  private _states?: HomeAssistant["states"] | null;
+
   private _request = 0;
 
   constructor(host: TargetExclusionsHost) {
     super(host);
     this._host = host;
+    // States change all the time, so they only resolve again once loaded.
+    new ContextSubscriptionController(host, statesContext, (states) => {
+      const loaded = !this._states && !!states;
+      this._states = states;
+      if (loaded) {
+        this.resolve();
+      }
+    });
   }
 
   protected contextUpdated() {
@@ -78,9 +107,9 @@ export class TargetExclusionsController extends ContextController {
    */
   public async resolve({ force = false }: { force?: boolean } = {}) {
     const request = ++this._request;
-    const { hass, value, allowExclude } = this._host;
+    const { value, allowExclude } = this._host;
     if (
-      !hass ||
+      !this._ready ||
       !value ||
       (!force &&
         !hasIncludedTargets(value.exclude) &&
@@ -140,7 +169,7 @@ export class TargetExclusionsController extends ContextController {
     item: TargetItem
   ): Promise<TargetExclusion | undefined> {
     const { value } = this._host;
-    if (!value) {
+    if (!this._ready || !value) {
       return undefined;
     }
     const explained = await this._explain({
@@ -152,9 +181,19 @@ export class TargetExclusionsController extends ContextController {
     ]?.[0];
   }
 
+  private get _ready(): boolean {
+    return !!(
+      this._callWS &&
+      this._states &&
+      this._registries?.entities &&
+      this._registries.devices &&
+      this._registries.areas
+    );
+  }
+
   private _explain(target: HassServiceTargetWithExclude) {
     return explainTarget(
-      this._host.hass.callWS,
+      this._callWS!,
       target,
       this.expandGroup,
       this._host.primaryEntitiesOnly ?? true
@@ -170,8 +209,9 @@ export class TargetExclusionsController extends ContextController {
   // What the picker's filters leave of a target, narrowed like the target's
   // row, so what an exclusion takes out matches what the row counts.
   private _keeps(): TargetNarrowing {
+    const states = this._states!;
+    const { entities, devices, areas } = this._registries!;
     const {
-      hass,
       deviceFilter,
       entityFilter,
       includeDomains,
@@ -180,10 +220,10 @@ export class TargetExclusionsController extends ContextController {
     } = this._host;
     return (include) =>
       filterTargetEntries(
-        hass.states,
-        hass.entities,
-        hass.devices,
-        hass.areas,
+        states,
+        entities,
+        devices,
+        areas,
         include,
         {
           referenced_areas: include.referenced_areas,

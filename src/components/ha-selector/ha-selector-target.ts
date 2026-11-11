@@ -1,9 +1,17 @@
+import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
+import { consume } from "../../common/decorators/consume";
+import {
+  apiContext,
+  devicesContext,
+  entitiesContext,
+  statesContext,
+} from "../../data/context";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import { getDeviceIntegrationLookup } from "../../data/device/device_registry";
 import type { EntitySources } from "../../data/entity/entity_sources";
@@ -28,8 +36,6 @@ const ALL_DEVICES = () => true;
 
 @customElement("ha-selector-target")
 export class HaTargetSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: TargetSelector;
 
   @property({ type: Object }) public value?: HassServiceTargetWithExclude;
@@ -44,9 +50,23 @@ export class HaTargetSelector extends LitElement {
 
   @state() private _createDomains: string[] | undefined;
 
+  @consume({ context: apiContext, subscribe: true })
+  private _api?: ContextType<typeof apiContext>;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states?: ContextType<typeof statesContext>;
+
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities?: ContextType<typeof entitiesContext>;
+
+  @consume({ context: devicesContext, subscribe: true })
+  private _devices?: ContextType<typeof devicesContext>;
+
+  private _fetchedEntitySources = false;
+
   private _deviceIntegrationLookup = memoizeOne(
-    (entities: HomeAssistant["entities"]) =>
-      getDeviceIntegrationLookup(Object.values(entities))
+    (entities: HomeAssistant["entities"] | undefined) =>
+      getDeviceIntegrationLookup(Object.values(entities ?? {}))
   );
 
   private _hasIntegration(selector: TargetSelector) {
@@ -65,15 +85,18 @@ export class HaTargetSelector extends LitElement {
   protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (
-      changedProperties.has("selector") &&
-      this._hasIntegration(this.selector) &&
-      !this._entitySources
+      this._api &&
+      !this._fetchedEntitySources &&
+      this._hasIntegration(this.selector)
     ) {
-      fetchEntitySourcesWithCache(this.hass.callWS, this.hass.states).then(
-        (sources) => {
+      this._fetchedEntitySources = true;
+      fetchEntitySourcesWithCache(this._api.callWS, this._states ?? {})
+        .then((sources) => {
           this._entitySources = sources;
-        }
-      );
+        })
+        .catch(() => {
+          this._entitySources ??= {};
+        });
     }
     if (changedProperties.has("selector")) {
       this._createDomains = computeCreateDomains(this.selector);
@@ -87,7 +110,6 @@ export class HaTargetSelector extends LitElement {
 
     return html` ${this.label ? html`<label>${this.label}</label>` : nothing}
       <ha-target-picker
-        .hass=${this.hass}
         .value=${this.value}
         .helper=${this.helper}
         .deviceFilter=${this._deviceFilter(this.selector.target?.device)}
@@ -118,8 +140,8 @@ export class HaTargetSelector extends LitElement {
             filter,
             entity,
             entitySources,
-            this.hass.entities,
-            this.hass.devices
+            this._entities,
+            this._devices
           )
         );
     }
@@ -132,7 +154,7 @@ export class HaTargetSelector extends LitElement {
       }
       return (device: DeviceRegistryEntry): boolean => {
         const deviceIntegrations = this._hasIntegration(this.selector)
-          ? this._deviceIntegrationLookup(this.hass.entities)
+          ? this._deviceIntegrationLookup(this._entities)
           : undefined;
         return ensureArray(filters).some((filter) =>
           filterSelectorDevices(filter, device, deviceIntegrations)
