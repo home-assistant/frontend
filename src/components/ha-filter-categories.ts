@@ -87,6 +87,7 @@ export class HaFilterCategories extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._unsubscribeCategories();
+    this._categories = [];
   }
 
   protected willUpdate(changedProps: PropertyValues) {
