@@ -210,6 +210,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(
                     .value=${this._serviceData}
                     .narrow=${this.narrow}
                     show-service-id
+                    loaded-only
                     @value-changed=${this._serviceDataChanged}
                     class="card-content ui-mode-content"
                   ></ha-service-control>

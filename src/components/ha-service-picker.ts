@@ -5,6 +5,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { isValidServiceId } from "../common/entity/valid_service_id";
@@ -64,6 +65,10 @@ class HaServicePicker extends LitElement {
 
   @property({ attribute: "show-service-id", type: Boolean })
   public showServiceId = false;
+
+  /** Only offer services of loaded integrations; others are described but cannot be performed. */
+  @property({ attribute: "loaded-only", type: Boolean })
+  public loadedOnly = false;
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
@@ -178,12 +183,17 @@ class HaServicePicker extends LitElement {
   }
 
   private _getItems = () =>
-    this._serviceItems(this._i18n.localize, this._services);
+    this._serviceItems(
+      this._i18n.localize,
+      this._services,
+      this.loadedOnly ? this._config.config : undefined
+    );
 
   private _serviceItems = memoizeOne(
     (
       localize: LocalizeFunc,
-      services: HomeAssistant["services"]
+      services: HomeAssistant["services"],
+      loadedConfig: HomeAssistant["config"] | undefined
     ): ServiceComboBoxItem[] => {
       if (!services) {
         return [];
@@ -193,6 +203,9 @@ class HaServicePicker extends LitElement {
       Object.keys(services)
         .sort()
         .forEach((domain) => {
+          if (loadedConfig && !isComponentLoaded(loadedConfig, domain)) {
+            return;
+          }
           const services_keys = Object.keys(services[domain]).sort();
 
           for (const service of services_keys) {
