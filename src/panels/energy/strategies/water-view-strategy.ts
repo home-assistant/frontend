@@ -83,7 +83,7 @@ export class WaterViewStrategy extends ReactiveElement {
         type: "energy-water-graph",
         collection_key: collectionKey,
         grid_options: {
-          columns: 24,
+          columns: 36,
         },
       });
     }
@@ -97,7 +97,7 @@ export class WaterViewStrategy extends ReactiveElement {
         collection_key: collectionKey,
         types: ["water"],
         grid_options: {
-          columns: 12,
+          columns: 36,
         },
       });
     }

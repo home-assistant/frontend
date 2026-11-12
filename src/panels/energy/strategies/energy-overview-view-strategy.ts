@@ -98,6 +98,8 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
     ) {
       view.sections!.push({
         type: "grid",
+        // Wide enough for the extra "previous" columns when comparing
+        column_span: 2,
         cards: [
           {
             title: hass.localize(
@@ -106,6 +108,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
             type: "energy-sources-table",
             collection_key: collectionKey,
             show_only_totals: true,
+            grid_options: { columns: "full" },
           },
         ],
       });

@@ -83,7 +83,7 @@ export class GasViewStrategy extends ReactiveElement {
         type: "energy-gas-graph",
         collection_key: collectionKey,
         grid_options: {
-          columns: 24,
+          columns: 36,
         },
       });
     }
@@ -97,7 +97,7 @@ export class GasViewStrategy extends ReactiveElement {
         collection_key: collectionKey,
         types: ["gas"],
         grid_options: {
-          columns: 12,
+          columns: 36,
         },
       });
     }
