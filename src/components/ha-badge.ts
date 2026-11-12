@@ -71,9 +71,10 @@ export class HaBadge extends LitElement {
       padding: 0px 12px;
       box-sizing: border-box;
       width: auto;
+      /* Concentric with the picture, which sits 3px inside the badge */
       border-radius: var(
         --ha-badge-border-radius,
-        calc(var(--ha-badge-size, 36px) / 2)
+        calc(var(--ha-picture-border-radius) + 3px)
       );
       background: var(
         --ha-card-background,
@@ -132,8 +133,7 @@ export class HaBadge extends LitElement {
     ::slotted(img[slot="icon"]) {
       width: 30px;
       height: 30px;
-      /* Circular to stay concentric with the pill-shaped badge */
-      border-radius: var(--ha-border-radius-circle);
+      border-radius: var(--ha-picture-border-radius);
       object-fit: cover;
       overflow: hidden;
       margin-left: -10px;
