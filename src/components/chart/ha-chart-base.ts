@@ -237,6 +237,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   private _maskColor = "";
 
+  private _maskShown = false;
+
   // Separate from _isZoomed, whose touch handling reruns graph layouts
   @state() private _isGraphRoamed = false;
 
@@ -1092,6 +1094,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     if (!range) {
       return undefined;
     }
+    this._maskShown = true;
     return {
       silent: true,
       z: 10,
@@ -1685,7 +1688,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         }
       }
       // ECharts merges series by id and would keep a mask left out here
-      if (s.type === "line" || s.type === "bar") {
+      if (this._maskShown && (s.type === "line" || s.type === "bar")) {
         result = {
           ...result,
           markArea:
