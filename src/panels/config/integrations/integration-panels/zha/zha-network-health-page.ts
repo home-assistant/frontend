@@ -560,8 +560,15 @@ class ZHANetworkHealthPage extends LitElement {
       parent ? this._t("via_router", { router: parent }) : undefined,
     ].filter(Boolean);
 
+    // A firmware update is installed from the device page, which the ZHA
+    // device page does not offer.
+    const href =
+      key === "firmware_update"
+        ? `/config/devices/device/${device.device_reg_id}`
+        : `/config/zha/device/${device.ieee}`;
+
     return html`
-      <ha-list-item-button href=${`/config/zha/device/${device.ieee}`}>
+      <ha-list-item-button href=${href}>
         <ha-svg-icon
           slot="start"
           class=${iconClass}
