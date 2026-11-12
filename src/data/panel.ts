@@ -11,7 +11,7 @@ import {
 import type { LocalizeKeys } from "../common/translations/localize";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 import type { HomeAssistant, PanelInfo } from "../types";
-import { MARKETPLACE_NAME } from "./marketplace/common";
+import { MARKETPLACE_NAME } from "../common/translations/name-placeholders";
 
 export const APP_PANEL = "app";
 export const HOME_PANEL = "home";

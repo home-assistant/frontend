@@ -3,6 +3,7 @@ import type { HTMLTemplateResult } from "lit";
 import { polyfillLocaleData } from "../../resources/polyfills/locale-data-polyfill";
 import type { Resources, TranslationDict } from "../../types";
 import { fireEvent } from "../dom/fire_event";
+import { NAME_PLACEHOLDERS } from "./name-placeholders";
 
 // Exclude some patterns from key type checking for now
 // These are intended to be removed as errors are fixed
@@ -140,7 +141,10 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
     }
 
     try {
-      return translatedMessage.format<string>(argObject) as string;
+      return translatedMessage.format<string>({
+        ...NAME_PLACEHOLDERS,
+        ...argObject,
+      }) as string;
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("Translation error", key, language, err);
