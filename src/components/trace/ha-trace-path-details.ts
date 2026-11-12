@@ -111,7 +111,6 @@ export class HaTracePathDetails extends LitElement {
     context: automationTriggerContext,
     initialValue: {
       options: [],
-      optionsStatus: "loaded",
       showIndices: false,
       select: () => true,
       fixDuplicateIds: async () => undefined,

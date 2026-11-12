@@ -119,20 +119,21 @@ describe("AutomationTriggerController with a blueprint automation", () => {
 
   it("reports the options as loading until the triggers arrive", async () => {
     update(blueprint("motion.yaml"));
-    expect(context().optionsStatus).toBe("loading");
+    expect(context().blueprintStatus).toBe("loading");
 
     fetch.pending[0].resolve([trigger("motion_on")]);
     await settle();
 
-    expect(context().optionsStatus).toBe("loaded");
+    expect(context().blueprintStatus).toBe("loaded");
   });
 
-  it("reports a blueprint without triggers as loaded", async () => {
+  it("reports a blueprint whose triggers have no IDs as loaded", async () => {
     update(blueprint("motion.yaml"));
-    fetch.pending[0].resolve(undefined);
+    fetch.pending[0].resolve([{ trigger: "event", event_type: "motion" }]);
     await settle();
 
-    expect(context().optionsStatus).toBe("loaded");
+    expect(ids()).toEqual([]);
+    expect(context().blueprintStatus).toBe("loaded");
   });
 
   it("reports a blueprint that never substituted as failed", async () => {
@@ -141,7 +142,7 @@ describe("AutomationTriggerController with a blueprint automation", () => {
     await settle();
 
     expect(ids()).toEqual([]);
-    expect(context().optionsStatus).toBe("failed");
+    expect(context().blueprintStatus).toBe("failed");
   });
 
   it("keeps the last triggers listed, as loading, while new inputs load", async () => {
@@ -152,14 +153,14 @@ describe("AutomationTriggerController with a blueprint automation", () => {
     update(blueprint("motion.yaml", { id: "motion_detected" }));
 
     expect(ids()).toEqual(["motion_on"]);
-    expect(context().optionsStatus).toBe("loading");
+    expect(context().blueprintStatus).toBe("loading");
 
     await vi.runAllTimersAsync();
     fetch.pending[1].resolve([trigger("motion_detected")]);
     await settle();
 
     expect(ids()).toEqual(["motion_detected"]);
-    expect(context().optionsStatus).toBe("loaded");
+    expect(context().blueprintStatus).toBe("loaded");
   });
 
   it("numbers no triggers once a blueprint replaces an automation with an open sidebar", () => {
@@ -217,7 +218,7 @@ describe("AutomationTriggerController with a blueprint automation", () => {
     await settle();
 
     expect(ids()).toEqual(["motion_on"]);
-    expect(context().optionsStatus).toBe("failed");
+    expect(context().blueprintStatus).toBe("failed");
   });
 
   it("drops the triggers of a blueprint that is no longer used", async () => {
@@ -246,7 +247,7 @@ describe("AutomationTriggerController with a blueprint automation", () => {
     });
 
     expect(ids()).toEqual(["own"]);
-    expect(context().optionsStatus).toBe("loaded");
+    expect(context().blueprintStatus).toBeUndefined();
     expect(context().select(condition, ["own"])).toBe(true);
     expect(commit).toHaveBeenCalledOnce();
   });

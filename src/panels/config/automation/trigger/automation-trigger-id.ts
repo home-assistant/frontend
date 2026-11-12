@@ -39,17 +39,19 @@ export interface TriggerIdOption {
 }
 
 /**
- * Whether options list every trigger. Only a blueprint automation is ever not
- * "loaded": its triggers are fetched with its inputs substituted. While
- * "loading" or "failed", options keep the last triggers fetched, if any.
+ * Whether a blueprint's substituted triggers are known. While "loading" or
+ * "failed", options keep the last triggers fetched, if any.
  */
-export type TriggerOptionsStatus = "loaded" | "loading" | "failed";
+export type BlueprintTriggersStatus = "loaded" | "loading" | "failed";
 
 /** Controller-provided options and operations for editors, sidebars, and row summaries. */
 export interface AutomationTriggerContext {
   options: TriggerIdOption[];
-  /** Missing IDs can only be flagged once "loaded". */
-  optionsStatus: TriggerOptionsStatus;
+  /**
+   * Left out for an automation with its own triggers. Set for a blueprint
+   * automation, whose missing IDs can only be flagged once "loaded".
+   */
+  blueprintStatus?: BlueprintTriggersStatus;
   /** True while the user is editing a `triggered_by` condition; trigger rows show their index badges only in this state. */
   showIndices: boolean;
   /**
@@ -66,6 +68,13 @@ export interface AutomationTriggerContext {
    */
   updateTriggerId: (original: Trigger, updated: Trigger) => boolean;
 }
+
+/** Whether options list every trigger, so an ID not among them is really missing. */
+export const triggerOptionsResolved = (
+  context: AutomationTriggerContext | undefined
+): boolean =>
+  context?.blueprintStatus === undefined ||
+  context.blueprintStatus === "loaded";
 
 export const automationTriggerContext =
   createContext<AutomationTriggerContext>("automationTriggers");

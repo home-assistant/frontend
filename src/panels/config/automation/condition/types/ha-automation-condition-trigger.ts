@@ -19,6 +19,7 @@ import type { TriggerCondition } from "../../../../../data/automation";
 import {
   automationTriggerContext,
   hasCustomTriggerId,
+  triggerOptionsResolved,
   type AutomationTriggerContext,
   type TriggerIdOption,
 } from "../../trigger/automation-trigger-id";
@@ -55,8 +56,8 @@ export class HaTriggerCondition extends LitElement {
     const selectedIds = (ensureArray(this.condition.id) ?? []).filter(Boolean);
     const triggerIdOptions = this._triggers?.options ?? [];
     const missingIds = this._missingIds(this.condition.id, triggerIdOptions);
-    const status = this._triggers?.optionsStatus ?? "loaded";
-    const resolved = status === "loaded";
+    const status = this._triggers?.blueprintStatus;
+    const resolved = triggerOptionsResolved(this._triggers);
 
     if (!triggerIdOptions.length && !selectedIds.length) {
       switch (status) {
@@ -69,6 +70,10 @@ export class HaTriggerCondition extends LitElement {
             "ui.panel.config.automation.editor.conditions.type.trigger.blueprint_triggers_pending"
           );
         case "loaded":
+          return this.hass.localize(
+            "ui.panel.config.automation.editor.conditions.type.trigger.blueprint_no_trigger_ids"
+          );
+        case undefined:
           return this.hass.localize(
             "ui.panel.config.automation.editor.conditions.type.trigger.no_triggers"
           );

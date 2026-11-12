@@ -27,7 +27,7 @@ import {
   replaceLeafTrigger,
   updateTriggerCondition,
   type TriggerIdOption,
-  type TriggerOptionsStatus,
+  type BlueprintTriggersStatus,
 } from "./automation-trigger-id";
 import { preserveAutomationRowKeys } from "../ha-automation-sortable-list-mixin";
 
@@ -77,7 +77,7 @@ export class AutomationTriggerController implements ReactiveController {
   private _blueprintTriggers?: Trigger | Trigger[];
 
   /** "failed" while required inputs are empty. */
-  private _blueprintStatus: TriggerOptionsStatus = "loading";
+  private _blueprintStatus: BlueprintTriggersStatus = "loading";
 
   constructor(
     private _host: LitElement,
@@ -94,7 +94,6 @@ export class AutomationTriggerController implements ReactiveController {
       context: automationTriggerContext,
       initialValue: {
         options: [],
-        optionsStatus: "loaded",
         showIndices: false,
         select: this._selectTriggerIds,
         fixDuplicateIds: this._fixDuplicateTriggerIds,
@@ -116,25 +115,25 @@ export class AutomationTriggerController implements ReactiveController {
       return;
     }
     let options: TriggerIdOption[];
-    let optionsStatus: TriggerOptionsStatus = "loaded";
+    let blueprintStatus: BlueprintTriggersStatus | undefined;
     let showIndices = this._provider.value.showIndices;
     if ("use_blueprint" in config && config.use_blueprint) {
       this._requestBlueprintTriggers(config.use_blueprint);
       options = this._getBlueprintTriggerIdOptions(this._blueprintTriggers);
-      optionsStatus = this._blueprintStatus;
+      blueprintStatus = this._blueprintStatus;
       showIndices = false;
     } else {
       options = this._getTriggerIdOptions(config.triggers);
     }
     if (
       options !== this._provider.value.options ||
-      optionsStatus !== this._provider.value.optionsStatus ||
+      blueprintStatus !== this._provider.value.blueprintStatus ||
       showIndices !== this._provider.value.showIndices
     ) {
       this._provider.setValue({
         ...this._provider.value,
         options,
-        optionsStatus,
+        blueprintStatus,
         showIndices,
       });
     }

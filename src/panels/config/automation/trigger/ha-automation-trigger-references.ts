@@ -14,6 +14,7 @@ import type { EntityRegistryEntry } from "../../../../data/entity/entity_registr
 import type { HomeAssistant } from "../../../../types";
 import {
   automationTriggerContext,
+  triggerOptionsResolved,
   type AutomationTriggerContext,
 } from "./automation-trigger-id";
 
@@ -41,7 +42,7 @@ export class HaAutomationTriggerReferences extends LitElement {
     const missingIds = selectedIds.filter(
       (id) => !options.some((option) => option.id === id)
     );
-    const resolved = (this._triggers?.optionsStatus ?? "loaded") === "loaded";
+    const resolved = triggerOptionsResolved(this._triggers);
 
     if (options.length && !selectedIds.length) {
       return html`<span class="trigger-reference no-selection">
