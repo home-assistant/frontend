@@ -5,7 +5,6 @@ import { debounce } from "../common/util/debounce";
 import type { HomeAssistant, HomeAssistantApi } from "../types";
 import type { ConfigEntry } from "./config_entries";
 import type { DataEntryFlowStep } from "./data_entry_flow";
-import type { RelatedResult } from "./search";
 
 export interface RepairsIssue {
   domain: string;
@@ -114,6 +113,9 @@ export interface UpdateReportConfigEntry {
   // null when the config entry was removed
   state: ConfigEntry["state"] | null;
   reason: string | null;
+  error_reason_translation_domain: string | null;
+  error_reason_translation_key: string | null;
+  error_reason_translation_placeholders: Record<string, string> | null;
 }
 
 export interface UpdateReportEntity {
@@ -121,12 +123,18 @@ export interface UpdateReportEntity {
   platform: string;
 }
 
+// Automations and scripts that still reference the old entity_id
+export interface UpdateReportReferencedEntity extends UpdateReportEntity {
+  automations: string[];
+  scripts: string[];
+}
+
 export interface UpdateReportUnavailableEntity extends UpdateReportEntity {
   // null when the entity has no state
   state: "unavailable" | "unknown" | null;
 }
 
-export interface UpdateReportRenamedEntity extends UpdateReportEntity {
+export interface UpdateReportRenamedEntity extends UpdateReportReferencedEntity {
   old_entity_id: string;
 }
 
@@ -148,8 +156,10 @@ export interface UpdateReport {
   config_entries: UpdateReportConfigEntry[];
   entities_unavailable: UpdateReportUnavailableEntity[];
   entities_renamed: UpdateReportRenamedEntity[];
-  entities_removed: UpdateReportEntity[];
+  entities_removed: UpdateReportReferencedEntity[];
+  // Without issues that have a breaks_in_ha_version
   issues: UpdateReportIssue[];
+  // Only breaking changes that are new since the snapshot
   upcoming: UpdateReportUpcomingIssue[];
 }
 
@@ -161,22 +171,6 @@ export const fetchUpdateReport = (api: HomeAssistantApi) =>
 export const dismissUpdateReport = (api: HomeAssistantApi) =>
   api.callWS<null>({ type: "repairs/update_report/dismiss" });
 
-// Old entity_id of each removed or renamed entity, with its new entity_id
-// (null when removed).
-export const updateReportOldEntityIds = (
-  report: UpdateReport
-): Map<string, string | null> =>
-  new Map([
-    ...report.entities_removed.map((entity): [string, null] => [
-      entity.entity_id,
-      null,
-    ]),
-    ...report.entities_renamed.map((entity): [string, string] => [
-      entity.old_entity_id,
-      entity.entity_id,
-    ]),
-  ]);
-
 export interface UpdateReportAffected {
   // automation or script that still references the old entity_id
   entity_id: string;
@@ -184,23 +178,29 @@ export interface UpdateReportAffected {
   new_entity_id: string | null;
 }
 
-export const updateReportAffected = (
-  oldEntityIds: Map<string, string | null>,
-  related: Record<string, RelatedResult>
+const referencingEntities = (
+  entity: UpdateReportReferencedEntity,
+  oldEntityId: string,
+  newEntityId: string | null
 ): UpdateReportAffected[] =>
-  [...oldEntityIds]
-    .flatMap(([oldEntityId, newEntityId]) =>
-      [
-        ...(related[oldEntityId]?.automation ?? []),
-        ...(related[oldEntityId]?.script ?? []),
-      ].map((entityId) => ({
-        entity_id: entityId,
-        old_entity_id: oldEntityId,
-        new_entity_id: newEntityId,
-      }))
-    )
-    .sort(
-      (a, b) =>
-        a.entity_id.localeCompare(b.entity_id) ||
-        a.old_entity_id.localeCompare(b.old_entity_id)
-    );
+  [...entity.automations, ...entity.scripts].map((entityId) => ({
+    entity_id: entityId,
+    old_entity_id: oldEntityId,
+    new_entity_id: newEntityId,
+  }));
+
+export const updateReportAffected = (
+  report: UpdateReport
+): UpdateReportAffected[] =>
+  [
+    ...report.entities_removed.flatMap((entity) =>
+      referencingEntities(entity, entity.entity_id, null)
+    ),
+    ...report.entities_renamed.flatMap((entity) =>
+      referencingEntities(entity, entity.old_entity_id, entity.entity_id)
+    ),
+  ].sort(
+    (a, b) =>
+      a.entity_id.localeCompare(b.entity_id) ||
+      a.old_entity_id.localeCompare(b.old_entity_id)
+  );

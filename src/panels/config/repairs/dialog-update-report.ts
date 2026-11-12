@@ -3,7 +3,6 @@ import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { consume } from "../../../common/decorators/consume";
 import { preserveUnchangedEntityStatesRecord } from "../../../common/decorators/consume-context-entry";
@@ -16,6 +15,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-spinner";
+import { localizeConfigEntryError } from "../../../data/config_entries";
 import {
   apiContext,
   configContext,
@@ -37,13 +37,11 @@ import {
   fetchRepairsIssues,
   fetchUpdateReport,
   updateReportAffected,
-  updateReportOldEntityIds,
 } from "../../../data/repairs";
-import type { RelatedResult } from "../../../data/search";
-import { findRelated } from "../../../data/search";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistantConfig } from "../../../types";
+import { openRepairsIssue } from "./open-repairs-issue";
 
 @customElement("dialog-update-report")
 class DialogUpdateReport extends DialogMixin(LitElement) {
@@ -53,6 +51,9 @@ class DialogUpdateReport extends DialogMixin(LitElement) {
   @state() private _issues: Record<string, RepairsIssue> = {};
 
   @state() private _affected: UpdateReportAffected[] = [];
+
+  // Localized setup failure reason per config entry_id
+  @state() private _reasons: Record<string, string | null> = {};
 
   @state() private _error?: string;
 
@@ -137,24 +138,23 @@ class DialogUpdateReport extends DialogMixin(LitElement) {
     }
     this._report = report;
     if (report) {
-      this._loadAffected(report);
+      this._affected = updateReportAffected(report);
+      this._localizeReasons(report);
     }
   }
 
-  private async _loadAffected(report: UpdateReport): Promise<void> {
-    const oldEntityIds = updateReportOldEntityIds(report);
-    if (!oldEntityIds.size || !isComponentLoaded(this._hassConfig, "search")) {
-      return;
-    }
-    const related: Record<string, RelatedResult> = Object.fromEntries(
+  private async _localizeReasons(report: UpdateReport): Promise<void> {
+    this._reasons = Object.fromEntries(
       await Promise.all(
-        [...oldEntityIds.keys()].map(async (entityId) => [
-          entityId,
-          await findRelated(this._api, "entity", entityId).catch(() => ({})),
+        report.config_entries.map(async (entry) => [
+          entry.entry_id,
+          await localizeConfigEntryError(
+            this._i18n.loadBackendTranslation,
+            entry
+          ),
         ])
       )
     );
-    this._affected = updateReportAffected(oldEntityIds, related);
   }
 
   protected render() {
@@ -235,7 +235,8 @@ class DialogUpdateReport extends DialogMixin(LitElement) {
       !report.entities_unavailable.length &&
       !report.entities_renamed.length &&
       !report.entities_removed.length &&
-      !report.issues.length;
+      !report.issues.length &&
+      !report.upcoming.length;
 
     return html`
       ${
@@ -272,7 +273,11 @@ class DialogUpdateReport extends DialogMixin(LitElement) {
                         "ui.panel.config.repairs.update_report.removed"
                       )
                 }
-                ${entry.reason ? html` · ${entry.reason}` : nothing}
+                ${
+                  this._reasons[entry.entry_id]
+                    ? html` · ${this._reasons[entry.entry_id]}`
+                    : nothing
+                }
               </span>
             </li>
           `
@@ -326,14 +331,14 @@ class DialogUpdateReport extends DialogMixin(LitElement) {
       )}
       ${this._renderSection(
         "issues",
-        report.issues.map((issue) => html`<li>${this._issueTitle(issue)}</li>`)
+        report.issues.map((issue) => html`<li>${this._renderIssue(issue)}</li>`)
       )}
       ${this._renderSection(
         "upcoming",
         report.upcoming.map(
           (issue) => html`
             <li>
-              ${this._issueTitle(issue)}
+              ${this._renderIssue(issue)}
               <span class="secondary">
                 ${this._i18n.localize(
                   "ui.panel.config.repairs.update_report.breaks_in_version",
@@ -418,6 +423,21 @@ class DialogUpdateReport extends DialogMixin(LitElement) {
     `;
   }
 
+  private _renderIssue(issue: UpdateReportIssue) {
+    const key = `${issue.domain}.${issue.issue_id}`;
+    // Resolved issues can no longer be opened
+    if (!this._issues[key]) {
+      return this._issueTitle(issue);
+    }
+    return html`<button
+      class="link"
+      data-issue-key=${key}
+      @click=${this._openIssue}
+    >
+      ${this._issueTitle(issue)}
+    </button>`;
+  }
+
   private _issueTitle(issue: UpdateReportIssue) {
     const current = this._issues[`${issue.domain}.${issue.issue_id}`];
     const key = current?.translation_key || issue.issue_id;
@@ -434,6 +454,20 @@ class DialogUpdateReport extends DialogMixin(LitElement) {
     if (entityId) {
       fireEvent(this, "hass-more-info", { entityId });
     }
+  }
+
+  private _openIssue(ev: Event): void {
+    const issue =
+      this._issues[(ev.currentTarget as HTMLElement).dataset.issueKey!];
+    openRepairsIssue(
+      this,
+      {
+        connection: this._connection.connection,
+        callWS: this._api.callWS,
+        loadFragmentTranslation: this._i18n.loadFragmentTranslation,
+      },
+      issue
+    );
   }
 
   private async _dismiss(): Promise<void> {

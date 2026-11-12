@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { UpdateReport } from "../../src/data/repairs";
-import {
-  updateReportAffected,
-  updateReportOldEntityIds,
-} from "../../src/data/repairs";
+import { updateReportAffected } from "../../src/data/repairs";
 
 const report: UpdateReport = {
   from_version: "2026.10.0",
@@ -16,33 +13,25 @@ const report: UpdateReport = {
       old_entity_id: "sensor.old_name",
       entity_id: "sensor.new_name",
       platform: "demo",
+      automations: ["automation.a"],
+      scripts: ["script.b"],
     },
   ],
-  entities_removed: [{ entity_id: "sensor.gone", platform: "demo" }],
+  entities_removed: [
+    {
+      entity_id: "sensor.gone",
+      platform: "demo",
+      automations: [],
+      scripts: ["script.b"],
+    },
+  ],
   issues: [],
   upcoming: [],
 };
 
-describe("updateReportOldEntityIds", () => {
-  it("maps old entity_ids to the new one, null when removed", () => {
-    expect([...updateReportOldEntityIds(report)]).toEqual([
-      ["sensor.gone", null],
-      ["sensor.old_name", "sensor.new_name"],
-    ]);
-  });
-});
-
 describe("updateReportAffected", () => {
   it("lists automations and scripts per old entity_id, sorted", () => {
-    expect(
-      updateReportAffected(updateReportOldEntityIds(report), {
-        "sensor.gone": { script: ["script.b"], device: ["abc"] },
-        "sensor.old_name": {
-          automation: ["automation.a"],
-          script: ["script.b"],
-        },
-      })
-    ).toEqual([
+    expect(updateReportAffected(report)).toEqual([
       {
         entity_id: "automation.a",
         old_entity_id: "sensor.old_name",
@@ -61,9 +50,17 @@ describe("updateReportAffected", () => {
     ]);
   });
 
-  it("returns nothing without related results", () => {
-    expect(updateReportAffected(updateReportOldEntityIds(report), {})).toEqual(
-      []
-    );
+  it("returns nothing when no automation or script references them", () => {
+    expect(
+      updateReportAffected({
+        ...report,
+        entities_renamed: [
+          { ...report.entities_renamed[0], automations: [], scripts: [] },
+        ],
+        entities_removed: [
+          { ...report.entities_removed[0], automations: [], scripts: [] },
+        ],
+      })
+    ).toEqual([]);
   });
 });

@@ -1,7 +1,7 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { mdiDotsVertical } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -13,6 +13,7 @@ import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import type { RepairsIssue } from "../../../data/repairs";
 import {
+  fetchUpdateReport,
   severitySort,
   subscribeRepairsIssueRegistry,
 } from "../../../data/repairs";
@@ -38,6 +39,8 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _showIgnored = false;
 
+  @state() private _hasUpdateReport = false;
+
   private _getFilteredIssues = memoizeOne(
     (showIgnored: boolean, repairsIssues: RepairsIssue[]) =>
       showIgnored
@@ -53,6 +56,22 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
     if (searchParam === "system-health") {
       navigate("/config/repairs", { replace: true });
       showSystemInformationDialog(this);
+    }
+  }
+
+  protected firstUpdated(changedProps: PropertyValues<this>): void {
+    super.firstUpdated(changedProps);
+    this._fetchUpdateReport();
+  }
+
+  private async _fetchUpdateReport(): Promise<void> {
+    if (!this.hass.user?.is_admin) {
+      return;
+    }
+    try {
+      this._hasUpdateReport = (await fetchUpdateReport(this.hass)) !== null;
+    } catch {
+      // Keep the menu item hidden when the report can't be fetched
     }
   }
 
@@ -121,11 +140,17 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
                 "ui.panel.config.repairs.integration_startup_time"
               )}
             </ha-dropdown-item>
-            <ha-dropdown-item value="update_report">
-              ${this.hass.localize(
-                "ui.panel.config.repairs.update_report.caption"
-              )}
-            </ha-dropdown-item>
+            ${
+              this._hasUpdateReport
+                ? html`
+                    <ha-dropdown-item value="update_report">
+                      ${this.hass.localize(
+                        "ui.panel.config.repairs.update_report.caption"
+                      )}
+                    </ha-dropdown-item>
+                  `
+                : nothing
+            }
           </ha-dropdown>
         </div>
         <div class="content">

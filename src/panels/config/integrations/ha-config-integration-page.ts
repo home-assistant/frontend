@@ -47,6 +47,7 @@ import {
   ERROR_STATES,
   getConfigEntries,
   getSubEntries,
+  localizeConfigEntryError,
 } from "../../../data/config_entries";
 import { ATTENTION_SOURCES } from "../../../data/config_flow";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
@@ -113,30 +114,11 @@ export const renderConfigEntryError = (
   entry: ConfigEntry
 ): TemplateResult => {
   if (entry.reason) {
-    if (entry.error_reason_translation_key) {
-      // The error may be translated by another integration, e.g. one raised by
-      // a shared helper and owned by the homeassistant integration.
-      const translationDomain =
-        entry.error_reason_translation_domain || entry.domain;
-      const lokalisePromExc = hass
-        .loadBackendTranslation("exceptions", translationDomain)
-        .then(
-          (localize) =>
-            localize(
-              `component.${translationDomain}.exceptions.${entry.error_reason_translation_key}.message`,
-              entry.error_reason_translation_placeholders ?? undefined
-            ) || entry.reason
-        );
-      return html`${until(lokalisePromExc)}`;
-    }
-    const lokalisePromError = hass
-      .loadBackendTranslation("config", entry.domain)
-      .then(
-        (localize) =>
-          localize(`component.${entry.domain}.config.error.${entry.reason}`) ||
-          entry.reason
-      );
-    return html`${until(lokalisePromError, entry.reason)}`;
+    // Don't flash an untranslated exception message while loading
+    return html`${until(
+      localizeConfigEntryError(hass.loadBackendTranslation, entry),
+      entry.error_reason_translation_key ? undefined : entry.reason
+    )}`;
   }
   return html`
     <br />
