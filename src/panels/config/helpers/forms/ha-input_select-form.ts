@@ -165,17 +165,14 @@ class HaInputSelectForm extends LitElement {
                         ></ha-svg-icon>
                         <ha-tooltip
                           trigger="focus"
+                          describe-anchor
                           slot="start"
                           for="move-option-${index}"
                           .disabled=${this.disabled}
                         >
                           ${renderMoveShortcutHint(
-                            this._localize(
-                              "ui.panel.config.automation.editor.move_up"
-                            ),
-                            this._localize(
-                              "ui.panel.config.automation.editor.move_down"
-                            )
+                            this._localize("ui.common.move_up"),
+                            this._localize("ui.common.move_down")
                           )}
                         </ha-tooltip>
                         <ha-icon-button

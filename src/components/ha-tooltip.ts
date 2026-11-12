@@ -1,5 +1,5 @@
 import Tooltip from "@home-assistant/webawesome/dist/components/tooltip/tooltip";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
@@ -11,27 +11,70 @@ export class HaTooltip extends Tooltip {
   /** The amount of time to wait before hiding the tooltip when the user mouses out.. */
   @property({ attribute: "hide-delay", type: Number }) hideDelay = 150;
 
-  private _anchorEvents?: AbortController;
+  /** Use the tooltip as supplemental help instead of the anchor's name. */
+  @property({ attribute: "describe-anchor", type: Boolean }) describeAnchor =
+    false;
 
   public handleForChange(): void {
+    if (this.anchor && this.describeAnchor) {
+      this._removeDescription(this.anchor);
+    }
     super.handleForChange();
-    this._anchorEvents?.abort();
-    this._anchorEvents = new AbortController();
-    this.anchor?.addEventListener(
-      "click",
-      () => {
-        // The underlying tooltip dismisses on click, including focus-only hints.
-        if (this.trigger === "focus" && this.anchor?.matches(":focus-within")) {
-          this.show();
-        }
-      },
-      { signal: this._anchorEvents.signal }
-    );
+    // Web Awesome associates the tooltip as a label when resolving its anchor.
+    // Move only our ID to the description, preserving other ARIA references.
+    this._updateAnchorDescription();
+  }
+
+  protected updated(changedProperties: PropertyValues<this>): void {
+    super.updated(changedProperties);
+    if (changedProperties.has("describeAnchor")) {
+      this._updateAnchorDescription();
+    }
   }
 
   public disconnectedCallback(): void {
+    if (this.anchor && this.describeAnchor) {
+      this._removeDescription(this.anchor);
+    }
     super.disconnectedCallback();
-    this._anchorEvents?.abort();
+  }
+
+  private _updateAnchorDescription(): void {
+    if (!this.anchor) {
+      return;
+    }
+    const removeAttribute = this.describeAnchor
+      ? "aria-labelledby"
+      : "aria-describedby";
+    const addAttribute = this.describeAnchor
+      ? "aria-describedby"
+      : "aria-labelledby";
+    const ids = this.anchor
+      .getAttribute(removeAttribute)
+      ?.split(/\s+/)
+      .filter((id) => id && id !== this.id);
+    if (ids?.length) {
+      this.anchor.setAttribute(removeAttribute, ids.join(" "));
+    } else {
+      this.anchor.removeAttribute(removeAttribute);
+    }
+    const descriptions = new Set(
+      this.anchor.getAttribute(addAttribute)?.split(/\s+/).filter(Boolean)
+    );
+    descriptions.add(this.id);
+    this.anchor.setAttribute(addAttribute, [...descriptions].join(" "));
+  }
+
+  private _removeDescription(anchor: Element): void {
+    const ids = anchor
+      .getAttribute("aria-describedby")
+      ?.split(/\s+/)
+      .filter((id) => id && id !== this.id);
+    if (ids?.length) {
+      anchor.setAttribute("aria-describedby", ids.join(" "));
+    } else {
+      anchor.removeAttribute("aria-describedby");
+    }
   }
 
   static get styles(): CSSResultGroup {

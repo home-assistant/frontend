@@ -193,14 +193,14 @@ export class HaCardConditionsEditor extends LitElement {
                   @keydown=${this._handleDragKeydown}
                 >
                   <ha-svg-icon .path=${mdiDragHorizontalVariant}></ha-svg-icon>
-                  <ha-tooltip trigger="focus" for="move-condition-${idx}">
+                  <ha-tooltip
+                    trigger="focus"
+                    describe-anchor
+                    for="move-condition-${idx}"
+                  >
                     ${renderMoveShortcutHint(
-                      this.hass.localize(
-                        "ui.panel.config.automation.editor.move_up"
-                      ),
-                      this.hass.localize(
-                        "ui.panel.config.automation.editor.move_down"
-                      )
+                      this.hass.localize("ui.common.move_up"),
+                      this.hass.localize("ui.common.move_down")
                     )}
                   </ha-tooltip>
                 </div>

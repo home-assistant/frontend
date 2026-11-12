@@ -94,15 +94,12 @@ export default class HaAutomationOption extends AutomationSortableListMixin<Opti
                             this.optionsInSidebar
                               ? html`<ha-tooltip
                                   trigger="focus"
+                                  describe-anchor
                                   for="move-row-${idx}"
                                 >
                                   ${renderMoveShortcutHint(
-                                    this.hass.localize(
-                                      "ui.panel.config.automation.editor.move_up"
-                                    ),
-                                    this.hass.localize(
-                                      "ui.panel.config.automation.editor.move_down"
-                                    )
+                                    this.hass.localize("ui.common.move_up"),
+                                    this.hass.localize("ui.common.move_down")
                                   )}
                                 </ha-tooltip>`
                               : nothing

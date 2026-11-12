@@ -550,7 +550,11 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
                       class="edit-icon view handle"
                       .path=${mdiDragHorizontalVariant}
                     ></ha-svg-icon>
-                    <ha-tooltip trigger="focus" for="move-view-${index}">
+                    <ha-tooltip
+                      trigger="focus"
+                      describe-anchor
+                      for="move-view-${index}"
+                    >
                       ${renderMoveShortcutHint(
                         this.hass.localize(
                           `ui.panel.lovelace.editor.edit_view.${rtl ? "move_right" : "move_left"}`
