@@ -55,15 +55,32 @@ export interface FirmwareUpdate {
   latest: string | null;
 }
 
-/** Readings that live in entity states rather than in the device list. */
+/** Readings that live in the registries and entity states rather than in the device list. */
 export interface DeviceReadings {
   /** Battery percentage, or null when the device has no battery sensor. */
   batteryLevel: (device: ZHADevice) => number | null;
   /** The pending firmware update, or null when there is none. */
   firmwareUpdate: (device: ZHADevice) => FirmwareUpdate | null;
+  /** Whether the device is disabled in the device registry. */
+  isDisabled: (device: ZHADevice) => boolean;
+  /**
+   * Whether the entity registry holds any entity of the device, disabled ones
+   * included. The device list only carries entities that were added.
+   */
+  hasRegisteredEntities: (device: ZHADevice) => boolean;
 }
 
 export type PowerSource = "mains" | "battery";
+
+/** The registry ids of all devices that own at least one entity. */
+export const devicesWithEntities = (
+  entities: Record<string, { device_id?: string | null }>
+): Set<string> =>
+  new Set(
+    Object.values(entities)
+      .map((entity) => entity.device_id)
+      .filter((id): id is string => Boolean(id))
+  );
 
 /** The devices the page reports on: everything except the coordinator. */
 export const managedDevices = (devices: ZHADevice[]): ZHADevice[] =>
@@ -80,11 +97,10 @@ export type LinkQualities = Record<string, number>;
  *
  * An end device uses the entry of the router it is a child of: that is the
  * link it actually depends on. A router routes over the whole mesh, so it
- * uses the best entry any neighbour reports: a router with one good link is
- * still reachable. This also keeps routers clear of the near-zero values some
- * firmware reports for every neighbour, and of "Child" entries between
- * routers, which say nothing about the link they rely on. Unavailable
- * routers are skipped, as their tables may be stale.
+ * uses the best entry any neighbour reports, whatever the relationship: a
+ * router with one good link is still reachable, and a single neighbour whose
+ * firmware reports near-zero values for everything does not drag it down.
+ * Unavailable routers are skipped, as their tables may be stale.
  */
 export const neighborLinkQualities = (devices: ZHADevice[]): LinkQualities => {
   const endDevices = new Set(
@@ -154,7 +170,8 @@ export const countBands = (
 
 /**
  * ZHA reports "Mains" for mains-powered devices and "Battery or Unknown" for
- * everything else, so only mains is certain.
+ * everything else. The latter is shown as battery: in practice it is almost
+ * always a battery device.
  */
 export const powerSource = (device: ZHADevice): PowerSource | undefined => {
   if (device.power_source === "Mains") {
@@ -165,12 +182,17 @@ export const powerSource = (device: ZHADevice): PowerSource | undefined => {
 
 /**
  * A device that joined the network but never finished its setup: it is known
- * to the coordinator, yet exposes nothing to control or read.
+ * to the coordinator, yet has no entities at all. The device list only
+ * carries entities that were added, so one whose entities are all disabled
+ * would look the same; the entity registry tells the two apart.
  * `pairing_status` would say so directly, but it only travels with the
  * pairing events, not with the device list this page is built on.
  */
-export const isSetupUnfinished = (device: ZHADevice): boolean =>
-  device.entities.length === 0;
+export const isSetupUnfinished = (
+  device: ZHADevice,
+  readings: Pick<DeviceReadings, "hasRegisteredEntities">
+): boolean =>
+  device.entities.length === 0 && !readings.hasRegisteredEntities(device);
 
 /** When the device was last heard from, or undefined for an empty or malformed stamp. */
 export const lastSeenAt = (device: ZHADevice): Date | undefined => {
@@ -182,19 +204,26 @@ export const lastSeenAt = (device: ZHADevice): Date | undefined => {
 };
 
 /**
- * Map each device to the router that lists it as a child, so a weak device
- * can be traced to the neighbour it depends on. An unavailable router's table
- * is skipped, as in the network visualization: it may still list a child that
- * has long since moved to another router.
+ * Map each end device to the router that lists it as a child, so a weak
+ * device can be traced to the neighbour it depends on. Routers are left out:
+ * they route over the whole mesh, so a "Child" entry between two routers says
+ * nothing about a dependency. An unavailable router's table is skipped, as in
+ * the network visualization: it may still list a child that has long since
+ * moved to another router.
  */
 export const parentByIeee = (devices: ZHADevice[]): Record<string, string> => {
+  const endDevices = new Set(
+    devices
+      .filter((device) => device.device_type === ZHADeviceType.EndDevice)
+      .map((device) => device.ieee)
+  );
   const parents: Record<string, string> = {};
   for (const device of devices) {
     if (!device.available) {
       continue;
     }
     for (const neighbor of device.neighbors) {
-      if (neighbor.relationship === "Child") {
+      if (neighbor.relationship === "Child" && endDevices.has(neighbor.ieee)) {
         parents[neighbor.ieee] = device.user_given_name || device.name;
       }
     }
@@ -207,12 +236,16 @@ export const findings = (
   readings: DeviceReadings,
   links: LinkQualities = {}
 ): Findings => {
-  // An offline device has no current signal or battery reading, so it is only
-  // listed as offline.
-  const online = devices.filter((device) => device.available);
+  // A disabled device was switched off on purpose and is not reported on.
+  const active = devices.filter((device) => !readings.isDisabled(device));
+  // An offline device has no current signal or battery reading and cannot
+  // take a firmware update, so it is only listed as offline.
+  const online = active.filter((device) => device.available);
   return {
-    offline: devices.filter((device) => !device.available),
-    setup_unfinished: devices.filter(isSetupUnfinished),
+    offline: active.filter((device) => !device.available),
+    setup_unfinished: active.filter((device) =>
+      isSetupUnfinished(device, readings)
+    ),
     weak_signal: online
       .filter((device) => signalBand(device, links) === "weak")
       .sort(
@@ -224,7 +257,7 @@ export const findings = (
         return level !== null && level <= LOW_BATTERY;
       })
       .sort((a, b) => readings.batteryLevel(a)! - readings.batteryLevel(b)!),
-    firmware_update: devices.filter(
+    firmware_update: online.filter(
       (device) => readings.firmwareUpdate(device) !== null
     ),
   };
@@ -244,7 +277,8 @@ export const attentionCount = (found: Findings): number =>
 export const sortByArea = (
   devices: ZHADevice[],
   areaName: (device: ZHADevice) => string | undefined,
-  deviceName: (device: ZHADevice) => string
+  deviceName: (device: ZHADevice) => string,
+  compare: (a: string, b: string) => number = (a, b) => a.localeCompare(b)
 ): ZHADevice[] =>
   [...devices].sort((a, b) => {
     const areaA = areaName(a);
@@ -252,7 +286,7 @@ export const sortByArea = (
     if (areaA !== areaB) {
       if (areaA === undefined) return 1;
       if (areaB === undefined) return -1;
-      return areaA.localeCompare(areaB);
+      return compare(areaA, areaB);
     }
-    return deviceName(a).localeCompare(deviceName(b));
+    return compare(deviceName(a), deviceName(b));
   });

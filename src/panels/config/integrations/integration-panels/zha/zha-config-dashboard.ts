@@ -51,7 +51,12 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import { fileDownload } from "../../../../../util/file_download";
 import { renderConfigEntryError } from "../../ha-config-integration-page";
-import { attentionCount, findings, managedDevices } from "./network-health";
+import {
+  attentionCount,
+  devicesWithEntities,
+  findings,
+  managedDevices,
+} from "./network-health";
 
 @customElement("zha-config-dashboard")
 class ZHAConfigDashboard extends LitElement {
@@ -531,12 +536,17 @@ class ZHAConfigDashboard extends LitElement {
       this._offlineDevices = devicesResult.value.filter(
         (d) => !d.available
       ).length;
-      // Only the findings that need attention count here, and they come from
-      // the device list alone.
+      // Only the findings that need attention count here, so battery and
+      // firmware readings are not needed.
+      const withEntities = devicesWithEntities(this.hass.entities);
       this._healthAttention = attentionCount(
         findings(managedDevices(devicesResult.value), {
           batteryLevel: () => null,
           firmwareUpdate: () => null,
+          isDisabled: (device) =>
+            Boolean(this.hass.devices[device.device_reg_id]?.disabled_by),
+          hasRegisteredEntities: (device) =>
+            withEntities.has(device.device_reg_id),
         })
       );
     } else {

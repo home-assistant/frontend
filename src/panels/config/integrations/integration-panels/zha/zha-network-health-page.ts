@@ -15,6 +15,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../../../../common/datetime/relative_time";
+import { stringCompare } from "../../../../../common/string/compare";
 import { batteryLevelIconPath } from "../../../../../common/entity/battery_icon";
 import { blankBeforePercent } from "../../../../../common/translations/blank_before_percent";
 import "../../../../../components/ha-alert";
@@ -47,6 +48,7 @@ import {
   attentionCount,
   BAR_BANDS,
   countBands,
+  devicesWithEntities,
   findings,
   lastSeenAt,
   linkQuality,
@@ -204,7 +206,13 @@ class ZHANetworkHealthPage extends LitElement {
       }
       return null;
     },
+    isDisabled: (device) =>
+      Boolean(this.hass.devices[device.device_reg_id]?.disabled_by),
+    hasRegisteredEntities: (device) =>
+      this._devicesWithEntities(this.hass.entities).has(device.device_reg_id),
   };
+
+  private _devicesWithEntities = memoizeOne(devicesWithEntities);
 
   private _deviceName = (device: ZHADevice): string =>
     device.user_given_name || device.name;
@@ -561,7 +569,9 @@ class ZHANetworkHealthPage extends LitElement {
   }
 
   private _sorted(devices: ZHADevice[]): ZHADevice[] {
-    return sortByArea(devices, this._areaName, this._deviceName);
+    return sortByArea(devices, this._areaName, this._deviceName, (a, b) =>
+      stringCompare(a, b, this.hass.locale.language)
+    );
   }
 
   static get styles(): CSSResultGroup {
@@ -721,7 +731,7 @@ class ZHANetworkHealthPage extends LitElement {
         }
 
         .signal.fair {
-          color: var(--success-color);
+          color: color-mix(in srgb, var(--success-color) 45%, white);
         }
 
         .signal.weak,

@@ -11637,11 +11637,11 @@
               },
               "time_format": "[%key:ui::panel::profile::time_format::dropdown_label%]",
               "time_formats": {
-                "12": "[%key:ui::panel::profile::time_format::formats::12%]",
-                "24": "[%key:ui::panel::profile::time_format::formats::24%]",
                 "auto": "Use user settings",
                 "language": "[%key:ui::panel::profile::time_format::formats::language%]",
-                "system": "[%key:ui::panel::profile::time_format::formats::system%]"
+                "system": "[%key:ui::panel::profile::time_format::formats::system%]",
+                "24": "[%key:ui::panel::profile::time_format::formats::24%]",
+                "12": "[%key:ui::panel::profile::time_format::formats::12%]"
               },
               "time_zone": "[%key:ui::panel::profile::time_zone::dropdown_label%]",
               "time_zones": {
@@ -12585,10 +12585,10 @@
           "dropdown_label": "Time format",
           "description": "Choose how times are formatted.",
           "formats": {
-            "12": "12 hours (AM/PM)",
-            "24": "24 hours",
             "language": "Auto (use language setting)",
-            "system": "Use system locale"
+            "system": "Use system locale",
+            "12": "12 hours (AM/PM)",
+            "24": "24 hours"
           }
         },
         "time_zone": {
@@ -13207,13 +13207,13 @@
         "load_failed": "The Marketplace could not load its data: {error}",
         "warning": {
           "title": "Before you install from the Marketplace",
-          "intro": "Marketplace items are made by community contributors and are not reviewed by the Home Assistant project. Treat them like plugins for any other software.",
+          "intro": "Marketplace items are made by community contributors and are not reviewed by the Home\u00a0Assistant project. Treat them like plugins for any other software.",
           "risks_title": "Anything you install can",
           "risks": {
-            "access": "Access and control everything in Home Assistant",
+            "access": "Access and control everything in Home\u00a0Assistant",
             "internet": "Connect to the internet",
             "data": "Share your data with others",
-            "stability": "Slow down or crash Home Assistant"
+            "stability": "Slow down or crash Home\u00a0Assistant"
           },
           "mindful_title": "So be mindful",
           "mindful": {

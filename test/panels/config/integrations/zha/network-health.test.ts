@@ -48,6 +48,8 @@ const device = (overrides: Partial<ZHADevice> & { ieee: string }): ZHADevice =>
 const noReadings: DeviceReadings = {
   batteryLevel: () => null,
   firmwareUpdate: () => null,
+  isDisabled: () => false,
+  hasRegisteredEntities: () => false,
 };
 
 describe("signalBand", () => {
@@ -119,8 +121,18 @@ describe("managedDevices", () => {
 
 describe("isSetupUnfinished", () => {
   it("recognises a device that exposes nothing", () => {
-    expect(isSetupUnfinished(device({ ieee: "a", entities: [] }))).toBe(true);
-    expect(isSetupUnfinished(device({ ieee: "b" }))).toBe(false);
+    expect(
+      isSetupUnfinished(device({ ieee: "a", entities: [] }), noReadings)
+    ).toBe(true);
+    expect(isSetupUnfinished(device({ ieee: "b" }), noReadings)).toBe(false);
+  });
+
+  it("does not mistake a device whose entities are all disabled", () => {
+    expect(
+      isSetupUnfinished(device({ ieee: "a", entities: [] }), {
+        hasRegisteredEntities: () => true,
+      })
+    ).toBe(false);
   });
 });
 
@@ -227,9 +239,31 @@ describe("parentByIeee", () => {
           },
         ],
       }),
+      device({ ieee: "child" }),
     ]);
 
     expect(parents.child).toBe("0x1234");
+  });
+
+  it("leaves out routers listed as another router's child", () => {
+    const parents = parentByIeee([
+      device({
+        ieee: "plug-2",
+        device_type: ZHADeviceType.Router,
+        neighbors: [
+          {
+            ieee: "plug-1",
+            nwk: "1",
+            lqi: "9",
+            depth: "1",
+            relationship: "Child",
+          },
+        ],
+      }),
+      device({ ieee: "plug-1", device_type: ZHADeviceType.Router }),
+    ]);
+
+    expect(parents).toEqual({});
   });
 });
 
@@ -296,6 +330,27 @@ describe("findings", () => {
     });
 
     expect(found.firmware_update.map((d) => d.ieee)).toEqual(["a"]);
+  });
+});
+
+describe("findings with registry readings", () => {
+  it("leaves out devices disabled in the device registry", () => {
+    const found = findings(
+      [device({ ieee: "a", available: false, entities: [] })],
+      { ...noReadings, isDisabled: () => true }
+    );
+
+    expect(found.offline).toEqual([]);
+    expect(found.setup_unfinished).toEqual([]);
+  });
+
+  it("does not offer a firmware update for an offline device", () => {
+    const found = findings(
+      [device({ ieee: "off", available: false }), device({ ieee: "on" })],
+      { ...noReadings, firmwareUpdate: () => ({ installed: "1", latest: "2" }) }
+    );
+
+    expect(found.firmware_update.map((d) => d.ieee)).toEqual(["on"]);
   });
 });
 
