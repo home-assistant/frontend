@@ -197,7 +197,7 @@ class HaBackupConfigAgents extends LitElement {
                     !this.cloudStatus.active_subscription;
 
                   return html`
-                    <ha-list-item-base>
+                    <ha-list-item-base wrap-headline wrap-supporting-text>
                       ${this._renderAgentIcon(agentId)}
                       <div slot="headline" class="name">${name}</div>
                       ${
@@ -248,7 +248,7 @@ class HaBackupConfigAgents extends LitElement {
                           );
 
                           return html`
-                            <ha-list-item-base>
+                            <ha-list-item-base wrap-headline>
                               ${this._renderAgentIcon(agentId)}
                               <div slot="headline" class="name">${name}</div>
                               <ha-icon-button
@@ -316,10 +316,6 @@ class HaBackupConfigAgents extends LitElement {
     ha-list-item-base ha-svg-icon[slot="start"] {
       --mdc-icon-size: 48px;
       color: var(--primary-text-color);
-    }
-    ha-list-item-base::part(headline),
-    ha-list-item-base::part(supporting-text) {
-      white-space: wrap;
     }
     ha-list-item-base::part(end) {
       gap: var(--ha-space-2);

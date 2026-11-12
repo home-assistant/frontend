@@ -50,7 +50,7 @@ class ZWaveJSNetworkInfoPage extends LitElement {
             ${
               this._network
                 ? html`<ha-list-base>
-                    <ha-list-item-base>
+                    <ha-list-item-base wrap-supporting-text>
                       <span slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.zwave_js.dashboard.home_id"
@@ -66,7 +66,7 @@ class ZWaveJSNetworkInfoPage extends LitElement {
                         }
                       </span>
                     </ha-list-item-base>
-                    <ha-list-item-base>
+                    <ha-list-item-base wrap-supporting-text>
                       <span slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.zwave_js.dashboard.driver_version"
@@ -76,7 +76,7 @@ class ZWaveJSNetworkInfoPage extends LitElement {
                         ${this._network.client.driver_version}
                       </span>
                     </ha-list-item-base>
-                    <ha-list-item-base>
+                    <ha-list-item-base wrap-supporting-text>
                       <span slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.zwave_js.dashboard.server_version"
@@ -86,7 +86,7 @@ class ZWaveJSNetworkInfoPage extends LitElement {
                         ${this._network.client.server_version}
                       </span>
                     </ha-list-item-base>
-                    <ha-list-item-base>
+                    <ha-list-item-base wrap-supporting-text>
                       <span slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.zwave_js.dashboard.server_url"
@@ -120,7 +120,6 @@ class ZWaveJSNetworkInfoPage extends LitElement {
 
         ha-list-item-base::part(supporting-text) {
           font-size: var(--ha-font-size-m);
-          white-space: normal;
         }
       `,
     ];

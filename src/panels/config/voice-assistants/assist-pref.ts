@@ -212,7 +212,7 @@ export class AssistPref extends LitElement {
           )}
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
         </ha-button>
-        <ha-row-item>
+        <ha-row-item wrap-headline wrap-supporting-text>
           <span slot="headline"
             >${this.hass!.localize(
               "ui.panel.config.voice_assistants.expose.expose_new_entities"
@@ -414,10 +414,6 @@ export class AssistPref extends LitElement {
   static styles = css`
     a {
       color: var(--primary-color);
-    }
-    ha-row-item::part(headline),
-    ha-row-item::part(supporting-text) {
-      white-space: normal;
     }
     .header-actions {
       position: absolute;

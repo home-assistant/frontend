@@ -117,11 +117,17 @@ shared slots/attributes below.
 
 **Attributes**
 
-| Name              | Type    | Default | Description                             |
-| ----------------- | ------- | ------- | --------------------------------------- |
-| `headline`        | String  | —       | Primary text. Overridden by the slot.   |
-| `supporting-text` | String  | —       | Secondary text. Overridden by the slot. |
-| `disabled`        | Boolean | `false` | Dims the row and blocks pointer events. |
+| Name                   | Type    | Default | Description                                        |
+| ---------------------- | ------- | ------- | -------------------------------------------------- |
+| `headline`             | String  | —       | Primary text. Overridden by the slot.              |
+| `supporting-text`      | String  | —       | Secondary text. Overridden by the slot.            |
+| `wrap-headline`        | Boolean | `false` | Wrap the headline instead of truncating it.        |
+| `wrap-supporting-text` | Boolean | `false` | Wrap the supporting text instead of truncating it. |
+| `disabled`             | Boolean | `false` | Dims the row and blocks pointer events.            |
+
+The headline and the supporting text stay on one line and are truncated with an
+ellipsis by default. Set `wrap-headline` or `wrap-supporting-text` on rows whose
+text has to stay readable in full, like settings with a description.
 
 **CSS parts**
 

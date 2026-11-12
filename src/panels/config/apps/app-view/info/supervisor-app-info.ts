@@ -816,7 +816,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
             this._currentAddon.version
               ? html`
                   <wa-divider></wa-divider>
-                  <ha-row-item>
+                  <ha-row-item wrap-supporting-text>
                     <span slot="headline">
                       ${this.i18n.localize(
                         "ui.panel.config.apps.dashboard.option.boot.title"
@@ -842,7 +842,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                   ${
                     this._currentAddon.startup !== "once"
                       ? html`
-                          <ha-row-item>
+                          <ha-row-item wrap-supporting-text>
                             <span slot="headline">
                               ${this.i18n.localize(
                                 "ui.panel.config.apps.dashboard.option.watchdog.title"
@@ -867,7 +867,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                         `
                       : nothing
                   }
-                  <ha-row-item>
+                  <ha-row-item wrap-supporting-text>
                     <span slot="headline">
                       ${this.i18n.localize(
                         "ui.panel.config.apps.dashboard.option.auto_update.title"
@@ -893,7 +893,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                     !this._computeCannotIngressSidebar &&
                     this._currentAddon.ingress
                       ? html`
-                          <ha-row-item>
+                          <ha-row-item wrap-supporting-text>
                             <span slot="headline">
                               ${this.i18n.localize(
                                 "ui.panel.config.apps.dashboard.option.ingress_panel.title"
@@ -923,7 +923,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                   ${
                     this._computeUsesProtectedOptions
                       ? html`
-                          <ha-row-item>
+                          <ha-row-item wrap-supporting-text>
                             <span slot="headline">
                               ${this.i18n.localize(
                                 "ui.panel.config.apps.dashboard.option.protected.title"
@@ -954,7 +954,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
           ${
             this._currentAddon.version && this._currentAddon.state === "started"
               ? html`<wa-divider></wa-divider>
-                  <ha-row-item>
+                  <ha-row-item wrap-supporting-text>
                     <span slot="supporting-text">
                       ${this.i18n.localize(
                         "ui.panel.config.apps.dashboard.hostname"
@@ -1628,10 +1628,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
           font-weight: var(--ha-font-weight-medium);
           padding: var(--ha-space-3) var(--ha-space-4) 0;
           color: var(--ha-color-text-secondary);
-        }
-
-        .controls ha-row-item::part(supporting-text) {
-          white-space: normal;
         }
 
         .controls .content {

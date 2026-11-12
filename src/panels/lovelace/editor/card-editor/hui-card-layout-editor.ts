@@ -118,7 +118,7 @@ export class HuiCardLayoutEditor extends LitElement {
             `
           : nothing
       }
-      <ha-row-item>
+      <ha-row-item wrap-supporting-text>
         <span slot="headline"
           >${this.hass.localize(
             "ui.panel.lovelace.editor.edit_card.layout.recommended_size"
@@ -151,7 +151,7 @@ export class HuiCardLayoutEditor extends LitElement {
                 .columnMax=${gridOptions.max_columns}
                 .step=${this._preciseMode ? 1 : GRID_COLUMN_MULTIPLIER}
               ></ha-grid-size-picker>
-              <ha-row-item>
+              <ha-row-item wrap-supporting-text>
                 <span slot="headline"
                   >${this.hass.localize(
                     "ui.panel.lovelace.editor.edit_card.layout.fit_content"
@@ -169,7 +169,7 @@ export class HuiCardLayoutEditor extends LitElement {
                   name="auto-height"
                 ></ha-switch>
               </ha-row-item>
-              <ha-row-item>
+              <ha-row-item wrap-supporting-text>
                 <span slot="headline"
                   >${this.hass.localize(
                     "ui.panel.lovelace.editor.edit_card.layout.full_width"
@@ -424,9 +424,6 @@ export class HuiCardLayoutEditor extends LitElement {
       .disabled {
         opacity: 0.5;
         pointer-events: none;
-      }
-      ha-row-item::part(supporting-text) {
-        white-space: normal;
       }
       ha-grid-size-picker {
         display: block;

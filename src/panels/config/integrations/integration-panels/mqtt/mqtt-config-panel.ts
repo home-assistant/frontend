@@ -221,6 +221,7 @@ export class MQTTConfigPanel extends LitElement {
             )}
           >
             <ha-list-item-button
+              wrap-headline
               href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}&status=disabled`}
             >
               <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
@@ -232,6 +233,7 @@ export class MQTTConfigPanel extends LitElement {
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-list-item-button>
             <ha-list-item-button
+              wrap-headline
               href=${`/config/entities?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
             >
               <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
@@ -253,7 +255,11 @@ export class MQTTConfigPanel extends LitElement {
       <ha-card class="nav-card">
         <div class="card-content">
           <ha-list-base>
-            <ha-list-item-button @click=${this._openOptionFlow}>
+            <ha-list-item-button
+              wrap-headline
+              wrap-supporting-text
+              @click=${this._openOptionFlow}
+            >
               <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
               <div slot="headline">
                 ${this.hass.localize("ui.panel.config.mqtt.option_flow")}
@@ -265,7 +271,11 @@ export class MQTTConfigPanel extends LitElement {
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-list-item-button>
-            <ha-list-item-button @click=${this._openConfigFlow}>
+            <ha-list-item-button
+              wrap-headline
+              wrap-supporting-text
+              @click=${this._openConfigFlow}
+            >
               <ha-svg-icon slot="start" .path=${mdiMqttLogo}></ha-svg-icon>
               <div slot="headline">
                 ${this.hass.localize("ui.panel.config.mqtt.config_flow")}
@@ -439,10 +449,6 @@ export class MQTTConfigPanel extends LitElement {
         ha-card {
           margin: 0 auto var(--ha-space-4);
           max-width: var(--ha-content-width-narrow);
-        }
-        ha-list-item-button::part(headline),
-        ha-list-item-button::part(supporting-text) {
-          white-space: normal;
         }
         ha-select {
           width: 96px;

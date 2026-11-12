@@ -542,7 +542,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     return html`
       ${
         !this.hideName && this._device
-          ? html`<ha-row-item class="main-entity">
+          ? html`<ha-row-item wrap-supporting-text class="main-entity">
               <span slot="headline"
                 >${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.main_entity",
@@ -740,7 +740,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 ${
                   SWITCH_AS_DOMAINS_INVERT.includes(this._switchAsDomain)
                     ? html`
-                        <ha-row-item>
+                        <ha-row-item wrap-supporting-text>
                           <span slot="headline"
                             >${this.hass.localize(
                               "ui.dialogs.entity_registry.editor.invert.label"
@@ -1017,7 +1017,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       ${
         this._cameraPrefs
           ? html`
-              <ha-row-item>
+              <ha-row-item wrap-supporting-text>
                 <span slot="headline"
                   >${this.hass.localize(
                     "ui.dialogs.entity_registry.editor.stream.preload_stream"
@@ -1035,7 +1035,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                   @change=${this._handleCameraPrefsChanged}
                 ></ha-switch>
               </ha-row-item>
-              <ha-row-item>
+              <ha-row-item wrap-supporting-text>
                 <span slot="headline"
                   >${this.hass.localize(
                     "ui.dialogs.entity_registry.editor.stream.stream_orientation"
@@ -1074,6 +1074,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
           this.helperConfigEntry.domain !== "switch_as_x"
             ? html`
                 <ha-list-item-button
+                  wrap-supporting-text
                   class="menu-item"
                   .disabled=${this.disabled}
                   @click=${this._showOptionsFlow}
@@ -1106,6 +1107,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
             : nothing
         }
         <ha-list-item-button
+          wrap-supporting-text
           class="menu-item"
           .disabled=${this.disabled}
           @click=${this._handleVoiceAssistantsClicked}
@@ -1134,6 +1136,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
           supportsFeature(stateObj, VacuumEntityFeature.CLEAN_AREA)
             ? html`
                 <ha-list-item-button
+                  wrap-supporting-text
                   class="menu-item"
                   .disabled=${this.disabled}
                   @click=${this._handleVacuumSegmentMappingClicked}
@@ -1171,7 +1174,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
           : nothing
       }
 
-      <ha-row-item>
+      <ha-row-item wrap-supporting-text>
         <span slot="headline"
           >${this.hass.localize(
             "ui.dialogs.entity_registry.editor.enabled_label"
@@ -1211,7 +1214,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
           : nothing
       }
 
-      <ha-row-item>
+      <ha-row-item wrap-supporting-text>
         <span slot="headline"
           >${this.hass.localize(
             "ui.dialogs.entity_registry.editor.visible_label"
@@ -1233,7 +1236,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       ${
         this.entry.device_id
           ? html`
-              <ha-row-item class="device-area">
+              <ha-row-item wrap-supporting-text class="device-area">
                 <span slot="headline"
                   >${this.hass.localize(
                     "ui.dialogs.entity_registry.editor.use_device_area"
@@ -2012,11 +2015,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
         }
         ha-input.entityId ha-icon-button:last-child {
           margin-inline-start: 0;
-        }
-
-        ha-row-item::part(supporting-text),
-        ha-list-item-button::part(supporting-text) {
-          white-space: normal;
         }
         ha-row-item {
           --ha-row-item-padding-inline: 0;
