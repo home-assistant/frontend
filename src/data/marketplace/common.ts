@@ -1,5 +1,3 @@
-export const MARKETPLACE_NAME = "Marketplace";
-
 export enum MarketplaceDispatchEvent {
   CONFIG = "marketplace_config",
   RELOAD = "marketplace_reload",

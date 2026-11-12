@@ -133,7 +133,7 @@ describe("ha-panel-marketplace", () => {
 
     expect(screen(panel, "ha-marketplace-router")).toBeNull();
     expect(screen(panel, "hass-error-screen")?.error).toBe(
-      'ui.panel.marketplace.not_loaded {"marketplace":"Marketplace"}'
+      "ui.panel.marketplace.not_loaded"
     );
   });
 
@@ -141,14 +141,13 @@ describe("ha-panel-marketplace", () => {
     {
       name: "a disabled entry",
       entry: { state: "not_loaded", disabled_by: "user" },
-      error:
-        'ui.panel.marketplace.entry.disabled {"marketplace":"Marketplace"}',
+      error: "ui.panel.marketplace.entry.disabled",
     },
     {
       name: "a failed setup",
       entry: { state: "setup_error", reason: "Could not read" },
       error:
-        'ui.panel.marketplace.entry.failed_reason {"marketplace":"Marketplace","reason":"Could not read"}',
+        'ui.panel.marketplace.entry.failed_reason {"reason":"Could not read"}',
     },
   ])("points $name to the integration page", async ({ entry, error }) => {
     const panel = await openPanel({
@@ -318,7 +317,7 @@ describe("ha-panel-marketplace", () => {
     });
 
     expect(screen(panel, "hass-error-screen")?.error).toBe(
-      'ui.panel.marketplace.load_failed {"marketplace":"Marketplace","error":"Boom"}'
+      'ui.panel.marketplace.load_failed {"error":"Boom"}'
     );
 
     infoFails = false;
@@ -345,7 +344,7 @@ describe("ha-panel-marketplace", () => {
     });
 
     expect(screen(panel, "hass-error-screen")?.error).toBe(
-      'ui.panel.marketplace.load_failed {"marketplace":"Marketplace","error":"component.marketplace.exceptions.catalog_timeout.message {}"}'
+      'ui.panel.marketplace.load_failed {"error":"component.marketplace.exceptions.catalog_timeout.message {}"}'
     );
     // Shown to the user already, the console stays quiet
     expect(consoleError).not.toHaveBeenCalled();

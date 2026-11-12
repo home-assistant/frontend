@@ -2,7 +2,6 @@ import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { MarketplaceData } from "../../../data/marketplace/marketplace";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showMarketplaceCustomRepositoriesDialog } from "../dialogs/show-dialog-marketplace-custom-repositories";
-import { MARKETPLACE_NAME } from "../../../data/marketplace/common";
 
 // The backend reports why the Marketplace is disabled, mapped so it can be shown
 // as a translated sentence.
@@ -23,17 +22,12 @@ export const showMarketplaceAddFromLink = (
 
   if (disabledReason) {
     showAlertDialog(element, {
-      title: localize("ui.panel.marketplace.dialog.disabled.title", {
-        marketplace: MARKETPLACE_NAME,
-      }),
+      title: localize("ui.panel.marketplace.dialog.disabled.title"),
       text: isKnownDisabledReason(disabledReason)
         ? localize(
-            `ui.panel.marketplace.dialog.disabled.reason.${disabledReason}`,
-            { marketplace: MARKETPLACE_NAME }
+            `ui.panel.marketplace.dialog.disabled.reason.${disabledReason}`
           )
-        : localize("ui.panel.marketplace.dialog.disabled.reason.unknown", {
-            marketplace: MARKETPLACE_NAME,
-          }),
+        : localize("ui.panel.marketplace.dialog.disabled.reason.unknown"),
     });
 
     return;

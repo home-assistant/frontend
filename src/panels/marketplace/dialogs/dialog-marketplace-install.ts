@@ -53,7 +53,6 @@ import { installBlockedReason } from "../tools/install-blocked-reason";
 import { generateFrontendResourceURL } from "../tools/frontend-resource";
 import type { ValueChangedEvent } from "../../../types";
 import type { MarketplaceInstallDialogParams } from "./show-dialog-marketplace-install";
-import { MARKETPLACE_NAME } from "../../../data/marketplace/common";
 
 interface ReleaseComboBoxItem extends PickerComboBoxItem {
   installed: boolean;
@@ -155,9 +154,7 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
         this._i18n.localize,
         err
       )
-        ? this._i18n.localize("ui.panel.marketplace.github.rate_limited", {
-            marketplace: MARKETPLACE_NAME,
-          })
+        ? this._i18n.localize("ui.panel.marketplace.github.rate_limited")
         : marketplaceErrorMessage(err, this._i18n.localize);
       return;
     }

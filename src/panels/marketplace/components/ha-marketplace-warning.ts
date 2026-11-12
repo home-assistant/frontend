@@ -25,7 +25,6 @@ import {
   acceptMarketplaceWarning,
   marketplaceErrorMessage,
 } from "../../../data/marketplace/websocket";
-import { MARKETPLACE_NAME } from "../../../data/marketplace/common";
 
 const RISKS = [
   { risk: "access", icon: mdiShieldKeyOutline },
@@ -62,8 +61,7 @@ export class HaMarketplaceWarning extends LitElement {
         open
         prevent-scrim-close
         .headerTitle=${this._i18n.localize(
-          "ui.panel.marketplace.warning.title",
-          { marketplace: MARKETPLACE_NAME }
+          "ui.panel.marketplace.warning.title"
         )}
       >
         <ha-svg-icon
@@ -72,7 +70,7 @@ export class HaMarketplaceWarning extends LitElement {
           .path=${mdiAlertOutline}
         ></ha-svg-icon>
         <p class="intro">
-          ${this._i18n.localize("ui.panel.marketplace.warning.intro", { marketplace: MARKETPLACE_NAME })}
+          ${this._i18n.localize("ui.panel.marketplace.warning.intro")}
         </p>
         ${
           this._error

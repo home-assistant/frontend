@@ -97,7 +97,7 @@ import {
   markdownWithRepositoryContext,
   repositoryUrl,
 } from "../tools/markdown";
-import { MARKETPLACE_NAME } from "../../../data/marketplace/common";
+import { MARKETPLACE_NAME } from "../../../common/translations/name-placeholders";
 
 // Repository pages live at /<id> below /repository, my links at /repository itself.
 const repositoryIdFromRoute = (route: Route): string => route.path.substring(1);
@@ -234,7 +234,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         ),
         text: this._i18n.localize(
           "ui.panel.marketplace.my.add_repository_description",
-          { marketplace: MARKETPLACE_NAME, repository: requestedRepository }
+          { repository: requestedRepository }
         ),
         confirmText: this._i18n.localize("ui.common.add"),
         dismissText: this._i18n.localize("ui.common.cancel"),
@@ -417,9 +417,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         ? isWebSocketError(err, ERROR_GITHUB_RATE_LIMITED)
         : handleGitHubRateLimited(this, this._api, this._i18n.localize, err);
       const message = rateLimited
-        ? this._i18n.localize("ui.panel.marketplace.github.rate_limited", {
-            marketplace: MARKETPLACE_NAME,
-          })
+        ? this._i18n.localize("ui.panel.marketplace.github.rate_limited")
         : marketplaceErrorMessage(err, this._i18n.localize);
 
       if (this._repository?.id === requestedRepositoryId) {

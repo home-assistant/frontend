@@ -12,10 +12,7 @@ import "../../layouts/hass-error-screen";
 import "../../layouts/hass-loading-screen";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../types";
-import {
-  MARKETPLACE_NAME,
-  MarketplaceDispatchEvent,
-} from "../../data/marketplace/common";
+import { MarketplaceDispatchEvent } from "../../data/marketplace/common";
 import type {
   MarketplaceData,
   MarketplaceInfo,
@@ -174,16 +171,14 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
         <hass-error-screen
           .hass=${this.hass}
           .narrow=${this.narrow}
-          .error=${this.hass.localize("ui.panel.marketplace.not_loaded", { marketplace: MARKETPLACE_NAME })}
+          .error=${this.hass.localize("ui.panel.marketplace.not_loaded")}
         ></hass-error-screen>
       `;
     }
 
     if (this._entry?.disabled_by) {
       return this._renderEntryProblem(
-        this.hass.localize("ui.panel.marketplace.entry.disabled", {
-          marketplace: MARKETPLACE_NAME,
-        })
+        this.hass.localize("ui.panel.marketplace.entry.disabled")
       );
     }
 
@@ -191,12 +186,9 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
       return this._renderEntryProblem(
         this._entry.reason
           ? this.hass.localize("ui.panel.marketplace.entry.failed_reason", {
-              marketplace: MARKETPLACE_NAME,
               reason: this._entry.reason,
             })
-          : this.hass.localize("ui.panel.marketplace.entry.failed", {
-              marketplace: MARKETPLACE_NAME,
-            })
+          : this.hass.localize("ui.panel.marketplace.entry.failed")
       );
     }
 
@@ -206,7 +198,6 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           .narrow=${this.narrow}
           .error=${this.hass.localize("ui.panel.marketplace.load_failed", {
-            marketplace: MARKETPLACE_NAME,
             error: this._loadError,
           })}
         >
@@ -224,9 +215,7 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
           .narrow=${this.narrow}
           .message=${
             this._entry?.state === "setup_retry"
-              ? this.hass.localize("ui.panel.marketplace.entry.retrying", {
-                  marketplace: MARKETPLACE_NAME,
-                })
+              ? this.hass.localize("ui.panel.marketplace.entry.retrying")
               : undefined
           }
         ></hass-loading-screen>

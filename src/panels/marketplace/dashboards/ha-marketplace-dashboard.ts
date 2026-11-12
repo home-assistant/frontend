@@ -118,7 +118,6 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
-import { MARKETPLACE_NAME } from "../../../data/marketplace/common";
 
 const defaultKeyData = {
   title: "",
@@ -434,10 +433,10 @@ export class HaMarketplaceDashboard extends LitElement {
             : html`<div class="empty" slot="empty">
                 <ha-svg-icon .path=${mdiStore}></ha-svg-icon>
                 <h2>
-                  ${this._i18n.localize("ui.panel.marketplace.dashboard.empty_header", { marketplace: MARKETPLACE_NAME })}
+                  ${this._i18n.localize("ui.panel.marketplace.dashboard.empty_header")}
                 </h2>
                 <p>
-                  ${this._i18n.localize("ui.panel.marketplace.dashboard.empty_text", { marketplace: MARKETPLACE_NAME })}
+                  ${this._i18n.localize("ui.panel.marketplace.dashboard.empty_text")}
                 </p>
                 <ha-button
                   href=${documentationUrl(this._config, "/integrations/marketplace")}
@@ -832,7 +831,6 @@ export class HaMarketplaceDashboard extends LitElement {
             : "ui.panel.marketplace.dialog.uninstall.selected",
           {
             count: selectedRepositories.length,
-            marketplace: MARKETPLACE_NAME,
             ...(inUseCount ? { in_use: inUseCount } : {}),
           }
         ),

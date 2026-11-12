@@ -11,7 +11,6 @@ import { internationalizationContext } from "../../../data/context";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { MarketplaceInUseDialogParams } from "./show-dialog-marketplace-in-use";
-import { MARKETPLACE_NAME } from "../../../data/marketplace/common";
 
 @customElement("dialog-marketplace-in-use")
 export class DialogMarketplaceInUse extends DialogMixin<MarketplaceInUseDialogParams>(
@@ -38,7 +37,6 @@ export class DialogMarketplaceInUse extends DialogMixin<MarketplaceInUseDialogPa
       >
         <p>
           ${localize("ui.panel.marketplace.dialog.in_use.message", {
-            marketplace: MARKETPLACE_NAME,
             name: repository.name,
           })}
         </p>
