@@ -112,6 +112,9 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   @property({ type: Boolean, attribute: "no-sort" }) public noSort = false;
 
+  @property({ attribute: "pin-block" })
+  public pinBlock?: "start" | "center" | "end" | "nearest";
+
   // Skip the "unknown value" highlight and note for a value that is not in the
   // list but that the value renderer presents on its own.
   @property({ type: Boolean, attribute: "no-unknown-state" })
@@ -347,6 +350,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .searchKeys=${this.searchKeys}
         .customValueLabel=${this.customValueLabel}
         .noSort=${this.noSort}
+        .pinBlock=${this.pinBlock}
       ></ha-picker-combo-box>
     `;
   }
