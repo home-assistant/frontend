@@ -108,6 +108,55 @@ describe("movedStyle", () => {
     expect(movedStyle({ type: "icon", style }, SPOT)).toEqual(moved);
   });
 
+  const moved = (style: Record<string, unknown>) =>
+    movedStyle({ type: "icon", style: style as Record<string, string> }, SPOT)!;
+
+  it.each([
+    [
+      { top: "", inset: "", right: "5%" },
+      { right: "87.7%", top: "20%" },
+    ],
+    [
+      { left: "", inset: "", top: "5%" },
+      { left: "12.3%", top: "20%" },
+    ],
+    [
+      { left: "", top: null, Inset: null, color: "red" },
+      { left: "12.3%", top: "20%" },
+    ],
+  ])("keeps the sides of %j behind the empty inset", (style, sides) => {
+    // Set key by key like the card does.
+    const element = document.createElement("div");
+    for (const [prop, value] of Object.entries(moved(style))) {
+      element.style.setProperty(prop, value);
+    }
+    for (const [side, value] of Object.entries(sides)) {
+      expect(element.style.getPropertyValue(side)).toBe(value);
+    }
+  });
+
+  it.each([
+    [
+      { left: "5%", color: "red", top: "5%" },
+      [
+        ["left", "12.3%"],
+        ["color", "red"],
+        ["top", "20%"],
+      ],
+    ],
+    [
+      { inset: "", bottom: "5%", color: "red", right: "5%" },
+      [
+        ["inset", ""],
+        ["bottom", "80%"],
+        ["color", "red"],
+        ["right", "87.7%"],
+      ],
+    ],
+  ])("keeps the key order of %j", (style, entries) => {
+    expect(Object.entries(moved(style))).toEqual(entries);
+  });
+
   it("leaves an element alone that it can't move there", () => {
     const style = { left: "5%", right: "5%" };
     expect(movedStyle({ type: "icon", style }, SPOT)).toBeUndefined();

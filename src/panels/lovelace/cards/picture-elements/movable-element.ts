@@ -94,8 +94,18 @@ export const movedStyle = (
     return undefined;
   }
   const round = (value: number) => Math.round(value * 10) / 10;
+  const style = { ...config.style };
+  const keys = Object.keys(style);
+  // The card applies the keys in order, so a side before an empty inset goes
+  // behind it, or the inset removes it again. Others keep their place.
+  for (const side of [anchors.x, anchors.y]) {
+    const later = keys.slice(keys.indexOf(side) + 1);
+    if (later.some((key) => key.toLowerCase() === "inset")) {
+      delete style[side];
+    }
+  }
   return {
-    ...config.style,
+    ...style,
     [anchors.x]: `${round(x)}%`,
     [anchors.y]: `${round(y)}%`,
   };
