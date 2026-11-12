@@ -66,13 +66,60 @@ export const groupSmallTables = (
   };
 };
 
-interface EntityUsageRow extends DataTableRowData {
-  entity_id: string;
-  name: string;
+// Row id for the rows the database cannot attribute to an entity or statistic.
+export const UNKNOWN_ROW_ID = "unknown";
+
+export interface DatabaseUsageRow {
+  id: string;
   states: number;
   statistics: number;
   statistics_short_term: number;
-  bytes: number;
+  bytes: number | null;
+}
+
+// Statistics of an entity share its ID and are merged into its row.
+export const databaseUsageRows = (
+  usage: RecorderDatabaseUsage
+): DatabaseUsageRow[] => {
+  const rows = new Map<string, DatabaseUsageRow>();
+  const row = (id: string | null) => {
+    const key = id ?? UNKNOWN_ROW_ID;
+    let result = rows.get(key);
+    if (!result) {
+      result = {
+        id: key,
+        states: 0,
+        statistics: 0,
+        statistics_short_term: 0,
+        bytes: usage.tables ? 0 : null,
+      };
+      rows.set(key, result);
+    }
+    return result;
+  };
+  for (const entity of usage.entities) {
+    const result = row(entity.entity_id);
+    result.states += entity.states;
+    if (result.bytes !== null) {
+      result.bytes +=
+        (entity.states_bytes ?? 0) + (entity.attributes_bytes ?? 0);
+    }
+  }
+  for (const statistic of usage.statistics) {
+    const result = row(statistic.statistic_id);
+    result.statistics += statistic.statistics;
+    result.statistics_short_term += statistic.statistics_short_term;
+    if (result.bytes !== null) {
+      result.bytes +=
+        (statistic.statistics_bytes ?? 0) +
+        (statistic.statistics_short_term_bytes ?? 0);
+    }
+  }
+  return [...rows.values()];
+};
+
+interface EntityUsageRow extends DatabaseUsageRow, DataTableRowData {
+  name: string;
 }
 
 @customElement("storage-database-card")
@@ -116,15 +163,18 @@ export class StorageDatabaseCard extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   private _entityRegistry: EntityRegistryEntry[] = [];
 
-  @state() private _usage?: RecorderDatabaseUsage;
+  // Undefined until loaded, null when no recent report exists.
+  @state() private _usage?: RecorderDatabaseUsage | null;
 
   @state() private _loading = false;
+
+  @state() private _analyzing = false;
 
   @state() private _error?: string;
 
   protected firstUpdated(changedProps: PropertyValues<this>): void {
     super.firstUpdated(changedProps);
-    this._load(false);
+    this._load();
   }
 
   protected render(): TemplateResult {
@@ -143,26 +193,36 @@ export class StorageDatabaseCard extends LitElement {
           ${
             usage
               ? this._renderUsage(usage)
-              : this._loading
+              : this._analyzing
                 ? html`<div class="loading">
                     <ha-spinner></ha-spinner>
                     <span>
                       ${this._localize(
-                        "ui.panel.config.storage.database.loading"
+                        "ui.panel.config.storage.database.analyzing"
                       )}
                     </span>
                   </div>`
-                : nothing
+                : usage === null
+                  ? html`<p class="description">
+                      ${this._localize(
+                        "ui.panel.config.storage.database.description"
+                      )}
+                    </p>`
+                  : nothing
           }
         </div>
         <div class="card-actions">
           <ha-button
             appearance="plain"
-            .loading=${this._loading}
-            .disabled=${this._loading}
-            @click=${this._refresh}
+            .loading=${this._analyzing}
+            .disabled=${this._loading || this._analyzing}
+            @click=${this._analyze}
           >
-            ${this._localize("ui.panel.config.storage.database.refresh")}
+            ${this._localize(
+              usage
+                ? "ui.panel.config.storage.database.analyze_again"
+                : "ui.panel.config.storage.database.analyze"
+            )}
           </ha-button>
         </div>
       </ha-card>
@@ -182,9 +242,28 @@ export class StorageDatabaseCard extends LitElement {
             ),
           })}
         </span>
+        ${
+          !usage.tables?.length && usage.free_bytes
+            ? html`<span class="generated">
+                ${this._localize(
+                  "ui.panel.config.storage.database.unused_space_of",
+                  { size: bytesToString(usage.free_bytes) }
+                )}
+              </span>`
+            : nothing
+        }
+        ${
+          usage.wal_bytes
+            ? html`<span class="generated">
+                ${this._localize("ui.panel.config.storage.database.wal", {
+                  size: bytesToString(usage.wal_bytes),
+                })}
+              </span>`
+            : nothing
+        }
       </div>
       ${
-        usage.tables.length
+        usage.tables?.length
           ? html`<ha-segmented-bar
               .heading=${this._localize(
                 "ui.panel.config.storage.database.tables"
@@ -192,6 +271,7 @@ export class StorageDatabaseCard extends LitElement {
               .segments=${this._tableSegments(
                 usage.tables,
                 usage.total_bytes,
+                usage.free_bytes,
                 this._localize,
                 this._themes
               )}
@@ -201,12 +281,16 @@ export class StorageDatabaseCard extends LitElement {
       <div class="table">
         <ha-data-table
           .narrow=${this.narrow}
-          .columns=${this._columns(this._localize, this._locale, this.narrow)}
-          .data=${this._rows(usage, this._entityRegistry)}
+          .columns=${this._columns(
+            this._localize,
+            this._locale,
+            this.narrow,
+            usage.tables !== null
+          )}
+          .data=${this._rows(usage, this._entityRegistry, this._localize)}
           .searchLabel=${this._localize(
             "ui.panel.config.storage.database.search"
           )}
-          id="entity_id"
           clickable
           .noDataText=${this._localize(
             "ui.panel.config.storage.database.no_entities"
@@ -221,6 +305,7 @@ export class StorageDatabaseCard extends LitElement {
     (
       tables: RecorderTableUsage[],
       totalBytes: number,
+      freeBytes: number | null,
       localize: LocalizeFunc,
       _themes: Themes
     ): Segment[] => {
@@ -230,10 +315,14 @@ export class StorageDatabaseCard extends LitElement {
         name: table.table,
         bytes: table.bytes,
       }));
-      if (grouped.otherBytes > 0) {
+      // PostgreSQL catalogs are in the total but not in the tables.
+      const otherBytes =
+        grouped.otherBytes +
+        Math.max(0, totalBytes - grouped.totalBytes - (freeBytes ?? 0));
+      if (otherBytes > 0) {
         segments.push({
           name: localize("ui.panel.config.storage.database.other_tables"),
-          bytes: grouped.otherBytes,
+          bytes: otherBytes,
         });
       }
       const result: Segment[] = segments.map((segment, index) => ({
@@ -244,16 +333,14 @@ export class StorageDatabaseCard extends LitElement {
             >${bytesToString(segment.bytes)}</span
           >`,
       }));
-      // SQLite free pages (or PostgreSQL catalogs) are not part of any table.
-      const unusedBytes = totalBytes - grouped.totalBytes;
-      if (unusedBytes > 0) {
+      if (freeBytes) {
         result.push({
-          value: unusedBytes,
+          value: freeBytes,
           color:
             "var(--ha-bar-background-color, var(--secondary-background-color))",
           label: html`${localize("ui.panel.config.storage.database.unused_space")}
             <span style="color: var(--secondary-text-color)"
-              >${bytesToString(unusedBytes)}</span
+              >${bytesToString(freeBytes)}</span
             >`,
         });
       }
@@ -266,13 +353,19 @@ export class StorageDatabaseCard extends LitElement {
   private _rows = memoizeOne(
     (
       usage: RecorderDatabaseUsage,
-      _entityRegistry: EntityRegistryEntry[]
+      _entityRegistry: EntityRegistryEntry[],
+      localize: LocalizeFunc
     ): EntityUsageRow[] =>
-      usage.entities.map((entity) => {
-        const stateObj = this._states[entity.entity_id];
+      databaseUsageRows(usage).map((row) => {
+        const stateObj = this._states[row.id];
         return {
-          ...entity,
-          name: stateObj ? computeStateName(stateObj) : entity.entity_id,
+          ...row,
+          name:
+            row.id === UNKNOWN_ROW_ID
+              ? localize("ui.panel.config.storage.database.unknown")
+              : stateObj
+                ? computeStateName(stateObj)
+                : row.id,
         };
       })
   );
@@ -281,7 +374,8 @@ export class StorageDatabaseCard extends LitElement {
     (
       localize: LocalizeFunc,
       locale: FrontendLocaleData,
-      narrow: boolean
+      narrow: boolean,
+      hasSizes: boolean
     ): DataTableColumnContainer<EntityUsageRow> => ({
       name: {
         title: localize("ui.panel.config.storage.database.columns.entity"),
@@ -292,12 +386,12 @@ export class StorageDatabaseCard extends LitElement {
         template: (row) =>
           html`${row.name}
           ${
-            row.name !== row.entity_id
-              ? html`<div class="secondary">${row.entity_id}</div>`
+            row.id !== UNKNOWN_ROW_ID && row.name !== row.id
+              ? html`<div class="secondary">${row.id}</div>`
               : nothing
           }`,
       },
-      entity_id: {
+      id: {
         title: localize("ui.panel.config.storage.database.columns.entity_id"),
         filterable: true,
         hidden: true,
@@ -308,7 +402,10 @@ export class StorageDatabaseCard extends LitElement {
         minWidth: "100px",
         maxWidth: "100px",
         sortable: true,
-        hidden: narrow,
+        // Without sizes the rows are sorted by states instead.
+        direction: hasSizes ? undefined : "desc",
+        hidden: narrow && hasSizes,
+        showNarrow: !hasSizes,
         template: (row) => formatNumber(row.states, locale),
       },
       statistics: {
@@ -337,9 +434,10 @@ export class StorageDatabaseCard extends LitElement {
         minWidth: "100px",
         maxWidth: "100px",
         sortable: true,
-        direction: "desc",
-        showNarrow: true,
-        template: (row) => bytesToString(row.bytes),
+        direction: hasSizes ? "desc" : undefined,
+        hidden: !hasSizes,
+        showNarrow: hasSizes,
+        template: (row) => bytesToString(row.bytes ?? 0),
       },
     })
   );
@@ -355,19 +453,42 @@ export class StorageDatabaseCard extends LitElement {
     }
   }
 
-  private _refresh() {
-    this._load(true);
-  }
-
-  private async _load(refresh: boolean) {
+  private async _load() {
     this._loading = true;
     this._error = undefined;
     try {
-      this._usage = await fetchRecorderDatabaseUsage(this._api, refresh);
+      this._usage = await fetchRecorderDatabaseUsage(this._api);
     } catch (err: any) {
-      this._error = err.message || err.code || String(err);
+      this._error = this._errorMessage(err);
     } finally {
       this._loading = false;
+    }
+  }
+
+  private async _analyze() {
+    this._analyzing = true;
+    this._error = undefined;
+    try {
+      this._usage = await fetchRecorderDatabaseUsage(this._api, true);
+    } catch (err: any) {
+      this._error = this._errorMessage(err);
+    } finally {
+      this._analyzing = false;
+    }
+  }
+
+  private _errorMessage(err: any): string {
+    switch (err.code) {
+      case "recorder_not_ready":
+        return this._localize(
+          "ui.panel.config.storage.database.errors.recorder_not_ready"
+        );
+      case "migration_in_progress":
+        return this._localize(
+          "ui.panel.config.storage.database.errors.migration_in_progress"
+        );
+      default:
+        return err.message || err.code || String(err);
     }
   }
 
@@ -399,8 +520,12 @@ export class StorageDatabaseCard extends LitElement {
     .total {
       font-size: var(--ha-font-size-2xl);
     }
-    .generated {
+    .generated,
+    .description {
       color: var(--secondary-text-color);
+    }
+    .description {
+      margin: 0;
     }
     .table {
       height: 480px;

@@ -168,26 +168,43 @@ export interface RecorderTableUsage {
   bytes: number;
 }
 
+// Byte figures are null when the database cannot report table sizes.
 export interface RecorderEntityUsage {
-  entity_id: string;
+  // null collects rows without a known entity
+  entity_id: string | null;
   states: number;
+  states_bytes: number | null;
+  attributes_bytes: number | null;
+}
+
+export interface RecorderStatisticUsage {
+  // null collects rows without a known statistic
+  statistic_id: string | null;
+  source: string | null;
   statistics: number;
   statistics_short_term: number;
-  bytes: number;
+  statistics_bytes: number | null;
+  statistics_short_term_bytes: number | null;
 }
 
 export interface RecorderDatabaseUsage {
   generated_at: string;
+  duration: number;
   total_bytes: number;
-  tables: RecorderTableUsage[];
+  free_bytes: number | null;
+  // SQLite write-ahead log, not part of total_bytes
+  wal_bytes: number | null;
+  tables: RecorderTableUsage[] | null;
   entities: RecorderEntityUsage[];
+  statistics: RecorderStatisticUsage[];
 }
 
+// Without refresh this returns the last report of the past hour, or null.
 export const fetchRecorderDatabaseUsage = (
   api: Pick<HomeAssistantApi, "callWS">,
   refresh = false
 ) =>
-  api.callWS<RecorderDatabaseUsage>({
+  api.callWS<RecorderDatabaseUsage | null>({
     type: "recorder/database_usage",
     refresh,
   });

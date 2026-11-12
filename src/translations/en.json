@@ -9769,14 +9769,23 @@
           "change_chart_type": "Change chart type",
           "database": {
             "title": "Database",
-            "loading": "Measuring the database, this can take a few seconds...",
-            "refresh": "Refresh",
+            "description": "Analyze the database to see which tables, entities and statistics use the most space.",
+            "analyzing": "Analyzing the database, this can take a while on a large database...",
+            "analyze": "Analyze",
+            "analyze_again": "Analyze again",
             "as_of": "as of {time}",
             "tables": "Tables",
             "other_tables": "Other tables",
             "unused_space": "Unused space",
+            "unused_space_of": "{size} unused",
+            "wal": "plus {size} write-ahead log",
+            "unknown": "Without a known entity or statistic",
             "search": "Search entities",
             "no_entities": "No recorded entities",
+            "errors": {
+              "recorder_not_ready": "The recorder database is not available yet.",
+              "migration_in_progress": "The recorder database is being migrated. Try again when the migration has finished."
+            },
             "columns": {
               "entity": "Entity",
               "entity_id": "Entity ID",
