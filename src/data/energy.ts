@@ -209,7 +209,8 @@ export interface BatteryDirectionsPowerConfig {
   stat_rate_to_grid?: string; // battery → grid
 }
 
-// An empty direction means the flow never happens
+// A missing direction is 0. At least one charge and one discharge direction is
+// required, so getBatteryEnergyStatIds never returns an empty list.
 export interface BatteryDirectionsSourceTypeEnergyPreference {
   type: "battery";
   stat_energy_from?: undefined;
