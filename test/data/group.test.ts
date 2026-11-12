@@ -51,6 +51,24 @@ describe("computeGroupMemberIds", () => {
     ).toEqual(["light.a"]);
   });
 
+  it("the registry copy wins over the state", () => {
+    expect(
+      computeGroupMemberIds(
+        entity("light.group", { group_entities: ["light.b"] }),
+        { capabilities: { group_entities: ["light.a"] } }
+      )
+    ).toEqual(["light.a"]);
+  });
+
+  it("no entry: the state copy", () => {
+    expect(
+      computeGroupMemberIds(
+        entity("light.group", { group_entities: ["light.b"] }),
+        null
+      )
+    ).toEqual(["light.b"]);
+  });
+
   it("not a group: undefined", () => {
     expect(computeGroupMemberIds(entity("light.lamp"))).toBeUndefined();
   });

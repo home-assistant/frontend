@@ -5,6 +5,7 @@ import type {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
+import type { ExtEntityRegistryEntry } from "./entity/entity_registry";
 
 interface GroupEntityAttributes extends HassEntityAttributeBase {
   entity_id: string[];
@@ -27,12 +28,15 @@ export const computeGroupDomain = (
   return uniqueDomains.length === 1 ? uniqueDomains[0] : undefined;
 };
 
-/** Member entity IDs of a group entity, or undefined if it is not a group. */
+/** Member entity IDs of a group, or undefined if it is not a group. */
 export const computeGroupMemberIds = (
-  stateObj: HassEntity
+  stateObj: HassEntity,
+  entry?: Pick<ExtEntityRegistryEntry, "capabilities"> | null
 ): string[] | undefined => {
   const ids =
-    stateObj.attributes.group_entities ?? stateObj.attributes.entity_id;
+    entry?.capabilities?.group_entities ??
+    stateObj.attributes.group_entities ??
+    stateObj.attributes.entity_id;
   return Array.isArray(ids) ? ids : undefined;
 };
 

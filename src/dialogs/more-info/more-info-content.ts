@@ -116,11 +116,9 @@ class MoreInfoContent extends LitElement {
         return undefined;
       }
 
-      const memberIds =
-        (entry?.capabilities?.group_entities as string[] | undefined) ??
-        computeGroupMemberIds(stateObj);
-
-      return memberIds?.filter((entityId) => !entities[entityId]?.hidden);
+      return computeGroupMemberIds(stateObj, entry)?.filter(
+        (entityId) => !entities[entityId]?.hidden
+      );
     }
   );
 
