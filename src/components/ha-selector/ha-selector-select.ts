@@ -39,7 +39,7 @@ const SEARCH_KEYS = [{ name: "primary", weight: 1 }];
 
 // Without `sort`, the order of the options is the integration's own (nearest
 // first, most used first), so matches keep it instead of the match score.
-const keepOptionOrder: PickerComboBoxSearchFn<PickerComboBoxItem> = (
+export const keepOptionOrder: PickerComboBoxSearchFn<PickerComboBoxItem> = (
   _search,
   filteredItems,
   allItems
@@ -281,7 +281,12 @@ export class HaSelectSelector extends LitElement {
       `;
     }
 
-    if (options.length > SEARCH_MIN_OPTIONS) {
+    // The picker has no way to select an empty value, so a list with an
+    // empty-string option keeps the plain dropdown.
+    if (
+      options.length > SEARCH_MIN_OPTIONS &&
+      !options.some((option) => option.value === "")
+    ) {
       return html`
         <ha-generic-picker
           no-sort
@@ -448,6 +453,9 @@ export class HaSelectSelector extends LitElement {
     }
 
     if (!this.selector.select?.multiple) {
+      if (newValue === this.value) {
+        return;
+      }
       fireEvent(this, "value-changed", {
         value: newValue,
       });
