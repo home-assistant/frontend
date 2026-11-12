@@ -366,8 +366,8 @@ importers:
         specifier: 6.3.0
         version: 6.3.0
       intl-messageformat:
-        specifier: 12.1.4
-        version: 12.1.4
+        specifier: 12.1.5
+        version: 12.1.5
       js-yaml:
         specifier: 5.5.0
         version: 5.5.0
@@ -2021,14 +2021,14 @@ packages:
   '@formatjs/icu-messageformat-parser@2.11.2':
     resolution: {integrity: sha512-AfiMi5NOSo2TQImsYAg8UYddsNJ/vUEv/HaNqiFjnI3ZFfWihUtD5QtuX6kHl8+H+d3qvnE/3HZrfzgdWpsLNA==}
 
-  '@formatjs/icu-messageformat-parser@3.5.22':
-    resolution: {integrity: sha512-YuwN+dDKgssfuYwtOyGQD0CSn7K46g9cv1Fp0VgKpjZDDFvv8b8crzP990IcJhRPWHhKzCGsbUSJVIguyyFA5A==}
+  '@formatjs/icu-messageformat-parser@3.5.23':
+    resolution: {integrity: sha512-iB1fYfhtSGd8uH9A8b1m01Ujcv6QtQnJasefP3jPApmz72L/zNipzf3BdoinTMd1xuviVChjUJWL60iTwjUQ+w==}
 
   '@formatjs/icu-skeleton-parser@1.8.14':
     resolution: {integrity: sha512-i4q4V4qslThK4Ig8SxyD76cp3+QJ3sAqr7f6q9VVfeGtxG9OhiAk3y9XF6Q41OymsKzsGQ6OQQoJNY4/lI8TcQ==}
 
-  '@formatjs/icu-skeleton-parser@2.1.12':
-    resolution: {integrity: sha512-ca7tZMLpfHX3sUD7hP6gE/qr6Iq89EDd3ZLeRhbsB7r0UD55DGJq+tmFLzrGrnx5StahUevQmQQVtbDRHsfDHA==}
+  '@formatjs/icu-skeleton-parser@2.1.13':
+    resolution: {integrity: sha512-IdAJ9NrHn7AF0zqncD9UpxQozTYyJtbwwrZnJMEKVxTcOOXtVkUb2XYTpNOGTAv58NCsk0rjRB9G+i2SvBmGAQ==}
 
   '@formatjs/intl-datetimeformat@8.0.3':
     resolution: {integrity: sha512-LQed+WhJBlceMJ4Zbe7dDe7Wn15le9t5HXfOFGdJYM/MGDyn56LTHlSzPzFjsJA0rvyp4FjN28jRQiMwtsji6A==}
@@ -5602,8 +5602,8 @@ packages:
   intl-messageformat@10.7.16:
     resolution: {integrity: sha512-UmdmHUmp5CIKKjSoE10la5yfU+AYJAaiYLsodbjL4lji83JNvgOQUjGaGhGrpFCb0Uh7sl7qfP1IyILa8Z40ug==}
 
-  intl-messageformat@12.1.4:
-    resolution: {integrity: sha512-JUkmv3cAEyijN3oiRiV3ctel7yVMuUCgfh7Pu8pj1/z6L1DSEPRyhuMaLjVw3pGmGJ5RDH54WVFxfMHZWTwyHw==}
+  intl-messageformat@12.1.5:
+    resolution: {integrity: sha512-quhcDFAxy4wr/GrgWgmMjuegoedNUIxGNLORfXgDgdjuv8cBM88ClLTLXmfYC1roMSR1PPc55yUEkpJ5m67W2g==}
 
   ip-address@10.7.2:
     resolution: {integrity: sha512-7H/2gFSIitxc0hG3nOI1glS8QLo/EHBFFLk8vEUjXY/xu0AdL8jZ9U1IzO2PUm0d2D/ofQcAifb0g6OBkt8U7w==}
@@ -9781,16 +9781,16 @@ snapshots:
       '@formatjs/icu-skeleton-parser': 1.8.14
       tslib: 2.9.1
 
-  '@formatjs/icu-messageformat-parser@3.5.22':
+  '@formatjs/icu-messageformat-parser@3.5.23':
     dependencies:
-      '@formatjs/icu-skeleton-parser': 2.1.12
+      '@formatjs/icu-skeleton-parser': 2.1.13
 
   '@formatjs/icu-skeleton-parser@1.8.14':
     dependencies:
       '@formatjs/ecma402-abstract': 2.3.4
       tslib: 2.9.1
 
-  '@formatjs/icu-skeleton-parser@2.1.12': {}
+  '@formatjs/icu-skeleton-parser@2.1.13': {}
 
   '@formatjs/intl-datetimeformat@8.0.3':
     dependencies:
@@ -13543,10 +13543,10 @@ snapshots:
       '@formatjs/icu-messageformat-parser': 2.11.2
       tslib: 2.9.1
 
-  intl-messageformat@12.1.4:
+  intl-messageformat@12.1.5:
     dependencies:
       '@formatjs/fast-memoize': 3.1.7
-      '@formatjs/icu-messageformat-parser': 3.5.22
+      '@formatjs/icu-messageformat-parser': 3.5.23
 
   ip-address@10.7.2: {}
 
