@@ -554,7 +554,9 @@ class ZHANetworkHealthPage extends LitElement {
       const band = signalBand(device, links);
       icon = BAND_ICON[band];
       iconClass = `signal ${band}`;
-      value = `LQI ${linkQuality(device, links) ?? "—"}`;
+      value = `${this.hass.localize("ui.panel.config.zha.neighbors.lqi")} ${
+        linkQuality(device, links) ?? "—"
+      }`;
     }
 
     const parent =
@@ -748,8 +750,9 @@ class ZHANetworkHealthPage extends LitElement {
           color: color-mix(in srgb, var(--success-color) 45%, white);
         }
 
+        /* ha-svg-icon raises the specificity above the slot rule above. */
         .signal.weak,
-        .warning {
+        ha-svg-icon.warning {
           color: var(--warning-color);
         }
 
