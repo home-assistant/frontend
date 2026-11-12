@@ -16,6 +16,7 @@ import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-spinner";
 import { localizeConfigEntryError } from "../../../data/config_entries";
+import { ConnectionSubscriptionController } from "../../../data/connection-subscription-controller";
 import {
   apiContext,
   configContext,
@@ -34,8 +35,8 @@ import type {
 } from "../../../data/repairs";
 import {
   dismissUpdateReport,
-  fetchRepairsIssues,
   fetchUpdateReport,
+  subscribeRepairsIssueRegistry,
   updateReportAffected,
 } from "../../../data/repairs";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
@@ -49,6 +50,9 @@ class DialogUpdateReport extends DialogMixin(LitElement) {
   @state() private _report?: UpdateReport | null;
 
   @state() private _issues: Record<string, RepairsIssue> = {};
+
+  // Never drops entries, so resolved issues keep their translated title
+  private _knownIssues: Record<string, RepairsIssue> = {};
 
   @state() private _affected: UpdateReportAffected[] = [];
 
@@ -113,6 +117,23 @@ class DialogUpdateReport extends DialogMixin(LitElement) {
   })
   private _uniqueIds?: Record<string, string>;
 
+  constructor() {
+    super();
+    // Live so issues resolved from this dialog stop being clickable
+    new ConnectionSubscriptionController(this, {
+      subscribe: (connection) =>
+        subscribeRepairsIssueRegistry(connection, ({ issues }) => {
+          this._issues = Object.fromEntries(
+            issues.map((issue) => [`${issue.domain}.${issue.issue_id}`, issue])
+          );
+          Object.assign(this._knownIssues, this._issues);
+          this._i18n.loadBackendTranslation("issues", [
+            ...new Set(issues.map((issue) => issue.domain)),
+          ]);
+        }),
+    });
+  }
+
   connectedCallback() {
     super.connectedCallback();
     this._fetchReport();
@@ -121,17 +142,7 @@ class DialogUpdateReport extends DialogMixin(LitElement) {
   private async _fetchReport(): Promise<void> {
     let report: UpdateReport | null;
     try {
-      const [fetchedReport, { issues }] = await Promise.all([
-        fetchUpdateReport(this._api),
-        fetchRepairsIssues(this._connection.connection),
-      ]);
-      report = fetchedReport;
-      this._issues = Object.fromEntries(
-        issues.map((issue) => [`${issue.domain}.${issue.issue_id}`, issue])
-      );
-      this._i18n.loadBackendTranslation("issues", [
-        ...new Set(issues.map((issue) => issue.domain)),
-      ]);
+      report = await fetchUpdateReport(this._api);
     } catch (err: any) {
       this._error = err.message;
       return;
@@ -439,7 +450,7 @@ class DialogUpdateReport extends DialogMixin(LitElement) {
   }
 
   private _issueTitle(issue: UpdateReportIssue) {
-    const current = this._issues[`${issue.domain}.${issue.issue_id}`];
+    const current = this._knownIssues[`${issue.domain}.${issue.issue_id}`];
     const key = current?.translation_key || issue.issue_id;
     return (
       this._i18n.localize(
