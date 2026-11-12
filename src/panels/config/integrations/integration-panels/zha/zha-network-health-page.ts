@@ -136,15 +136,23 @@ class ZHANetworkHealthPage extends LitElement {
     }
   }
 
+  /**
+   * Devices and entity registry are loaded together, so a device that joins
+   * while the page is open is never matched against an older registry.
+   */
+  private async _load(): Promise<void> {
+    const [devices, entities] = await Promise.all([
+      fetchDevices(this.hass),
+      fetchEntityRegistry(this.hass.connection),
+    ]);
+    this._devicesWithEntities = devicesWithEntities(entities);
+    this._devices = devices;
+    this._updatedAt = new Date();
+  }
+
   private async _fetchDevices(): Promise<void> {
     try {
-      const [devices, entities] = await Promise.all([
-        fetchDevices(this.hass),
-        fetchEntityRegistry(this.hass.connection),
-      ]);
-      this._devicesWithEntities = devicesWithEntities(entities);
-      this._devices = devices;
-      this._updatedAt = new Date();
+      await this._load();
       // The page may have been left while the request was in flight.
       if (this.isConnected) {
         this._startRefresh();
@@ -171,8 +179,7 @@ class ZHANetworkHealthPage extends LitElement {
 
   private async _refreshDevices(): Promise<void> {
     try {
-      this._devices = await fetchDevices(this.hass);
-      this._updatedAt = new Date();
+      await this._load();
     } catch (_err: any) {
       // Keep the last snapshot; "Updated" keeps showing its age.
     }
