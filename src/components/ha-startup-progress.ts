@@ -23,7 +23,7 @@ export class HaStartupProgress extends LitElement {
   protected render() {
     const localize = this._localize;
     const progress = this.progress;
-    const issues = progress.failed.length + progress.retrying.length;
+    const issues = progress.failed.length;
     const phase = localize(`ui.startup_progress.phase.${progress.phase}`);
     const count =
       progress.total === null

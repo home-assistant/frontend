@@ -7,7 +7,6 @@ import { describe, expect, it } from "vitest";
 import type { BootstrapProgress } from "../../src/data/bootstrap_integrations";
 import {
   computeStartupProgress,
-  legacyTimingsToProgress,
   startupTransition,
 } from "../../src/data/bootstrap_integrations";
 
@@ -15,10 +14,8 @@ const progress = (
   overrides: Partial<BootstrapProgress> = {}
 ): BootstrapProgress => ({
   phase: "setup",
-  stage: "2",
   elapsed: 12.4,
   integrations: { total: 40, done: 10, failed: [] },
-  config_entries: { total: 5, done: 2, retrying: [], failed: [] },
   active: {},
   ...overrides,
 });
@@ -60,22 +57,16 @@ describe("computeStartupProgress", () => {
     expect(view.finished).toBe(false);
   });
 
-  it("reports failures and retries separately from completion", () => {
+  it("reports failed integrations separately from completion", () => {
     const view = computeStartupProgress(
       progress({
         phase: "wrap_up",
-        integrations: { total: 3, done: 3, failed: ["broken"] },
-        config_entries: {
-          total: 3,
-          done: 3,
-          retrying: ["cloudy", "broken"],
-          failed: ["auth"],
-        },
+        integrations: { total: 3, done: 3, failed: ["auth", "broken"] },
       }),
       STATE_NOT_RUNNING
     );
+    expect(view.done).toBe(3);
     expect(view.failed).toEqual(["auth", "broken"]);
-    expect(view.retrying).toEqual(["cloudy"]);
   });
 
   it("follows the core state when the progress message lags behind", () => {
@@ -99,19 +90,6 @@ describe("computeStartupProgress", () => {
     );
     expect(view.phase).toBe("running");
     expect(view.finished).toBe(true);
-  });
-
-  it("adapts the legacy timings without inventing a total", () => {
-    const view = computeStartupProgress(
-      legacyTimingsToProgress({ hue: 3 }),
-      STATE_NOT_RUNNING
-    );
-    expect(view.phase).toBe("setup");
-    expect(view.total).toBeNull();
-    expect(view.percent).toBeUndefined();
-    expect(view.elapsed).toBeUndefined();
-    expect(view.active).toEqual([["hue", 3]]);
-    expect(legacyTimingsToProgress({}).phase).toBe("wrap_up");
   });
 });
 

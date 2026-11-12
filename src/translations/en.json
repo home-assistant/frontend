@@ -2852,7 +2852,6 @@
       "active": "Setting up now",
       "seconds": "{seconds} s",
       "failed": "Failed to set up",
-      "retrying": "Retrying in the background",
       "started": "Home Assistant started in {seconds} s.",
       "started_with_issues": "Home Assistant started in {seconds} s. {count, plural,\n  one {# integration needs}\n  other {# integrations need}\n} attention.",
       "slowest": "Slowest integrations",

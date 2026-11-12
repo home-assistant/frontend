@@ -5,14 +5,11 @@ import {
   STATE_STARTING,
 } from "home-assistant-js-websocket";
 
-export type BootstrapIntegrationsTimings = Record<string, number>;
-
 export type BootstrapPhase =
   "preparing" | "setup" | "wrap_up" | "starting" | "running";
 
 export interface BootstrapProgress {
   phase: BootstrapPhase;
-  stage: string | null;
   // Seconds since integration setup started.
   elapsed: number;
   integrations: {
@@ -20,12 +17,6 @@ export interface BootstrapProgress {
     total: number | null;
     // Integrations whose setup attempt finished, successful or not.
     done: number;
-    failed: string[];
-  };
-  config_entries: {
-    total: number;
-    done: number;
-    retrying: string[];
     failed: string[];
   };
   // Domain to seconds since its oldest pending setup started.
@@ -42,54 +33,18 @@ export interface StartupProgressView {
   elapsed?: number;
   active: [domain: string, seconds: number][];
   failed: string[];
-  retrying: string[];
   finished: boolean;
 }
 
 export type StartupTransition = "show" | "finish" | "none";
 
-export const subscribeBootstrapIntegrations = (
-  connection: Connection,
-  callback: (message: BootstrapIntegrationsTimings) => void
-) =>
-  connection.subscribeMessage<BootstrapIntegrationsTimings>(
-    (message) => callback(message),
-    {
-      type: "subscribe_bootstrap_integrations",
-    }
-  );
-
-export const legacyTimingsToProgress = (
-  timings: BootstrapIntegrationsTimings
-): BootstrapProgress => ({
-  phase: Object.keys(timings).length ? "setup" : "wrap_up",
-  stage: null,
-  elapsed: 0,
-  integrations: { total: null, done: 0, failed: [] },
-  config_entries: { total: 0, done: 0, retrying: [], failed: [] },
-  active: timings,
-});
-
 export const subscribeBootstrapProgress = (
   connection: Connection,
-  callback: (message: BootstrapProgress) => void,
-  // Older cores send no snapshot, so no final message after startup either.
-  onLegacy?: () => void
+  callback: (message: BootstrapProgress) => void
 ): Promise<UnsubscribeFunc> =>
-  connection
-    .subscribeMessage<BootstrapProgress>(callback, {
-      type: "subscribe_bootstrap_progress",
-    })
-    .catch((err) => {
-      if (err?.code !== "unknown_command") {
-        throw err;
-      }
-      // Older cores only report the integrations that are setting up.
-      onLegacy?.();
-      return subscribeBootstrapIntegrations(connection, (timings) =>
-        callback(legacyTimingsToProgress(timings))
-      );
-    });
+  connection.subscribeMessage<BootstrapProgress>(callback, {
+    type: "subscribe_bootstrap_progress",
+  });
 
 const PHASE_ORDER: BootstrapPhase[] = [
   "preparing",
@@ -118,10 +73,6 @@ export const computeStartupProgress = (
       : messagePhase;
   const total = progress?.integrations.total ?? null;
   const done = progress?.integrations.done ?? 0;
-  const failed = new Set([
-    ...(progress?.integrations.failed ?? []),
-    ...(progress?.config_entries.failed ?? []),
-  ]);
   return {
     phase,
     percent:
@@ -130,15 +81,11 @@ export const computeStartupProgress = (
         : undefined,
     done,
     total,
-    // Older cores do not report it.
-    elapsed: progress?.elapsed || undefined,
+    elapsed: progress?.elapsed,
     active: Object.entries(progress?.active ?? {}).sort(
       ([, a], [, b]) => b - a
     ),
-    failed: [...failed].sort(),
-    retrying: (progress?.config_entries.retrying ?? []).filter(
-      (domain) => !failed.has(domain)
-    ),
+    failed: progress?.integrations.failed ?? [],
     finished: coreState === STATE_RUNNING,
   };
 };

@@ -1,4 +1,4 @@
-import { mdiAlert, mdiAlertCircle } from "@mdi/js";
+import { mdiAlertCircle } from "@mdi/js";
 import type { ContextType } from "@lit/context";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { STATE_RUNNING } from "home-assistant-js-websocket";
@@ -58,22 +58,17 @@ class DialogStartupProgress extends DialogMixin(LitElement) {
 
   @state() private _setups?: IntegrationSetup[];
 
-  @state() private _legacy = false;
-
   private _unsubProgress?: Promise<UnsubscribeFunc>;
 
   private _computeProgress = memoizeOne(computeStartupProgress);
 
   connectedCallback() {
     super.connectedCallback();
-    // Core sends the last progress on subscribe, older cores do not.
+    // Core sends the current progress on subscribe.
     this._unsubProgress = subscribeBootstrapProgress(
       this._connection.connection,
       (progress) => {
         this._progress = progress;
-      },
-      () => {
-        this._legacy = true;
       }
     );
   }
@@ -103,14 +98,10 @@ class DialogStartupProgress extends DialogMixin(LitElement) {
 
   protected render() {
     const localize = this._i18n.localize;
-    const progress =
-      this._progress ||
-      (this._legacy && this._config.config.state === STATE_RUNNING)
-        ? this._computeProgress(this._progress, this._config.config.state)
-        : undefined;
-    const issues = progress
-      ? progress.failed.length + progress.retrying.length
-      : 0;
+    const progress = this._progress
+      ? this._computeProgress(this._progress, this._config.config.state)
+      : undefined;
+    const issues = progress?.failed.length ?? 0;
     return html`
       <ha-dialog open header-title=${localize("ui.startup_progress.details")}>
         ${
@@ -120,14 +111,7 @@ class DialogStartupProgress extends DialogMixin(LitElement) {
               ? this._renderSummary(progress.elapsed, issues)
               : this._renderLive(progress)
         }
-        ${
-          progress
-            ? html`
-                ${this._renderDomains("failed", progress.failed, mdiAlertCircle)}
-                ${this._renderDomains("retrying", progress.retrying, mdiAlert)}
-              `
-            : nothing
-        }
+        ${progress ? this._renderFailed(progress.failed) : nothing}
         ${progress?.finished ? this._renderSlowest() : nothing}
         <ha-dialog-footer slot="footer">
           ${
@@ -225,25 +209,17 @@ class DialogStartupProgress extends DialogMixin(LitElement) {
     `;
   }
 
-  private _renderDomains(
-    key: "failed" | "retrying",
-    domains: string[],
-    icon: string
-  ) {
+  private _renderFailed(domains: string[]) {
     if (!domains.length) {
       return nothing;
     }
     return html`
-      <h3>${this._i18n.localize(`ui.startup_progress.${key}`)}</h3>
+      <h3>${this._i18n.localize("ui.startup_progress.failed")}</h3>
       <ha-list-base>
         ${domains.map(
           (domain) => html`
             <ha-list-item-base>
-              <ha-svg-icon
-                slot="start"
-                class=${key}
-                .path=${icon}
-              ></ha-svg-icon>
+              <ha-svg-icon slot="start" .path=${mdiAlertCircle}></ha-svg-icon>
               <span slot="headline">
                 ${domainToName(this._i18n.localize, domain)}
               </span>
@@ -303,12 +279,7 @@ class DialogStartupProgress extends DialogMixin(LitElement) {
       }
       ha-svg-icon {
         flex-shrink: 0;
-      }
-      ha-svg-icon.failed {
         color: var(--error-color);
-      }
-      ha-svg-icon.retrying {
-        color: var(--warning-color);
       }
     `,
   ];

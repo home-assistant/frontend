@@ -23,8 +23,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     private _startupProgressVisible = false;
 
-    private _startupProgressLegacy = false;
-
     private _startupFinishPending = false;
 
     private _startupProgressEl?: HTMLElementTagNameMap["ha-startup-progress"];
@@ -120,7 +118,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     private _showStartupProgress() {
       this._unsubscribeBootstrapProgress();
       this._startupProgress = undefined;
-      this._startupProgressLegacy = false;
       this._startupFinishPending = false;
       this._startupProgressVisible = true;
       this._subscribedBootstrapProgress = subscribeBootstrapProgress(
@@ -132,12 +129,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
             return;
           }
           this._updateStartupProgress();
-        },
-        () => {
-          this._startupProgressLegacy = true;
-          if (this._startupFinishPending) {
-            this._finishStartupProgress();
-          }
         }
       );
       this._updateStartupProgress();
@@ -191,10 +182,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     // Core can reach RUNNING before its final snapshot with the failures arrives.
     private _requestFinishStartupProgress() {
-      if (
-        this._startupProgressLegacy ||
-        this._startupProgress?.phase === "running"
-      ) {
+      if (this._startupProgress?.phase === "running") {
         this._finishStartupProgress();
       } else {
         this._startupFinishPending = true;
@@ -203,13 +191,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     private _finishStartupProgress() {
       this._startupFinishPending = false;
-      const { failed, retrying } = computeStartupProgress(
+      const { failed } = computeStartupProgress(
         this._startupProgress,
         this.hass!.config.state
       );
       this._hideStartupProgress();
       this._unsubscribeBootstrapProgress();
-      const issues = failed.length + retrying.length;
+      const issues = failed.length;
       showToast(this, {
         id: SERVER_STARTUP_TOAST_ID,
         message: issues
