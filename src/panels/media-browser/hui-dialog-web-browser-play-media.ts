@@ -4,6 +4,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
+import { mainWindow } from "../../common/dom/get_main_window";
 import "../../components/ha-dialog";
 import "../../components/ha-hls-player";
 import "../../components/ha-icon-button-next";
@@ -36,15 +37,24 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
   // Size of the picture on screen, not known until the first one has loaded
   @state() private _imageSize?: { width: number; height: number };
 
+  // The picture asked for, which is not on screen until it is resolved
   @state() private _imageIndex = -1;
+
+  // The picture that is on screen
+  private _shownImageIndex = -1;
+
+  // Tells the answer to the latest request from one that is out of date
+  private _latestRequest = 0;
 
   @query("img") private _img?: HTMLImageElement;
 
   public showDialog(params: WebBrowserPlayMediaDialogParams): void {
+    this._latestRequest++;
     this._params = params;
     this._imageLoading = true;
     this._imageSize = undefined;
     this._imageIndex = params.imageIndex ?? -1;
+    this._shownImageIndex = this._imageIndex;
     this._open = true;
   }
 
@@ -57,6 +67,7 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
       // Unload streaming images so the connection can be closed
       this._img.src = "";
     }
+    this._latestRequest++;
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -99,9 +110,14 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
     if (!this._hasImageNavigation) {
       return;
     }
-    if (ev.key === "ArrowLeft") {
+    // The arrow buttons are mirrored in right-to-left languages, so are the keys
+    const [previousKey, nextKey] =
+      mainWindow.document.dir === "rtl"
+        ? ["ArrowRight", "ArrowLeft"]
+        : ["ArrowLeft", "ArrowRight"];
+    if (ev.key === previousKey) {
       this._showPreviousImage();
-    } else if (ev.key === "ArrowRight") {
+    } else if (ev.key === nextKey) {
       this._showNextImage();
     }
   }
@@ -111,7 +127,7 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
     if (!item) {
       return;
     }
-    const previousIndex = this._imageIndex;
+    const request = ++this._latestRequest;
     this._imageIndex = index;
     this._imageLoading = true;
 
@@ -119,8 +135,8 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
     try {
       resolved = await resolveMediaSource(this.hass, item.media_content_id);
     } catch (err: any) {
-      if (this._imageIndex === index) {
-        this._imageIndex = previousIndex;
+      if (request === this._latestRequest) {
+        this._imageIndex = this._shownImageIndex;
         this._imageLoading = false;
         showAlertDialog(this, {
           title: this.hass.localize(
@@ -132,10 +148,14 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
       return;
     }
 
-    // Another picture was asked for, or the dialog closed, while resolving
-    if (!this._params || this._imageIndex !== index) {
+    // Another picture was asked for, or the dialog closed or opened again,
+    // while resolving
+    if (!this._params || request !== this._latestRequest) {
       return;
     }
+    this._shownImageIndex = index;
+    // The picture that was loading before may have finished in the meantime
+    this._imageLoading = true;
     this._params = {
       ...this._params,
       sourceUrl: this.hass.hassUrl(resolved.url),
