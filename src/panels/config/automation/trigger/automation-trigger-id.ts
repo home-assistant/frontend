@@ -40,8 +40,8 @@ export interface TriggerIdOption {
 
 /**
  * Whether options list every trigger. Only a blueprint automation is ever not
- * "loaded": its triggers are fetched with its inputs substituted, and "failed"
- * keeps the last triggers fetched, if any.
+ * "loaded": its triggers are fetched with its inputs substituted. While
+ * "loading" or "failed", options keep the last triggers fetched, if any.
  */
 export type TriggerOptionsStatus = "loaded" | "loading" | "failed";
 

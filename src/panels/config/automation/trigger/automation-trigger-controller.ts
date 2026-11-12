@@ -76,7 +76,7 @@ export class AutomationTriggerController implements ReactiveController {
 
   private _blueprintTriggers?: Trigger | Trigger[];
 
-  /** "failed" while required inputs are empty; a refetch after a success stays "loaded". */
+  /** "failed" while required inputs are empty. */
   private _blueprintStatus: TriggerOptionsStatus = "loading";
 
   constructor(
@@ -117,21 +117,25 @@ export class AutomationTriggerController implements ReactiveController {
     }
     let options: TriggerIdOption[];
     let optionsStatus: TriggerOptionsStatus = "loaded";
+    let showIndices = this._provider.value.showIndices;
     if ("use_blueprint" in config && config.use_blueprint) {
       this._requestBlueprintTriggers(config.use_blueprint);
       options = this._getBlueprintTriggerIdOptions(this._blueprintTriggers);
       optionsStatus = this._blueprintStatus;
+      showIndices = false;
     } else {
       options = this._getTriggerIdOptions(config.triggers);
     }
     if (
       options !== this._provider.value.options ||
-      optionsStatus !== this._provider.value.optionsStatus
+      optionsStatus !== this._provider.value.optionsStatus ||
+      showIndices !== this._provider.value.showIndices
     ) {
       this._provider.setValue({
         ...this._provider.value,
         options,
         optionsStatus,
+        showIndices,
       });
     }
   }
@@ -188,14 +192,13 @@ export class AutomationTriggerController implements ReactiveController {
   private _requestBlueprintTriggers(
     useBlueprint: BlueprintAutomationConfig["use_blueprint"]
   ) {
-    // YAML mode parses a new object on every edit, so compare by value.
     if (deepEqual(useBlueprint, this._blueprintRequested)) {
       return;
     }
     if (useBlueprint.path !== this._blueprintRequested?.path) {
       this._blueprintTriggers = undefined;
-      this._blueprintStatus = "loading";
     }
+    this._blueprintStatus = "loading";
     this._blueprintRequested = useBlueprint;
     this._fetchBlueprintTriggers(useBlueprint);
   }
@@ -206,8 +209,6 @@ export class AutomationTriggerController implements ReactiveController {
       try {
         triggers = await this._options.fetchBlueprintTriggers(useBlueprint);
       } catch (_err) {
-        // Inputs fail to substitute while they are incomplete. The last
-        // triggers stay listed; the status only hides missing-ID warnings.
         if (useBlueprint === this._blueprintRequested) {
           this._blueprintStatus = "failed";
           this._host.requestUpdate();

@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type {
   AutomationConfig,
   BlueprintAutomationConfig,
+  SidebarConfig,
   Trigger,
   TriggerCondition,
 } from "../../../../../src/data/automation";
@@ -141,6 +142,41 @@ describe("AutomationTriggerController with a blueprint automation", () => {
 
     expect(ids()).toEqual([]);
     expect(context().optionsStatus).toBe("failed");
+  });
+
+  it("keeps the last triggers listed, as loading, while new inputs load", async () => {
+    update(blueprint("motion.yaml", { id: "motion_on" }));
+    fetch.pending[0].resolve([trigger("motion_on")]);
+    await settle();
+
+    update(blueprint("motion.yaml", { id: "motion_detected" }));
+
+    expect(ids()).toEqual(["motion_on"]);
+    expect(context().optionsStatus).toBe("loading");
+
+    await vi.runAllTimersAsync();
+    fetch.pending[1].resolve([trigger("motion_detected")]);
+    await settle();
+
+    expect(ids()).toEqual(["motion_detected"]);
+    expect(context().optionsStatus).toBe("loaded");
+  });
+
+  it("numbers no triggers once a blueprint replaces an automation with an open sidebar", () => {
+    update({
+      triggers: [trigger("own")],
+      conditions: [condition],
+      actions: [],
+    });
+    controller.checkShowIndices({
+      config: condition,
+    } as unknown as SidebarConfig);
+    expect(context().showIndices).toBe(true);
+
+    // Switching to YAML removes the sidebar without reporting it.
+    update(blueprint("motion.yaml"));
+
+    expect(context().showIndices).toBe(false);
   });
 
   it("fetches again only when `use_blueprint` changes by value", async () => {

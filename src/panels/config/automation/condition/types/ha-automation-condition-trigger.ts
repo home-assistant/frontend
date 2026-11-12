@@ -6,8 +6,10 @@ import { consume } from "../../../../../common/decorators/consume";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
+import "../../../../../components/animation/ha-fade-in";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
+import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-trigger-icon";
 import "../../../../../components/item/ha-list-item-option";
@@ -53,14 +55,15 @@ export class HaTriggerCondition extends LitElement {
     const selectedIds = (ensureArray(this.condition.id) ?? []).filter(Boolean);
     const triggerIdOptions = this._triggers?.options ?? [];
     const missingIds = this._missingIds(this.condition.id, triggerIdOptions);
-    // Until a blueprint's triggers are known, an ID not listed may still exist.
     const status = this._triggers?.optionsStatus ?? "loaded";
     const resolved = status === "loaded";
 
     if (!triggerIdOptions.length && !selectedIds.length) {
       switch (status) {
         case "loading":
-          return this.hass.localize("ui.common.loading");
+          return html`<ha-fade-in .delay=${500}>
+            <ha-spinner size="small"></ha-spinner>
+          </ha-fade-in>`;
         case "failed":
           return this.hass.localize(
             "ui.panel.config.automation.editor.conditions.type.trigger.blueprint_triggers_pending"

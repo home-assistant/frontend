@@ -41,7 +41,6 @@ export class HaAutomationTriggerReferences extends LitElement {
     const missingIds = selectedIds.filter(
       (id) => !options.some((option) => option.id === id)
     );
-    // Until a blueprint's triggers are known, an ID not listed may still exist.
     const resolved = (this._triggers?.optionsStatus ?? "loaded") === "loaded";
 
     if (options.length && !selectedIds.length) {
