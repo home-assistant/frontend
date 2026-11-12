@@ -115,30 +115,33 @@
             actions.className = "ha-launch-screen-actions";
             box.appendChild(actions);
 
-            function addButton(label, value) {
-              var button = document.createElement("button");
-              button.type = "button";
-              button.textContent = label;
-              button.addEventListener("click", function () {
-                try {
-                  localStorage.setItem(ACCEPTED_KEY, value());
-                } catch (_err) {
-                  // Continue this time only.
-                }
-                box.removeChild(actions);
-                loadApp();
-              });
-              actions.appendChild(button);
-              return button;
-            }
+            var always = null;
+            var button = document.createElement("button");
+            button.type = "button";
+            button.textContent = "Continue anyway";
+            button.addEventListener("click", function () {
+              try {
+                localStorage.setItem(
+                  ACCEPTED_KEY,
+                  always && always.checked ? "always" : String(Date.now())
+                );
+              } catch (_err) {
+                // Continue this time only.
+              }
+              box.removeChild(actions);
+              loadApp();
+            });
+            actions.appendChild(button);
 
-            addButton("Continue anyway", function () {
-              return String(Date.now());
-            }).className = "ha-launch-screen-continue";
+            // From the first reminder on. A checkbox, so it is not chosen by
+            // accident.
             if (acceptedAt) {
-              addButton("Don't show again", function () {
-                return "always";
-              });
+              var label = document.createElement("label");
+              always = document.createElement("input");
+              always.type = "checkbox";
+              label.appendChild(always);
+              label.appendChild(document.createTextNode("Don't show again"));
+              actions.appendChild(label);
             }
           })();
         }
