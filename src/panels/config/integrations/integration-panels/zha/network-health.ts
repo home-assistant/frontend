@@ -74,7 +74,9 @@ export type PowerSource = "mains" | "battery";
 
 /** The registry ids of all devices that own at least one entity. */
 export const devicesWithEntities = (
-  entities: Record<string, { device_id?: string | null }>
+  entities:
+    | Record<string, { device_id?: string | null }>
+    | { device_id?: string | null }[]
 ): Set<string> =>
   new Set(
     Object.values(entities)
@@ -100,7 +102,8 @@ export type LinkQualities = Record<string, number>;
  * uses the best entry any neighbour reports, whatever the relationship: a
  * router with one good link is still reachable, and a single neighbour whose
  * firmware reports near-zero values for everything does not drag it down.
- * Unavailable routers are skipped, as their tables may be stale.
+ * An end device without a current parent entry falls back to its last
+ * packet. Unavailable routers are skipped, as their tables may be stale.
  */
 export const neighborLinkQualities = (devices: ZHADevice[]): LinkQualities => {
   const endDevices = new Set(
@@ -119,8 +122,13 @@ export const neighborLinkQualities = (devices: ZHADevice[]): LinkQualities => {
       if (neighbor.lqi === "" || isNaN(lqi)) {
         continue;
       }
-      if (neighbor.relationship === "Child" && endDevices.has(neighbor.ieee)) {
-        parent[neighbor.ieee] = lqi;
+      if (endDevices.has(neighbor.ieee)) {
+        // Only the current parent counts: a former parent may still list
+        // the device as a previous child with a stale reading.
+        if (neighbor.relationship === "Child") {
+          parent[neighbor.ieee] = lqi;
+        }
+        continue;
       }
       best[neighbor.ieee] = Math.max(best[neighbor.ieee] ?? -1, lqi);
     }
@@ -271,15 +279,18 @@ export const attentionCount = (found: Findings): number =>
   new Set(NEEDS_ATTENTION.flatMap((key) => found[key]).map((d) => d.ieee)).size;
 
 /**
- * Order devices by area, then by name, so devices in the same room sit
- * together. Unassigned devices come last.
+ * Order devices by area, so devices in the same room sit together.
+ * Unassigned devices come last. Within an area, devices are ordered by name,
+ * or keep their incoming order (for example worst reading first) when no
+ * name function is given.
  */
 export const sortByArea = (
   devices: ZHADevice[],
   areaName: (device: ZHADevice) => string | undefined,
-  deviceName: (device: ZHADevice) => string,
+  deviceName: ((device: ZHADevice) => string) | null,
   compare: (a: string, b: string) => number = (a, b) => a.localeCompare(b)
 ): ZHADevice[] =>
+  // Array.prototype.sort is stable, so returning 0 keeps the incoming order.
   [...devices].sort((a, b) => {
     const areaA = areaName(a);
     const areaB = areaName(b);
@@ -288,5 +299,5 @@ export const sortByArea = (
       if (areaB === undefined) return -1;
       return compare(areaA, areaB);
     }
-    return compare(deviceName(a), deviceName(b));
+    return deviceName ? compare(deviceName(a), deviceName(b)) : 0;
   });

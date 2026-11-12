@@ -33,6 +33,7 @@ import "../../../../../components/list/ha-list-base";
 import "../../../../../components/list/ha-list-nav";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import { getConfigEntries } from "../../../../../data/config_entries";
+import { fetchEntityRegistry } from "../../../../../data/entity/entity_registry";
 import type {
   ZHAConfiguration,
   ZHANetworkBackupAndMetadata,
@@ -527,10 +528,13 @@ class ZHAConfigDashboard extends LitElement {
   }
 
   private async _fetchDevicesAndGroups(): Promise<void> {
-    const [devicesResult, groupsResult] = await Promise.allSettled([
-      fetchDevices(this.hass),
-      fetchGroups(this.hass),
-    ]);
+    const [devicesResult, groupsResult, entitiesResult] =
+      await Promise.allSettled([
+        fetchDevices(this.hass),
+        fetchGroups(this.hass),
+        // The full registry, as hass.entities leaves out disabled entities.
+        fetchEntityRegistry(this.hass.connection),
+      ]);
 
     if (devicesResult.status === "fulfilled") {
       this._offlineDevices = devicesResult.value.filter(
@@ -538,7 +542,11 @@ class ZHAConfigDashboard extends LitElement {
       ).length;
       // Only the findings that need attention count here, so battery and
       // firmware readings are not needed.
-      const withEntities = devicesWithEntities(this.hass.entities);
+      const withEntities = devicesWithEntities(
+        entitiesResult.status === "fulfilled"
+          ? entitiesResult.value
+          : this.hass.entities
+      );
       this._healthAttention = attentionCount(
         findings(managedDevices(devicesResult.value), {
           batteryLevel: () => null,

@@ -1,6 +1,5 @@
 import {
   mdiBatteryAlertVariantOutline,
-  mdiCheckCircleOutline,
   mdiClockOutline,
   mdiHelpCircleOutline,
   mdiPackageUp,
@@ -29,6 +28,7 @@ import "../../../../../components/item/ha-list-item-base";
 import "../../../../../components/item/ha-list-item-button";
 import "../../../../../components/list/ha-list-base";
 import "../../../../../components/list/ha-list-nav";
+import { fetchEntityRegistry } from "../../../../../data/entity/entity_registry";
 import type { UpdateEntity } from "../../../../../data/update";
 import { updateAvailable } from "../../../../../data/update";
 import type { ZHADevice } from "../../../../../data/zha";
@@ -61,6 +61,7 @@ import {
   sortByArea,
   WORTH_A_LOOK,
 } from "./network-health";
+import { getZHADeviceAreaName } from "./functions";
 
 const BAND_ICON: Record<SignalBand, string> = {
   strong: mdiSignalCellular3,
@@ -104,6 +105,12 @@ class ZHANetworkHealthPage extends LitElement {
 
   @state() private _devices?: ZHADevice[];
 
+  /**
+   * Devices with at least one registered entity. Taken from the full entity
+   * registry, as hass.entities leaves out disabled entities.
+   */
+  @state() private _devicesWithEntities?: Set<string>;
+
   @state() private _updatedAt?: Date;
 
   @state() private _error?: string;
@@ -131,7 +138,12 @@ class ZHANetworkHealthPage extends LitElement {
 
   private async _fetchDevices(): Promise<void> {
     try {
-      this._devices = await fetchDevices(this.hass);
+      const [devices, entities] = await Promise.all([
+        fetchDevices(this.hass),
+        fetchEntityRegistry(this.hass.connection),
+      ]);
+      this._devicesWithEntities = devicesWithEntities(entities);
+      this._devices = devices;
       this._updatedAt = new Date();
       // The page may have been left while the request was in flight.
       if (this.isConnected) {
@@ -209,18 +221,14 @@ class ZHANetworkHealthPage extends LitElement {
     isDisabled: (device) =>
       Boolean(this.hass.devices[device.device_reg_id]?.disabled_by),
     hasRegisteredEntities: (device) =>
-      this._devicesWithEntities(this.hass.entities).has(device.device_reg_id),
+      this._devicesWithEntities!.has(device.device_reg_id),
   };
-
-  private _devicesWithEntities = memoizeOne(devicesWithEntities);
 
   private _deviceName = (device: ZHADevice): string =>
     device.user_given_name || device.name;
 
   private _areaName = (device: ZHADevice): string | undefined =>
-    device.area_id
-      ? (this.hass.areas[device.area_id]?.name ?? device.area_id)
-      : undefined;
+    getZHADeviceAreaName(device, this.hass.areas, this.hass.devices);
 
   /** The finding a subpage shows, taken from the path below the page. */
   private get _subpage(): FindingKey | undefined {
@@ -272,7 +280,11 @@ class ZHANetworkHealthPage extends LitElement {
     const found = findings(devices, this._readings, this._links(this._devices));
 
     if (subpage) {
-      return this._renderSubpage(subpage, found[subpage]);
+      // Grouped by room; within a room the worst reading stays first.
+      return this._renderSubpage(
+        subpage,
+        this._sorted(found[subpage], { keepOrder: true })
+      );
     }
 
     return html`
@@ -460,18 +472,8 @@ class ZHANetworkHealthPage extends LitElement {
 
   private _renderWorthALookCard(found: Record<FindingKey, ZHADevice[]>) {
     const keys = WORTH_A_LOOK.filter((key) => found[key].length);
-    // Kept when empty, so it is clear that signal, batteries and firmware
-    // were checked rather than left out.
     if (!keys.length) {
-      return html`
-        <ha-card>
-          <h2 class="card-title header">${this._t("worth_a_look")}</h2>
-          <p class="all-fine">
-            <ha-svg-icon .path=${mdiCheckCircleOutline}></ha-svg-icon>
-            ${this._t("worth_a_look_nothing")}
-          </p>
-        </ha-card>
-      `;
+      return nothing;
     }
     return html`
       <ha-card>
@@ -573,9 +575,15 @@ class ZHANetworkHealthPage extends LitElement {
     `;
   }
 
-  private _sorted(devices: ZHADevice[]): ZHADevice[] {
-    return sortByArea(devices, this._areaName, this._deviceName, (a, b) =>
-      stringCompare(a, b, this.hass.locale.language)
+  private _sorted(
+    devices: ZHADevice[],
+    { keepOrder = false } = {}
+  ): ZHADevice[] {
+    return sortByArea(
+      devices,
+      this._areaName,
+      keepOrder ? null : this._deviceName,
+      (a, b) => stringCompare(a, b, this.hass.locale.language)
     );
   }
 
@@ -698,19 +706,6 @@ class ZHANetworkHealthPage extends LitElement {
         ha-state-icon[slot="start"],
         ha-svg-icon[slot="start"] {
           color: var(--secondary-text-color);
-        }
-
-        .all-fine {
-          display: flex;
-          align-items: center;
-          gap: var(--ha-space-4);
-          margin: 0;
-          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
-          color: var(--secondary-text-color);
-        }
-
-        .all-fine ha-svg-icon {
-          color: var(--success-color);
         }
 
         .status {

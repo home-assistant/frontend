@@ -388,13 +388,27 @@ describe("sortByArea", () => {
 
     expect(sorted.map((d) => d.ieee)).toEqual(["a", "k1", "k2", "z"]);
   });
+
+  it("keeps the incoming order within an area without a name function", () => {
+    const sorted = sortByArea(
+      [
+        device({ ieee: "k2", name: "Lamp", area_id: "kitchen" }),
+        device({ ieee: "a", name: "Plug", area_id: "attic" }),
+        device({ ieee: "k1", name: "Bulb", area_id: "kitchen" }),
+      ],
+      areaName,
+      null
+    );
+
+    expect(sorted.map((d) => d.ieee)).toEqual(["a", "k2", "k1"]);
+  });
 });
 
 describe("neighborLinkQualities", () => {
   const entry = (
     ieee: string,
     lqi: string,
-    relationship: "Child" | "Sibling" | "Parent" = "Sibling"
+    relationship: "Child" | "Sibling" | "Parent" | "PreviousChild" = "Sibling"
   ) => ({ ieee, nwk: "1", lqi, depth: "1", relationship });
 
   it("takes an end device's link from the router it is a child of", () => {
@@ -408,6 +422,19 @@ describe("neighborLinkQualities", () => {
     ]);
 
     expect(links.child).toBe(40);
+  });
+
+  it("ignores a former parent's entry for an end device", () => {
+    const links = neighborLinkQualities([
+      device({
+        ieee: "old-parent",
+        neighbors: [entry("child", "200", "PreviousChild")],
+      }),
+      device({ ieee: "child", device_type: ZHADeviceType.EndDevice }),
+    ]);
+
+    // No current parent entry: the device falls back to its last packet.
+    expect(links.child).toBeUndefined();
   });
 
   it("takes a router's best link from any neighbour", () => {
