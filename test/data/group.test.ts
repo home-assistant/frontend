@@ -18,8 +18,10 @@ const entity = (
 const toStates = (...entities: HassEntity[]): HassEntities =>
   Object.fromEntries(entities.map((e) => [e.entity_id, e]));
 
+// The home summary's lights-on count and the more-info member list rely on
+// these rules to avoid counting a light twice.
 describe("computeGroupMemberIds", () => {
-  it("reads group_entities", () => {
+  it("core groups: members from group_entities", () => {
     expect(
       computeGroupMemberIds(
         entity("light.wled", { group_entities: ["light.wled_segment_1"] })
@@ -27,7 +29,7 @@ describe("computeGroupMemberIds", () => {
     ).toEqual(["light.wled_segment_1"]);
   });
 
-  it("reads entity_id from group helpers and Hue rooms", () => {
+  it("group helpers and Hue rooms: members from entity_id", () => {
     expect(
       computeGroupMemberIds(
         entity("light.living_room", {
@@ -38,7 +40,18 @@ describe("computeGroupMemberIds", () => {
     ).toEqual(["light.lamp"]);
   });
 
-  it("returns undefined for a single light", () => {
+  it("prefers group_entities over entity_id", () => {
+    expect(
+      computeGroupMemberIds(
+        entity("light.group", {
+          group_entities: ["light.a"],
+          entity_id: ["light.b"],
+        })
+      )
+    ).toEqual(["light.a"]);
+  });
+
+  it("not a group: undefined", () => {
     expect(computeGroupMemberIds(entity("light.lamp"))).toBeUndefined();
   });
 });
@@ -54,7 +67,7 @@ describe("filterGroupsWithListedMembers", () => {
     entity_id: ["light.lamp"],
   });
 
-  it("drops groups whose members are listed", () => {
+  it("drops a group whose members are counted", () => {
     const states = toStates(lamp, ceiling, helperGroup, hueRoom);
     expect(filterGroupsWithListedMembers(Object.keys(states), states)).toEqual([
       "light.lamp",
@@ -62,7 +75,7 @@ describe("filterGroupsWithListedMembers", () => {
     ]);
   });
 
-  it("drops a group of groups", () => {
+  it("nested groups: drops the outer group too", () => {
     const house = entity("light.house", {
       entity_id: ["light.downstairs"],
     });
@@ -73,11 +86,17 @@ describe("filterGroupsWithListedMembers", () => {
     ]);
   });
 
-  it("keeps a group when none of its members are listed", () => {
-    // e.g. the members are hidden, or a Hue room's bulbs are disabled
+  it("hidden members: the group still counts once", () => {
+    // Only the group is listed, so dropping it would read "All off".
     const states = toStates(lamp, ceiling, helperGroup);
     expect(filterGroupsWithListedMembers(["light.downstairs"], states)).toEqual(
       ["light.downstairs"]
     );
+  });
+
+  it("keeps an entity missing from states", () => {
+    expect(filterGroupsWithListedMembers(["light.gone"], {})).toEqual([
+      "light.gone",
+    ]);
   });
 });

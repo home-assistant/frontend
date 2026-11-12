@@ -27,25 +27,18 @@ export const computeGroupDomain = (
   return uniqueDomains.length === 1 ? uniqueDomains[0] : undefined;
 };
 
-/**
- * Member entity IDs of a group entity, or undefined if it is not a group.
- * Core exposes them as `group_entities`; group helpers and integrations
- * like Hue (rooms and zones) use `entity_id`.
- */
+/** Member entity IDs of a group entity, or undefined if it is not a group. */
 export const computeGroupMemberIds = (
   stateObj: HassEntity
 ): string[] | undefined => {
-  const { group_entities, entity_id } = stateObj.attributes;
-  if (Array.isArray(group_entities)) {
-    return group_entities;
-  }
-  return Array.isArray(entity_id) ? entity_id : undefined;
+  const ids =
+    stateObj.attributes.group_entities ?? stateObj.attributes.entity_id;
+  return Array.isArray(ids) ? ids : undefined;
 };
 
 /**
- * Drops groups that have a member in `entityIds`, so counting the result
- * doesn't count a light twice. A group without any listed member (e.g. its
- * members are hidden) stays, as it is the only entity for those devices.
+ * Drops groups that have a member in `entityIds`. A group with no listed
+ * member stays, so hiding its bulbs doesn't read "All off".
  */
 export const filterGroupsWithListedMembers = (
   entityIds: string[],
@@ -54,9 +47,11 @@ export const filterGroupsWithListedMembers = (
   const listed = new Set(entityIds);
   return entityIds.filter((entityId) => {
     const stateObj = states[entityId];
-    const members = stateObj ? computeGroupMemberIds(stateObj) : undefined;
-    return !members?.some(
-      (memberId) => memberId !== entityId && listed.has(memberId)
+    return !(
+      stateObj &&
+      computeGroupMemberIds(stateObj)?.some(
+        (memberId) => memberId !== entityId && listed.has(memberId)
+      )
     );
   });
 };

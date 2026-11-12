@@ -12,6 +12,7 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import "../../components/ha-badge";
 import type { ExtEntityRegistryEntry } from "../../data/entity/entity_registry";
+import { computeGroupMemberIds } from "../../data/group";
 import { supportsCoverPositionCardFeature } from "../../panels/lovelace/card-features/hui-cover-position-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../panels/lovelace/card-features/hui-light-brightness-card-feature";
 import { supportsLightColorCardFeature } from "../../panels/lovelace/card-features/hui-light-color-card-feature";
@@ -117,9 +118,7 @@ class MoreInfoContent extends LitElement {
 
       const memberIds =
         (entry?.capabilities?.group_entities as string[] | undefined) ??
-        (Array.isArray(stateObj.attributes.entity_id)
-          ? (stateObj.attributes.entity_id as string[])
-          : undefined);
+        computeGroupMemberIds(stateObj);
 
       return memberIds?.filter((entityId) => !entities[entityId]?.hidden);
     }
