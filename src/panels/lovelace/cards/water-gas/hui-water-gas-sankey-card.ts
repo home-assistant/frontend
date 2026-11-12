@@ -13,9 +13,10 @@ import {
   registriesContext,
   statesContext,
 } from "../../../../data/context";
-import type { EnergyData } from "../../../../data/energy";
+import type { EnergyData, WaterGasResource } from "../../../../data/energy";
 import {
   computeEnergyDeviceLabels,
+  getWaterGasDevices,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
@@ -25,14 +26,17 @@ import {
   isExternalStatistic,
 } from "../../../../data/recorder";
 import type {
-  HomeAssistant,
   HomeAssistantConfig,
   HomeAssistantFormatters,
   HomeAssistantInternationalization,
   HomeAssistantRegistries,
 } from "../../../../types";
 import type { LovelaceCard, LovelaceGridOptions } from "../../types";
-import type { WaterSankeyCardConfig } from "../types";
+import type {
+  EnergyCardSankeyConfig,
+  GasSankeyCardConfig,
+  WaterSankeyCardConfig,
+} from "../types";
 import "../../../../components/chart/ha-sankey-chart";
 import type { Link, Node } from "../../../../components/chart/ha-sankey-chart";
 import { formatNumberWithUnit } from "../../../../common/number/format_number";
@@ -43,18 +47,21 @@ import {
   DEFAULT_MAX_SANKEY_DEVICES,
   fireSankeyNodeMoreInfo,
   MIN_SANKEY_THRESHOLD_FACTOR,
+  resolveSankeyParents,
 } from "../energy/common/sankey";
+import type { LocalizeKeys } from "../../../../common/translations/localize";
 
-const DEFAULT_CONFIG: Partial<WaterSankeyCardConfig> = {
+const DEFAULT_CONFIG = {
   group_by_floor: true,
   group_by_area: true,
 };
 
-@customElement("hui-water-sankey-card")
-class HuiWaterSankeyCard
+abstract class HuiWaterGasSankeyCard
   extends MobileAwareMixin(LitElement)
   implements LovelaceCard
 {
+  protected abstract readonly resource: WaterGasResource;
+
   public static async getConfigElement() {
     await import("../../editor/config-elements/hui-energy-sankey-card-editor");
     return document.createElement("hui-energy-sankey-card-editor");
@@ -62,19 +69,7 @@ class HuiWaterSankeyCard
 
   @property({ attribute: false }) public layout?: string;
 
-  @state() private _config?: WaterSankeyCardConfig;
-
-  public static getStubConfig(
-    _hass: HomeAssistant,
-    _entities: string[],
-    _entitiesFill: string[]
-  ): WaterSankeyCardConfig {
-    return {
-      type: "water-sankey",
-      layout: "auto",
-      ...DEFAULT_CONFIG,
-    };
-  }
+  @state() private _config?: EnergyCardSankeyConfig;
 
   @state() private _data?: EnergyData;
 
@@ -117,7 +112,7 @@ class HuiWaterSankeyCard
     });
   }
 
-  public setConfig(config: WaterSankeyCardConfig): void {
+  public setConfig(config: EnergyCardSankeyConfig): void {
     if (config.collection_key) {
       validateEnergyCollectionKey(config.collection_key);
     }
@@ -146,44 +141,46 @@ class HuiWaterSankeyCard
       return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
     }
 
-    const prefs = this._data.prefs;
-    const waterSources = prefs.energy_sources.filter(
-      (source) => source.type === "water"
+    const data = this._data;
+    const resource = this.resource;
+    const prefs = data.prefs;
+    const sources = prefs.energy_sources.filter(
+      (source) => source.type === resource
     );
+    const prefDevices = getWaterGasDevices(prefs, resource);
 
     const computedStyle = getComputedStyle(this);
 
     const nodes: Node[] = [];
     const links: Link[] = [];
 
+    const statValue = (statId: string) =>
+      statId in data.stats
+        ? calculateStatisticSumGrowth(data.stats[statId]) || 0
+        : 0;
+
+    // Devices whose parent has no data move up to the nearest ancestor with data
+    const devices = resolveSankeyParents(
+      prefDevices,
+      (d) => statValue(d.stat_consumption) > 0
+    );
+
     // Sum only top-level devices. Devices with `included_in_stat` are already
     // counted inside their parent stat; adding them again would double-count
     // and push the home total above the source meter.
-    const totalDownstreamConsumption = prefs.device_consumption_water.reduce(
-      (total, device) => {
-        if (device.included_in_stat) {
-          return total;
-        }
-        const value =
-          device.stat_consumption in this._data!.stats
-            ? calculateStatisticSumGrowth(
-                this._data!.stats[device.stat_consumption]
-              ) || 0
-            : 0;
-        return total + value;
-      },
+    const totalDownstreamConsumption = devices.reduce(
+      (total, d) =>
+        d.included_in_stat ? total : total + statValue(d.stat_consumption),
       0
     );
-    const totalSourceSupply = waterSources.reduce((total, source) => {
-      const value =
-        source.stat_energy_from in this._data!.stats
-          ? calculateStatisticSumGrowth(
-              this._data!.stats[source.stat_energy_from]
-            ) || 0
-          : 0;
-      return total + value;
-    }, 0);
-    const totalWaterConsumption = Math.max(
+    const totalSourceSupply = sources.reduce(
+      (total, source) =>
+        source.type === resource
+          ? total + statValue(source.stat_energy_from)
+          : total,
+      0
+    );
+    const totalConsumption = Math.max(
       totalDownstreamConsumption,
       totalSourceSupply
     );
@@ -192,47 +189,42 @@ class HuiWaterSankeyCard
     const homeNode: Node = {
       id: "home",
       label: this._hassConfig.location_name,
-      value: Math.max(0, totalWaterConsumption),
+      value: Math.max(0, totalConsumption),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
     };
     nodes.push(homeNode);
 
-    const minWaterThreshold = homeNode.value * MIN_SANKEY_THRESHOLD_FACTOR;
+    const minThreshold = homeNode.value * MIN_SANKEY_THRESHOLD_FACTOR;
 
-    // Add water source nodes
-    const waterColor = computedStyle
-      .getPropertyValue("--energy-water-color")
+    // Add source nodes
+    const resourceColor = computedStyle
+      .getPropertyValue(`--energy-${resource}-color`)
       .trim();
     const combineSources =
-      waterSources.length > 1 &&
-      (this._config.combine_sources ?? this._data.combineSources ?? false);
+      sources.length > 1 &&
+      (this._config.combine_sources ?? data.combineSources ?? false);
     if (combineSources && totalSourceSupply > 0) {
       nodes.push({
-        id: "source-water",
+        id: `source-${resource}`,
         label: this._i18n.localize(
-          "ui.panel.lovelace.cards.energy.energy_distribution.water"
+          `ui.panel.lovelace.cards.energy.energy_distribution.${resource}` as LocalizeKeys
         ),
         value: totalSourceSupply,
-        color: waterColor,
+        color: resourceColor,
         index: 0,
       });
       links.push({
-        source: "source-water",
+        source: `source-${resource}`,
         target: "home",
         value: totalSourceSupply,
       });
     }
-    waterSources.forEach((source) => {
-      if (combineSources || source.type !== "water") {
+    sources.forEach((source) => {
+      if (combineSources || source.type !== resource) {
         return;
       }
-      const value =
-        source.stat_energy_from in this._data!.stats
-          ? calculateStatisticSumGrowth(
-              this._data!.stats[source.stat_energy_from]
-            ) || 0
-          : 0;
+      const value = statValue(source.stat_energy_from);
 
       if (value <= 0) {
         return;
@@ -246,10 +238,10 @@ class HuiWaterSankeyCard
             this._states,
             this._formatEntityName,
             source.stat_energy_from,
-            this._data!.statsMetadata[source.stat_energy_from]
+            data.statsMetadata[source.stat_energy_from]
           ),
         value,
-        color: waterColor,
+        color: resourceColor,
         index: 0,
       });
 
@@ -260,16 +252,11 @@ class HuiWaterSankeyCard
       });
     });
 
-    const deviceValue = (statConsumption: string) =>
-      statConsumption in this._data!.stats
-        ? calculateStatisticSumGrowth(this._data!.stats[statConsumption]) || 0
-        : 0;
-
     const deviceLabels = computeEnergyDeviceLabels(
       this._states,
       this._formatEntityName,
-      prefs.device_consumption_water,
-      this._data!.statsMetadata
+      prefDevices,
+      data.statsMetadata
     );
 
     const deviceLabel = (statConsumption: string) =>
@@ -278,7 +265,7 @@ class HuiWaterSankeyCard
         this._states,
         this._formatEntityName,
         statConsumption,
-        this._data!.statsMetadata[statConsumption]
+        data.statsMetadata[statConsumption]
       );
 
     const {
@@ -287,17 +274,17 @@ class HuiWaterSankeyCard
       links: deviceLinks,
       untrackedConsumption,
     } = buildSankeyDeviceNodes({
-      devices: prefs.device_consumption_water,
+      devices,
       computedStyle,
       localize: this._i18n.localize,
       rootNodeId: "home",
-      minThreshold: minWaterThreshold,
+      minThreshold,
       maxDevices: this._config.max_devices ?? DEFAULT_MAX_SANKEY_DEVICES,
       untrackedFloor: 0,
       ceilOtherValue: false,
       initialUntracked: homeNode.value,
       getId: (device) => device.stat_consumption,
-      getValue: deviceValue,
+      getValue: statValue,
       getLabel: deviceLabel,
       getEntityId: (id) => (isExternalStatistic(id) ? undefined : id),
     });
@@ -359,7 +346,7 @@ class HuiWaterSankeyCard
       value < 0.1 ? { maximumFractionDigits: 3 } : undefined;
     return formatNumberWithUnit(
       value,
-      this._data!.waterUnit,
+      this.resource === "gas" ? this._data!.gasUnit : this._data!.waterUnit,
       this._i18n.locale,
       formatOptions
     );
@@ -390,8 +377,27 @@ class HuiWaterSankeyCard
   `;
 }
 
+@customElement("hui-water-sankey-card")
+class HuiWaterSankeyCard extends HuiWaterGasSankeyCard {
+  protected readonly resource = "water";
+
+  public static getStubConfig(): WaterSankeyCardConfig {
+    return { type: "water-sankey", layout: "auto", ...DEFAULT_CONFIG };
+  }
+}
+
+@customElement("hui-gas-sankey-card")
+class HuiGasSankeyCard extends HuiWaterGasSankeyCard {
+  protected readonly resource = "gas";
+
+  public static getStubConfig(): GasSankeyCardConfig {
+    return { type: "gas-sankey", layout: "auto", ...DEFAULT_CONFIG };
+  }
+}
+
 declare global {
   interface HTMLElementTagNameMap {
     "hui-water-sankey-card": HuiWaterSankeyCard;
+    "hui-gas-sankey-card": HuiGasSankeyCard;
   }
 }

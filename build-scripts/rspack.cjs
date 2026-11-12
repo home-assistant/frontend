@@ -244,6 +244,9 @@ const createRspackConfig = ({
                       path: paths.root_dir,
                       env: "legacy",
                     }),
+                    // Keep rgba() instead of #rrggbbaa, see
+                    // minify-template-literals-loader.cjs
+                    include: { hexAlphaColors: true },
                   },
                 },
               ],

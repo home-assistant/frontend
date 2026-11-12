@@ -27,9 +27,10 @@ import {
   dataTableQueryStateFromUrl,
 } from "../common/url/data-table-query-params";
 import "../components/chips/ha-assist-chip";
-import { GROUP_ACTIONS_SLOT_PREFIX } from "../components/data-table/ha-data-table";
+import "../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
+  DataTableGroupActions,
   DataTableRowData,
   HaDataTable,
   SortingDirection,
@@ -215,6 +216,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public initialGroupColumn?: string;
 
   @property({ attribute: false }) public groupOrder?: string[];
+
+  @property({ attribute: false })
+  public renderGroupActions?: DataTableGroupActions;
 
   @property({ attribute: false }) public columnOrder?: string[];
 
@@ -627,13 +631,11 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   .sortDirection=${this._sortDirection}
                   .groupColumn=${this._groupColumn}
                   .groupOrder=${this.groupOrder}
+                  .renderGroupActions=${this.renderGroupActions}
                   .initialCollapsedGroups=${this.initialCollapsedGroups}
                   .columnOrder=${this.columnOrder}
                   .hiddenColumns=${this.hiddenColumns}
                 >
-                  ${this._groupActionsSlots.map(
-                    (slot) => html`<slot name=${slot} slot=${slot}></slot>`
-                  )}
                   ${
                     !this.narrow
                       ? html`
@@ -847,46 +849,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
 
     this._setGroupColumn(group);
-  }
-
-  // Slots of the group actions the page supplies, passed through to the table
-  @state() private _groupActionsSlots: string[] = [];
-
-  private _groupActionsObserver = new MutationObserver(() =>
-    this._updateGroupActionsSlots()
-  );
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this._updateGroupActionsSlots();
-    // Subtree, so slot changes on the page's children are seen too
-    this._groupActionsObserver.observe(this, {
-      childList: true,
-      subtree: true,
-      attributeFilter: ["slot"],
-    });
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._groupActionsObserver.disconnect();
-  }
-
-  private _updateGroupActionsSlots() {
-    const slots = [
-      ...new Set(
-        Array.from(this.children, (child) => child.slot).filter((slot) =>
-          slot.startsWith(GROUP_ACTIONS_SLOT_PREFIX)
-        )
-      ),
-    ];
-
-    if (
-      slots.length !== this._groupActionsSlots.length ||
-      slots.some((slot, index) => slot !== this._groupActionsSlots[index])
-    ) {
-      this._groupActionsSlots = slots;
-    }
   }
 
   private _setGroupColumn(columnId: string, link = false) {

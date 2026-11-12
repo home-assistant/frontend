@@ -163,6 +163,17 @@ describe("getHiddenFields", () => {
       ...getHiddenFields(fields, { mode: "advanced", token: "kept" }),
     ]).toEqual([]);
   });
+
+  it("does not depend on the order of the fields", () => {
+    const token = ["token", { field: "mode", value: "advanced" }] as const;
+    const extra = [
+      "extra",
+      { field: "token", operator: "not_exists" },
+    ] as const;
+    const data = { mode: "simple", token: "stale" };
+    expect([...getHiddenFields([token, extra], data)]).toEqual(["token"]);
+    expect([...getHiddenFields([extra, token], data)]).toEqual(["token"]);
+  });
 });
 
 describe("getHiddenSchemaFields", () => {
