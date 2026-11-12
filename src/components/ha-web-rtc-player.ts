@@ -9,12 +9,6 @@ import { consume } from "../common/decorators/consume";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
-import { getIcePath } from "../common/webrtc/get-ice-path";
-import type { IcePath } from "../common/webrtc/limit-ice-servers";
-import {
-  limitIceServers,
-  limitIceServersToPath,
-} from "../common/webrtc/limit-ice-servers";
 import {
   addWebRtcCandidate,
   fetchWebRtcClientConfiguration,
@@ -37,8 +31,10 @@ const ANSWER_TIMEOUT = 20000;
 // minutes to give up on their own, or never do.
 const ICE_TIMEOUT = 30000;
 
-// How often a stream that lost or never got its connection is started again
-const MAX_RETRIES = 2;
+// How often a stream that lost its connection or got a backend error is
+// started again. A new connection that gets no answer or finds no path is not
+// retried, as a retry would most likely end the same way.
+const MAX_RETRIES = 1;
 
 // Gives the backend time to tear down the failed session before the next one
 const RETRY_DELAY = 1000;
@@ -192,16 +188,8 @@ export class HaWebRtcPlayer extends LitElement {
     // Renegotiating the existing connection is not supported by all providers
     // (go2rtc answers with a new DTLS fingerprint, which Firefox rejects), so
     // start a new connection and session with the microphone track instead.
-    // The new connection only looks for the path the running stream uses
-    const icePath = this._peerConnection
-      ? await getIcePath(this._peerConnection)
-      : undefined;
-    if (request !== this._microphoneRequest || !this.isConnected) {
-      track.stop();
-      return;
-    }
     this._captureReconnectFrame();
-    await this._startWebRtc(track, icePath);
+    await this._startWebRtc(track);
   }
 
   private _captureReconnectFrame() {
@@ -238,8 +226,9 @@ export class HaWebRtcPlayer extends LitElement {
 
   private _retries = 0;
 
-  // The stream only loaded with all ICE servers, so keep using them
-  private _allIceServers = false;
+  // The stream showed video since it was started, so a lost connection is
+  // worth a retry
+  private _hasPlayed = false;
 
   private _handleVisibilityChange = () => {
     if (document.pictureInPictureElement) {
@@ -256,8 +245,7 @@ export class HaWebRtcPlayer extends LitElement {
       clearTimeout(this._hiddenCleanupTimeout);
       this._hiddenCleanupTimeout = undefined;
     } else {
-      this._retries = 0;
-      this._startWebRtc();
+      this._restartWebRtc();
     }
   };
 
@@ -298,8 +286,7 @@ export class HaWebRtcPlayer extends LitElement {
   public override connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated && this.entityid) {
-      this._retries = 0;
-      this._startWebRtc();
+      this._restartWebRtc();
     }
     document.addEventListener("visibilitychange", this._handleVisibilityChange);
   }
@@ -320,14 +307,18 @@ export class HaWebRtcPlayer extends LitElement {
     if (!changedProperties.has("entityid")) {
       return;
     }
+    this._restartWebRtc();
+  }
+
+  /** Starts a new stream, not a retry of the current one. */
+  private _restartWebRtc() {
     this._retries = 0;
-    this._allIceServers = false;
+    this._hasPlayed = false;
     this._startWebRtc();
   }
 
   private async _startWebRtc(
-    localReturnAudioTrack?: MediaStreamTrack,
-    icePath?: IcePath
+    localReturnAudioTrack?: MediaStreamTrack
   ): Promise<void> {
     this._cleanUp();
 
@@ -382,21 +373,9 @@ export class HaWebRtcPlayer extends LitElement {
 
     this._logEvent("end clientConfig", this._clientConfig);
 
-    const { iceServers } = this._clientConfig.configuration;
-    const allIceServers = this._allIceServers || this._retries >= MAX_RETRIES;
-
-    this._peerConnection = new RTCPeerConnection({
-      ...this._clientConfig.configuration,
-      // The last attempt uses all ICE servers, in case a removed URL is the
-      // only one that works in this network
-      // A known relay is taken from all of them. A direct path is not, as
-      // the URL it needs can be one that is removed.
-      iceServers:
-        (icePath &&
-          (icePath.relayUrl || !allIceServers) &&
-          limitIceServersToPath(iceServers, icePath)) ||
-        (allIceServers ? iceServers : limitIceServers(iceServers)),
-    });
+    this._peerConnection = new RTCPeerConnection(
+      this._clientConfig.configuration
+    );
 
     if (this._clientConfig.dataChannel) {
       // Some cameras (such as nest) require a data channel to establish a stream
@@ -529,6 +508,9 @@ export class HaWebRtcPlayer extends LitElement {
   private _retryOrFail(error: WebRtcPlayerError) {
     if (
       this._retries >= MAX_RETRIES ||
+      // No answer or no path for a stream that never played, a retry would
+      // most likely end the same way
+      (error.type === "no_connection" && !this._hasPlayed) ||
       // A microphone connect the user started is handled by starting again
       // without the microphone. A retry keeps the microphone of the stream.
       (this._localReturnAudioTrack &&
@@ -799,10 +781,8 @@ export class HaWebRtcPlayer extends LitElement {
 
     this._logEvent("loadedData", data);
     this._stopTimer();
-    if (this._retries >= MAX_RETRIES) {
-      this._allIceServers = true;
-    }
     this._retries = 0;
+    this._hasPlayed = true;
 
     // Without a track the microphone is still waiting for permission
     if (this._microphoneConnecting && this._localReturnAudioTrack) {
