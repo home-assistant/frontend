@@ -2104,7 +2104,6 @@ describe("getEnergyDataCollection gas energy unit", () => {
       stat_compensation: null,
       entity_energy_price_export: null,
       number_energy_price_export: null,
-      cost_adjustment_day: 0,
     },
     solar: {
       type: "solar",

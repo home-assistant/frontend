@@ -81,7 +81,6 @@ export const emptyGridSourceEnergyPreference =
     number_energy_price: null,
     entity_energy_price_export: null,
     number_energy_price_export: null,
-    cost_adjustment_day: 0,
   });
 
 export const emptySolarEnergyPreference =
@@ -169,7 +168,6 @@ export interface GridSourceTypeEnergyPreference {
   stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
 
-  cost_adjustment_day: number;
   name?: string;
 }
 
