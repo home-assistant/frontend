@@ -138,13 +138,11 @@ class MoreInfoCover extends LitElement {
   private _stateText(): string {
     const stateObj = this.stateObj!;
     const stateDisplay = this._formatters.formatEntityState(stateObj);
-    const mode: CoverControlMode =
-      stateObj.attributes.current_position == null ? "tilt" : "position";
-    const value = Math.round(coverCurrentValue(stateObj, mode) ?? 0);
+    const value = Math.round(coverCurrentValue(stateObj, this._mode) ?? 0);
     if (value === 0) {
       return stateDisplay;
     }
-    return `${stateDisplay} · ${this._formatValue(mode, value)}`;
+    return `${stateDisplay} · ${this._formatValue(this._mode, value)}`;
   }
 
   private _dragHint(): string | undefined {

@@ -661,9 +661,10 @@ export class HaStateControlCover extends LitElement {
 
   private _sliderAria(shape: CoverShape, value: number) {
     return {
-      label: this._formatters.formatEntityAttributeName(
-        this.stateObj,
-        coverModeAttribute(this.mode)
+      label: this._localize(
+        this.mode === "tilt"
+          ? "ui.card.cover.tilt_position"
+          : "ui.card.cover.position"
       ),
       valueNow: String(value),
       valueText: this._valueText(value),

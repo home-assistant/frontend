@@ -56,7 +56,7 @@ export class CoverRequestController {
       this._setRequest(undefined);
       return;
     }
-    if (request.mode === "position" && isMoving(stateObj)) {
+    if (isMoving(stateObj)) {
       this._moving = true;
       return;
     }
