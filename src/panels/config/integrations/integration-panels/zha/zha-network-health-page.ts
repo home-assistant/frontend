@@ -380,9 +380,14 @@ class ZHANetworkHealthPage extends LitElement {
   /** The entity that best stands for the device, for its icon. */
   private _primaryState(device: ZHADevice): HassEntity | undefined {
     const states = device.entities
-      .map((entity) =>
-        entity.entity_id ? this.hass.states[entity.entity_id] : undefined
+      // Configuration and diagnostic entities, such as a child lock switch,
+      // say nothing about what the device is.
+      .filter(
+        (entity) =>
+          entity.entity_id &&
+          !this.hass.entities[entity.entity_id]?.entity_category
       )
+      .map((entity) => this.hass.states[entity.entity_id!])
       .filter((stateObj): stateObj is HassEntity => stateObj !== undefined);
     for (const domain of PRIMARY_DOMAINS) {
       const match = states.find((stateObj) =>
