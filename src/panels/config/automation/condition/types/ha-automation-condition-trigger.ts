@@ -67,7 +67,7 @@ export class HaTriggerCondition extends LitElement {
           </ha-fade-in>`;
         case "failed":
           return this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.type.trigger.blueprint_triggers_pending"
+            "ui.panel.config.automation.editor.conditions.type.trigger.blueprint_triggers_unavailable"
           );
         case "loaded":
           return this.hass.localize(
