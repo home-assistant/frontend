@@ -212,7 +212,16 @@ class ZHANetworkHealthPage extends LitElement {
     }
   }
 
-  private _managedDevices = memoizeOne(managedDevices);
+  /**
+   * The devices the page reports on. A disabled device was switched off on
+   * purpose, so it is left out of the snapshot as well as the findings.
+   */
+  private _activeDevices = memoizeOne(
+    (devices: ZHADevice[], haDevices: ContextType<typeof devicesContext>) =>
+      managedDevices(devices).filter(
+        (device) => !haDevices[device.device_reg_id]?.disabled_by
+      )
+  );
 
   /** Built once per device list rather than per rendered row. */
   private _parentByIeee = memoizeOne(parentByIeee);
@@ -304,7 +313,7 @@ class ZHANetworkHealthPage extends LitElement {
       `;
     }
 
-    const devices = this._managedDevices(this._devices);
+    const devices = this._activeDevices(this._devices, this._haDevices);
     const found = findings(devices, this._readings, this._links(this._devices));
 
     if (subpage) {
