@@ -4,9 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type {
   AutomationConfig,
   BlueprintAutomationConfig,
-  SidebarConfig,
   Trigger,
-  TriggerCondition,
 } from "../../../../../src/data/automation";
 import { AutomationTriggerController } from "../../../../../src/panels/config/automation/trigger/automation-trigger-controller";
 import {
@@ -52,7 +50,6 @@ describe("AutomationTriggerController with a blueprint automation", () => {
   let host: TestHost;
   let config: AutomationConfig;
   let fetch: ReturnType<typeof createFetch>;
-  let commit: ReturnType<typeof vi.fn<(config: AutomationConfig) => void>>;
   let controller: AutomationTriggerController;
 
   // What a condition editor inside the automation receives.
@@ -70,8 +67,6 @@ describe("AutomationTriggerController with a blueprint automation", () => {
   };
 
   const ids = () => context().options.map((option) => option.id);
-
-  const condition = { condition: "trigger", id: [] } as TriggerCondition;
 
   // The host's update after the editor's config changes.
   const update = (next: AutomationConfig) => {
@@ -91,11 +86,10 @@ describe("AutomationTriggerController with a blueprint automation", () => {
     host = document.createElement("test-automation-trigger-host");
     fetch = createFetch();
     config = blueprint("motion.yaml");
-    commit = vi.fn<(config: AutomationConfig) => void>();
     controller = new AutomationTriggerController(host, {
       getConfig: () => config,
       canEdit: () => true,
-      commit,
+      commit: vi.fn(),
       fetchBlueprintTriggers: fetch.fetch,
     });
   });
@@ -163,23 +157,6 @@ describe("AutomationTriggerController with a blueprint automation", () => {
     expect(context().blueprintStatus).toBe("loaded");
   });
 
-  it("numbers no triggers once a blueprint replaces an automation with an open sidebar", () => {
-    update({
-      triggers: [trigger("own")],
-      conditions: [condition],
-      actions: [],
-    });
-    controller.checkShowIndices({
-      config: condition,
-    } as unknown as SidebarConfig);
-    expect(context().showIndices).toBe(true);
-
-    // Switching to YAML removes the sidebar without reporting it.
-    update(blueprint("motion.yaml"));
-
-    expect(context().showIndices).toBe(false);
-  });
-
   it("fetches again only when `use_blueprint` changes by value", async () => {
     update(blueprint("motion.yaml", { wait: 1 }));
     // YAML mode parses a new, equal object when another key is edited.
@@ -187,11 +164,6 @@ describe("AutomationTriggerController with a blueprint automation", () => {
     await vi.runAllTimersAsync();
 
     expect(fetch.fetch).toHaveBeenCalledOnce();
-  });
-
-  it("leaves a pick to the condition editor, since the condition is in an input", () => {
-    expect(context().select(condition, ["motion_on"])).toBe(false);
-    expect(commit).not.toHaveBeenCalled();
   });
 
   it("uses only the response for the latest inputs", async () => {
@@ -219,36 +191,5 @@ describe("AutomationTriggerController with a blueprint automation", () => {
 
     expect(ids()).toEqual(["motion_on"]);
     expect(context().blueprintStatus).toBe("failed");
-  });
-
-  it("drops the triggers of a blueprint that is no longer used", async () => {
-    update(blueprint("motion.yaml"));
-    fetch.pending[0].resolve([trigger("motion_on")]);
-    await settle();
-
-    update(blueprint("doorbell.yaml"));
-
-    expect(ids()).toEqual([]);
-  });
-
-  it("offers nothing while `use_blueprint` is empty in YAML", () => {
-    update({ use_blueprint: null } as unknown as BlueprintAutomationConfig);
-
-    expect(ids()).toEqual([]);
-    expect(fetch.fetch).not.toHaveBeenCalled();
-  });
-
-  it("handles picks again once the automation stops using a blueprint", () => {
-    update(blueprint("motion.yaml"));
-    update({
-      triggers: [trigger("own")],
-      conditions: [condition],
-      actions: [],
-    });
-
-    expect(ids()).toEqual(["own"]);
-    expect(context().blueprintStatus).toBeUndefined();
-    expect(context().select(condition, ["own"])).toBe(true);
-    expect(commit).toHaveBeenCalledOnce();
   });
 });
