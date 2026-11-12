@@ -47,7 +47,6 @@ const device = (overrides: Partial<ZHADevice> & { ieee: string }): ZHADevice =>
 
 const noReadings: DeviceReadings = {
   batteryLevel: () => null,
-  firmwareUpdate: () => null,
   isDisabled: () => false,
   hasRegisteredEntities: () => false,
 };
@@ -321,16 +320,6 @@ describe("findings", () => {
       []
     );
   });
-
-  it("lists devices with a pending firmware update", () => {
-    const found = findings([device({ ieee: "a" }), device({ ieee: "b" })], {
-      ...noReadings,
-      firmwareUpdate: (d) =>
-        d.ieee === "a" ? { installed: "1.0", latest: "1.1" } : null,
-    });
-
-    expect(found.firmware_update.map((d) => d.ieee)).toEqual(["a"]);
-  });
 });
 
 describe("findings with registry readings", () => {
@@ -342,15 +331,6 @@ describe("findings with registry readings", () => {
 
     expect(found.offline).toEqual([]);
     expect(found.setup_unfinished).toEqual([]);
-  });
-
-  it("does not offer a firmware update for an offline device", () => {
-    const found = findings(
-      [device({ ieee: "off", available: false }), device({ ieee: "on" })],
-      { ...noReadings, firmwareUpdate: () => ({ installed: "1", latest: "2" }) }
-    );
-
-    expect(found.firmware_update.map((d) => d.ieee)).toEqual(["on"]);
   });
 });
 

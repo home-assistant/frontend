@@ -8566,7 +8566,6 @@
             "signal_offline": "{count} offline",
             "updated": "Updated",
             "attention_title": "{count, plural,\n  one {# device needs attention}\n  other {# devices need attention}\n}",
-            "nothing_needs_attention": "No devices need attention",
             "worth_a_look": "Worth a look",
             "no_devices": "No devices",
             "via_router": "via {router}",
@@ -8579,12 +8578,12 @@
             "weak_signal": "Weak signal",
             "weak_signal_count": "{count, plural,\n  one {# device with a weak signal}\n  other {# devices with a weak signal}\n}",
             "weak_signal_advice": "Usually harmless. A mains-powered device in between helps.",
+            "weak_signal_tip": "Usually harmless. A mains-powered device between a weak device and its router steadies the link.",
             "low_battery": "Low battery",
             "low_battery_count": "{count, plural,\n  one {# device with a low battery}\n  other {# devices with a low battery}\n}",
             "low_battery_advice": "Replace the battery before the device goes offline.",
-            "firmware_update": "Firmware update",
-            "firmware_update_count": "{count, plural,\n  one {# device with a firmware update}\n  other {# devices with a firmware update}\n}",
-            "firmware_update_advice": "Install it from the device page. Battery devices may need a button press."
+            "low_battery_tip": "Battery levels can drop suddenly. A weak signal drains them faster.",
+            "show_map": "Show map"
           },
           "add_device_page": {
             "spinner": "Waiting for Zigbee devices to join…",

@@ -24,43 +24,33 @@ export const BAR_BANDS: BarBand[] = ["strong", "fair", "weak", "offline"];
 
 export type BandCounts = Record<BarBand | "unknown", number>;
 
+/** Findings that stop a device from working. */
+export type AttentionKey = "offline" | "setup_unfinished";
+
+/** Findings that are worth knowing but do not stop anything. */
+export type WorthALookKey = "weak_signal" | "low_battery";
+
 /** What the page reports on a device. */
-export type FindingKey =
-  | "offline"
-  | "setup_unfinished"
-  | "weak_signal"
-  | "low_battery"
-  | "firmware_update";
+export type FindingKey = AttentionKey | WorthALookKey;
 
 /**
  * Findings that stop a device from working. Listed with their devices right
  * on the page, like repairs.
  */
-export const NEEDS_ATTENTION: FindingKey[] = ["offline", "setup_unfinished"];
+export const NEEDS_ATTENTION: AttentionKey[] = ["offline", "setup_unfinished"];
 
 /**
  * Findings that are worth knowing but do not stop anything. Each has its own
  * subpage, reached from a single row on the page.
  */
-export const WORTH_A_LOOK: FindingKey[] = [
-  "weak_signal",
-  "low_battery",
-  "firmware_update",
-];
+export const WORTH_A_LOOK: WorthALookKey[] = ["weak_signal", "low_battery"];
 
 export type Findings = Record<FindingKey, ZHADevice[]>;
-
-export interface FirmwareUpdate {
-  installed: string | null;
-  latest: string | null;
-}
 
 /** Readings that live in the registries and entity states rather than in the device list. */
 export interface DeviceReadings {
   /** Battery percentage, or null when the device has no battery sensor. */
   batteryLevel: (device: ZHADevice) => number | null;
-  /** The pending firmware update, or null when there is none. */
-  firmwareUpdate: (device: ZHADevice) => FirmwareUpdate | null;
   /** Whether the device is disabled in the device registry. */
   isDisabled: (device: ZHADevice) => boolean;
   /**
@@ -246,8 +236,8 @@ export const findings = (
 ): Findings => {
   // A disabled device was switched off on purpose and is not reported on.
   const active = devices.filter((device) => !readings.isDisabled(device));
-  // An offline device has no current signal or battery reading and cannot
-  // take a firmware update, so it is only listed as offline.
+  // An offline device has no current signal or battery reading, so it is
+  // only listed as offline.
   const online = active.filter((device) => device.available);
   return {
     offline: active.filter((device) => !device.available),
@@ -265,9 +255,6 @@ export const findings = (
         return level !== null && level <= LOW_BATTERY;
       })
       .sort((a, b) => readings.batteryLevel(a)! - readings.batteryLevel(b)!),
-    firmware_update: online.filter(
-      (device) => readings.firmwareUpdate(device) !== null
-    ),
   };
 };
 

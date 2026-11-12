@@ -1,8 +1,8 @@
+import type { ContextType } from "@lit/context";
 import {
   mdiBatteryAlertVariantOutline,
   mdiClockOutline,
   mdiHelpCircleOutline,
-  mdiPackageUp,
   mdiSignalCellular1,
   mdiSignalCellular2,
   mdiSignalCellular3,
@@ -14,10 +14,13 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../../../../common/datetime/relative_time";
-import { stringCompare } from "../../../../../common/string/compare";
+import { consume } from "../../../../../common/decorators/consume";
+import { consumeEntityStates } from "../../../../../common/decorators/consume-context-entry";
 import { batteryLevelIconPath } from "../../../../../common/entity/battery_icon";
-import { blankBeforePercent } from "../../../../../common/translations/blank_before_percent";
+import { formatNumberWithUnit } from "../../../../../common/number/format_number";
+import { stringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/ha-alert";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-relative-time";
@@ -28,21 +31,28 @@ import "../../../../../components/item/ha-list-item-base";
 import "../../../../../components/item/ha-list-item-button";
 import "../../../../../components/list/ha-list-base";
 import "../../../../../components/list/ha-list-nav";
-import { fetchEntityRegistry } from "../../../../../data/entity/entity_registry";
-import type { UpdateEntity } from "../../../../../data/update";
-import { updateAvailable } from "../../../../../data/update";
+import {
+  apiContext,
+  areasContext,
+  devicesContext,
+  fullEntitiesContext,
+  internationalizationContext,
+} from "../../../../../data/context";
+import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import type { ZHADevice } from "../../../../../data/zha";
 import { fetchDevices } from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../../types";
+import type { Route } from "../../../../../types";
+import { getZHADeviceAreaName } from "./functions";
 import type {
+  AttentionKey,
   BandCounts,
   BarBand,
   DeviceReadings,
-  FindingKey,
-  FirmwareUpdate,
+  Findings,
   SignalBand,
+  WorthALookKey,
 } from "./network-health";
 import {
   attentionCount,
@@ -61,7 +71,6 @@ import {
   sortByArea,
   WORTH_A_LOOK,
 } from "./network-health";
-import { getZHADeviceAreaName } from "./functions";
 
 const BAND_ICON: Record<SignalBand, string> = {
   strong: mdiSignalCellular3,
@@ -70,10 +79,9 @@ const BAND_ICON: Record<SignalBand, string> = {
   unknown: mdiSignalCellularOutline,
 };
 
-const FINDING_ICON: Partial<Record<FindingKey, string>> = {
+const FINDING_ICON: Record<WorthALookKey, string> = {
   weak_signal: mdiSignalCellular1,
   low_battery: mdiBatteryAlertVariantOutline,
-  firmware_update: mdiPackageUp,
 };
 
 /** Domains whose icon tells what a device is, most telling first. */
@@ -88,28 +96,52 @@ const PRIMARY_DOMAINS = [
   "sensor",
 ];
 
-/** Same cadence as the device page, so availability and signal do not freeze while the page is open. */
+/**
+ * ZHA has no subscription for its device list, so link quality, last seen
+ * and availability are fetched again at the same cadence as the ZHA device
+ * page, so they do not freeze while the page is open.
+ */
 const DEVICE_REFRESH_INTERVAL = 60000;
 
 const BASE_PATH = "/config/zha/network-health";
 
 @customElement("zha-network-health-page")
 class ZHANetworkHealthPage extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public route!: Route;
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: devicesContext, subscribe: true })
+  private _haDevices!: ContextType<typeof devicesContext>;
+
+  @state()
+  @consume({ context: areasContext, subscribe: true })
+  private _areas!: ContextType<typeof areasContext>;
+
+  /** The full registry, as the display registry leaves out disabled entities. */
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  private _entityReg?: EntityRegistryEntry[];
 
   @state() private _devices?: ZHADevice[];
 
   /**
-   * Devices with at least one registered entity. Taken from the full entity
-   * registry, as hass.entities leaves out disabled entities.
+   * The entities of all ZHA devices, whose states the page reads. Read by
+   * consumeEntityStates through its path, hence not private.
    */
-  @state() private _devicesWithEntities?: Set<string>;
+  @state() protected _entityIds: string[] = [];
+
+  @state()
+  @consumeEntityStates({ entityIdPath: ["_entityIds"] })
+  private _states?: Record<string, HassEntity>;
 
   @state() private _updatedAt?: Date;
 
@@ -131,28 +163,23 @@ class ZHANetworkHealthPage extends LitElement {
 
   protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
-    if (this.hass) {
-      this._fetchDevices();
-    }
+    this._fetchDevices();
   }
 
-  /**
-   * Devices and entity registry are loaded together, so a device that joins
-   * while the page is open is never matched against an older registry.
-   */
-  private async _load(): Promise<void> {
-    const [devices, entities] = await Promise.all([
-      fetchDevices(this.hass),
-      fetchEntityRegistry(this.hass.connection),
-    ]);
-    this._devicesWithEntities = devicesWithEntities(entities);
+  private async _loadDevices(): Promise<void> {
+    const devices = await fetchDevices(this._api);
     this._devices = devices;
+    this._entityIds = devices.flatMap((device) =>
+      device.entities
+        .map((entity) => entity.entity_id)
+        .filter((entityId): entityId is string => Boolean(entityId))
+    );
     this._updatedAt = new Date();
   }
 
   private async _fetchDevices(): Promise<void> {
     try {
-      await this._load();
+      await this._loadDevices();
       // The page may have been left while the request was in flight.
       if (this.isConnected) {
         this._startRefresh();
@@ -179,7 +206,7 @@ class ZHANetworkHealthPage extends LitElement {
 
   private async _refreshDevices(): Promise<void> {
     try {
-      await this._load();
+      await this._loadDevices();
     } catch (_err: any) {
       // Keep the last snapshot; "Updated" keeps showing its age.
     }
@@ -196,11 +223,18 @@ class ZHANetworkHealthPage extends LitElement {
    */
   private _links = memoizeOne(neighborLinkQualities);
 
+  private _devicesWithEntities = memoizeOne(devicesWithEntities);
+
+  private _entityRegById = memoizeOne(
+    (entityReg: EntityRegistryEntry[]) =>
+      new Map(entityReg.map((entry) => [entry.entity_id, entry]))
+  );
+
   private _readings: DeviceReadings = {
     batteryLevel: (device) => {
       for (const entity of device.entities) {
         const stateObj = entity.entity_id
-          ? this.hass.states[entity.entity_id]
+          ? this._states?.[entity.entity_id]
           : undefined;
         if (stateObj?.attributes.device_class === "battery") {
           const level = Number(stateObj.state);
@@ -211,54 +245,36 @@ class ZHANetworkHealthPage extends LitElement {
       }
       return null;
     },
-    firmwareUpdate: (device): FirmwareUpdate | null => {
-      for (const entity of device.entities) {
-        if (!entity.entity_id?.startsWith("update.")) continue;
-        const stateObj = this.hass.states[entity.entity_id] as
-          UpdateEntity | undefined;
-        if (stateObj && updateAvailable(stateObj)) {
-          return {
-            installed: stateObj.attributes.installed_version,
-            latest: stateObj.attributes.latest_version,
-          };
-        }
-      }
-      return null;
-    },
     isDisabled: (device) =>
-      Boolean(this.hass.devices[device.device_reg_id]?.disabled_by),
+      Boolean(this._haDevices[device.device_reg_id]?.disabled_by),
     hasRegisteredEntities: (device) =>
-      this._devicesWithEntities!.has(device.device_reg_id),
+      this._devicesWithEntities(this._entityReg!).has(device.device_reg_id),
   };
 
   private _deviceName = (device: ZHADevice): string =>
     device.user_given_name || device.name;
 
   private _areaName = (device: ZHADevice): string | undefined =>
-    getZHADeviceAreaName(device, this.hass.areas, this.hass.devices);
+    getZHADeviceAreaName(device, this._areas, this._haDevices);
 
   /** The finding a subpage shows, taken from the path below the page. */
-  private get _subpage(): FindingKey | undefined {
+  private get _subpage(): WorthALookKey | undefined {
     const key = this.route?.path?.replace(/^\//, "").split("/")[0];
-    return WORTH_A_LOOK.includes(key as FindingKey)
-      ? (key as FindingKey)
+    return WORTH_A_LOOK.includes(key as WorthALookKey)
+      ? (key as WorthALookKey)
       : undefined;
-  }
-
-  private _t(key: string, values?: Record<string, any>): string {
-    return this.hass.localize(
-      `ui.panel.config.zha.network_health.${key}` as any,
-      values
-    );
   }
 
   protected render(): TemplateResult {
     const subpage = this._subpage;
     return html`
       <hass-subpage
-        .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${subpage ? this._t(subpage) : this._t("title")}
+        .header=${this._i18n.localize(
+          subpage
+            ? `ui.panel.config.zha.network_health.${subpage}`
+            : "ui.panel.config.zha.network_health.title"
+        )}
         .backPath=${subpage ? BASE_PATH : "/config/zha/dashboard"}
       >
         <div class="container">${this._renderContent(subpage)}</div>
@@ -266,16 +282,21 @@ class ZHANetworkHealthPage extends LitElement {
     `;
   }
 
-  private _renderContent(subpage?: FindingKey): TemplateResult {
+  private _renderContent(subpage?: WorthALookKey) {
     if (this._error) {
       return html`
-        <ha-alert alert-type="error" .title=${this._t("loading_error")}>
+        <ha-alert
+          alert-type="error"
+          .title=${this._i18n.localize(
+            "ui.panel.config.zha.network_health.loading_error"
+          )}
+        >
           ${this._error}
         </ha-alert>
       `;
     }
 
-    if (!this._devices) {
+    if (!this._devices || !this._entityReg) {
       return html`
         <div class="loading">
           <ha-spinner size="large"></ha-spinner>
@@ -322,18 +343,29 @@ class ZHANetworkHealthPage extends LitElement {
     return html`
       <ha-card>
         <div class="card-body">
-          <h2 class="card-title">${this._t("network_title")}</h2>
-          <p class="description">${this._t("snapshot")}</p>
+          <h2 class="card-title">
+            ${this._i18n.localize(
+              "ui.panel.config.zha.network_health.network_title"
+            )}
+          </h2>
+          <p class="description">
+            ${this._i18n.localize(
+              "ui.panel.config.zha.network_health.snapshot"
+            )}
+          </p>
           ${
             rated
               ? html`
                   ${this._renderBar(counts)}
                   <div class="legend">
-                    ${BAR_BANDS.map(
+                    ${BAR_BANDS.filter((band) => counts[band]).map(
                       (band: BarBand) => html`
                         <span class="legend-item">
                           <span class="dot ${band}"></span>
-                          ${this._t(`signal_${band}`, { count: counts[band] })}
+                          ${this._i18n.localize(
+                            `ui.panel.config.zha.network_health.signal_${band}`,
+                            { count: counts[band] }
+                          )}
                         </span>
                       `
                     )}
@@ -344,7 +376,9 @@ class ZHANetworkHealthPage extends LitElement {
           <p class="updated">
             <ha-svg-icon .path=${mdiClockOutline}></ha-svg-icon>
             <span>
-              ${this._t("updated")}
+              ${this._i18n.localize(
+                "ui.panel.config.zha.network_health.updated"
+              )}
               <ha-relative-time .datetime=${this._updatedAt}></ha-relative-time>
             </span>
           </p>
@@ -353,11 +387,14 @@ class ZHANetworkHealthPage extends LitElement {
     `;
   }
 
-  private _renderAttentionCard(found: Record<FindingKey, ZHADevice[]>) {
+  private _renderAttentionCard(found: Findings) {
     const count = attentionCount(found);
+    if (!count) {
+      return nothing;
+    }
     // One row per device: an offline device whose setup did not finish is
     // listed as offline, the more pressing of the two.
-    const rows = new Map<string, { key: FindingKey; device: ZHADevice }>();
+    const rows = new Map<string, { key: AttentionKey; device: ZHADevice }>();
     for (const key of NEEDS_ATTENTION) {
       for (const device of found[key]) {
         if (!rows.has(device.ieee)) {
@@ -366,47 +403,34 @@ class ZHANetworkHealthPage extends LitElement {
       }
     }
     const sorted = this._sorted([...rows.values()].map((row) => row.device));
+    const title = this._i18n.localize(
+      "ui.panel.config.zha.network_health.attention_title",
+      { count }
+    );
 
     return html`
       <ha-card>
-        <h2 class="card-title header">
-          ${
-            count
-              ? this._t("attention_title", { count })
-              : this._t("nothing_needs_attention")
-          }
-        </h2>
-        ${
-          count
-            ? html`
-                <ha-list-nav
-                  .ariaLabel=${this._t("attention_title", { count })}
-                >
-                  ${sorted.map((device) =>
-                    this._renderAttentionDevice(
-                      rows.get(device.ieee)!.key,
-                      device
-                    )
-                  )}
-                </ha-list-nav>
-              `
-            : nothing
-        }
+        <h2 class="card-title header">${title}</h2>
+        <ha-list-nav .ariaLabel=${title}>
+          ${sorted.map((device) =>
+            this._renderAttentionDevice(rows.get(device.ieee)!.key, device)
+          )}
+        </ha-list-nav>
       </ha-card>
     `;
   }
 
   /** The entity that best stands for the device, for its icon. */
   private _primaryState(device: ZHADevice): HassEntity | undefined {
+    const entityReg = this._entityRegById(this._entityReg!);
     const states = device.entities
       // Configuration and diagnostic entities, such as a child lock switch,
       // say nothing about what the device is.
       .filter(
         (entity) =>
-          entity.entity_id &&
-          !this.hass.entities[entity.entity_id]?.entity_category
+          entity.entity_id && !entityReg.get(entity.entity_id)?.entity_category
       )
-      .map((entity) => this.hass.states[entity.entity_id!])
+      .map((entity) => this._states?.[entity.entity_id!])
       .filter((stateObj): stateObj is HassEntity => stateObj !== undefined);
     for (const domain of PRIMARY_DOMAINS) {
       const match = states.find((stateObj) =>
@@ -420,34 +444,35 @@ class ZHANetworkHealthPage extends LitElement {
   }
 
   private _renderAttentionDevice(
-    key: FindingKey,
+    key: AttentionKey,
     device: ZHADevice
   ): TemplateResult {
+    const localize = this._i18n.localize;
+    const locale = this._i18n.locale;
     const stateObj = this._primaryState(device);
     const power = powerSource(device);
     const seen = lastSeenAt(device);
-    const created = this.hass.devices[device.device_reg_id]?.created_at;
+    const created = this._haDevices[device.device_reg_id]?.created_at;
     const details =
       key === "offline"
         ? [
             // A mains device that is offline is often just switched off at
             // the wall.
-            power ? this._t(`power_${power}`) : undefined,
+            power
+              ? localize(`ui.panel.config.zha.network_health.power_${power}`)
+              : undefined,
             this._areaName(device),
             seen
-              ? this._t("last_seen", {
-                  time: relativeTime(seen, this.hass.locale),
+              ? localize("ui.panel.config.zha.network_health.last_seen", {
+                  time: relativeTime(seen, locale),
                 })
               : undefined,
           ]
         : [
             this._areaName(device),
             created
-              ? this._t("joined", {
-                  time: relativeTime(
-                    new Date(created * 1000),
-                    this.hass.locale
-                  ),
+              ? localize("ui.panel.config.zha.network_health.joined", {
+                  time: relativeTime(new Date(created * 1000), locale),
                 })
               : undefined,
           ];
@@ -458,7 +483,6 @@ class ZHANetworkHealthPage extends LitElement {
           stateObj
             ? html`<ha-state-icon
                 slot="start"
-                .hass=${this.hass}
                 .stateObj=${stateObj}
               ></ha-state-icon>`
             : html`<ha-svg-icon
@@ -468,24 +492,27 @@ class ZHANetworkHealthPage extends LitElement {
         }
         <span slot="headline">${this._deviceName(device)}</span>
         <span slot="supporting-text">
-          <span class="status">${this._t(key)}</span>${details
-            .filter(Boolean)
-            .map((detail) => ` · ${detail}`)}
+          <span class="status"
+            >${localize(`ui.panel.config.zha.network_health.${key}`)}</span
+          >${details.filter(Boolean).map((detail) => ` · ${detail}`)}
         </span>
         <ha-icon-next slot="end"></ha-icon-next>
       </ha-list-item-button>
     `;
   }
 
-  private _renderWorthALookCard(found: Record<FindingKey, ZHADevice[]>) {
+  private _renderWorthALookCard(found: Findings) {
     const keys = WORTH_A_LOOK.filter((key) => found[key].length);
     if (!keys.length) {
       return nothing;
     }
+    const title = this._i18n.localize(
+      "ui.panel.config.zha.network_health.worth_a_look"
+    );
     return html`
       <ha-card>
-        <h2 class="card-title header">${this._t("worth_a_look")}</h2>
-        <ha-list-nav .ariaLabel=${this._t("worth_a_look")}>
+        <h2 class="card-title header">${title}</h2>
+        <ha-list-nav .ariaLabel=${title}>
           ${keys.map(
             (key) => html`
               <ha-list-item-button href=${`${BASE_PATH}/${key}`}>
@@ -494,9 +521,16 @@ class ZHANetworkHealthPage extends LitElement {
                   .path=${FINDING_ICON[key]}
                 ></ha-svg-icon>
                 <span slot="headline">
-                  ${this._t(`${key}_count`, { count: found[key].length })}
+                  ${this._i18n.localize(
+                    `ui.panel.config.zha.network_health.${key}_count`,
+                    { count: found[key].length }
+                  )}
                 </span>
-                <span slot="supporting-text">${this._t(`${key}_advice`)}</span>
+                <span slot="supporting-text">
+                  ${this._i18n.localize(
+                    `ui.panel.config.zha.network_health.${key}_advice`
+                  )}
+                </span>
                 <ha-icon-next slot="end"></ha-icon-next>
               </ha-list-item-button>
             `
@@ -506,14 +540,18 @@ class ZHANetworkHealthPage extends LitElement {
     `;
   }
 
-  private _renderSubpage(key: FindingKey, devices: ZHADevice[]) {
+  private _renderSubpage(key: WorthALookKey, devices: ZHADevice[]) {
+    const localize = this._i18n.localize;
     return html`
       <ha-card>
-        <p class="advice">${this._t(`${key}_advice`)}</p>
         ${
           devices.length
             ? html`
-                <ha-list-nav .ariaLabel=${this._t(key)}>
+                <ha-list-nav
+                  .ariaLabel=${localize(
+                    `ui.panel.config.zha.network_health.${key}`
+                  )}
+                >
                   ${devices.map((device) =>
                     this._renderValueDevice(key, device)
                   )}
@@ -522,40 +560,47 @@ class ZHANetworkHealthPage extends LitElement {
             : html`
                 <ha-list-base>
                   <ha-list-item-base>
-                    <span slot="headline">${this._t("no_devices")}</span>
+                    <span slot="headline">
+                      ${localize("ui.panel.config.zha.network_health.no_devices")}
+                    </span>
                   </ha-list-item-base>
                 </ha-list-base>
               `
         }
+        <div class="card-actions">
+          <ha-button appearance="plain" href="/config/zha/visualization">
+            ${localize("ui.panel.config.zha.network_health.show_map")}
+          </ha-button>
+        </div>
       </ha-card>
+      <p class="tip">
+        ${localize(`ui.panel.config.zha.network_health.${key}_tip`)}
+      </p>
     `;
   }
 
   /** A device row with the value of its finding in front of the chevron. */
   private _renderValueDevice(
-    key: FindingKey,
+    key: WorthALookKey,
     device: ZHADevice
   ): TemplateResult {
     let icon: string;
-    let iconClass = "";
+    let iconClass: string;
     let value: string;
 
     if (key === "low_battery") {
       const level = this._readings.batteryLevel(device)!;
       icon = batteryLevelIconPath(level);
       iconClass = "warning";
-      value = `${level}${blankBeforePercent(this.hass.locale)}%`;
-    } else if (key === "firmware_update") {
-      const update = this._readings.firmwareUpdate(device)!;
-      icon = mdiPackageUp;
-      value = [update.installed, update.latest].filter(Boolean).join(" → ");
+      value = formatNumberWithUnit(level, "%", this._i18n.locale);
     } else {
       const links = this._links(this._devices!);
       const band = signalBand(device, links);
+      const lqi = linkQuality(device, links);
       icon = BAND_ICON[band];
       iconClass = `signal ${band}`;
-      value = `${this.hass.localize("ui.panel.config.zha.neighbors.lqi")} ${
-        linkQuality(device, links) ?? "—"
+      value = `${this._i18n.localize("ui.panel.config.zha.neighbors.lqi")} ${
+        lqi === null ? "—" : formatNumberWithUnit(lqi, null, this._i18n.locale)
       }`;
     }
 
@@ -566,18 +611,15 @@ class ZHANetworkHealthPage extends LitElement {
     const details = [
       this._areaName(device),
       device.model,
-      parent ? this._t("via_router", { router: parent }) : undefined,
+      parent
+        ? this._i18n.localize("ui.panel.config.zha.network_health.via_router", {
+            router: parent,
+          })
+        : undefined,
     ].filter(Boolean);
 
-    // A firmware update is installed from the device page, which the ZHA
-    // device page does not offer.
-    const href =
-      key === "firmware_update"
-        ? `/config/devices/device/${device.device_reg_id}`
-        : `/config/zha/device/${device.ieee}`;
-
     return html`
-      <ha-list-item-button href=${href}>
+      <ha-list-item-button href=${`/config/zha/device/${device.ieee}`}>
         <ha-svg-icon
           slot="start"
           class=${iconClass}
@@ -599,7 +641,7 @@ class ZHANetworkHealthPage extends LitElement {
       devices,
       this._areaName,
       keepOrder ? null : this._deviceName,
-      (a, b) => stringCompare(a, b, this.hass.locale.language)
+      (a, b) => stringCompare(a, b, this._i18n.language)
     );
   }
 
@@ -647,19 +689,19 @@ class ZHANetworkHealthPage extends LitElement {
           margin: var(--ha-space-2) 0 var(--ha-space-4);
           color: var(--secondary-text-color);
           font-size: var(--ha-font-size-m);
-          line-height: 1.5;
+          line-height: var(--ha-line-height-normal);
         }
 
         .bar {
           display: flex;
           gap: 2px;
-          height: 8px;
-          border-radius: 4px;
+          height: var(--ha-space-2);
+          border-radius: var(--ha-border-radius-sm);
           overflow: hidden;
         }
 
         .segment {
-          min-width: 6px;
+          min-width: var(--ha-space-2);
         }
 
         .segment.strong,
@@ -699,9 +741,9 @@ class ZHANetworkHealthPage extends LitElement {
         }
 
         .dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
+          width: var(--ha-space-2);
+          height: var(--ha-space-2);
+          border-radius: var(--ha-border-radius-circle);
           flex-shrink: 0;
         }
 
@@ -728,12 +770,12 @@ class ZHANetworkHealthPage extends LitElement {
           color: var(--error-color);
         }
 
-        .advice {
+        .tip {
           margin: 0;
-          padding: var(--ha-space-4);
+          padding: 0 var(--ha-space-4);
           color: var(--secondary-text-color);
           font-size: var(--ha-font-size-s);
-          line-height: 1.4;
+          line-height: var(--ha-line-height-normal);
         }
 
         .value {

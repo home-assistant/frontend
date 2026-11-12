@@ -14,7 +14,9 @@ import {
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+import { consume } from "../../../../../common/decorators/consume";
 import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/buttons/ha-progress-button";
@@ -33,9 +35,11 @@ import "../../../../../components/list/ha-list-base";
 import "../../../../../components/list/ha-list-nav";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import { getConfigEntries } from "../../../../../data/config_entries";
-import { fetchEntityRegistry } from "../../../../../data/entity/entity_registry";
+import { fullEntitiesContext } from "../../../../../data/context";
+import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import type {
   ZHAConfiguration,
+  ZHADevice,
   ZHANetworkBackupAndMetadata,
 } from "../../../../../data/zha";
 import {
@@ -75,7 +79,12 @@ class ZHAConfigDashboard extends LitElement {
 
   @state() private _offlineDevices = 0;
 
-  @state() private _healthAttention = 0;
+  @state() private _devices?: ZHADevice[];
+
+  /** The full registry, as hass.entities leaves out disabled entities. */
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  private _entityReg?: EntityRegistryEntry[];
 
   @state() private _totalGroups?: number;
 
@@ -303,6 +312,14 @@ class ZHAConfigDashboard extends LitElement {
   }
 
   private _renderNavigationCard() {
+    const healthAttention =
+      this._devices && this._entityReg
+        ? this._healthAttention(
+            this._devices,
+            this._entityReg,
+            this.hass.devices
+          )
+        : 0;
     const dynamicSections = this._configuration
       ? Object.keys(this._configuration.schemas).filter(
           (section) => section !== "zha_options"
@@ -357,21 +374,19 @@ class ZHAConfigDashboard extends LitElement {
               </div>
               <div slot="supporting-text">
                 ${
-                  this._healthAttention
-                    ? this.hass.localize(
-                        "ui.panel.config.zha.configuration_page.network_health_attention",
-                        { count: this._healthAttention }
-                      )
+                  healthAttention
+                    ? html`<span class="attention">
+                        <span class="attention-dot"></span>
+                        ${this.hass.localize(
+                          "ui.panel.config.zha.configuration_page.network_health_attention",
+                          { count: healthAttention }
+                        )}
+                      </span>`
                     : this.hass.localize(
                         "ui.panel.config.zha.configuration_page.network_health_description"
                       )
                 }
               </div>
-              ${
-                this._healthAttention
-                  ? html`<span slot="end" class="attention-dot"></span>`
-                  : nothing
-              }
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-list-item-button>
             ${dynamicSections.map(
@@ -527,36 +542,40 @@ class ZHAConfigDashboard extends LitElement {
     showOptionsFlowDialog(this, this._configEntry);
   }
 
+  /**
+   * How many devices need attention on the network health page. Only those
+   * findings count here, so battery readings are not needed.
+   */
+  private _healthAttention = memoizeOne(
+    (
+      devices: ZHADevice[],
+      entityReg: EntityRegistryEntry[],
+      haDevices: HomeAssistant["devices"]
+    ): number => {
+      const withEntities = devicesWithEntities(entityReg);
+      return attentionCount(
+        findings(managedDevices(devices), {
+          batteryLevel: () => null,
+          isDisabled: (device) =>
+            Boolean(haDevices[device.device_reg_id]?.disabled_by),
+          hasRegisteredEntities: (device) =>
+            withEntities.has(device.device_reg_id),
+        })
+      );
+    }
+  );
+
   private async _fetchDevicesAndGroups(): Promise<void> {
-    const [devicesResult, groupsResult, entitiesResult] =
-      await Promise.allSettled([
-        fetchDevices(this.hass),
-        fetchGroups(this.hass),
-        // The full registry, as hass.entities leaves out disabled entities.
-        fetchEntityRegistry(this.hass.connection),
-      ]);
+    const [devicesResult, groupsResult] = await Promise.allSettled([
+      fetchDevices(this.hass),
+      fetchGroups(this.hass),
+    ]);
 
     if (devicesResult.status === "fulfilled") {
       this._offlineDevices = devicesResult.value.filter(
         (d) => !d.available
       ).length;
-      // Only the findings that need attention count here, so battery and
-      // firmware readings are not needed.
-      const withEntities = devicesWithEntities(
-        entitiesResult.status === "fulfilled"
-          ? entitiesResult.value
-          : this.hass.entities
-      );
-      this._healthAttention = attentionCount(
-        findings(managedDevices(devicesResult.value), {
-          batteryLevel: () => null,
-          firmwareUpdate: () => null,
-          isDisabled: (device) =>
-            Boolean(this.hass.devices[device.device_reg_id]?.disabled_by),
-          hasRegisteredEntities: (device) =>
-            withEntities.has(device.device_reg_id),
-        })
-      );
+      this._devices = devicesResult.value;
     } else {
       this._error = devicesResult.reason?.message || devicesResult.reason;
     }
@@ -573,11 +592,18 @@ class ZHAConfigDashboard extends LitElement {
       haStyle,
       animationStyles,
       css`
+        .attention {
+          display: inline-flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+        }
+
         .attention-dot {
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
+          width: 8px;
+          height: 8px;
+          border-radius: var(--ha-border-radius-circle);
           background-color: var(--error-color);
+          flex-shrink: 0;
         }
 
         ha-card {
