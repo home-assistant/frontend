@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, eventOptions, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { DOMAINS_INPUT_ROW } from "../../../common/const";
@@ -36,6 +36,10 @@ export class HuiGenericEntityRow extends LitElement {
   @property({ attribute: "catch-interaction", type: Boolean })
   public catchInteraction?;
 
+  @query(".row > slot") private _controlSlot?: HTMLSlotElement;
+
+  private _pressedControl = false;
+
   protected render() {
     if (!this.hass || !this.config) {
       return nothing;
@@ -64,6 +68,8 @@ export class HuiGenericEntityRow extends LitElement {
     return html`
       <div
         class="row ${classMap({ pointer })}"
+        @pointerdown=${this._handlePointerDown}
+        @click=${this._handleClick}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this.config!.hold_action),
@@ -136,6 +142,22 @@ export class HuiGenericEntityRow extends LitElement {
       "no-secondary",
       !this.secondaryText && !this.config?.secondary_info
     );
+  }
+
+  private _handlePointerDown(ev: PointerEvent) {
+    this._pressedControl = this._isControlEvent(ev);
+  }
+
+  @eventOptions({ capture: true })
+  private _handleClick(ev: MouseEvent) {
+    if (this._pressedControl && !this._isControlEvent(ev)) {
+      ev.stopImmediatePropagation();
+    }
+    this._pressedControl = false;
+  }
+
+  private _isControlEvent(ev: Event) {
+    return !!this._controlSlot && ev.composedPath().includes(this._controlSlot);
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
