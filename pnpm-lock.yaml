@@ -595,8 +595,8 @@ importers:
         specifier: 0.13.11
         version: 0.13.11(supports-color@8.1.1)
       eslint-plugin-import-x:
-        specifier: 4.18.0
-        version: 4.18.0(@typescript-eslint/utils@8.72.1(eslint@10.14.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3))(eslint@10.14.0(supports-color@8.1.1))(supports-color@8.1.1)
+        specifier: 4.18.1
+        version: 4.18.1(@typescript-eslint/utils@8.72.1(eslint@10.14.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3))(eslint@10.14.0(supports-color@8.1.1))(supports-color@8.1.1)
       eslint-plugin-lit:
         specifier: 2.3.1
         version: 2.3.1(eslint@10.14.0(supports-color@8.1.1))
@@ -4994,8 +4994,8 @@ packages:
       eslint-plugin-import: '>=1.4.0'
       webpack: '>=1.11.0'
 
-  eslint-plugin-import-x@4.18.0:
-    resolution: {integrity: sha512-UfxHFmV+f9vwybrNn6LQ1rPzfeDMPGi/dRbqQnCFO/jBzYrujSOyX7jxqBSYr/HwXs/V4XJdEGPvC3Re46nzKg==}
+  eslint-plugin-import-x@4.18.1:
+    resolution: {integrity: sha512-D1h++38NS2Z40zf8jbd2OHqDrnIFRKpdp8sL0jP4xSDGZj6MNwEQua8F+r3tOWjcHrsWuhHOJ7wASWioJ31tfg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       '@typescript-eslint/utils': ^8.56.0
@@ -12823,7 +12823,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import-x@4.18.0(@typescript-eslint/utils@8.72.1(eslint@10.14.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3))(eslint@10.14.0(supports-color@8.1.1))(supports-color@8.1.1):
+  eslint-plugin-import-x@4.18.1(@typescript-eslint/utils@8.72.1(eslint@10.14.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3))(eslint@10.14.0(supports-color@8.1.1))(supports-color@8.1.1):
     dependencies:
       '@typescript-eslint/types': 8.72.1
       cjs-module-lexer: 2.3.0
