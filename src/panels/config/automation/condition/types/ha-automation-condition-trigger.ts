@@ -140,7 +140,9 @@ export class HaTriggerCondition extends LitElement {
                 )}
               </span>
               ${
-                option.duplicate || hasCustomTriggerId(option)
+                option.duplicate ||
+                hasCustomTriggerId(option) ||
+                !this._triggers?.showIndices
                   ? html`<span
                       slot="supporting-text"
                       class="trigger-id ${option.duplicate ? "duplicate" : ""}"
