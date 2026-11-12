@@ -138,7 +138,9 @@ class MoreInfoCover extends LitElement {
   private _stateText(): string {
     const stateObj = this.stateObj!;
     const stateDisplay = this._formatters.formatEntityState(stateObj);
-    const value = Math.round(coverCurrentValue(stateObj, this._mode) ?? 0);
+    const value = Math.round(
+      stateObj.attributes[coverModeAttribute(this._mode)] ?? 0
+    );
     if (value === 0) {
       return stateDisplay;
     }
