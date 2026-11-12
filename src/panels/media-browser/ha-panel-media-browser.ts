@@ -42,6 +42,9 @@ import type { BarMediaPlayer } from "./ha-bar-media-player";
 import { showWebBrowserPlayMediaDialog } from "./show-media-player-dialog";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 
+const isImage = (item: MediaPlayerItem) =>
+  !item.can_expand && item.media_class === "image";
+
 const createMediaPanelUrl = (entityId: string, items: MediaPlayerItemId[]) => {
   let path = `/media-browser/${entityId}`;
   for (const item of items.slice(1)) {
@@ -307,11 +310,20 @@ class PanelMediaBrowser extends LitElement {
       return;
     }
 
+    const images = this._currentItem?.children?.filter(isImage) ?? [];
+
     showWebBrowserPlayMediaDialog(this, {
-      sourceUrl: resolvedUrl.url,
+      // The resolved URL is relative to Home Assistant. Make it absolute, so it
+      // also loads when the frontend is served from another origin, like the
+      // development server.
+      sourceUrl: this.hass.hassUrl(resolvedUrl.url),
       sourceType: resolvedUrl.mime_type,
       title: item.title,
       can_play: item.can_play,
+      images,
+      imageIndex: images.findIndex(
+        (image) => image.media_content_id === item.media_content_id
+      ),
     });
     this._player.hideResolvingNewMediaPicked();
   }

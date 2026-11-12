@@ -56,6 +56,8 @@ type DialogHideEvent = CustomEvent<{ source?: Element }>;
  * @cssprop --dialog-content-padding - Padding for the dialog content sections.
  * @cssprop --ha-dialog-show-duration - Show animation duration.
  * @cssprop --ha-dialog-hide-duration - Hide animation duration.
+ * @cssprop --ha-dialog-resize-duration - Duration of the animation when the
+ *   width of the dialog changes. Not animated by default.
  * @cssprop --ha-dialog-surface-background - Dialog background color.
  * @cssprop --ha-dialog-surface-backdrop-filter - Dialog backdrop filter.
  * @cssprop --dialog-box-shadow - Dialog box shadow.
@@ -428,6 +430,14 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
           display: flex;
           flex-direction: column;
           overflow: hidden;
+          transition:
+            min-width var(--ha-dialog-resize-duration, 0ms) ease,
+            max-width var(--ha-dialog-resize-duration, 0ms) ease;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          wa-dialog::part(dialog) {
+            transition: none;
+          }
         }
 
         wa-dialog::part(dialog)::backdrop {
