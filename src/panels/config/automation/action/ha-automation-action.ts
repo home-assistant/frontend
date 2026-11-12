@@ -120,7 +120,7 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
                             this.optionsInSidebar
                               ? html`<ha-tooltip
                                   trigger="focus"
-                                  describe-anchor
+                                  association="description"
                                   for="move-row-${idx}"
                                 >
                                   ${renderMoveShortcutHint(

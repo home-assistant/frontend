@@ -165,7 +165,7 @@ class HaInputSelectForm extends LitElement {
                         ></ha-svg-icon>
                         <ha-tooltip
                           trigger="focus"
-                          describe-anchor
+                          association="description"
                           slot="start"
                           for="move-option-${index}"
                           .disabled=${this.disabled}

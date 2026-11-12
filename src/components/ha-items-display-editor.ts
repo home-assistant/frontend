@@ -219,7 +219,7 @@ export class HaItemDisplayEditor extends LitElement {
                           <ha-tooltip
                             slot="end"
                             trigger="focus"
-                            describe-anchor
+                            association="description"
                             for=${
                               this.showNavigationButton
                                 ? `move-item-${idx}`

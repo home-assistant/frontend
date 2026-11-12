@@ -552,7 +552,7 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
                     ></ha-svg-icon>
                     <ha-tooltip
                       trigger="focus"
-                      describe-anchor
+                      association="description"
                       for="move-view-${index}"
                     >
                       ${renderMoveShortcutHint(

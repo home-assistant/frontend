@@ -195,7 +195,7 @@ export class HaCardConditionsEditor extends LitElement {
                   <ha-svg-icon .path=${mdiDragHorizontalVariant}></ha-svg-icon>
                   <ha-tooltip
                     trigger="focus"
-                    describe-anchor
+                    association="description"
                     for="move-condition-${idx}"
                   >
                     ${renderMoveShortcutHint(

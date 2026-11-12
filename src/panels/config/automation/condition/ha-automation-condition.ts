@@ -233,7 +233,7 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
                             this.optionsInSidebar
                               ? html`<ha-tooltip
                                   trigger="focus"
-                                  describe-anchor
+                                  association="description"
                                   for="move-row-${idx}"
                                 >
                                   ${renderMoveShortcutHint(
