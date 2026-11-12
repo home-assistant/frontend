@@ -9,26 +9,6 @@ const MAX_ROWS = 2;
 const NARROW_MAX_ROWS = 3;
 const NARROW_WIDTH = 450;
 
-// How many items a collapsed legend shows. A wider list never shows fewer items
-// than a narrow one, so a card does not lose items when it gets a bit wider,
-// such as when leaving edit mode.
-export const fitLegend = (
-  widths: number[],
-  moreWidth: number,
-  rowWidth: number,
-  gap: number
-): number =>
-  Math.max(
-    fitInRows(widths, moreWidth, rowWidth, gap, MAX_ROWS),
-    fitInRows(
-      widths,
-      moreWidth,
-      Math.min(rowWidth, NARROW_WIDTH),
-      gap,
-      NARROW_MAX_ROWS
-    )
-  );
-
 // How many items fit in maxRows of a wrapping row, leaving room for the
 // "more" item after them when not all of them fit.
 export const fitInRows = (
@@ -147,11 +127,12 @@ export class LegendFitController {
         Math.max(width, this._widths[index])
       );
     }
-    const fit = fitLegend(
+    const fit = fitInRows(
       this._widths,
       more ? layoutWidth(more) : 0,
       rowWidth,
-      parseFloat(style.columnGap) || 0
+      parseFloat(style.columnGap) || 0,
+      rowWidth < NARROW_WIDTH ? NARROW_MAX_ROWS : MAX_ROWS
     );
     if (fit !== this.fit) {
       this.fit = fit;
