@@ -583,7 +583,7 @@ class ZHANetworkHealthPage extends LitElement {
         ></ha-svg-icon>
         <span slot="headline">${this._deviceName(device)}</span>
         <span slot="supporting-text">${details.join(" · ")}</span>
-        <span slot="end" class="value ${iconClass}">${value}</span>
+        <span slot="end" class="value">${value}</span>
         <ha-icon-next slot="end"></ha-icon-next>
       </ha-list-item-button>
     `;
