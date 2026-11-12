@@ -8,7 +8,7 @@ import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { formatNumber } from "../../../common/number/format_number";
 import type { LocalizeFunc } from "../../../common/translations/localize";
@@ -16,7 +16,6 @@ import "../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
-  RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -120,6 +119,7 @@ export const databaseUsageRows = (
 
 interface EntityUsageRow extends DatabaseUsageRow, DataTableRowData {
   name: string;
+  hasSettings: boolean;
 }
 
 @customElement("storage-database-card")
@@ -154,7 +154,7 @@ export class StorageDatabaseCard extends LitElement {
   })
   private _themes!: Themes;
 
-  // Not reactive: read for names and clicks, rows follow the entity registry.
+  // Not reactive: read when building the rows, which follow the entity registry.
   @consume({ context: statesContext, subscribe: true })
   private _states!: HomeAssistant["states"];
 
@@ -291,11 +291,9 @@ export class StorageDatabaseCard extends LitElement {
           .searchLabel=${this._localize(
             "ui.panel.config.storage.database.search"
           )}
-          clickable
           .noDataText=${this._localize(
             "ui.panel.config.storage.database.no_entities"
           )}
-          @row-click=${this._rowClicked}
         ></ha-data-table>
       </div>
     `;
@@ -353,13 +351,18 @@ export class StorageDatabaseCard extends LitElement {
   private _rows = memoizeOne(
     (
       usage: RecorderDatabaseUsage,
-      _entityRegistry: EntityRegistryEntry[],
+      entityRegistry: EntityRegistryEntry[],
       localize: LocalizeFunc
-    ): EntityUsageRow[] =>
-      databaseUsageRows(usage).map((row) => {
+    ): EntityUsageRow[] => {
+      const registered = new Set(
+        entityRegistry.map((entry) => entry.entity_id)
+      );
+      return databaseUsageRows(usage).map((row) => {
         const stateObj = this._states[row.id];
         return {
           ...row,
+          // Statistics of external sources (e.g. "sensor:energy") have no entity.
+          hasSettings: stateObj !== undefined || registered.has(row.id),
           name:
             row.id === UNKNOWN_ROW_ID
               ? localize("ui.panel.config.storage.database.unknown")
@@ -367,7 +370,8 @@ export class StorageDatabaseCard extends LitElement {
                 ? computeStateName(stateObj)
                 : row.id,
         };
-      })
+      });
+    }
   );
 
   private _columns = memoizeOne(
@@ -383,13 +387,25 @@ export class StorageDatabaseCard extends LitElement {
         sortable: true,
         filterable: true,
         flex: 3,
-        template: (row) =>
-          html`${row.name}
+        template: (row) => {
+          const content = html`${row.name}
           ${
             row.id !== UNKNOWN_ROW_ID && row.name !== row.id
               ? html`<div class="secondary">${row.id}</div>`
               : nothing
-          }`,
+          }`;
+          // Rendered inside the data table, which styles .row-button.
+          return row.hasSettings
+            ? html`<button
+                type="button"
+                class="row-button"
+                data-entity-id=${row.id}
+                @click=${this._openSettings}
+              >
+                ${content}
+              </button>`
+            : content;
+        },
       },
       id: {
         title: localize("ui.panel.config.storage.database.columns.entity_id"),
@@ -442,16 +458,15 @@ export class StorageDatabaseCard extends LitElement {
     })
   );
 
-  private _rowClicked(ev: HASSDomEvent<RowClickedEvent>) {
-    const entityId = ev.detail.id;
-    // Statistics of external sources (e.g. "sensor:energy") have no entity.
-    if (
-      entityId in this._states ||
-      this._entityRegistry.some((entry) => entry.entity_id === entityId)
-    ) {
-      showMoreInfoDialog(this, { entityId, view: "settings" });
-    }
-  }
+  // Arrow function: the data table renders the template, not this card.
+  private _openSettings = (
+    ev: HASSDomCurrentTargetEvent<HTMLButtonElement>
+  ) => {
+    showMoreInfoDialog(this, {
+      entityId: ev.currentTarget.dataset.entityId!,
+      view: "settings",
+    });
+  };
 
   private async _load() {
     this._loading = true;
