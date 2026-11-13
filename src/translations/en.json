@@ -2482,6 +2482,7 @@
           "restore": "Restore state and time when Home Assistant starts"
         },
         "schedule": {
+          "schedule": "[%key:ui::panel::config::helpers::types::schedule%]",
           "new_block": "New time block",
           "edit_block": "Edit time block",
           "start": "Start",

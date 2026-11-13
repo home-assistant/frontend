@@ -61,6 +61,9 @@ const panelKind = (panel?: SchedulePanel) =>
 
 const NEW_BLOCK: ScheduleBlock = { from: "08:00", to: "17:00" };
 
+/** The panel with nothing selected: a new time block with default times. */
+const newBlockPanel = (): SchedulePanel => ({ type: "block" });
+
 const DRAFT_DIRTY_KEY = "schedule-block-draft";
 
 @customElement("ha-schedule-form")
@@ -79,7 +82,8 @@ class HaScheduleForm extends LitElement {
 
   @state() private _week: ScheduleWeek = getScheduleWeek({});
 
-  @state() private _panel?: SchedulePanel;
+  /** Always shown: a new block, the selected block, or a day being copied. */
+  @state() private _panel: SchedulePanel = newBlockPanel();
 
   /** Read-only week of a schedule that cannot be edited in the UI. */
   @state() private _readonlyWeek?: ScheduleWeek;
@@ -120,7 +124,7 @@ class HaScheduleForm extends LitElement {
     super.willUpdate(changedProps);
     if (changedProps.has("item")) {
       if (this.item?.id !== changedProps.get("item")?.id) {
-        this._panel = undefined;
+        this._panel = newBlockPanel();
       }
       // Hosts pass back the emitted value, and the settings tab re-fetches
       // the item. Only an actual change replaces the week, which resets an
@@ -129,7 +133,7 @@ class HaScheduleForm extends LitElement {
       if (!deepEqual(week, this._week)) {
         this._week = week;
         if (panelKind(this._panel) === "edit") {
-          this._panel = undefined;
+          this._panel = newBlockPanel();
         }
       }
     }
@@ -162,11 +166,9 @@ class HaScheduleForm extends LitElement {
     if (!changedProps.has("_panel")) {
       return;
     }
-    this._reportDraftDirty(
-      this._panel?.type === "block" && !!this._panel.dirty
-    );
+    this._reportDraftDirty(this._panel.type === "block" && !!this._panel.dirty);
     const oldPanel = changedProps.get("_panel") as SchedulePanel | undefined;
-    if (this._panel && panelKind(this._panel) !== panelKind(oldPanel)) {
+    if (oldPanel && panelKind(this._panel) !== panelKind(oldPanel)) {
       this._panelElement?.scrollIntoView({
         block: "nearest",
         behavior: "smooth",
@@ -210,6 +212,25 @@ class HaScheduleForm extends LitElement {
 
     return html`
       <div class="form">
+        ${
+          this.disabled
+            ? html`${this._renderIdentity()}${this._renderReadonly()}`
+            : this._renderEditor()
+        }
+      </div>
+    `;
+  }
+
+  private _renderIdentity() {
+    return html`
+      <div class="identity">
+        <ha-icon-picker
+          .value=${this.item?.icon || ""}
+          .configValue=${"icon"}
+          @value-changed=${this._valueChanged}
+          .label=${this.hass.localize("ui.dialogs.helper_settings.generic.icon")}
+          .disabled=${this.disabled}
+        ></ha-icon-picker>
         <ha-input
           .value=${this.item?.name || ""}
           .configValue=${"name"}
@@ -223,14 +244,6 @@ class HaScheduleForm extends LitElement {
           dialogInitialFocus
           .disabled=${this.disabled}
         ></ha-input>
-        <ha-icon-picker
-          .value=${this.item?.icon || ""}
-          .configValue=${"icon"}
-          @value-changed=${this._valueChanged}
-          .label=${this.hass.localize("ui.dialogs.helper_settings.generic.icon")}
-          .disabled=${this.disabled}
-        ></ha-icon-picker>
-        ${this.disabled ? this._renderReadonly() : this._renderEditor()}
       </div>
     `;
   }
@@ -258,18 +271,16 @@ class HaScheduleForm extends LitElement {
   private _renderEditor() {
     const panel = this._panel;
     const kind = panelKind(panel);
+    // On wide screens the identity and the panel form a column beside the
+    // schedule, with the schedule and panel titles on one line; on narrow
+    // ones everything stacks in DOM order.
     return html`
-      <div class="schedule ${panel ? "with-panel" : ""}">
+      <div class="layout">
+        ${this._renderIdentity()}
         <div class="main">
-          <ha-schedule-timeline
-            .value=${this._week}
-            .selected=${panel?.type === "block" ? panel.source : undefined}
-            .preview=${panel?.type === "block" ? panel.preview : undefined}
-            .confirmChange=${this._confirmTimelineChange}
-            @value-changed=${this._weekChanged}
-            @schedule-block-selected=${this._blockSelected}
-            @schedule-day-copy=${this._copyDay}
-          ></ha-schedule-timeline>
+          <h3 class="heading">
+            ${this.hass.localize("ui.dialogs.helper_settings.schedule.schedule")}
+          </h3>
           <div class="toolbar">
             <ha-button
               appearance="filled"
@@ -286,36 +297,41 @@ class HaScheduleForm extends LitElement {
               )}
             </span>
           </div>
+          <ha-schedule-timeline
+            .value=${this._week}
+            .selected=${panel.type === "block" ? panel.source : undefined}
+            .preview=${panel.type === "block" ? panel.preview : undefined}
+            .confirmChange=${this._confirmTimelineChange}
+            @value-changed=${this._weekChanged}
+            @schedule-block-selected=${this._blockSelected}
+            @schedule-day-copy=${this._copyDay}
+          ></ha-schedule-timeline>
         </div>
-        ${
-          panel
-            ? keyed(
-                // A new panel element for each kind of panel replays the
-                // fade-in, while switching between blocks keeps it.
-                kind,
-                html`<div class="panel">
-                  <h3 class="panel-title">${this._panelTitle(panel)}</h3>
-                  ${
-                    panel.type === "block"
-                      ? html`<ha-schedule-block-editor
-                          .week=${this._week}
-                          .block=${
-                            panel.source
-                              ? this._week[panel.source.day][panel.source.index]
-                              : NEW_BLOCK
-                          }
-                          .source=${panel.source}
-                          @schedule-block-draft-changed=${this._draftChanged}
-                          @schedule-block-apply=${this._applyBlock}
-                          @schedule-block-delete=${this._deleteBlock}
-                          @schedule-block-close=${this._closePanel}
-                        ></ha-schedule-block-editor>`
-                      : this._renderCopyPanel(panel)
-                  }
-                </div>`
-              )
-            : nothing
-        }
+        ${keyed(
+          // A new panel element for each kind of panel replays the fade-in,
+          // while switching between blocks keeps it.
+          kind,
+          html`<div class="panel">
+            <h3 class="panel-title">${this._panelTitle(panel)}</h3>
+            ${
+              panel.type === "block"
+                ? html`<ha-schedule-block-editor
+                    .week=${this._week}
+                    .block=${
+                      panel.source
+                        ? this._week[panel.source.day][panel.source.index]
+                        : NEW_BLOCK
+                    }
+                    .source=${panel.source}
+                    @schedule-block-draft-changed=${this._draftChanged}
+                    @schedule-block-apply=${this._applyBlock}
+                    @schedule-block-delete=${this._deleteBlock}
+                    @schedule-block-close=${this._closePanel}
+                  ></ha-schedule-block-editor>`
+                : this._renderCopyPanel(panel)
+            }
+          </div>`
+        )}
       </div>
     `;
   }
@@ -368,21 +384,21 @@ class HaScheduleForm extends LitElement {
     ev.stopPropagation();
     const source = ev.detail.block;
     const current =
-      this._panel?.type === "block" ? this._panel.source : undefined;
+      this._panel.type === "block" ? this._panel.source : undefined;
     // Selecting the block being edited again keeps its unsaved changes.
     const sameBlock =
       current?.day === source?.day && current?.index === source?.index;
     if ((!source && !current) || sameBlock || !(await this._confirmDiscard())) {
       return;
     }
-    this._panel = source ? { type: "block", source } : undefined;
+    this._panel = source ? { type: "block", source } : newBlockPanel();
   }
 
   private _draftChanged(
     ev: HASSDomEvent<HASSDomEvents["schedule-block-draft-changed"]>
   ) {
     ev.stopPropagation();
-    if (this._panel?.type === "block") {
+    if (this._panel.type === "block") {
       this._panel = { ...this._panel, ...ev.detail };
     }
   }
@@ -395,15 +411,15 @@ class HaScheduleForm extends LitElement {
     if (!(await this._confirmDiscard())) {
       return false;
     }
-    if (this._panel?.type === "block" && this._panel.dirty) {
-      this._panel = undefined;
+    if (this._panel.type === "block" && this._panel.dirty) {
+      this._panel = newBlockPanel();
     }
     return true;
   };
 
   /** Ask before replacing a block editor that has changes not applied. */
   private async _confirmDiscard(): Promise<boolean> {
-    if (this._panel?.type !== "block" || !this._panel.dirty) {
+    if (this._panel.type !== "block" || !this._panel.dirty) {
       return true;
     }
     const localize = this.hass.localize;
@@ -432,24 +448,24 @@ class HaScheduleForm extends LitElement {
 
   private _copyTargetsChanged(ev: ValueChangedEvent<ScheduleWeekday[]>) {
     ev.stopPropagation();
-    if (this._panel?.type === "copy") {
+    if (this._panel.type === "copy") {
       this._panel = { ...this._panel, targets: ev.detail.value };
     }
   }
 
   private _applyCopy() {
-    if (this._panel?.type !== "copy") {
+    if (this._panel.type !== "copy") {
       return;
     }
     this._setWeek(
       copyScheduleDay(this._week, this._panel.day, this._panel.targets)
     );
-    this._panel = undefined;
+    this._panel = newBlockPanel();
   }
 
   private _applyBlock(ev: HASSDomEvent<HASSDomEvents["schedule-block-apply"]>) {
     ev.stopPropagation();
-    if (this._panel?.type !== "block") {
+    if (this._panel.type !== "block") {
       return;
     }
     this._setWeek(
@@ -460,29 +476,29 @@ class HaScheduleForm extends LitElement {
         this._panel.source
       )
     );
-    this._panel = undefined;
+    this._panel = newBlockPanel();
   }
 
   private _deleteBlock(ev: Event) {
     ev.stopPropagation();
-    if (this._panel?.type !== "block" || !this._panel.source) {
+    if (this._panel.type !== "block" || !this._panel.source) {
       return;
     }
     this._setWeek(removeScheduleBlock(this._week, this._panel.source));
-    this._panel = undefined;
+    this._panel = newBlockPanel();
   }
 
   private _closePanel(ev: Event) {
     ev.stopPropagation();
-    this._panel = undefined;
+    this._panel = newBlockPanel();
   }
 
   private _setWeek(week: ScheduleWeek) {
     this._week = week;
     // Close the block editor if its block is gone.
-    const source = this._panel?.type === "block" && this._panel.source;
+    const source = this._panel.type === "block" && this._panel.source;
     if (source && !week[source.day][source.index]) {
-      this._panel = undefined;
+      this._panel = newBlockPanel();
     }
     this._fireChanged({ ...this.item, ...week });
   }
@@ -528,10 +544,33 @@ class HaScheduleForm extends LitElement {
           --ha-input-padding-bottom: 0;
         }
 
-        .schedule {
+        /* Icon and name share one line. */
+        .identity {
+          display: flex;
+          gap: var(--ha-space-3);
+          align-items: flex-start;
+        }
+
+        .identity ha-icon-picker {
+          flex: 0 0 112px;
+        }
+
+        .identity ha-input {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .layout {
           display: flex;
           flex-direction: column;
-          gap: var(--ha-space-3);
+          gap: var(--ha-space-4);
+        }
+
+        .heading {
+          margin: 0;
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-medium);
+          line-height: var(--ha-line-height-condensed);
         }
 
         .main {
@@ -540,14 +579,31 @@ class HaScheduleForm extends LitElement {
           gap: var(--ha-space-3);
         }
 
-        /* With enough room, the panel sits next to the timeline, so both
-           stay in view while editing. */
+        /* With enough room, the identity and the panel sit beside the
+           schedule, so both stay in view while editing. */
         @container (min-width: 840px) {
-          .schedule.with-panel {
+          .layout {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 360px;
+            grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+            grid-template-rows: auto 1fr;
+            grid-template-areas:
+              "identity ."
+              "panel main";
+            column-gap: var(--ha-space-6);
+            row-gap: var(--ha-space-4);
             align-items: start;
-            gap: var(--ha-space-6);
+          }
+
+          .identity {
+            grid-area: identity;
+          }
+
+          .main {
+            grid-area: main;
+          }
+
+          .panel {
+            grid-area: panel;
           }
         }
 
@@ -569,9 +625,6 @@ class HaScheduleForm extends LitElement {
           display: flex;
           flex-direction: column;
           gap: var(--ha-space-4);
-          padding: var(--ha-space-4);
-          border: 1px solid var(--ha-color-border-neutral-quiet);
-          border-radius: var(--ha-border-radius-lg);
           animation: panel-in var(--ha-animation-duration-normal, 250ms)
             ease-out;
         }
