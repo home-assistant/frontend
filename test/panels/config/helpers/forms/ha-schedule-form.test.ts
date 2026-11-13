@@ -3,6 +3,7 @@ import { LitElement } from "lit";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { fireEvent } from "../../../../../src/common/dom/fire_event";
 import { internationalizationContext } from "../../../../../src/data/context";
+import type { Schedule } from "../../../../../src/data/schedule";
 import type { HomeAssistantInternationalization } from "../../../../../src/types";
 import { DirtyStateProviderMixin } from "../../../../../src/mixins/dirty-state-provider-mixin";
 import "../../../../../src/panels/config/helpers/forms/ha-schedule-form";
@@ -99,5 +100,30 @@ describe("ha-schedule-form", () => {
     form["_panel"] = { type: "block" };
     await settle(form);
     expect(host!.isDirtyState).toBe(false);
+  });
+
+  it("applies a valid draft before the host saves, and no other", async () => {
+    const form = await mountForm();
+    const values: Partial<Schedule>[] = [];
+    form.addEventListener("value-changed", (ev) => {
+      values.push(
+        (ev as CustomEvent<{ value: Partial<Schedule> }>).detail.value
+      );
+    });
+    const preview = {
+      block: { from: "09:00", to: "10:00" },
+      days: ["monday" as const],
+    };
+
+    // An overlapping or incomplete draft stays in the editor.
+    form["_panel"] = { type: "block", preview, valid: false };
+    form.applyPendingChanges();
+    expect(values).toEqual([]);
+
+    form["_panel"] = { type: "block", preview, valid: true };
+    form.applyPendingChanges();
+    expect(values).toHaveLength(1);
+    expect(values[0].monday).toEqual([{ from: "09:00", to: "10:00" }]);
+    expect(values[0].name).toBe("Office");
   });
 });

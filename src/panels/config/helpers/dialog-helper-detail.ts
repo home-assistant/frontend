@@ -80,6 +80,7 @@ import type {
   Helper,
   HelperCategory,
   HelperDomain,
+  HelperFormElement,
   HelperFormItem,
 } from "./const";
 import {
@@ -208,6 +209,8 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
+  @query(".helper-form > *") private _helperForm?: HelperFormElement;
+
   private _pendingConfigFlow?: {
     startFlowHandler: string;
     manifest: IntegrationManifest;
@@ -306,11 +309,13 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
       content = html`
         <div class="form" @value-changed=${this._valueChanged}>
           ${this._error ? html`<div class="error">${this._error}</div>` : ""}
-          ${dynamicElement(`ha-${this._domain}-form`, {
-            item: this._item,
-            new: true,
-            autofocus: true,
-          })}
+          <div class="helper-form">
+            ${dynamicElement(`ha-${this._domain}-form`, {
+              item: this._item,
+              new: true,
+              autofocus: true,
+            })}
+          </div>
           <ha-area-picker
             .value=${this._area}
             .disabled=${this._submitting}
@@ -554,6 +559,8 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
   }
 
   private async _createItem(): Promise<void> {
+    // Updates `_item` through `value-changed`.
+    this._helperForm?.applyPendingChanges?.();
     if (!this._domain || !this._item) {
       return;
     }

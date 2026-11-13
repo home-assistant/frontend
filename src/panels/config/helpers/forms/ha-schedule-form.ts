@@ -44,6 +44,7 @@ import type {
   HomeAssistantInternationalization,
   ValueChangedEvent,
 } from "../../../../types";
+import type { HelperFormElement } from "../const";
 import "./ha-schedule-block-editor";
 import "./ha-schedule-weekday-picker";
 
@@ -79,7 +80,7 @@ const newBlockPanel = (): SchedulePanel => ({
 const DRAFT_DIRTY_KEY = "schedule-block-draft";
 
 @customElement("ha-schedule-form")
-class HaScheduleForm extends LitElement {
+class HaScheduleForm extends LitElement implements HelperFormElement {
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: HomeAssistantInternationalization;
@@ -507,8 +508,17 @@ class HaScheduleForm extends LitElement {
     this._panel = newBlockPanel();
   }
 
+  /** Applies a valid time block draft, so saving the schedule keeps it. */
+  public applyPendingChanges() {
+    this._applyBlock();
+  }
+
   private _applyBlock() {
-    if (this._panel.type !== "block" || !this._panel.preview) {
+    if (
+      this._panel.type !== "block" ||
+      !this._panel.valid ||
+      !this._panel.preview
+    ) {
       return;
     }
     const { block, days, source } = this._panel.preview;
