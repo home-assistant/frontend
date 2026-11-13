@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 import { consume } from "../../../../common/decorators/consume";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import { formatListWithAnds } from "../../../../common/string/format-list";
@@ -48,16 +49,20 @@ const isValidTime = (time: string): boolean => {
   );
 };
 
+/** Why a draft cannot be applied. */
+type DraftProblem =
+  | { type: "invalid_time" | "end_before_start" | "no_days" }
+  | { type: "overlap"; days: ScheduleWeekday[] };
+
 /**
  * Inline editor for one time block: start, end, the days it applies to, and
  * optional additional data.
  *
  * @fires schedule-block-draft-changed - The draft changed. `detail.preview`
- * is not set while the times or days are incomplete or invalid, and
+ * is not set while the times or days are incomplete or invalid,
  * `detail.dirty` tells whether the draft differs from the block, and
- * `detail.valid` whether it can be applied.
- * @fires schedule-block-apply - Apply the block to the selected days, after
- * the host calls `apply()`.
+ * `detail.valid` whether the preview can be applied. The host renders the
+ * buttons and applies the preview.
  */
 @customElement("ha-schedule-block-editor")
 export class HaScheduleBlockEditor extends LitElement {
@@ -82,6 +87,12 @@ export class HaScheduleBlockEditor extends LitElement {
 
   @state() private _dataValid = true;
 
+  /**
+   * Whether the additional data was opened. Its YAML editor is only created
+   * then, as most blocks have no data.
+   */
+  @state() private _dataOpened = false;
+
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (changedProps.has("block") || changedProps.has("source")) {
@@ -91,6 +102,7 @@ export class HaScheduleBlockEditor extends LitElement {
       this._days = this.source ? [this.source.day] : [];
       this._data = this.block.data;
       this._dataValid = true;
+      this._dataOpened = !!this.block.data;
     }
   }
 
@@ -98,7 +110,7 @@ export class HaScheduleBlockEditor extends LitElement {
     super.updated(changedProps);
     if (
       [
-        "_i18n",
+        "week",
         "block",
         "source",
         "_from",
@@ -108,10 +120,16 @@ export class HaScheduleBlockEditor extends LitElement {
         "_dataValid",
       ].some((prop) => changedProps.has(prop))
     ) {
+      const draft = this._draft();
+      const problem = this._problem(draft);
       fireEvent(this, "schedule-block-draft-changed", {
-        preview: this._preview(),
+        // An overlapping draft is still shown, so the conflict is visible.
+        preview:
+          !problem || problem.type === "overlap"
+            ? { block: draft, days: this._days, source: this.source }
+            : undefined,
         dirty: this._isDirty(),
-        valid: !!this._i18n && this._dataValid && !this._error(this._draft()),
+        valid: !problem && this._dataValid,
       });
     }
   }
@@ -121,8 +139,7 @@ export class HaScheduleBlockEditor extends LitElement {
       return nothing;
     }
     const { localize, locale } = this._i18n;
-    const draft = this._draft();
-    const error = this._error(draft);
+    const problem = this._problem(this._draft());
 
     return html`
       <div class="times">
@@ -145,8 +162,12 @@ export class HaScheduleBlockEditor extends LitElement {
         @value-changed=${this._daysChanged}
       ></ha-schedule-weekday-picker>
       ${
-        error
-          ? html`<ha-alert alert-type=${error.type}>${error.message}</ha-alert>`
+        problem
+          ? html`<ha-alert
+              alert-type=${problem.type === "no_days" ? "info" : "error"}
+            >
+              ${this._problemMessage(problem)}
+            </ha-alert>`
           : nothing
       }
       <ha-expansion-panel
@@ -156,16 +177,22 @@ export class HaScheduleBlockEditor extends LitElement {
           "ui.dialogs.helper_settings.schedule.data_description"
         )}
         .expanded=${!!this.block.data}
+        @expanded-will-change=${this._expandedWillChange}
       >
-        ${keyed(
-          // A new editor for each block, so no text of the previous one stays.
-          this.block,
-          html`<ha-yaml-editor
-            in-dialog
-            .defaultValue=${this.block.data}
-            @value-changed=${this._dataChanged}
-          ></ha-yaml-editor>`
-        )}
+        ${
+          this._dataOpened
+            ? keyed(
+                // A new editor for each block, so no text of the previous
+                // one stays.
+                this.block,
+                html`<ha-yaml-editor
+                  in-dialog
+                  .defaultValue=${this.block.data}
+                  @value-changed=${this._dataChanged}
+                ></ha-yaml-editor>`
+              )
+            : nothing
+        }
         ${
           this._dataValid
             ? nothing
@@ -205,64 +232,34 @@ export class HaScheduleBlockEditor extends LitElement {
     );
   }
 
-  private _preview(): ScheduleBlockPreview | undefined {
-    const block = this._draft();
-    if (
-      !isValidTime(this._from) ||
-      !isValidTime(this._to) ||
-      !this._days.length ||
-      timeToMinutes(block.to) <= timeToMinutes(block.from)
-    ) {
-      return undefined;
-    }
-    return { block, days: this._days, source: this.source };
-  }
-
-  private _error(
-    draft: ScheduleBlock
-  ): { type: "error" | "info"; message: string } | undefined {
-    const { localize, locale } = this._i18n;
+  private _problem(draft: ScheduleBlock): DraftProblem | undefined {
     // A cleared time input is empty, which is not midnight.
     if (!isValidTime(this._from) || !isValidTime(this._to)) {
-      return {
-        type: "error",
-        message: localize(
-          "ui.dialogs.helper_settings.schedule.error_invalid_time"
-        ),
-      };
+      return { type: "invalid_time" };
     }
     if (timeToMinutes(draft.to) <= timeToMinutes(draft.from)) {
-      return {
-        type: "error",
-        message: localize(
-          "ui.dialogs.helper_settings.schedule.error_end_before_start"
-        ),
-      };
+      return { type: "end_before_start" };
     }
     if (!this._days.length) {
-      return {
-        type: "info",
-        message: localize("ui.dialogs.helper_settings.schedule.error_no_days"),
-      };
+      return { type: "no_days" };
     }
-    const conflicts = getConflictingDays(
-      this.week,
-      draft,
-      this._days,
-      this.source
+    const days = getConflictingDays(this.week, draft, this._days, this.source);
+    return days.length ? { type: "overlap", days } : undefined;
+  }
+
+  private _problemMessage(problem: DraftProblem): string {
+    const { localize, locale } = this._i18n;
+    if (problem.type === "overlap") {
+      return localize("ui.dialogs.helper_settings.schedule.error_overlap", {
+        days: formatListWithAnds(
+          locale,
+          problem.days.map((day) => formatScheduleWeekday(day, locale))
+        ),
+      });
+    }
+    return localize(
+      `ui.dialogs.helper_settings.schedule.error_${problem.type}`
     );
-    if (conflicts.length) {
-      return {
-        type: "error",
-        message: localize("ui.dialogs.helper_settings.schedule.error_overlap", {
-          days: formatListWithAnds(
-            locale,
-            conflicts.map((day) => formatScheduleWeekday(day, locale))
-          ),
-        }),
-      };
-    }
-    return undefined;
   }
 
   private _fromChanged(ev: ValueChangedEvent<string | undefined>) {
@@ -299,12 +296,12 @@ export class HaScheduleBlockEditor extends LitElement {
     this._data = value ?? undefined;
   }
 
-  /** Applies the draft. The host renders the buttons, next to the timeline. */
-  public apply() {
-    fireEvent(this, "schedule-block-apply", {
-      block: this._draft(),
-      days: this._days,
-    });
+  private _expandedWillChange(
+    ev: HASSDomEvent<HASSDomEvents["expanded-will-change"]>
+  ) {
+    if (ev.detail.expanded) {
+      this._dataOpened = true;
+    }
   }
 
   static styles = css`
@@ -346,10 +343,6 @@ declare global {
       preview?: ScheduleBlockPreview;
       dirty: boolean;
       valid: boolean;
-    };
-    "schedule-block-apply": {
-      block: ScheduleBlock;
-      days: ScheduleWeekday[];
     };
   }
 }

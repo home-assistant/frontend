@@ -37,13 +37,17 @@ import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import "./ha-schedule-block-editor";
-import type { HaScheduleBlockEditor } from "./ha-schedule-block-editor";
 import "./ha-schedule-weekday-picker";
 
 type SchedulePanel =
   | {
       type: "block";
       source?: ScheduleBlockRef;
+      /**
+       * What a new block starts with. Each new block panel has its own copy,
+       * so the editor starts over after Cancel or Create.
+       */
+      newBlock?: ScheduleBlock;
       /** The editor's draft, shown on the timeline until it is applied. */
       preview?: ScheduleBlockPreview;
       /** Whether the editor has changes that are not applied yet. */
@@ -53,19 +57,16 @@ type SchedulePanel =
     }
   | { type: "copy"; day: ScheduleWeekday; targets: ScheduleWeekday[] };
 
-const panelKind = (panel?: SchedulePanel) =>
-  !panel
-    ? undefined
-    : panel.type === "copy"
-      ? "copy"
-      : panel.source
-        ? "edit"
-        : "new";
+const panelKind = (panel: SchedulePanel) =>
+  panel.type === "copy" ? "copy" : panel.source ? "edit" : "new";
 
 const NEW_BLOCK: ScheduleBlock = { from: "08:00", to: "17:00" };
 
 /** The panel with nothing selected: a new time block with default times. */
-const newBlockPanel = (): SchedulePanel => ({ type: "block" });
+const newBlockPanel = (): SchedulePanel => ({
+  type: "block",
+  newBlock: { ...NEW_BLOCK },
+});
 
 const DRAFT_DIRTY_KEY = "schedule-block-draft";
 
@@ -113,9 +114,6 @@ class HaScheduleForm extends LitElement {
   @query("[dialogInitialFocus]") private _focusElement?: HaInput;
 
   @query(".panel") private _panelElement?: HTMLElement;
-
-  @query("ha-schedule-block-editor")
-  private _blockEditor?: HaScheduleBlockEditor;
 
   public focus() {
     this.updateComplete.then(() => this._focusElement?.focus());
@@ -318,7 +316,7 @@ class HaScheduleForm extends LitElement {
           // while switching between blocks keeps it.
           kind,
           html`<div class="panel">
-            <h3 class="panel-title">${this._panelTitle(panel)}</h3>
+            <h3 class="heading">${this._panelTitle(panel)}</h3>
             ${
               panel.type === "block"
                 ? html`<ha-schedule-block-editor
@@ -326,11 +324,10 @@ class HaScheduleForm extends LitElement {
                     .block=${
                       panel.source
                         ? this._week[panel.source.day][panel.source.index]
-                        : NEW_BLOCK
+                        : (panel.newBlock ?? NEW_BLOCK)
                     }
                     .source=${panel.source}
                     @schedule-block-draft-changed=${this._draftChanged}
-                    @schedule-block-apply=${this._applyBlock}
                   ></ha-schedule-block-editor>`
                 : this._renderCopyPanel(panel)
             }
@@ -393,7 +390,7 @@ class HaScheduleForm extends LitElement {
           panel.type === "block"
             ? html`<ha-button
                 .disabled=${!panel.valid}
-                @click=${this._applyBlockClick}
+                @click=${this._applyBlock}
               >
                 ${localize(panel.source ? "ui.common.apply" : "ui.common.create")}
               </ha-button>`
@@ -469,7 +466,7 @@ class HaScheduleForm extends LitElement {
 
   private async _newBlock() {
     if (await this._confirmDiscard()) {
-      this._panel = { type: "block" };
+      this._panel = newBlockPanel();
     }
   }
 
@@ -498,23 +495,12 @@ class HaScheduleForm extends LitElement {
     this._panel = newBlockPanel();
   }
 
-  private _applyBlockClick() {
-    this._blockEditor?.apply();
-  }
-
-  private _applyBlock(ev: HASSDomEvent<HASSDomEvents["schedule-block-apply"]>) {
-    ev.stopPropagation();
-    if (this._panel.type !== "block") {
+  private _applyBlock() {
+    if (this._panel.type !== "block" || !this._panel.preview) {
       return;
     }
-    this._setWeek(
-      applyScheduleBlock(
-        this._week,
-        ev.detail.block,
-        ev.detail.days,
-        this._panel.source
-      )
-    );
+    const { block, days, source } = this._panel.preview;
+    this._setWeek(applyScheduleBlock(this._week, block, days, source));
     this._panel = newBlockPanel();
   }
 
@@ -669,13 +655,6 @@ class HaScheduleForm extends LitElement {
             opacity: 0;
             transform: translateY(calc(-1 * var(--ha-space-2)));
           }
-        }
-
-        .panel-title {
-          margin: 0;
-          font-size: var(--ha-font-size-l);
-          font-weight: var(--ha-font-weight-medium);
-          line-height: var(--ha-line-height-condensed);
         }
 
         .readonly-note {
