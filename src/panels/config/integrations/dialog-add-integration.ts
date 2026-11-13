@@ -479,6 +479,7 @@ class AddIntegrationDialog extends LitElement {
   });
 
   private async _categoryClicked(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
+    this._filter = "";
     this._category = ev.currentTarget.dataset.category || undefined;
     if (this._narrow) {
       this._categoryOpen = true;
