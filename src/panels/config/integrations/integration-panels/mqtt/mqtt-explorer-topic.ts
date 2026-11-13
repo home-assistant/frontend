@@ -26,7 +26,11 @@ import type {
 import { bytesToString } from "../../../../../util/bytes-to-string";
 import { showToast } from "../../../../../util/toast";
 import type { ExplorerMessage } from "./mqtt-explorer-data";
-import { diffJsonPayloads, prettyPrintJson } from "./mqtt-explorer-data";
+import {
+  diffJsonPayloads,
+  parseJsonPayload,
+  prettyPrintJson,
+} from "./mqtt-explorer-data";
 
 const CHANGE_SIGNS = { added: "+", removed: "−", changed: "~" } as const;
 
@@ -74,9 +78,12 @@ class MqttExplorerTopic extends LitElement {
     );
     const selected = this.messages[index];
     const previous = this.messages[index + 1];
-    const pretty = selected ? prettyPrintJson(selected.payload) : undefined;
-    const shownPayload =
-      this._pretty && pretty !== undefined ? pretty : selected?.payload;
+    const isJson =
+      selected !== undefined &&
+      parseJsonPayload(selected.payload) !== undefined;
+    const pretty =
+      this._pretty && isJson ? prettyPrintJson(selected.payload) : undefined;
+    const shownPayload = pretty ?? selected?.payload;
 
     return html`
       <div class="header">
@@ -140,7 +147,7 @@ class MqttExplorerTopic extends LitElement {
                   ${this._i18n.localize("ui.panel.config.mqtt.explorer.payload")}
                 </h3>
                 ${
-                  pretty !== undefined
+                  isJson
                     ? html`<ha-switch
                         class="pretty"
                         .checked=${this._pretty}

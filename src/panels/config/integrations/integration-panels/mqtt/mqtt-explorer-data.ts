@@ -31,9 +31,8 @@ const messagesSize = (messages: Iterable<MQTTExplorerMessage>): number => {
 
 /**
  * Removes the oldest messages when their total size exceeds the budget.
- * The newest message of every topic is never removed, the tree previews it.
- * Older messages of `keepTopic` go last. Mutates `messages` and returns the
- * number removed.
+ * Messages of `keepTopic` go last and its newest message is never removed.
+ * Mutates `messages` and returns the number removed.
  */
 export const trimMessages = (
   messages: Map<string, ExplorerMessage[]>,
@@ -51,9 +50,11 @@ export const trimMessages = (
   const candidates: ExplorerMessage[] = [];
   const keptTopicHistory: ExplorerMessage[] = [];
   for (const [topic, topicMessages] of messages) {
-    (topic === keepTopic ? keptTopicHistory : candidates).push(
-      ...topicMessages.slice(1)
-    );
+    if (topic === keepTopic) {
+      keptTopicHistory.push(...topicMessages.slice(1));
+    } else {
+      candidates.push(...topicMessages);
+    }
   }
   candidates.sort((a, b) => a.id - b.id);
   keptTopicHistory.sort((a, b) => a.id - b.id);
@@ -139,11 +140,13 @@ export const parseJsonPayload = (payload: string): unknown => {
 };
 
 const JSON_WHITESPACE = new Set([" ", "\t", "\n", "\r"]);
+// Indentation grows with depth, deeper payloads are shown as received.
+const MAX_PRETTY_DEPTH = 20;
 
 /**
  * Indents a JSON payload without parsing it into values, so numbers, duplicate
  * keys and escapes stay exactly as received. Returns undefined when the payload
- * is not a JSON object or array.
+ * is not a JSON object or array, or is nested too deep.
  */
 export const prettyPrintJson = (payload: string): string | undefined => {
   if (parseJsonPayload(payload) === undefined) {
@@ -182,6 +185,9 @@ export const prettyPrintJson = (payload: string): string | undefined => {
         continue;
       }
       depth++;
+      if (depth > MAX_PRETTY_DEPTH) {
+        return undefined;
+      }
       out += char + newline();
     } else if (char === "}" || char === "]") {
       depth--;
@@ -272,5 +278,7 @@ export const diffJsonPayloads = (
       changes.push({ key, type: "removed", oldValue });
     }
   }
-  return changes;
+  // Parsing loses big number precision and duplicate keys, so payloads that
+  // differ can parse the same.
+  return changes.length || oldPayload === newPayload ? changes : undefined;
 };

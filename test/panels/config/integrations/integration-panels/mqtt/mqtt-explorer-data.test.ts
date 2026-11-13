@@ -92,6 +92,13 @@ describe("prettyPrintJson", () => {
     expect(prettyPrintJson("42")).toBeUndefined();
     expect(prettyPrintJson("{not json")).toBeUndefined();
   });
+
+  it("returns undefined for payloads nested too deep", () => {
+    const nested = (depth: number) =>
+      `${"[".repeat(depth)}1${"]".repeat(depth)}`;
+    expect(prettyPrintJson(nested(20))).toBeDefined();
+    expect(prettyPrintJson(nested(21))).toBeUndefined();
+  });
 });
 
 describe("diffJsonPayloads", () => {
@@ -130,6 +137,13 @@ describe("diffJsonPayloads", () => {
 
   it("returns no changes for identical payloads", () => {
     expect(diffJsonPayloads('{"a": 1}', '{"a": 1}')).toEqual([]);
+  });
+
+  it("compares full payloads when parsing hides the change", () => {
+    expect(
+      diffJsonPayloads('{"id":9007199254740992}', '{"id":9007199254740993}')
+    ).toBeUndefined();
+    expect(diffJsonPayloads('{"a":1,"a":2}', '{"a":3,"a":2}')).toBeUndefined();
   });
 
   it("can't compare payloads that aren't JSON", () => {
@@ -185,32 +199,32 @@ describe("trimMessages", () => {
     expect(ids(messages)).toEqual({ a: [5, 3], b: [4] });
   });
 
-  it("keeps the newest message of every topic", () => {
+  it("removes the newest message of a topic too", () => {
     const messages = new Map([
       ["a", history("a", [1])],
       ["b", history("b", [2, 3])],
     ]);
     expect(trimMessages(messages, 2500)).toBe(1);
-    expect(ids(messages)).toEqual({ a: [1], b: [3] });
+    expect(ids(messages)).toEqual({ a: [], b: [3, 2] });
   });
 
-  it("stays over the budget rather than remove the newest messages", () => {
+  it("stays over the budget rather than remove the newest kept message", () => {
     const messages = new Map([
       ["a", history("a", [1, 2])],
       ["b", history("b", [3])],
       ["c", history("c", [4])],
     ]);
-    expect(trimMessages(messages, 1000)).toBe(1);
-    expect(ids(messages)).toEqual({ a: [2], b: [3], c: [4] });
+    expect(trimMessages(messages, 1000, "a")).toBe(3);
+    expect(ids(messages)).toEqual({ a: [2], b: [], c: [] });
   });
 
-  it("removes the history of other topics before the kept topic", () => {
+  it("removes the messages of other topics before the kept topic", () => {
     const messages = new Map([
       ["a", history("a", [1, 2, 3])],
       ["b", history("b", [4, 5])],
     ]);
     expect(trimMessages(messages, 4000, "a")).toBe(2);
-    expect(ids(messages)).toEqual({ a: [3, 2], b: [5] });
+    expect(ids(messages)).toEqual({ a: [3, 2, 1], b: [] });
   });
 
   it("removes the history of the kept topic last", () => {
@@ -218,8 +232,8 @@ describe("trimMessages", () => {
       ["a", history("a", [1, 2, 3])],
       ["b", history("b", [4, 5])],
     ]);
-    expect(trimMessages(messages, 500, "a")).toBe(3);
-    expect(ids(messages)).toEqual({ a: [3], b: [5] });
+    expect(trimMessages(messages, 500, "a")).toBe(4);
+    expect(ids(messages)).toEqual({ a: [3], b: [] });
   });
 
   it("counts the per message overhead for small payloads", () => {

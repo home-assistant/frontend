@@ -50,6 +50,8 @@ const MAX_VISIBLE_ROWS = 15;
 // The backend sends an event every interval, also when nothing changed.
 const STALL_CHECK_MS = 5000;
 const STALLED_INTERVALS = 3;
+// Kept apart from the trimmed history, 10,000 topics take 1M characters.
+const PREVIEW_LENGTH = 100;
 
 @customElement("mqtt-explorer-card")
 class MqttExplorerCard extends LitElement {
@@ -101,6 +103,8 @@ class MqttExplorerCard extends LitElement {
 
   private _messages = new Map<string, ExplorerMessage[]>();
 
+  private _previews = new Map<string, string>();
+
   private _messageId = 0;
 
   private _lastEvent = 0;
@@ -151,7 +155,7 @@ class MqttExplorerCard extends LitElement {
         node,
         expanded: expanded.has(path),
         selected: topic !== undefined && path === selected,
-        preview: topic ? this._messages.get(topic.topic)?.[0]?.payload : "",
+        preview: topic ? this._previews.get(topic.topic) : "",
       });
       if (busiest) {
         return this._busiestTopics(version).map((topic) =>
@@ -436,6 +440,7 @@ class MqttExplorerCard extends LitElement {
     if (event.started !== this._started) {
       this._topics = new Map();
       this._messages = new Map();
+      this._previews = new Map();
       this._trimmed = 0;
     }
     for (const topic of this._topics.values()) {
@@ -462,6 +467,10 @@ class MqttExplorerCard extends LitElement {
           MAX_MESSAGES_PER_TOPIC
         )
       );
+      this._previews.set(
+        message.topic,
+        message.payload.slice(0, PREVIEW_LENGTH)
+      );
     }
     this._trimmed += trimMessages(
       this._messages,
@@ -487,6 +496,7 @@ class MqttExplorerCard extends LitElement {
     this._starting = true;
     this._topics = new Map();
     this._messages = new Map();
+    this._previews = new Map();
     this._total = undefined;
     this._started = 0;
     this._selected = undefined;

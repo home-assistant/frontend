@@ -8148,8 +8148,6 @@
             "topics": "Topics",
             "rows_truncated": "Showing the {shown} busiest of {total} topics. Use the topic filter to narrow them down.",
             "start_failed": "Could not start the MQTT explorer: {error}",
-            "expand": "Expand",
-            "collapse": "Collapse",
             "empty_level": "(empty)",
             "retained": "Retained",
             "topic_count": "{count, plural,\n  one {# topic}\n  other {# topics}\n}",
