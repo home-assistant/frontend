@@ -31,43 +31,6 @@ export interface ConfigEntry {
   error_reason_translation_placeholders: Record<string, string> | null;
 }
 
-export const localizeConfigEntryError = async (
-  loadBackendTranslation: HomeAssistant["loadBackendTranslation"],
-  entry: Pick<
-    ConfigEntry,
-    | "domain"
-    | "reason"
-    | "error_reason_translation_domain"
-    | "error_reason_translation_key"
-    | "error_reason_translation_placeholders"
-  >
-): Promise<string | null> => {
-  if (!entry.reason) {
-    return null;
-  }
-  if (entry.error_reason_translation_key) {
-    // The error may be translated by another integration, e.g. one raised by
-    // a shared helper and owned by the homeassistant integration.
-    const translationDomain =
-      entry.error_reason_translation_domain || entry.domain;
-    const localize = await loadBackendTranslation(
-      "exceptions",
-      translationDomain
-    );
-    return (
-      localize(
-        `component.${translationDomain}.exceptions.${entry.error_reason_translation_key}.message`,
-        entry.error_reason_translation_placeholders ?? undefined
-      ) || entry.reason
-    );
-  }
-  const localize = await loadBackendTranslation("config", entry.domain);
-  return (
-    localize(`component.${entry.domain}.config.error.${entry.reason}`) ||
-    entry.reason
-  );
-};
-
 export interface SubEntry {
   subentry_id: string;
   subentry_type: string;

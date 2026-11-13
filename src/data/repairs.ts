@@ -2,8 +2,7 @@ import type { Connection } from "home-assistant-js-websocket";
 import { createCollection } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
 import { debounce } from "../common/util/debounce";
-import type { HomeAssistant, HomeAssistantApi } from "../types";
-import type { ConfigEntry } from "./config_entries";
+import type { HomeAssistant } from "../types";
 import type { DataEntryFlowStep } from "./data_entry_flow";
 
 export interface RepairsIssue {
@@ -104,103 +103,4 @@ export const subscribeRepairsIssueRegistry = (
     subscribeRepairsIssueUpdates,
     conn,
     onChange
-  );
-
-export interface UpdateReportConfigEntry {
-  entry_id: string;
-  domain: string;
-  title: string;
-  // null when the config entry was removed
-  state: ConfigEntry["state"] | null;
-  reason: string | null;
-  error_reason_translation_domain: string | null;
-  error_reason_translation_key: string | null;
-  error_reason_translation_placeholders: Record<string, string> | null;
-}
-
-export interface UpdateReportEntity {
-  entity_id: string;
-  platform: string;
-}
-
-// Automations and scripts that still reference the old entity_id
-export interface UpdateReportReferencedEntity extends UpdateReportEntity {
-  automations: string[];
-  scripts: string[];
-}
-
-export interface UpdateReportUnavailableEntity extends UpdateReportEntity {
-  // null when the entity has no state
-  state: "unavailable" | "unknown" | null;
-}
-
-export interface UpdateReportRenamedEntity extends UpdateReportReferencedEntity {
-  old_entity_id: string;
-}
-
-export interface UpdateReportIssue {
-  domain: string;
-  issue_id: string;
-}
-
-export interface UpdateReportUpcomingIssue extends UpdateReportIssue {
-  issue_domain: string | null;
-  breaks_in_ha_version: string;
-  dismissed: boolean;
-}
-
-export interface UpdateReport {
-  from_version: string;
-  to_version: string;
-  created: string;
-  config_entries: UpdateReportConfigEntry[];
-  entities_unavailable: UpdateReportUnavailableEntity[];
-  entities_renamed: UpdateReportRenamedEntity[];
-  entities_removed: UpdateReportReferencedEntity[];
-  // Without issues that have a breaks_in_ha_version
-  issues: UpdateReportIssue[];
-  // Only breaking changes that are new since the snapshot
-  upcoming: UpdateReportUpcomingIssue[];
-}
-
-export const UPDATE_REPORT_ISSUE_ID = "update_report";
-
-export const fetchUpdateReport = (api: HomeAssistantApi) =>
-  api.callWS<UpdateReport | null>({ type: "repairs/update_report" });
-
-export const dismissUpdateReport = (api: HomeAssistantApi) =>
-  api.callWS<null>({ type: "repairs/update_report/dismiss" });
-
-export interface UpdateReportAffected {
-  // automation or script that still references the old entity_id
-  entity_id: string;
-  old_entity_id: string;
-  new_entity_id: string | null;
-}
-
-const referencingEntities = (
-  entity: UpdateReportReferencedEntity,
-  oldEntityId: string,
-  newEntityId: string | null
-): UpdateReportAffected[] =>
-  [...entity.automations, ...entity.scripts].map((entityId) => ({
-    entity_id: entityId,
-    old_entity_id: oldEntityId,
-    new_entity_id: newEntityId,
-  }));
-
-export const updateReportAffected = (
-  report: UpdateReport
-): UpdateReportAffected[] =>
-  [
-    ...report.entities_removed.flatMap((entity) =>
-      referencingEntities(entity, entity.entity_id, null)
-    ),
-    ...report.entities_renamed.flatMap((entity) =>
-      referencingEntities(entity, entity.old_entity_id, entity.entity_id)
-    ),
-  ].sort(
-    (a, b) =>
-      a.entity_id.localeCompare(b.entity_id) ||
-      a.old_entity_id.localeCompare(b.old_entity_id)
   );

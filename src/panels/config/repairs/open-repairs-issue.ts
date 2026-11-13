@@ -6,7 +6,6 @@ import {
 import {
   fetchRepairsIssueData,
   type RepairsIssue,
-  UPDATE_REPORT_ISSUE_ID,
 } from "../../../data/repairs";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showRepairsFlowDialog } from "../../../dialogs/repairs-flow/show-dialog-repair-flow";
@@ -14,7 +13,6 @@ import type { HomeAssistant } from "../../../types";
 import { showVacuumSegmentMappingDialog } from "../entities/dialogs/show-dialog-vacuum-segment-mapping";
 import { fixStatisticsIssue } from "../tools/statistics/fix-statistics";
 import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
-import { showUpdateReportDialog } from "./show-update-report-dialog";
 
 export const openRepairsIssue = async (
   element: HTMLElement,
@@ -24,12 +22,7 @@ export const openRepairsIssue = async (
   >,
   issue: RepairsIssue
 ): Promise<void> => {
-  if (
-    issue.domain === "repairs" &&
-    issue.translation_key === UPDATE_REPORT_ISSUE_ID
-  ) {
-    showUpdateReportDialog(element);
-  } else if (issue.is_fixable) {
+  if (issue.is_fixable) {
     showRepairsFlowDialog(element, issue);
   } else if (
     issue.domain === "homeassistant" &&
