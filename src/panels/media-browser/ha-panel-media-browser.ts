@@ -290,6 +290,9 @@ class PanelMediaBrowser extends LitElement {
       return;
     }
 
+    // The folder can change while the picture is resolved
+    const images = this._currentItem?.children?.filter(isImage) ?? [];
+
     this._player.showResolvingNewMediaPicked();
     let resolvedUrl: ResolvedMediaSource;
     try {
@@ -310,13 +313,8 @@ class PanelMediaBrowser extends LitElement {
       return;
     }
 
-    const images = this._currentItem?.children?.filter(isImage) ?? [];
-
     showWebBrowserPlayMediaDialog(this, {
-      // The resolved URL is relative to Home Assistant. Make it absolute, so it
-      // also loads when the frontend is served from another origin, like the
-      // development server.
-      sourceUrl: this.hass.hassUrl(resolvedUrl.url),
+      sourceUrl: resolvedUrl.url,
       sourceType: resolvedUrl.mime_type,
       title: item.title,
       can_play: item.can_play,

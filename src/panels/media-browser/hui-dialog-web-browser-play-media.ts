@@ -1,8 +1,9 @@
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { mainWindow } from "../../common/dom/get_main_window";
 import "../../components/ha-dialog";
@@ -11,7 +12,7 @@ import "../../components/ha-icon-button-next";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-spinner";
 import type { ResolvedMediaSource } from "../../data/media_source";
-import { resolveMediaSource } from "../../data/media_source";
+import { resolveMediaSourceWithCache } from "../../data/media_source";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../resources/styles";
 import { animationStyles } from "../../resources/theme/animations.globals";
@@ -43,10 +44,12 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
   // The picture that is on screen
   private _shownImageIndex = -1;
 
-  // Tells the answer to the latest request from one that is out of date
+  // Counts the requests, so the answer to an outdated one can be ignored
   private _latestRequest = 0;
 
   @query("img") private _img?: HTMLImageElement;
+
+  @query(".picture") private _picture?: HTMLElement;
 
   public showDialog(params: WebBrowserPlayMediaDialogParams): void {
     this._latestRequest++;
@@ -56,6 +59,22 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
     this._imageIndex = params.imageIndex ?? -1;
     this._shownImageIndex = this._imageIndex;
     this._open = true;
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("_imageIndex")) {
+      this._keepFocusInDialog();
+    }
+  }
+
+  // The arrow that has the focus is disabled at the first or last picture. It
+  // would lose the focus, and the arrow keys would no longer reach the dialog,
+  // so the focus moves to the picture.
+  private _keepFocusInDialog(): void {
+    const focused = this.shadowRoot?.activeElement;
+    if (focused && "disabled" in focused && focused.disabled) {
+      this._picture?.focus();
+    }
   }
 
   public closeDialog(): void {
@@ -72,8 +91,8 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  private _imageLoaded(ev: Event): void {
-    const { naturalWidth, naturalHeight } = ev.target as HTMLImageElement;
+  private _imageLoaded(ev: HASSDomCurrentTargetEvent<HTMLImageElement>): void {
+    const { naturalWidth, naturalHeight } = ev.currentTarget;
     // A picture without a size of its own (some SVGs) is left to the browser
     this._imageSize =
       naturalWidth && naturalHeight
@@ -100,8 +119,7 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
   }
 
   // Clicking an arrow must not move the focus to it. Otherwise the next arrow
-  // key press would draw a focus ring on the button, and the focus would be lost
-  // when the button is disabled at the first or last picture.
+  // key press would draw a focus ring on the button.
   private _keepFocus(ev: MouseEvent): void {
     ev.preventDefault();
   }
@@ -133,11 +151,17 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
 
     let resolved: ResolvedMediaSource;
     try {
-      resolved = await resolveMediaSource(this.hass, item.media_content_id);
+      // Resolving again would sign the URL again, so the browser could not
+      // reuse a picture it has already downloaded
+      resolved = await resolveMediaSourceWithCache(
+        this.hass,
+        item.media_content_id
+      );
     } catch (err: any) {
       if (request === this._latestRequest) {
         this._imageIndex = this._shownImageIndex;
-        this._imageLoading = false;
+        // The picture on screen may itself still be loading
+        this._imageLoading = !this._img?.complete;
         showAlertDialog(this, {
           title: this.hass.localize(
             "ui.components.media-browser.media_browsing_error"
@@ -154,11 +178,13 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
       return;
     }
     this._shownImageIndex = index;
-    // The picture that was loading before may have finished in the meantime
-    this._imageLoading = true;
+    // A new picture always has to load. The picture that is already on screen
+    // fires no new load event, so it tells whether it is still loading.
+    this._imageLoading =
+      resolved.url !== this._params.sourceUrl || !this._img?.complete;
     this._params = {
       ...this._params,
-      sourceUrl: this.hass.hassUrl(resolved.url),
+      sourceUrl: resolved.url,
       sourceType: resolved.mime_type,
       title: item.title,
     };
@@ -218,6 +244,7 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
     return html`
       <div
         class=${classMap({ picture: true, placeholder: !hasPicture })}
+        tabindex="-1"
         style=${styleMap(this._pictureStyle())}
       >
         ${
@@ -318,6 +345,9 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
           transition:
             width var(--ha-animation-duration-normal) ease,
             aspect-ratio var(--ha-animation-duration-normal) ease;
+        }
+        .picture:focus {
+          outline: none;
         }
         .picture.placeholder {
           min-height: var(--ha-space-20);

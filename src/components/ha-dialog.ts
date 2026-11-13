@@ -56,8 +56,7 @@ type DialogHideEvent = CustomEvent<{ source?: Element }>;
  * @cssprop --dialog-content-padding - Padding for the dialog content sections.
  * @cssprop --ha-dialog-show-duration - Show animation duration.
  * @cssprop --ha-dialog-hide-duration - Hide animation duration.
- * @cssprop --ha-dialog-resize-duration - Duration of the animation when the
- *   width of the dialog changes. Not animated by default.
+ * @cssprop --ha-dialog-resize-duration - Width resize animation duration.
  * @cssprop --ha-dialog-surface-background - Dialog background color.
  * @cssprop --ha-dialog-surface-backdrop-filter - Dialog backdrop filter.
  * @cssprop --dialog-box-shadow - Dialog box shadow.
