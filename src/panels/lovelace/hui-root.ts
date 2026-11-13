@@ -27,6 +27,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { ctrlOrCmdLabel } from "../../common/keyboard/ctrl-or-cmd";
 import { goBack, navigate, replaceCurrentUrl } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
