@@ -353,9 +353,12 @@ export class HaSelectSelector extends LitElement {
         !option.disabled && !multiple ? true : !value?.includes(option.value)
       );
 
+      // The picker works with text IDs and ignores a falsy one, such as 0.
+      // Numbers come from `ha-form-select` (a backend `vol.In` of integers),
+      // which turns the text back into the number, as it does for `ha-select`.
       return () =>
         filteredOptions.map((option) => ({
-          id: option.value,
+          id: String(option.value),
           primary: option.label,
           sorting_label: option.label,
           disabled: option.disabled,
@@ -366,7 +369,10 @@ export class HaSelectSelector extends LitElement {
   private _valueRenderer = memoizeOne(
     (options: SelectOption[]) => (value: string) =>
       html`<span slot="headline"
-        >${options.find((option) => option.value === value)?.label ?? value}</span
+        >${
+          options.find((option) => String(option.value) === value)?.label ??
+          value
+        }</span
       >`
   );
 
@@ -453,7 +459,8 @@ export class HaSelectSelector extends LitElement {
     }
 
     if (!this.selector.select?.multiple) {
-      if (newValue === this.value) {
+      // The picker gives back text, also for a numeric value
+      if (this.value != null && newValue === String(this.value)) {
         return;
       }
       fireEvent(this, "value-changed", {
