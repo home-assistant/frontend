@@ -28,13 +28,6 @@ export class HaIntegrationListItem extends HaListItemButton {
 
   protected override _renderStart(): TemplateResult {
     const integration = this.integration;
-    const yamlOnly =
-      !integration.config_flow &&
-      !integration.integrations &&
-      !integration.iot_standards;
-    const marketplace =
-      integration.installation_type === "marketplace" &&
-      !integration.overwrites_built_in;
     return html`
       <div part="start" class="start">
         ${
@@ -76,6 +69,9 @@ export class HaIntegrationListItem extends HaListItemButton {
       !integration.config_flow &&
       !integration.integrations &&
       !integration.iot_standards;
+    const marketplace =
+      integration.installation_type === "marketplace" &&
+      !integration.overwrites_built_in;
     return html`
       <div part="end" class="end">
         ${
