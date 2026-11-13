@@ -119,6 +119,10 @@ export class HaInput extends WaInputMixin(LitElement) {
   @property()
   public step?: number | "any";
 
+  /** Accepts values that don't match `step`, so `step` only sets the spin button and arrow key increment. */
+  @property({ type: Boolean, attribute: "ignore-step-mismatch" })
+  public ignoreStepMismatch = false;
+
   /** Indicates whether the browser's autocorrect feature is on or off. */
   @property({ type: Boolean })
   public autocorrect = false;
@@ -195,6 +199,30 @@ export class HaInput extends WaInputMixin(LitElement) {
     this._handleInput();
     this.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
     return true;
+  }
+
+  public override checkValidity(): boolean {
+    // Checked before wa-input, whose failed check fires wa-invalid and marks the field invalid.
+    if (this.ignoreStepMismatch && this._hasOnlyStepMismatch()) {
+      return true;
+    }
+    return super.checkValidity();
+  }
+
+  private _hasOnlyStepMismatch(): boolean {
+    const validity = this._getNativeInput()?.validity;
+    return (
+      !!validity?.stepMismatch &&
+      !validity.badInput &&
+      !validity.customError &&
+      !validity.patternMismatch &&
+      !validity.rangeOverflow &&
+      !validity.rangeUnderflow &&
+      !validity.tooLong &&
+      !validity.tooShort &&
+      !validity.typeMismatch &&
+      !validity.valueMissing
+    );
   }
 
   public override reportValidity(): boolean {
