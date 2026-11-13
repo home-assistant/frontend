@@ -3,6 +3,12 @@ import { ref } from "lit/directives/ref";
 
 const MAX_ROWS = 2;
 
+// A narrow list, as on a phone or a half width card, fits about one item per
+// row, so two rows hide most of the legend. 450px is about the widest list a
+// phone viewport gives.
+const NARROW_MAX_ROWS = 3;
+const NARROW_WIDTH = 450;
+
 // How many items fit in maxRows of a wrapping row, leaving room for the
 // "more" item after them when not all of them fit.
 export const fitInRows = (
@@ -34,9 +40,10 @@ export const fitInRows = (
   return widths.length;
 };
 
-// Fits the items of a wrapping legend list into two rows. The list keeps its
-// "more" item rendered with the legend-more class, and items past the fit
-// stay rendered out of the flow, so both can always be measured.
+// Fits the items of a wrapping legend list into two rows, three when it is
+// narrow. The list keeps its "more" item rendered with the legend-more class,
+// and items past the fit stay rendered out of the flow, so both can always be
+// measured.
 export class LegendFitController {
   // Items to show while collapsed, undefined until the list is measured
   public fit?: number;
@@ -82,10 +89,19 @@ export class LegendFitController {
 
   private _fit() {
     const list = this._element;
-    const rowWidth = list?.getBoundingClientRect().width;
-    if (!list || !rowWidth) {
+    if (!list) {
       return;
     }
+    const style = getComputedStyle(list);
+    const rowWidth = parseFloat(style.width);
+    // Bounding rects include transforms, such as a dialog scaling in, which
+    // never resize the list, so measure in layout pixels
+    const scale = list.getBoundingClientRect().width / rowWidth;
+    if (!rowWidth || !scale) {
+      return;
+    }
+    const layoutWidth = (element: Element) =>
+      element.getBoundingClientRect().width / scale;
     const children = Array.from(list.children);
     const more = children.find((child) =>
       child.classList.contains("legend-more")
@@ -100,9 +116,7 @@ export class LegendFitController {
       }
       this._more = more;
     }
-    const widths = children
-      .filter((child) => child !== more)
-      .map((child) => child.getBoundingClientRect().width);
+    const widths = children.filter((child) => child !== more).map(layoutWidth);
     // Values resize the items on every state update. Fitting each item at its
     // widest since the last resize keeps the more button from flickering.
     if (rowWidth !== this._rowWidth || widths.length !== this._widths.length) {
@@ -115,10 +129,10 @@ export class LegendFitController {
     }
     const fit = fitInRows(
       this._widths,
-      more?.getBoundingClientRect().width ?? 0,
+      more ? layoutWidth(more) : 0,
       rowWidth,
-      parseFloat(getComputedStyle(list).columnGap) || 0,
-      MAX_ROWS
+      parseFloat(style.columnGap) || 0,
+      rowWidth < NARROW_WIDTH ? NARROW_MAX_ROWS : MAX_ROWS
     );
     if (fit !== this.fit) {
       this.fit = fit;

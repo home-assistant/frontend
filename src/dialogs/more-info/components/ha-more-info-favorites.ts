@@ -167,14 +167,10 @@ export class HaMoreInfoFavorites extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: calc(var(--ha-space-2) * -1);
+      gap: var(--ha-space-4);
       flex-wrap: wrap;
       max-width: var(--favorite-items-max-width, 250px);
       user-select: none;
-    }
-
-    .container > * {
-      margin: var(--ha-space-2);
     }
 
     .favorite {

@@ -28,6 +28,8 @@ const NON_STANDARD_CARD_URLS = {
   "power-sankey": "energy/#power-flow-sankey-graph",
   "water-sankey": "energy/#water-sankey-graph",
   "water-flow-sankey": "energy/#water-flow-sankey-graph",
+  "gas-sankey": "energy/#gas-sankey-graph",
+  "gas-flow-sankey": "energy/#gas-flow-sankey-graph",
   "power-sources-graph": "energy/#power-sources-graph",
 };
 

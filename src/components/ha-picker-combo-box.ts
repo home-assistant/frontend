@@ -201,6 +201,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   @property({ type: Boolean, attribute: "no-sort" }) public noSort = false;
 
+  @property({ attribute: "pin-block" })
+  public pinBlock?: "start" | "center" | "end" | "nearest";
+
   @query(".list") private _list?: HaListBase;
 
   @query("ha-input-search") private _searchFieldElement?: HaInputSearch;
@@ -219,6 +222,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     if (this._searchFieldElement) {
       this._searchFieldElement.value = value;
     }
+    this._applySearch(value);
   }
 
   protected get scrollableElement(): HTMLElement | null {
@@ -452,6 +456,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           this.value
         )}
         .pinIndex=${this.value ? this._getInitialSelectedIndex() : undefined}
+        .pinBlock=${this.pinBlock ?? "center"}
         @mousedown=${this._preventBlur}
         @focus=${this._focusList}
         @blur=${this._resetSelectedItem}
@@ -477,6 +482,12 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
                 .section-id=${section.id}
                 .selected=${this._selectedSection === section.id}
                 .label=${section.label}
+                aria-label=${
+                  this.i18n?.localize?.(
+                    "ui.components.combo-box.filter_by_section",
+                    { section: section.label }
+                  ) || section.label
+                }
               >
               </ha-filter-chip>`
         )}
@@ -678,6 +689,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     fireEvent(this, "index-selected", { index, item, newTab });
   }
 
+  // Fuse indexes every row as text when the first one is a section title
+  private _searchableItems = memoizeOne((items: PickerComboBoxItem[]) =>
+    items.filter((item) => typeof item !== "string")
+  );
+
   private _fuseIndex = memoizeOne(
     (states: PickerComboBoxItem[], searchKeys?: FuseWeightedKey[]) =>
       Fuse.createIndex(searchKeys || DEFAULT_SEARCH_KEYS, states)
@@ -685,7 +701,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _filterChanged = (ev: InputEvent) => {
     const textfield = ev.target as HaInputSearch;
-    const searchString = (textfield.value ?? "").trim();
+    this._applySearch(textfield.value ?? "");
+  };
+
+  private _applySearch(value: string) {
+    const searchString = value.trim();
     this._search = searchString;
 
     if (this.sections?.length) {
@@ -697,10 +717,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         return;
       }
 
-      const index = this._fuseIndex(this._allItems, this.searchKeys);
+      const searchableItems = this._searchableItems(this._allItems);
+      const index = this._fuseIndex(searchableItems, this.searchKeys);
 
       let filteredItems = multiTermSortedSearch<PickerComboBoxItem>(
-        this._allItems,
+        searchableItems,
         searchString,
         (item) => item.id,
         index
@@ -730,7 +751,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
     this._resetSelectedItem();
     this._resetListScroll();
-  };
+  }
 
   // Keep focus in the search field, so a focus change doesn't scroll the
   // list to the active row and make the click miss.

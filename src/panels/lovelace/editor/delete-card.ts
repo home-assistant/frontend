@@ -1,12 +1,12 @@
+import type { ConfigPath } from "../../../common/util/config-path";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { Lovelace } from "../types";
 import { LOVELACE_EDIT_TOAST_ID } from "../types";
-import type { LovelacePath } from "./lovelace-path";
 import { deleteAtPath } from "./lovelace-path";
 import { fireEvent } from "../../../common/dom/fire_event";
 
 export interface DeleteCardParams {
-  path: LovelacePath;
+  path: ConfigPath;
   silent: boolean;
 }
 

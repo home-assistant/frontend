@@ -14,6 +14,10 @@ import "../../../../components/ha-schedule-timeline";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/input/ha-input";
 import type { HaInput } from "../../../../components/input/ha-input";
+import {
+  apiContext,
+  internationalizationContext,
+} from "../../../../data/context";
 import type { DirtyStateContext } from "../../../../data/context/dirty-state";
 import { dirtyStateContext } from "../../../../data/context/dirty-state";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
@@ -35,7 +39,11 @@ import {
 } from "../../../../data/schedule";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type {
+  HomeAssistantApi,
+  HomeAssistantInternationalization,
+  ValueChangedEvent,
+} from "../../../../types";
 import "./ha-schedule-block-editor";
 import "./ha-schedule-weekday-picker";
 
@@ -72,7 +80,12 @@ const DRAFT_DIRTY_KEY = "schedule-block-draft";
 
 @customElement("ha-schedule-form")
 class HaScheduleForm extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   /** Without an `id` when creating or duplicating a schedule. */
   @property({ attribute: false }) public item?: Partial<Schedule>;
@@ -142,13 +155,9 @@ class HaScheduleForm extends LitElement {
       }
     }
     if (
-      (changedProps.has("entry") ||
-        changedProps.has("disabled") ||
-        // Fetch once `hass` arrives, if it came after the entry.
-        (changedProps.has("hass") && !changedProps.get("hass"))) &&
+      (changedProps.has("entry") || changedProps.has("disabled")) &&
       this.disabled &&
-      this.entry &&
-      this.hass
+      this.entry
     ) {
       this._fetchReadonlyWeek(this.entry.entity_id);
     }
@@ -202,7 +211,10 @@ class HaScheduleForm extends LitElement {
   private async _fetchReadonlyWeek(entityId: string) {
     this._readonlyError = false;
     try {
-      this._readonlyWeek = await fetchScheduleEntityWeek(this.hass, entityId);
+      this._readonlyWeek = await fetchScheduleEntityWeek(
+        this._api.callService,
+        entityId
+      );
     } catch (_err) {
       this._readonlyWeek = undefined;
       this._readonlyError = true;
@@ -210,7 +222,7 @@ class HaScheduleForm extends LitElement {
   }
 
   protected render() {
-    if (!this.hass) {
+    if (!this._i18n) {
       return nothing;
     }
 
@@ -232,10 +244,10 @@ class HaScheduleForm extends LitElement {
           .value=${this.item?.name || ""}
           .configValue=${"name"}
           @input=${this._valueChanged}
-          .label=${this.hass.localize("ui.dialogs.helper_settings.generic.name")}
+          .label=${this._i18n.localize("ui.dialogs.helper_settings.generic.name")}
           auto-validate
           required
-          .validationMessage=${this.hass.localize(
+          .validationMessage=${this._i18n.localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           dialogInitialFocus
@@ -245,7 +257,7 @@ class HaScheduleForm extends LitElement {
           .value=${this.item?.icon || ""}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
-          .label=${this.hass.localize("ui.dialogs.helper_settings.generic.icon")}
+          .label=${this._i18n.localize("ui.dialogs.helper_settings.generic.icon")}
           .disabled=${this.disabled}
         ></ha-icon-picker>
       </div>
@@ -255,7 +267,7 @@ class HaScheduleForm extends LitElement {
   private _renderReadonly() {
     if (this._readonlyError) {
       return html`<ha-alert alert-type="error">
-        ${this.hass.localize("ui.dialogs.helper_settings.schedule.error_load")}
+        ${this._i18n.localize("ui.dialogs.helper_settings.schedule.error_load")}
       </ha-alert>`;
     }
     if (!this._readonlyWeek) {
@@ -267,7 +279,7 @@ class HaScheduleForm extends LitElement {
         .value=${this._readonlyWeek}
       ></ha-schedule-timeline>
       <p class="readonly-note">
-        ${this.hass.localize("ui.dialogs.helper_settings.schedule.readonly_yaml")}
+        ${this._i18n.localize("ui.dialogs.helper_settings.schedule.readonly_yaml")}
       </p>
     `;
   }
@@ -283,7 +295,7 @@ class HaScheduleForm extends LitElement {
         ${this._renderIdentity()}
         <div class="main">
           <h3 class="heading">
-            ${this.hass.localize("ui.dialogs.helper_settings.schedule.schedule")}
+            ${this._i18n.localize("ui.dialogs.helper_settings.schedule.schedule")}
           </h3>
           <div class="toolbar">
             <ha-button
@@ -293,10 +305,10 @@ class HaScheduleForm extends LitElement {
               .disabled=${kind === "new"}
             >
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-              ${this.hass.localize("ui.dialogs.helper_settings.schedule.new_block")}
+              ${this._i18n.localize("ui.dialogs.helper_settings.schedule.new_block")}
             </ha-button>
             <span class="hint">
-              ${this.hass.localize(
+              ${this._i18n.localize(
                 "ui.dialogs.helper_settings.schedule.timeline_hint"
               )}
             </span>
@@ -339,10 +351,10 @@ class HaScheduleForm extends LitElement {
   }
 
   private _panelTitle(panel: SchedulePanel) {
-    const localize = this.hass.localize;
+    const localize = this._i18n.localize;
     if (panel.type === "copy") {
       return localize("ui.dialogs.helper_settings.schedule.copy_day_title", {
-        day: formatScheduleWeekday(panel.day, this.hass.locale),
+        day: formatScheduleWeekday(panel.day, this._i18n.locale),
       });
     }
     return localize(
@@ -353,7 +365,7 @@ class HaScheduleForm extends LitElement {
   }
 
   private _renderCopyPanel(panel: Extract<SchedulePanel, { type: "copy" }>) {
-    const localize = this.hass.localize;
+    const localize = this._i18n.localize;
     return html`
       <ha-schedule-weekday-picker
         .label=${localize("ui.dialogs.helper_settings.schedule.copy_day_to")}
@@ -368,7 +380,7 @@ class HaScheduleForm extends LitElement {
   }
 
   private _renderActions(panel: SchedulePanel) {
-    const localize = this.hass.localize;
+    const localize = this._i18n.localize;
     return html`
       <div class="actions">
         ${
@@ -454,7 +466,7 @@ class HaScheduleForm extends LitElement {
     if (this._panel.type !== "block" || !this._panel.dirty) {
       return true;
     }
-    const localize = this.hass.localize;
+    const localize = this._i18n.localize;
     return showConfirmationDialog(this, {
       title: localize("ui.dialogs.helper_settings.schedule.discard_title"),
       text: localize("ui.dialogs.helper_settings.schedule.discard_text"),

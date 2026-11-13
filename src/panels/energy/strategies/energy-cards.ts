@@ -58,6 +58,9 @@ export const hasWaterSource = (prefs: EnergyPreferences): boolean =>
 export const hasWaterDevices = (prefs: EnergyPreferences): boolean =>
   (prefs.device_consumption_water?.length ?? 0) > 0;
 
+export const hasGasDevices = (prefs: EnergyPreferences): boolean =>
+  (prefs.device_consumption_gas?.length ?? 0) > 0;
+
 export const hasDeviceConsumption = (prefs: EnergyPreferences): boolean =>
   prefs.device_consumption.length > 0;
 
@@ -78,6 +81,9 @@ export const hasPowerDevices = (prefs: EnergyPreferences): boolean =>
 export const hasWaterRateDevices = (prefs: EnergyPreferences): boolean =>
   (prefs.device_consumption_water ?? []).some((device) => device.stat_rate);
 
+export const hasGasRateDevices = (prefs: EnergyPreferences): boolean =>
+  prefs.device_consumption_gas.some((device) => device.stat_rate);
+
 /** A water source exposing a live flow-rate statistic. */
 export const hasWaterRateSource = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some(
@@ -96,7 +102,8 @@ export const hasNowViewContent = (prefs: EnergyPreferences): boolean =>
   hasPowerDevices(prefs) ||
   hasWaterRateSource(prefs) ||
   hasWaterRateDevices(prefs) ||
-  hasGasRateSource(prefs);
+  hasGasRateSource(prefs) ||
+  hasGasRateDevices(prefs);
 
 // --- Card catalog ----------------------------------------------------------
 
@@ -155,7 +162,7 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "overview",
     "energy-gas-graph",
     "ui.panel.energy.cards.energy_gas_graph_title",
-    (p) => hasGasSource(p)
+    (p) => hasGasSource(p) || hasGasDevices(p)
   ),
   // One toggle gates the water row, which renders energy-water-graph (sources)
   // or, with only water devices, water-sankey.
@@ -253,6 +260,9 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "ui.panel.energy.cards.energy_sources_table_title",
     (p) => hasGasSource(p)
   ),
+  entry("gas", "gas-sankey", "ui.panel.energy.cards.gas_sankey_title", (p) =>
+    hasGasDevices(p)
+  ),
 
   // --- Water ---
   entry(
@@ -292,6 +302,12 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "water-flow-sankey",
     "ui.panel.energy.cards.water_flow_sankey_title",
     (p) => hasWaterRateDevices(p)
+  ),
+  entry(
+    "now",
+    "gas-flow-sankey",
+    "ui.panel.energy.cards.gas_flow_sankey_title",
+    (p) => hasGasRateDevices(p)
   ),
 ];
 

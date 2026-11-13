@@ -34,6 +34,8 @@ import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
  *
  * @attr {string} headline - Primary text. Overridden by the `headline` slot.
  * @attr {string} supporting-text - Secondary text. Overridden by the `supporting-text` slot.
+ * @attr {boolean} wrap-headline - Wraps the headline onto multiple lines instead of truncating it.
+ * @attr {boolean} wrap-supporting-text - Wraps the supporting text onto multiple lines instead of truncating it.
  * @attr {boolean} disabled - Dims the row and blocks pointer events.
  */
 @customElement("ha-row-item")
@@ -42,6 +44,12 @@ export class HaRowItem extends LitElement {
 
   @property({ type: String, attribute: "supporting-text" })
   public supportingText?: string;
+
+  @property({ type: Boolean, reflect: true, attribute: "wrap-headline" })
+  public wrapHeadline = false;
+
+  @property({ type: Boolean, reflect: true, attribute: "wrap-supporting-text" })
+  public wrapSupportingText = false;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
@@ -84,19 +92,21 @@ export class HaRowItem extends LitElement {
   }
 
   protected _renderInner(): TemplateResult {
+    return html`
+      ${this._renderStart()}${this._renderContent()}${this._renderEnd()}
+    `;
+  }
+
+  protected _renderContent(): TemplateResult {
     const hasContent = this._slotController.test("content");
 
-    return html`
-      ${this._renderStart()}
-      <div part="content" class="content">
-        ${
-          hasContent
-            ? html`<slot name="content"></slot>`
-            : this._renderDefaultContent()
-        }
-      </div>
-      ${this._renderEnd()}
-    `;
+    return html`<div part="content" class="content">
+      ${
+        hasContent
+          ? html`<slot name="content"></slot>`
+          : this._renderDefaultContent()
+      }
+    </div>`;
   }
 
   protected _renderStart(): TemplateResult {
@@ -189,6 +199,10 @@ export class HaRowItem extends LitElement {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+    :host([wrap-headline]) .headline,
+    :host([wrap-supporting-text]) .supporting {
+      white-space: normal;
     }
   `;
 }

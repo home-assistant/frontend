@@ -6,11 +6,7 @@ import { internationalizationContext } from "../../../../../src/data/context";
 import type { HomeAssistantInternationalization } from "../../../../../src/types";
 import { DirtyStateProviderMixin } from "../../../../../src/mixins/dirty-state-provider-mixin";
 import "../../../../../src/panels/config/helpers/forms/ha-schedule-form";
-import {
-  createMockHass,
-  mockLocale,
-  mockLocalize,
-} from "../../../../fixtures/hass";
+import { mockLocale, mockLocalize } from "../../../../fixtures/hass";
 
 class TestScheduleHost extends DirtyStateProviderMixin()(LitElement) {
   public connectedCallback() {
@@ -48,7 +44,6 @@ const mountForm = async () => {
     } as HomeAssistantInternationalization,
   });
   const form = document.createElement("ha-schedule-form");
-  form.hass = createMockHass();
   form.item = { name: "Office" };
   host.append(form);
   document.body.append(host);

@@ -19,6 +19,7 @@ import {
   state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import type { ConfigPath } from "../../../common/util/config-path";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { storage } from "../../../common/decorators/storage";
 import type { LocalizeFunc } from "../../../common/translations/localize";
@@ -33,14 +34,13 @@ import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { haStyle } from "../../../resources/styles";
 import type { HuiCard } from "../cards/hui-card";
 import { takeCardHighlight } from "../editor/card-highlight";
-import type { LovelacePath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 
 @customElement("hui-card-edit-mode")
 export class HuiCardEditMode extends LitElement {
   @property({ attribute: false }) public lovelace!: Lovelace;
 
-  @property({ attribute: false }) public path!: LovelacePath;
+  @property({ attribute: false }) public path!: ConfigPath;
 
   @property({ type: Boolean, attribute: "hidden-overlay" })
   public hiddenOverlay = false;

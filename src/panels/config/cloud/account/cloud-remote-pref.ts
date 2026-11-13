@@ -170,7 +170,7 @@ export class CloudRemotePref extends LitElement {
                   >
                     <div class="card-content">
                       <ha-list-base>
-                        <ha-list-item-base>
+                        <ha-list-item-base wrap-supporting-text>
                           <span slot="headline"
                             >${this.hass.localize(
                               "ui.panel.config.cloud.account.remote.external_activation"
@@ -187,7 +187,7 @@ export class CloudRemotePref extends LitElement {
                             @change=${this._toggleAllowRemoteEnabledChanged}
                           ></ha-switch>
                         </ha-list-item-base>
-                        <ha-list-item-base>
+                        <ha-list-item-base wrap-supporting-text>
                           <span slot="headline"
                             >${this.hass.localize(
                               "ui.panel.config.cloud.account.remote.certificate_info"

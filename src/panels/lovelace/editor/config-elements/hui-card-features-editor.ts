@@ -162,6 +162,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "cover-position-favorite",
   "cover-tilt-favorite",
   "fan-preset-modes",
+  "fan-speed",
   "humidifier-modes",
   "precipitation-forecast",
   "temperature-forecast",

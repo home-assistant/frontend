@@ -9,7 +9,7 @@ import {
   WEEKDAYS_LONG,
 } from "../common/datetime/weekday";
 import { clamp } from "../common/number/clamp";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
 import type { FrontendLocaleData } from "./translation";
 
 export type ScheduleWeekday = WeekdayLong;
@@ -79,10 +79,10 @@ export const fetchSchedule = (hass: HomeAssistant) =>
   hass.callWS<Schedule[]>({ type: "schedule/list" });
 
 export const createSchedule = (
-  hass: HomeAssistant,
+  callWS: HomeAssistantApi["callWS"],
   values: ScheduleMutableParams
 ) =>
-  hass.callWS<Schedule>({
+  callWS<Schedule>({
     type: "schedule/create",
     ...values,
   });
@@ -109,10 +109,10 @@ export const deleteSchedule = (hass: HomeAssistant, id: string) =>
  * in YAML that are not available through `schedule/list`.
  */
 export const fetchScheduleEntityWeek = async (
-  hass: HomeAssistant,
+  callService: HomeAssistantApi["callService"],
   entityId: string
 ): Promise<ScheduleWeek> => {
-  const result = await hass.callService<Record<string, ScheduleDays>>(
+  const result = await callService<Record<string, ScheduleDays>>(
     "schedule",
     "get_schedule",
     {},

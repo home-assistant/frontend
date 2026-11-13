@@ -7,13 +7,15 @@ import { timeCacheEntityPromiseFunc } from "../common/util/time-cache-entity-pro
 import type { HomeAssistant, HomeAssistantApi } from "../types";
 import { fileDownload } from "../util/file_download";
 import { getSignedPath } from "./auth";
+import type { StreamType } from "./camera-streams";
 
 export const CAMERA_ORIENTATIONS = [1, 2, 3, 4, 6, 8];
 
-export const STREAM_TYPE_HLS = "hls";
-export const STREAM_TYPE_WEB_RTC = "web_rtc";
-
-export type StreamType = typeof STREAM_TYPE_HLS | typeof STREAM_TYPE_WEB_RTC;
+export {
+  STREAM_TYPE_HLS,
+  STREAM_TYPE_WEB_RTC,
+  type StreamType,
+} from "./camera-streams";
 
 export { CameraEntityFeature } from "./feature/camera_entity_feature";
 

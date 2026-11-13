@@ -252,12 +252,14 @@ export interface EnergyPreferences {
   energy_sources: EnergySource[];
   device_consumption: DeviceConsumptionEnergyPreference[];
   device_consumption_water: DeviceConsumptionEnergyPreference[];
+  device_consumption_gas: DeviceConsumptionEnergyPreference[];
 }
 
 export const EMPTY_PREFERENCES: EnergyPreferences = {
   energy_sources: [],
   device_consumption: [],
   device_consumption_water: [],
+  device_consumption_gas: [],
 };
 
 export interface EnergyInfo {
@@ -275,6 +277,7 @@ export interface EnergyPreferencesValidation {
   energy_sources: EnergyValidationIssue[][];
   device_consumption: EnergyValidationIssue[][];
   device_consumption_water: EnergyValidationIssue[][];
+  device_consumption_gas: EnergyValidationIssue[][];
 }
 
 export const getEnergyInfo = (callWS: HomeAssistant["callWS"]) =>
@@ -342,25 +345,41 @@ const ENERGY_DEVICE_NAME = [
   { type: "device" },
 ] satisfies EntityNameItem[];
 
+const ENERGY_DEVICE_ENTITY_NAME = [
+  { type: "parent_device" },
+  { type: "device" },
+  { type: "entity" },
+] satisfies EntityNameItem[];
+
 /**
  * Display name of an individual device. A name set by the user always wins;
  * otherwise the device is named like an entity without the entity part, so
  * the energy and power sensors of one device share a name. Entities without a
  * device and statistics without an entity keep the statistic label.
+ *
+ * `includeEntityName` adds the entity name back for devices that would
+ * otherwise share a name with another device in the same list, see
+ * `computeAmbiguousEnergyDevices`.
  */
 export const computeEnergyLabel = (
   states: HomeAssistant["states"],
   formatEntityName: HomeAssistant["formatEntityName"],
   statisticId: string,
   statisticsMetaData?: StatisticsMetaData,
-  customName?: string
+  customName?: string,
+  includeEntityName = false
 ): string => {
   if (customName) {
     return customName;
   }
 
   const entity = states[statisticId];
-  const deviceName = entity && formatEntityName(entity, ENERGY_DEVICE_NAME);
+  const deviceName =
+    entity &&
+    formatEntityName(
+      entity,
+      includeEntityName ? ENERGY_DEVICE_ENTITY_NAME : ENERGY_DEVICE_NAME
+    );
   if (deviceName) {
     return deviceName;
   }
@@ -387,6 +406,61 @@ export const computeEnergyStatisticArea = (
 };
 
 /**
+ * Statistic ids of the devices that would share their label with another
+ * device in the same list, which happens when one device has several meters of
+ * the same type. Those are named with the entity name as well, so they stay
+ * apart in the charts. Lists hold one type of device, so an energy meter and a
+ * water meter of one device never collide.
+ */
+export const computeAmbiguousEnergyDevices = (
+  states: HomeAssistant["states"],
+  formatEntityName: HomeAssistant["formatEntityName"],
+  devices: Partial<DeviceConsumptionEnergyPreference>[],
+  statisticKey: "stat_consumption" | "stat_rate" = "stat_consumption"
+): Set<string> => {
+  const statisticIdsByLabel = new Map<string, Set<string>>();
+  const named = new Set<string>();
+
+  for (const device of devices) {
+    const statisticId = device[statisticKey];
+    if (!statisticId) {
+      continue;
+    }
+    const entity = states[statisticId];
+    // A name set by the user is the label, so it counts towards a collision,
+    // but it is never the one that gives way. Statistics named after their
+    // entity or their metadata are distinct enough already.
+    const label =
+      device.name || (entity && formatEntityName(entity, ENERGY_DEVICE_NAME));
+    if (!label) {
+      continue;
+    }
+    if (device.name) {
+      named.add(statisticId);
+    }
+    const statisticIds = statisticIdsByLabel.get(label);
+    if (statisticIds) {
+      statisticIds.add(statisticId);
+    } else {
+      statisticIdsByLabel.set(label, new Set([statisticId]));
+    }
+  }
+
+  const ambiguous = new Set<string>();
+  for (const statisticIds of statisticIdsByLabel.values()) {
+    if (statisticIds.size > 1) {
+      for (const statisticId of statisticIds) {
+        if (!named.has(statisticId)) {
+          ambiguous.add(statisticId);
+        }
+      }
+    }
+  }
+
+  return ambiguous;
+};
+
+/**
  * Device labels keyed by statistic id. Cards that show live power or flow
  * key their nodes by `stat_rate` instead of `stat_consumption`; devices
  * without the requested statistic are left out.
@@ -399,6 +473,12 @@ export const computeEnergyDeviceLabels = (
   statisticKey: "stat_consumption" | "stat_rate" = "stat_consumption"
 ): Record<string, string> => {
   const labels: Record<string, string> = {};
+  const ambiguous = computeAmbiguousEnergyDevices(
+    states,
+    formatEntityName,
+    devices,
+    statisticKey
+  );
 
   for (const device of devices) {
     const statisticId = device[statisticKey];
@@ -408,7 +488,8 @@ export const computeEnergyDeviceLabels = (
         formatEntityName,
         statisticId,
         statsMetadata?.[statisticId],
-        device.name
+        device.name,
+        ambiguous.has(statisticId)
       );
     }
   }
@@ -507,6 +588,11 @@ export const getReferencedStatisticIds = (
       ...prefs.device_consumption_water.map((d) => d.stat_consumption)
     );
   }
+  if (!(includeTypes && !includeTypes.includes("gas"))) {
+    statIDs.push(
+      ...prefs.device_consumption_gas.map((d) => d.stat_consumption)
+    );
+  }
 
   return statIDs;
 };
@@ -543,6 +629,7 @@ export const getReferencedStatisticIdsPower = (
   }
   statIDs.push(...prefs.device_consumption.map((d) => d.stat_rate));
   statIDs.push(...prefs.device_consumption_water.map((d) => d.stat_rate));
+  statIDs.push(...prefs.device_consumption_gas.map((d) => d.stat_rate));
 
   return statIDs.filter(Boolean) as string[];
 };
@@ -651,9 +738,16 @@ const getEnergyData = async (
   const gasIsOtherEnergy =
     ENERGY_UNITS.includes(gasUnit as any) && gasUnit !== "kWh";
   const gasEnergyStatIds = gasIsOtherEnergy
-    ? (energySourcesByType(prefs).gas ?? []).map(
-        (source) => source.stat_energy_from
-      )
+    ? [
+        ...new Set([
+          ...(energySourcesByType(prefs).gas ?? []).map(
+            (source) => source.stat_energy_from
+          ),
+          ...prefs.device_consumption_gas.map(
+            (device) => device.stat_consumption
+          ),
+        ]),
+      ]
     : [];
   const gasEnergyUnits: StatisticsUnitConfiguration = {
     energy: gasIsOtherEnergy
@@ -1474,13 +1568,18 @@ export type EnergyGasUnitClass = (typeof energyGasUnitClass)[number];
 export const getEnergyGasUnitClass = (
   prefs: EnergyPreferences,
   excludeSource?: string,
-  statisticsMetaData: Record<string, StatisticsMetaData> = {}
+  statisticsMetaData: Record<string, StatisticsMetaData> = {},
+  excludeFrom?: "source" | "device"
 ): EnergyGasUnitClass | undefined => {
   for (const source of prefs.energy_sources) {
     if (source.type !== "gas") {
       continue;
     }
-    if (excludeSource && excludeSource === source.stat_energy_from) {
+    if (
+      excludeSource &&
+      excludeSource === source.stat_energy_from &&
+      excludeFrom !== "device"
+    ) {
       continue;
     }
     const statisticIdWithMeta = statisticsMetaData[source.stat_energy_from];
@@ -1492,6 +1591,19 @@ export const getEnergyGasUnitClass = (
       return statisticIdWithMeta.unit_class as EnergyGasUnitClass;
     }
   }
+  for (const device of prefs.device_consumption_gas) {
+    if (
+      excludeSource &&
+      excludeSource === device.stat_consumption &&
+      excludeFrom !== "source"
+    ) {
+      continue;
+    }
+    const unitClass = statisticsMetaData[device.stat_consumption]?.unit_class;
+    if (energyGasUnitClass.includes(unitClass as EnergyGasUnitClass)) {
+      return unitClass as EnergyGasUnitClass;
+    }
+  }
   return undefined;
 };
 
@@ -1501,15 +1613,15 @@ const getEnergyGasUnit = (
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): string => {
-  const units = prefs.energy_sources
-    .filter((s) => s.type === "gas")
-    .map((s) =>
-      getDisplayUnit(
-        states,
-        s.stat_energy_from,
-        statisticsMetaData[s.stat_energy_from]
-      )
-    );
+  const gasStatIds = [
+    ...prefs.energy_sources.flatMap((s) =>
+      s.type === "gas" ? [s.stat_energy_from] : []
+    ),
+    ...prefs.device_consumption_gas.map((d) => d.stat_consumption),
+  ];
+  const units = gasStatIds.map((id) =>
+    getDisplayUnit(states, id, statisticsMetaData[id])
+  );
 
   const unitClass = getEnergyGasUnitClass(prefs, undefined, statisticsMetaData);
   if (unitClass === "energy") {
@@ -1535,10 +1647,7 @@ const getEnergyGasUnit = (
         return [];
       }),
     ]);
-    const isSharedWithKWh = prefs.energy_sources.some(
-      (source) =>
-        source.type === "gas" && kWhStatIds.has(source.stat_energy_from)
-    );
+    const isSharedWithKWh = gasStatIds.some((id) => kWhStatIds.has(id));
     const first = units[0];
     if (
       !isSharedWithKWh &&
@@ -2200,6 +2309,48 @@ export const formatFlowRateShort = (
   });
 };
 
+export type WaterGasResource = "water" | "gas";
+
+export const getWaterGasDevicesKey = (resource: WaterGasResource) =>
+  `device_consumption_${resource}` as const;
+
+export const getWaterGasDevices = (
+  prefs: EnergyPreferences,
+  resource: WaterGasResource
+): DeviceConsumptionEnergyPreference[] =>
+  prefs[getWaterGasDevicesKey(resource)];
+
+export const getFlowRateUnit = (
+  resource: WaterGasResource,
+  prefs: EnergyPreferences,
+  states: HomeAssistant["states"]
+): string | undefined => {
+  const ids = [
+    ...prefs.energy_sources.flatMap((s) =>
+      s.type === resource && s.stat_rate ? [s.stat_rate] : []
+    ),
+    ...getWaterGasDevices(prefs, resource).flatMap((d) =>
+      d.stat_rate ? [d.stat_rate] : []
+    ),
+  ];
+  for (const id of ids) {
+    const unit = states[id]?.attributes.unit_of_measurement;
+    if (unit) {
+      return unit;
+    }
+  }
+  return undefined;
+};
+
+export const getFlowRateInUnit = (
+  stateObj: HassEntity | undefined,
+  unit: string
+): number | undefined => {
+  const value = getFlowRateFromState(stateObj);
+  const factor = FLOW_RATE_TO_LMIN[unit];
+  return value === undefined || factor === undefined ? value : value / factor;
+};
+
 /**
  * Get current power value from entity state, normalized to watts (W)
  * @param stateObj - The entity state object to get power value from
@@ -2280,6 +2431,7 @@ export const downloadEnergyData = (
   const energy_sources = energyData.prefs.energy_sources;
   const device_consumption = energyData.prefs.device_consumption;
   const device_consumption_water = energyData.prefs.device_consumption_water;
+  const device_consumption_gas = energyData.prefs.device_consumption_gas;
   const stats = state.stats;
 
   interface CsvRow {
@@ -2458,6 +2610,16 @@ export const downloadEnergyData = (
     });
 
     printCategory("device_consumption_water", waterDevices, state.waterUnit);
+  }
+
+  if (device_consumption_gas) {
+    const gasDevices: string[] = [];
+    device_consumption_gas.forEach((source) => {
+      source = source as DeviceConsumptionEnergyPreference;
+      gasDevices.push(source.stat_consumption);
+    });
+
+    printCategory("device_consumption_gas", gasDevices, state.gasUnit);
   }
 
   const { summedData } = getSummedData(state);

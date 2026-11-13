@@ -25,7 +25,7 @@ class HaBackupConfigEncryptionKey extends LitElement {
     if (this._value) {
       return html`
         <ha-list-base>
-          <ha-list-item-base>
+          <ha-list-item-base wrap-headline wrap-supporting-text>
             <span slot="headline">
               ${this.hass.localize(
                 "ui.panel.config.backup.encryption_key.download_emergency_kit"
@@ -48,7 +48,7 @@ class HaBackupConfigEncryptionKey extends LitElement {
               )}
             </ha-button>
           </ha-list-item-base>
-          <ha-list-item-base>
+          <ha-list-item-base wrap-headline wrap-supporting-text>
             <span slot="headline">
               ${this.hass.localize(
                 "ui.panel.config.backup.encryption_key.show_encryption_key"
@@ -70,7 +70,7 @@ class HaBackupConfigEncryptionKey extends LitElement {
               )}
             </ha-button>
           </ha-list-item-base>
-          <ha-list-item-base>
+          <ha-list-item-base wrap-headline wrap-supporting-text>
             <span slot="headline">
               ${this.hass.localize(
                 "ui.panel.config.backup.encryption_key.change_encryption_key"
@@ -99,7 +99,7 @@ class HaBackupConfigEncryptionKey extends LitElement {
 
     return html`
       <ha-list-base>
-        <ha-list-item-base>
+        <ha-list-item-base wrap-headline wrap-supporting-text>
           <span slot="headline">
             ${this.hass.localize(
               "ui.panel.config.backup.encryption_key.set_encryption_key"
@@ -151,10 +151,6 @@ class HaBackupConfigEncryptionKey extends LitElement {
   static styles = css`
     ha-list-base {
       --ha-row-item-padding-inline: 0;
-    }
-    ha-list-item-base::part(headline),
-    ha-list-item-base::part(supporting-text) {
-      white-space: wrap;
     }
     ha-button[size="s"] ha-svg-icon {
       --mdc-icon-size: 16px;

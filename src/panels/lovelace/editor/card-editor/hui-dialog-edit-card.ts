@@ -6,6 +6,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { ctrlOrCmdLabel } from "../../../../common/keyboard/ctrl-or-cmd";
 import {
   fireRelatedContext,
   type RelatedContextItem,
@@ -18,6 +19,7 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-spinner";
+import "../../../../components/ha-tooltip";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import {
@@ -288,6 +290,7 @@ export class HuiDialogEditCard
                     @click=${this._toggleMode}
                     .disabled=${!this._guiModeAvailable}
                     class="gui-mode-button"
+                    id="toggle-editor-mode"
                     appearance="plain"
                   >
                     ${this.hass!.localize(
@@ -296,6 +299,9 @@ export class HuiDialogEditCard
                         : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
                     )}
                   </ha-button>
+                  <ha-tooltip slot="secondaryAction" for="toggle-editor-mode">
+                    ${ctrlOrCmdLabel(this.hass!.localize)}+Shift+Y
+                  </ha-tooltip>
                 `
               : ""
           }

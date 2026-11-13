@@ -10,6 +10,7 @@ import {
   mdiScriptText,
   mdiShape,
   mdiTools,
+  mdiTransitConnectionVariant,
 } from "@mdi/js";
 import { startOfYesterday } from "date-fns";
 import type { HassEntity } from "home-assistant-js-websocket/dist/types";
@@ -19,6 +20,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { consume } from "../../../common/decorators/consume";
+import { transform } from "../../../common/decorators/transform";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -34,9 +36,11 @@ import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
+import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import "../../../components/item/ha-list-item-base";
@@ -49,7 +53,13 @@ import {
   updateAreaRegistryEntry,
 } from "../../../data/area/area_registry";
 import type { AutomationEntity } from "../../../data/automation";
-import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
+import type { ConfigEntry } from "../../../data/config_entries";
+import {
+  brandsAccessTokenContext,
+  configEntriesContext,
+  fireRelatedContext,
+  fullEntitiesContext,
+} from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import { sortDeviceRegistryByName } from "../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -68,6 +78,7 @@ import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
 import "../../logbook/ha-logbook";
 import { isHelperDomain } from "../helpers/const";
 import {
@@ -148,6 +159,24 @@ class HaConfigAreaPage extends LitElement {
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg: EntityRegistryEntry[] = [];
+
+  // Integration domain per config entry ID, to show the brand icon of a device
+  @state()
+  @consume({ context: configEntriesContext, subscribe: true })
+  @transform<ConfigEntry[], Record<string, string>>({
+    transformer: (entries) =>
+      entries
+        ? Object.fromEntries(
+            entries.map((entry) => [entry.entry_id, entry.domain])
+          )
+        : undefined,
+  })
+  private _configEntryDomains?: Record<string, string>;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  // @ts-ignore re-render trigger only, its value is never read
+  private _brandsAccessToken?: string;
 
   @state() private _related?: RelatedResult;
 
@@ -387,6 +416,7 @@ class HaConfigAreaPage extends LitElement {
                       .href=${`/config/devices/device/${device.id}`}
                       .headline=${device.name}
                     >
+                      ${this._renderDeviceIcon(device)}
                       <ha-icon-next slot="end"></ha-icon-next>
                     </ha-list-item-button>
                   `
@@ -419,6 +449,7 @@ class HaConfigAreaPage extends LitElement {
                       .entity=${entity}
                       .headline=${entity.name ?? undefined}
                     >
+                      ${this._renderEntityIcon(entity)}
                       <ha-icon-next slot="end"></ha-icon-next>
                     </ha-list-item-button>
                   `
@@ -794,14 +825,75 @@ class HaConfigAreaPage extends LitElement {
     return { groupedEntities, relatedEntities };
   }
 
+  private _renderDeviceIcon(device: DeviceRegistryEntry) {
+    const entryIds = device.primary_config_entry
+      ? [device.primary_config_entry, ...device.config_entries]
+      : device.config_entries;
+    const domain = entryIds
+      .map((entryId) => this._configEntryDomains?.[entryId])
+      .find(Boolean);
+
+    if (!domain) {
+      return html`<ha-svg-icon
+        slot="start"
+        .path=${
+          device.entry_type === "service"
+            ? mdiTransitConnectionVariant
+            : mdiDevices
+        }
+      ></ha-svg-icon>`;
+    }
+
+    return html`<img
+      slot="start"
+      alt=""
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+      src=${brandsUrl(
+        {
+          domain,
+          type: "icon",
+          darkOptimized: this.hass.themes?.darkMode,
+        },
+        this.hass.auth.data.hassUrl
+      )}
+      width="24"
+      height="24"
+      @error=${this._onImageError}
+      @load=${this._onImageLoad}
+    />`;
+  }
+
+  private _renderEntityIcon(entity: EntityRegistryEntry) {
+    const stateObj = this.hass.states[entity.entity_id];
+    return stateObj
+      ? html`<ha-state-icon slot="start" .stateObj=${stateObj}></ha-state-icon>`
+      : html`<ha-domain-icon
+          slot="start"
+          .domain=${computeDomain(entity.entity_id)}
+          .icon=${entity.icon ?? undefined}
+        ></ha-domain-icon>`;
+  }
+
+  // Keep the space of a brand icon that failed to load so the rows stay aligned
+  private _onImageError(ev: HASSDomCurrentTargetEvent<HTMLImageElement>) {
+    ev.currentTarget.style.visibility = "hidden";
+  }
+
+  private _onImageLoad(ev: HASSDomCurrentTargetEvent<HTMLImageElement>) {
+    ev.currentTarget.style.visibility = "";
+  }
+
   private _renderScene(name: string, entityState: SceneEntity) {
     return entityState.attributes.id
       ? this._renderLink(
           name,
+          entityState,
           `/config/scene/edit/${entityState.attributes.id}`
         )
       : this._renderNotEditable(
           name,
+          entityState,
           `scene-${slugify(entityState.entity_id)}`
         );
   }
@@ -810,22 +902,30 @@ class HaConfigAreaPage extends LitElement {
     return entityState.attributes.id
       ? this._renderLink(
           name,
+          entityState,
           `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
         )
       : this._renderNotEditable(
           name,
+          entityState,
           `automation-${slugify(entityState.entity_id)}`
         );
   }
 
-  private _renderLink(name: string, href: string) {
+  private _renderLink(name: string, entityState: HassEntity, href: string) {
     return html`<ha-list-item-button .href=${href} .headline=${name}>
+      <ha-state-icon slot="start" .stateObj=${entityState}></ha-state-icon>
       <ha-icon-next slot="end"></ha-icon-next>
     </ha-list-item-button>`;
   }
 
-  private _renderNotEditable(name: string, id: string) {
+  private _renderNotEditable(
+    name: string,
+    entityState: HassEntity,
+    id: string
+  ) {
     return html`<ha-list-item-base id=${id} .headline=${name}>
+        <ha-state-icon slot="start" .stateObj=${entityState}></ha-state-icon>
         <ha-icon-next slot="end"></ha-icon-next>
       </ha-list-item-base>
       <ha-tooltip .for=${id} .distance=${-4}>
@@ -841,7 +941,7 @@ class HaConfigAreaPage extends LitElement {
     if (entry) {
       url = `/config/script/edit/${entry.unique_id}`;
     }
-    return this._renderLink(name, url);
+    return this._renderLink(name, entityState, url);
   }
 
   private async _findRelated() {
@@ -963,7 +1063,7 @@ class HaConfigAreaPage extends LitElement {
           justify-content: space-around;
         }
 
-        img {
+        .img-container img {
           border-radius: var(
             --ha-card-border-radius,
             var(--ha-border-radius-lg)

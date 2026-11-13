@@ -35,9 +35,9 @@ import {
   sortedMarketplaceFilterQueryString,
 } from "../../../common/url/marketplace-query-params";
 import { shallowEqual } from "../../../common/util/shallow-equal";
-import { groupActionsSlot } from "../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
+  DataTableGroupActions,
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../layouts/hass-tabs-subpage";
@@ -117,6 +117,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 
 const defaultKeyData = {
   title: "",
@@ -399,6 +400,7 @@ export class HaMarketplaceDashboard extends LitElement {
           this._tableSettings.grouping,
           this._i18n.localize
         )}
+        .renderGroupActions=${this._renderGroupActions}
         .columnOrder=${this._orderTableColumns}
         .hiddenColumns=${this._hiddenTableColumns}
         @columns-changed=${this._handleColumnsChanged}
@@ -413,14 +415,6 @@ export class HaMarketplaceDashboard extends LitElement {
         @sorting-changed=${this._tableSettings.sortingChanged}
       >
         ${this._renderToolbar()}
-        <ha-icon-button
-          slot=${groupActionsSlot(
-            this._i18n.localize("ui.panel.marketplace.repository_status.new")
-          )}
-          .label=${this._i18n.localize("ui.panel.marketplace.menu.dismiss")}
-          .path=${mdiCheckAll}
-          @click=${this._dismissNew}
-        ></ha-icon-button>
         ${
           this.tab === "installed"
             ? html`<ha-assist-chip
@@ -544,6 +538,9 @@ export class HaMarketplaceDashboard extends LitElement {
         </ha-dropdown-item>
         <ha-dropdown-item value="custom_repositories">
           ${this._i18n.localize("ui.panel.marketplace.menu.custom_repositories")}
+        </ha-dropdown-item>
+        <ha-dropdown-item value="download_source">
+          ${this._i18n.localize("ui.panel.marketplace.menu.download_source")}
         </ha-dropdown-item>
         ${
           repositoriesContainsNew
@@ -911,6 +908,9 @@ export class HaMarketplaceDashboard extends LitElement {
       case "custom_repositories":
         navigate("/marketplace/repositories");
         break;
+      case "download_source":
+        this._openDownloadSource();
+        break;
       case "dismiss_new":
         this._dismissNew();
         break;
@@ -948,6 +948,23 @@ export class HaMarketplaceDashboard extends LitElement {
     this._repositoryOverflowMenu.anchorElement = undefined;
   };
 
+  private async _openDownloadSource() {
+    let entries: ConfigEntry[];
+    try {
+      entries = await getConfigEntries(this._api, { domain: "marketplace" });
+    } catch (err: unknown) {
+      showAlertDialog(this, {
+        title: this._i18n.localize("ui.panel.marketplace.dialog.error.title"),
+        text: marketplaceErrorMessage(err, this._i18n.localize),
+      });
+      return;
+    }
+
+    if (entries.length) {
+      showOptionsFlowDialog(this, entries[0]);
+    }
+  }
+
   private _openDocumentation() {
     window.open(
       documentationUrl(this._config, "/integrations/marketplace"),
@@ -960,7 +977,16 @@ export class HaMarketplaceDashboard extends LitElement {
     showMarketplaceAddFromLink(this, this._i18n.localize, this.marketplace);
   }
 
-  private _dismissNew() {
+  private _renderGroupActions: DataTableGroupActions = (group) =>
+    group === this._i18n.localize("ui.panel.marketplace.repository_status.new")
+      ? html`<ha-icon-button
+          .label=${this._i18n.localize("ui.panel.marketplace.menu.dismiss")}
+          .path=${mdiCheckAll}
+          @click=${this._dismissNew}
+        ></ha-icon-button>`
+      : nothing;
+
+  private _dismissNew = () => {
     showConfirmationDialog(this, {
       title: this._i18n.localize(
         "ui.panel.marketplace.dialog.dismiss_new.title"
@@ -997,7 +1023,7 @@ export class HaMarketplaceDashboard extends LitElement {
         }
       },
     });
-  }
+  };
 
   private _statusStates = memoize(
     (localize: LocalizeFunc, tab: MarketplaceTab) =>

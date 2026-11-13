@@ -17,6 +17,8 @@ export class HaTriggerSelector extends LitElement {
 
   @property({ attribute: false }) public value?: Trigger;
 
+  @property() public name?: string;
+
   @property() public label?: string;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
@@ -32,6 +34,7 @@ export class HaTriggerSelector extends LitElement {
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
       <ha-automation-trigger
+        .pathKey=${this.name}
         .disabled=${this.disabled}
         .triggers=${this._triggers(this.value)}
         .hass=${this.hass}

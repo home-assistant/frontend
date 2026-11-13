@@ -19,6 +19,7 @@
     <meta name="referrer" content="same-origin" />
     <meta name="theme-color" content="{{ theme_color }}" />
     <meta name="color-scheme" content="dark light" />
+    <%= renderTemplate("_meta_viewport.html.template") %>
     <%= renderTemplate("_style_base.html.template") %>
     <style>
       html {
@@ -26,104 +27,14 @@
         color: var(--primary-text-color, #212121);
         height: 100vh;
       }
-      #ha-launch-screen {
-        font-family: ui-sans-serif, system-ui, sans-serif;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        user-select: none;
-        -webkit-user-select: none;
-        background-color: var(--primary-background-color, #fafafa);
-        z-index: 100;
-        transition: opacity var(--ha-animation-duration-normal, 250ms) ease-out;
-      }
-      #ha-launch-screen.removing {
-        opacity: 0;
-      }
-      @keyframes launch-lockup-in {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
-      #ha-launch-screen .ha-lockup {
-        display: flex;
-        align-items: center;
-        flex-shrink: 0;
-        animation: launch-lockup-in var(--ha-animation-duration-normal, 250ms) ease-out both;
-      }
-      #ha-launch-screen-info-box > *,
-      #ha-launch-screen .ohf-logo {
-        animation: launch-lockup-in var(--ha-animation-duration-normal, 250ms) ease-out both;
-      }
-      #ha-launch-screen .ha-logo {
-        width: 96px;
-        height: 96px;
-      }
-      #ha-launch-screen .ha-launch-screen-spacer-top {
-        flex: 1;
-        margin-top: calc( 2 * max(var(--safe-area-inset-top, 0px), 48px) + 46px );
-        padding-top: 48px;
-      }
-      #ha-launch-screen .ha-launch-screen-spacer-bottom {
-        flex: 1;
-        padding-top: 16px;
-      }
-      .ohf-logo {
-        margin: max(var(--safe-area-inset-bottom, 0px), 48px) 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
-        opacity: .66;
-      }
-      .ohf-logo span {
-        font-size: 12px;
-        line-height: 12px;
-        text-transform: uppercase;
-      }
-      .ohf-logo picture {
-        display: flex;
-      }
-      .ohf-logo img {
-        width: 237px;
-        aspect-ratio: 237 / 24;
-        height: auto;
-      }
       @media (prefers-color-scheme: dark) {
         html {
           background-color: var(--primary-background-color, #111111);
           color: var(--primary-text-color, #e1e1e1);
         }
-        /* body selector to avoid minification causing bad jinja2 */
-        body #ha-launch-screen {
-          background-color: var(--primary-background-color, #111111);
-        }
-      }
-      @media (max-height: 560px) {
-        /* body selector to avoid minification causing bad jinja2 */
-        body #ha-launch-screen .ha-launch-screen-spacer-top {
-          margin-top: 24px;
-          padding-top: 24px;
-        }
-        body #ha-launch-screen .ha-launch-screen-spacer-bottom {
-          padding-top: 16px;
-        }
-        .ohf-logo {
-          margin-block: 24px;
-        }
       }
     </style>
+    <%= renderTemplate("_style_launch_screen.html.template") %>
   </head>
   <body>
     <div id="ha-launch-screen">
@@ -154,23 +65,86 @@
     </script>
     <script>
         if (!window.latestJS) {
-          // Below the [legacy] browserslist floor the entry bundles cannot be
-          // parsed, or dialogs cannot open, and nothing would ever leave the
-          // launch screen. Test the features that set the floors: BigInt for
-          // Chrome 67, native <dialog> for Safari 15.4 and Firefox 98. Not
-          // transpiled, so keep this ES5.
-          if (
-            typeof BigInt === "undefined" ||
-            typeof document.createElement("dialog").showModal !== "function"
-          ) {
-            document.getElementById("ha-launch-screen-info-box").textContent =
-              "This browser is too old to run Home Assistant.";
-          } else {
-            window.customPanelJS = "<%= es5CustomPanelJS %>";
-            <% for (const entry of es5EntryJS) { %>
-              _ls("<%= entry %>", true);
-            <% } %>
-          }
+          // Floor check: BigInt for Chrome 67, <dialog> for Safari 15.4 and
+          // Firefox 98. Not transpiled, so keep this ES5.
+          (function () {
+            var ACCEPTED_KEY = "haUnsupportedBrowserAccepted";
+            var REMIND_AFTER = 30 * 24 * 60 * 60 * 1000;
+
+            function loadApp() {
+              window.customPanelJS = "<%= es5CustomPanelJS %>";
+              <% for (const entry of es5EntryJS) { %>
+                _ls("<%= entry %>", true);
+              <% } %>
+            }
+
+            if (
+              typeof BigInt !== "undefined" &&
+              typeof document.createElement("dialog").showModal === "function"
+            ) {
+              loadApp();
+              return;
+            }
+
+            // Shown while the app loads too.
+            var box = document.getElementById("ha-launch-screen-info-box");
+            var message = document.createElement("p");
+            message.textContent =
+              "This browser is no longer supported. Some parts of Home Assistant may not work.";
+            box.appendChild(message);
+
+            // Stored: "always", or when the user last continued (ms).
+            var stored = null;
+            try {
+              stored = localStorage.getItem(ACCEPTED_KEY);
+            } catch (_err) {
+              // Ask on every load.
+            }
+            if (stored === "always") {
+              loadApp();
+              return;
+            }
+            var acceptedAt = Number(stored) || 0;
+            // A clock behind the stored time asks again.
+            var age = Date.now() - acceptedAt;
+            if (acceptedAt && age >= 0 && age < REMIND_AFTER) {
+              loadApp();
+              return;
+            }
+
+            var actions = document.createElement("div");
+            actions.className = "ha-launch-screen-actions";
+            box.appendChild(actions);
+
+            var always = null;
+            var button = document.createElement("button");
+            button.type = "button";
+            button.textContent = "Continue anyway";
+            button.addEventListener("click", function () {
+              try {
+                localStorage.setItem(
+                  ACCEPTED_KEY,
+                  always && always.checked ? "always" : String(Date.now())
+                );
+              } catch (_err) {
+                // Continue this time only.
+              }
+              box.removeChild(actions);
+              loadApp();
+            });
+            actions.appendChild(button);
+
+            // From the first reminder on. A checkbox, so it is not chosen by
+            // accident.
+            if (acceptedAt) {
+              var label = document.createElement("label");
+              always = document.createElement("input");
+              always.type = "checkbox";
+              label.appendChild(always);
+              label.appendChild(document.createTextNode("Don't show again"));
+              actions.appendChild(label);
+            }
+          })();
         }
     </script>
 

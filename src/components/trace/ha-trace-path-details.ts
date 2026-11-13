@@ -112,7 +112,7 @@ export class HaTracePathDetails extends LitElement {
     initialValue: {
       options: [],
       showIndices: false,
-      select: () => undefined,
+      select: () => true,
       fixDuplicateIds: async () => undefined,
       updateTriggerId: () => false,
     },
@@ -420,11 +420,16 @@ export class HaTracePathDetails extends LitElement {
       return nothing;
     }
     const targetSpec = this._getTargetSelector(config, type);
+    // Triggers and conditions, including a condition action, don't expand
+    // the groups their targets name.
+    const expandGroup =
+      type !== "trigger" && type !== "condition" && !("condition" in config);
     return html`<div class="targets">
       <ha-automation-row-targets
         .target=${target}
         .selector=${targetSpec ? { target: targetSpec } : undefined}
         .size=${size}
+        .expandGroup=${expandGroup}
         interactive
       ></ha-automation-row-targets>
     </div>`;

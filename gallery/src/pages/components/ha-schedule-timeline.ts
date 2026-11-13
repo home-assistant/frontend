@@ -111,7 +111,6 @@ export class DemoHaScheduleTimeline
       <ha-card class="editor" header="Schedule helper editor">
         <div class="card-content">
           <ha-schedule-form
-            .hass=${this.hass}
             .item=${this._schedule}
             @value-changed=${this._valueChanged}
           ></ha-schedule-form>
@@ -119,11 +118,7 @@ export class DemoHaScheduleTimeline
       </ha-card>
       <ha-card header="Schedule set up in YAML">
         <div class="card-content">
-          <ha-schedule-form
-            .hass=${this.hass}
-            .entry=${YAML_ENTRY}
-            disabled
-          ></ha-schedule-form>
+          <ha-schedule-form .entry=${YAML_ENTRY} disabled></ha-schedule-form>
         </div>
       </ha-card>
     `;
