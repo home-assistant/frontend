@@ -10,6 +10,7 @@ import {
   cleanupRemovedGeneratedTriggerReferences,
   cleanupUnusedGeneratedTriggerIds,
   GENERATED_TRIGGER_ID_PREFIX,
+  getBlueprintTriggerIdOptions,
   getExplicitTriggerIds,
   getTriggerIdOptions,
   hasCustomTriggerId,
@@ -25,6 +26,40 @@ const GENERATED_TRIGGER_ID_PATTERN = new RegExp(
 );
 
 describe("automation trigger IDs", () => {
+  it("offers a blueprint's stored trigger IDs once each, without generating any", () => {
+    const motion: Trigger = {
+      trigger: "state",
+      entity_id: "binary_sensor.motion",
+      id: "motion_on",
+    };
+    const triggers = [
+      motion,
+      { trigger: "time_pattern", minutes: "/5" },
+      {
+        trigger: "state",
+        entity_id: "binary_sensor.presence",
+        id: "motion_on",
+      },
+      { triggers: [{ trigger: "sun", event: "sunset", id: "sunset" }] },
+    ] as Trigger[];
+
+    const options = getBlueprintTriggerIdOptions(triggers);
+
+    expect(
+      options.map(({ id, index, draft, duplicate }) => ({
+        id,
+        index,
+        draft,
+        duplicate,
+      }))
+    ).toEqual([
+      { id: "motion_on", index: 0, draft: false, duplicate: false },
+      { id: "sunset", index: 3, draft: false, duplicate: false },
+    ]);
+    expect(options[0].trigger).toBe(motion);
+    expect(getBlueprintTriggerIdOptions(undefined)).toEqual([]);
+  });
+
   it("ignores null trigger entries from incomplete YAML", () => {
     const triggers = [
       null,
