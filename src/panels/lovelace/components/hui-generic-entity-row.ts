@@ -150,7 +150,7 @@ export class HuiGenericEntityRow extends LitElement {
 
   @eventOptions({ capture: true })
   private _handleClick(ev: MouseEvent) {
-    if (this._pressedControl && !this._isControlEvent(ev)) {
+    if (this._pressedControl && ev.detail > 0 && !this._isControlEvent(ev)) {
       ev.stopImmediatePropagation();
     }
     this._pressedControl = false;

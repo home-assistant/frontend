@@ -53,6 +53,15 @@ describe("hui-generic-entity-row", () => {
     expect(moreInfo).toHaveBeenCalledOnce();
   });
 
+  it("lets a click without a pointer through after an unfinished press on the control", async () => {
+    const { control, moreInfo, rowElement } = await mountRow();
+    press(control);
+    rowElement.dispatchEvent(
+      new MouseEvent("click", { bubbles: true, composed: true, detail: 0 })
+    );
+    expect(moreInfo).toHaveBeenCalledOnce();
+  });
+
   it("lets a click on the control reach the control", async () => {
     const { control, moreInfo } = await mountRow();
     const controlClick = vi.fn();
