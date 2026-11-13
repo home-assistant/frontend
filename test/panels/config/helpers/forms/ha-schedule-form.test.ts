@@ -90,7 +90,7 @@ describe("ha-schedule-form", () => {
     fireEvent(
       form.shadowRoot!.querySelector("ha-schedule-block-editor")!,
       "schedule-block-draft-changed",
-      { dirty: true }
+      { dirty: true, valid: true }
     );
     await settle(form);
     expect(host!.isDirtyState).toBe(true);
@@ -101,7 +101,7 @@ describe("ha-schedule-form", () => {
     expect(host!.isDirtyState).toBe(true);
 
     // Closing the draft leaves nothing unsaved.
-    form["_panel"] = undefined;
+    form["_panel"] = { type: "block" };
     await settle(form);
     expect(host!.isDirtyState).toBe(false);
   });

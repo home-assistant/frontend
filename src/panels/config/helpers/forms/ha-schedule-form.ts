@@ -37,6 +37,7 @@ import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import "./ha-schedule-block-editor";
+import type { HaScheduleBlockEditor } from "./ha-schedule-block-editor";
 import "./ha-schedule-weekday-picker";
 
 type SchedulePanel =
@@ -47,6 +48,8 @@ type SchedulePanel =
       preview?: ScheduleBlockPreview;
       /** Whether the editor has changes that are not applied yet. */
       dirty?: boolean;
+      /** Whether the draft can be applied. */
+      valid?: boolean;
     }
   | { type: "copy"; day: ScheduleWeekday; targets: ScheduleWeekday[] };
 
@@ -110,6 +113,9 @@ class HaScheduleForm extends LitElement {
   @query("[dialogInitialFocus]") private _focusElement?: HaInput;
 
   @query(".panel") private _panelElement?: HTMLElement;
+
+  @query("ha-schedule-block-editor")
+  private _blockEditor?: HaScheduleBlockEditor;
 
   public focus() {
     this.updateComplete.then(() => this._focusElement?.focus());
@@ -224,13 +230,6 @@ class HaScheduleForm extends LitElement {
   private _renderIdentity() {
     return html`
       <div class="identity">
-        <ha-icon-picker
-          .value=${this.item?.icon || ""}
-          .configValue=${"icon"}
-          @value-changed=${this._valueChanged}
-          .label=${this.hass.localize("ui.dialogs.helper_settings.generic.icon")}
-          .disabled=${this.disabled}
-        ></ha-icon-picker>
         <ha-input
           .value=${this.item?.name || ""}
           .configValue=${"name"}
@@ -244,6 +243,13 @@ class HaScheduleForm extends LitElement {
           dialogInitialFocus
           .disabled=${this.disabled}
         ></ha-input>
+        <ha-icon-picker
+          .value=${this.item?.icon || ""}
+          .configValue=${"icon"}
+          @value-changed=${this._valueChanged}
+          .label=${this.hass.localize("ui.dialogs.helper_settings.generic.icon")}
+          .disabled=${this.disabled}
+        ></ha-icon-picker>
       </div>
     `;
   }
@@ -272,8 +278,8 @@ class HaScheduleForm extends LitElement {
     const panel = this._panel;
     const kind = panelKind(panel);
     // On wide screens the identity and the panel form a column beside the
-    // schedule, with the schedule and panel titles on one line; on narrow
-    // ones everything stacks in DOM order.
+    // schedule, which spans the full height with the panel actions under it;
+    // on narrow ones everything stacks in DOM order.
     return html`
       <div class="layout">
         ${this._renderIdentity()}
@@ -325,13 +331,12 @@ class HaScheduleForm extends LitElement {
                     .source=${panel.source}
                     @schedule-block-draft-changed=${this._draftChanged}
                     @schedule-block-apply=${this._applyBlock}
-                    @schedule-block-delete=${this._deleteBlock}
-                    @schedule-block-close=${this._closePanel}
                   ></ha-schedule-block-editor>`
                 : this._renderCopyPanel(panel)
             }
           </div>`
         )}
+        ${this._renderActions(panel)}
       </div>
     `;
   }
@@ -362,13 +367,43 @@ class HaScheduleForm extends LitElement {
       <p class="panel-note">
         ${localize("ui.dialogs.helper_settings.schedule.copy_day_replace")}
       </p>
-      <div class="panel-actions">
+    `;
+  }
+
+  private _renderActions(panel: SchedulePanel) {
+    const localize = this.hass.localize;
+    return html`
+      <div class="actions">
+        ${
+          panel.type === "block" && panel.source
+            ? html`<ha-button
+                appearance="plain"
+                variant="danger"
+                @click=${this._deleteBlock}
+              >
+                ${localize("ui.common.delete")}
+              </ha-button>`
+            : nothing
+        }
+        <span class="spacer"></span>
         <ha-button appearance="plain" @click=${this._closePanel}>
           ${localize("ui.common.cancel")}
         </ha-button>
-        <ha-button .disabled=${!panel.targets.length} @click=${this._applyCopy}>
-          ${localize("ui.common.copy")}
-        </ha-button>
+        ${
+          panel.type === "block"
+            ? html`<ha-button
+                .disabled=${!panel.valid}
+                @click=${this._applyBlockClick}
+              >
+                ${localize(panel.source ? "ui.common.apply" : "ui.common.create")}
+              </ha-button>`
+            : html`<ha-button
+                .disabled=${!panel.targets.length}
+                @click=${this._applyCopy}
+              >
+                ${localize("ui.common.copy")}
+              </ha-button>`
+        }
       </div>
     `;
   }
@@ -463,6 +498,10 @@ class HaScheduleForm extends LitElement {
     this._panel = newBlockPanel();
   }
 
+  private _applyBlockClick() {
+    this._blockEditor?.apply();
+  }
+
   private _applyBlock(ev: HASSDomEvent<HASSDomEvents["schedule-block-apply"]>) {
     ev.stopPropagation();
     if (this._panel.type !== "block") {
@@ -479,8 +518,7 @@ class HaScheduleForm extends LitElement {
     this._panel = newBlockPanel();
   }
 
-  private _deleteBlock(ev: Event) {
-    ev.stopPropagation();
+  private _deleteBlock() {
     if (this._panel.type !== "block" || !this._panel.source) {
       return;
     }
@@ -488,8 +526,7 @@ class HaScheduleForm extends LitElement {
     this._panel = newBlockPanel();
   }
 
-  private _closePanel(ev: Event) {
-    ev.stopPropagation();
+  private _closePanel() {
     this._panel = newBlockPanel();
   }
 
@@ -544,20 +581,11 @@ class HaScheduleForm extends LitElement {
           --ha-input-padding-bottom: 0;
         }
 
-        /* Icon and name share one line. */
+        /* No gap: the name keeps room for its required error below it,
+           which already separates it from the icon. */
         .identity {
           display: flex;
-          gap: var(--ha-space-3);
-          align-items: flex-start;
-        }
-
-        .identity ha-icon-picker {
-          flex: 0 0 112px;
-        }
-
-        .identity ha-input {
-          flex: 1;
-          min-width: 0;
+          flex-direction: column;
         }
 
         .layout {
@@ -580,15 +608,17 @@ class HaScheduleForm extends LitElement {
         }
 
         /* With enough room, the identity and the panel sit beside the
-           schedule, so both stay in view while editing. */
+           schedule, so both stay in view while editing. The schedule spans
+           the full height of the form. */
         @container (min-width: 840px) {
           .layout {
             display: grid;
             grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-            grid-template-rows: auto 1fr;
+            grid-template-rows: auto 1fr auto;
             grid-template-areas:
-              "identity ."
-              "panel main";
+              "identity main"
+              "panel main"
+              "panel actions";
             column-gap: var(--ha-space-6);
             row-gap: var(--ha-space-4);
             align-items: start;
@@ -596,6 +626,11 @@ class HaScheduleForm extends LitElement {
 
           .identity {
             grid-area: identity;
+          }
+
+          .actions {
+            grid-area: actions;
+            align-self: end;
           }
 
           .main {
@@ -655,10 +690,14 @@ class HaScheduleForm extends LitElement {
           font-size: var(--ha-font-size-s);
         }
 
-        .panel-actions {
+        .actions {
           display: flex;
-          justify-content: flex-end;
+          align-items: center;
           gap: var(--ha-space-2);
+        }
+
+        .spacer {
+          flex: 1;
         }
       `,
     ];

@@ -8,7 +8,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import { formatListWithAnds } from "../../../../common/string/format-list";
 import "../../../../components/ha-alert";
-import "../../../../components/ha-button";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-time-input";
 import "../../../../components/ha-yaml-editor";
@@ -55,10 +54,10 @@ const isValidTime = (time: string): boolean => {
  *
  * @fires schedule-block-draft-changed - The draft changed. `detail.preview`
  * is not set while the times or days are incomplete or invalid, and
- * `detail.dirty` tells whether the draft differs from the block.
- * @fires schedule-block-apply - Apply the block to the selected days.
- * @fires schedule-block-delete - Delete the block being edited.
- * @fires schedule-block-close - Close the editor without changes.
+ * `detail.dirty` tells whether the draft differs from the block, and
+ * `detail.valid` whether it can be applied.
+ * @fires schedule-block-apply - Apply the block to the selected days, after
+ * the host calls `apply()`.
  */
 @customElement("ha-schedule-block-editor")
 export class HaScheduleBlockEditor extends LitElement {
@@ -98,13 +97,21 @@ export class HaScheduleBlockEditor extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
     if (
-      ["block", "source", "_from", "_to", "_days", "_data", "_dataValid"].some(
-        (prop) => changedProps.has(prop)
-      )
+      [
+        "_i18n",
+        "block",
+        "source",
+        "_from",
+        "_to",
+        "_days",
+        "_data",
+        "_dataValid",
+      ].some((prop) => changedProps.has(prop))
     ) {
       fireEvent(this, "schedule-block-draft-changed", {
         preview: this._preview(),
         dirty: this._isDirty(),
+        valid: !!this._i18n && this._dataValid && !this._error(this._draft()),
       });
     }
   }
@@ -116,7 +123,6 @@ export class HaScheduleBlockEditor extends LitElement {
     const { localize, locale } = this._i18n;
     const draft = this._draft();
     const error = this._error(draft);
-    const editing = !!this.source;
 
     return html`
       <div class="times">
@@ -168,29 +174,6 @@ export class HaScheduleBlockEditor extends LitElement {
               </ha-alert>`
         }
       </ha-expansion-panel>
-      <div class="actions">
-        ${
-          editing
-            ? html`<ha-button
-                appearance="plain"
-                variant="danger"
-                @click=${this._delete}
-              >
-                ${localize("ui.common.delete")}
-              </ha-button>`
-            : nothing
-        }
-        <span class="spacer"></span>
-        <ha-button appearance="plain" @click=${this._close}>
-          ${localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          .disabled=${!!error || !this._dataValid}
-          @click=${this._apply}
-        >
-          ${localize(editing ? "ui.common.apply" : "ui.common.create")}
-        </ha-button>
-      </div>
     `;
   }
 
@@ -316,19 +299,12 @@ export class HaScheduleBlockEditor extends LitElement {
     this._data = value ?? undefined;
   }
 
-  private _apply() {
+  /** Applies the draft. The host renders the buttons, next to the timeline. */
+  public apply() {
     fireEvent(this, "schedule-block-apply", {
       block: this._draft(),
       days: this._days,
     });
-  }
-
-  private _delete() {
-    fireEvent(this, "schedule-block-delete");
-  }
-
-  private _close() {
-    fireEvent(this, "schedule-block-close");
   }
 
   static styles = css`
@@ -357,16 +333,6 @@ export class HaScheduleBlockEditor extends LitElement {
       display: block;
       padding: var(--ha-space-2) 0;
     }
-
-    .actions {
-      display: flex;
-      align-items: center;
-      gap: var(--ha-space-2);
-    }
-
-    .spacer {
-      flex: 1;
-    }
   `;
 }
 
@@ -379,12 +345,11 @@ declare global {
     "schedule-block-draft-changed": {
       preview?: ScheduleBlockPreview;
       dirty: boolean;
+      valid: boolean;
     };
     "schedule-block-apply": {
       block: ScheduleBlock;
       days: ScheduleWeekday[];
     };
-    "schedule-block-delete": undefined;
-    "schedule-block-close": undefined;
   }
 }
