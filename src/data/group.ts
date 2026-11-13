@@ -69,5 +69,13 @@ export const filterGroupsWithListedMembers = (
     }
     return false;
   };
-  return entityIds.filter((entityId) => !hasListedDescendant(entityId));
+  return entityIds.filter((entityId) => {
+    if (!hasListedDescendant(entityId)) {
+      return true;
+    }
+    // A dropped group no longer counts as listed, so of two groups that
+    // contain each other one still stays.
+    listed.delete(entityId);
+    return false;
+  });
 };

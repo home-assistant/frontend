@@ -129,6 +129,15 @@ describe("filterGroupsWithListedMembers", () => {
     ).toEqual(["light.lamp"]);
   });
 
+  it("groups that contain each other, both listed: one stays", () => {
+    const a = entity("light.a", { entity_id: ["light.b"] });
+    const b = entity("light.b", { entity_id: ["light.a"] });
+    const states = toStates(a, b);
+    expect(
+      filterGroupsWithListedMembers(["light.a", "light.b"], states)
+    ).toEqual(["light.b"]);
+  });
+
   it("groups that contain each other: no infinite loop", () => {
     const a = entity("light.a", { entity_id: ["light.b"] });
     const b = entity("light.b", { entity_id: ["light.a"] });
