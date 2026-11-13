@@ -229,9 +229,9 @@ export class MCPPref extends LitElement {
     this._enabling = true;
     try {
       // The config flow only asks for confirmation, so submit it directly
-      let step = await createConfigFlow(this.hass, MCP_SERVER_DOMAIN);
+      let step = await createConfigFlow(this.hass.callApi, MCP_SERVER_DOMAIN);
       if (step.type === "form") {
-        step = await handleConfigFlowStep(this.hass, step.flow_id, {});
+        step = await handleConfigFlowStep(this.hass.callApi, step.flow_id, {});
       }
       if (step.type === "form") {
         showConfigFlowDialog(this, {

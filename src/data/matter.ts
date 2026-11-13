@@ -209,7 +209,15 @@ export const watchForNewMatterDevice = (
   callback: (device: DeviceRegistryEntry) => void
 ): UnsubscribeFunc => {
   let curMatterDevices: Set<string> | undefined;
-  const unsubDeviceReg = subscribeDeviceRegistry(hass.connection, (entries) => {
+  let unsubDeviceReg: UnsubscribeFunc | undefined;
+  // Callers also unsubscribe after a find. The registry collection counts its
+  // subscribers, so a second unsubscribe would stop its updates for everyone.
+  const unsubscribe = () => {
+    unsubDeviceReg?.();
+    unsubDeviceReg = undefined;
+    curMatterDevices = undefined;
+  };
+  unsubDeviceReg = subscribeDeviceRegistry(hass.connection, (entries) => {
     if (!curMatterDevices) {
       curMatterDevices = new Set(
         Object.values(entries)
@@ -226,15 +234,11 @@ export const watchForNewMatterDevice = (
         !curMatterDevices!.has(device.id)
     );
     if (newMatterDevices.length) {
-      unsubDeviceReg();
-      curMatterDevices = undefined;
+      unsubscribe();
       callback(newMatterDevices[0]);
     }
   });
-  return () => {
-    unsubDeviceReg();
-    curMatterDevices = undefined;
-  };
+  return unsubscribe;
 };
 
 export const redirectOnNewMatterDevice = (

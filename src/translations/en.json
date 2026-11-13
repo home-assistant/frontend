@@ -1106,6 +1106,46 @@
         "failed_create_floor": "Failed to create floor.",
         "unknown": "Unknown floor selected"
       },
+      "rooms": {
+        "keywords": {
+          "living_room": "living room|lounge|family room|sitting room|den|living",
+          "bedroom": "bedroom|guest room|master bedroom|master suite|bed room",
+          "kids_room": "kids room|kids' room|kid's room|children's room|nursery|playroom|baby room",
+          "kitchen": "kitchen|kitchenette",
+          "dining_room": "dining room|dining area|dining",
+          "bathroom": "bathroom|bath|shower room|ensuite|washroom",
+          "toilet": "toilet|wc|restroom|powder room|loo|lavatory",
+          "office": "office|study|home office|workspace|workroom",
+          "laundry_room": "laundry|laundry room",
+          "hallway": "hallway|hall|corridor|entrance|entryway|foyer|mudroom",
+          "stairs": "stairs|staircase|stairway|stairwell|landing",
+          "garage": "garage|carport",
+          "garden": "garden|yard|backyard|front yard|lawn|greenhouse",
+          "terrace": "terrace|patio|balcony|deck|porch|veranda",
+          "basement": "basement|cellar",
+          "attic": "attic|loft",
+          "storage": "storage|storage room|pantry|closet|shed|storeroom",
+          "utility_room": "utility room|boiler room|technical room|plant room",
+          "pool": "pool|swimming pool|pool house",
+          "media_room": "media room|home cinema|home theater|home theatre|cinema room|movie room|tv room",
+          "game_room": "game room|games room|gaming room|recreation room|rec room|billiard room",
+          "music_room": "music room|music studio|piano room|practice room",
+          "library": "library|reading room|book room",
+          "bar": "bar|home bar|pub|wine room|wine cellar",
+          "dressing_room": "dressing room|walk-in closet|walk-in wardrobe",
+          "workshop": "workshop|tool room|craft room|hobby room",
+          "server_room": "server room|network room|rack room",
+          "safe_room": "safe room|panic room|shelter|storm shelter|bunker",
+          "prayer_room": "prayer room|chapel|meditation room",
+          "sauna": "sauna|steam room",
+          "outdoor_kitchen": "outdoor kitchen|summer kitchen|barbecue area|bbq area|grill area",
+          "driveway": "driveway|parking|parking space"
+        }
+      },
+      "icon_picker": {
+        "suggested": "Suggested",
+        "all_icons": "All icons"
+      },
       "area-filter": {
         "title": "Areas",
         "no_areas": "No areas",
@@ -1333,6 +1373,7 @@
         "not_supported": "WebRTC is not supported in this browser.",
         "start_failed": "Failed to start the WebRTC stream: {message}",
         "connect_failed": "Failed to connect the WebRTC stream: {message}",
+        "no_connection": "Could not connect the WebRTC stream.",
         "microphone_failed": "Could not access the microphone: {message}",
         "microphone_connect_failed": "Could not connect the microphone to the camera: {message}"
       },
@@ -1610,6 +1651,21 @@
         "syntax_error": "YAML syntax error",
         "error": "Error in parsing YAML: {reason}",
         "error_location": "line: {line}, column: {column}",
+        "reasons": {
+          "duplicated_mapping_key": "Duplicated mapping key",
+          "bad_mapping_indentation": "Bad indentation of a mapping entry",
+          "bad_sequence_indentation": "Bad indentation of a sequence entry",
+          "deficient_indentation": "Deficient indentation",
+          "tab_indentation": "Tab characters must not be used in indentation",
+          "multiline_implicit_key": "Can not read a block mapping entry; a multiline key may not be an implicit key",
+          "missing_key_value_space": "A whitespace character is expected after the key-value separator within a block mapping",
+          "missing_colon": "Expected ':' after a mapping key",
+          "missing_comma": "Missed comma between flow collection entries",
+          "unterminated_flow_collection": "Unexpected end of the stream within a flow collection",
+          "unterminated_single_quote": "Unexpected end of the stream within a single quoted scalar",
+          "unterminated_double_quote": "Unexpected end of the stream within a double quoted scalar",
+          "unexpected_content": "End of the stream or a document separator is expected"
+        },
         "enter_fullscreen": "Enter fullscreen",
         "exit_fullscreen": "Exit fullscreen",
         "find_and_replace": "Find and replace",
@@ -1630,6 +1686,12 @@
         "go_to_line": {
           "label": "Go to line",
           "go": "Go"
+        },
+        "fold": {
+          "fold_line": "Fold line",
+          "unfold_line": "Unfold line",
+          "folded_code": "Folded code",
+          "unfold": "Unfold"
         }
       },
       "state-class-picker": {
@@ -1870,6 +1932,7 @@
       "image_cropper": {
         "crop": "Crop",
         "crop_image": "Picture to crop",
+        "load_error": "This picture could not be loaded. Try another file.",
         "use_original": "Use original"
       },
       "date-picker": {
@@ -2186,6 +2249,8 @@
           "visibility_unit": "Visibility unit",
           "wind_speed_unit": "Wind speed unit",
           "device_class": "Show as",
+          "type": "Type",
+          "type_default": "Default ({type})",
           "switch_as_x": "Show switch as",
           "invert": {
             "label": "Invert state",
@@ -3220,13 +3285,13 @@
         },
         "mcp": {
           "header": "Model Context Protocol",
-          "description": "Add one of the URLs below to your AI agent. See the {documentation_link} for agent-specific instructions.",
-          "description_disabled": "See the {documentation_link} to learn how to connect your AI agent to Home Assistant.",
+          "description": "Add one of the URLs below to your AI app. See the {documentation_link} for app-specific instructions.",
+          "description_disabled": "See the {documentation_link} to learn how to connect your AI app to Home Assistant.",
           "documentation": "documentation",
           "enable": "[%key:ui::common::enable%]",
           "disable": "[%key:ui::common::disable%]",
           "disable_confirm_title": "Disable the Model Context Protocol server?",
-          "disable_confirm_text": "AI agents connected to the server will lose access to Home Assistant.",
+          "disable_confirm_text": "AI apps connected to the server will lose access to Home Assistant.",
           "your_api_header": "Main URL",
           "apis_header": "Individual URLs",
           "copy_url": "Copy URL",
@@ -4640,6 +4705,8 @@
           },
           "delete_source": "Are you sure you want to remove this source?",
           "save_config_failed": "Failed to save config: {error}",
+          "unsaved_confirm_title": "[%key:ui::panel::config::automation::editor::unsaved_confirm_title%]",
+          "unsaved_confirm_text": "[%key:ui::panel::config::automation::editor::unsaved_confirm_text%]",
           "delete_integration": "Are you sure you want to remove this integration? It will remove the entities it provides",
           "grid": {
             "title": "Electricity grid",
@@ -4647,7 +4714,6 @@
             "learn_more": "More information on how to get started",
             "grid_connections": "Grid connections",
             "add_connection": "Add grid connection",
-            "edit_connection": "Edit grid connection",
             "delete_connection": "Delete grid connection",
             "grid_carbon_footprint": "Grid carbon footprint",
             "remove_co2_signal": "Remove Electricity Maps integration",
@@ -4713,7 +4779,6 @@
             "sub": "Let Home Assistant monitor your solar panels and give you insight on their performance.",
             "learn_more": "More information on how to get started",
             "solar_production": "Solar production",
-            "edit_solar_production": "Edit solar production",
             "delete_solar_production": "Remove solar production",
             "add_solar_production": "Add solar production",
             "stat_production": "Your solar energy production",
@@ -4727,8 +4792,6 @@
               "solar_production_power": "Solar production power",
               "solar_production_forecast": "Solar production forecast",
               "solar_production_forecast_description": "Adding solar production forecast information will allow you to quickly see your expected production for today.",
-              "dont_forecast_production": "Don't forecast production",
-              "forecast_production": "Forecast production",
               "add_forecast": "Add forecast",
               "energy_sensor_needed": "To track your solar production, you need an energy sensor."
             }
@@ -4738,7 +4801,6 @@
             "sub": "If you have a meter that measures your whole house consumption, you can configure it here.",
             "add_home_meter": "Add home meter",
             "remove_home_meter": "Remove home meter",
-            "edit_home_meter": "Edit home meter",
             "dialog": {
               "header": "Configure home consumption",
               "entity_para": "Pick a sensor which measures home consumption in either of {unit}.",
@@ -4753,7 +4815,6 @@
             "sub": "If you have a battery system, you can configure it to monitor how much energy was stored and used from your battery.",
             "learn_more": "More information on how to get started",
             "battery_systems": "Battery systems",
-            "edit_battery_system": "Edit battery system",
             "delete_battery_system": "Remove battery system",
             "add_battery_system": "Add battery system",
             "dialog": {
@@ -4790,7 +4851,6 @@
             "sub": "Let Home Assistant monitor your gas usage.",
             "learn_more": "More information on how to get started",
             "gas_consumption": "Gas consumption",
-            "edit_gas_source": "Edit gas source",
             "delete_gas_source": "Remove gas source",
             "add_gas_source": "Add gas source",
             "dialog": {
@@ -4799,6 +4859,7 @@
               "entity_para": "Pick a sensor which measures gas consumption in either of {unit}.",
               "note_para": "Note: It is not possible to add both sensors measuring a volume of gas and sensors measuring the amount of energy contained in the gas.",
               "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
+              "cost_tracking": "[%key:ui::panel::config::energy::grid::dialog::import_cost%]",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed gas.",
               "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
               "cost_stat": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat%]",
@@ -4823,13 +4884,13 @@
             "sub": "Let Home Assistant monitor your water usage.",
             "learn_more": "More information on how to get started",
             "water_consumption": "Water consumption",
-            "edit_water_source": "Edit water source",
             "delete_water_source": "Remove water source",
             "add_water_source": "Add water source",
             "dialog": {
               "header": "Configure water consumption",
               "paragraph": "Water consumption is the volume of water that flows to your home.",
               "entity_para": "Pick a sensor which measures water consumption in either of {unit}.",
+              "cost_tracking": "[%key:ui::panel::config::energy::grid::dialog::import_cost%]",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed water.",
               "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
@@ -5289,6 +5350,7 @@
               },
               "open": "Open",
               "edit": "Edit",
+              "duplicate": "Duplicate",
               "delete": "Delete",
               "add_dashboard": "Add dashboard",
               "set_as_default": "Set as default",
@@ -5305,6 +5367,8 @@
             "confirm_delete_selected_partly": "You can only delete {deletable} of the {selected} dashboards. The others are built-in or configured in YAML.",
             "delete_failed_title": "Delete failed",
             "delete_failed": "Some dashboards could not be deleted. Check system logs for more information.",
+            "duplicate_title": "{title} (copy)",
+            "duplicate_failed": "This dashboard could not be duplicated.",
             "cant_edit_yaml": "Dashboards created in YAML cannot be edited from the UI. Change them in configuration.yaml.",
             "cant_edit_lovelace": "The Overview dashboard title and icon cannot be changed. You can create a new dashboard to get more customization options.",
             "detail": {
@@ -6378,6 +6442,8 @@
                   "label": "Triggered by",
                   "no_triggers": "There are no triggers in this automation. Add a trigger first.",
                   "no_triggers_selected": "No triggers selected.",
+                  "blueprint_no_trigger_ids": "This blueprint has no triggers with IDs, so there is nothing to choose.",
+                  "blueprint_triggers_unavailable": "Complete all of the blueprint's required inputs to see its triggers.",
                   "id": "Trigger",
                   "missing_trigger": "Missing trigger",
                   "missing_triggers": "This condition references a trigger that no longer exists. Uncheck it to clear it.",
@@ -7492,7 +7558,7 @@
           "set_up_voice_assistant": "Set up voice assistant",
           "download_diagnostics": "Download diagnostics",
           "download_diagnostics_integration": "Download {integration} diagnostics",
-          "delete_device": "Delete",
+          "delete_device": "Remove device",
           "delete_device_integration": "Remove device from {integration}",
           "connected_devices": {
             "heading": "Connected devices",
@@ -7594,9 +7660,10 @@
             "unknown": "unknown"
           },
           "delete": "Delete",
-          "confirm_delete": "Are you sure you want to delete this device?",
+          "confirm_delete_title": "Remove device?",
+          "confirm_delete": "Are you sure you want to remove this device?",
           "confirm_delete_integration": "Are you sure you want to remove this device from {integration}?",
-          "error_delete": "Error deleting device",
+          "error_delete": "Error removing device",
           "picker": {
             "search": "Search {number} {number, plural,\n  one {device}\n  other {devices}\n}",
             "state": "Status",
@@ -13243,7 +13310,11 @@
           "no_repositories": "You have not added any repositories from a link yet.",
           "remove_title": "Remove {name} from the list?",
           "remove_text": "It no longer shows in the Marketplace. You can add it again later.",
-          "remove_installed": "Uninstall it first"
+          "remove_installed": "Uninstall it first",
+          "remove_selected_title": "Remove selected repositories?",
+          "remove_selected_text": "{count, plural,\n  one {The selected repository no longer shows in the Marketplace. You can add it again later.}\n  other {The {count} selected repositories no longer show in the Marketplace. You can add them again later.}\n}",
+          "remove_failed_title": "Remove failed",
+          "remove_failed": "Some repositories could not be removed."
         },
         "dialog_install": {
           "loading": "Loading repository",

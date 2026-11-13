@@ -1,56 +1,50 @@
 import { assert, describe, it } from "vitest";
 
+import type { HassServices } from "home-assistant-js-websocket";
 import { canToggleDomain } from "../../../src/common/entity/can_toggle_domain";
-import type { HomeAssistant } from "../../../src/types";
 
 describe("canToggleDomain", () => {
-  const hass: any = {
-    services: {
-      light: {
-        turn_on: null, // Service keys only need to be present for test
-        turn_off: null,
-      },
-      sensor: {
-        custom_service: null,
-      },
+  const services: any = {
+    light: {
+      turn_on: null, // Service keys only need to be present for test
+      turn_off: null,
+    },
+    sensor: {
+      custom_service: null,
     },
   };
 
   it("Detects lights toggle", () => {
-    assert.isTrue(canToggleDomain(hass, "light"));
+    assert.isTrue(canToggleDomain(services, "light"));
   });
 
   it("Detects sensors do not toggle", () => {
-    assert.isFalse(canToggleDomain(hass, "sensor"));
+    assert.isFalse(canToggleDomain(services, "sensor"));
   });
 
   it("Detects binary sensors do not toggle", () => {
-    assert.isFalse(canToggleDomain(hass, "binary_sensor"));
+    assert.isFalse(canToggleDomain(services, "binary_sensor"));
   });
 
   it("Detects covers toggle", () => {
     assert.isTrue(
       canToggleDomain(
         {
-          services: {
-            cover: {
-              open_cover: null,
-              close_cover: null,
-            },
+          cover: {
+            open_cover: null,
+            close_cover: null,
           },
-        } as unknown as HomeAssistant,
+        } as unknown as HassServices,
         "cover"
       )
     );
     assert.isFalse(
       canToggleDomain(
         {
-          services: {
-            cover: {
-              open: null,
-            },
+          cover: {
+            open: null,
           },
-        } as unknown as HomeAssistant,
+        } as unknown as HassServices,
         "cover"
       )
     );
@@ -60,25 +54,21 @@ describe("canToggleDomain", () => {
     assert.isTrue(
       canToggleDomain(
         {
-          services: {
-            lock: {
-              lock: null,
-              unlock: null,
-            },
+          lock: {
+            lock: null,
+            unlock: null,
           },
-        } as unknown as HomeAssistant,
+        } as unknown as HassServices,
         "lock"
       )
     );
     assert.isFalse(
       canToggleDomain(
         {
-          services: {
-            lock: {
-              unlock: null,
-            },
+          lock: {
+            unlock: null,
           },
-        } as unknown as HomeAssistant,
+        } as unknown as HassServices,
         "lock"
       )
     );
@@ -87,12 +77,10 @@ describe("canToggleDomain", () => {
     assert.isTrue(
       canToggleDomain(
         {
-          services: {
-            scene: {
-              turn_on: null,
-            },
+          scene: {
+            turn_on: null,
           },
-        } as unknown as HomeAssistant,
+        } as unknown as HassServices,
         "scene"
       )
     );
@@ -101,12 +89,10 @@ describe("canToggleDomain", () => {
     assert.isTrue(
       canToggleDomain(
         {
-          services: {
-            button: {
-              press: null,
-            },
+          button: {
+            press: null,
           },
-        } as unknown as HomeAssistant,
+        } as unknown as HassServices,
         "button"
       )
     );
@@ -115,25 +101,21 @@ describe("canToggleDomain", () => {
     assert.isTrue(
       canToggleDomain(
         {
-          services: {
-            custom_component: {
-              turn_on: null,
-              turn_off: null,
-            },
+          custom_component: {
+            turn_on: null,
+            turn_off: null,
           },
-        } as unknown as HomeAssistant,
+        } as unknown as HassServices,
         "custom_component"
       )
     );
     assert.isFalse(
       canToggleDomain(
         {
-          services: {
-            custom_component: {
-              turn_on: null,
-            },
+          custom_component: {
+            turn_on: null,
           },
-        } as unknown as HomeAssistant,
+        } as unknown as HassServices,
         "custom_component"
       )
     );

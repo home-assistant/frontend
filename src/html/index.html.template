@@ -65,23 +65,86 @@
     </script>
     <script>
         if (!window.latestJS) {
-          // Below the [legacy] browserslist floor the entry bundles cannot be
-          // parsed, or dialogs cannot open, and nothing would ever leave the
-          // launch screen. Test the features that set the floors: BigInt for
-          // Chrome 67, native <dialog> for Safari 15.4 and Firefox 98. Not
-          // transpiled, so keep this ES5.
-          if (
-            typeof BigInt === "undefined" ||
-            typeof document.createElement("dialog").showModal !== "function"
-          ) {
-            document.getElementById("ha-launch-screen-info-box").textContent =
-              "This browser is too old to run Home Assistant.";
-          } else {
-            window.customPanelJS = "<%= es5CustomPanelJS %>";
-            <% for (const entry of es5EntryJS) { %>
-              _ls("<%= entry %>", true);
-            <% } %>
-          }
+          // Floor check: BigInt for Chrome 67, <dialog> for Safari 15.4 and
+          // Firefox 98. Not transpiled, so keep this ES5.
+          (function () {
+            var ACCEPTED_KEY = "haUnsupportedBrowserAccepted";
+            var REMIND_AFTER = 30 * 24 * 60 * 60 * 1000;
+
+            function loadApp() {
+              window.customPanelJS = "<%= es5CustomPanelJS %>";
+              <% for (const entry of es5EntryJS) { %>
+                _ls("<%= entry %>", true);
+              <% } %>
+            }
+
+            if (
+              typeof BigInt !== "undefined" &&
+              typeof document.createElement("dialog").showModal === "function"
+            ) {
+              loadApp();
+              return;
+            }
+
+            // Shown while the app loads too.
+            var box = document.getElementById("ha-launch-screen-info-box");
+            var message = document.createElement("p");
+            message.textContent =
+              "This browser is no longer supported. Some parts of Home Assistant may not work.";
+            box.appendChild(message);
+
+            // Stored: "always", or when the user last continued (ms).
+            var stored = null;
+            try {
+              stored = localStorage.getItem(ACCEPTED_KEY);
+            } catch (_err) {
+              // Ask on every load.
+            }
+            if (stored === "always") {
+              loadApp();
+              return;
+            }
+            var acceptedAt = Number(stored) || 0;
+            // A clock behind the stored time asks again.
+            var age = Date.now() - acceptedAt;
+            if (acceptedAt && age >= 0 && age < REMIND_AFTER) {
+              loadApp();
+              return;
+            }
+
+            var actions = document.createElement("div");
+            actions.className = "ha-launch-screen-actions";
+            box.appendChild(actions);
+
+            var always = null;
+            var button = document.createElement("button");
+            button.type = "button";
+            button.textContent = "Continue anyway";
+            button.addEventListener("click", function () {
+              try {
+                localStorage.setItem(
+                  ACCEPTED_KEY,
+                  always && always.checked ? "always" : String(Date.now())
+                );
+              } catch (_err) {
+                // Continue this time only.
+              }
+              box.removeChild(actions);
+              loadApp();
+            });
+            actions.appendChild(button);
+
+            // From the first reminder on. A checkbox, so it is not chosen by
+            // accident.
+            if (acceptedAt) {
+              var label = document.createElement("label");
+              always = document.createElement("input");
+              always.type = "checkbox";
+              label.appendChild(always);
+              label.appendChild(document.createTextNode("Don't show again"));
+              actions.appendChild(label);
+            }
+          })();
         }
     </script>
 

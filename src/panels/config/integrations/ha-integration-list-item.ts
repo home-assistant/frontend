@@ -26,7 +26,7 @@ export class HaIntegrationListItem extends HaListItemButton {
   @consumeLocalize()
   private _localize!: LocalizeFunc;
 
-  protected override _renderInner(): TemplateResult {
+  protected override _renderStart(): TemplateResult {
     const integration = this.integration;
     const yamlOnly =
       !integration.config_flow &&
@@ -49,6 +49,12 @@ export class HaIntegrationListItem extends HaListItemButton {
               ></ha-domain-icon>`
         }
       </div>
+    `;
+  }
+
+  protected override _renderContent(): TemplateResult {
+    const integration = this.integration;
+    return html`
       <div part="content" class="content">
         <div part="headline" class="headline">
           ${
@@ -61,6 +67,16 @@ export class HaIntegrationListItem extends HaListItemButton {
           }
         </div>
       </div>
+    `;
+  }
+
+  protected override _renderEnd(): TemplateResult {
+    const integration = this.integration;
+    const yamlOnly =
+      !integration.config_flow &&
+      !integration.integrations &&
+      !integration.iot_standards;
+    return html`
       <div part="end" class="end">
         ${
           integration.cloud
@@ -126,6 +142,15 @@ export class HaIntegrationListItem extends HaListItemButton {
         display: flex;
         align-items: center;
         gap: var(--ha-space-2);
+      }
+      /* Raise the icons above the row's hit area so their tooltips open */
+      .end ha-svg-icon {
+        position: relative;
+        z-index: 1;
+      }
+      /* The chevron is decorative, keep it below the row's hit area */
+      .end ha-icon-next {
+        z-index: -1;
       }
       .discovered-icon {
         color: var(--primary-color);

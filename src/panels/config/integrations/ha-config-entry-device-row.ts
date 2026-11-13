@@ -76,7 +76,10 @@ class HaConfigEntryDeviceRow extends LitElement {
 
     const supportingText = [
       area ? html`<span class="area">${area.name}</span>` : undefined,
-      device.model || device.sw_version || device.manufacturer,
+      device.model ||
+        device.model_id ||
+        device.sw_version ||
+        device.manufacturer,
       entities.length
         ? bidiIsolate(
             this.hass.localize(
@@ -127,7 +130,7 @@ class HaConfigEntryDeviceRow extends LitElement {
         )}</span
       >
       ${!this.narrow ? html`<ha-icon-next slot="end"></ha-icon-next>` : nothing}
-      <div class="vertical-divider" slot="end" @click=${stopPropagation}></div>
+      <div class="vertical-divider" slot="end"></div>
       ${
         !this.narrow
           ? html`<ha-icon-button
@@ -350,8 +353,9 @@ class HaConfigEntryDeviceRow extends LitElement {
 
   private _handleDeleteDevice = async () => {
     const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize("ui.panel.config.devices.confirm_delete_title"),
       text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
-      confirmText: this.hass.localize("ui.common.delete"),
+      confirmText: this.hass.localize("ui.common.remove"),
       dismissText: this.hass.localize("ui.common.cancel"),
       destructive: true,
     });

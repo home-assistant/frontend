@@ -6,8 +6,10 @@ import { consume } from "../../../../../common/decorators/consume";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
+import "../../../../../components/animation/ha-fade-in";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
+import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-trigger-icon";
 import "../../../../../components/item/ha-list-item-option";
@@ -17,6 +19,7 @@ import type { TriggerCondition } from "../../../../../data/automation";
 import {
   automationTriggerContext,
   hasCustomTriggerId,
+  triggerOptionsResolved,
   type AutomationTriggerContext,
   type TriggerIdOption,
 } from "../../trigger/automation-trigger-id";
@@ -53,16 +56,33 @@ export class HaTriggerCondition extends LitElement {
     const selectedIds = (ensureArray(this.condition.id) ?? []).filter(Boolean);
     const triggerIdOptions = this._triggers?.options ?? [];
     const missingIds = this._missingIds(this.condition.id, triggerIdOptions);
+    const status = this._triggers?.blueprintStatus;
+    const resolved = triggerOptionsResolved(this._triggers);
 
     if (!triggerIdOptions.length && !selectedIds.length) {
-      return this.hass.localize(
-        "ui.panel.config.automation.editor.conditions.type.trigger.no_triggers"
-      );
+      switch (status) {
+        case "loading":
+          return html`<ha-fade-in .delay=${500}>
+            <ha-spinner size="small"></ha-spinner>
+          </ha-fade-in>`;
+        case "failed":
+          return this.hass.localize(
+            "ui.panel.config.automation.editor.conditions.type.trigger.blueprint_triggers_unavailable"
+          );
+        case "loaded":
+          return this.hass.localize(
+            "ui.panel.config.automation.editor.conditions.type.trigger.blueprint_no_trigger_ids"
+          );
+        case undefined:
+          return this.hass.localize(
+            "ui.panel.config.automation.editor.conditions.type.trigger.no_triggers"
+          );
+      }
     }
 
     return html`
       ${
-        missingIds.length
+        resolved && missingIds.length
           ? html`<ha-alert alert-type="warning">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.type.trigger.missing_triggers"
@@ -106,7 +126,13 @@ export class HaTriggerCondition extends LitElement {
               appearance="checkbox"
             >
               <span slot="start" class="trigger-row-leading">
-                <span class="trigger-index-badge">${option.index + 1}</span>
+                ${
+                  this._triggers?.showIndices
+                    ? html`<span class="trigger-index-badge"
+                        >${option.index + 1}</span
+                      >`
+                    : nothing
+                }
                 <ha-trigger-icon
                   .trigger=${
                     "trigger" in option.trigger ? option.trigger.trigger : ""
@@ -119,7 +145,9 @@ export class HaTriggerCondition extends LitElement {
                 )}
               </span>
               ${
-                option.duplicate || hasCustomTriggerId(option)
+                option.duplicate ||
+                hasCustomTriggerId(option) ||
+                !this._triggers?.showIndices
                   ? html`<span
                       slot="supporting-text"
                       class="trigger-id ${option.duplicate ? "duplicate" : ""}"
@@ -152,14 +180,22 @@ export class HaTriggerCondition extends LitElement {
               .disabled=${this.disabled}
               appearance="checkbox"
             >
-              <span slot="start" class="missing-trigger-badge">
-                <ha-svg-icon .path=${mdiLinkVariantOff}></ha-svg-icon>
-                <span class="missing-trigger-id">${id}</span>
-              </span>
+              ${
+                resolved
+                  ? html`<span slot="start" class="missing-trigger-badge">
+                      <ha-svg-icon .path=${mdiLinkVariantOff}></ha-svg-icon>
+                      <span class="missing-trigger-id">${id}</span>
+                    </span>`
+                  : nothing
+              }
               <span slot="headline">
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.conditions.type.trigger.missing_trigger"
-                )}
+                ${
+                  resolved
+                    ? this.hass.localize(
+                        "ui.panel.config.automation.editor.conditions.type.trigger.missing_trigger"
+                      )
+                    : id
+                }
               </span>
             </ha-list-item-option>
           `
@@ -197,8 +233,7 @@ export class HaTriggerCondition extends LitElement {
         ? ids
         : [...ids, id]
       : ids.filter((_id) => _id !== id);
-    if (this._triggers) {
-      this._triggers.select(this.condition, selectedIds);
+    if (this._triggers?.select(this.condition, selectedIds)) {
       return;
     }
     fireEvent(this, "value-changed", {

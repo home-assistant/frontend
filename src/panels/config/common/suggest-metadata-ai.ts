@@ -1,5 +1,7 @@
 import { dump } from "js-yaml";
 import type { AITaskStructure, GenDataTaskResult } from "../../../data/ai_task";
+import type { RoomType } from "../../../data/area_icon_suggestions";
+import { isRoomType, ROOM_TYPES } from "../../../data/area_icon_suggestions";
 import type { HomeAssistant } from "../../../types";
 import type { SuggestWithAIGenerateTask } from "../../../components/ha-suggest-with-ai-button";
 import {
@@ -14,6 +16,7 @@ export interface MetadataSuggestionResult {
   category?: string;
   labels?: string[];
   floor?: string;
+  room?: RoomType;
 }
 
 export type MetadataSuggestionDomain =
@@ -25,6 +28,7 @@ export interface MetadataSuggestionInclude {
   categories?: boolean;
   labels?: boolean;
   floor?: boolean;
+  room?: boolean;
 }
 
 export const SUGGESTION_INCLUDE_DEFAULT: MetadataSuggestionInclude = {
@@ -86,6 +90,7 @@ export async function generateMetadataSuggestionTask<T>(
   // providers reject a select/enum schema with an empty options list.
   const includeCategories = categoryOptions.length > 0;
   const includeFloor = floorOptions.length > 0;
+  const includeRoom = Boolean(include.room) && domain === "area";
 
   const structure: AITaskStructure = {
     ...(include.name && {
@@ -139,6 +144,20 @@ export async function generateMetadataSuggestionTask<T>(
         },
       },
     }),
+    ...(includeRoom && {
+      room: {
+        description: `The type of room that best matches the ${domain}`,
+        required: false,
+        selector: {
+          select: {
+            options: ROOM_TYPES.map((room) => ({
+              value: room,
+              label: room.replace(/_/g, " "),
+            })),
+          },
+        },
+      },
+    }),
   };
 
   const requestedParts = [
@@ -147,6 +166,7 @@ export async function generateMetadataSuggestionTask<T>(
     includeCategories ? "a category" : null,
     include.labels ? "labels" : null,
     includeFloor ? "a floor" : null,
+    includeRoom ? "a room type" : null,
   ].filter((entry): entry is string => entry !== null);
 
   const categoryLabels: string[] = [
@@ -233,6 +253,10 @@ export async function processMetadataSuggestion(
   const processed: MetadataSuggestionResult = {
     name: include.name ? result.data.name : undefined,
     description: include.description ? result.data.description : undefined,
+    room:
+      include.room && result.data.room && isRoomType(result.data.room)
+        ? result.data.room
+        : undefined,
   };
 
   // Convert category name to ID
