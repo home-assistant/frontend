@@ -125,7 +125,7 @@ describe("ha-input native ids", () => {
 
 describe("ha-input ignore-step-mismatch", () => {
   // jsdom's ElementInternals always reports valid, so take wa-input's
-  // validity from the native input like the browser does.
+  // validity from the native input and fire `invalid` like the browser does.
   const mountNumberInput = async (
     props: Partial<HaInput>,
     value: string
@@ -134,16 +134,28 @@ describe("ha-input ignore-step-mismatch", () => {
     const native = nativeInput(el);
     native.value = value;
     const waInput = el.shadowRoot!.querySelector("wa-input")!;
-    vi.spyOn(waInput, "checkValidity").mockImplementation(() =>
-      native.checkValidity()
-    );
+    vi.spyOn(waInput, "checkValidity").mockImplementation(() => {
+      const valid = native.checkValidity();
+      if (!valid) {
+        waInput.dispatchEvent(new Event("invalid"));
+      }
+      return valid;
+    });
     return el;
+  };
+
+  const shownAsInvalid = async (el: HaInput): Promise<boolean> => {
+    await el.updateComplete;
+    return el
+      .shadowRoot!.querySelector("wa-input")!
+      .classList.contains("invalid");
   };
 
   it("flags a value that doesn't match the step by default", async () => {
     const el = await mountNumberInput({ step: 1 }, "21.1");
     expect(nativeInput(el).validity.stepMismatch).toBe(true);
     expect(el.checkValidity()).toBe(false);
+    expect(await shownAsInvalid(el)).toBe(true);
   });
 
   it("accepts a value that doesn't match the step", async () => {
@@ -152,6 +164,7 @@ describe("ha-input ignore-step-mismatch", () => {
       "21.1"
     );
     expect(el.checkValidity()).toBe(true);
+    expect(await shownAsInvalid(el)).toBe(false);
   });
 
   it("still flags other errors", async () => {

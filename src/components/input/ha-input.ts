@@ -202,12 +202,14 @@ export class HaInput extends WaInputMixin(LitElement) {
   }
 
   public override checkValidity(): boolean {
-    if (super.checkValidity()) {
+    // Checked before wa-input, whose failed check fires wa-invalid and marks the field invalid.
+    if (this.ignoreStepMismatch && this._hasOnlyStepMismatch()) {
       return true;
     }
-    if (!this.ignoreStepMismatch) {
-      return false;
-    }
+    return super.checkValidity();
+  }
+
+  private _hasOnlyStepMismatch(): boolean {
     const validity = this._getNativeInput()?.validity;
     return (
       !!validity?.stepMismatch &&
