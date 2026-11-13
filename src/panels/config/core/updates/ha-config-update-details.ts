@@ -29,6 +29,7 @@ import type {
 } from "../../../../data/update_report";
 import {
   fetchUpdateReport,
+  UPDATE_REPORT_PENDING_REFRESH_INTERVAL,
   updateReportReferencePath,
   updateReportReferences,
   updateReportWorseCount,
@@ -38,9 +39,6 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import { openRepairsIssue } from "../../repairs/open-repairs-issue";
-
-// The report is a live diff until startup has settled
-const PENDING_REFRESH_INTERVAL = 30000;
 
 @customElement("ha-config-update-details")
 class HaConfigUpdateDetails extends SubscribeMixin(LitElement) {
@@ -105,7 +103,7 @@ class HaConfigUpdateDetails extends SubscribeMixin(LitElement) {
     if (report.pending && this.isConnected) {
       this._refreshTimeout = window.setTimeout(
         () => this._fetchReport(),
-        PENDING_REFRESH_INTERVAL
+        UPDATE_REPORT_PENDING_REFRESH_INTERVAL
       );
     }
     this.hass.loadBackendTranslation("title", [

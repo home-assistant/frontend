@@ -65,6 +65,9 @@ export interface UpdateReport {
   upcoming: UpdateReportUpcomingIssue[];
 }
 
+// The report is a live diff until startup has settled
+export const UPDATE_REPORT_PENDING_REFRESH_INTERVAL = 30000;
+
 export const fetchUpdateReport = (
   hass: Pick<HomeAssistant, "callWS">,
   entityId: string

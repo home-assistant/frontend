@@ -47,6 +47,7 @@ import type { UpdateReport } from "../../../data/update_report";
 import {
   fetchUpdateReport,
   findCoreUpdateEntityId,
+  UPDATE_REPORT_PENDING_REFRESH_INTERVAL,
   updateReportWorseCount,
 } from "../../../data/update_report";
 import type { UpdateEntity } from "../../../data/update";
@@ -96,6 +97,21 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
 
   @state() private _coreReport?: { entityId: string; report: UpdateReport };
 
+  private _reportRefreshTimeout?: number;
+
+  // The router caches this page, so refetch whenever it is shown again
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._loadCoreReport();
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    clearTimeout(this._reportRefreshTimeout);
+  }
+
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
@@ -108,15 +124,24 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
   }
 
   private async _loadCoreReport() {
+    clearTimeout(this._reportRefreshTimeout);
     const entityId = findCoreUpdateEntityId(this.hass.states);
     if (!entityId) {
       return;
     }
+    let report: UpdateReport | null;
     try {
-      const report = await fetchUpdateReport(this.hass, entityId);
-      this._coreReport = report ? { entityId, report } : undefined;
+      report = await fetchUpdateReport(this.hass, entityId);
     } catch (_err) {
-      // Non-fatal: the entry point stays hidden.
+      // Non-fatal: keep the last known report
+      return;
+    }
+    this._coreReport = report ? { entityId, report } : undefined;
+    if (report?.pending && this.isConnected) {
+      this._reportRefreshTimeout = window.setTimeout(
+        () => this._loadCoreReport(),
+        UPDATE_REPORT_PENDING_REFRESH_INTERVAL
+      );
     }
   }
 
