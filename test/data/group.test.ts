@@ -117,4 +117,24 @@ describe("filterGroupsWithListedMembers", () => {
       "light.gone",
     ]);
   });
+
+  it("hidden intermediate group: drops the outer group", () => {
+    // House contains the hidden Downstairs group, which contains the lamp.
+    const house = entity("light.house", {
+      entity_id: ["light.downstairs"],
+    });
+    const states = toStates(lamp, ceiling, helperGroup, house);
+    expect(
+      filterGroupsWithListedMembers(["light.house", "light.lamp"], states)
+    ).toEqual(["light.lamp"]);
+  });
+
+  it("groups that contain each other: no infinite loop", () => {
+    const a = entity("light.a", { entity_id: ["light.b"] });
+    const b = entity("light.b", { entity_id: ["light.a"] });
+    const states = toStates(a, b);
+    expect(filterGroupsWithListedMembers(["light.a"], states)).toEqual([
+      "light.a",
+    ]);
+  });
 });

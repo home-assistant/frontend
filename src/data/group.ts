@@ -41,21 +41,33 @@ export const computeGroupMemberIds = (
 };
 
 /**
- * Drops groups that have a member in `entityIds`. A group with no listed
- * member stays, so hiding its bulbs doesn't read "All off".
+ * Drops groups that have a member in `entityIds`, at any depth (a hidden
+ * group in between still counts). A group with no listed member stays, so
+ * hiding its bulbs doesn't read "All off".
  */
 export const filterGroupsWithListedMembers = (
   entityIds: string[],
   states: HassEntities
 ): string[] => {
   const listed = new Set(entityIds);
-  return entityIds.filter((entityId) => {
-    const stateObj = states[entityId];
-    return !(
-      stateObj &&
-      computeGroupMemberIds(stateObj)?.some(
-        (memberId) => memberId !== entityId && listed.has(memberId)
-      )
-    );
-  });
+  const hasListedDescendant = (groupId: string): boolean => {
+    const seen = new Set([groupId]);
+    const queue = [groupId];
+    while (queue.length) {
+      const stateObj = states[queue.shift()!];
+      for (const memberId of (stateObj && computeGroupMemberIds(stateObj)) ??
+        []) {
+        if (seen.has(memberId)) {
+          continue;
+        }
+        if (listed.has(memberId)) {
+          return true;
+        }
+        seen.add(memberId);
+        queue.push(memberId);
+      }
+    }
+    return false;
+  };
+  return entityIds.filter((entityId) => !hasListedDescendant(entityId));
 };
