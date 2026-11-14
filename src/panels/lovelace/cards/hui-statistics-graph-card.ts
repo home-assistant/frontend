@@ -393,6 +393,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             }
             .fitYData=${this._config.fit_y_data || false}
             .hideLegend=${this._config.hide_legend || false}
+            .hideSingleStatType=${this._config.hide_single_stat_type || false}
             .logarithmicScale=${this._config.logarithmic_scale || false}
             .daysToShow=${daysToShow}
             .height=${hasFixedHeight ? "100%" : undefined}

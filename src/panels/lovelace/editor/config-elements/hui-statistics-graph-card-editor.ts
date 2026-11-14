@@ -88,6 +88,7 @@ const cardConfigStruct = assign(
     unit: optional(string()),
     hide_legend: optional(boolean()),
     expand_legend: optional(boolean()),
+    hide_single_stat_type: optional(boolean()),
     logarithmic_scale: optional(boolean()),
     min_y_axis: optional(number()),
     max_y_axis: optional(number()),
@@ -319,6 +320,11 @@ export class HuiStatisticsGraphCardEditor
                     operator: "not_eq",
                     value: true,
                   },
+                  selector: { boolean: {} },
+                },
+                {
+                  name: "hide_single_stat_type",
+                  required: false,
                   selector: { boolean: {} },
                 },
               ],
@@ -602,6 +608,7 @@ export class HuiStatisticsGraphCardEditor
       case "unit":
       case "hide_legend":
       case "expand_legend":
+      case "hide_single_stat_type":
       case "logarithmic_scale":
       case "min_y_axis":
       case "max_y_axis":
