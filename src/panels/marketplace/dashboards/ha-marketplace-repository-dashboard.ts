@@ -97,6 +97,7 @@ import {
   markdownWithRepositoryContext,
   repositoryUrl,
 } from "../tools/markdown";
+import { MARKETPLACE_NAME } from "../../../common/translations/name-placeholders";
 
 // Repository pages live at /<id> below /repository, my links at /repository itself.
 const repositoryIdFromRoute = (route: Route): string => route.path.substring(1);
@@ -495,7 +496,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
       <hass-subpage
         .narrow=${this.narrow}
         back-path="/marketplace"
-        .header=${this._i18n.localize("ui.panel.marketplace.title")}
+        .header=${MARKETPLACE_NAME}
       >
         <ha-dropdown
           slot="toolbar-icon"

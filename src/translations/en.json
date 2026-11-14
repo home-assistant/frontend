@@ -17,7 +17,6 @@
     "climate": "Climate",
     "home": "Overview",
     "maintenance": "Maintenance",
-    "marketplace": "Marketplace",
     "notfound": "Page not found"
   },
   "state": {
@@ -3053,7 +3052,6 @@
             "secondary": "Run extra applications next to Home Assistant"
           },
           "marketplace": {
-            "main": "Marketplace",
             "secondary": "Install community integrations, dashboard content, themes, and templates"
           },
           "dashboards": {
@@ -8039,7 +8037,7 @@
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "marketplace_uninstall": {
               "title": "Also uninstall {name}?",
-              "text": "{name} came from the Marketplace. Its files stay on your system, and the Marketplace keeps checking for updates until you uninstall it.",
+              "text": "{name} came from the {marketplace}. Its files stay on your system, and the {marketplace} keeps checking for updates until you uninstall it.",
               "confirm": "Uninstall",
               "dismiss": "Keep",
               "failed": "Uninstall failed. Check the Home Assistant logs for details."
@@ -13206,12 +13204,11 @@
         "error_no_data": "You need to select some data sources first."
       },
       "marketplace": {
-        "title": "Marketplace",
-        "not_loaded": "The Marketplace is not available. It does not load in recovery mode or when it failed to start, check the Home Assistant logs for more information.",
-        "load_failed": "The Marketplace could not load its data: {error}",
+        "not_loaded": "The {marketplace} is not available. It does not load in recovery mode or when it failed to start, check the Home Assistant logs for more information.",
+        "load_failed": "The {marketplace} could not load its data: {error}",
         "warning": {
-          "title": "Before you install from the Marketplace",
-          "intro": "Marketplace items are made by community contributors and are not reviewed by the Home\u00a0Assistant project. Treat them like plugins for any other software.",
+          "title": "Before you install from the {marketplace}",
+          "intro": "{marketplace} items are made by community contributors and are not reviewed by the Home\u00a0Assistant project. Treat them like plugins for any other software.",
           "risks_title": "Anything you install can",
           "risks": {
             "access": "Access and control everything in Home\u00a0Assistant",
@@ -13247,23 +13244,23 @@
         },
         "dashboard": {
           "search": "Search {number} {number, plural,\n  one {repository}\n  other {repositories}\n}",
-          "empty_header": "Nothing in the Marketplace yet",
-          "empty_text": "The Marketplace gets its list from the community catalog, which could not be reached yet. The list shows up here once it loads.",
+          "empty_header": "Nothing in the {marketplace} yet",
+          "empty_text": "The {marketplace} gets its list from the community catalog, which could not be reached yet. The list shows up here once it loads.",
           "no_data": "No repositories matching search and filters",
           "repository_not_found": "Repository not found"
         },
         "entry": {
-          "disabled": "The Marketplace is disabled. Enable it on the integration page to use it.",
+          "disabled": "The {marketplace} is disabled. Enable it on the integration page to use it.",
           "open_integration": "Open integration page",
-          "failed": "The Marketplace could not be loaded, check the Home Assistant logs for more information.",
-          "failed_reason": "The Marketplace could not be loaded: {reason}",
-          "retrying": "The Marketplace could not start yet, retrying in a moment"
+          "failed": "The {marketplace} could not be loaded, check the Home Assistant logs for more information.",
+          "failed_reason": "The {marketplace} could not be loaded: {reason}",
+          "retrying": "The {marketplace} could not start yet, retrying in a moment"
         },
         "github": {
           "connect": "Connect GitHub",
           "add_repository_needs_github": "Connect GitHub to add the custom repository {repository}, then open the link again.",
           "rate_limited_title": "GitHub limit reached",
-          "rate_limited": "GitHub limits how often the Marketplace can reach it without a GitHub connection. Try again later, or connect GitHub for a higher limit."
+          "rate_limited": "GitHub limits how often the {marketplace} can reach it without a GitHub connection. Try again later, or connect GitHub for a higher limit."
         },
         "column": {
           "name": "Repository name",
@@ -13284,7 +13281,7 @@
           "error": "An unknown error occurred",
           "repository_not_found": "Repository {repository} not found",
           "add_repository_title": "Add custom repository",
-          "add_repository_description": "Add the custom repository {repository} to the Marketplace?"
+          "add_repository_description": "Add the custom repository {repository} to the {marketplace}?"
         },
         "filters": {
           "status": "Status",
@@ -13293,7 +13290,7 @@
         },
         "dialog_custom_repositories": {
           "title": "Add from a GitHub link",
-          "intro": "Add something that is not in the Marketplace yet, straight from its page on GitHub. Like everything in the Marketplace, it is made by the community and not tested or reviewed by the Home Assistant project.",
+          "intro": "Add something that is not in the {marketplace} yet, straight from its page on GitHub. Like everything in the {marketplace}, it is made by the community and not tested or reviewed by the Home Assistant project.",
           "link": "GitHub link",
           "link_helper": "The address of its page on GitHub, like https://github.com/owner/name",
           "type": "Type",
@@ -13308,10 +13305,10 @@
           "github": "GitHub repository",
           "no_repositories": "You have not added any repositories from a link yet.",
           "remove_title": "Remove {name} from the list?",
-          "remove_text": "It no longer shows in the Marketplace. You can add it again later.",
+          "remove_text": "It no longer shows in the {marketplace}. You can add it again later.",
           "remove_installed": "Uninstall it first",
           "remove_selected_title": "Remove selected repositories?",
-          "remove_selected_text": "{count, plural,\n  one {The selected repository no longer shows in the Marketplace. You can add it again later.}\n  other {The {count} selected repositories no longer show in the Marketplace. You can add them again later.}\n}",
+          "remove_selected_text": "{count, plural,\n  one {The selected repository no longer shows in the {marketplace}. You can add it again later.}\n  other {The {count} selected repositories no longer show in the {marketplace}. You can add them again later.}\n}",
           "remove_failed_title": "Remove failed",
           "remove_failed": "Some repositories could not be removed."
         },
@@ -13445,9 +13442,9 @@
           },
           "uninstall": {
             "title": "Uninstall {name}?",
-            "message": "This removes the files the Marketplace installed for it.",
+            "message": "This removes the files the {marketplace} installed for it.",
             "selected_title": "Uninstall selected repositories?",
-            "selected": "{count, plural,\n  one {The selected repository will be uninstalled. This removes the files the Marketplace installed for it.}\n  other {The {count} selected repositories will be uninstalled. This removes the files the Marketplace installed for them.}\n}",
+            "selected": "{count, plural,\n  one {The selected repository will be uninstalled. This removes the files the {marketplace} installed for it.}\n  other {The {count} selected repositories will be uninstalled. This removes the files the {marketplace} installed for them.}\n}",
             "selected_in_use": "{count, plural, one {The selected repository} other {The {count} selected repositories}} will be uninstalled. {in_use, plural, one {The setup of one of them} other {The setups of # of them}} will be deleted with their devices and entities. This cannot be undone.",
             "check_failed_title": "Unable to check repositories",
             "check_failed": "The setups of some selected repositories could not be verified.",
@@ -13455,17 +13452,17 @@
             "failed": "Some repositories could not be uninstalled."
           },
           "disabled": {
-            "title": "The Marketplace is disabled",
+            "title": "The {marketplace} is disabled",
             "reason": {
-              "invalid_token": "The GitHub connection no longer works. Reconfigure the Marketplace integration to connect GitHub again.",
-              "rate_limit": "The GitHub API rate limit has been reached. The Marketplace works again once the limit resets.",
-              "removed": "The Marketplace integration has been removed.",
-              "unknown": "The Marketplace is unavailable, check the Home Assistant logs for more information."
+              "invalid_token": "The GitHub connection no longer works. Reconfigure the {marketplace} integration to connect GitHub again.",
+              "rate_limit": "The GitHub API rate limit has been reached. The {marketplace} works again once the limit resets.",
+              "removed": "The {marketplace} integration has been removed.",
+              "unknown": "The {marketplace} is unavailable, check the Home Assistant logs for more information."
             }
           },
           "in_use": {
             "title": "{name} is in use",
-            "message": "{name} is still set up, and that setup runs on the files the Marketplace installed. Without them it would fail to load and leave its devices and entities behind. Delete it first, or let the Marketplace delete it and uninstall {name} for you.",
+            "message": "{name} is still set up, and that setup runs on the files the {marketplace} installed. Without them it would fail to load and leave its devices and entities behind. Delete it first, or let the {marketplace} delete it and uninstall {name} for you.",
             "ignored": "Ignored",
             "view_integration": "View integration",
             "delete_and_uninstall": "Delete and uninstall",

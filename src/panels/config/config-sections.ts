@@ -42,6 +42,7 @@ import {
 } from "@mdi/js";
 import memoizeOne from "memoize-one";
 import { haLora } from "../../resources/ha-icons";
+import { MARKETPLACE_NAME } from "../../common/translations/name-placeholders";
 import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../../types";
 import { mdiMqttLogo } from "../../resources/mqtt-logo-svg";
@@ -92,6 +93,7 @@ export const configSections: Record<string, PageNavigation[]> = {
     },
     {
       path: "/marketplace",
+      name: MARKETPLACE_NAME,
       translationKey: "marketplace",
       iconPath: mdiStore,
       iconColor: "#7C4DFF",

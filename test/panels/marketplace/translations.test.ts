@@ -1,5 +1,6 @@
 import { IntlMessageFormat } from "intl-messageformat";
 import { describe, expect, it } from "vitest";
+import { NAME_PLACEHOLDERS } from "../../../src/common/translations/name-placeholders";
 import en from "../../../src/translations/en.json";
 
 type TranslationNode = string | { [key: string]: TranslationNode };
@@ -13,7 +14,10 @@ const format = (key: string, values: Record<string, string | number>) => {
         typeof translations === "object" ? translations[part] : undefined,
       en as TranslationNode
     );
-  return new IntlMessageFormat(message as string, "en").format(values);
+  return new IntlMessageFormat(message as string, "en").format({
+    ...NAME_PLACEHOLDERS,
+    ...values,
+  });
 };
 
 describe("Marketplace strings", () => {
