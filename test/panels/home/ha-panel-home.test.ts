@@ -1,7 +1,21 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { provideHass } from "../../../src/fake_data/provide_hass";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type * as FrontendDataModule from "../../../src/data/frontend";
 import type { HomeFrontendSystemData } from "../../../src/data/frontend";
+import type * as GetStrategyModule from "../../../src/panels/lovelace/strategies/get-strategy";
+import type { HomeAssistant, Route } from "../../../src/types";
+import { provideHass } from "../../../src/fake_data/provide_hass";
+import { createMockHass } from "../../fixtures/hass";
+import { mockArea } from "../../common/entity/context/context-mock";
 import "../../../src/panels/home/ha-panel-home";
+import { navigate } from "../../../src/common/navigate";
+import { saveFrontendSystemData } from "../../../src/data/frontend";
+import { generateLovelaceDashboardStrategy } from "../../../src/panels/lovelace/strategies/get-strategy";
+
+// ha-panel-home transitively imports theme resources that reference
+// __STATIC_PATH__, a build-time global normally injected by the bundler.
+vi.hoisted(() => {
+  (globalThis as any).__STATIC_PATH__ = "/static/";
+});
 
 type HomePanel = HTMLElement & {
   hass: unknown;
@@ -29,8 +43,23 @@ vi.stubGlobal(
 vi.mock("../../../src/components/ha-button", () => ({}));
 vi.mock("../../../src/components/ha-svg-icon", () => ({}));
 vi.mock("../../../src/panels/lovelace/hui-root", () => ({}));
+vi.mock("../../../src/panels/home/dialogs/show-dialog-new-overview", () => ({
+  showNewOverviewDialog: vi.fn(),
+}));
+
+vi.mock(
+  "../../../src/panels/lovelace/strategies/get-strategy",
+  async (importOriginal) => {
+    const actual = await importOriginal<typeof GetStrategyModule>();
+    return {
+      ...actual,
+      generateLovelaceDashboardStrategy: vi.fn(),
+    };
+  }
+);
+
 vi.mock("../../../src/data/frontend", async (importOriginal) => {
-  const actual = await importOriginal<object>();
+  const actual = await importOriginal<typeof FrontendDataModule>();
   return {
     ...actual,
     fetchFrontendSystemData: vi.fn(),
@@ -38,9 +67,388 @@ vi.mock("../../../src/data/frontend", async (importOriginal) => {
     subscribeFrontendSystemData: vi.fn(() => () => undefined),
   };
 });
-vi.mock("../../../src/panels/home/dialogs/show-dialog-new-overview", () => ({
-  showNewOverviewDialog: vi.fn(),
-}));
+vi.mock("../../../src/common/navigate", () => ({ navigate: vi.fn() }));
+
+const mockedGenerateLovelaceDashboardStrategy = vi.mocked(
+  generateLovelaceDashboardStrategy
+);
+
+const mockedSaveFrontendSystemData = vi.mocked(saveFrontendSystemData);
+
+const mockedNavigate = vi.mocked(navigate);
+
+interface TestPanelHome extends HTMLElement {
+  hass: HomeAssistant;
+  route?: Route;
+  hasUpdated: boolean;
+  _lovelace?: { config: unknown };
+  willUpdate(changedProps: Map<string, unknown>): void;
+}
+
+const setPreviewConfig = (
+  el: TestPanelHome,
+  config: HomeFrontendSystemData | undefined
+) =>
+  (
+    el as unknown as Record<
+      "_setPreviewConfig",
+      (config: HomeFrontendSystemData | undefined) => void
+    >
+  )._setPreviewConfig(config);
+
+const setLovelace = (el: TestPanelHome) =>
+  (el as unknown as Record<"_setLovelace", () => Promise<void>>)._setLovelace();
+
+const saveConfig = (el: TestPanelHome, config: HomeFrontendSystemData) =>
+  (
+    el as unknown as Record<
+      "_saveConfig",
+      (config: HomeFrontendSystemData) => Promise<boolean>
+    >
+  )._saveConfig(config);
+
+const getPreviewConfig = (el: TestPanelHome) =>
+  (
+    el as unknown as Record<
+      "_previewConfig",
+      HomeFrontendSystemData | undefined
+    >
+  )._previewConfig;
+
+// The area registry now holds exactly these areas, as willUpdate() sees it.
+const setAreas = (el: TestPanelHome, areas: HomeAssistant["areas"]) => {
+  const oldHass = el.hass;
+  el.hass = { ...oldHass, areas };
+  el.willUpdate(new Map([["hass", oldHass]]));
+};
+
+// A registry the strategy depends on changes, as willUpdate() sees it.
+const changeAreaRegistry = (el: TestPanelHome) =>
+  setAreas(el, { ...el.hass.areas });
+
+// The user switches language, as willUpdate() sees it.
+const changeLocale = (el: TestPanelHome) => {
+  const oldHass = el.hass;
+  el.hass = { ...oldHass, localize: ((key: string) => key) as any };
+  el.willUpdate(new Map([["hass", oldHass]]));
+};
+
+const deferred = <T>() => {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((res) => {
+    resolve = res;
+  });
+  return { promise, resolve };
+};
+
+describe("ha-panel-home stale strategy regeneration guard", () => {
+  beforeEach(() => {
+    // Registry changes schedule a real 200ms debounce. Fake timers keep it
+    // from ever firing on its own, so each test decides when it runs.
+    vi.useFakeTimers();
+    mockedGenerateLovelaceDashboardStrategy.mockReset();
+    mockedSaveFrontendSystemData.mockReset();
+  });
+
+  afterEach(() => {
+    vi.clearAllTimers();
+    vi.useRealTimers();
+  });
+
+  const createPanel = () => {
+    const el = document.createElement(
+      "ha-panel-home"
+    ) as unknown as TestPanelHome;
+    el.hass = createMockHass();
+    return el;
+  };
+
+  it("keeps the most recently started regeneration when an older one resolves later", async () => {
+    const el = createPanel();
+
+    const older = deferred<{ views: unknown[] }>();
+    const newer = deferred<{ views: unknown[] }>();
+    mockedGenerateLovelaceDashboardStrategy
+      .mockReturnValueOnce(older.promise as any)
+      .mockReturnValueOnce(newer.promise as any);
+
+    // Two regenerations start back-to-back, with no preview change in
+    // between, simulating two _setLovelace() calls overlapping in flight.
+    const olderCall = setLovelace(el);
+    const newerCall = setLovelace(el);
+
+    // The newer one resolves first...
+    newer.resolve({ views: ["newer"] });
+    await newerCall;
+    // ...but the older one, from before it, resolves last.
+    older.resolve({ views: ["older"] });
+    await olderCall;
+
+    expect(el._lovelace?.config).toEqual({ views: ["newer"] });
+  });
+
+  it("discards a draft generation that resolves after preview is cleared", async () => {
+    const el = createPanel();
+
+    const staleGeneration = deferred<{ views: unknown[] }>();
+    const revertGeneration = deferred<{ views: unknown[] }>();
+    mockedGenerateLovelaceDashboardStrategy
+      .mockReturnValueOnce(staleGeneration.promise as any)
+      .mockReturnValueOnce(revertGeneration.promise as any);
+
+    // An edit starts a draft regeneration that will take a while to resolve.
+    setPreviewConfig(el, { hide_welcome_message: true });
+
+    // The user cancels before that regeneration resolves.
+    setPreviewConfig(el, undefined);
+
+    // The cancelled draft's request finally comes back, and must be dropped.
+    staleGeneration.resolve({ views: ["cancelled draft"] });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(el._lovelace).toBeUndefined();
+
+    revertGeneration.resolve({ views: ["saved config"] });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(el._lovelace?.config).toEqual({ views: ["saved config"] });
+  });
+
+  it("still applies a regeneration that starts after the previous one", async () => {
+    const el = createPanel();
+
+    const config: HomeFrontendSystemData = { hide_welcome_message: true };
+    mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
+      views: [],
+    } as any);
+
+    setPreviewConfig(el, config);
+    await setLovelace(el);
+
+    expect(el._lovelace?.config).toEqual({ views: [] });
+  });
+
+  it("passes the previewed draft to strategy generation, then falls back to the saved config once the preview is cleared", async () => {
+    const el = createPanel();
+    mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
+      views: [],
+    } as any);
+
+    setPreviewConfig(el, { hide_welcome_message: true });
+
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenLastCalledWith(
+      {
+        strategy: {
+          type: "home",
+          alert_entities: undefined,
+          favorite_entities: undefined,
+          home_panel: true,
+          hide_welcome_message: true,
+          hide_suggested_entities: undefined,
+          shortcuts: undefined,
+        },
+      },
+      el.hass
+    );
+
+    setPreviewConfig(el, undefined);
+
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenLastCalledWith(
+      {
+        strategy: {
+          type: "home",
+          alert_entities: undefined,
+          favorite_entities: undefined,
+          home_panel: true,
+          hide_welcome_message: undefined,
+          hide_suggested_entities: undefined,
+          shortcuts: undefined,
+        },
+      },
+      el.hass
+    );
+  });
+
+  it("previews a change at once and covers a pending registry regeneration", async () => {
+    const el = createPanel();
+    el.hasUpdated = true;
+    mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
+      views: [],
+    } as any);
+
+    // A registry change schedules the 200ms debounce...
+    changeAreaRegistry(el);
+    expect(mockedGenerateLovelaceDashboardStrategy).not.toHaveBeenCalled();
+
+    // ...then a preview change regenerates without waiting for any timer.
+    setPreviewConfig(el, { hide_welcome_message: true });
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
+
+    // The registry debounce must not add a second regeneration later.
+    await vi.advanceTimersByTimeAsync(200);
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
+  });
+
+  it("cancels a pending registry debounce so a fast save does not trigger a redundant extra regeneration", async () => {
+    const el = createPanel();
+    el.hasUpdated = true;
+    mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
+      views: [],
+    } as any);
+    mockedSaveFrontendSystemData.mockResolvedValueOnce(undefined);
+
+    // A registry change schedules the 200ms debounce...
+    changeAreaRegistry(el);
+
+    // ...but the user saves before it fires.
+    await saveConfig(el, { hide_welcome_message: true });
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
+
+    // Advancing past the debounce's original window must not add a second,
+    // now-redundant regeneration.
+    await vi.advanceTimersByTimeAsync(200);
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
+  });
+
+  it("reports failure without touching the dashboard when the backend save rejects", async () => {
+    const el = createPanel();
+    mockedSaveFrontendSystemData.mockRejectedValueOnce(new Error("boom"));
+
+    const success = await saveConfig(el, { hide_welcome_message: true });
+
+    expect(success).toBe(false);
+    expect(mockedGenerateLovelaceDashboardStrategy).not.toHaveBeenCalled();
+  });
+
+  it("does not regenerate when previewConfig is called with the already-current value", async () => {
+    const el = createPanel();
+    mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
+      views: [],
+    } as any);
+
+    // Opening and cancelling the dialog without any edit still calls
+    // previewConfig(undefined), which is already the current value.
+    setPreviewConfig(el, undefined);
+
+    // Nothing regenerates, not even once the debounce window has passed.
+    expect(mockedGenerateLovelaceDashboardStrategy).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(200);
+    expect(mockedGenerateLovelaceDashboardStrategy).not.toHaveBeenCalled();
+  });
+
+  it("ignores a content-equal preview in a new object without discarding the in-flight regeneration", async () => {
+    const el = createPanel();
+
+    const inFlight = deferred<{ views: unknown[] }>();
+    mockedGenerateLovelaceDashboardStrategy.mockReturnValueOnce(
+      inFlight.promise as any
+    );
+
+    // A draft is previewed, and its regeneration takes a while.
+    setPreviewConfig(el, { hide_welcome_message: true });
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
+
+    // The same draft content is pushed again, as a new object.
+    setPreviewConfig(el, { hide_welcome_message: true });
+
+    inFlight.resolve({ views: ["current"] });
+    await vi.advanceTimersByTimeAsync(0);
+    // The in-flight regeneration was not invalidated...
+    expect(el._lovelace?.config).toEqual({ views: ["current"] });
+
+    // ...and no extra one was scheduled behind it.
+    await vi.advanceTimersByTimeAsync(200);
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
+  });
+
+  it("clears _previewConfig after any successful save", async () => {
+    const el = createPanel();
+    mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
+      views: [],
+    } as any);
+    mockedSaveFrontendSystemData.mockResolvedValueOnce(undefined);
+
+    setPreviewConfig(el, { hide_welcome_message: true });
+
+    // The editors are disabled while saving, so no newer draft can exist:
+    // the preview goes even when its content differs from the saved config,
+    // and a reopened dialog does not inherit it.
+    await saveConfig(el, { hide_suggested_entities: true });
+
+    expect(getPreviewConfig(el)).toBeUndefined();
+  });
+});
+
+describe("ha-panel-home deleted area view redirect", () => {
+  beforeEach(() => {
+    // Registry changes schedule a real 200ms debounce. Fake timers keep it
+    // from ever firing on its own, so each test decides when it runs.
+    vi.useFakeTimers();
+    mockedGenerateLovelaceDashboardStrategy.mockReset();
+    mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
+      views: [],
+    } as any);
+    mockedNavigate.mockReset();
+  });
+
+  afterEach(() => {
+    vi.clearAllTimers();
+    vi.useRealTimers();
+  });
+
+  const kitchen = mockArea({ area_id: "kitchen", name: "kitchen" });
+  const living = mockArea({ area_id: "living_room", name: "living_room" });
+
+  // An updated panel showing the kitchen area view.
+  const createKitchenViewPanel = () => {
+    const el = document.createElement(
+      "ha-panel-home"
+    ) as unknown as TestPanelHome;
+    el.hass = createMockHass({}, { areas: { kitchen, living_room: living } });
+    el.route = { prefix: "/home", path: "/areas-kitchen" };
+    el.hasUpdated = true;
+    return el;
+  };
+
+  // Protects the registry debounce redirect: leaving a deleted area's view
+  // for the overview instead of regenerating a dashboard without it.
+  it("redirects to the overview once the debounce fires after the current area is deleted", async () => {
+    const el = createKitchenViewPanel();
+
+    setAreas(el, { living_room: living });
+    await vi.advanceTimersByTimeAsync(200);
+
+    expect(mockedNavigate).toHaveBeenCalledTimes(1);
+    expect(mockedNavigate).toHaveBeenCalledWith("/home");
+    expect(mockedGenerateLovelaceDashboardStrategy).not.toHaveBeenCalled();
+  });
+
+  // Protects the redirect check from firing for an area other than the one
+  // being viewed: the dashboard just regenerates.
+  it("regenerates without redirecting when another area is deleted", async () => {
+    const el = createKitchenViewPanel();
+
+    setAreas(el, { kitchen });
+    await vi.advanceTimersByTimeAsync(200);
+
+    expect(mockedNavigate).not.toHaveBeenCalled();
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
+  });
+
+  // Protects the redirect from being dropped by a locale change that lands
+  // inside the registry debounce window.
+  it("still redirects when the locale changes before the debounce fires", async () => {
+    const el = createKitchenViewPanel();
+
+    setAreas(el, { living_room: living });
+    changeLocale(el);
+    // The locale change regenerates at once, without waiting for the timer.
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(200);
+
+    expect(mockedNavigate).toHaveBeenCalledTimes(1);
+    expect(mockedNavigate).toHaveBeenCalledWith("/home");
+  });
+});
 
 const STORED: HomeFrontendSystemData = {
   welcome_banner_dismissed: false,
@@ -74,8 +482,6 @@ afterEach(() => {
 
 describe("home panel welcome banner", () => {
   it("stays hidden when the home config load is rejected", async () => {
-    const { saveFrontendSystemData } =
-      await import("../../../src/data/frontend");
     const { showNewOverviewDialog } =
       await import("../../../src/panels/home/dialogs/show-dialog-new-overview");
     let dismissed: Promise<void> | undefined;
@@ -95,12 +501,10 @@ describe("home panel welcome banner", () => {
     (panel["_learnMore"] as () => void)();
     await dismissed;
     await panel.updateComplete;
-    expect(vi.mocked(saveFrontendSystemData)).not.toHaveBeenCalled();
+    expect(mockedSaveFrontendSystemData).not.toHaveBeenCalled();
   });
 
   it("dismissing saves the loaded favourites, not an empty config", async () => {
-    const { saveFrontendSystemData } =
-      await import("../../../src/data/frontend");
     const { showNewOverviewDialog } =
       await import("../../../src/panels/home/dialogs/show-dialog-new-overview");
     let dismissed: Promise<void> | undefined;
@@ -116,8 +520,8 @@ describe("home panel welcome banner", () => {
     (panel["_learnMore"] as () => void)();
     await dismissed;
     await panel.updateComplete;
-    expect(vi.mocked(saveFrontendSystemData)).toHaveBeenCalledTimes(1);
-    const saved = vi.mocked(saveFrontendSystemData).mock.calls[0][2] as any;
+    expect(mockedSaveFrontendSystemData).toHaveBeenCalledTimes(1);
+    const saved = mockedSaveFrontendSystemData.mock.calls[0][2] as any;
     expect(saved.favorite_entities).toEqual(STORED.favorite_entities);
     expect(saved.shortcuts).toEqual(STORED.shortcuts);
     expect(saved.welcome_banner_dismissed).toBe(true);
