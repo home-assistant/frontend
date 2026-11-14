@@ -146,6 +146,7 @@ export const COLLAPSIBLE_ACTION_ELEMENTS = [
   "ha-automation-action-parallel",
   "ha-automation-action-repeat",
   "ha-automation-action-sequence",
+  "ha-automation-action-wait_for_trigger",
 ];
 
 export const ACTION_BUILDING_BLOCKS = [
