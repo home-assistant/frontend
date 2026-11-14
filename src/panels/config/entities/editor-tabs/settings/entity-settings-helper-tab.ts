@@ -17,7 +17,7 @@ import { HELPERS_CRUD } from "../../../../../data/helpers_crud";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
-import type { Helper } from "../../../helpers/const";
+import type { Helper, HelperFormElement } from "../../../helpers/const";
 import "../../../helpers/forms/ha-counter-form";
 import "../../../helpers/forms/ha-input_boolean-form";
 import "../../../helpers/forms/ha-input_button-form";
@@ -25,6 +25,7 @@ import "../../../helpers/forms/ha-input_datetime-form";
 import "../../../helpers/forms/ha-input_number-form";
 import "../../../helpers/forms/ha-input_select-form";
 import "../../../helpers/forms/ha-input_text-form";
+import "../../../helpers/forms/ha-schedule-form";
 import "../../../helpers/forms/ha-timer-form";
 import "../../entity-registry-settings-editor";
 import type { EntityRegistrySettingsEditor } from "../../entity-registry-settings-editor";
@@ -50,6 +51,8 @@ export class EntitySettingsHelperTab extends LitElement {
 
   @query("entity-registry-settings-editor")
   private _registryEditor?: EntityRegistrySettingsEditor;
+
+  @query(".helper-form > *") private _helperForm?: HelperFormElement;
 
   protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
@@ -98,7 +101,7 @@ export class EntitySettingsHelperTab extends LitElement {
                 { platform: this.entry.platform }
               )
             : html`
-                <span @value-changed=${this._valueChanged}>
+                <span class="helper-form" @value-changed=${this._valueChanged}>
                   ${dynamicElement(`ha-${this.entry.platform}-form`, {
                     item: this._item,
                     entry: this.entry,
@@ -150,14 +153,7 @@ export class EntitySettingsHelperTab extends LitElement {
   }
 
   private async _getItem() {
-    const [items] = await Promise.all([
-      HELPERS_CRUD[this.entry.platform].fetch(this.hass!),
-      // Only schedules need FullCalendar, which some older browsers cannot
-      // load. The form renders with the item, so it must be defined by then.
-      this.entry.platform === "schedule"
-        ? import("../../../helpers/forms/ha-schedule-form")
-        : undefined,
-    ]);
+    const items = await HELPERS_CRUD[this.entry.platform].fetch(this.hass!);
     const item =
       items.find((helper) => helper.id === this.entry.unique_id) || null;
     this._item = item;
@@ -165,6 +161,8 @@ export class EntitySettingsHelperTab extends LitElement {
   }
 
   private async _updateItem(): Promise<void> {
+    // Updates `_item` through `value-changed`.
+    this._helperForm?.applyPendingChanges?.();
     this._submitting = true;
     this._error = undefined;
     try {
