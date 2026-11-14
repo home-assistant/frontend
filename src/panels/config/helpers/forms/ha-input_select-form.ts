@@ -3,6 +3,8 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { ifDefined } from "lit/directives/if-defined";
+import { renderMoveShortcutHint } from "../../../../common/keyboard/render-move-shortcut-hint";
 import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -12,6 +14,7 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import "../../../../components/input/ha-input";
 import "../../../../components/item/ha-list-item-base";
 import "../../../../components/list/ha-list-base";
@@ -143,17 +146,35 @@ class HaInputSelectForm extends LitElement {
                     (option) => option,
                     (option, index) => html`
                       <ha-list-item-base
+                        id="move-option-${index}"
                         class="option"
                         interactive
                         .headline=${option}
                         .index=${index}
                         @keydown=${this._optionKeydown}
+                        aria-keyshortcuts=${ifDefined(
+                          !this.disabled
+                            ? "Alt+ArrowUp Alt+ArrowDown"
+                            : undefined
+                        )}
                       >
                         <ha-svg-icon
                           slot="start"
                           class="handle"
                           .path=${mdiDragHorizontalVariant}
                         ></ha-svg-icon>
+                        <ha-tooltip
+                          trigger="focus"
+                          association="description"
+                          slot="start"
+                          for="move-option-${index}"
+                          .disabled=${this.disabled}
+                        >
+                          ${renderMoveShortcutHint(
+                            this._localize("ui.common.move_up"),
+                            this._localize("ui.common.move_down")
+                          )}
+                        </ha-tooltip>
                         <ha-icon-button
                           slot="end"
                           .index=${index}
