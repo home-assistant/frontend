@@ -187,6 +187,139 @@ const ENTITIES = [
       current_tilt_position: 70,
     },
   },
+  {
+    entity_id: "cover.shade",
+    state: "open",
+    attributes: {
+      friendly_name: "Shade",
+      device_class: "shade",
+      supported_features:
+        CoverEntityFeature.OPEN +
+        CoverEntityFeature.STOP +
+        CoverEntityFeature.CLOSE +
+        CoverEntityFeature.SET_POSITION,
+      current_position: 60,
+    },
+  },
+  {
+    entity_id: "cover.shutter",
+    state: "open",
+    attributes: {
+      friendly_name: "Shutter",
+      device_class: "shutter",
+      supported_features:
+        CoverEntityFeature.OPEN +
+        CoverEntityFeature.STOP +
+        CoverEntityFeature.CLOSE +
+        CoverEntityFeature.SET_POSITION,
+      current_position: 40,
+    },
+  },
+  {
+    entity_id: "cover.awning",
+    state: "open",
+    attributes: {
+      friendly_name: "Awning",
+      device_class: "awning",
+      supported_features:
+        CoverEntityFeature.OPEN +
+        CoverEntityFeature.STOP +
+        CoverEntityFeature.CLOSE +
+        CoverEntityFeature.SET_POSITION,
+      current_position: 70,
+    },
+  },
+  {
+    entity_id: "cover.curtain",
+    state: "open",
+    attributes: {
+      friendly_name: "Curtain",
+      device_class: "curtain",
+      supported_features:
+        CoverEntityFeature.OPEN +
+        CoverEntityFeature.STOP +
+        CoverEntityFeature.CLOSE +
+        CoverEntityFeature.SET_POSITION,
+      current_position: 50,
+    },
+  },
+  {
+    entity_id: "cover.door",
+    state: "open",
+    attributes: {
+      friendly_name: "Door",
+      device_class: "door",
+      supported_features:
+        CoverEntityFeature.OPEN +
+        CoverEntityFeature.STOP +
+        CoverEntityFeature.CLOSE +
+        CoverEntityFeature.SET_POSITION,
+      current_position: 30,
+    },
+  },
+  {
+    entity_id: "cover.gate",
+    state: "open",
+    attributes: {
+      friendly_name: "Gate",
+      device_class: "gate",
+      supported_features:
+        CoverEntityFeature.OPEN +
+        CoverEntityFeature.STOP +
+        CoverEntityFeature.CLOSE +
+        CoverEntityFeature.SET_POSITION,
+      current_position: 30,
+    },
+  },
+  {
+    entity_id: "cover.window",
+    state: "open",
+    attributes: {
+      friendly_name: "Window",
+      device_class: "window",
+      supported_features:
+        CoverEntityFeature.OPEN +
+        CoverEntityFeature.STOP +
+        CoverEntityFeature.CLOSE +
+        CoverEntityFeature.SET_POSITION,
+      current_position: 50,
+    },
+  },
+  {
+    entity_id: "cover.garage",
+    state: "closed",
+    attributes: {
+      friendly_name: "Garage door",
+      device_class: "garage",
+      supported_features: CoverEntityFeature.OPEN + CoverEntityFeature.CLOSE,
+    },
+  },
+  {
+    entity_id: "cover.unknown",
+    state: "unknown",
+    attributes: {
+      friendly_name: "Unknown position",
+      device_class: "shade",
+      supported_features:
+        CoverEntityFeature.OPEN +
+        CoverEntityFeature.STOP +
+        CoverEntityFeature.CLOSE +
+        CoverEntityFeature.SET_POSITION,
+    },
+  },
+  {
+    entity_id: "cover.unavailable",
+    state: "unavailable",
+    attributes: {
+      friendly_name: "Unavailable",
+      device_class: "shutter",
+      supported_features:
+        CoverEntityFeature.OPEN +
+        CoverEntityFeature.STOP +
+        CoverEntityFeature.CLOSE +
+        CoverEntityFeature.SET_POSITION,
+    },
+  },
 ];
 
 @customElement("demo-more-info-cover")
