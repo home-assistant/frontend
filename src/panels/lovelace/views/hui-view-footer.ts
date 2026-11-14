@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import type { ConfigPath } from "../../../common/util/config-path";
 import "../../../components/ha-ripple";
 import "../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -15,7 +16,6 @@ import type { HomeAssistant } from "../../../types";
 import type { HuiCard } from "../cards/hui-card";
 import { computeCardGridSize } from "../common/compute-card-grid-size";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
-import type { LovelacePath } from "../editor/lovelace-path";
 import { setAtPath } from "../editor/lovelace-path";
 import { showEditViewFooterDialog } from "../editor/view-footer/show-edit-view-footer-dialog";
 import type { Lovelace } from "../types";
@@ -30,7 +30,7 @@ export class HuiViewFooter extends LitElement {
 
   @property({ attribute: false }) public config?: LovelaceViewFooterConfig;
 
-  @property({ attribute: false }) public path!: LovelacePath;
+  @property({ attribute: false }) public path!: ConfigPath;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -89,7 +89,7 @@ export class HuiViewFooter extends LitElement {
     return element;
   }
 
-  private get _cardPath(): LovelacePath {
+  private get _cardPath(): ConfigPath {
     return [...this.path, "footer", "card"];
   }
 

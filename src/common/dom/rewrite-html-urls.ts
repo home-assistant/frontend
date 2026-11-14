@@ -1,5 +1,5 @@
 // The attributes that hold the address of a link or an image
-const URL_ATTRIBUTES = [
+export const URL_ATTRIBUTES = [
   ["a", "href"],
   ["img", "src"],
   ["source", "src"],

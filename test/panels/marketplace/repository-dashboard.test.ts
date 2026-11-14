@@ -673,7 +673,7 @@ describe("ha-marketplace-repository-dashboard", () => {
       )
     ).toEqual([
       "ui.panel.marketplace.repository.community.stars",
-      "ui.panel.marketplace.repository.community.open_issues",
+      "ui.panel.marketplace.repository.community.open_issues_and_prs",
     ]);
   });
 

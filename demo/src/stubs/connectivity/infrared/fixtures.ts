@@ -59,6 +59,10 @@ const REGISTRY_ENTRIES = [
 export const infraredFixtures: ConnectivityFixtures = {
   components: ["infrared"],
   manifests: [
+    manifest("infrared", "Infrared", {
+      config_flow: false,
+      integration_type: "entity",
+    }),
     manifest("broadlink", "Broadlink", {
       integration_type: "hub",
       iot_class: "local_polling",

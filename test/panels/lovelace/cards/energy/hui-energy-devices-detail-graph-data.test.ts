@@ -3,13 +3,17 @@
  * devices-detail graph data transform. Do NOT update these snapshots to make
  * an optimization pass — see test/benchmarks/README.md.
  */
+import type { CallbackDataParams } from "echarts/types/dist/shared";
 import { assert, describe, expect, it } from "vitest";
 import type {
   DeviceConsumptionEnergyPreference,
   EnergyPreferences,
 } from "../../../../../src/data/energy";
 import type { EnergyDevicesDetailGraphCardConfig } from "../../../../../src/panels/lovelace/cards/types";
-import { generateEnergyDevicesDetailGraphData } from "../../../../../src/panels/lovelace/cards/energy/energy-devices-detail-graph-data";
+import {
+  generateEnergyDevicesDetailGraphData,
+  limitTooltipParams,
+} from "../../../../../src/panels/lovelace/cards/energy/energy-devices-detail-graph-data";
 import { createMockComputedStyle } from "../../../../fixtures/computed-style";
 import { digestResult } from "../../../../fixtures/digest";
 import { createMockHass } from "../../../../fixtures/hass";
@@ -369,5 +373,84 @@ describe("generateEnergyDevicesDetailGraphData", () => {
         (d) => typeof d.id === "string" && d.id.includes("untracked-negative")
       )
     );
+  });
+});
+
+describe("limitTooltipParams", () => {
+  const param = (seriesId: string, value: number) =>
+    ({
+      seriesId,
+      seriesName: seriesId,
+      color: "#000",
+      value: [1000, value, 900],
+    }) as CallbackDataParams;
+  const otherName = (count: number) => `${count} others`;
+  const devices = (count: number, prefix = "") =>
+    Array.from({ length: count }, (_, i) =>
+      param(`${prefix}sensor.device_${i}-${i}`, i + 1)
+    );
+  const summary = (params: CallbackDataParams[]) =>
+    params.map((p) => [p.seriesName, (p.value as number[])[1]]);
+
+  it("sorts devices largest first without folding up to one extra row", () => {
+    const result = limitTooltipParams(devices(4), 3, otherName);
+    expect(result.map((p) => p.seriesId)).toEqual([
+      "sensor.device_3-3",
+      "sensor.device_2-2",
+      "sensor.device_1-1",
+      "sensor.device_0-0",
+    ]);
+  });
+
+  it("folds the smallest devices and keeps untracked and zero rows", () => {
+    const params = [
+      param("untracked-1", 0.5),
+      param("untracked-negative-1", -0.2),
+      param("sensor.off-99", 0),
+      ...devices(6),
+    ];
+    const result = limitTooltipParams(params, 3, otherName);
+    expect(summary(result)).toEqual([
+      ["sensor.device_5-5", 6],
+      ["sensor.device_4-4", 5],
+      ["sensor.device_3-3", 4],
+      ["3 others", 6],
+      ["untracked-1", 0.5],
+      ["untracked-negative-1", -0.2],
+      ["sensor.off-99", 0],
+    ]);
+    expect(result[3]).toMatchObject({
+      seriesId: "other-devices",
+      color: "transparent",
+      value: [1000, 6, 900],
+    });
+  });
+
+  it("does not fold devices the formatter hides as 0", () => {
+    const params = [
+      ...Array.from({ length: 10 }, (_, i) =>
+        param(`sensor.a_${i}-${i}`, 0.00049)
+      ),
+      param("sensor.b_0-0", 0.0004),
+      param("sensor.b_1-1", 0.0004),
+      ...devices(2),
+    ];
+    const result = limitTooltipParams(params, 2, otherName);
+    expect(result.map((p) => p.seriesId)).not.toContain("other-devices");
+  });
+
+  it("limits the compare period on its own", () => {
+    const result = limitTooltipParams(
+      [...devices(2), ...devices(5, "compare-")],
+      2,
+      otherName
+    );
+    expect(result.map((p) => p.seriesId)).toEqual([
+      "sensor.device_1-1",
+      "sensor.device_0-0",
+      "compare-sensor.device_4-4",
+      "compare-sensor.device_3-3",
+      "compare-other-devices",
+    ]);
   });
 });

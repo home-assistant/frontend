@@ -2,7 +2,7 @@ import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { HaEntityPickerEntityFilterFunc } from "../../../data/entity/entity";
 import type { TargetSelector } from "../../../data/selector";
-import type { TargetType } from "../../../data/target";
+import type { TargetItem, TargetType } from "../../../data/target";
 import type { HaDevicePickerDeviceFilterFunc } from "../../device/ha-device-picker";
 import type { TargetExclusion } from "../target-exclusions";
 
@@ -25,10 +25,16 @@ export interface TargetDetailsDialogParams {
    */
   exclude?: HassServiceTarget;
   /**
-   * The entities of the other included targets, so an exclusion made here
-   * is known to also affect them.
+   * Whether the target expands the groups it names when it is used, like an
+   * action does and a trigger or condition doesn't. Defaults to `true`.
    */
-  otherTargetEntities?: string[];
+  expandGroup?: boolean;
+  /**
+   * What excluding `item` would take out of this target, worked out by core
+   * with the rest of the target value, so it is also known whether it
+   * affects another target.
+   */
+  explainExclusion?: (item: TargetItem) => Promise<TargetExclusion | undefined>;
   /**
    * Set to give the rows checkboxes. Called on apply with the exclusions the
    * dialog opened with and the ones it has now.

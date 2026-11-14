@@ -24,7 +24,6 @@ import { customElement, property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
 import { keyed } from "lit/directives/keyed";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -37,7 +36,6 @@ import {
   computeEntityNameParts,
   type EntityNameType,
 } from "../../common/entity/compute_entity_name_display";
-import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import {
   getHistoryState,
   navigate,
@@ -533,7 +531,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     }
 
     const result = await updateEntityRegistryEntry(
-      this.hass,
+      this.hass.callWS,
       favoritesContext.entry.entity_id,
       {
         options_domain: favoritesHandler.domain,
@@ -561,14 +559,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     await favoritesHandler.copy(favoritesContext);
   }
 
-  private _goToAddEntityTo(ev: CustomEvent<RequestSelectedDetail>) {
-    // Only check for request-selected events (from menu items), not regular clicks (from icon button)
-    if (
-      ev.type === "request-selected" &&
-      !shouldHandleRequestSelectedEvent(ev)
-    ) {
-      return;
-    }
+  private _goToAddEntityTo() {
     this._setView("add_to");
   }
 

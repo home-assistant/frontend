@@ -14,6 +14,7 @@ import { cache } from "lit/directives/cache";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { ctrlOrCmdLabel } from "../../../../common/keyboard/ctrl-or-cmd";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { withViewTransition } from "../../../../common/util/view-transition";
 import "../../../../components/ha-button";
@@ -414,6 +415,7 @@ export class HuiDialogEditSection
           <ha-button
             slot="secondaryAction"
             class="gui-mode-button"
+            id="toggle-editor-mode"
             appearance="plain"
             @click=${this._toggleMode}
             .disabled=${this._yamlMode && this._yamlError}
@@ -424,6 +426,9 @@ export class HuiDialogEditSection
                 : "ui.panel.lovelace.editor.edit_card.show_code_editor"
             )}
           </ha-button>
+          <ha-tooltip slot="secondaryAction" for="toggle-editor-mode">
+            ${ctrlOrCmdLabel(this.hass.localize)}+Shift+Y
+          </ha-tooltip>
           <ha-button
             slot="secondaryAction"
             appearance="plain"

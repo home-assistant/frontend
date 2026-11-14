@@ -121,7 +121,7 @@ const brandEntries: ConfigEntryExtended[] = (
     ["tuya", "Tuya", "setup_error"],
     ["unifi", "UniFi Network", "not_loaded"],
     ["met", "Meteorologisk institutt (Met.no)", "setup_error"],
-    ["google_assistant", "Google Assistant", "not_loaded"],
+    ["google_assistant", "Google Home", "not_loaded"],
     ["homekit_controller", "HomeKit Device", "setup_retry"],
   ] as [string, string, ConfigEntryExtended["state"]][]
 ).map(([domain, name, entryState]) =>

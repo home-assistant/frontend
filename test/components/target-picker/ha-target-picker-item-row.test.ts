@@ -1,9 +1,11 @@
+import { mdiChartLine } from "@mdi/js";
 import { describe, expect, it } from "vitest";
 import "../../../src/components/target-picker/ha-target-picker-item-row";
 import type { HaTargetPickerItemRow } from "../../../src/components/target-picker/ha-target-picker-item-row";
 import type { AreaRegistryEntry } from "../../../src/data/area/area_registry";
 import type { DeviceRegistryEntry } from "../../../src/data/device/device_registry";
 import type { EntityRegistryDisplayEntry } from "../../../src/data/entity/entity_registry";
+import { StatisticMeanType } from "../../../src/data/recorder";
 import type {
   ExtractFromTargetResult,
   TargetType,
@@ -224,5 +226,79 @@ describe("ha-target-picker-item-row target extraction", () => {
     expect(result.referenced_areas).toEqual(["area_missing"]);
     expect(result.referenced_devices).toEqual(["dev_missing"]);
     expect(result.referenced_entities).toEqual(["light.missing"]);
+  });
+});
+
+describe("ha-target-picker-item-row external statistics", () => {
+  const statisticId = "example:outdoor_temperature";
+
+  // Resolves an entity row against the statistics metadata in `metadata`.
+  const entityRow = async (itemId: string, metadata: unknown[]) => {
+    const el = document.createElement(
+      "ha-target-picker-item-row"
+    ) as HaTargetPickerItemRow;
+    el.type = "entity";
+    el.itemId = itemId;
+    const row = el as any;
+    row._registries = {
+      areas: {},
+      devices: {},
+      entities: {},
+      floors: {},
+    };
+    row._states = {};
+    row._i18n = {
+      localize: (key: string) =>
+        key === "component.example.title" ? "Example" : "",
+    };
+    const messages: Record<string, unknown>[] = [];
+    row._api = {
+      callWS: async (message: Record<string, unknown>) => {
+        messages.push(message);
+        return metadata;
+      },
+    };
+
+    await row._updateItemData();
+    return { data: row._itemData("entity", itemId), messages };
+  };
+
+  it("shows an external statistic by the name in its metadata", async () => {
+    const { data, messages } = await entityRow(statisticId, [
+      {
+        statistic_id: statisticId,
+        source: "example",
+        name: "Outdoor temperature",
+        statistics_unit_of_measurement: "°C",
+        has_sum: false,
+        mean_type: StatisticMeanType.ARITHMETIC,
+        unit_class: "temperature",
+      },
+    ]);
+
+    expect(messages).toEqual([
+      {
+        type: "recorder/get_statistics_metadata",
+        statistic_ids: [statisticId],
+      },
+    ]);
+    expect(data.name).toBe("Outdoor temperature");
+    expect(data.context).toBe("Example");
+    expect(data.fallbackIconPath).toBe(mdiChartLine);
+    expect(data.notFound).toBe(false);
+  });
+
+  it("shows an external statistic without metadata as not found", async () => {
+    const { data } = await entityRow(statisticId, []);
+
+    expect(data.name).toBe(statisticId);
+    expect(data.notFound).toBe(true);
+  });
+
+  it("does not look up statistics for an entity ID", async () => {
+    const { data, messages } = await entityRow("sensor.missing", []);
+
+    expect(messages).toEqual([]);
+    expect(data.notFound).toBe(true);
   });
 });

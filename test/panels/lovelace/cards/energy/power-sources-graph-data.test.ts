@@ -111,6 +111,23 @@ describe("generatePowerSourcesGraphData", () => {
     ).toMatchSnapshot();
   });
 
+  it("keeps single sources combined when sources are separated", () => {
+    const energyData = buildEnergyData(1, {
+      days: 1,
+      period: "hour",
+      grid: true,
+      solar: true,
+      battery: true,
+    });
+    expect(
+      generatePowerSourcesGraphData({
+        ...baseParams,
+        energyData,
+        combineSources: false,
+      })
+    ).toEqual(generatePowerSourcesGraphData({ ...baseParams, energyData }));
+  });
+
   it("matches snapshot for grid-only (hour)", () => {
     const energyData = buildEnergyData(2, {
       days: 1,
@@ -392,6 +409,68 @@ describe("generatePowerSourcesGraphData with a home meter", () => {
 
     expect(withHome.length).toBeGreaterThan(0);
     expect(withHome).toEqual(withoutHome);
+  });
+});
+
+describe("generatePowerSourcesGraphData with separate sources", () => {
+  it("draws one series per source that sums to the combined series", () => {
+    const solar2 = "sensor.solar_power_2";
+    const energyData = buildHomeEnergyData(
+      [
+        solarSource,
+        {
+          type: "battery",
+          stat_energy_from: "sensor.battery_out",
+          stat_energy_to: "sensor.battery_in",
+          stat_rate: RATE_IDS.battery,
+          name: "Garage",
+        } as EnergySource,
+        { ...solarSource, stat_rate: solar2 } as EnergySource,
+      ],
+      {
+        [RATE_IDS.solar]: hourlyStats([1, 2]),
+        [solar2]: hourlyStats([0.5, 0.25]),
+        [RATE_IDS.battery]: hourlyStats([-1, 1]),
+      }
+    );
+    const params = {
+      localize: mockLocalize,
+      formatPower: (w: number) => `${w} W`,
+      states: {} as HassEntities,
+      computedStyles,
+      energyData,
+      start: new Date(FIXED_EPOCH_MS),
+      end: new Date(FIXED_EPOCH_MS + dayMs),
+      now: FIXED_EPOCH_MS + dayMs + 60 * 60 * 1000,
+    };
+    const combined = generatePowerSourcesGraphData(params);
+    const separate = generatePowerSourcesGraphData({
+      ...params,
+      combineSources: false,
+    });
+
+    expect(separate.chartData.map((series) => series.id)).toEqual([
+      `solar-${RATE_IDS.solar}`,
+      `solar-${solar2}`,
+      "battery",
+      "battery-negative",
+      "usage",
+    ]);
+    expect(separate.legendData!.map((item) => item.id)).toEqual([
+      `solar-${RATE_IDS.solar}`,
+      `solar-${solar2}`,
+      "battery",
+      "usage",
+    ]);
+    const ys = (series: (typeof separate.chartData)[number]) =>
+      (series.data as ({ value: number[] } | number[])[]).map(
+        (p) => ("value" in p ? p.value : p)[1]
+      );
+    const solarSum = ys(separate.chartData[0]).map(
+      (y, i) => y + ys(separate.chartData[1])[i]
+    );
+    expect(solarSum).toEqual(ys(combined.chartData[0]));
+    expect(separate.chartData.slice(2)).toEqual(combined.chartData.slice(1));
   });
 });
 

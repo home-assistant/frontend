@@ -11,6 +11,7 @@ export interface ShowDialogHelperDetailParams {
     entryId?: string;
     entityId?: string;
   }) => void;
+  navigateToResult?: boolean;
 }
 
 export const showHelperDetailDialog = (

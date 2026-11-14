@@ -122,7 +122,13 @@ export class MockBaseEntity {
       this.attributes = { ...this.attributes, ...changes.attributes };
     }
 
-    this.hass!.updateStates({
+    // A removed or replaced entity can finish its transitions, so that their
+    // timers stop, but must not bring its state back
+    if (this.hass?.mockEntities[this.entityId] !== this) {
+      return;
+    }
+
+    this.hass.updateStates({
       [this.entityId]: this.toState(),
     });
   }
@@ -159,7 +165,11 @@ export class MockBaseEntity {
     return {
       entity_id: this.entityId,
       state: this.state,
+      // Every attribute of the input, like Core keeps the attributes of an
+      // integration. What the mock works out itself wins, like a light that
+      // is off having no brightness.
       attributes: {
+        ...this.attributes,
         ...this._getBaseAttributes(),
         ...this._getCapabilityAttributes(),
         ...this._getStateAttributes(),

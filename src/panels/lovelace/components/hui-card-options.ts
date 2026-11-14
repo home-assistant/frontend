@@ -18,6 +18,7 @@ import {
   queryAssignedElements,
   state,
 } from "lit/decorators";
+import type { ConfigPath } from "../../../common/util/config-path";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { highlightElement } from "../../../common/dom/highlight-element";
@@ -44,7 +45,6 @@ import {
   moveCardToContainer,
   moveCardToIndex,
 } from "../editor/config-util";
-import type { LovelacePath } from "../editor/lovelace-path";
 import {
   deleteAtPath,
   getAtPath,
@@ -63,7 +63,7 @@ export class HuiCardOptions extends LitElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property({ attribute: false }) public path?: LovelacePath;
+  @property({ attribute: false }) public path?: ConfigPath;
 
   @queryAssignedElements() private _assignedElements?: LovelaceCard[];
 
@@ -417,7 +417,7 @@ export class HuiCardOptions extends LitElement {
           return;
         }
 
-        const toPath: LovelacePath = ["views", viewIndex];
+        const toPath: ConfigPath = ["views", viewIndex];
 
         if (urlPath === this.lovelace!.urlPath) {
           this.lovelace!.saveConfig(

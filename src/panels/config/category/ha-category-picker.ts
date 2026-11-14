@@ -16,7 +16,7 @@ import "../../../components/ha-svg-icon";
 import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
   createCategoryRegistryEntry,
-  subscribeCategoryRegistry,
+  getCategoryRegistryCollection,
 } from "../../../data/category_registry";
 import {
   apiContext,
@@ -65,6 +65,8 @@ export class HaCategoryPicker extends LitElement {
   @property({ type: Boolean }) public required = false;
 
   @state() private _categories?: CategoryRegistryEntry[];
+
+  @state() private _loadFailed = false;
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
@@ -133,14 +135,44 @@ export class HaCategoryPicker extends LitElement {
     const scope = this.scope;
     this._categoriesConnection = this._connection;
     this._categoriesScope = scope;
-    this._unsubCategories = subscribeCategoryRegistry(
-      this._connection,
-      scope,
-      (categories) => {
-        if (this._categoriesScope === scope) {
-          this._categories = categories;
-        }
+    this._loadFailed = false;
+    const collection = getCategoryRegistryCollection(this._connection, scope);
+    this._unsubCategories = collection.subscribe((categories) => {
+      if (this._categoriesScope === scope) {
+        this._categories = categories;
+        this._loadFailed = false;
       }
+    });
+    // The subscription never reports a failed fetch, so fetch once more to
+    // find out, unless another picker already has the list
+    if (collection.state === undefined) {
+      this._refreshCategories(collection, scope);
+    }
+  }
+
+  private async _refreshCategories(
+    collection: ReturnType<typeof getCategoryRegistryCollection>,
+    scope: string
+  ) {
+    try {
+      await collection.refresh();
+    } catch {
+      // The subscription's own fetch may still have delivered the list
+      if (this._categoriesScope === scope && collection.state === undefined) {
+        this._loadFailed = true;
+      }
+    }
+  }
+
+  private _retryCategories(ev: Event) {
+    ev.stopPropagation();
+    if (!this._connection || !this._categoriesScope) {
+      return;
+    }
+    this._loadFailed = false;
+    this._refreshCategories(
+      getCategoryRegistryCollection(this._connection, this._categoriesScope),
+      this._categoriesScope
     );
   }
 
@@ -275,11 +307,22 @@ export class HaCategoryPicker extends LitElement {
         )}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
+        .loading=${
+          Boolean(this.scope) &&
+          !this._loadFailed &&
+          this._categories === undefined
+        }
+        .loadError=${
+          this._loadFailed
+            ? this._i18n.localize("ui.components.category-picker.load_failed")
+            : undefined
+        }
         .valueRenderer=${valueRenderer}
         .unknownItemText=${this._i18n.localize(
           "ui.components.category-picker.unknown"
         )}
         @value-changed=${this._valueChanged}
+        @picker-retry=${this._retryCategories}
       >
       </ha-generic-picker>
     `;

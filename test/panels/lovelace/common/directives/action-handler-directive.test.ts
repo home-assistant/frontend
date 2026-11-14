@@ -209,6 +209,76 @@ describe("action-handler container (resolve) bindings", () => {
   });
 });
 
+describe("action-handler touch movement", () => {
+  let el: HTMLElement;
+  let actions: string[];
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    el = document.createElement("div");
+    document.body.appendChild(el);
+    actions = actionsOn(el);
+    actionHandlerBind(el, { hasHold: true });
+  });
+
+  afterEach(() => {
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
+    el.remove();
+  });
+
+  it("still taps when the finger moves a few pixels", () => {
+    el.dispatchEvent(touch("touchstart", { x: 10, y: 10 }));
+    el.dispatchEvent(touch("touchmove", { x: 14, y: 17 }));
+    const end = touch("touchend", { x: 14, y: 17 });
+    el.dispatchEvent(end);
+    expect(actions).toEqual(["tap"]);
+    // No emulated click follows, so the tap fires once.
+    expect(end.defaultPrevented).toBe(true);
+  });
+
+  it("still holds when the finger moves a few pixels", () => {
+    el.dispatchEvent(touch("touchstart", { x: 10, y: 10 }));
+    el.dispatchEvent(touch("touchmove", { x: 12, y: 18 }));
+    vi.advanceTimersByTime(500);
+    el.dispatchEvent(touch("touchend", { x: 12, y: 18 }));
+    expect(actions).toEqual(["hold"]);
+  });
+
+  it("drops the press once the finger moves past the slop", () => {
+    el.dispatchEvent(touch("touchstart", { x: 10, y: 10 }));
+    el.dispatchEvent(touch("touchmove", { x: 14, y: 17 }));
+    el.dispatchEvent(touch("touchmove", { x: 10, y: 40 }));
+    el.dispatchEvent(touch("touchend", { x: 10, y: 40 }));
+    vi.advanceTimersByTime(500);
+    expect(actions).toEqual([]);
+  });
+
+  it("drops the press when the page scrolls", () => {
+    el.dispatchEvent(touch("touchstart", { x: 10, y: 10 }));
+    document.dispatchEvent(new Event("scroll"));
+    el.dispatchEvent(touch("touchend", { x: 10, y: 10 }));
+    expect(actions).toEqual([]);
+  });
+
+  it("drops the press when the browser takes over the touch", () => {
+    // A nested scroller: its scroll event never reaches the document, but the
+    // composed pointercancel does.
+    const host = document.createElement("div");
+    const inner = document.createElement("div");
+    host.attachShadow({ mode: "open" }).appendChild(inner);
+    el.appendChild(host);
+    el.dispatchEvent(touch("touchstart", { x: 10, y: 10 }));
+    el.dispatchEvent(touch("touchmove", { x: 14, y: 14 }));
+    inner.dispatchEvent(
+      new Event("pointercancel", { bubbles: true, composed: true })
+    );
+    el.dispatchEvent(touch("touchend", { x: 14, y: 14 }));
+    vi.advanceTimersByTime(500);
+    expect(actions).toEqual([]);
+  });
+});
+
 describe("action-handler keyboard-only bindings", () => {
   beforeEach(() => vi.useFakeTimers());
   afterEach(() => {

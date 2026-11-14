@@ -26,7 +26,6 @@ import type { Field } from "../../../data/script";
 import { SELECTOR_SELECTOR_BUILDING_BLOCKS } from "../../../data/selector/selector_selector";
 import { showPromptDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
-import { isMac } from "../../../util/is_mac";
 import { showEditorToast } from "../automation/editor-toast";
 import { scrollRowIntoView } from "../automation/scroll-row-into-view";
 import { indentStyle, overflowStyles, rowStyles } from "../automation/styles";
@@ -116,7 +115,17 @@ export default class HaScriptFieldRow extends LitElement {
                 ${this.hass.localize(
                   `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
                 )}
-                <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+                ${
+                  !this.narrow && this._selected
+                    ? html`<span class="shortcut">
+                        <span>${renderCtrlOrCmd(this.hass.localize)}</span>
+                        <span>+</span>
+                        <span>Shift</span>
+                        <span>+</span>
+                        <span>Y</span>
+                      </span>`
+                    : nothing
+                }
               </div>
             </ha-dropdown-item>
             <ha-dropdown-item
@@ -221,9 +230,19 @@ export default class HaScriptFieldRow extends LitElement {
                           ${this.hass.localize(
                             `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
                           )}
-                          <span
-                            class="shortcut-placeholder ${isMac ? "mac" : ""}"
-                          ></span>
+                          ${
+                            !this.narrow && this._selectorRowSelected
+                              ? html`<span class="shortcut">
+                                  <span
+                                    >${renderCtrlOrCmd(this.hass.localize)}</span
+                                  >
+                                  <span>+</span>
+                                  <span>Shift</span>
+                                  <span>+</span>
+                                  <span>Y</span>
+                                </span>`
+                              : nothing
+                          }
                         </div>
                       </ha-dropdown-item>
                       <ha-dropdown-item

@@ -117,11 +117,17 @@ shared slots/attributes below.
 
 **Attributes**
 
-| Name              | Type    | Default | Description                             |
-| ----------------- | ------- | ------- | --------------------------------------- |
-| `headline`        | String  | —       | Primary text. Overridden by the slot.   |
-| `supporting-text` | String  | —       | Secondary text. Overridden by the slot. |
-| `disabled`        | Boolean | `false` | Dims the row and blocks pointer events. |
+| Name                   | Type    | Default | Description                                        |
+| ---------------------- | ------- | ------- | -------------------------------------------------- |
+| `headline`             | String  | —       | Primary text. Overridden by the slot.              |
+| `supporting-text`      | String  | —       | Secondary text. Overridden by the slot.            |
+| `wrap-headline`        | Boolean | `false` | Wrap the headline instead of truncating it.        |
+| `wrap-supporting-text` | Boolean | `false` | Wrap the supporting text instead of truncating it. |
+| `disabled`             | Boolean | `false` | Dims the row and blocks pointer events.            |
+
+The headline and the supporting text stay on one line and are truncated with an
+ellipsis by default. Set `wrap-headline` or `wrap-supporting-text` on rows whose
+text has to stay readable in full, like settings with a description.
 
 **CSS parts**
 
@@ -165,6 +171,18 @@ Interactive row. Renders an inner `<a>` when `href` is set, otherwise a
 roving tabindex, the host is the tab stop and the inner element carries
 `tabindex="-1"`.
 
+Only the headline and supporting text are inside the `<a>` or `<button>`; its
+hit area is stretched over the whole row. The `start` and `end` slots sit next
+to it, so controls placed there, like an `ha-icon-button` or `ha-dropdown`,
+stay separate controls for screen readers. Slotted elements are raised above
+the hit area so they can be clicked, except icons, badges, `span`s and empty
+`div`s (dividers), which let clicks and hover through to the row. A focusable
+element (with `tabindex`) is always raised. To keep another element clickable
+on its own, like a drag handle, give it `z-index: 1` in the consumer's styles.
+
+Subclasses customize the row by overriding `_renderStart()`,
+`_renderContent()` and `_renderEnd()`. `_renderInner()` is not used.
+
 **Attributes**
 
 - `href` (String) — when set, renders an `<a>` instead of a `<button>`.
@@ -174,6 +192,7 @@ roving tabindex, the host is the tab stop and the inner element carries
 
 **CSS parts**
 
+- `control` — the inner `<a>` or `<button>`.
 - `ripple` — the ripple effect element.
 
 ### `<ha-list-item-option>`

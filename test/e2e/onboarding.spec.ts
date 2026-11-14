@@ -3,14 +3,17 @@ import { demoConfig } from "../../src/fake_data/demo_config";
 import {
   completeAnalytics,
   completeCoreConfig,
+  confirmLocation,
   createOwner,
+  detectLocation,
   expectDefaultDashboard,
   finishIntegrations,
   onboardingData,
   openOnboarding,
+  searchAddress,
   setupOnboardingMocks,
 } from "./app/src/onboarding";
-import { expectNoPageErrors, trackPageErrors } from "./helpers";
+import { expectNoPageErrors, PANEL_TIMEOUT, trackPageErrors } from "./helpers";
 
 test.use({ serviceWorkers: "block" });
 
@@ -153,6 +156,119 @@ test("preserves empty client state through onboarding", async ({
   });
   expect(calls.tokenRequests).toHaveLength(1);
   expectNoPageErrors(errors);
+});
+
+for (const unitSystem of ["metric", "us_customary"] as const) {
+  test(`keeps the detected ${unitSystem} unit system`, async ({
+    page,
+    baseURL,
+  }) => {
+    const errors = trackPageErrors(page);
+    const calls = await setupOnboardingMocks(page);
+
+    await openOnboarding(page, baseURL!);
+    await createOwner(page);
+    await completeCoreConfig(page, unitSystem);
+    await expect.poll(() => calls.coreConfigCompleted).toBe(true);
+
+    expect(calls.coreConfig).toMatchObject({
+      type: "config/core/update",
+      unit_system: unitSystem,
+      country: onboardingData.location.country,
+    });
+    expectNoPageErrors(errors);
+  });
+}
+
+test.describe("detected location", () => {
+  test.use({ timezoneId: "America/New_York" });
+
+  test("uses the detected location details", async ({ page, baseURL }) => {
+    const errors = trackPageErrors(page);
+    const calls = await setupOnboardingMocks(page);
+
+    await openOnboarding(page, baseURL!);
+    await createOwner(page);
+    await detectLocation(page, calls);
+    await confirmLocation(page);
+    await expect.poll(() => calls.coreConfigCompleted).toBe(true);
+
+    expect(calls.coreConfig).toMatchObject({
+      type: "config/core/update",
+      latitude: onboardingData.location.latitude,
+      longitude: onboardingData.location.longitude,
+      elevation: onboardingData.location.elevation,
+      unit_system: onboardingData.location.unitSystem,
+      time_zone: onboardingData.location.timeZone,
+      currency: onboardingData.location.currency,
+      country: onboardingData.location.country,
+    });
+    expectNoPageErrors(errors);
+  });
+
+  test("drops detected details after searching another address", async ({
+    page,
+    baseURL,
+  }) => {
+    const errors = trackPageErrors(page);
+    const calls = await setupOnboardingMocks(page);
+
+    await openOnboarding(page, baseURL!);
+    await createOwner(page);
+    await detectLocation(page, calls);
+    await searchAddress(page);
+    await confirmLocation(page);
+    await expect.poll(() => calls.coreConfigCompleted).toBe(true);
+
+    expect(calls.coreConfig).toMatchObject({
+      type: "config/core/update",
+      latitude: Number(onboardingData.searchedPlace.lat),
+      longitude: Number(onboardingData.searchedPlace.lon),
+      elevation: 0,
+      unit_system: "us_customary",
+      time_zone: "America/New_York",
+      currency: "USD",
+      country: "US",
+    });
+    expectNoPageErrors(errors);
+  });
+});
+
+test.describe("unresolved browser time zone", () => {
+  test.use({ locale: "en-GB" });
+
+  test("keeps the searched country in the core config form", async ({
+    page,
+    baseURL,
+  }) => {
+    await page.addInitScript(() => {
+      const resolvedOptions = Intl.DateTimeFormat.prototype.resolvedOptions;
+      Intl.DateTimeFormat.prototype.resolvedOptions = function () {
+        return { ...resolvedOptions.call(this), timeZone: "+00:00" };
+      };
+    });
+    const errors = trackPageErrors(page);
+    const calls = await setupOnboardingMocks(page);
+
+    await openOnboarding(page, baseURL!);
+    await createOwner(page);
+    await detectLocation(page, calls);
+    await searchAddress(page);
+    await confirmLocation(page);
+    await page
+      .locator("onboarding-core-config")
+      .getByRole("button", { name: "Next", exact: true })
+      .click({ timeout: PANEL_TIMEOUT });
+    await expect.poll(() => calls.coreConfigCompleted).toBe(true);
+
+    expect(calls.coreConfig).toMatchObject({
+      type: "config/core/update",
+      unit_system: "us_customary",
+      currency: "USD",
+      country: "US",
+    });
+    expectNoPageErrors(errors);
+  });
 });
 
 for (const { name, resume } of [

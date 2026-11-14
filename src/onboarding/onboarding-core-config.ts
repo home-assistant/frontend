@@ -154,8 +154,8 @@ class OnboardingCoreConfig extends LitElement {
     if (ev.detail.value.language) {
       this._language = ev.detail.value.language;
     }
-    if (ev.detail.value.timezone) {
-      this._timeZone = ev.detail.value.timezone;
+    if (ev.detail.value.time_zone) {
+      this._timeZone = ev.detail.value.time_zone;
       this._timeZoneDetected = true;
     }
     if (ev.detail.value.unit_system) {
@@ -175,7 +175,7 @@ class OnboardingCoreConfig extends LitElement {
         suggested = lang;
       }
     }
-    this._country = suggested;
+    this._country ??= suggested;
 
     fireEvent(this, "onboarding-progress", { increase: 0.5 });
     await this.updateComplete;
@@ -197,9 +197,10 @@ class OnboardingCoreConfig extends LitElement {
         longitude: this._location[1],
         elevation: Number(this._elevation),
         unit_system:
-          this._unitSystem || ["US", "MM", "LR"].includes(this._country)
+          this._unitSystem ||
+          (["US", "MM", "LR"].includes(this._country)
             ? "us_customary"
-            : "metric",
+            : "metric"),
         time_zone: this._timeZone,
         currency: this._currency || countryCurrency[this._country] || "EUR",
         country: this._country,

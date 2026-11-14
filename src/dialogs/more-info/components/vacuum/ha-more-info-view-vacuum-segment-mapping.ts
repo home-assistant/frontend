@@ -82,7 +82,7 @@ export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
     };
 
     try {
-      await updateEntityRegistryEntry(this.hass, this.params.entityId, {
+      await updateEntityRegistryEntry(this.hass.callWS, this.params.entityId, {
         options_domain: "vacuum",
         options: options,
       });

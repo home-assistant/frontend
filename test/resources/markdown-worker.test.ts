@@ -174,6 +174,97 @@ describe("renderMarkdown", () => {
     });
   });
 
+  describe("relative addresses", () => {
+    const renderImageSrc = async (src: string, allowRelativeUrls: boolean) =>
+      parse(
+        (
+          await renderMarkdown(`<img src="${src}">`, {}, { allowRelativeUrls })
+        ).join("")
+      )
+        .querySelector("img")
+        ?.getAttribute("src");
+
+    it("keeps a plain relative path for a caller that rewrites it", async () => {
+      expect(await renderImageSrc("images/logo.png", true)).toBe(
+        "./images/logo.png"
+      );
+    });
+
+    it("keeps a padded relative path without the spaces", async () => {
+      expect(await renderImageSrc("&#32;images/logo.png&#32;", true)).toBe(
+        "./images/logo.png"
+      );
+    });
+
+    it("keeps the query string of a relative path", async () => {
+      expect(await renderImageSrc("images/logo.png?v=1&amp;size=2", true)).toBe(
+        "./images/logo.png?v=1&size=2"
+      );
+    });
+
+    it("keeps a quote in a relative path", async () => {
+      expect(await renderImageSrc("images/a&quot;b.png", true)).toBe(
+        './images/a"b.png'
+      );
+    });
+
+    it("drops a relative path with entities left after decoding", async () => {
+      expect(await renderImageSrc("&#38;#105;mages/logo.png", true)).toBeNull();
+    });
+
+    it("keeps an allowed data link as it is", async () => {
+      const html = (
+        await renderMarkdown(
+          '<a href="data:text/plain,hello" download="hello.txt">Hello</a>',
+          {},
+          { allowDataUrl: true, allowRelativeUrls: true }
+        )
+      ).join("");
+      expect(parse(html).querySelector("a")?.getAttribute("href")).toBe(
+        "data:text/plain,hello"
+      );
+    });
+
+    it("empties a plain relative path otherwise", async () => {
+      expect(await renderImageSrc("images/logo.png", false)).toBe("");
+    });
+
+    it("keeps an address xss allows as it is", async () => {
+      expect(await renderImageSrc("https://example.com/a.png", true)).toBe(
+        "https://example.com/a.png"
+      );
+    });
+
+    it.each([
+      // eslint-disable-next-line no-script-url
+      "javascript:alert(1)",
+      "&#106;avascript:alert(1)",
+      "data:text/html,x",
+      "HTTPS://example.com/a.png",
+      "&#0000106avascript:alert(1)",
+    ])("drops an address with a scheme: %s", async (src) => {
+      expect(await renderImageSrc(src, true)).toBeNull();
+    });
+
+    it("drops an empty address", async () => {
+      expect(await renderImageSrc("", true)).toBeNull();
+    });
+
+    it("keeps relative addresses only for links and images", async () => {
+      const html = (
+        await renderMarkdown(
+          '<a href="docs/setup.md">Setup</a><video src="clip.mp4"></video>',
+          {},
+          { allowRelativeUrls: true }
+        )
+      ).join("");
+      expect(parse(html).querySelector("a")?.getAttribute("href")).toBe(
+        "./docs/setup.md"
+      );
+      expect(parse(html).querySelector("video")?.getAttribute("src")).toBe("");
+    });
+  });
+
   describe.each(["audio", "video"])("source src in %s", (tag) => {
     const renderSrc = async (src: string) =>
       parse(await render(`<${tag} controls><source src="${src}"></${tag}>`))
@@ -195,5 +286,53 @@ describe("renderMarkdown", () => {
     ])("empties a disallowed src: %s", async (src) => {
       expect(await renderSrc(src)).toBe("");
     });
+  });
+
+  describe("data URLs", () => {
+    const renderLink = async (
+      content: string,
+      hassOptions: { allowDataUrl?: boolean; allowSvg?: boolean }
+    ) => {
+      const link = parse(
+        (await renderMarkdown(content, {}, hassOptions)).join("")
+      ).querySelector("a");
+      expect(link).not.toBeNull();
+      return link!;
+    };
+
+    it("keeps a data URL and download on a link when allowed", async () => {
+      const link = await renderLink(
+        '<a href="data:application/octet-stream;base64,aGVsbG8=" download="backup.bin">Download</a>',
+        { allowDataUrl: true }
+      );
+      expect(link.getAttribute("href")).toBe(
+        "data:application/octet-stream;base64,aGVsbG8="
+      );
+      expect(link.getAttribute("download")).toBe("backup.bin");
+    });
+
+    it("does not let a quote in a data URL add an attribute", async () => {
+      const link = await renderLink(
+        `<a href='data:text/plain,x" onmouseover="alert(1)'>Download</a>`,
+        { allowDataUrl: true }
+      );
+      expect(link.getAttributeNames()).toEqual(["href"]);
+      expect(link.getAttribute("href")).toBe(
+        'data:text/plain,x" onmouseover="alert(1)'
+      );
+    });
+
+    it.each([false, true])(
+      "does not allow data URLs or download in other content (allowSvg: %s)",
+      async (allowSvg) => {
+        const content =
+          '<a href="data:text/plain,x" download="x.txt">Download</a>';
+        // Render with data URLs first, so the cached whitelist is in use
+        await renderLink(content, { allowDataUrl: true, allowSvg });
+        const link = await renderLink(content, { allowSvg });
+        expect(link.getAttribute("href")).toBe("");
+        expect(link.hasAttribute("download")).toBe(false);
+      }
+    );
   });
 });
