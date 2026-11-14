@@ -358,7 +358,7 @@ class PanelTodo extends LitElement {
     }
 
     const entityRegistryEntry = await getExtendedEntityRegistryEntry(
-      this.hass,
+      this.hass.callWS,
       this._entityId
     );
 

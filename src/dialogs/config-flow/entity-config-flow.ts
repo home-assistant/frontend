@@ -19,7 +19,7 @@ export const fetchEntityConfigFlow = async (
   if (!entities || !(entityId in entities)) {
     return undefined;
   }
-  const regEntry = await getExtendedEntityRegistryEntry(api, entityId);
+  const regEntry = await getExtendedEntityRegistryEntry(api.callWS, entityId);
   if (!regEntry.config_entry_id) {
     return undefined;
   }

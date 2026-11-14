@@ -77,7 +77,10 @@ export class DialogVacuumSegmentMapping
     if (!this._params) return;
 
     const entityId = this._params.entityId;
-    this._entry = await getExtendedEntityRegistryEntry(this.hass, entityId);
+    this._entry = await getExtendedEntityRegistryEntry(
+      this.hass.callWS,
+      entityId
+    );
 
     if (this._entry?.options?.vacuum) {
       this._areaMapping = this._entry.options.vacuum.area_mapping || {};

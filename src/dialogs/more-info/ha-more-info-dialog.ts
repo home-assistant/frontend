@@ -217,7 +217,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     }
     try {
       this._entry = await getExtendedEntityRegistryEntry(
-        this.hass,
+        this.hass.callWS,
         this._entityId
       );
     } catch (_e) {

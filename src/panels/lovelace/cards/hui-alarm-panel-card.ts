@@ -248,7 +248,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         }
         try {
           this._entry = await getExtendedEntityRegistryEntry(
-            this._api,
+            this._api.callWS,
             this._config!.entity
           );
         } catch (_e) {

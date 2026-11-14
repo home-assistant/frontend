@@ -56,7 +56,10 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
 
     try {
       const entry: ExtEntityRegistryEntry =
-        await getExtendedEntityRegistryEntry(this.hass, this.params.entityId);
+        await getExtendedEntityRegistryEntry(
+          this.hass.callWS,
+          this.params.entityId
+        );
 
       const areaMapping = entry?.options?.vacuum?.area_mapping || {};
       const mappedAreaIds = new Set(Object.keys(areaMapping));
