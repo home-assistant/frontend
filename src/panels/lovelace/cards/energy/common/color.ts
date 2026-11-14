@@ -5,7 +5,15 @@ import {
   rgb2lab,
   theme2hex,
 } from "../../../../../common/color/convert-color";
-import { labBrighten, labDarken } from "../../../../../common/color/lab";
+
+const HUE_STEP_DEG = 14;
+const MAX_HUE_OFFSET_DEG = 42; // stay within the family
+const MAX_LIGHTNESS_OFFSET = 24;
+const LIGHTNESS_STEP = 6;
+const LIGHTNESS_BAND_MIN = 35;
+const LIGHTNESS_BAND_MAX = 75;
+const GREYISH_CHROMA_THRESHOLD = 8;
+const FALLBACK_CHROMA = 25;
 
 export function getEnergyColor(
   computedStyles: CSSStyleDeclaration,
@@ -27,15 +35,31 @@ export function getEnergyColor(
   let hexColor = theme2hex(themeColor);
 
   if (themeIdxColor.length === 0 && idx) {
-    // Brighten or darken the color based on set position.
-    // Skip if theme already provides a color for this set.
-
-    hexColor = rgb2hex(
-      lab2rgb(
-        darkMode
-          ? labBrighten(rgb2lab(hex2rgb(hexColor)), idx)
-          : labDarken(rgb2lab(hex2rgb(hexColor)), idx)
+    const [l, a, b] = rgb2lab(hex2rgb(hexColor));
+    let chroma = Math.hypot(a, b);
+    if (chroma < GREYISH_CHROMA_THRESHOLD) {
+      chroma = FALLBACK_CHROMA;
+    }
+    const step = Math.ceil(idx / 2);
+    const direction = idx % 2 === 0 ? -1 : 1;
+    const hue =
+      Math.atan2(b, a) +
+      (direction *
+        Math.min(step * HUE_STEP_DEG, MAX_HUE_OFFSET_DEG) *
+        Math.PI) /
+        180;
+    const targetL = Math.min(
+      LIGHTNESS_BAND_MAX,
+      Math.max(
+        LIGHTNESS_BAND_MIN,
+        l +
+          direction *
+            (darkMode ? 1 : -1) *
+            Math.min(step * LIGHTNESS_STEP, MAX_LIGHTNESS_OFFSET)
       )
+    );
+    hexColor = rgb2hex(
+      lab2rgb([targetL, chroma * Math.cos(hue), chroma * Math.sin(hue)])
     );
   }
 
