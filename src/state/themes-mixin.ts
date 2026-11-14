@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import {
   applyThemesOnElement,
   invalidateThemeCache,
+  themeSupportsBlackMode,
 } from "../common/dom/apply_themes_on_element";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HASSDomEvent } from "../common/dom/fire_event";
@@ -114,8 +115,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       let darkMode =
         themeSettings?.dark === undefined ? darkPreferred : themeSettings.dark;
-      let blackMode =
-        themeSettings?.dark === true && themeSettings.black === true;
 
       const themeName =
         themeSettings?.theme ||
@@ -132,10 +131,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           darkMode = false;
         } else if (!("light" in selectedTheme.modes)) {
           darkMode = true;
-          // Dark-only themes keep their own colors; Black is not applied on top of them.
-          blackMode = false;
         }
       }
+
+      const blackMode =
+        themeSettings?.dark === true &&
+        themeSettings.black === true &&
+        themeSupportsBlackMode(selectedTheme);
 
       themeSettings = { ...themeSettings, dark: darkMode, black: blackMode };
       this._updateHass({

@@ -2,7 +2,9 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   applyThemesOnElement,
   invalidateThemeCache,
+  themeSupportsBlackMode,
 } from "../../../src/common/dom/apply_themes_on_element";
+import type { Theme } from "../../../src/data/ws-themes";
 import type { HomeAssistant } from "../../../src/types";
 
 // Black (OLED) is stored next to the dark mode choice. These tests protect
@@ -57,5 +59,29 @@ describe("applyThemesOnElement black mode", () => {
     expect(style("--sidebar-background-color")).toBe(
       "var(--card-background-color)"
     );
+  });
+});
+
+// The theme mode picker and the themes mixin both use this rule, so Black is
+// only offered when the theme used in dark mode actually applies it.
+describe("themeSupportsBlackMode", () => {
+  // Themes come from the backend as plain objects with optional modes.
+  const theme = (modes?: Record<string, object>) => ({ modes }) as Theme;
+
+  it("supports the default theme", () => {
+    expect(themeSupportsBlackMode(undefined)).toBe(true);
+  });
+
+  it("supports a theme with a light and a dark mode", () => {
+    expect(themeSupportsBlackMode(theme({ light: {}, dark: {} }))).toBe(true);
+  });
+
+  it("does not support a dark-only theme", () => {
+    expect(themeSupportsBlackMode(theme({ dark: {} }))).toBe(false);
+  });
+
+  it("does not support a theme without a dark mode", () => {
+    expect(themeSupportsBlackMode(theme())).toBe(false);
+    expect(themeSupportsBlackMode(theme({ light: {} }))).toBe(false);
   });
 });

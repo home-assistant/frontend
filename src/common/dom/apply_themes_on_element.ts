@@ -1,4 +1,4 @@
-import type { ThemeVars } from "../../data/ws-themes";
+import type { Theme, ThemeVars } from "../../data/ws-themes";
 import { darkColorVariables } from "../../resources/theme/color";
 import { darkSemanticVariables } from "../../resources/theme/semantic.globals";
 import { derivedStyles } from "../../resources/theme/theme";
@@ -30,6 +30,15 @@ const BLACK_MODE_RULES: Partial<ThemeVars> = {
   "sidebar-background-color": "#000000",
   "app-header-background-color": "#000000",
 };
+
+/**
+ * Whether Black (OLED) mode can be applied with this theme. It is applied on
+ * top of the dark mode of the default theme (not part of `themes`, so
+ * undefined here) or of a theme with both a light and a dark mode. Themes
+ * with a single mode keep their own colors.
+ */
+export const themeSupportsBlackMode = (theme?: Theme): boolean =>
+  !theme || !!(theme.modes && "light" in theme.modes && "dark" in theme.modes);
 
 /**
  * Apply a theme to an element by setting the CSS variables on it.

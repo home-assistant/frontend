@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { normalizeLuminance } from "../common/color/palette";
 import { consume } from "../common/decorators/consume";
+import { themeSupportsBlackMode } from "../common/dom/apply_themes_on_element";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HASSDomCurrentTargetEvent } from "../common/dom/fire_event";
 import { uiContext } from "../data/context";
@@ -78,6 +79,17 @@ export class HaThemeSettings extends LitElement {
         this._ui.themes.default_theme) ||
       this._supportsModeSelection(curTheme);
 
+    // Black is applied on top of the theme used in dark mode, which with
+    // "Use default" can be the server's default dark theme. Only offer it
+    // when that theme can apply it.
+    const darkTheme =
+      themeSettings?.theme ||
+      this._ui.themes.default_dark_theme ||
+      this._ui.themes.default_theme;
+    const showBlackMode = themeSupportsBlackMode(
+      this._ui.themes.themes[darkTheme]
+    );
+
     return html`
       <ha-list-base>
         ${
@@ -124,7 +136,7 @@ export class HaThemeSettings extends LitElement {
                       themeSettings?.dark === undefined
                         ? "auto"
                         : themeSettings.dark
-                          ? themeSettings.black
+                          ? themeSettings.black && showBlackMode
                             ? "black"
                             : "dark"
                           : "light"
@@ -140,9 +152,13 @@ export class HaThemeSettings extends LitElement {
                     <ha-radio-option value="dark">
                       ${this.labels?.darkMode ?? "Dark"}
                     </ha-radio-option>
-                    <ha-radio-option value="black">
-                      ${this.labels?.blackMode ?? "Black (OLED)"}
-                    </ha-radio-option>
+                    ${
+                      showBlackMode
+                        ? html`<ha-radio-option value="black">
+                            ${this.labels?.blackMode ?? "Black (OLED)"}
+                          </ha-radio-option>`
+                        : nothing
+                    }
                   </ha-radio-group>
                 </ha-list-item-base>
               `
