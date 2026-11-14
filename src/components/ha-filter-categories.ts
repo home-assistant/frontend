@@ -87,11 +87,12 @@ export class HaFilterCategories extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._unsubscribeCategories();
+    this._categories = [];
   }
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (changedProps.get("scope") !== undefined) {
+    if (changedProps.has("scope") && this.scope !== this._categoriesScope) {
       this._categories = [];
     }
   }
