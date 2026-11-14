@@ -44,6 +44,7 @@ class HaLabeledSlider extends LitElement {
             .labeled=${this.labeled}
             .disabled=${this.disabled}
             .value=${this.value}
+            .accessibleLabel=${this.caption ?? ""}
             @change=${this._inputChanged}
           ></ha-slider>
         </div>

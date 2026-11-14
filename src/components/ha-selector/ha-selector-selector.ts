@@ -136,6 +136,7 @@ const SELECTOR_SCHEMAS = {
   ] as const,
   object: [] as const,
   color_rgb: [] as const,
+  color_rgbw: [] as const,
   select: [
     {
       name: "options",
