@@ -53,6 +53,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   private _colors: Record<string, string | undefined> = {};
 
+  private _secondaryYAxisEntities = new Set<string>();
+
   private _entityIds: string[] = [];
 
   private _entities: GraphEntityConfig[] = [];
@@ -92,6 +94,11 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       ? processConfigEntities(config.entities)
       : [];
     this._entityIds = this._entities.map((entity) => entity.entity);
+    this._secondaryYAxisEntities = new Set(
+      this._entities
+        .filter((entity) => entity.secondary_y_axis)
+        .map((entity) => entity.entity)
+    );
 
     this._hoursToShow = config.hours_to_show || DEFAULT_HOURS_TO_SHOW;
 
@@ -379,6 +386,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                     .minYAxis=${this._config.min_y_axis}
                     .maxYAxis=${this._config.max_y_axis}
                     .fitYData=${this._config.fit_y_data || false}
+                    .secondaryYAxisEntities=${this._secondaryYAxisEntities}
                     .colors=${this._colors}
                     .height=${hasFixedHeight ? "100%" : undefined}
                     .narrow=${narrow}
