@@ -1,6 +1,6 @@
 import type { ContextType } from "@lit/context";
 import { mdiDelete, mdiDragHorizontalVariant } from "@mdi/js";
-import { css, html, LitElement, nothing, type PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { consume } from "../../../common/decorators/consume";
@@ -30,18 +30,8 @@ import "../../../components/ha-settings-row";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import { computeDefaultSecurityAlertSeverity } from "../strategies/security-alerts";
-import {
-  createSecurityEntityFilter,
-  type SecurityEntityContext,
-} from "../security-entity-filter";
+import { createSecurityEntityFilter } from "../security-entity-filter";
 import type { ValueChangedEvent } from "../../../types";
-
-type SecurityEditorContext = SecurityEntityContext & {
-  language: ContextType<typeof internationalizationContext>["language"];
-  translationMetadata: ContextType<
-    typeof internationalizationContext
-  >["translationMetadata"];
-};
 
 @customElement("security-alerts-editor")
 export class SecurityAlertsEditor extends LitElement {
@@ -59,24 +49,6 @@ export class SecurityAlertsEditor extends LitElement {
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
-
-  private _entityContext?: SecurityEditorContext;
-
-  protected willUpdate(changedProps: PropertyValues): void {
-    super.willUpdate(changedProps);
-    if (
-      changedProps.has("_states") ||
-      changedProps.has("_registries") ||
-      changedProps.has("_i18n")
-    ) {
-      this._entityContext = {
-        states: this._states,
-        ...this._registries,
-        language: this._i18n.language,
-        translationMetadata: this._i18n.translationMetadata,
-      };
-    }
-  }
 
   protected render() {
     return html`
@@ -107,10 +79,19 @@ export class SecurityAlertsEditor extends LitElement {
     index: number
   ) {
     const stateObj = this._states[alertEntity.entity];
-    const { primary, secondary } =
-      stateObj && this._entityContext
-        ? computeEntityPickerDisplay(this._entityContext, stateObj)
-        : { primary: alertEntity.entity, secondary: undefined };
+    const { primary, secondary } = stateObj
+      ? computeEntityPickerDisplay(
+          {
+            entities: this._registries.entities,
+            devices: this._registries.devices,
+            areas: this._registries.areas,
+            floors: this._registries.floors,
+            language: this._i18n.language,
+            translationMetadata: this._i18n.translationMetadata,
+          },
+          stateObj
+        )
+      : { primary: alertEntity.entity, secondary: undefined };
     const severity =
       alertEntity.severity ?? computeDefaultSecurityAlertSeverity(stateObj);
 
@@ -158,7 +139,10 @@ export class SecurityAlertsEditor extends LitElement {
     fireEvent(this, "value-changed", { value: next });
   }
 
-  private _entityFilter = createSecurityEntityFilter(() => this._entityContext);
+  private _entityFilter = createSecurityEntityFilter(
+    () => this._states,
+    () => this._registries
+  );
 
   private _getIndex(
     ev: HASSDomCurrentTargetEvent<HTMLElement>
