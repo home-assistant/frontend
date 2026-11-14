@@ -22,6 +22,11 @@ export interface ESPHomeFrontendUserData {
   setupDeferred?: string[];
 }
 
+export interface EnergyFrontendUserData {
+  // Statistic ids the user doesn't want suggested for the energy dashboard.
+  dismissed_suggestions?: string[];
+}
+
 export interface CoreFrontendSystemData {
   default_panel?: string;
   onboarded_version?: string;
@@ -67,6 +72,7 @@ declare global {
     core: CoreFrontendUserData;
     sidebar: SidebarFrontendUserData;
     esphome: ESPHomeFrontendUserData;
+    energy: EnergyFrontendUserData;
   }
   interface FrontendSystemData {
     core: CoreFrontendSystemData;
