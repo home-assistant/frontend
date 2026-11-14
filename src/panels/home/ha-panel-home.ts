@@ -16,10 +16,8 @@ import {
   fetchFrontendSystemData,
   saveFrontendSystemData,
   subscribeFrontendSystemData,
-  type ClimateFrontendSystemData,
   type HomeFrontendSystemData,
-  type MaintenanceFrontendSystemData,
-  type SecurityFrontendSystemData,
+  type HomeSummaryPanelSystemDataKey,
 } from "../../data/frontend";
 import type { LovelaceDashboardStrategyConfig } from "../../data/lovelace/config/types";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
@@ -40,6 +38,16 @@ import { showEditHomeDialog } from "./dialogs/show-dialog-edit-home";
 import { showNewOverviewDialog } from "./dialogs/show-dialog-new-overview";
 import { hasLegacyOverviewPanel } from "../../data/panel";
 
+const SUMMARY_PANEL_KEYS: HomeSummaryPanelSystemDataKey[] = [
+  "security",
+  "maintenance",
+  "climate",
+];
+
+type SummaryPanelConfigs = {
+  [K in HomeSummaryPanelSystemDataKey]: FrontendSystemData[K];
+};
+
 @customElement("ha-panel-home")
 class PanelHome extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -54,11 +62,11 @@ class PanelHome extends SubscribeMixin(LitElement) {
 
   @state() private _config?: HomeFrontendSystemData;
 
-  @state() private _securityConfig: SecurityFrontendSystemData = {};
-
-  @state() private _maintenanceConfig: MaintenanceFrontendSystemData = {};
-
-  @state() private _climateConfig: ClimateFrontendSystemData = {};
+  @state() private _summaryConfigs: SummaryPanelConfigs = {
+    security: {},
+    maintenance: {},
+    climate: {},
+  };
 
   @state() private _extraActionItems?: ExtraActionItem[];
 
@@ -66,60 +74,29 @@ class PanelHome extends SubscribeMixin(LitElement) {
 
   private _loadConfigPromise?: Promise<void>;
 
-  private _securityConfigRevision = 0;
-
-  private _maintenanceConfigRevision = 0;
-
-  private _climateConfigRevision = 0;
+  private _summaryConfigRevisions: Record<
+    HomeSummaryPanelSystemDataKey,
+    number
+  > = {
+    security: 0,
+    maintenance: 0,
+    climate: 0,
+  };
 
   public hassSubscribe() {
-    return [
-      subscribeFrontendSystemData(
-        this.hass.connection,
-        "security",
-        ({ value }) => {
-          this._securityConfigRevision++;
-          const config = value || {};
-          if (deepEqual(config, this._securityConfig)) {
-            return;
-          }
-          this._securityConfig = config;
-          if (this.hasUpdated) {
-            this._setLovelace();
-          }
+    return SUMMARY_PANEL_KEYS.map((key) =>
+      subscribeFrontendSystemData(this.hass.connection, key, ({ value }) => {
+        this._summaryConfigRevisions[key]++;
+        const config = value || {};
+        if (deepEqual(config, this._summaryConfigs[key])) {
+          return;
         }
-      ),
-      subscribeFrontendSystemData(
-        this.hass.connection,
-        "maintenance",
-        ({ value }) => {
-          this._maintenanceConfigRevision++;
-          const config = value || {};
-          if (deepEqual(config, this._maintenanceConfig)) {
-            return;
-          }
-          this._maintenanceConfig = config;
-          if (this.hasUpdated) {
-            this._setLovelace();
-          }
+        this._summaryConfigs = { ...this._summaryConfigs, [key]: config };
+        if (this.hasUpdated) {
+          this._setLovelace();
         }
-      ),
-      subscribeFrontendSystemData(
-        this.hass.connection,
-        "climate",
-        ({ value }) => {
-          this._climateConfigRevision++;
-          const config = value || {};
-          if (deepEqual(config, this._climateConfig)) {
-            return;
-          }
-          this._climateConfig = config;
-          if (this.hasUpdated) {
-            this._setLovelace();
-          }
-        }
-      ),
-    ];
+      })
+    );
   }
 
   private get _showBanner(): boolean {
@@ -218,22 +195,15 @@ class PanelHome extends SubscribeMixin(LitElement) {
   }
 
   private async _loadConfig() {
-    const securityConfigRevision = this._securityConfigRevision;
-    const maintenanceConfigRevision = this._maintenanceConfigRevision;
-    const climateConfigRevision = this._climateConfigRevision;
-    const [
-      translationsResult,
-      homeResult,
-      securityResult,
-      maintenanceResult,
-      climateResult,
-    ] = await Promise.allSettled([
-      this.hass.loadFragmentTranslation("lovelace"),
-      fetchFrontendSystemData(this.hass.connection, "home"),
-      fetchFrontendSystemData(this.hass.connection, "security"),
-      fetchFrontendSystemData(this.hass.connection, "maintenance"),
-      fetchFrontendSystemData(this.hass.connection, "climate"),
-    ]);
+    const summaryRevisions = { ...this._summaryConfigRevisions };
+    const [translationsResult, homeResult, ...summaryResults] =
+      await Promise.allSettled([
+        this.hass.loadFragmentTranslation("lovelace"),
+        fetchFrontendSystemData(this.hass.connection, "home"),
+        ...SUMMARY_PANEL_KEYS.map((key) =>
+          fetchFrontendSystemData(this.hass.connection, key)
+        ),
+      ]);
 
     if (translationsResult.status === "rejected") {
       // eslint-disable-next-line no-console
@@ -251,44 +221,20 @@ class PanelHome extends SubscribeMixin(LitElement) {
       this._config = homeResult.value || {};
     }
 
-    if (securityResult.status === "rejected") {
-      // eslint-disable-next-line no-console
-      console.error(
-        "Failed to load security configuration:",
-        securityResult.reason
-      );
-      if (securityConfigRevision === this._securityConfigRevision) {
-        this._securityConfig = {};
+    const summaryConfigs = { ...this._summaryConfigs };
+    SUMMARY_PANEL_KEYS.forEach((key, index) => {
+      if (summaryRevisions[key] !== this._summaryConfigRevisions[key]) {
+        return;
       }
-    } else if (securityConfigRevision === this._securityConfigRevision) {
-      this._securityConfig = securityResult.value || {};
-    }
-
-    if (maintenanceResult.status === "rejected") {
-      // eslint-disable-next-line no-console
-      console.error(
-        "Failed to load maintenance configuration:",
-        maintenanceResult.reason
-      );
-      if (maintenanceConfigRevision === this._maintenanceConfigRevision) {
-        this._maintenanceConfig = {};
+      const result = summaryResults[index];
+      if (result.status === "rejected") {
+        // eslint-disable-next-line no-console
+        console.error(`Failed to load ${key} configuration:`, result.reason);
       }
-    } else if (maintenanceConfigRevision === this._maintenanceConfigRevision) {
-      this._maintenanceConfig = maintenanceResult.value || {};
-    }
-
-    if (climateResult.status === "rejected") {
-      // eslint-disable-next-line no-console
-      console.error(
-        "Failed to load climate configuration:",
-        climateResult.reason
-      );
-      if (climateConfigRevision === this._climateConfigRevision) {
-        this._climateConfig = {};
-      }
-    } else if (climateConfigRevision === this._climateConfigRevision) {
-      this._climateConfig = climateResult.value || {};
-    }
+      summaryConfigs[key] =
+        result.status === "fulfilled" && result.value ? result.value : {};
+    });
+    this._summaryConfigs = summaryConfigs;
   }
 
   private _debounceRegenerateStrategy = debounce(
@@ -474,10 +420,11 @@ class PanelHome extends SubscribeMixin(LitElement) {
     return {
       strategy: {
         type: "home",
-        alert_entities: this._securityConfig.alert_entities,
-        security_hidden_entities: this._securityConfig.hidden_entities,
-        maintenance_hidden_entities: this._maintenanceConfig.hidden_entities,
-        climate_hidden_entities: this._climateConfig.hidden_entities,
+        alert_entities: this._summaryConfigs.security.alert_entities,
+        security_hidden_entities: this._summaryConfigs.security.hidden_entities,
+        maintenance_hidden_entities:
+          this._summaryConfigs.maintenance.hidden_entities,
+        climate_hidden_entities: this._summaryConfigs.climate.hidden_entities,
         favorite_entities: this._config?.favorite_entities,
         home_panel: true,
         hide_welcome_message: this._config?.hide_welcome_message,
