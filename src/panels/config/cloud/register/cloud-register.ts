@@ -83,8 +83,6 @@ export class CloudRegister extends LitElement {
         }
         cloud-register-card {
           width: 100%;
-          max-width: 600px;
-          margin-inline: auto;
         }
       `,
     ];

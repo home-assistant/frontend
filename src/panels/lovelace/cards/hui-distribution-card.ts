@@ -181,6 +181,7 @@ export class HuiDistributionCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: DistributionCardConfig): void {
     this._config = config;
+    this._expandLegend = config.expand_legend ?? false;
 
     // Handle empty entities gracefully
     if (!config.entities || config.entities.length === 0) {

@@ -6,7 +6,7 @@ const playerManager = castContext.getPlayerManager();
 
 playerManager.setMessageInterceptor("LOAD", (loadRequestData) => {
   const media = loadRequestData.media;
-  // Special handling if it came from Google Assistant
+  // Special handling if it came from Google Home
   if (media.entity) {
     media.contentId = media.entity;
     media.streamType = "LIVE";

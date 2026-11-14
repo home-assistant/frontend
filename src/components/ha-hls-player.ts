@@ -180,13 +180,14 @@ class HaHLSPlayer extends LitElement {
       return;
     }
 
-    if (!this.entityid) {
+    const entityId = this.entityid;
+    if (!entityId) {
       return;
     }
     try {
       const { url } = await fetchStreamUrl(
         { callWS: this._api.callWS, hassUrl: this._connection.hassUrl },
-        this.entityid
+        entityId
       );
 
       this._url = this._connection.hassUrl(url);
@@ -198,6 +199,10 @@ class HaHLSPlayer extends LitElement {
       // eslint-disable-next-line
       console.error(err);
 
+      if (!this.isConnected || entityId !== this.entityid) {
+        // Removed or switched camera while fetching, the result is outdated
+        return;
+      }
       fireEvent(this, "streams", { hasAudio: false, hasVideo: false });
     }
   }

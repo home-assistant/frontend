@@ -99,7 +99,8 @@ describe("createZHANetworkChartData", () => {
     const { links } = createZHANetworkChartData(
       [coordinator, upstreamRouter, downstreamRouter, childEndDevice],
       hass,
-      document.createElement("div")
+      document.createElement("div"),
+      false
     );
 
     const adjacency = new Map<string, string[]>();
@@ -182,7 +183,8 @@ describe("createZHANetworkChartData", () => {
     const { links } = createZHANetworkChartData(
       [router, unknownRelationship],
       hass,
-      document.createElement("div")
+      document.createElement("div"),
+      false
     );
 
     const otherEndOf = (ieee: string) => {
@@ -262,7 +264,8 @@ describe("createZHANetworkChartData", () => {
     const { links } = createZHANetworkChartData(
       [coordinator, upstreamRouter, childEndDevice, downstreamRouter],
       hass,
-      document.createElement("div")
+      document.createElement("div"),
+      false
     );
 
     const adjacency = new Map<string, string[]>();

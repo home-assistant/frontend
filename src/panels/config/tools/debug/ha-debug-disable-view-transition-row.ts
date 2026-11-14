@@ -1,5 +1,5 @@
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { storage } from "../../../../common/decorators/storage";
 import { setViewTransitionDisabled } from "../../../../common/util/view-transition";
@@ -17,7 +17,7 @@ class HaDebugDisableViewTransitionRow extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-list-item-base>
+      <ha-list-item-base wrap-headline wrap-supporting-text>
         <span slot="headline"
           >${this.hass.localize(
             "ui.panel.config.tools.tabs.debug.disable_view_transition.title"
@@ -41,13 +41,6 @@ class HaDebugDisableViewTransitionRow extends LitElement {
     this._disabled = (ev.target as HaSwitch).checked;
     setViewTransitionDisabled(this._disabled);
   }
-
-  static styles = css`
-    ha-list-item-base::part(headline),
-    ha-list-item-base::part(supporting-text) {
-      white-space: normal;
-    }
-  `;
 }
 
 declare global {

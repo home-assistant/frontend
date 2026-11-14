@@ -178,7 +178,8 @@ export class HaNavigationPicker extends LitElement {
         allow-custom-value
         .placeholder=${this.label}
         .helper=${this.helper}
-        .disabled=${this._loading || this.disabled}
+        .disabled=${this.disabled}
+        .loading=${this._loading}
         .required=${this.required}
         .getItems=${this._getItems}
         .valueRenderer=${this._valueRenderer}

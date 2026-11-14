@@ -65,7 +65,7 @@ class HaBackupOverviewBackups extends LitElement {
     return html`
       <ha-backup-summary-card .heading=${heading} .status=${status}>
         <ha-list-base>
-          <ha-list-item-base>
+          <ha-list-item-base wrap-headline>
             <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
             <span slot="headline" class=${headline === null ? "skeleton" : ""}
               >${headline}</span
@@ -74,7 +74,7 @@ class HaBackupOverviewBackups extends LitElement {
           ${
             description || description === null
               ? html`
-                  <ha-list-item-base>
+                  <ha-list-item-base wrap-headline>
                     <ha-svg-icon
                       slot="start"
                       .path=${mdiCalendar}
@@ -357,9 +357,12 @@ class HaBackupOverviewBackups extends LitElement {
           justify-content: flex-end;
           border-top: none;
         }
+        ha-list-base {
+          --ha-list-padding: 0 0 var(--ha-space-2);
+        }
         ha-list-item-base {
           --ha-row-item-padding-block: var(--ha-space-2);
-          --ha-row-item-min-height: 40x;
+          --ha-row-item-min-height: 40px;
         }
         ha-list-item-base::part(start) {
           color: var(--ha-color-text-secondary);

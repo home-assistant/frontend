@@ -43,6 +43,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
     return html`
       <ha-automation-option
+        path-key="choose"
         .options=${options}
         .disabled=${this.disabled}
         @value-changed=${this._optionsChanged}

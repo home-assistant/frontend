@@ -62,7 +62,7 @@ class ZWaveJSOptionsPage extends LitElement {
             ${
               this._network
                 ? html`<ha-list-base>
-                    <ha-list-item-base>
+                    <ha-list-item-base wrap-headline wrap-supporting-text>
                       <span slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.zwave_js.common.rebuild_network_routes"
@@ -85,7 +85,7 @@ class ZWaveJSOptionsPage extends LitElement {
                         )}
                       </ha-button>
                     </ha-list-item-base>
-                    <ha-list-item-base>
+                    <ha-list-item-base wrap-headline wrap-supporting-text>
                       <span slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.zwave_js.common.remove_node"
@@ -142,11 +142,11 @@ class ZWaveJSOptionsPage extends LitElement {
       haStyle,
       css`
         .container {
-          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+          padding: var(--ha-space-2) var(--ha-content-gutter) var(--ha-space-4);
         }
 
         ha-card {
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
           margin: auto;
         }
       `,

@@ -170,9 +170,11 @@ class DialogMatterLockManage extends LitElement {
                         .user=${user}
                         @click=${this._handleUserClick}
                       >
-                        <div slot="start" class="icon-background">
-                          <ha-svg-icon .path=${mdiLock}></ha-svg-icon>
-                        </div>
+                        <ha-svg-icon
+                          slot="start"
+                          class="icon-background"
+                          .path=${mdiLock}
+                        ></ha-svg-icon>
                         <div slot="headline">
                           ${user.user_name || `User ${user.user_index}`}
                         </div>
@@ -336,11 +338,8 @@ class DialogMatterLockManage extends LitElement {
           border-radius: var(--ha-border-radius-circle);
           background-color: var(--primary-color);
           color: #fff;
-          display: flex;
-          width: 40px;
-          height: 40px;
-          align-items: center;
-          justify-content: center;
+          /* 24px icon + padding = 40px circle */
+          padding: var(--ha-space-2);
         }
       `,
     ];

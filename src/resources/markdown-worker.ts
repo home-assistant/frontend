@@ -9,6 +9,7 @@ import {
   getDefaultWhiteList,
   safeAttrValue,
 } from "xss";
+import { URL_ATTRIBUTES } from "../common/dom/rewrite-html-urls";
 
 let whiteListNormal: IWhiteList | undefined;
 let whiteListSvg: IWhiteList | undefined;
@@ -42,6 +43,23 @@ const sanitizeSrcset = (value: string): string => {
     : "";
 };
 
+// Keep a relative address xss would empty as a path below the current one.
+// Returns the attribute to render, or "" to drop it.
+const sanitizeRelativeUrl = (tag: string, name: string, value: string) => {
+  const decoded = friendlyAttrValue(value).replace(/&amp;/g, "&").trim();
+  if (
+    !decoded ||
+    /^[a-z][a-z\d+.-]*:/i.test(decoded) ||
+    friendlyAttrValue(decoded) !== decoded
+  ) {
+    return "";
+  }
+  const path = `./${decoded}`;
+  return safeAttrValue(tag, name, path, cssFilter)
+    ? `${name}="${escapeAttrValue(path.replace(/&/g, "&amp;"))}"`
+    : "";
+};
+
 const renderMarkdown = async (
   content: string,
   markedOptions: MarkedOptions,
@@ -49,6 +67,7 @@ const renderMarkdown = async (
     // Do not allow SVG on untrusted content, it allows XSS.
     allowSvg?: boolean;
     allowDataUrl?: boolean;
+    allowRelativeUrls?: boolean;
   } = {}
 ): Promise<string[]> => {
   if (!whiteListNormal) {
@@ -88,8 +107,9 @@ const renderMarkdown = async (
   } else {
     whiteList = whiteListNormal;
   }
-  if (hassOptions.allowDataUrl && whiteList.a) {
-    whiteList.a.push("download");
+  if (hassOptions.allowDataUrl) {
+    // Copy it, the cached list is also used without data URLs
+    whiteList = { ...whiteList, a: [...(whiteList.a ?? []), "download"] };
   }
 
   marked.setOptions(markedOptions);
@@ -138,7 +158,14 @@ const renderMarkdown = async (
           name === "href" &&
           value.startsWith("data:")
         ) {
-          return `href="${value}"`;
+          return `href="${escapeAttrValue(value)}"`;
+        }
+        if (
+          hassOptions.allowRelativeUrls &&
+          URL_ATTRIBUTES.some(([t, a]) => t === tag && a === name) &&
+          safeAttrValue(tag, name, value, cssFilter) === ""
+        ) {
+          return sanitizeRelativeUrl(tag, name, value);
         }
         return undefined;
       },

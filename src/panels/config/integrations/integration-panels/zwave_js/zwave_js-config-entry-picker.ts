@@ -118,7 +118,7 @@ class ZWaveJSConfigEntryPicker extends LitElement {
         }
 
         ha-card {
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
           width: 100%;
         }
 

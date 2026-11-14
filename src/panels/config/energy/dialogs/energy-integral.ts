@@ -10,7 +10,12 @@ import type { StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
 import { findRelated } from "../../../../data/search";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../../../types";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantFormatters,
+} from "../../../../types";
 import type { PowerType } from "./power-config";
 
 export type IntegralDeviceClass = "energy" | "gas" | "water";
@@ -154,23 +159,24 @@ export function integralFlowInput(
 }
 
 async function createIntegral(
-  hass: HomeAssistant,
+  api: HomeAssistantApi,
+  localize: LocalizeFunc,
   request: IntegralRequest,
   deviceClass: IntegralDeviceClass
 ): Promise<string> {
   let flowId: string | undefined;
   let entityId: string | undefined;
   try {
-    flowId = (await createConfigFlow(hass, "integration")).flow_id;
+    flowId = (await createConfigFlow(api.callApi, "integration")).flow_id;
     const step = await handleConfigFlowStep(
-      hass,
+      api.callApi,
       flowId,
       integralFlowInput(request.name, request.rate, request.units, deviceClass)
     );
     if (step.type === "create_entry" && step.result) {
       flowId = undefined;
       const related = await findRelated(
-        hass,
+        api,
         "config_entry",
         step.result.entry_id
       );
@@ -181,17 +187,18 @@ async function createIntegral(
   }
   if (flowId) {
     // Rejected input keeps the flow open
-    await deleteConfigFlow(hass, flowId).catch(() => undefined);
+    await deleteConfigFlow(api, flowId).catch(() => undefined);
   }
   if (!entityId) {
-    throw new Error(
-      hass.localize("ui.panel.config.energy.integral.create_failed")
-    );
+    throw new Error(localize("ui.panel.config.energy.integral.create_failed"));
   }
   return entityId;
 }
 
 export interface ConfirmIntegralsOptions {
+  api: HomeAssistantApi;
+  localize: LocalizeFunc;
+  formatEntityName: HomeAssistantFormatters["formatEntityName"];
   deviceClass: IntegralDeviceClass;
   /** Live states and entities, so a retry finds the helpers already created. */
   states: HomeAssistant["states"];
@@ -211,11 +218,10 @@ export interface ConfirmIntegralsOptions {
  */
 export async function confirmIntegrals(
   element: HTMLElement,
-  hass: HomeAssistant,
   options: ConfirmIntegralsOptions
 ): Promise<string[] | undefined> {
-  const { localize, formatEntityName } = hass;
-  const { deviceClass, states, entities } = options;
+  const { api, localize, formatEntityName, deviceClass, states, entities } =
+    options;
   const label = (statisticId: string) =>
     getStatisticLabel(
       states,
@@ -284,7 +290,7 @@ export async function confirmIntegrals(
       const settled = await Promise.allSettled(
         plan.map(
           ({ request, existing }) =>
-            existing ?? createIntegral(hass, request, deviceClass)
+            existing ?? createIntegral(api, localize, request, deviceClass)
         )
       );
       const failure = settled.find(

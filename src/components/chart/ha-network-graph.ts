@@ -31,8 +31,14 @@ export interface NetworkNode {
     color?: string;
     borderColor?: string;
     borderWidth?: number;
+    opacity?: number;
   };
-  label?: { position: "left" | "right" | "top" | "bottom" };
+  label?: {
+    position?: "left" | "right" | "top" | "bottom";
+    show?: boolean;
+    fontWeight?: "normal" | "bold";
+    fontSize?: number;
+  };
   fixed?: boolean;
   /**
    * Distance from the center, where 0 is the center and 1 is the edge
@@ -51,6 +57,7 @@ export interface NetworkLink {
     width?: number;
     color?: string;
     type?: "solid" | "dashed" | "dotted";
+    opacity?: number;
   };
   symbolSize?: number | number[];
   symbol?: string;
@@ -286,9 +293,8 @@ export class HaNetworkGraph extends LitElement {
           return node.name ?? "";
         },
         rich: {
-          primary: {
-            fontSize: 12,
-          },
+          // inherits the node label font, so a node can override it
+          primary: {},
           secondary: {
             fontSize: 12,
             color: getComputedStyle(document.body).getPropertyValue(
@@ -648,7 +654,7 @@ export class HaNetworkGraph extends LitElement {
 
     ha-icon-button,
     ::slotted(ha-icon-button) {
-      margin-right: 12px;
+      margin-inline-end: var(--ha-space-3);
     }
   `;
 }

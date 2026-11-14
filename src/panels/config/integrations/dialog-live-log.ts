@@ -19,6 +19,7 @@ import type { HaLogViewer } from "../../../components/ha-log-viewer";
 import "../../../components/ha-svg-icon";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import "../../../components/skeleton/ha-skeleton-log";
 import {
   connectionContext,
   internationalizationContext,
@@ -50,6 +51,9 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
   @state() private _error?: string;
 
   @state() private _live = false;
+
+  // The backend answers the subscription once it has read the backlog
+  @state() private _loading = false;
 
   @state() private _search = "";
 
@@ -84,9 +88,11 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
       (lines) => this._addLines(lines)
     );
     this._unsub = unsub;
+    this._loading = true;
     unsub.then(
       () => {
         if (this._unsub === unsub) {
+          this._loading = false;
           this._live = true;
         }
       },
@@ -95,6 +101,7 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
           return;
         }
         this._unsub = undefined;
+        this._loading = false;
         if (err?.code === ERR_UNKNOWN_COMMAND) {
           this._unsupported = true;
         } else if (
@@ -130,6 +137,7 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
     // _subscribe reports subscription errors, so only ignore them here
     this._unsub?.then((unsub) => unsub()).catch(() => undefined);
     this._unsub = undefined;
+    this._loading = false;
     this._live = false;
   }
 
@@ -209,12 +217,18 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
                     ${
                       this._lineCount
                         ? nothing
-                        : html`<div class="waiting">
-                            ${this._i18n.localize(
-                              "ui.panel.config.integrations.config_entry.live_log.waiting",
-                              { integration: this.params.name }
-                            )}
-                          </div>`
+                        : this._loading
+                          ? html`<ha-skeleton-log
+                              .label=${this._i18n.localize(
+                                "ui.panel.config.logs.loading_log"
+                              )}
+                            ></ha-skeleton-log>`
+                          : html`<div class="waiting">
+                              ${this._i18n.localize(
+                                "ui.panel.config.integrations.config_entry.live_log.waiting",
+                                { integration: this.params.name }
+                              )}
+                            </div>`
                     }
                   </ha-log-viewer>
                   ${

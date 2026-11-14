@@ -22,6 +22,7 @@ import { UNAVAILABLE } from "../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity/entity_attributes";
 import type { FanEntity, FanSpeed } from "../../data/fan";
 import {
+  computeDefaultFanSpeedStyle,
   computeFanSpeedIcon,
   computeFanSpeeds,
   fanPercentageToSpeed,
@@ -103,7 +104,10 @@ export class HaStateControlFanSpeed extends LitElement {
   protected render() {
     const color = stateColorCss(this.stateObj);
 
-    const speeds = computeFanSpeeds(this.stateObj);
+    const speeds =
+      computeDefaultFanSpeedStyle(this.stateObj) === "buttons"
+        ? computeFanSpeeds(this.stateObj)
+        : undefined;
 
     if (speeds) {
       const options = speeds

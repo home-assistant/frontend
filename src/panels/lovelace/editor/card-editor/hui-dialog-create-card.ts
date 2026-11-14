@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
+import type { ConfigPath } from "../../../../common/util/config-path";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-dialog";
@@ -23,7 +24,6 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { addCardAtPath, getCardSectionConfig } from "../config-util";
-import type { LovelacePath } from "../lovelace-path";
 import { getAtPath, getParentPath, getPathTarget } from "../lovelace-path";
 import "./hui-card-picker";
 import "./hui-suggestion-picker";
@@ -85,7 +85,7 @@ export class HuiCreateDialogCard
     return true;
   }
 
-  private _containerPath(path: LovelacePath): LovelacePath {
+  private _containerPath(path: ConfigPath): ConfigPath {
     const parentPath = getParentPath(path);
     return getPathTarget(path) === "slot"
       ? getParentPath(parentPath)

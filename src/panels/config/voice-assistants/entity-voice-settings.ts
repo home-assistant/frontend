@@ -193,7 +193,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
     const exposedToAssist = this.exposed.conversation;
 
     return html`
-      <ha-row-item>
+      <ha-row-item wrap-headline>
         <h3 slot="headline">
           ${this.hass.localize("ui.dialogs.voice-settings.expose_header")}
         </h3>
@@ -227,7 +227,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                 this._googleEntity?.might_2fa;
 
               return html`
-                <ha-row-item>
+                <ha-row-item wrap-headline wrap-supporting-text>
                   <voice-assistant-brand-icon
                     slot="start"
                     .voiceAssistantId=${key}
@@ -324,7 +324,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
               )}
             </ha-alert>`
           : html`
-              <ha-row-item>
+              <ha-row-item wrap-headline wrap-supporting-text>
                 <span slot="headline">${this._computedName(this.entry)}</span>
                 <span slot="supporting-text">
                   ${this.hass.localize(
@@ -400,9 +400,13 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       .filter((a): a is string => a !== null)
       .map((alias) => alias.trim())
       .filter((alias) => alias);
-    const result = await updateEntityRegistryEntry(this.hass, this.entityId, {
-      aliases: [...nullAliases, ...stringAliases],
-    });
+    const result = await updateEntityRegistryEntry(
+      this.hass.callWS,
+      this.entityId,
+      {
+        aliases: [...nullAliases, ...stringAliases],
+      }
+    );
     fireEvent(this, "entity-entry-updated", result.entity_entry);
   }
 
@@ -452,10 +456,6 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         }
         ha-row-item {
           --ha-row-item-padding-inline: 0;
-        }
-        ha-row-item::part(headline),
-        ha-row-item::part(supporting-text) {
-          white-space: normal;
         }
         img {
           height: 32px;

@@ -524,9 +524,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       --ha-progress-bar-border-radius: 0;
       --ha-progress-bar-track-height: 4px;
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
+      top: var(--safe-area-inset-top, 0px);
+      left: var(--safe-area-inset-left, 0px);
+      right: var(--safe-area-inset-right, 0px);
       z-index: 10;
     }
     .footer {

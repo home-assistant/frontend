@@ -152,7 +152,7 @@ class HaConfigBackupDetails extends LitElement {
                         ${
                           CLOUD_AGENT === this.agentId
                             ? html`
-                                <ha-row-item>
+                                <ha-row-item wrap-supporting-text>
                                   <span slot="headline">
                                     ${this.hass.localize(
                                       "ui.panel.config.backup.location.encryption.location_encrypted"
@@ -179,7 +179,7 @@ class HaConfigBackupDetails extends LitElement {
                               `
                             : encrypted
                               ? html`
-                                  <ha-row-item>
+                                  <ha-row-item wrap-supporting-text>
                                     <span slot="headline">
                                       ${this.hass.localize(
                                         "ui.panel.config.backup.location.encryption.location_encrypted"
@@ -213,7 +213,7 @@ class HaConfigBackupDetails extends LitElement {
                                       "ui.panel.config.backup.location.encryption.warning_encryption_turn_off_description"
                                     )}
                                   </ha-alert>
-                                  <ha-row-item>
+                                  <ha-row-item wrap-supporting-text>
                                     <span slot="headline">
                                       ${this.hass.localize(
                                         "ui.panel.config.backup.location.encryption.location_unencrypted"
@@ -328,8 +328,8 @@ class HaConfigBackupDetails extends LitElement {
 
   static styles = css`
     .content {
-      padding: 28px 20px 0;
-      max-width: 690px;
+      padding: 28px var(--ha-content-gutter) 0;
+      max-width: var(--ha-content-width-narrow);
       margin: 0 auto;
       gap: var(--ha-space-6);
       display: grid;
@@ -363,9 +363,6 @@ class HaConfigBackupDetails extends LitElement {
     }
     ha-backup-data-picker {
       display: block;
-    }
-    ha-row-item::part(supporting-text) {
-      white-space: wrap;
     }
     .dot {
       display: block;

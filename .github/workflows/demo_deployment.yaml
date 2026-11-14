@@ -19,7 +19,7 @@ jobs:
   deploy_dev:
     runs-on: ubuntu-latest
     name: Demo Development
-    if: github.repository == 'home-assistant/frontend' && (github.event_name != 'push' || github.ref_name != 'master')
+    if: github.repository == 'home-assistant/frontend' && github.ref_name != 'master'
     environment:
       name: Demo Development
       url: ${{ steps.deploy.outputs.unique_deploy_url }}
@@ -31,17 +31,17 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node and install
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
 
       - name: Build Demo
-        uses: ./.github/actions/build
+        uses: $/.github/actions/build
         with:
           target: build-demo
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to Netlify
         id: deploy
-        uses: ./.github/actions/netlify-deploy
+        uses: $/.github/actions/netlify-deploy
         with:
           dir: demo/dist
           auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
@@ -50,7 +50,7 @@ jobs:
   deploy_master:
     runs-on: ubuntu-latest
     name: Demo Production
-    if: github.repository == 'home-assistant/frontend' && github.event_name == 'push' && github.ref_name == 'master'
+    if: github.repository == 'home-assistant/frontend' && github.ref_name == 'master'
     environment:
       name: Demo Production
       url: ${{ steps.deploy.outputs.netlify_url }}
@@ -62,17 +62,17 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node and install
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
 
       - name: Build Demo
-        uses: ./.github/actions/build
+        uses: $/.github/actions/build
         with:
           target: build-demo
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to Netlify
         id: deploy
-        uses: ./.github/actions/netlify-deploy
+        uses: $/.github/actions/netlify-deploy
         with:
           dir: demo/dist
           auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}

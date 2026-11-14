@@ -8,6 +8,7 @@ import {
   ENERGY_CARD_CATALOG,
   energyCardKey,
   hasEnergySource,
+  hasGasDevices,
   hasGasRateSource,
   hasNowViewContent,
   hasWaterRateSource,
@@ -25,6 +26,7 @@ const makePrefs = (
   energy_sources: [],
   device_consumption: [],
   device_consumption_water: [],
+  device_consumption_gas: [],
   ...prefs,
 });
 
@@ -46,6 +48,11 @@ const WATER_RATE = source({
   stat_energy_from: "sensor.water",
   stat_rate: "sensor.water_rate",
 });
+const GAS_DEVICE = { stat_consumption: "sensor.gas_device" };
+const GAS_DEVICE_RATE = {
+  stat_consumption: "sensor.gas_device",
+  stat_rate: "sensor.gas_device_rate",
+};
 
 describe("energyCardKey", () => {
   it("joins the view path and card type", () => {
@@ -273,5 +280,69 @@ describe("isEnergyCardVisible", () => {
         isEnergyCardVisible(card.view, cardType, richPrefs, [card.key])
       ).toBe(false);
     }
+  });
+});
+
+describe("gas devices", () => {
+  it("hasGasDevices is true only with gas devices", () => {
+    expect(hasGasDevices(makePrefs())).toBe(false);
+    expect(
+      hasGasDevices(makePrefs({ device_consumption_gas: [GAS_DEVICE] }))
+    ).toBe(true);
+  });
+
+  it("shows the gas sankey with gas devices only", () => {
+    const prefs = makePrefs({ device_consumption_gas: [GAS_DEVICE] });
+    expect(isEnergyCardVisible("gas", "gas-sankey", prefs, undefined)).toBe(
+      true
+    );
+    expect(
+      isEnergyCardVisible("gas", "gas-sankey", makePrefs(), undefined)
+    ).toBe(false);
+    expect(
+      isEnergyCardVisible("gas", "gas-sankey", prefs, ["gas.gas-sankey"])
+    ).toBe(false);
+    expect(applicableEnergyCardKeys("gas", prefs)).toContain("gas.gas-sankey");
+  });
+
+  it("does not show the gas sankey for a gas source without devices", () => {
+    expect(
+      isEnergyCardVisible(
+        "gas",
+        "gas-sankey",
+        makePrefs({ energy_sources: [GAS] }),
+        undefined
+      )
+    ).toBe(false);
+  });
+
+  it("shows the overview gas graph with gas devices only", () => {
+    expect(
+      isEnergyCardVisible(
+        "overview",
+        "energy-gas-graph",
+        makePrefs({ device_consumption_gas: [GAS_DEVICE] }),
+        undefined
+      )
+    ).toBe(true);
+  });
+
+  it("shows gas-flow-sankey in the now view only with a device rate", () => {
+    const withRate = makePrefs({ device_consumption_gas: [GAS_DEVICE_RATE] });
+    const noRate = makePrefs({ device_consumption_gas: [GAS_DEVICE] });
+    expect(
+      isEnergyCardVisible("now", "gas-flow-sankey", withRate, undefined)
+    ).toBe(true);
+    expect(
+      isEnergyCardVisible("now", "gas-flow-sankey", noRate, undefined)
+    ).toBe(false);
+  });
+
+  it("hasNowViewContent is true for a gas device with a rate", () => {
+    expect(
+      hasNowViewContent(
+        makePrefs({ device_consumption_gas: [GAS_DEVICE_RATE] })
+      )
+    ).toBe(true);
   });
 });

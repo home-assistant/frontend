@@ -95,10 +95,11 @@ export const linewrapCompartment = new Compartment();
 export const yamlLintCompartment = new Compartment();
 export const phrasesCompartment = new Compartment();
 
-// CodeMirror renders the search panel and the go to line dialog with
-// hardcoded English text, looked up through `state.phrase()`. Map those
-// phrases to our translations. CodeMirror replaces `$` with the line number or
-// match count after the lookup, so pass it in as the placeholder value.
+// CodeMirror renders the search panel, the go to line dialog and the fold
+// markers with hardcoded English text, looked up through `state.phrase()`.
+// Map those phrases to our translations. CodeMirror replaces `$` with the line
+// number or match count after the lookup, so pass it in as the placeholder
+// value.
 export const localizedPhrases = (localize: LocalizeFunc) => {
   const phrases: Record<string, string> = {
     Find: localize("ui.components.yaml-editor.search.find"),
@@ -124,6 +125,10 @@ export const localizedPhrases = (localize: LocalizeFunc) => {
     ),
     "Go to line": localize("ui.components.yaml-editor.go_to_line.label"),
     go: localize("ui.components.yaml-editor.go_to_line.go"),
+    "Fold line": localize("ui.components.yaml-editor.fold.fold_line"),
+    "Unfold line": localize("ui.components.yaml-editor.fold.unfold_line"),
+    "folded code": localize("ui.components.yaml-editor.fold.folded_code"),
+    unfold: localize("ui.components.yaml-editor.fold.unfold"),
   };
   // Leave out missing translations so CodeMirror falls back to its own text
   return EditorState.phrases.of(

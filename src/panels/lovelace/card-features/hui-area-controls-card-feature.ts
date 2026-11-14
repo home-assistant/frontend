@@ -27,6 +27,7 @@ import "../../../components/ha-svg-icon";
 import {
   AREA_CONTROLS_BUTTONS,
   getAreaControlEntities,
+  getAreaEntityIds,
   MAX_DEFAULT_AREA_CONTROLS,
 } from "../../../data/area/area_controls";
 import type { AreaRegistryEntry } from "../../../data/area/area_registry";
@@ -236,6 +237,8 @@ class HuiAreaControlsCardFeature
       .map((n) => n.value)
   );
 
+  private _areaEntityIds = memoizeOne(getAreaEntityIds);
+
   // States are part of the key: the filter reads device classes from them,
   // so an entity can only match once its state exists.
   private _controlEntities = memoizeOne(
@@ -245,17 +248,23 @@ class HuiAreaControlsCardFeature
       excludeEntities: string[] | undefined,
       registries: HomeAssistantRegistries,
       states: HassEntities
-    ) =>
-      getAreaControlEntities(
+    ) => {
+      const areaEntities = this._areaEntityIds(
+        registries.entities,
+        registries.devices,
+        areaId,
+        excludeEntities
+      );
+      return getAreaControlEntities(
+        areaEntities,
         states,
         registries.entities,
         registries.devices,
         registries.areas,
         registries.floors,
-        controls,
-        areaId,
-        excludeEntities
-      )
+        controls
+      );
+    }
   );
 
   protected render() {

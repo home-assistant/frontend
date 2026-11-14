@@ -1,4 +1,5 @@
 import type { BarSeriesOption } from "echarts/charts";
+import type { CallbackDataParams } from "echarts/types/dist/shared";
 import type { HassEntities } from "home-assistant-js-websocket";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -555,5 +556,72 @@ export function generateEnergyDevicesDetailGraphData(
     compareEnd,
   };
 }
+
+const limitPeriodTooltipParams = (
+  params: CallbackDataParams[],
+  maxRows: number,
+  otherName: (count: number) => string,
+  otherId: string
+): CallbackDataParams[] => {
+  const devices: CallbackDataParams[] = [];
+  const rest: CallbackDataParams[] = [];
+  for (const param of params) {
+    const y = (param.value as number[] | undefined)?.[1];
+    // The tooltip formatter hides values that round to 0 at 3 decimals
+    if (
+      (y ?? 0) >= 0.0005 &&
+      !/^(compare-)?untracked-/.test(param.seriesId ?? "")
+    ) {
+      devices.push(param);
+    } else {
+      rest.push(param);
+    }
+  }
+  devices.sort((a, b) => (b.value as number[])[1] - (a.value as number[])[1]);
+  if (devices.length < maxRows + 2) {
+    return [...devices, ...rest];
+  }
+  const folded = devices.slice(maxRows);
+  const [x, , originalStart] = folded[0].value as number[];
+  const other: CallbackDataParams = {
+    ...folded[0],
+    seriesId: otherId,
+    seriesName: otherName(folded.length),
+    color: "transparent",
+    value: [
+      x,
+      folded.reduce((sum, p) => sum + (p.value as number[])[1], 0),
+      originalStart,
+    ],
+  };
+  return [...devices.slice(0, maxRows), other, ...rest];
+};
+
+/**
+ * Sorts the device rows of each period largest first and folds all but the
+ * largest `maxRows` into one row. Untracked rows are never folded.
+ */
+export const limitTooltipParams = (
+  params: CallbackDataParams[],
+  maxRows: number,
+  otherName: (count: number) => string
+): CallbackDataParams[] => {
+  const isCompare = (p: CallbackDataParams) =>
+    p.seriesId?.startsWith("compare-");
+  return [
+    ...limitPeriodTooltipParams(
+      params.filter((p) => !isCompare(p)),
+      maxRows,
+      otherName,
+      "other-devices"
+    ),
+    ...limitPeriodTooltipParams(
+      params.filter(isCompare),
+      maxRows,
+      otherName,
+      "compare-other-devices"
+    ),
+  ];
+};
 
 export { getStatIdFromId, UNIT };

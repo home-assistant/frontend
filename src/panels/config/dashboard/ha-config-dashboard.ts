@@ -425,7 +425,8 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
         ha-config-section {
           margin: auto;
           margin-top: -32px;
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
+          padding-inline: var(--ha-content-gutter);
         }
 
         ha-card {
@@ -477,6 +478,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           }
           ha-config-section {
             margin-top: -42px;
+            padding-inline: 0;
           }
         }
 

@@ -28,7 +28,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node and install
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
 
       - name: Regenerate sensor entity constants
         run: ./script/gen_sensor_entity_constants
