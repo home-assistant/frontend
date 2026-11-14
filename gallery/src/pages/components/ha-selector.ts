@@ -462,6 +462,14 @@ const SCHEMAS: {
           },
         },
       },
+      select_search: {
+        name: "Select (more than 12 options)",
+        selector: {
+          select: {
+            options: Array.from({ length: 20 }, (_, i) => `Option ${i + 1}`),
+          },
+        },
+      },
       select_disabled_list: {
         name: "Select disabled option",
         selector: {
