@@ -143,8 +143,10 @@ export class HaNetworkGraph extends LitElement {
   // Dragged nodes stay where they are dropped, the force layout moves the others
   private _pinnedNodes: string[] = [];
 
-  // Names of the legend categories that are switched off
-  @state() private _hiddenCategories: string[] = [];
+  // Names of the legend categories that are switched off. Not reactive: the
+  // legend lays the graph out itself, only the layout animation threshold
+  // needs a render
+  private _hiddenCategories: string[] = [];
 
   private _dragNode?: string;
 
@@ -197,7 +199,7 @@ export class HaNetworkGraph extends LitElement {
         this.selectedNode,
         this._nodePositions,
         this._pinnedNodes,
-        this._hiddenCategories
+        this._fewVisibleNodes()
       )}
       .options=${this._createOptions(this.data?.categories)}
       height="100%"
@@ -303,7 +305,7 @@ export class HaNetworkGraph extends LitElement {
       selectedNode?: string,
       nodePositions: Record<string, { x: number; y: number }> = {},
       pinnedNodes: string[] = [],
-      hiddenCategories: string[] = []
+      fewVisibleNodes = true
     ) => ({
       id: "network",
       type: "graph",
@@ -341,11 +343,7 @@ export class HaNetworkGraph extends LitElement {
         repulsion: [400, 600],
         edgeLength: [200, 350],
         gravity: 0.05,
-        // The legend leaves the nodes of hidden categories out of the layout
-        layoutAnimation:
-          !reducedMotion &&
-          this._countVisibleNodes(data, hiddenCategories) <
-            LAYOUT_ANIMATION_THRESHOLD,
+        layoutAnimation: !reducedMotion && fewVisibleNodes,
       },
       edgeSymbol: ["none", "arrow"],
       edgeSymbolSize: 10,
@@ -369,15 +367,17 @@ export class HaNetworkGraph extends LitElement {
     deepEqual
   );
 
-  private _countVisibleNodes(data: NetworkData, hiddenCategories: string[]) {
-    if (!hiddenCategories.length) {
-      return data.nodes.length;
-    }
-    return data.nodes.filter(
-      (node) =>
-        node.category === undefined ||
-        !hiddenCategories.includes(data.categories?.[node.category]?.name ?? "")
-    ).length;
+  // The legend leaves the nodes of hidden categories out of the layout
+  private _fewVisibleNodes() {
+    const hidden = this._hiddenCategories;
+    const visibleNodes = hidden.length
+      ? this.data.nodes.filter(
+          (node) =>
+            node.category === undefined ||
+            !hidden.includes(this.data.categories?.[node.category]?.name ?? "")
+        ).length
+      : this.data.nodes.length;
+    return visibleNodes < LAYOUT_ANIMATION_THRESHOLD;
   }
 
   private _getSeriesData = memoizeOne(
@@ -582,18 +582,21 @@ export class HaNetworkGraph extends LitElement {
   }
 
   private _handleLegendChange = (params: unknown) => {
-    // A layout that starts again continues from where the nodes are now
-    this._saveNodePositions();
+    const fewVisibleNodes = this._fewVisibleNodes();
     this._setHiddenCategories(
       (params as { selected: Record<string, boolean> }).selected
     );
+    if (this._fewVisibleNodes() !== fewVisibleNodes) {
+      // The new series option lays out again from where the nodes are now
+      this._saveNodePositions();
+      this.requestUpdate();
+    }
   };
 
   private _setHiddenCategories(selected: Record<string, boolean>) {
-    const hidden = Object.keys(selected).filter((name) => !selected[name]);
-    if (!deepEqual(hidden, this._hiddenCategories)) {
-      this._hiddenCategories = hidden;
-    }
+    this._hiddenCategories = Object.keys(selected).filter(
+      (name) => !selected[name]
+    );
   }
 
   private _handleNodeMouseDown = (params: {
@@ -629,10 +632,7 @@ export class HaNetworkGraph extends LitElement {
   // the running force layout, and into the item option that ECharts lays out
   // from again, e.g. on a legend change
   private _pinNodeInChart(id: string) {
-    const series: any = this._baseChart?.chart
-      // @ts-ignore private method but no other way to get the graph
-      ?.getModel()
-      .getSeriesByIndex(0);
+    const series = this._getGraphSeries();
     const node = series?.getGraph().getNodeById(id);
     if (!node) {
       return;
@@ -681,10 +681,7 @@ export class HaNetworkGraph extends LitElement {
     if (!chart) {
       return;
     }
-    const series: any = chart
-      // @ts-ignore private method but no other way to get the graph positions
-      .getModel()
-      .getSeriesByIndex(0);
+    const series = this._getGraphSeries(chart);
     const node = series?.getGraph().getNodeById(this.selectedNode);
     const position: number[] | undefined = node?.getLayout();
     if (!position) {
@@ -756,24 +753,26 @@ export class HaNetworkGraph extends LitElement {
   private _saveNodePositions() {
     // Nodes that are not drawn keep their earlier position
     const positions = { ...this._nodePositions };
-    const chart = this._baseChart?.chart;
-    if (chart && !chart.isDisposed()) {
-      chart
-        // @ts-ignore private method but no other way to get the graph positions
-        .getModel()
-        .getSeriesByIndex(0)
-        ?.getGraph()
-        .eachNode((node: any) => {
-          const layout = node.getLayout();
-          if (layout) {
-            positions[node.id] = {
-              x: layout[0],
-              y: layout[1],
-            };
-          }
-        });
-    }
+    this._getGraphSeries()
+      ?.getGraph()
+      .eachNode((node: any) => {
+        const layout = node.getLayout();
+        if (layout) {
+          positions[node.id] = {
+            x: layout[0],
+            y: layout[1],
+          };
+        }
+      });
     this._nodePositions = positions;
+  }
+
+  private _getGraphSeries(chart = this._baseChart?.chart): any {
+    if (!chart || chart.isDisposed()) {
+      return undefined;
+    }
+    // @ts-ignore private method but no other way to get the graph
+    return chart.getModel().getSeriesByIndex(0);
   }
 
   static styles = css`
