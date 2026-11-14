@@ -10,7 +10,6 @@ const makeBridge = () =>
   new PictureElementsEditorBridge({
     selectElement: vi.fn(),
     moveElement: vi.fn(),
-    clickImage: vi.fn(),
   });
 
 describe("PictureElementsEditorBridge", () => {

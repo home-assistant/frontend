@@ -4,7 +4,8 @@ import type {
   LovelaceElementConfig,
 } from "../../elements/types";
 import type { PictureElementsEditorBridge } from "./editor-bridge";
-import { isMovableElement } from "./movable-element";
+import type { ElementAnchors, ElementPosition } from "./movable-element";
+import { elementAnchors, isMovableElement } from "./movable-element";
 
 // How far (px) a press has to move before it counts as a drag.
 const DRAG_THRESHOLD = 4;
@@ -21,16 +22,27 @@ export interface EditorPreviewTarget {
   configs?: LovelaceElementConfig[];
 }
 
+// Where a movable element is, in percent of the image: its distances from the
+// sides it is placed from, and its rendered center. The card's default
+// transform centers it on its left/top point only, not on its right/bottom one.
+interface Placement {
+  anchors: ElementAnchors;
+  x: number;
+  y: number;
+  centerX: number;
+  centerY: number;
+}
+
 // A press on the preview, which ends as a click or a drag.
 interface Press {
   pointerId: number;
   clientX: number;
   clientY: number;
   index?: number;
-  // Start position (percent) of a movable element.
-  start?: { left: number; top: number };
+  // Start position of a movable element.
+  start?: Placement;
   // Current position (percent) once an element is dragged.
-  moved?: { left: number; top: number };
+  moved?: ElementPosition;
   // The pointer left the threshold, so the press is no click.
   dragged?: boolean;
 }
@@ -226,15 +238,35 @@ export class PictureElementsEditorPreviewController implements ReactiveControlle
     );
   }
 
-  // The element's left/top in percent, as laid out.
-  private _position(root: HTMLElement, index: number): Press["start"] {
-    if (!root.offsetWidth || !root.offsetHeight) {
+  // Where the element is, as laid out. Undefined while it isn't rendered (like
+  // display: none), as it then has no layout to take it from.
+  private _position(root: HTMLElement, index: number): Placement | undefined {
+    const { elements, configs } = this._target();
+    const element = elements?.[index];
+    const anchors = configs?.[index] && elementAnchors(configs[index]);
+    if (!element || !anchors || !element.getClientRects().length) {
       return undefined;
     }
-    const style = getComputedStyle(this._target().elements![index]);
+    // The computed sides are layout px, while the rects are visual px, which
+    // differ under an ancestor's scale() or zoom. Both sizes are fractional,
+    // unlike offsetWidth/offsetHeight.
+    const rootStyle = getComputedStyle(root);
+    const width = parseFloat(rootStyle.width);
+    const height = parseFloat(rootStyle.height);
+    const rootRect = root.getBoundingClientRect();
+    if (!width || !height || !rootRect.width || !rootRect.height) {
+      return undefined;
+    }
+    const style = getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
     return {
-      left: (parseFloat(style.left) / root.offsetWidth) * 100,
-      top: (parseFloat(style.top) / root.offsetHeight) * 100,
+      anchors,
+      x: (parseFloat(style[anchors.x]) / width) * 100,
+      y: (parseFloat(style[anchors.y]) / height) * 100,
+      centerX:
+        ((rect.left + rect.width / 2 - rootRect.left) / rootRect.width) * 100,
+      centerY:
+        ((rect.top + rect.height / 2 - rootRect.top) / rootRect.height) * 100,
     };
   }
 
@@ -260,13 +292,15 @@ export class PictureElementsEditorPreviewController implements ReactiveControlle
     }
     const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
     const wasMoved = !!press.moved;
-    press.moved = {
-      left: clampPercent(press.start.left + (dx / rect.width) * 100),
-      top: clampPercent(press.start.top + (dy / rect.height) * 100),
-    };
+    press.moved = movedPosition(
+      press.start,
+      (dx / rect.width) * 100,
+      (dy / rect.height) * 100
+    );
     const element = this._target().elements?.[press.index];
-    element?.style.setProperty("left", `${press.moved.left}%`);
-    element?.style.setProperty("top", `${press.moved.top}%`);
+    for (const [prop, value] of Object.entries(press.moved)) {
+      element?.style.setProperty(prop, `${value}%`);
+    }
     if (!wasMoved) {
       this._host.requestUpdate();
     }
@@ -278,29 +312,53 @@ export class PictureElementsEditorPreviewController implements ReactiveControlle
       return;
     }
     const editor = this._editor;
-    if (!editor) {
+    // The visual editor went away, or the config changed the element's sides.
+    if (!editor || (press.moved && !this._sameAnchors(press))) {
       this.pointerCancel(ev);
       return;
     }
     this._endPress();
     if (press.index !== undefined && press.moved) {
-      editor.handlers.moveElement(
-        press.index,
-        press.moved.left,
-        press.moved.top
-      );
+      editor.handlers.moveElement(press.index, press.moved);
     } else if (press.dragged) {
       // A drag that moved nothing is no click.
     } else if (press.index !== undefined) {
       editor.handlers.selectElement(press.index);
     } else {
-      const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
-      editor.handlers.clickImage(
-        clampPercent(((ev.clientX - rect.left) / rect.width) * 100),
-        clampPercent(((ev.clientY - rect.top) / rect.height) * 100)
-      );
+      this._placeSelected(ev, editor);
     }
   };
+
+  // Whether the config places the element from the sides the press started
+  // from.
+  private _sameAnchors({ index, start }: Press): boolean {
+    const config =
+      index === undefined ? undefined : this._target().configs?.[index];
+    const anchors = config && elementAnchors(config);
+    return anchors?.x === start?.anchors.x && anchors?.y === start?.anchors.y;
+  }
+
+  // Moves the center of the selected element to a click on the image.
+  private _placeSelected(
+    ev: PointerEvent,
+    editor: PictureElementsEditorBridge
+  ): void {
+    const root = ev.currentTarget as HTMLElement;
+    const index = editor.selectedIndex;
+    const start = index === undefined ? undefined : this._position(root, index);
+    if (index === undefined || !start) {
+      return;
+    }
+    const rect = root.getBoundingClientRect();
+    editor.handlers.moveElement(
+      index,
+      movedPosition(
+        start,
+        ((ev.clientX - rect.left) / rect.width) * 100 - start.centerX,
+        ((ev.clientY - rect.top) / rect.height) * 100 - start.centerY
+      )
+    );
+  }
 
   // Also bound to lostpointercapture.
   public pointerCancel = (ev: PointerEvent): void => {
@@ -316,7 +374,7 @@ export class PictureElementsEditorPreviewController implements ReactiveControlle
     const { elements, configs } = this._target();
     const element = elements?.[press.index];
     const style = configs?.[press.index]?.style;
-    for (const prop of ["left", "top"]) {
+    for (const prop of Object.keys(press.moved)) {
       if (style?.[prop] != null && style[prop] !== "") {
         element?.style.setProperty(prop, style[prop]);
       } else {
@@ -378,6 +436,22 @@ export class PictureElementsEditorPreviewController implements ReactiveControlle
 
 const clampPercent = (value: number): number =>
   Math.min(100, Math.max(0, value));
+
+// The element's position once its center moved by dx/dy (percent), which is
+// kept on the image.
+const movedPosition = (
+  start: Placement,
+  dx: number,
+  dy: number
+): ElementPosition => {
+  const moveX = clampPercent(start.centerX + dx) - start.centerX;
+  const moveY = clampPercent(start.centerY + dy) - start.centerY;
+  // Right and bottom distances shrink as the element moves right or down.
+  return {
+    [start.anchors.x]: start.x + (start.anchors.x === "left" ? moveX : -moveX),
+    [start.anchors.y]: start.y + (start.anchors.y === "top" ? moveY : -moveY),
+  };
+};
 
 const isEditable = (node: EventTarget | undefined): boolean =>
   node instanceof HTMLInputElement ||
