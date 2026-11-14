@@ -5811,6 +5811,58 @@
             "take_control": "Take control",
             "confirm_take_control": "You are viewing a preview of the automation config, do you want to take control?",
             "run": "Run actions",
+            "dry_run": {
+              "menu": "Dry run",
+              "title": "Dry run",
+              "subtitle": "Checks the triggers and conditions against the current state, including unsaved changes. No actions are run.",
+              "check_again": "Check again",
+              "failed": "The dry run failed: {error}",
+              "variables_error": "The automation variables could not be rendered: {error}",
+              "manual_only": "There are no enabled triggers. The automation only runs when it is started manually.",
+              "no_conditions": "There are no conditions.",
+              "state_change_note": "A state trigger only fires when the state changes into the target, not while it stays there.",
+              "verdict": {
+                "would_run": "The conditions pass right now. The automation would run if it were triggered.",
+                "automation_off": "The automation is turned off, so it will not run.",
+                "conditions_not_met": "The conditions are not met right now.",
+                "condition_error": "A condition could not be checked.",
+                "depends_on_trigger": "Whether it runs depends on the trigger. The conditions that use the trigger cannot be checked without one.",
+                "already_running": "The automation is already running and its mode is single, so a new run would be skipped.",
+                "max_runs_reached": "The automation already runs the maximum number of times ({max}), so a new run would not start."
+              },
+              "trigger_status": {
+                "in_target_state": "In the target state now",
+                "not_in_target_state": "Not in the target state now",
+                "in_range": "In range now",
+                "not_in_range": "Not in range now",
+                "scheduled": "Next at {time}",
+                "waits_for_event": "Waits for an event",
+                "disabled": "Disabled",
+                "error": "Error"
+              },
+              "condition_result": {
+                "pass": "Passes",
+                "fail": "Fails",
+                "error": "Error",
+                "depends_on_trigger": "Depends on the trigger",
+                "disabled": "Disabled"
+              },
+              "detail": {
+                "entity": "The entity",
+                "state": "{entity} is {actual}, wanted {wanted}",
+                "state_only": "{entity} is {actual}",
+                "state_since": "{entity} has been {actual} since before {since}",
+                "state_not_since": "{entity} is {actual}, but has not been since before {since}",
+                "numeric": "{entity} is {actual}, wanted {range}",
+                "range_between": "above {above} and below {below}",
+                "range_above": "above {above}",
+                "range_below": "below {below}",
+                "time": "It is {now}, the window is {after} to {before}",
+                "weekday": "Today is {now}, wanted {wanted}",
+                "template_entities": "Uses {entities}",
+                "template_error": "Template error: {error}"
+              }
+            },
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "show_trace": "Traces",
             "show_info": "More info",
