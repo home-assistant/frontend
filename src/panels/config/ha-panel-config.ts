@@ -155,8 +155,8 @@ class HaPanelConfig extends HassRouterPage {
         waitForReady: true,
       },
       updates: {
-        tag: "ha-config-section-updates",
-        load: () => import("./core/ha-config-section-updates"),
+        tag: "ha-config-updates-router",
+        load: () => import("./core/updates/ha-config-updates-router"),
       },
       "radio-frequency": {
         tag: "radio-frequency-config-dashboard-router",

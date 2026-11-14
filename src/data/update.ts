@@ -88,7 +88,7 @@ export const updateReleaseNotes = (
     entity_id: entityId,
   });
 
-const HOME_ASSISTANT_CORE_TITLE = "Home Assistant Core";
+export const HOME_ASSISTANT_CORE_TITLE = "Home Assistant Core";
 const HOME_ASSISTANT_SUPERVISOR_TITLE = "Home Assistant Supervisor";
 const HOME_ASSISTANT_OS_TITLE = "Home Assistant Operating System";
 

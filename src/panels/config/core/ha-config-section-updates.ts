@@ -23,6 +23,10 @@ import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
+import "../../../components/ha-icon-next";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-base";
+import "../../../components/entity/state-badge";
 import "../../../components/ha-spinner";
 import type { ManagerState } from "../../../data/backup_manager";
 import { subscribeBackupEvents } from "../../../data/backup_manager";
@@ -39,6 +43,13 @@ import {
   setSupervisorOption,
 } from "../../../data/hassio/supervisor";
 import { domainToName } from "../../../data/integration";
+import type { UpdateReport } from "../../../data/update_report";
+import {
+  fetchUpdateReport,
+  findCoreUpdateEntityId,
+  UPDATE_REPORT_PENDING_REFRESH_INTERVAL,
+  updateReportWorseCount,
+} from "../../../data/update_report";
 import type { UpdateEntity } from "../../../data/update";
 import {
   checkForEntityUpdates,
@@ -84,6 +95,23 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
 
   @state() private _loadedIntegrationTitles = new Set<string>();
 
+  @state() private _coreReport?: { entityId: string; report: UpdateReport };
+
+  private _reportRefreshTimeout?: number;
+
+  // The router caches this page, so refetch whenever it is shown again
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._loadCoreReport();
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    clearTimeout(this._reportRefreshTimeout);
+  }
+
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
@@ -92,6 +120,29 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
     }
 
     this._loadEntitySources();
+    this._loadCoreReport();
+  }
+
+  private async _loadCoreReport() {
+    clearTimeout(this._reportRefreshTimeout);
+    const entityId = findCoreUpdateEntityId(this.hass.states);
+    if (!entityId) {
+      return;
+    }
+    let report: UpdateReport | null;
+    try {
+      report = await fetchUpdateReport(this.hass, entityId);
+    } catch (_err) {
+      // Non-fatal: keep the last known report
+      return;
+    }
+    this._coreReport = report ? { entityId, report } : undefined;
+    if (report?.pending && this.isConnected) {
+      this._reportRefreshTimeout = window.setTimeout(
+        () => this._loadCoreReport(),
+        UPDATE_REPORT_PENDING_REFRESH_INTERVAL
+      );
+    }
   }
 
   private async _loadEntitySources() {
@@ -413,10 +464,58 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
                           </ha-card>
                         `
                   }
+                  ${this._renderRecentlyInstalled()}
                 </div>
               `
         }
       </hass-subpage>
+    `;
+  }
+
+  private _renderRecentlyInstalled() {
+    if (!this._coreReport) {
+      return nothing;
+    }
+    const { entityId, report } = this._coreReport;
+    const stateObj = this.hass.states[entityId] as UpdateEntity | undefined;
+    const worseCount = updateReportWorseCount(report);
+    return html`
+      <ha-card
+        outlined
+        .header=${this.hass.localize("ui.panel.config.updates.installed.title")}
+      >
+        <ha-list-base>
+          <ha-list-item-button href=${`/config/updates/details/${entityId}`}>
+            ${
+              stateObj
+                ? html`<state-badge
+                    slot="start"
+                    .stateObj=${stateObj}
+                  ></state-badge>`
+                : nothing
+            }
+            <span slot="headline">
+              ${this.hass.localize(
+                "ui.panel.config.updates.installed.what_changed",
+                { version: report.to_version }
+              )}
+            </span>
+            <span slot="supporting-text">
+              ${
+                worseCount
+                  ? this.hass.localize(
+                      "ui.panel.config.updates.installed.got_worse",
+                      { count: worseCount }
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.updates.installed.nothing_got_worse"
+                    )
+              }
+            </span>
+            <ha-icon-next slot="end"></ha-icon-next>
+          </ha-list-item-button>
+        </ha-list-base>
+      </ha-card>
     `;
   }
 
@@ -650,6 +749,9 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
       font-size: var(--ha-font-size-l);
     }
 
+    ha-card ha-icon-next {
+      color: var(--secondary-text-color);
+    }
     .no-updates {
       padding: 16px;
     }

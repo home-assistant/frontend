@@ -6,22 +6,10 @@ import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-l
 import "../../../components/item/ha-list-item-button";
 import "../../../components/list/ha-list-base";
 import { domainToName } from "../../../data/integration";
-import type { StatisticsValidationResult } from "../../../data/recorder";
-import {
-  STATISTIC_TYPES,
-  updateStatisticsIssues,
-} from "../../../data/recorder";
-import {
-  fetchRepairsIssueData,
-  type RepairsIssue,
-} from "../../../data/repairs";
-import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
+import type { RepairsIssue } from "../../../data/repairs";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import { fixStatisticsIssue } from "../tools/statistics/fix-statistics";
-import { showVacuumSegmentMappingDialog } from "../entities/dialogs/show-dialog-vacuum-segment-mapping";
-import { showRepairsFlowDialog } from "../../../dialogs/repairs-flow/show-dialog-repair-flow";
-import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
+import { openRepairsIssue } from "./open-repairs-issue";
 
 @customElement("ha-config-repairs")
 class HaConfigRepairs extends LitElement {
@@ -131,66 +119,8 @@ class HaConfigRepairs extends LitElement {
     `;
   }
 
-  private async _openShowMoreDialog(ev): Promise<void> {
-    const issue = ev.currentTarget.issue as RepairsIssue;
-    if (issue.is_fixable) {
-      showRepairsFlowDialog(this, issue);
-    } else if (
-      issue.domain === "homeassistant" &&
-      issue.translation_key === "config_entry_reauth"
-    ) {
-      const data = await fetchRepairsIssueData(
-        this.hass.connection,
-        issue.domain,
-        issue.issue_id
-      );
-      if (data.issue_data && "flow_id" in data.issue_data) {
-        showConfigFlowDialog(this, {
-          continueFlowId: data.issue_data.flow_id as string,
-        });
-      }
-    } else if (
-      issue.domain === "vacuum" &&
-      issue.translation_key === "segments_changed"
-    ) {
-      const data = await fetchRepairsIssueData(
-        this.hass.connection,
-        issue.domain,
-        issue.issue_id
-      );
-      if (
-        data.issue_data &&
-        "entity_id" in data.issue_data &&
-        typeof data.issue_data.entity_id === "string"
-      ) {
-        showVacuumSegmentMappingDialog(this, {
-          entityId: data.issue_data.entity_id,
-        });
-      }
-    } else if (
-      issue.domain === "sensor" &&
-      issue.translation_key &&
-      STATISTIC_TYPES.includes(issue.translation_key as any)
-    ) {
-      this.hass.loadFragmentTranslation("config");
-      const data = await fetchRepairsIssueData(
-        this.hass.connection,
-        issue.domain,
-        issue.issue_id
-      );
-      if (data.issue_data && "issue_type" in data.issue_data) {
-        await fixStatisticsIssue(this, {
-          type: data.issue_data
-            .issue_type as StatisticsValidationResult["type"],
-          data: data.issue_data as any,
-        });
-        updateStatisticsIssues(this.hass);
-      }
-    } else {
-      showRepairsIssueDialog(this, {
-        issue,
-      });
-    }
+  private _openShowMoreDialog(ev): void {
+    openRepairsIssue(this, this.hass, ev.currentTarget.issue as RepairsIssue);
   }
 
   static styles = css`

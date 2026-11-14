@@ -3221,6 +3221,43 @@
             "receive_backup": "[%key:ui::dialogs::more_info_control::update::backup_in_progress::receive_backup%]",
             "restore_backup": "[%key:ui::dialogs::more_info_control::update::backup_in_progress::restore_backup%]",
             "backups_link": "[%key:ui::dialogs::more_info_control::update::backup_in_progress::backups_link%]"
+          },
+          "installed": {
+            "title": "Recently installed",
+            "what_changed": "What changed since updating to {version}",
+            "nothing_got_worse": "Nothing got worse",
+            "got_worse": "{count} {count, plural,\n  one {item needs}\n  other {items need}\n} your attention"
+          },
+          "details": {
+            "not_found": "This update could not be found.",
+            "installed_version": "Installed version {version}",
+            "update_available": "Version {version} available",
+            "report": {
+              "title": "What changed for you",
+              "versions": "Since updating from {from_version} to {to_version}",
+              "created": "Checked on {date}",
+              "pending": "Home Assistant is still starting up. This list updates until startup has settled.",
+              "no_report": "There is nothing to compare yet. A report becomes available after the next update.",
+              "nothing_got_worse": "Nothing got worse after this update.",
+              "load_failed": "Unable to load the report: {error}",
+              "sections": {
+                "integrations": "Integrations that no longer load",
+                "unavailable": "Unavailable entities",
+                "renamed": "Entities with a new entity ID",
+                "removed": "Removed entities",
+                "issues": "New repairs",
+                "upcoming": "Upcoming breaking changes"
+              },
+              "integration_removed": "Removed",
+              "state_unavailable": "Unavailable",
+              "state_unknown": "Unknown",
+              "state_missing": "Not provided anymore",
+              "renamed_from": "Was {old_entity_id}",
+              "uses_old_entity_id": "Still uses {entity_id}",
+              "issue_resolved": "Resolved",
+              "breaks_in_version": "Stops working in version {version}",
+              "ignored": "Ignored"
+            }
           }
         },
         "repairs": {
