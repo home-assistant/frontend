@@ -86,15 +86,19 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
       (entity) => entity in hass.states
     );
 
-    // Pinned entities already fill the section, skip the prediction call.
-    if (computeFavoriteCardsSize(includedEntities) >= limit) {
-      section.cards!.push(
-        ...fitToLimit(includedEntities, limit).map(computeFavoriteCardConfig)
-      );
+    // Pinned entities always show. Predictions only fill the free slots.
+    const freeSlots = limit - computeFavoriteCardsSize(includedEntities);
+    const predictionsLoaded = isComponentLoaded(
+      hass.config,
+      "usage_prediction"
+    );
+
+    if (includedEntities.length > 0 && (freeSlots <= 0 || !predictionsLoaded)) {
+      section.cards!.push(...includedEntities.map(computeFavoriteCardConfig));
       return section;
     }
 
-    if (!isComponentLoaded(hass.config, "usage_prediction")) {
+    if (!predictionsLoaded) {
       section.cards!.push({
         type: "markdown",
         content: hass.localize(
@@ -121,10 +125,10 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
       }
     );
 
-    const entities = fitToLimit(
-      [...includedEntities, ...predictedEntities],
-      limit
-    );
+    const entities = [
+      ...includedEntities,
+      ...fitToLimit(predictedEntities, freeSlots),
+    ];
 
     if (entities.length === 0) {
       section.cards!.push({
