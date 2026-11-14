@@ -13,6 +13,14 @@ import {
   reloadDemo,
 } from "./demo/helpers";
 import {
+  expectStableColumnWidths,
+  firstMasonryFrameCards,
+  type MasonryRebuild,
+  rebuildMasonryColumns,
+  recordFirstMasonryFrame,
+  stubMasonryCardSizes,
+} from "./demo/masonry";
+import {
   expectNoPageErrors,
   NAVIGATION_TIMEOUT,
   PANEL_TIMEOUT,
@@ -148,6 +156,78 @@ test.describe("Home Assistant Demo", () => {
 
     expect(disconnected).toBe(0);
     expectNoPageErrors(pageErrors);
+  });
+
+  test.describe("masonry placement", () => {
+    // These tests set the viewport themselves
+    test.skip(({ isMobile }) => isMobile, "Covered by the desktop project");
+
+    for (const [name, rebuild] of [
+      ["every column gets cards", { size: 3, stagger: 40 }],
+      ["a card size is slow", { size: 3, slow: 1, slowDelay: 2000 }],
+      [
+        "placing restarts",
+        { size: 3, slow: 1, slowDelay: 2000, restart: true },
+      ],
+    ] as [string, MasonryRebuild][]) {
+      test(`masonry columns keep their width when ${name}`, async ({
+        page,
+      }) => {
+        // Placing takes several frames. A column that shows a card must have
+        // its final width in every frame, so the cards don't move.
+        const { frames } = await rebuildMasonryColumns(page, rebuild);
+        expectStableColumnWidths(frames);
+        if (rebuild.slow !== undefined) {
+          // The cards before the slow one are shown without waiting for it
+          expect(frames.some((frame) => frame.placed === rebuild.slow)).toBe(
+            true
+          );
+        }
+        expectNoPageErrors(pageErrors);
+      });
+    }
+
+    test("masonry requests card sizes in parallel", async ({ page }) => {
+      // Slow card sizes must not add up: every size is requested before
+      // the first one is known.
+      const delay = 200;
+      const { requests } = await rebuildMasonryColumns(page, {
+        size: 3,
+        delay,
+      });
+      expect(Math.max(...requests) - Math.min(...requests)).toBeLessThan(delay);
+      expectNoPageErrors(pageErrors);
+    });
+
+    test("masonry shows the first card on its own when card sizes are slow", async ({
+      page,
+    }) => {
+      // With every card size equally slow, the sizes are known at about the
+      // same time. The first card must still be rendered before more cards
+      // are added, so rendering them does not delay it.
+      await page.setViewportSize({ width: 1280, height: 900 });
+      await stubMasonryCardSizes(page, 300);
+      await recordFirstMasonryFrame(page);
+      await loadDemo(page, "/?demo=arsaboo#/lovelace/0");
+      expect(await firstMasonryFrameCards(page)).toBe(1);
+      expectNoPageErrors(pageErrors);
+    });
+
+    test("masonry adds cards with known sizes without waiting for a frame", async ({
+      page,
+    }) => {
+      // Sizes known right away are placed as before: waiting for a frame
+      // after the first card would let other pending work delay the next
+      // ones. The clock is fixed, so the 16 ms budget does not end the first
+      // frame either.
+      await page.setViewportSize({ width: 1280, height: 900 });
+      await page.clock.setFixedTime(new Date("2026-11-20T12:00:00Z"));
+      await stubMasonryCardSizes(page);
+      await recordFirstMasonryFrame(page);
+      await loadDemo(page, "/?demo=arsaboo#/lovelace/0");
+      expect(await firstMasonryFrameCards(page)).toBeGreaterThan(1);
+      expectNoPageErrors(pageErrors);
+    });
   });
 
   test("sidebar navigation changes the active panel", async ({ page }) => {
