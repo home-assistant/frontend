@@ -66,6 +66,7 @@ const FULL_WIDTH_SELECTOR_TYPES = new Set([
   "device",
   "entity",
   "floor",
+  "image_region",
   "label",
   "target",
 ]);
