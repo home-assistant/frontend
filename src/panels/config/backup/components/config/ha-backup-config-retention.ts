@@ -105,7 +105,7 @@ class HaBackupConfigRetention extends LitElement {
     }
 
     return html`
-      <ha-list-item-base>
+      <ha-list-item-base wrap-headline wrap-supporting-text>
         <span slot="headline">
           ${
             this.headline ??
@@ -255,11 +255,6 @@ class HaBackupConfigRetention extends LitElement {
     }
     ha-row-item::part(end) {
       align-items: flex-start;
-    }
-
-    ha-list-item-base::part(headline),
-    ha-list-item-base::part(supporting-text) {
-      white-space: wrap;
     }
     ha-select {
       min-width: 210px;

@@ -1,6 +1,7 @@
 import type {
   DataTableFiltersValue,
   DataTableFiltersValues,
+  FloorAreasFilterValue,
 } from "../../data/data_table_filters";
 import { dataTableQueryParamConfig } from "./data-table-query-params";
 import {
@@ -30,6 +31,7 @@ export const entitiesFilterQueryParamConfig = {
     // Read until 2027.5, replaced with `assistants` on the next write
     "voice_assistant",
   ],
+  boolean: [{ key: "no_area", trueValue: "1" }],
 } as const satisfies QueryParamConfig;
 
 export type EntitiesFilterQueryParams = QueryParamValues<
@@ -41,7 +43,7 @@ const list = (value: DataTableFiltersValue): string[] | undefined =>
 
 const floorAreas = (
   value: DataTableFiltersValue
-): Record<string, string[]> | undefined =>
+): FloorAreasFilterValue | undefined =>
   value && !Array.isArray(value) ? value : undefined;
 
 export const entitiesFilterQueryParams = (
@@ -50,6 +52,7 @@ export const entitiesFilterQueryParams = (
   status: list(filters["ha-filter-states"]),
   floor: floorAreas(filters["ha-filter-floor-areas"])?.floors,
   area: floorAreas(filters["ha-filter-floor-areas"])?.areas,
+  no_area: floorAreas(filters["ha-filter-floor-areas"])?.no_area,
   device: list(filters["ha-filter-devices"]),
   device_class: list(filters["ha-filter-device-classes"]),
   domain: list(filters["ha-filter-integrations"]),
@@ -67,7 +70,7 @@ export const entitiesFilterQueryString = (
   filters: DataTableFiltersValues
 ): string => {
   const params = entitiesFilterQueryParams(filters);
-  const sorted: EntitiesFilterQueryParams = {};
+  const sorted: EntitiesFilterQueryParams = { ...params };
 
   for (const key of entitiesFilterQueryParamConfig.list) {
     sorted[key] = params[key] && [...params[key]].sort();
@@ -102,8 +105,9 @@ export const entitiesLinkFromUrl = (
 
   const { search } = decodeQueryParams(searchParams, dataTableQueryParamConfig);
 
-  const values = (key: keyof EntitiesFilterQueryParams): string[] =>
-    params[key]?.filter(Boolean) ?? [];
+  const values = (
+    key: (typeof entitiesFilterQueryParamConfig.list)[number]
+  ): string[] => params[key]?.filter(Boolean) ?? [];
 
   const floors = values("floor");
   const areas = values("area");
@@ -114,7 +118,9 @@ export const entitiesLinkFromUrl = (
     filters: {
       "ha-filter-states": values("status"),
       "ha-filter-floor-areas":
-        floors.length || areas.length ? { floors, areas } : undefined,
+        floors.length || areas.length || params.no_area
+          ? { floors, areas, no_area: params.no_area }
+          : undefined,
       "ha-filter-devices": values("device"),
       "ha-filter-device-classes": values("device_class"),
       "ha-filter-integrations": values("domain"),

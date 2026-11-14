@@ -1,3 +1,4 @@
+import type { Connection } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -41,6 +42,11 @@ class ZHAAddDevicesPage extends LitElement {
   private _subscribed?: Promise<() => Promise<void>>;
 
   private _wakeLock?: Promise<WakeLockSentinel>;
+
+  private _connection?: Connection;
+
+  // Set for the search in flight, so a pending subscription can tell it ended
+  private _search?: object;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -194,26 +200,32 @@ class ZHAAddDevicesPage extends LitElement {
     }
   }
 
+  // The backend ends the subscription when the connection drops, and it is not
+  // sent again, so end the search here and show "Search again"
+  private _connectionLost = () => {
+    this._unsubscribe();
+  };
+
   private _unsubscribe(): Promise<void> {
     this._active = false;
+    this._search = undefined;
+    this._connection?.removeEventListener("disconnected", this._connectionLost);
+    this._connection = undefined;
     if (this._addDevicesTimeoutHandle) {
       clearTimeout(this._addDevicesTimeoutHandle);
     }
     let unsubscribed = Promise.resolve();
     if (this._subscribed) {
-      unsubscribed = this._subscribed.then((unsub) => unsub());
+      unsubscribed = this._subscribed.then(
+        (unsub) => unsub(),
+        // A subscription that was cancelled or lost with the connection has
+        // nothing to unsubscribe
+        () => undefined
+      );
       this._subscribed = undefined;
     }
     this._wakeLock?.then((wakeLock) => wakeLock.release());
     return unsubscribed;
-  }
-
-  private _deactivate(): void {
-    this._active = false;
-    if (this._addDevicesTimeoutHandle) {
-      clearTimeout(this._addDevicesTimeoutHandle);
-    }
-    this._wakeLock?.then((wakeLock) => wakeLock.release());
   }
 
   private _subscribe(): void {
@@ -225,22 +237,35 @@ class ZHAAddDevicesPage extends LitElement {
     // session before starting the next one
     const unsubscribed = this._unsubscribe();
     this._active = true;
+    const search = {};
+    this._search = search;
     const data: any = { type: "zha/devices/permit", duration: 254 };
     if (this._ieeeAddress) {
       data.ieee = this._ieeeAddress;
     }
     const connection = this.hass.connection;
+    this._connection = connection;
+    connection.addEventListener("disconnected", this._connectionLost);
     this._subscribed = unsubscribed
       // A failed unsubscribe leaves nothing to wait for
       .catch(() => undefined)
       .then(() =>
+        // Each subscription opens the network for joining and turns on ZHA
+        // debug logging, so don't send it again after a reconnect
         connection.subscribeMessage(
           (message) => this._handleMessage(message),
-          data
+          data,
+          {
+            resubscribe: false,
+            // While offline, subscribeMessage waits for the connection. Don't
+            // open the network if this search ended in the meantime
+            preCheck: () => this._search === search,
+          }
         )
       );
     this._addDevicesTimeoutHandle = setTimeout(
-      () => this._deactivate(),
+      // End the subscription with the search, so debug logging ends too
+      () => this._unsubscribe(),
       254000
     );
     if ("wakeLock" in navigator) {

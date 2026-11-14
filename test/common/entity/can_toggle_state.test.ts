@@ -4,17 +4,15 @@ import { canToggleState } from "../../../src/common/entity/can_toggle_state";
 import { ClimateEntityFeature } from "../../../src/data/climate";
 
 describe("canToggleState", () => {
-  const hass: any = {
-    services: {
-      light: {
-        turn_on: null, // Service keys only need to be present for test
-        turn_off: null,
-      },
+  const services: any = {
+    light: {
+      turn_on: null, // Service keys only need to be present for test
+      turn_off: null,
     },
-    states: {
-      "light.bla": { entity_id: "light.bla" },
-      "light.test": { entity_id: "light.test" },
-    },
+  };
+  const states: any = {
+    "light.bla": { entity_id: "light.bla" },
+    "light.test": { entity_id: "light.test" },
   };
 
   it("Detects lights toggle", () => {
@@ -22,7 +20,7 @@ describe("canToggleState", () => {
       entity_id: "light.bla",
       state: "on",
     };
-    assert.isTrue(canToggleState(hass, stateObj));
+    assert.isTrue(canToggleState(states, services, stateObj));
   });
 
   it("Detects group with toggle", () => {
@@ -34,7 +32,7 @@ describe("canToggleState", () => {
       },
     };
 
-    assert.isTrue(canToggleState(hass, stateObj));
+    assert.isTrue(canToggleState(states, services, stateObj));
   });
 
   it("Detects group without toggle", () => {
@@ -42,7 +40,7 @@ describe("canToggleState", () => {
       entity_id: "group.devices",
       state: "home",
     };
-    assert.isFalse(canToggleState(hass, stateObj));
+    assert.isFalse(canToggleState(states, services, stateObj));
   });
 
   it("Detects climate with toggle", () => {
@@ -53,7 +51,7 @@ describe("canToggleState", () => {
           ClimateEntityFeature.TURN_ON + ClimateEntityFeature.TURN_OFF,
       },
     };
-    assert.isTrue(canToggleState(hass, stateObj));
+    assert.isTrue(canToggleState(states, services, stateObj));
   });
 
   it("Detects climate without toggle", () => {
@@ -63,7 +61,7 @@ describe("canToggleState", () => {
         supported_features: 0,
       },
     };
-    assert.isFalse(canToggleState(hass, stateObj));
+    assert.isFalse(canToggleState(states, services, stateObj));
   });
 
   it("Detects group with missing entity", () => {
@@ -75,7 +73,7 @@ describe("canToggleState", () => {
       },
     };
 
-    assert.isFalse(canToggleState(hass, stateObj));
+    assert.isFalse(canToggleState(states, services, stateObj));
   });
 
   it("Detects group with off state", () => {
@@ -87,6 +85,6 @@ describe("canToggleState", () => {
       },
     };
 
-    assert.isTrue(canToggleState(hass, stateObj));
+    assert.isTrue(canToggleState(states, services, stateObj));
   });
 });

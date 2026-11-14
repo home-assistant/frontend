@@ -514,8 +514,6 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
         padding: 28px var(--ha-content-gutter) 0;
         max-width: var(--ha-content-width-narrow);
         margin: 0 auto;
-        --mdc-list-side-padding: 24px;
-        --mdc-list-vertical-padding: 0;
       }
       ha-card {
         height: 100%;

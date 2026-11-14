@@ -1,10 +1,13 @@
+import type { ContextType } from "@lit/context";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../common/array/ensure-array";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
+import { entitiesContext, statesContext } from "../data/context";
 import type { DataTableFiltersValue } from "../data/data_table_filters";
 import type { HaEntityPickerEntityFilterFunc } from "../data/entity/entity";
 import { entityTypeFilterFunc } from "../data/entity/entity_type";
@@ -108,8 +111,6 @@ export const applySourceFilters = (
  */
 @customElement("ha-sources-picker")
 export class HaSourcesPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public value: HassServiceTarget = {};
 
   /** The filters the page applies, so the picker counts what they keep. */
@@ -125,6 +126,14 @@ export class HaSourcesPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
+
   protected render() {
     const noTargets = countTargets(this.value) === 0;
 
@@ -136,13 +145,12 @@ export class HaSourcesPicker extends LitElement {
       }
       <ha-target-picker
         class=${classMap({ "no-padding-top": noTargets })}
-        .hass=${this.hass}
         .value=${this.value}
         .entityFilter=${this.entityFilter}
         .activeFilter=${this._activeFilter(
           this.filters,
-          this.hass.states,
-          this.hass.entities,
+          this._states,
+          this._entities,
           this.entitySources
         )}
         .primaryEntitiesOnly=${false}

@@ -322,13 +322,10 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
           : localize("ui.card.home-summary.no_media_playing");
       }
       case "maintenance": {
-        const maintenanceEntities = findMaintenanceEntities({
-          states,
-          entities,
-          devices,
-          areas,
-          floors,
-        });
+        const maintenanceEntities = findMaintenanceEntities(
+          { states, entities, devices, areas, floors },
+          this._config.hidden_entities
+        );
 
         const lowBatteryEntities = filterLowBatteryEntities(
           states,

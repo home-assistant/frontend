@@ -33,6 +33,7 @@ import {
   getConfigEntries,
 } from "../../../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
+import { domainToName } from "../../../../../data/integration";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-subpage";
@@ -50,6 +51,10 @@ export class BluetoothAdapterInfoPage extends LitElement {
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @state() private _configEntries: ConfigEntry[] = [];
+
+  // Config entries of the integrations that provide remote scanners
+  // (for example ESPHome Bluetooth proxies), keyed by entry ID.
+  @state() private _sourceConfigEntries: Record<string, ConfigEntry> = {};
 
   @state() private _connectionAllocationData: BluetoothAllocationsData[] = [];
 
@@ -74,9 +79,45 @@ export class BluetoothAdapterInfoPage extends LitElement {
   }
 
   private async _loadConfigEntries(): Promise<void> {
-    this._configEntries = await getConfigEntries(this.hass, {
-      domain: "bluetooth",
-    });
+    const configEntries = await getConfigEntries(this.hass);
+    const bluetoothEntries: ConfigEntry[] = [];
+    const sourceEntries: Record<string, ConfigEntry> = {};
+    for (const configEntry of configEntries) {
+      if (configEntry.domain === "bluetooth") {
+        bluetoothEntries.push(configEntry);
+      } else {
+        sourceEntries[configEntry.entry_id] = configEntry;
+      }
+    }
+    this._configEntries = bluetoothEntries;
+    this._sourceConfigEntries = sourceEntries;
+  }
+
+  /**
+   * Remote scanners (such as ESPHome Bluetooth proxies) are configured by the
+   * integration that provides them. The Bluetooth integration creates its own
+   * device for a remote scanner, linked through `via_device_id` to the device
+   * of the integration that provides it, so look there for that
+   * integration's config entry.
+   */
+  private _getSourceConfigEntry(
+    device: DeviceRegistryEntry
+  ): ConfigEntry | undefined {
+    const sourceDevice = device.via_device_id
+      ? this.hass.devices[device.via_device_id]
+      : undefined;
+    if (!sourceDevice) {
+      return undefined;
+    }
+    if (
+      sourceDevice.primary_config_entry &&
+      sourceDevice.primary_config_entry in this._sourceConfigEntries
+    ) {
+      return this._sourceConfigEntries[sourceDevice.primary_config_entry];
+    }
+    return sourceDevice.config_entries
+      .map((id) => this._sourceConfigEntries[id])
+      .find((e) => e !== undefined);
   }
 
   private async _subscribeBluetoothConnectionAllocations(): Promise<void> {
@@ -289,6 +330,10 @@ export class BluetoothAdapterInfoPage extends LitElement {
       const scannerType: HaScannerType =
         scannerDetails?.scanner_type ?? "unknown";
       const isRemoteScanner = scannerType === "remote";
+      // Remote scanners are configured through the integration providing them.
+      const optionsEntry = isRemoteScanner
+        ? this._getSourceConfigEntry(device)
+        : entry;
       const hasMismatch = scannerState && isScannerStateMismatch(scannerState);
 
       const allocations = scannerDetails
@@ -323,16 +368,30 @@ export class BluetoothAdapterInfoPage extends LitElement {
           <div slot="headline">${deviceName}</div>
           <div slot="supporting-text">${supportingParts.join(" · ")}</div>
           ${
-            !isRemoteScanner
+            optionsEntry &&
+            (!isRemoteScanner ||
+              (optionsEntry.supports_options && !optionsEntry.disabled_by))
               ? html`<ha-icon-button
                   slot="end"
                   .path=${mdiCogOutline}
-                  .entry=${entry}
+                  .entry=${optionsEntry}
                   @click=${this._openOptionFlow}
                   @keydown=${stopKeydownEnterSpacePropagation}
-                  .label=${this.hass.localize(
-                    "ui.panel.config.bluetooth.option_flow"
-                  )}
+                  .label=${
+                    isRemoteScanner
+                      ? this.hass.localize(
+                          "ui.panel.config.bluetooth.source_option_flow",
+                          {
+                            integration: domainToName(
+                              this.hass.localize,
+                              optionsEntry.domain
+                            ),
+                          }
+                        )
+                      : this.hass.localize(
+                          "ui.panel.config.bluetooth.option_flow"
+                        )
+                  }
                 ></ha-icon-button>`
               : nothing
           }

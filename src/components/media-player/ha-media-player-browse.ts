@@ -77,7 +77,6 @@ import "../ha-svg-icon";
 import "../ha-tooltip";
 import "../input/ha-input-search";
 import type { HaInputSearch } from "../input/ha-input-search";
-import { HaListItemButton } from "../item/ha-list-item-button";
 import "../list/ha-list-virtualized";
 import type {
   HaListVirtualized,
@@ -88,6 +87,7 @@ import type { ManualMediaPickedEvent } from "./ha-browse-media-manual";
 import "./ha-browse-media-tts";
 import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
 import "./ha-media-browser-thumbnail";
+import "./ha-media-player-browse-list-item";
 
 declare global {
   interface HASSDomEvents {
@@ -119,105 +119,6 @@ type MediaBrowseListRow =
       type: "not-shown";
       count: number;
     });
-
-@customElement("ha-media-player-browse-list-item")
-export class HaMediaPlayerBrowseListItem extends HaListItemButton {
-  @property() public thumbnail?: string;
-
-  // The "not shown" row is plain text, not a button
-  protected override _renderBase(inner: TemplateResult): TemplateResult {
-    if (!this.interactive) {
-      return html`<div part="base" class="base" id="item">${inner}</div>`;
-    }
-    return super._renderBase(inner);
-  }
-
-  // Always reserve the graphic, so titles line up across rows
-  protected override _renderStart(): TemplateResult {
-    return html`<div part="start" class="start">
-      <div class="graphic">
-        ${
-          this.thumbnail
-            ? html`<ha-media-browser-thumbnail
-                .url=${this.thumbnail}
-              ></ha-media-browser-thumbnail>`
-            : nothing
-        }
-        <slot name="start"></slot>
-      </div>
-    </div>`;
-  }
-
-  static styles: CSSResultGroup = [
-    HaListItemButton.styles,
-    css`
-      :host {
-        direction: var(--direction);
-        --ha-row-item-padding-block: 0;
-        --ha-row-item-min-height: 48px;
-      }
-
-      :host(.show-images) {
-        --ha-row-item-padding-block: var(--ha-space-1);
-        --ha-row-item-min-height: 64px;
-      }
-
-      :host(.not-shown) {
-        font-style: italic;
-        color: var(--secondary-text-color);
-        cursor: default;
-      }
-
-      ::slotted(ha-svg-icon) {
-        color: var(--secondary-text-color);
-      }
-
-      .graphic {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        border-radius: var(--ha-border-radius-sm);
-        overflow: hidden;
-      }
-
-      :host(.show-images) .graphic {
-        width: 56px;
-        height: 56px;
-      }
-
-      ha-media-browser-thumbnail {
-        position: absolute;
-        inset: 0;
-      }
-
-      ::slotted(.play) {
-        position: absolute;
-        inset: 0;
-        margin: auto;
-        width: 40px;
-        height: 40px;
-        opacity: 0;
-        transition: all 0.5s;
-        background-color: rgba(var(--rgb-card-background-color), 0.5);
-        border-radius: var(--ha-border-radius-circle);
-        --ha-icon-button-size: 40px;
-      }
-
-      :host(:hover) ::slotted(.play) {
-        opacity: 1;
-        color: var(--primary-text-color);
-      }
-
-      ::slotted(.play.show) {
-        opacity: 1;
-        background-color: transparent;
-      }
-    `,
-  ];
-}
 
 /** Folders with at least this many items get a filter field when their source cannot search. */
 const FILTER_MIN_CHILDREN = 10;
@@ -1945,6 +1846,5 @@ export class HaMediaPlayerBrowse extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-media-player-browse": HaMediaPlayerBrowse;
-    "ha-media-player-browse-list-item": HaMediaPlayerBrowseListItem;
   }
 }
