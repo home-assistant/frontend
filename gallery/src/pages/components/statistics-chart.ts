@@ -1,7 +1,9 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import type { ChartSelectMode } from "../../../../src/components/chart/ha-chart-base";
 import "../../../../src/components/chart/statistics-chart";
+import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-card";
 import type {
   Statistics,
@@ -11,7 +13,9 @@ import type {
 } from "../../../../src/data/recorder";
 import { StatisticMeanType } from "../../../../src/data/recorder";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
+import type { HASSDomEvent } from "../../../../src/common/dom/fire_event";
 import type { HomeAssistant } from "../../../../src/types";
+import { followGalleryTheme } from "../../data/follow-gallery-theme";
 
 const HOUR = 60 * 60 * 1000;
 const HOURS = 48;
@@ -108,6 +112,64 @@ interface Example {
   height?: string;
 }
 
+interface TimeRange {
+  start: number;
+  end: number;
+}
+
+interface RangeExample {
+  id: string;
+  title: string;
+  description: string;
+  statistics: Statistics;
+  statTypes: StatisticType[];
+  chartType: "line" | "bar";
+  unit: string;
+  selectMode: ChartSelectMode;
+  hint: string;
+}
+
+const RANGE_EXAMPLES: RangeExample[] = [
+  {
+    id: "point",
+    title: "Point selection",
+    description:
+      "With select-mode set to point, a click selects the hour that contains it, and everything outside fades. Dragging still zooms.",
+    statistics: { [HEAT_PUMP_ID]: HEAT_PUMP },
+    statTypes: ["change"],
+    chartType: "bar",
+    unit: "kWh",
+    selectMode: "point",
+    hint: "Click on a bar to select its hour.",
+  },
+  {
+    id: "range-bar",
+    title: "Range selection on bars",
+    description:
+      "With select-mode set to range, dragging selects a time range instead of zooming, so several bars can be selected at once. A click still selects one bar.",
+    statistics: { [HEAT_PUMP_ID]: HEAT_PUMP },
+    statTypes: ["change"],
+    chartType: "bar",
+    unit: "kWh",
+    selectMode: "range",
+    hint: "Click or drag on the chart to select one or more bars.",
+  },
+  {
+    id: "range",
+    title: "Range selection on lines",
+    description: "The same on a line chart.",
+    statistics: { [LIVING_ROOM_ID]: LIVING_ROOM },
+    statTypes: ["mean", "min", "max"],
+    chartType: "line",
+    unit: "°C",
+    selectMode: "range",
+    hint: "Click or drag on the chart to select a period.",
+  },
+];
+
+const formatRange = (range: TimeRange) =>
+  `${new Date(range.start).toLocaleString()} to ${new Date(range.end).toLocaleString()}`;
+
 const EXAMPLES: Example[] = [
   {
     title: "Sum as bars",
@@ -159,17 +221,20 @@ const EXAMPLES: Example[] = [
 export class DemoStatisticsChart extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @state() private _selections: Record<string, TimeRange | undefined> = {};
+
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     const hass = provideHass(this);
     hass.updateTranslations(null, "en");
+    followGalleryTheme(this, hass);
   }
 
   protected render() {
     if (!this.hass) {
       return nothing;
     }
-    return EXAMPLES.map(
+    return html`${EXAMPLES.map(
       (example) => html`
         <ha-card header=${example.title}>
           <div class="card-content">
@@ -191,7 +256,66 @@ export class DemoStatisticsChart extends LitElement {
           </div>
         </ha-card>
       `
-    );
+    )}
+    ${RANGE_EXAMPLES.map((example) => this._renderRangeExample(example))}`;
+  }
+
+  private _renderRangeExample(example: RangeExample) {
+    const selection = this._selections[example.id];
+    return html`
+      <ha-card header=${example.title}>
+        <div class="card-content">
+          <p>${example.description}</p>
+          <statistics-chart
+            .statisticsData=${example.statistics}
+            .metadata=${METADATA}
+            .names=${NAMES}
+            .statTypes=${example.statTypes}
+            .chartType=${example.chartType}
+            period="hour"
+            .unit=${example.unit}
+            .startTime=${START}
+            .endTime=${END}
+            .highlight=${selection}
+            .clickForMoreInfo=${false}
+            data-example=${example.id}
+            .selectMode=${example.selectMode}
+            hide-legend
+            @chart-select=${this._rangeSelected}
+          ></statistics-chart>
+          <div class="selection">
+            ${
+              selection
+                ? html`
+                    <span>${formatRange(selection)}</span>
+                    <ha-button
+                      appearance="plain"
+                      size="s"
+                      data-example=${example.id}
+                      @click=${this._clearSelection}
+                    >
+                      Clear
+                    </ha-button>
+                  `
+                : html`<span class="hint">${example.hint}</span>`
+            }
+          </div>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  private _rangeSelected(ev: HASSDomEvent<HASSDomEvents["chart-select"]>) {
+    const id = (ev.currentTarget as HTMLElement).dataset.example!;
+    this._selections = {
+      ...this._selections,
+      [id]: ev.detail,
+    };
+  }
+
+  private _clearSelection(ev: Event) {
+    const id = (ev.currentTarget as HTMLElement).dataset.example!;
+    this._selections = { ...this._selections, [id]: undefined };
   }
 
   static styles = css`
@@ -201,6 +325,20 @@ export class DemoStatisticsChart extends LitElement {
     }
     p {
       margin-top: 0;
+    }
+    .selection {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--ha-space-2);
+      min-height: 48px;
+      margin-top: var(--ha-space-2);
+      padding: 0 var(--ha-space-2) 0 var(--ha-space-4);
+      border-radius: var(--ha-border-radius-lg);
+      background-color: var(--secondary-background-color);
+    }
+    .hint {
+      color: var(--secondary-text-color);
     }
   `;
 }
