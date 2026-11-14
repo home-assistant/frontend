@@ -7,6 +7,7 @@ import {
   mdiCogOutline,
   mdiContentDuplicate,
   mdiDevices,
+  mdiDirections,
   mdiDotsVertical,
   mdiDownload,
   mdiInformationOutline,
@@ -36,6 +37,8 @@ import {
   computeEntityNameParts,
   type EntityNameType,
 } from "../../common/entity/compute_entity_name_display";
+import { getEntityLocation } from "../../common/entity/get_entity_location";
+import { navigationUrl } from "../../common/map/navigation-url";
 import {
   getHistoryState,
   navigate,
@@ -496,9 +499,27 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       case "download_snapshot":
         this._downloadSnapshot();
         break;
+      case "directions":
+        this._openDirections();
+        break;
       default:
         break;
     }
+  }
+
+  private _openDirections() {
+    const stateObj = this._entityId
+      ? (this.hass.states[this._entityId] as HassEntity | undefined)
+      : undefined;
+    const location = stateObj && getEntityLocation(stateObj, this.hass.states);
+    if (!location) {
+      return;
+    }
+    window.open(
+      navigationUrl(location.latitude, location.longitude),
+      "_blank",
+      "noreferrer"
+    );
   }
 
   private async _resetFavorites() {
@@ -624,6 +645,16 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
             </ha-dropdown-item>
           `
         : nothing;
+    const hasLocation =
+      !!stateObj && !!getEntityLocation(stateObj, this.hass.states);
+    const directionsMenuItem = hasLocation
+      ? html`
+          <ha-dropdown-item value="directions">
+            <ha-svg-icon slot="icon" .path=${mdiDirections}></ha-svg-icon>
+            ${this.hass.localize("ui.dialogs.more_info_control.directions")}
+          </ha-dropdown-item>
+        `
+      : nothing;
     const viewTitle = this._computeViewTitle();
     const defaultTitle = breadcrumb[breadcrumb.length - 1] || entityId;
     if (!viewTitle) {
@@ -769,9 +800,10 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                           ></ha-icon-button>
 
                           ${
-                            domain === "camera"
+                            domain === "camera" || hasLocation
                               ? html`
                                   ${downloadSnapshotMenuItem}
+                                  ${directionsMenuItem}
                                   <wa-divider></wa-divider>
                                 `
                               : nothing
@@ -908,7 +940,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                             : nothing
                         }
                         ${
-                          domain === "camera"
+                          domain === "camera" || hasLocation
                             ? html`
                                 <ha-dropdown
                                   slot="headerActionItems"
@@ -924,6 +956,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                                     .path=${mdiDotsVertical}
                                   ></ha-icon-button>
                                   ${downloadSnapshotMenuItem}
+                                  ${directionsMenuItem}
                                 </ha-dropdown>
                               `
                             : nothing
