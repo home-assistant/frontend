@@ -49,6 +49,7 @@ import { showAlertDialog } from "../../generic/show-dialog-box";
 import { showToast } from "../../../util/toast";
 import { showLogsDialog } from "../../../panels/config/logs/show-dialog-logs";
 import "../components/update/ha-more-info-update-backup";
+import "../components/update/ha-more-info-update-upgrade-check";
 import type { HaMoreInfoUpdateBackup } from "../components/update/ha-more-info-update-backup";
 
 // Dialogs that reflect their open state to the `open` attribute.
@@ -152,6 +153,18 @@ class MoreInfoUpdate extends LitElement {
     this._backupEventsUnsub = backupEventsUnsub;
   }
 
+  // Core says which update is the core one; skip asking for any other kind.
+  private _mayBeCoreUpdate(): boolean {
+    return (
+      isComponentLoaded(this._config, "homeassistant_upgrade_check") &&
+      [
+        "hassio",
+        // Mock: the upgrade check's own core update, where there is no Supervisor.
+        "homeassistant_upgrade_check",
+      ].includes(this._entityEntry?.platform ?? "")
+    );
+  }
+
   private _backupInProgressMessage(): string | undefined {
     // The Supervisor only holds back the updates it manages.
     if (this._entityEntry?.platform !== "hassio") {
@@ -250,6 +263,14 @@ class MoreInfoUpdate extends LitElement {
                     </a>
                   </div>
                 </div>`
+              : nothing
+          }
+          ${
+            this._mayBeCoreUpdate() && this.stateObj.state === "on"
+              ? html`<ha-more-info-update-upgrade-check
+                  .entityId=${this.stateObj.entity_id}
+                  .latestVersion=${this.stateObj.attributes.latest_version}
+                ></ha-more-info-update-upgrade-check>`
               : nothing
           }
         </div>
