@@ -32,6 +32,7 @@ import { UndoRedoController } from "../../common/controllers/undo-redo-controlle
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { ctrlOrCmdLabel } from "../../common/keyboard/ctrl-or-cmd";
+import { renderMoveShortcutHint } from "../../common/keyboard/render-move-shortcut-hint";
 import type { NavigateOptions } from "../../common/navigate";
 import { goBack, navigate, replaceCurrentUrl } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
@@ -524,6 +525,7 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
         `;
         return html`
           <ha-tab-group-tab
+            id="move-view-${index}"
             slot="nav"
             panel=${index}
             .active=${current}
@@ -548,6 +550,20 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
                       class="edit-icon view handle"
                       .path=${mdiDragHorizontalVariant}
                     ></ha-svg-icon>
+                    <ha-tooltip
+                      trigger="focus"
+                      describe-anchor
+                      for="move-view-${index}"
+                    >
+                      ${renderMoveShortcutHint(
+                        this.hass.localize(
+                          `ui.panel.lovelace.editor.edit_view.${rtl ? "move_right" : "move_left"}`
+                        ),
+                        this.hass.localize(
+                          `ui.panel.lovelace.editor.edit_view.${rtl ? "move_left" : "move_right"}`
+                        )
+                      )}
+                    </ha-tooltip>
                     <ha-icon-button
                       .label=${this.hass!.localize(
                         `ui.panel.lovelace.editor.edit_view.${rtl ? "move_right" : "move_left"}`

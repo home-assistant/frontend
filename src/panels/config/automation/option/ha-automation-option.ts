@@ -3,11 +3,14 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, queryAll } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { ifDefined } from "lit/directives/if-defined";
+import { renderMoveShortcutHint } from "../../../../common/keyboard/render-move-shortcut-hint";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import type { Option } from "../../../../data/script";
 import { AutomationSortableListMixin } from "../ha-automation-sortable-list-mixin";
 import { automationRowsStyles } from "../styles";
@@ -74,6 +77,8 @@ export default class HaAutomationOption extends AutomationSortableListMixin<Opti
                     ? html`
                         <div
                           tabindex="0"
+                          id="move-row-${idx}"
+                          aria-keyshortcuts=${ifDefined(this.optionsInSidebar ? "Alt+ArrowUp Alt+ArrowDown" : undefined)}
                           class="handle ${
                             this.rowSortSelected === idx ? "active" : ""
                           }"
@@ -85,6 +90,20 @@ export default class HaAutomationOption extends AutomationSortableListMixin<Opti
                           <ha-svg-icon
                             .path=${mdiDragHorizontalVariant}
                           ></ha-svg-icon>
+                          ${
+                            this.optionsInSidebar
+                              ? html`<ha-tooltip
+                                  trigger="focus"
+                                  describe-anchor
+                                  for="move-row-${idx}"
+                                >
+                                  ${renderMoveShortcutHint(
+                                    this.hass.localize("ui.common.move_up"),
+                                    this.hass.localize("ui.common.move_down")
+                                  )}
+                                </ha-tooltip>`
+                              : nothing
+                          }
                         </div>
                       `
                     : nothing
