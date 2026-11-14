@@ -22,6 +22,15 @@ interface ProcessedTheme {
 
 let PROCESSED_THEMES: Record<string, ProcessedTheme> = {};
 
+// Black (OLED) mode: the page, the sidebar and the header go pure black, while
+// cards keep their dark surface so they still stand out.
+const BLACK_MODE_RULES: Partial<ThemeVars> = {
+  "primary-background-color": "#000000",
+  "clear-background-color": "#000000",
+  "sidebar-background-color": "#000000",
+  "app-header-background-color": "#000000",
+};
+
 /**
  * Apply a theme to an element by setting the CSS variables on it.
  *
@@ -48,12 +57,19 @@ export const applyThemesOnElement = (
       ? themeSettings.dark
       : themes?.darkMode || false;
 
+  // Black only applies on top of dark mode.
+  const blackMode = darkMode && themeSettings?.black === true;
+
   let cacheKey = themeToApply;
   let themeRules: Partial<ThemeVars> = {};
 
   if (themeToApply && darkMode) {
     cacheKey = `${cacheKey}__dark`;
     themeRules = { ...darkSemanticVariables, ...darkColorVariables };
+  }
+
+  if (themeToApply && blackMode) {
+    cacheKey = `${cacheKey}__black`;
   }
 
   if (themeToApply === "default") {
@@ -128,6 +144,10 @@ export const applyThemesOnElement = (
         themeRules = { ...themeRules, ...modes.light };
       }
     }
+  }
+
+  if (themeToApply && blackMode) {
+    themeRules = { ...themeRules, ...BLACK_MODE_RULES };
   }
 
   if (!element.__themes?.keys && !Object.keys(themeRules).length) {

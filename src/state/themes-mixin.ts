@@ -114,6 +114,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       let darkMode =
         themeSettings?.dark === undefined ? darkPreferred : themeSettings.dark;
+      let blackMode =
+        themeSettings?.dark === true && themeSettings.black === true;
 
       const themeName =
         themeSettings?.theme ||
@@ -130,10 +132,12 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           darkMode = false;
         } else if (!("light" in selectedTheme.modes)) {
           darkMode = true;
+          // Dark-only themes keep their own colors; Black is not applied on top of them.
+          blackMode = false;
         }
       }
 
-      themeSettings = { ...themeSettings, dark: darkMode };
+      themeSettings = { ...themeSettings, dark: darkMode, black: blackMode };
       this._updateHass({
         themes: { ...this.hass.themes!, theme: themeName },
       });

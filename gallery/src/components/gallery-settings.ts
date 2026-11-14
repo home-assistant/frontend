@@ -33,6 +33,7 @@ class GallerySettings extends LitElement {
               autoMode: "Auto",
               lightMode: "Light",
               darkMode: "Dark",
+              blackMode: "Black (OLED)",
               primaryColor: "Primary color",
               accentColor: "Accent color",
               reset: "Reset",

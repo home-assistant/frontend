@@ -128,6 +128,9 @@ export interface ThemeSettings {
   // it can be undefined == auto.
   // Property hass.themes.darkMode carries effective current mode.
   dark?: boolean;
+  // Pure black backgrounds on top of dark mode, for OLED screens. Ignored
+  // when dark mode is not active.
+  black?: boolean;
   primaryColor?: string;
   accentColor?: string;
 }

@@ -29,6 +29,7 @@ export const loadGalleryThemeSettings = (): ThemeSettings => {
     return {
       theme: "default",
       dark: typeof value.dark === "boolean" ? value.dark : undefined,
+      black: typeof value.black === "boolean" ? value.black : undefined,
       primaryColor:
         typeof value.primaryColor === "string" ? value.primaryColor : undefined,
       accentColor:

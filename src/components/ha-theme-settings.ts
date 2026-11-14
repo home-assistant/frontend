@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { normalizeLuminance } from "../common/color/palette";
 import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../common/dom/fire_event";
 import { uiContext } from "../data/context";
 import {
   DefaultAccentColor,
@@ -29,6 +30,7 @@ export interface ThemeSettingsLabels {
   autoMode?: string;
   lightMode?: string;
   darkMode?: string;
+  blackMode?: string;
   colors?: string;
   primaryColor?: string;
   accentColor?: string;
@@ -122,7 +124,9 @@ export class HaThemeSettings extends LitElement {
                       themeSettings?.dark === undefined
                         ? "auto"
                         : themeSettings.dark
-                          ? "dark"
+                          ? themeSettings.black
+                            ? "black"
+                            : "dark"
                           : "light"
                     }
                     orientation="horizontal"
@@ -135,6 +139,9 @@ export class HaThemeSettings extends LitElement {
                     </ha-radio-option>
                     <ha-radio-option value="dark">
                       ${this.labels?.darkMode ?? "Dark"}
+                    </ha-radio-option>
+                    <ha-radio-option value="black">
+                      ${this.labels?.blackMode ?? "Black (OLED)"}
                     </ha-radio-option>
                   </ha-radio-group>
                 </ha-list-item-base>
@@ -216,17 +223,22 @@ export class HaThemeSettings extends LitElement {
     return !!(theme.modes && "light" in theme.modes && "dark" in theme.modes);
   }
 
-  private _handleDarkMode(ev: Event) {
+  private _handleDarkMode(ev: HASSDomCurrentTargetEvent<HaRadioGroup>) {
     let dark: boolean | undefined;
-    switch ((ev.currentTarget as HaRadioGroup).value) {
+    let black = false;
+    switch (ev.currentTarget.value) {
       case "light":
         dark = false;
         break;
       case "dark":
         dark = true;
         break;
+      case "black":
+        dark = true;
+        black = true;
+        break;
     }
-    fireEvent(this, "theme-settings-changed", { dark });
+    fireEvent(this, "theme-settings-changed", { dark, black });
   }
 
   private _handleThemeSelection(

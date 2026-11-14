@@ -12646,7 +12646,8 @@
           "dark_mode": {
             "auto": "Auto",
             "light": "Light",
-            "dark": "Dark"
+            "dark": "Dark",
+            "black": "Black (OLED)"
           },
           "primary_color": "Primary color",
           "accent_color": "Accent color",
