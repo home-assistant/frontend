@@ -1183,6 +1183,15 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
         : {}),
       updateDashboard: async (values) => {
         await updateDashboard(this.hass!, dashboard!.id, values);
+        // Stay on the same view of the dashboard at its new url.
+        if (values.url_path && values.url_path !== urlPath) {
+          navigate(
+            `/${values.url_path}${window.location.pathname.slice(
+              `/${urlPath}`.length
+            )}`,
+            { replace: true }
+          );
+        }
       },
       removeDashboard: async () => {
         const confirm = await showConfirmationDialog(this, {
