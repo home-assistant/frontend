@@ -71,7 +71,7 @@ describe("computeSecurityAlertCardConfig", () => {
     });
   });
 
-  it.each(["glass_break", "smoke"])(
+  it.each(["glass_break", "heat", "smoke"])(
     "uses the %s device class for the default severity",
     (deviceClass) => {
       const stateObj = createMockEntityState(
