@@ -78,7 +78,7 @@ const backupConfig: BackupConfig = {
 const agentsInfo: BackupAgentsInfo = {
   agents: [
     { agent_id: "backup.local", name: "This device" },
-    { agent_id: "cloud.cloud", name: "Home Assistant Cloud" },
+    { agent_id: "cloud.cloud", name: "Home Assistant Link" },
   ],
 };
 

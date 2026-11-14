@@ -93,7 +93,7 @@ class OnboardingWelcome extends LitElement {
           .disabled=${!ready}
         >
           <div slot="headline">
-            ${ready ? "Home Assistant Cloud" : renderSkeleton("headline")}
+            ${ready ? "Home Assistant Link" : renderSkeleton("headline")}
           </div>
           <div slot="supporting-text">
             ${
