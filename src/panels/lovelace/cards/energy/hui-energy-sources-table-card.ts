@@ -13,6 +13,7 @@ import {
 import { shallowEqual } from "../../../../common/util/shallow-equal";
 import { getEnergyColor } from "./common/color";
 import "../../../../components/ha-card";
+import "../../../../components/ha-tooltip";
 import {
   configContext,
   entitiesContext,
@@ -253,6 +254,7 @@ export class HuiEnergySourcesTableCard
         ${label}
       </th>
       ${this._renderValueCell(
+        `${type}-${statId}`,
         formattedEnergy,
         compare ? formattedCompareEnergy : undefined,
         "previous_energy"
@@ -260,6 +262,7 @@ export class HuiEnergySourcesTableCard
       ${
         showCosts
           ? this._renderValueCell(
+              `${type}-${statId}`,
               this._formatCost(cost),
               compare ? this._formatCost(compareCost) : undefined,
               "previous_cost"
@@ -321,6 +324,7 @@ export class HuiEnergySourcesTableCard
         ${label}
       </th>
       ${this._renderValueCell(
+        label,
         formattedEnergy,
         compare ? formattedCompareEnergy : undefined,
         "previous_energy"
@@ -328,6 +332,7 @@ export class HuiEnergySourcesTableCard
       ${
         showCosts
           ? this._renderValueCell(
+              label,
               this._formatCost(cost),
               compare ? this._formatCost(compareCost) : undefined,
               "previous_cost"
@@ -349,22 +354,22 @@ export class HuiEnergySourcesTableCard
   // When comparing, the previous period's value goes on a second line in the
   // same cell, so the table keeps its columns and fits narrow cards.
   private _renderValueCell(
+    rowKey: string,
     value: string,
     compareValue: string | undefined,
     compareLabel: "previous_energy" | "previous_cost"
   ) {
+    const compareId = `${compareLabel}-${rowKey}`.replace(/[^\w-]/g, "-");
     return html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
       <div>${value}</div>
       ${
-        compareValue !== undefined
-          ? html`<div
-              class="compare"
-              .title=${this._i18n.localize(
-                `ui.panel.lovelace.cards.energy.energy_sources_table.${compareLabel}`
-              )}
-            >
-              ${compareValue}
-            </div>`
+        compareValue
+          ? html`<div class="compare" id=${compareId}>${compareValue}</div>
+              <ha-tooltip for=${compareId}>
+                ${this._i18n.localize(
+                  `ui.panel.lovelace.cards.energy.energy_sources_table.${compareLabel}`
+                )}
+              </ha-tooltip>`
           : nothing
       }
     </td>`;
