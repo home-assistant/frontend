@@ -23,6 +23,7 @@ import {
 } from "../../../../data/context";
 import type { EnergyData, EnergySourceByType } from "../../../../data/energy";
 import {
+  calculateGridNetCost,
   energySourcesByType,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
@@ -401,15 +402,11 @@ export class HuiEnergySourcesTableCard
     }
 
     let totalGrid = 0;
-    let totalGridCost = 0;
     let gridImportIdx = 0;
     let gridExportIdx = 0;
     let totalBattery = 0;
 
-    let hasGridCost = false;
-
     let totalGridCompare = 0;
-    let totalGridCostCompare = 0;
     let totalBatteryCompare = 0;
 
     const totals = {
@@ -515,6 +512,21 @@ export class HuiEnergySourcesTableCard
         : undefined;
 
     const compare = this._data.statsCompare !== undefined;
+
+    const gridCost = types.grid
+      ? calculateGridNetCost(types.grid, this._data.info, this._data.stats)
+      : undefined;
+    const gridCostCompare =
+      compare && types.grid
+        ? calculateGridNetCost(
+            types.grid,
+            this._data.info,
+            this._data.statsCompare
+          )
+        : undefined;
+    const hasGridCost = gridCost !== undefined || gridCostCompare !== undefined;
+    const totalGridCost = gridCost ?? 0;
+    const totalGridCostCompare = gridCostCompare ?? 0;
 
     const _extractStatData = (
       statId: string,
@@ -914,12 +926,6 @@ export class HuiEnergySourcesTableCard
                   totalGrid += energy;
                   totalGridCompare += energyCompare;
 
-                  if (cost_stat) {
-                    hasGridCost = true;
-                    totalGridCost += cost;
-                    totalGridCostCompare += costCompare;
-                  }
-
                   if (showOnlyTotals) {
                     return nothing;
                   }
@@ -975,12 +981,6 @@ export class HuiEnergySourcesTableCard
                   }
                   totalGrid -= energy;
                   totalGridCompare -= energyCompare;
-
-                  if (cost_stat) {
-                    hasGridCost = true;
-                    totalGridCost -= cost;
-                    totalGridCostCompare -= costCompare;
-                  }
 
                   if (showOnlyTotals) {
                     return nothing;
