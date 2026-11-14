@@ -273,6 +273,7 @@ export class HuiEnergySourcesTableCard
   }
 
   protected _renderTotalRow(
+    key: string,
     label: string,
     energy: number | null,
     compareEnergy: number | null,
@@ -324,7 +325,7 @@ export class HuiEnergySourcesTableCard
         ${label}
       </th>
       ${this._renderValueCell(
-        label,
+        key,
         formattedEnergy,
         compare ? formattedCompareEnergy : undefined,
         "previous_energy"
@@ -332,7 +333,7 @@ export class HuiEnergySourcesTableCard
       ${
         showCosts
           ? this._renderValueCell(
-              label,
+              key,
               this._formatCost(cost),
               compare ? this._formatCost(compareCost) : undefined,
               "previous_cost"
@@ -359,12 +360,16 @@ export class HuiEnergySourcesTableCard
     compareValue: string | undefined,
     compareLabel: "previous_energy" | "previous_cost"
   ) {
-    const compareId = `${compareLabel}-${rowKey}`.replace(/[^\w-]/g, "-");
+    // rowKey is a statistic ID or a fixed key, never translated text, so
+    // the ID stays unique in every language.
+    const compareId = `${compareLabel}-${rowKey}`;
     return html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
       <div>${value}</div>
       ${
         compareValue
-          ? html`<div class="compare" id=${compareId}>${compareValue}</div>
+          ? html`<div class="compare" id=${compareId} tabindex="0">
+                ${compareValue}
+              </div>
               <ha-tooltip for=${compareId}>
                 ${this._i18n.localize(
                   `ui.panel.lovelace.cards.energy.energy_sources_table.${compareLabel}`
@@ -594,6 +599,7 @@ export class HuiEnergySourcesTableCard
       const row = combinedRows[type];
       return row
         ? this._renderTotalRow(
+            `combined-${type}`,
             label,
             row.energy,
             row.energyCompare,
@@ -659,6 +665,7 @@ export class HuiEnergySourcesTableCard
       ${
         types[type]
           ? this._renderTotalRow(
+              `${type}_total`,
               this._i18n.localize(
                 `ui.panel.lovelace.cards.energy.energy_sources_table.${type}_total`
               ),
@@ -835,6 +842,7 @@ export class HuiEnergySourcesTableCard
               ${
                 types.battery
                   ? this._renderTotalRow(
+                      "battery_total",
                       this._i18n.localize(
                         "ui.panel.lovelace.cards.energy.energy_sources_table.battery_total"
                       ),
@@ -1006,6 +1014,7 @@ export class HuiEnergySourcesTableCard
                   (s) => !!s.stat_energy_from || !!s.stat_energy_to
                 )
                   ? this._renderTotalRow(
+                      "grid_total",
                       this._i18n.localize(
                         "ui.panel.lovelace.cards.energy.energy_sources_table.grid_total"
                       ),
@@ -1027,6 +1036,7 @@ export class HuiEnergySourcesTableCard
                 [hasCosts.gas, hasCosts.water, hasGridCost].filter(Boolean)
                   .length > 1
                   ? this._renderTotalRow(
+                      "total_costs",
                       this._i18n.localize(
                         "ui.panel.lovelace.cards.energy.energy_sources_table.total_costs"
                       ),
