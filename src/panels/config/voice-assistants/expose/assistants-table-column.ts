@@ -10,7 +10,10 @@ export function getAssistantsTableColumn<T>(
   availableAssistants: string[],
   entitiesToCheck?: any[],
   supportedEntities?: Record<
-    "cloud.google_assistant" | "cloud.alexa" | "conversation",
+    | "cloud.google_assistant"
+    | "cloud.alexa"
+    | "conversation"
+    | "google_assistant",
     string[] | undefined
   >,
   visible?: boolean
@@ -85,6 +88,7 @@ export const getAssistantsSortableKey = (
     "conversation",
     "cloud.alexa",
     "cloud.google_assistant",
+    "google_assistant",
   ];
   assistantsOrdered.forEach((vaId, index) => {
     if (entityAssistants.includes(vaId)) {
