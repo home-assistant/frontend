@@ -2,9 +2,10 @@ import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { getAreasFloorHierarchy } from "../../../common/areas/areas-floor-hierarchy";
 import {
-  findEntities,
+  findFilteredEntities,
   generateEntityFilter,
   type EntityFilter,
+  type EntityFilterSources,
 } from "../../../common/entity/entity_filter";
 import { floorDefaultIcon } from "../../../components/ha-floor-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -18,19 +19,37 @@ import {
 } from "../../lovelace/strategies/helpers/view-columns-conditions";
 import type { ToggleGroupCardConfig } from "../../lovelace/cards/types";
 import type { ButtonHeadingBadgeConfig } from "../../lovelace/heading-badges/types";
+import {
+  wrapEntityVisibility,
+  type ComputeEntityCard,
+} from "../../lovelace/strategies/helpers/entity-visibility";
 
 export interface LightViewStrategyConfig {
   type: "light";
+  hidden_entities?: string[];
+  edit_visibility?: boolean;
 }
 
 export const lightEntityFilters: EntityFilter[] = [
   { domain: "light", entity_category: "none" },
 ];
 
+export const findLightEntities = (
+  sources: EntityFilterSources,
+  hiddenEntities?: string[]
+): string[] =>
+  findFilteredEntities(sources, lightEntityFilters, hiddenEntities);
+
+interface LightCardOptions {
+  entities: string[];
+  computeCard: ComputeEntityCard;
+  editVisibility: boolean;
+}
+
 const processAreasForLight = (
   areaIds: string[],
   hass: HomeAssistant,
-  entities: string[]
+  { entities, computeCard, editVisibility }: LightCardOptions
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
 
@@ -49,114 +68,114 @@ const processAreasForLight = (
       }
     );
     const areaLights = entities.filter(areaFilter);
-    const areaCards: LovelaceCardConfig[] = [];
+    const areaCards = areaLights.map(computeCard);
 
-    const computeTileCard = computeAreaTileCardConfig(hass, false);
-
-    for (const entityId of areaLights) {
-      areaCards.push(computeTileCard(entityId));
+    if (areaCards.length === 0) {
+      continue;
     }
 
-    if (areaCards.length > 0) {
-      // Visibility condition: any light is on
-      const anyOnCondition = {
-        condition: "or" as const,
-        conditions: areaLights.map((entityId) => ({
-          condition: "state" as const,
-          entity: entityId,
-          state: "on",
-        })),
-      };
+    const heading: LovelaceCardConfig = {
+      heading_style: "subtitle",
+      type: "heading",
+      heading: area.name,
+      tap_action: hass.panels.home
+        ? {
+            action: "navigate",
+            navigation_path: `/home/areas-${area.area_id}`,
+          }
+        : undefined,
+    };
 
-      cards.push({
-        heading_style: "subtitle",
-        type: "heading",
-        heading: area.name,
-        tap_action: hass.panels.home
-          ? {
-              action: "navigate",
-              navigation_path: `/home/areas-${area.area_id}`,
-            }
-          : undefined,
-        badges: [
-          // Toggle buttons for mobile
-          {
-            type: "button",
-            icon: "mdi:power",
-            text: hass.localize("ui.panel.lovelace.strategy.light.off"),
-            label: hass.localize(
-              "ui.panel.lovelace.strategy.light.turn_on_area",
-              { area: area.name }
-            ),
-            tap_action: {
-              action: "perform-action",
-              perform_action: "light.turn_on",
-              target: {
-                area_id: area.area_id,
-              },
-            },
-            visibility: [
-              SMALL_SCREEN_CONDITION,
-              {
-                condition: "not",
-                conditions: [anyOnCondition],
-              },
-            ],
-          } satisfies ButtonHeadingBadgeConfig,
-          {
-            type: "button",
-            icon: "mdi:power",
-            color: "orange",
-            text: hass.localize("ui.panel.lovelace.strategy.light.on"),
-            label: hass.localize(
-              "ui.panel.lovelace.strategy.light.turn_off_area",
-              { area: area.name }
-            ),
-            tap_action: {
-              action: "perform-action",
-              perform_action: "light.turn_off",
-              target: {
-                area_id: area.area_id,
-              },
-            },
-            visibility: [SMALL_SCREEN_CONDITION, anyOnCondition],
-          } satisfies ButtonHeadingBadgeConfig,
-        ] satisfies LovelaceCardConfig[],
-      });
-
-      // Toggle group card for desktop
-      cards.push({
-        type: "toggle-group",
-        color: "amber",
-        entities: areaLights,
-        visibility: [LARGE_SCREEN_CONDITION],
-        grid_options: {
-          columns: 6,
-          rows: 1,
-        },
-      } as ToggleGroupCardConfig);
-
-      areaCards.forEach((card) => {
-        // Insert a blank card before every 3rd card to align the individual
-        // cards with the toggle group card on desktop
-        if (
-          areaCards.indexOf(card) % 3 === 0 &&
-          areaCards.indexOf(card) !== 0
-        ) {
-          cards.push({
-            type: "vertical-stack",
-            cards: [],
-            visibility: [LARGE_SCREEN_CONDITION],
-            grid_options: {
-              columns: 6,
-              rows: 1,
-            },
-          });
-        }
-
-        cards.push(card);
-      });
+    if (editVisibility) {
+      cards.push(heading, ...areaCards);
+      continue;
     }
+
+    // Visibility condition: any light is on
+    const anyOnCondition = {
+      condition: "or" as const,
+      conditions: areaLights.map((entityId) => ({
+        condition: "state" as const,
+        entity: entityId,
+        state: "on",
+      })),
+    };
+
+    const target = { entity_id: areaLights };
+
+    cards.push({
+      ...heading,
+      badges: [
+        // Toggle buttons for mobile
+        {
+          type: "button",
+          icon: "mdi:power",
+          text: hass.localize("ui.panel.lovelace.strategy.light.off"),
+          label: hass.localize(
+            "ui.panel.lovelace.strategy.light.turn_on_area",
+            { area: area.name }
+          ),
+          tap_action: {
+            action: "perform-action",
+            perform_action: "light.turn_on",
+            target,
+          },
+          visibility: [
+            SMALL_SCREEN_CONDITION,
+            {
+              condition: "not",
+              conditions: [anyOnCondition],
+            },
+          ],
+        } satisfies ButtonHeadingBadgeConfig,
+        {
+          type: "button",
+          icon: "mdi:power",
+          color: "orange",
+          text: hass.localize("ui.panel.lovelace.strategy.light.on"),
+          label: hass.localize(
+            "ui.panel.lovelace.strategy.light.turn_off_area",
+            { area: area.name }
+          ),
+          tap_action: {
+            action: "perform-action",
+            perform_action: "light.turn_off",
+            target,
+          },
+          visibility: [SMALL_SCREEN_CONDITION, anyOnCondition],
+        } satisfies ButtonHeadingBadgeConfig,
+      ] satisfies LovelaceCardConfig[],
+    });
+
+    // Toggle group card for desktop
+    cards.push({
+      type: "toggle-group",
+      color: "amber",
+      entities: areaLights,
+      visibility: [LARGE_SCREEN_CONDITION],
+      grid_options: {
+        columns: 6,
+        rows: 1,
+      },
+    } as ToggleGroupCardConfig);
+
+    areaCards.forEach((card) => {
+      // Insert a blank card before every 3rd card to align the individual
+      // cards with the toggle group card on desktop
+      if (areaCards.indexOf(card) % 3 === 0 && areaCards.indexOf(card) !== 0) {
+        cards.push({
+          type: "vertical-stack",
+          cards: [],
+          visibility: [LARGE_SCREEN_CONDITION],
+          grid_options: {
+            columns: 6,
+            rows: 1,
+          },
+        });
+      }
+
+      cards.push(card);
+    });
   }
 
   return cards;
@@ -164,7 +183,7 @@ const processAreasForLight = (
 
 const processUnassignedLights = (
   hass: HomeAssistant,
-  entities: string[]
+  { entities, computeCard }: LightCardOptions
 ): LovelaceCardConfig[] => {
   const unassignedFilter = generateEntityFilter(
     hass.states,
@@ -176,21 +195,13 @@ const processUnassignedLights = (
       area: null,
     }
   );
-  const unassignedLights = entities.filter(unassignedFilter);
-  const areaCards: LovelaceCardConfig[] = [];
-  const computeTileCard = computeAreaTileCardConfig(hass, false);
-
-  for (const entityId of unassignedLights) {
-    areaCards.push(computeTileCard(entityId));
-  }
-
-  return areaCards;
+  return entities.filter(unassignedFilter).map(computeCard);
 };
 
 @customElement("light-view-strategy")
 export class LightViewStrategy extends ReactiveElement {
   static async generate(
-    _config: LightViewStrategyConfig,
+    config: LightViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = Object.values(hass.areas);
@@ -199,20 +210,18 @@ export class LightViewStrategy extends ReactiveElement {
 
     const sections: LovelaceSectionRawConfig[] = [];
 
-    const allEntities = Object.keys(hass.states);
-
-    const lightFilters = lightEntityFilters.map((filter) =>
-      generateEntityFilter(
-        hass.states,
-        hass.entities,
-        hass.devices,
-        hass.areas,
-        hass.floors,
-        filter
-      )
-    );
-
-    const entities = findEntities(allEntities, lightFilters);
+    const editVisibility = Boolean(config.edit_visibility);
+    const computeTileCard = computeAreaTileCardConfig(hass, false);
+    const cardOptions: LightCardOptions = {
+      entities: findLightEntities(
+        hass,
+        editVisibility ? undefined : config.hidden_entities
+      ),
+      computeCard: editVisibility
+        ? wrapEntityVisibility(new Set(config.hidden_entities), computeTileCard)
+        : computeTileCard,
+      editVisibility,
+    };
 
     const floorCount =
       hierarchy.floors.length + (hierarchy.areas.length ? 1 : 0);
@@ -238,7 +247,7 @@ export class LightViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForLight(areaIds, hass, entities);
+      const areaCards = processAreasForLight(areaIds, hass, cardOptions);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -262,7 +271,11 @@ export class LightViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForLight(hierarchy.areas, hass, entities);
+      const areaCards = processAreasForLight(
+        hierarchy.areas,
+        hass,
+        cardOptions
+      );
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -271,7 +284,7 @@ export class LightViewStrategy extends ReactiveElement {
     }
 
     // Process unassigned lights
-    const unassignedCards = processUnassignedLights(hass, entities);
+    const unassignedCards = processUnassignedLights(hass, cardOptions);
     if (unassignedCards.length > 0) {
       const section: LovelaceSectionRawConfig = {
         type: "grid",

@@ -3007,6 +3007,13 @@
           "save_failed": "Failed to save climate page configuration"
         }
       },
+      "light": {
+        "editor": {
+          "title": "Edit visible entities",
+          "load_failed": "Failed to load lights page configuration",
+          "save_failed": "Failed to save lights page configuration"
+        }
+      },
       "maintenance": {
         "editor": {
           "title": "Edit visible entities",
