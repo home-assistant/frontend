@@ -10,6 +10,10 @@ import "../../../../../components/input/ha-input";
 import type { HaInput } from "../../../../../components/input/ha-input";
 import type { ServiceAction } from "../../../../../data/script";
 import { serviceActionStruct } from "../../../../../data/script";
+import {
+  getServiceResponseVariableMode,
+  serviceRejectsResponseVariable,
+} from "../../../../../data/service";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { HomeAssistant } from "../../../../../types";
 import type { ActionElement } from "../ha-automation-action-row";
@@ -80,10 +84,11 @@ export class HaServiceAction extends LitElement implements ActionElement {
       ? this._action.action.split(".", 2)
       : [undefined, undefined];
 
-    const optionalResponse =
-      domain && service
-        ? !!this.hass.services[domain]?.[service]?.response?.optional
-        : false;
+    const responseMode = getServiceResponseVariableMode(
+      domain && service ? this.hass.services[domain]?.[service] : undefined,
+      !!this._action.response_variable
+    );
+    const optionalResponse = responseMode === "optional";
 
     return html`
       <ha-service-control
@@ -95,7 +100,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
         @value-changed=${this._actionChanged}
       ></ha-service-control>
       ${
-        domain && service && this.hass.services[domain]?.[service]?.response
+        responseMode !== "hidden"
           ? html`<ha-settings-row .narrow=${this.narrow}>
               ${
                 optionalResponse
@@ -155,15 +160,14 @@ export class HaServiceAction extends LitElement implements ActionElement {
       ev.stopPropagation();
     }
     const value = { ...this.action, ...ev.detail.value };
-    if ("response_variable" in this.action) {
-      const [domain, service] = this._action!.action
-        ? this._action!.action.split(".", 2)
+    if ("response_variable" in value && value.action !== this.action.action) {
+      const [domain, service] = value.action
+        ? value.action.split(".", 2)
         : [undefined, undefined];
       if (
         domain &&
         service &&
-        this.hass.services[domain]?.[service] &&
-        !("response" in this.hass.services[domain][service])
+        serviceRejectsResponseVariable(this.hass.services[domain]?.[service])
       ) {
         delete value.response_variable;
         this._responseChecked = false;

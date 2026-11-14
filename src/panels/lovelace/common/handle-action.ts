@@ -10,6 +10,7 @@ import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/sh
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { toggleEntity } from "./entity/toggle-entity";
+import { getServicePlaceholders } from "../../../data/service";
 
 declare global {
   interface HASSDomEvents {
@@ -76,7 +77,7 @@ export const handleAction = async (
         serviceName = `${domainToName(localize, domain)}: ${
           localize(
             `component.${domain}.services.${service}.name`,
-            hass.services[domain][service].description_placeholders
+            getServicePlaceholders(hass.services[domain][service])
           ) ||
           serviceDomains[domain][service].name ||
           service

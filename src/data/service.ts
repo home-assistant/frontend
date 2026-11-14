@@ -1,7 +1,57 @@
+import type { HassService as HassServiceBase } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
+import type { LocalizeValues } from "../common/translations/localize";
+import { UNKNOWN_PLACEHOLDERS } from "../common/translations/localize";
 import type { Context, HomeAssistant, ServiceCallRequest } from "../types";
 import type { Action } from "./script";
+
+export { subscribeServices } from "./ws-services";
+
+// Core also describes services from an integration's services.yaml before
+// the integration registers them. Until then `null` marks the values that
+// only registration provides.
+export interface HassService extends Omit<
+  HassServiceBase,
+  "response" | "description_placeholders"
+> {
+  response?: { optional: boolean } | null;
+  description_placeholders?: Record<string, string> | null;
+}
+
+export type HassDomainServices = Record<string, HassService>;
+
+export type HassServices = Record<string, HassDomainServices>;
+
+/** Placeholders for localizing a service's texts. */
+export const getServicePlaceholders = (
+  service: HassService | undefined
+): LocalizeValues | undefined =>
+  service?.description_placeholders === null
+    ? UNKNOWN_PLACEHOLDERS
+    : service?.description_placeholders;
+
+export type ServiceResponseVariableMode = "hidden" | "optional" | "required";
+
+/** How the editor offers the response variable; a kept variable of a not yet registered service stays editable. */
+export const getServiceResponseVariableMode = (
+  service: HassService | undefined,
+  hasResponseVariable: boolean
+): ServiceResponseVariableMode => {
+  const response = service?.response;
+  if (response === null) {
+    return hasResponseVariable ? "optional" : "hidden";
+  }
+  if (!response) {
+    return "hidden";
+  }
+  return response.optional ? "optional" : "required";
+};
+
+/** Whether a response variable is meaningless for this service. */
+export const serviceRejectsResponseVariable = (
+  service: HassService | undefined
+) => !!service && service.response === undefined;
 
 export const callExecuteScript = (
   hass: HomeAssistant,

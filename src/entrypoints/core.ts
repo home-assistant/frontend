@@ -5,7 +5,6 @@ import {
   getAuth,
   subscribeConfig,
   subscribeEntities,
-  subscribeServices,
 } from "home-assistant-js-websocket";
 import { loadTokens, saveTokens } from "../common/auth/token_storage";
 import { hassUrl } from "../data/auth";
@@ -22,6 +21,7 @@ import { subscribeDeviceRegistry } from "../data/ws-device_registry";
 import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_display";
 import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 import { subscribePanels } from "../data/ws-panels";
+import { subscribeServices } from "../data/ws-services";
 import { subscribeThemes } from "../data/ws-themes";
 import { subscribeUser } from "../data/ws-user";
 import type { ExternalAuth } from "../external_app/external_auth";

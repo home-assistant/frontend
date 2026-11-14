@@ -1,5 +1,4 @@
 import { mdiHelpCircleOutline } from "@mdi/js";
-import type { HassService, HassServices } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -29,6 +28,8 @@ import {
   type Selector,
   type TargetSelector,
 } from "../data/selector";
+import type { HassService, HassServices } from "../data/service";
+import { getServicePlaceholders } from "../data/service";
 import type { HassServiceTargetWithExclude } from "../data/target";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
@@ -115,6 +116,9 @@ export class HaServiceControl extends LitElement {
 
   @property({ attribute: "hide-picker", type: Boolean, reflect: true })
   public hidePicker = false;
+
+  @property({ attribute: "loaded-only", type: Boolean })
+  public loadedOnly = false;
 
   @property({ attribute: "hide-description", type: Boolean })
   public hideDescription = false;
@@ -477,10 +481,11 @@ export class HaServiceControl extends LitElement {
       ? computeObjectId(this._value.action)
       : undefined;
 
-    const descriptionPlaceholders =
+    const descriptionPlaceholders = getServicePlaceholders(
       domain && serviceName
-        ? this.hass.services[domain]?.[serviceName]?.description_placeholders
-        : undefined;
+        ? this.hass.services[domain]?.[serviceName]
+        : undefined
+    );
 
     const description =
       (serviceName &&
@@ -511,6 +516,7 @@ export class HaServiceControl extends LitElement {
             .disabled=${this.disabled}
             @value-changed=${this._serviceChanged}
             .showServiceId=${this.showServiceId}
+            .loadedOnly=${this.loadedOnly}
           ></ha-service-picker>`
     }
     ${
@@ -636,9 +642,11 @@ export class HaServiceControl extends LitElement {
   ) {
     return this.hass!.localize(
       `component.${domain}.services.${serviceName}.sections.${dataField.key}.description`,
-      domain && serviceName
-        ? this.hass.services[domain][serviceName].description_placeholders
-        : undefined
+      getServicePlaceholders(
+        domain && serviceName
+          ? this.hass.services[domain][serviceName]
+          : undefined
+      )
     );
   }
 
@@ -685,10 +693,11 @@ export class HaServiceControl extends LitElement {
     }
 
     const showOptional = showOptionalToggle(dataField);
-    const descriptionPlaceholders =
+    const descriptionPlaceholders = getServicePlaceholders(
       domain && serviceName
-        ? this.hass.services[domain][serviceName].description_placeholders
-        : undefined;
+        ? this.hass.services[domain][serviceName]
+        : undefined
+    );
 
     return dataField.selector
       ? html`<ha-settings-row

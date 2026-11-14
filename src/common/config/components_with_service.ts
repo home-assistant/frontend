@@ -1,4 +1,5 @@
 import type { HomeAssistant } from "../../types";
+import { isComponentLoaded } from "./is_component_loaded";
 
 /** Return an array of domains with the service. */
 export const componentsWithService = (
@@ -6,4 +7,7 @@ export const componentsWithService = (
   service: string
 ): string[] =>
   hass &&
-  Object.keys(hass.services).filter((key) => service in hass.services[key]);
+  Object.keys(hass.services).filter(
+    (domain) =>
+      service in hass.services[domain] && isComponentLoaded(hass.config, domain)
+  );
