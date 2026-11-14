@@ -32,8 +32,12 @@ export class HaMarqueeText extends LitElement {
 
   private _pauseTimeout?: number;
 
+  private _animationFactor = 1;
+
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
+
+    this._animationFactor = document.dir === "rtl" ? -1 : 1;
 
     this._setupAnimation();
   }
@@ -117,7 +121,7 @@ export class HaMarqueeText extends LitElement {
         reachedEnd = true;
       }
     }
-    this._textSpan.style.transform = `translateX(${this._position}px)`;
+    this._textSpan.style.transform = `translateX(${this._position * this._animationFactor}px)`;
     if (reachedEnd) {
       this._pauseTimeout = window.setTimeout(() => {
         this._pauseTimeout = undefined;
