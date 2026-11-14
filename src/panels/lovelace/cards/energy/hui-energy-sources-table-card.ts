@@ -252,46 +252,18 @@ export class HuiEnergySourcesTableCard
       <th class="mdc-data-table__cell cell-source" scope="row" .title=${label}>
         ${label}
       </th>
-      ${
-        compare
-          ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
-                ${formattedCompareEnergy}
-              </td>
-              ${
-                showCosts
-                  ? html`<td
-                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                    >
-                      ${
-                        compareCost !== null
-                          ? formatNumber(compareCost, this._i18n.locale, {
-                              style: "currency",
-                              currency: this._hassConfig.currency!,
-                            })
-                          : ""
-                      }
-                    </td>`
-                  : ""
-              }`
-          : ""
-      }
-      <td class="mdc-data-table__cell mdc-data-table__cell--numeric">
-        ${formattedEnergy}
-      </td>
+      ${this._renderValueCell(
+        formattedEnergy,
+        compare ? formattedCompareEnergy : undefined,
+        "previous_energy"
+      )}
       ${
         showCosts
-          ? html` <td
-              class="mdc-data-table__cell mdc-data-table__cell--numeric"
-            >
-              ${
-                cost !== null
-                  ? formatNumber(cost, this._i18n.locale, {
-                      style: "currency",
-                      currency: this._hassConfig.currency!,
-                    })
-                  : ""
-              }
-            </td>`
+          ? this._renderValueCell(
+              this._formatCost(cost),
+              compare ? this._formatCost(compareCost) : undefined,
+              "previous_cost"
+            )
           : ""
       }
     </tr>`;
@@ -348,47 +320,54 @@ export class HuiEnergySourcesTableCard
       <th class="mdc-data-table__cell cell-source" scope="row" .title=${label}>
         ${label}
       </th>
-      ${
-        compare
-          ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
-                ${formattedCompareEnergy}
-              </td>
-              ${
-                showCosts
-                  ? html`<td
-                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                    >
-                      ${
-                        compareCost !== null
-                          ? formatNumber(compareCost, this._i18n.locale, {
-                              style: "currency",
-                              currency: this._hassConfig.currency!,
-                            })
-                          : ""
-                      }
-                    </td>`
-                  : ""
-              }`
-          : ""
-      }
-      <td class="mdc-data-table__cell mdc-data-table__cell--numeric">
-        ${formattedEnergy}
-      </td>
+      ${this._renderValueCell(
+        formattedEnergy,
+        compare ? formattedCompareEnergy : undefined,
+        "previous_energy"
+      )}
       ${
         showCosts
-          ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
-              ${
-                cost !== null
-                  ? formatNumber(cost, this._i18n.locale, {
-                      style: "currency",
-                      currency: this._hassConfig.currency!,
-                    })
-                  : ""
-              }
-            </td>`
+          ? this._renderValueCell(
+              this._formatCost(cost),
+              compare ? this._formatCost(compareCost) : undefined,
+              "previous_cost"
+            )
           : ""
       }
     </tr>`;
+  }
+
+  private _formatCost(cost: number | null): string {
+    return cost !== null
+      ? formatNumber(cost, this._i18n.locale, {
+          style: "currency",
+          currency: this._hassConfig.currency!,
+        })
+      : "";
+  }
+
+  // When comparing, the previous period's value goes on a second line in the
+  // same cell, so the table keeps its columns and fits narrow cards.
+  private _renderValueCell(
+    value: string,
+    compareValue: string | undefined,
+    compareLabel: "previous_energy" | "previous_cost"
+  ) {
+    return html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
+      <div>${value}</div>
+      ${
+        compareValue !== undefined
+          ? html`<div
+              class="compare"
+              .title=${this._i18n.localize(
+                `ui.panel.lovelace.cards.energy.energy_sources_table.${compareLabel}`
+              )}
+            >
+              ${compareValue}
+            </div>`
+          : nothing
+      }
+    </td>`;
   }
 
   protected render() {
@@ -715,32 +694,6 @@ export class HuiEnergySourcesTableCard
                     "ui.panel.lovelace.cards.energy.energy_sources_table.source"
                   )}
                 </th>
-                ${
-                  compare
-                    ? html`<th
-                          class="mdc-data-table__header-cell mdc-data-table__header-cell--numeric"
-                          role="columnheader"
-                          scope="col"
-                        >
-                          ${this._i18n.localize(
-                            "ui.panel.lovelace.cards.energy.energy_sources_table.previous_energy"
-                          )}
-                        </th>
-                        ${
-                          showCosts
-                            ? html`<th
-                                class="mdc-data-table__header-cell mdc-data-table__header-cell--numeric"
-                                role="columnheader"
-                                scope="col"
-                              >
-                                ${this._i18n.localize(
-                                  "ui.panel.lovelace.cards.energy.energy_sources_table.previous_cost"
-                                )}
-                              </th>`
-                            : ""
-                        }`
-                    : ""
-                }
                 <th
                   class="mdc-data-table__header-cell mdc-data-table__header-cell--numeric"
                   role="columnheader"
@@ -1222,6 +1175,10 @@ export class HuiEnergySourcesTableCard
       direction: ltr;
       white-space: nowrap;
       width: 1%;
+    }
+    .compare {
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
     }
     .mdc-data-table__header-cell--numeric {
       text-align: var(--float-end);
