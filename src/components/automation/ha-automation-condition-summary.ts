@@ -76,6 +76,7 @@ export class HaAutomationConditionSummary extends LitElement {
                 ></ha-automation-row-threshold>
                 <ha-automation-row-options
                   .config=${this.condition}
+                  .description=${this.description}
                 ></ha-automation-row-options> `
             : nothing
         }
