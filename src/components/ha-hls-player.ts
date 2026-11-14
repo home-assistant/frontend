@@ -12,6 +12,7 @@ import type { LocalizeFunc } from "../common/translations/localize";
 import { nextRender } from "../common/util/render-status";
 import { fetchStreamUrl } from "../data/camera";
 import { apiContext, configContext, connectionContext } from "../data/context";
+import { isExternal } from "../data/external";
 import "./ha-alert";
 
 type HlsLite = Omit<
@@ -87,6 +88,12 @@ class HaHLSPlayer extends LitElement {
       return;
     }
     if (document.hidden) {
+      if (isExternal) {
+        // The companion apps pause JavaScript timers while in the background,
+        // so a delayed clean up would not run until the app is opened again
+        this._cleanUp();
+        return;
+      }
       this._hiddenCleanupTimeout = window.setTimeout(() => {
         this._hiddenCleanupTimeout = undefined;
         this._cleanUp();
