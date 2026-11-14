@@ -71,9 +71,10 @@ export class HaBadge extends LitElement {
       padding: 0px 12px;
       box-sizing: border-box;
       width: auto;
+      /* Concentric with the picture, which sits 3px inside the badge */
       border-radius: var(
         --ha-badge-border-radius,
-        calc(var(--ha-badge-size, 36px) / 2)
+        calc(var(--ha-picture-border-radius) + 3px)
       );
       background: var(
         --ha-card-background,

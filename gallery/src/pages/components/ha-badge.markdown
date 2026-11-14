@@ -61,6 +61,6 @@ The badge component is a small component that displays a number or status inform
 **CSS Custom Properties**
 
 - `--ha-badge-size` (default `36px`)
-- `--ha-badge-border-radius` (default `calc(var(--ha-badge-size, 36px) / 2)`)
+- `--ha-badge-border-radius` (default `calc(var(--ha-picture-border-radius) + 3px)`)
 - `--ha-badge-font-size` (default `var(--ha-font-size-s)`)
 - `--ha-badge-icon-size` (default `18px`)
