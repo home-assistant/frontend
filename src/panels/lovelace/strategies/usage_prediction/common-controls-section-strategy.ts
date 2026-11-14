@@ -87,9 +87,10 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
     );
 
     // Pinned entities already fill the section, skip the prediction call.
-    if (computeFavoriteCardsSize(includedEntities) >= limit) {
+    const fittedIncludedEntities = fitToLimit(includedEntities, limit);
+    if (computeFavoriteCardsSize(fittedIncludedEntities) >= limit) {
       section.cards!.push(
-        ...fitToLimit(includedEntities, limit).map(computeFavoriteCardConfig)
+        ...fittedIncludedEntities.map(computeFavoriteCardConfig)
       );
       return section;
     }
