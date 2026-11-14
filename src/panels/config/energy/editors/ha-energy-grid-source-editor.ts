@@ -768,7 +768,6 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
         number_energy_price: draft.number_energy_price,
         entity_energy_price_export: draft.entity_energy_price_export,
         number_energy_price_export: draft.number_energy_price_export,
-        cost_adjustment_day: draft.cost_adjustment_day,
       };
       if (draft.name) {
         source.name = draft.name;
