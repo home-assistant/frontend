@@ -261,7 +261,9 @@ export const fetchAttributesForCluster = (
     cluster_type: clusterType,
   });
 
-export const fetchDevices = (hass: HomeAssistant): Promise<ZHADevice[]> =>
+export const fetchDevices = (
+  hass: Pick<HomeAssistant, "callWS">
+): Promise<ZHADevice[]> =>
   hass.callWS({
     type: "zha/devices",
   });
