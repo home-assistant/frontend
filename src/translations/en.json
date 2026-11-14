@@ -2895,13 +2895,33 @@
       "close": "Close",
       "dismiss_all": "Dismiss all"
     },
+    "startup_progress": {
+      "phase": {
+        "preparing": "Preparing startup",
+        "setup": "Setting up integrations",
+        "wrap_up": "Finishing integration setup",
+        "starting": "Running final startup tasks",
+        "running": "Home Assistant has started"
+      },
+      "integrations": "{done} of {total} integrations set up",
+      "integrations_unknown": "Not everything is available until startup is finished",
+      "issues": "{count, plural,\n  one {# needs attention}\n  other {# need attention}\n}",
+      "details": "Startup details",
+      "elapsed": "Starting for {seconds} s",
+      "active": "Setting up now",
+      "seconds": "{seconds} s",
+      "failed": "Failed to set up",
+      "started": "Home Assistant started in {seconds} s.",
+      "started_with_issues": "Home Assistant started in {seconds} s. {count, plural,\n  one {# integration needs}\n  other {# integrations need}\n} attention.",
+      "slowest": "Slowest integrations",
+      "open_integrations": "Open integrations"
+    },
     "notification_toast": {
       "action_failed": "Failed to perform the action {service}.",
       "connection_lost": "Connection lost. Reconnecting…",
       "started": "Home Assistant has started!",
-      "starting": "Home Assistant is starting. Not everything will be available until it is finished.",
-      "wrapping_up_startup": "Wrapping up startup. Not everything will be available until it is finished.",
-      "integration_starting": "Starting {integration}. Not everything will be available until startup is finished.",
+      "started_with_issues": "Home Assistant has started. {count, plural,\n  one {# integration needs}\n  other {# integrations need}\n} attention.",
+      "details": "Details",
       "triggered": "Triggered {name}",
       "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}",
