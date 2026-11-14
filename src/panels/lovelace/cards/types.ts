@@ -574,6 +574,7 @@ export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
   max_y_axis?: number;
   fit_y_data?: boolean;
   hide_legend?: boolean;
+  hide_single_stat_type?: boolean;
   logarithmic_scale?: boolean;
   energy_date_selection?: boolean;
   expand_legend?: boolean;

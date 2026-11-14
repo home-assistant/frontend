@@ -109,6 +109,9 @@ export class StatisticsChart extends LitElement {
   @property({ attribute: "hide-legend", type: Boolean }) public hideLegend =
     false;
 
+  @property({ attribute: "hide-single-stat-type", type: Boolean })
+  public hideSingleStatType = false;
+
   @property({ attribute: "logarithmic-scale", type: Boolean })
   public logarithmicScale = false;
 
@@ -188,6 +191,7 @@ export class StatisticsChart extends LitElement {
       changedProps.has("statTypes") ||
       changedProps.has("chartType") ||
       changedProps.has("hideLegend") ||
+      changedProps.has("hideSingleStatType") ||
       changedProps.has("_hiddenStats") ||
       changedProps.has("names") ||
       changedProps.has("_formatEntityName") ||
@@ -575,6 +579,7 @@ export class StatisticsChart extends LitElement {
       chartType: this.chartType,
       period: this.period,
       hideLegend: this.hideLegend,
+      hideSingleStatType: this.hideSingleStatType,
       hiddenStats: this._hiddenStats,
       computedStyle: this._computedStyle || getComputedStyle(this),
       now: new Date(),

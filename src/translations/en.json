@@ -11364,6 +11364,7 @@
               "picked_statistic": "Statistic",
               "hide_legend": "Hide legend",
               "expand_legend": "Expanded legend",
+              "hide_single_stat_type": "Hide statistic type in name if only one is shown",
               "logarithmic_scale": "Logarithmic scale",
               "min_y_axis": "Y axis minimum",
               "max_y_axis": "Y axis maximum",
