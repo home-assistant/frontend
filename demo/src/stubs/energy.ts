@@ -8,7 +8,7 @@ import type {
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
 export const mockEnergy = (hass: MockHomeAssistant) => {
-  hass.mockWS("energy/get_prefs", (): EnergyPreferences => ({
+  const prefs: EnergyPreferences = {
     energy_sources: [
       {
         type: "grid",
@@ -47,6 +47,23 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
         stat_energy_from: "sensor.battery_output",
         stat_energy_to: "sensor.battery_input",
         stat_rate: "sensor.power_battery",
+      },
+      {
+        type: "battery",
+        name: "Powerwall",
+        stat_energy_from_grid: "sensor.powerwall_from_grid",
+        stat_energy_from_solar: "sensor.powerwall_from_solar",
+        stat_energy_to_home: "sensor.powerwall_to_home",
+        stat_energy_to_grid: "sensor.powerwall_to_grid",
+        stat_rate: "sensor.powerwall_power",
+        power_config: {
+          stat_rate_from_grid: "sensor.powerwall_power_from_grid",
+          stat_rate_from_solar: "sensor.powerwall_power_from_solar",
+          stat_rate_to_home: "sensor.powerwall_power_to_home",
+          stat_rate_to_grid: "sensor.powerwall_power_to_grid",
+        },
+        stat_soc: "sensor.powerwall_battery_level",
+        capacity: 13.5,
       },
       {
         type: "gas",
@@ -105,16 +122,17 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
         stat_consumption: "sensor.gas_heat_pump",
       },
     ],
-  }));
+  };
+  hass.mockWS("energy/get_prefs", (): EnergyPreferences => prefs);
   hass.mockWS("energy/info", (): EnergyInfo => ({
     cost_sensors: {},
     solar_forecast_domains: [],
   }));
   hass.mockWS("energy/validate", () => ({
-    energy_sources: Array.from({ length: 6 }, () => []),
-    device_consumption: Array.from({ length: 6 }, () => []),
-    device_consumption_water: Array.from({ length: 2 }, () => []),
-    device_consumption_gas: Array.from({ length: 2 }, () => []),
+    energy_sources: prefs.energy_sources.map(() => []),
+    device_consumption: prefs.device_consumption.map(() => []),
+    device_consumption_water: prefs.device_consumption_water.map(() => []),
+    device_consumption_gas: prefs.device_consumption_gas.map(() => []),
   }));
   hass.mockWS(
     "energy/fossil_energy_consumption",

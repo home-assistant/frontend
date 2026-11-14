@@ -1,3 +1,30 @@
+// Live power of the battery measured per direction, in W
+const powerwallPower = {
+  from_grid: 50,
+  from_solar: 150,
+  to_home: 0,
+  to_grid: 0,
+};
+
+const powerEntity = (entityId: string, power: number) => ({
+  entity_id: entityId,
+  state: String(power),
+  attributes: {
+    state_class: "measurement",
+    unit_of_measurement: "W",
+  },
+});
+
+const powerwallEnergyEntity = (entityId: string, friendlyName: string) => ({
+  entity_id: entityId,
+  state: "2",
+  attributes: {
+    last_reset: "1970-01-01T00:00:00:00+00",
+    friendly_name: friendlyName,
+    unit_of_measurement: "kWh",
+  },
+});
+
 export const energyEntities = () =>
   Object.values({
     "sensor.grid_fossil_fuel_percentage": {
@@ -32,6 +59,31 @@ export const energyEntities = () =>
         state_class: "total_increasing",
         friendly_name: "Battery Output",
         unit_of_measurement: "kWh",
+      },
+    },
+    "sensor.powerwall_from_grid": powerwallEnergyEntity(
+      "sensor.powerwall_from_grid",
+      "Powerwall charged from grid"
+    ),
+    "sensor.powerwall_from_solar": powerwallEnergyEntity(
+      "sensor.powerwall_from_solar",
+      "Powerwall charged from solar"
+    ),
+    "sensor.powerwall_to_home": powerwallEnergyEntity(
+      "sensor.powerwall_to_home",
+      "Powerwall discharged to home"
+    ),
+    "sensor.powerwall_to_grid": powerwallEnergyEntity(
+      "sensor.powerwall_to_grid",
+      "Powerwall discharged to grid"
+    ),
+    "sensor.powerwall_battery_level": {
+      entity_id: "sensor.powerwall_battery_level",
+      state: "62",
+      attributes: {
+        device_class: "battery",
+        friendly_name: "Powerwall battery level",
+        unit_of_measurement: "%",
       },
     },
     "sensor.energy_consumption_tarif_1": {
@@ -134,6 +186,29 @@ export const energyEntities = () =>
         unit_of_measurement: "W",
       },
     },
+    "sensor.powerwall_power_from_grid": powerEntity(
+      "sensor.powerwall_power_from_grid",
+      powerwallPower.from_grid
+    ),
+    "sensor.powerwall_power_from_solar": powerEntity(
+      "sensor.powerwall_power_from_solar",
+      powerwallPower.from_solar
+    ),
+    "sensor.powerwall_power_to_home": powerEntity(
+      "sensor.powerwall_power_to_home",
+      powerwallPower.to_home
+    ),
+    "sensor.powerwall_power_to_grid": powerEntity(
+      "sensor.powerwall_power_to_grid",
+      powerwallPower.to_grid
+    ),
+    "sensor.powerwall_power": powerEntity(
+      "sensor.powerwall_power",
+      powerwallPower.to_home +
+        powerwallPower.to_grid -
+        powerwallPower.from_grid -
+        powerwallPower.from_solar
+    ),
     "sensor.energy_gas_cost": {
       entity_id: "sensor.energy_gas_cost",
       state: "2",
