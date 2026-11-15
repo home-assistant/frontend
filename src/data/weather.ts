@@ -364,6 +364,9 @@ const getWeatherExtrema = (
     if (new Date(fc.datetime).getDate() !== today) {
       break;
     }
+    if (fc.temperature == null) {
+      continue;
+    }
     if (tempHigh === undefined || fc.temperature > tempHigh) {
       tempHigh =
         temperatureFractionDigits === undefined
