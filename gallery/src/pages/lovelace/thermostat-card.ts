@@ -9,6 +9,18 @@ import { mockIcons } from "../../../../demo/src/stubs/icons";
 
 const ENTITIES = [
   {
+    entity_id: "water_heater.tank",
+    state: "electric",
+    attributes: {
+      friendly_name: "Water heater",
+      current_temperature: 45,
+      temperature: 50,
+      min_temp: 40,
+      max_temp: 65,
+      supported_features: 1,
+    },
+  },
+  {
     entity_id: "climate.ecobee",
     state: "auto",
     attributes: {
@@ -123,6 +135,30 @@ const ENTITIES = [
 ];
 
 const CONFIGS = [
+  {
+    heading: "Water heater with buttons only",
+    config: {
+      type: "thermostat",
+      entity: "water_heater.tank",
+      disable_dial_interaction: true,
+    },
+  },
+  {
+    heading: "Buttons only",
+    config: {
+      type: "thermostat",
+      entity: "climate.nest",
+      disable_dial_interaction: true,
+    },
+  },
+  {
+    heading: "Range with buttons only",
+    config: {
+      type: "thermostat",
+      entity: "climate.ecobee",
+      disable_dial_interaction: true,
+    },
+  },
   {
     heading: "Range example",
     config: {

@@ -58,6 +58,9 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
   @property({ type: Boolean, attribute: "prevent-interaction-on-scroll" })
   public preventInteractionOnScroll = false;
 
+  @property({ type: Boolean, attribute: "disable-dial-interaction" })
+  public disableDialInteraction = false;
+
   @state() private _targetTemperature?: number;
 
   private _sizeController = createStateControlCircularSliderController(this);
@@ -257,6 +260,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
         >
           <ha-control-circular-slider
             .preventInteractionOnScroll=${this.preventInteractionOnScroll}
+            .readonly=${this.disableDialInteraction}
             .inactive=${!active}
             .value=${this._targetTemperature}
             .min=${this._min}

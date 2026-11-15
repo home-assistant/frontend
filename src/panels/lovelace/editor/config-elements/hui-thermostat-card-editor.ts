@@ -54,6 +54,7 @@ const cardConfigStruct = assign(
     name: optional(entityNameStruct),
     theme: optional(string()),
     show_current_as_primary: optional(boolean()),
+    disable_dial_interaction: optional(boolean()),
     features: optional(array(any())),
   })
 );
@@ -96,6 +97,10 @@ export class HuiThermostatCardEditor
           type: "grid",
           name: "",
           schema: [{ name: "theme", selector: { theme: {} } }],
+        },
+        {
+          name: "disable_dial_interaction",
+          selector: { boolean: {} },
         },
         ...(domain === "climate"
           ? [
@@ -200,9 +205,12 @@ export class HuiThermostatCardEditor
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
-    if (schema.name === "show_current_as_primary") {
+    if (
+      schema.name === "show_current_as_primary" ||
+      schema.name === "disable_dial_interaction"
+    ) {
       return this.hass!.localize(
-        "ui.panel.lovelace.editor.card.thermostat.show_current_as_primary"
+        `ui.panel.lovelace.editor.card.thermostat.${schema.name}`
       );
     }
 

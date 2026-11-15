@@ -148,6 +148,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                   style=${styleMap({
                     maxWidth: controlMaxWidth,
                   })}
+                  .disableDialInteraction=${this._config.disable_dial_interaction ?? false}
                   prevent-interaction-on-scroll
                   show-current
                   .stateObj=${stateObj}
@@ -156,6 +157,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                   style=${styleMap({
                     maxWidth: controlMaxWidth,
                   })}
+                  .disableDialInteraction=${this._config.disable_dial_interaction ?? false}
                   prevent-interaction-on-scroll
                   .showCurrentAsPrimary=${this._config.show_current_as_primary}
                   show-secondary

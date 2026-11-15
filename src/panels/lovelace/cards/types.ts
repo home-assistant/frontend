@@ -713,6 +713,7 @@ export interface ThermostatCardConfig extends LovelaceCardConfig {
   theme?: string;
   name?: string | EntityNameItem | EntityNameItem[];
   show_current_as_primary?: boolean;
+  disable_dial_interaction?: boolean;
   features?: LovelaceCardFeatureConfig[];
 }
 

@@ -79,6 +79,9 @@ export class HaStateControlClimateTemperature extends LitElement {
   @property({ type: Boolean, attribute: "prevent-interaction-on-scroll" })
   public preventInteractionOnScroll = false;
 
+  @property({ type: Boolean, attribute: "disable-dial-interaction" })
+  public disableDialInteraction = false;
+
   @state() private _targetTemperature: Partial<Record<Target, number>> = {};
 
   @state() private _selectTargetTemperature: Target = "low";
@@ -547,6 +550,7 @@ export class HaStateControlClimateTemperature extends LitElement {
         >
           <ha-control-circular-slider
             .preventInteractionOnScroll=${this.preventInteractionOnScroll}
+            .readonly=${this.disableDialInteraction}
             .inactive=${!active}
             .mode=${sliderMode}
             .value=${this._targetTemperature.value}
@@ -583,6 +587,7 @@ export class HaStateControlClimateTemperature extends LitElement {
         >
           <ha-control-circular-slider
             .preventInteractionOnScroll=${this.preventInteractionOnScroll}
+            .readonly=${this.disableDialInteraction}
             .inactive=${!active}
             dual
             .low=${this._targetTemperature.low}
