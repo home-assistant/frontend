@@ -628,8 +628,8 @@ importers:
         specifier: 4.2.5
         version: 4.2.5(supports-color@8.1.1)
       glob:
-        specifier: 14.0.5
-        version: 14.0.5
+        specifier: 14.0.6
+        version: 14.0.6
       globals:
         specifier: 17.14.0
         version: 17.14.0
@@ -5358,8 +5358,8 @@ packages:
     resolution: {integrity: sha512-Wjlyrolmm8uDpm/ogGyXZXb1Z+Ca2B8NbJwqBVg0axK9GbBeoS7yGV6vjXnYdGm6X53iehEuxxbyiKp8QmN4Vw==}
     engines: {node: 18 || 20 || >=22}
 
-  glob@14.0.5:
-    resolution: {integrity: sha512-nbKW5Sl53DEM5PkmZ5Jwfeyss1ohuqcgOBjOarSjz1fp8W4ss4EOOvKADQRbApD6JmVBX+HkpZYfBez4wXbeQQ==}
+  glob@14.0.6:
+    resolution: {integrity: sha512-OwXjVP2svY5EyLY75Vek96C8qK43gqrt4xsZ+qSILdnaEiJPXkd62mcfUSNx/TQErQRdu5uM5kF67sfONragKw==}
     engines: {node: 18 || 20 || >=22}
 
   global-modules@1.0.0:
@@ -13262,7 +13262,7 @@ snapshots:
       minipass: 7.1.3
       path-scurry: 2.0.2
 
-  glob@14.0.5:
+  glob@14.0.6:
     dependencies:
       minimatch: 11.0.5
       minipass: 7.1.3
