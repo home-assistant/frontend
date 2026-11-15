@@ -116,7 +116,7 @@ class ZHAOptionsPage extends LitElement {
               this._configuration
                 ? html`
                     <ha-list-base>
-                      <ha-list-item-base>
+                      <ha-list-item-base wrap-headline wrap-supporting-text>
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.enable_identify_on_join_label"
@@ -136,7 +136,7 @@ class ZHAOptionsPage extends LitElement {
                           @change=${this._enableIdentifyOnJoinChanged}
                         ></ha-switch>
                       </ha-list-item-base>
-                      <ha-list-item-base>
+                      <ha-list-item-base wrap-headline wrap-supporting-text>
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.default_light_transition_label"
@@ -161,7 +161,7 @@ class ZHAOptionsPage extends LitElement {
                           <span slot="end">s</span>
                         </ha-input>
                       </ha-list-item-base>
-                      <ha-list-item-base>
+                      <ha-list-item-base wrap-headline wrap-supporting-text>
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.enhanced_light_transition_label"
@@ -181,7 +181,7 @@ class ZHAOptionsPage extends LitElement {
                           @change=${this._enhancedLightTransitionChanged}
                         ></ha-switch>
                       </ha-list-item-base>
-                      <ha-list-item-base>
+                      <ha-list-item-base wrap-headline wrap-supporting-text>
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.light_transitioning_flag_label"
@@ -201,7 +201,7 @@ class ZHAOptionsPage extends LitElement {
                           @change=${this._lightTransitioningFlagChanged}
                         ></ha-switch>
                       </ha-list-item-base>
-                      <ha-list-item-base>
+                      <ha-list-item-base wrap-headline wrap-supporting-text>
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.group_members_assume_state_label"
@@ -221,7 +221,7 @@ class ZHAOptionsPage extends LitElement {
                           @change=${this._groupMembersAssumeStateChanged}
                         ></ha-switch>
                       </ha-list-item-base>
-                      <ha-list-item-base>
+                      <ha-list-item-base wrap-headline wrap-supporting-text>
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.consider_unavailable_mains_label"
@@ -265,7 +265,7 @@ class ZHAOptionsPage extends LitElement {
                             `
                           : nothing
                       }
-                      <ha-list-item-base>
+                      <ha-list-item-base wrap-headline wrap-supporting-text>
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.consider_unavailable_battery_label"
@@ -309,7 +309,7 @@ class ZHAOptionsPage extends LitElement {
                             `
                           : nothing
                       }
-                      <ha-list-item-base>
+                      <ha-list-item-base wrap-headline wrap-supporting-text>
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.enable_mains_startup_polling_label"
@@ -461,11 +461,6 @@ class ZHAOptionsPage extends LitElement {
         ha-card {
           max-width: var(--ha-content-width-narrow);
           margin: auto;
-        }
-
-        ha-list-item-base::part(headline),
-        ha-list-item-base::part(supporting-text) {
-          white-space: normal;
         }
 
         ha-select,

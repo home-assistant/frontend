@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
 import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { storage } from "../../../../common/decorators/storage";
@@ -19,7 +19,7 @@ class HaDebugSafeAreaToolRow extends LitElement {
 
   protected render() {
     return html`
-      <ha-list-item-base>
+      <ha-list-item-base wrap-headline wrap-supporting-text>
         <span slot="headline"
           >${this._localize(
             "ui.panel.config.tools.tabs.debug.safe_area_tool.title"
@@ -42,13 +42,6 @@ class HaDebugSafeAreaToolRow extends LitElement {
   private _checkedChanged(ev: Event) {
     this._enabled = (ev.target as HaSwitch).checked;
   }
-
-  static styles = css`
-    ha-list-item-base::part(headline),
-    ha-list-item-base::part(supporting-text) {
-      white-space: normal;
-    }
-  `;
 }
 
 declare global {

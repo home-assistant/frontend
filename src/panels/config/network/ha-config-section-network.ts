@@ -64,7 +64,11 @@ class HaConfigSectionNetwork extends LitElement {
                     >
                       ${NETWORK_BROWSERS.map(
                         (domain) => html`
-                          <ha-list-item-button href="/config/${domain}">
+                          <ha-list-item-button
+                            wrap-headline
+                            wrap-supporting-text
+                            href="/config/${domain}"
+                          >
                             <div slot="headline">
                               ${this.hass.localize(
                                 `ui.panel.config.network.discovery.${domain}`
@@ -103,10 +107,6 @@ class HaConfigSectionNetwork extends LitElement {
     .discovery-card {
       display: block;
       margin-bottom: 24px;
-    }
-    .discovery-card ha-list-item-button::part(headline),
-    .discovery-card ha-list-item-button::part(supporting-text) {
-      white-space: normal;
     }
   `;
 }

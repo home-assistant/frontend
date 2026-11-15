@@ -191,6 +191,20 @@ export class DemoHaList extends LitElement {
           <ha-list-item-base headline="Disabled row" disabled>
             <ha-svg-icon slot="start" .path=${mdiHome}></ha-svg-icon>
           </ha-list-item-base>
+          <ha-list-item-base
+            headline="Truncated by default, a long headline stays on one line and ends with an ellipsis"
+            supporting-text="Long supporting text is truncated as well, so every row in the list keeps the same height"
+          >
+            <ha-svg-icon slot="start" .path=${mdiHome}></ha-svg-icon>
+          </ha-list-item-base>
+          <ha-list-item-base
+            wrap-headline
+            wrap-supporting-text
+            headline="With wrap-headline, a long headline wraps onto as many lines as it needs"
+            supporting-text="With wrap-supporting-text, long supporting text wraps too, which suits settings with a description"
+          >
+            <ha-svg-icon slot="start" .path=${mdiHome}></ha-svg-icon>
+          </ha-list-item-base>
         </ha-list-base>
       </ha-card>
 

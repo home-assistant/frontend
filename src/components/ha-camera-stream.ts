@@ -19,10 +19,8 @@ import {
   type CameraEntity,
 } from "../data/camera";
 import {
-  hasWebRtcWorked,
   MJPEG_STREAM,
   selectCameraStreams,
-  setWebRtcWorked,
   type CameraStream,
   type CameraStreamTracks,
   type CameraStreamType,
@@ -38,9 +36,6 @@ import "./ha-web-rtc-player";
 import type { HaWebRtcPlayer } from "./ha-web-rtc-player";
 
 export type { CameraStreamType } from "../data/camera-streams";
-
-// How long WebRTC gets on its own before HLS is started as well
-const WEB_RTC_FIRST_TIMEOUT = 12000;
 
 @customElement("ha-camera-stream")
 export class HaCameraStream extends LitElement {
@@ -86,21 +81,11 @@ export class HaCameraStream extends LitElement {
 
   @state() private _webRtcStreams?: CameraStreamTracks;
 
-  // WebRTC worked before for this camera, so HLS is not started with it
-  @state() private _webRtcFirst = false;
-
   @query("ha-web-rtc-player") private _webRtcPlayer?: HaWebRtcPlayer;
 
   private _visibleStreamType?: CameraStreamType;
 
-  private _webRtcFirstTimeout?: number;
-
   private _capabilitiesRequest = 0;
-
-  private _streamsStartedAt = 0;
-
-  // If WebRTC loaded fast enough to be worth waiting for without HLS
-  private _webRtcLoadedInTime?: boolean;
 
   private _thumbnailApi = memoizeOne(
     (
@@ -148,16 +133,15 @@ export class HaCameraStream extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     this._connected = true;
-    if (this.hasUpdated && this._capabilities && this.stateObj) {
+    if (this.hasUpdated) {
       // The players start again when reattached, so their results do as well
-      this._startStreams(this.stateObj.entity_id, this._capabilities);
+      this._resetStreams();
     }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._connected = false;
-    this._stopWebRtcFirst();
   }
 
   protected updated(changedProps: PropertyValues<this>): void {
@@ -173,28 +157,6 @@ export class HaCameraStream extends LitElement {
       this._visibleStreamType = visibleStreamType;
       fireEvent(this, "stream-type-changed", { type: visibleStreamType });
     }
-    this._rememberWebRtc(streams);
-  }
-
-  /**
-   * Remembers per camera if WebRTC is the stream that ends up playing in this
-   * browser, to start it without HLS the next time.
-   */
-  private _rememberWebRtc(streams: CameraStream[]) {
-    if (
-      !this.stateObj ||
-      !this._webRtcStreams ||
-      (this._capabilities?.frontend_stream_types.length ?? 0) < 2 ||
-      streams.length !== 1
-    ) {
-      // No choice between streams, or the choice is not final yet
-      return;
-    }
-    setWebRtcWorked(
-      this.stateObj.entity_id,
-      streams[0].type === STREAM_TYPE_WEB_RTC &&
-        this._webRtcLoadedInTime === true
-    );
   }
 
   protected render() {
@@ -271,8 +233,7 @@ export class HaCameraStream extends LitElement {
     return this._streams(
       this._capabilities?.frontend_stream_types,
       this._hlsStreams,
-      this._webRtcStreams,
-      this._webRtcFirst
+      this._webRtcStreams
     );
   }
 
@@ -287,14 +248,12 @@ export class HaCameraStream extends LitElement {
       };
       return;
     }
-    const entityId = this.stateObj!.entity_id;
-    const capabilities = await fetchCameraCapabilities(this._api, entityId);
+    const capabilities = await fetchCameraCapabilities(
+      this._api,
+      this.stateObj!.entity_id
+    );
     if (request !== this._capabilitiesRequest) {
       return;
-    }
-    if (this.isConnected) {
-      // Otherwise started when connected
-      this._startStreams(entityId, capabilities);
     }
     this._capabilities = capabilities;
   }
@@ -302,47 +261,6 @@ export class HaCameraStream extends LitElement {
   private _resetStreams() {
     this._hlsStreams = undefined;
     this._webRtcStreams = undefined;
-    this._webRtcLoadedInTime = undefined;
-    this._stopWebRtcFirst();
-  }
-
-  private _startStreams(entityId: string, capabilities: CameraCapabilities) {
-    this._resetStreams();
-    this._streamsStartedAt = performance.now();
-    if (
-      capabilities.frontend_stream_types.length > 1 &&
-      hasWebRtcWorked(entityId)
-    ) {
-      this._webRtcFirst = true;
-      this._webRtcFirstTimeout = window.setTimeout(
-        this._webRtcFirstTimedOut,
-        WEB_RTC_FIRST_TIMEOUT
-      );
-    }
-  }
-
-  private _webRtcFirstTimedOut = () => {
-    if (document.hidden) {
-      // A player started in the background is not stopped again, so wait
-      this._webRtcFirstTimeout = window.setTimeout(
-        this._webRtcFirstTimedOut,
-        WEB_RTC_FIRST_TIMEOUT
-      );
-      return;
-    }
-    this._webRtcFirstTimeout = undefined;
-    // Start HLS as well, WebRTC keeps connecting and takes over when it loads
-    this._webRtcFirst = false;
-    if (this.stateObj) {
-      // Don't wait for it the next time, also when it never reports a result
-      setWebRtcWorked(this.stateObj.entity_id, false);
-    }
-  };
-
-  private _stopWebRtcFirst() {
-    clearTimeout(this._webRtcFirstTimeout);
-    this._webRtcFirstTimeout = undefined;
-    this._webRtcFirst = false;
   }
 
   private async _getPosterUrl(): Promise<void> {
@@ -368,8 +286,6 @@ export class HaCameraStream extends LitElement {
   }
 
   private _handleWebRtcStreams(ev: HASSDomEvent<HASSDomEvents["streams"]>) {
-    clearTimeout(this._webRtcFirstTimeout);
-    this._webRtcFirstTimeout = undefined;
     if (
       !ev.detail.hasVideo &&
       !ev.detail.hasAudio &&
@@ -380,10 +296,6 @@ export class HaCameraStream extends LitElement {
       // Only a browser without WebRTC falls back to MJPEG.
       return;
     }
-    if (ev.detail.hasVideo && this._webRtcLoadedInTime === undefined) {
-      this._webRtcLoadedInTime =
-        performance.now() - this._streamsStartedAt <= WEB_RTC_FIRST_TIMEOUT;
-    }
     this._webRtcStreams = ev.detail;
   }
 
@@ -391,8 +303,7 @@ export class HaCameraStream extends LitElement {
     (
       supportedTypes?: CameraCapabilities["frontend_stream_types"],
       hlsStreams?: CameraStreamTracks,
-      webRtcStreams?: CameraStreamTracks,
-      webRtcFirst?: boolean
+      webRtcStreams?: CameraStreamTracks
     ): CameraStream[] => {
       if (__DEMO__) {
         return [{ type: MJPEG_STREAM, visible: true }];
@@ -401,7 +312,6 @@ export class HaCameraStream extends LitElement {
         supportedTypes,
         hlsStreams,
         webRtcStreams,
-        webRtcFirst,
       });
     }
   );

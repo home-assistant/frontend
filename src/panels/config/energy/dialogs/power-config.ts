@@ -1,4 +1,7 @@
-import type { PowerConfig } from "../../../../data/energy";
+import type {
+  BatteryDirectionsPowerConfig,
+  PowerConfig,
+} from "../../../../data/energy";
 import { deepEqual } from "../../../../common/util/deep-equal";
 
 export type PowerType = "none" | "standard" | "inverted" | "two_sensors";
@@ -68,7 +71,10 @@ export function isPowerConfigValid(
  * Builds an exclude list for power statistics from existing sources.
  */
 export function buildPowerExcludeList(
-  sources: { stat_rate?: string; power_config?: PowerConfig }[],
+  sources: {
+    stat_rate?: string;
+    power_config?: PowerConfig | BatteryDirectionsPowerConfig;
+  }[],
   currentPowerConfig: PowerConfig,
   currentStatRate?: string
 ): string[] {
@@ -77,18 +83,9 @@ export function buildPowerExcludeList(
   sources.forEach((entry) => {
     if (entry.stat_rate) powerIds.push(entry.stat_rate);
     if (entry.power_config) {
-      if (entry.power_config.stat_rate) {
-        powerIds.push(entry.power_config.stat_rate);
-      }
-      if (entry.power_config.stat_rate_inverted) {
-        powerIds.push(entry.power_config.stat_rate_inverted);
-      }
-      if (entry.power_config.stat_rate_from) {
-        powerIds.push(entry.power_config.stat_rate_from);
-      }
-      if (entry.power_config.stat_rate_to) {
-        powerIds.push(entry.power_config.stat_rate_to);
-      }
+      powerIds.push(
+        ...Object.values(entry.power_config).filter((id): id is string => !!id)
+      );
     }
   });
 
