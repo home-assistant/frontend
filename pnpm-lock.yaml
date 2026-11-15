@@ -682,8 +682,8 @@ importers:
         specifier: 3.0.0
         version: 3.0.0
       prettier:
-        specifier: 3.10.0
-        version: 3.10.0
+        specifier: 3.10.1
+        version: 3.10.1
       rspack-manifest-plugin:
         specifier: 5.2.2
         version: 5.2.2(@rspack/core@2.3.2(@swc/helpers@0.5.24))
@@ -6732,8 +6732,8 @@ packages:
     resolution: {integrity: sha512-E6rsNU1QNJgB3sjj7OANinGncFKuK+164sLXw1/CqBjj/EkXSoSdHCtWQGBNlREIGLnL7IEUEGa08YFVUbrhVg==}
     engines: {node: '>=16'}
 
-  prettier@3.10.0:
-    resolution: {integrity: sha512-mBi4765LgjO1PFjlEs7pUeK0nb1bw71c+N4/ItfeUWNdY5cV2pRKaFpbbFRYmDJMO+5ZwzGxHRqHxFZna7iv5w==}
+  prettier@3.10.1:
+    resolution: {integrity: sha512-70vp3ZUYoPlFbF9uiTdXHUUCGEIp7d4+6p+8DYbkm2jP7x/3i/paXVF6dopSI3zd/CEitrZN1rc4i85xWmmXlg==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -14735,7 +14735,7 @@ snapshots:
 
   presentable-error@0.0.1: {}
 
-  prettier@3.10.0: {}
+  prettier@3.10.1: {}
 
   pretty-bytes@5.6.0: {}
 
