@@ -685,8 +685,8 @@ importers:
         specifier: 22.1.0
         version: 22.1.0
       tar:
-        specifier: 7.5.22
-        version: 7.5.22
+        specifier: 7.5.23
+        version: 7.5.23
       terser-webpack-plugin:
         specifier: 5.6.1
         version: 5.6.1(clean-css@5.3.3)(csso@5.0.5)(html-minifier-terser@7.2.0)(lightningcss@1.33.0)(postcss@8.5.32)
@@ -7347,8 +7347,8 @@ packages:
     resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
     engines: {node: '>=6'}
 
-  tar@7.5.22:
-    resolution: {integrity: sha512-MFO/QzvtAOmJbkhOaCTvbGcFN9L9b+JunIsDwaKljSOdcLMea3NJ1k9Usz/rjdfSXTq4dfzfeS7W4p4YOAAHeA==}
+  tar@7.5.23:
+    resolution: {integrity: sha512-lkukzdoGngZHJZXxW4S/E4Fp9ghTDlyZXrQGRNoJ/LXvDKcXUTq2sg5yQe74po7Voea6n/IN09+wE/QvJMiifA==}
     engines: {node: '>=18'}
 
   teex@1.0.1:
@@ -11384,7 +11384,7 @@ snapshots:
 
   '@types/tar@7.0.87':
     dependencies:
-      tar: 7.5.22
+      tar: 7.5.23
 
   '@types/trusted-types@2.0.7': {}
 
@@ -14272,7 +14272,7 @@ snapshots:
       nopt: 9.0.0
       proc-log: 6.1.0
       semver: 7.8.5
-      tar: 7.5.22
+      tar: 7.5.23
       tinyglobby: 0.2.17
       undici: 6.29.1
       which: 6.0.1
@@ -14285,7 +14285,7 @@ snapshots:
       nopt: 10.0.1
       proc-log: 7.0.0
       semver: 7.8.5
-      tar: 7.5.22
+      tar: 7.5.23
       tinyglobby: 0.2.17
       undici: 8.12.4
       which: 7.0.0
@@ -14550,7 +14550,7 @@ snapshots:
       proc-log: 6.1.0
       sigstore: 4.1.1(supports-color@8.1.1)
       ssri: 13.0.1
-      tar: 7.5.22
+      tar: 7.5.23
     transitivePeerDependencies:
       - supports-color
 
@@ -14572,7 +14572,7 @@ snapshots:
       proc-log: 7.0.0
       sigstore: 5.0.0(supports-color@8.1.1)
       ssri: 14.0.0
-      tar: 7.5.22
+      tar: 7.5.23
     transitivePeerDependencies:
       - kerberos
       - supports-color
@@ -15477,7 +15477,7 @@ snapshots:
 
   tapable@2.3.3: {}
 
-  tar@7.5.22:
+  tar@7.5.23:
     dependencies:
       '@isaacs/fs-minipass': 4.0.1
       chownr: 3.0.0
