@@ -40,7 +40,7 @@
   "license": "Apache-2.0",
   "type": "module",
   "dependencies": {
-    "@babel/runtime": "8.1.0",
+    "@babel/runtime": "8.1.2",
     "@braintree/sanitize-url": "7.1.2",
     "@codemirror/autocomplete": "6.20.4",
     "@codemirror/commands": "6.11.1",
@@ -136,12 +136,12 @@
   },
   "devDependencies": {
     "@ampproject/remapping": "2.3.0",
-    "@babel/core": "8.1.0",
+    "@babel/core": "8.1.2",
     "@babel/helper-compilation-targets": "8.0.7",
     "@babel/helper-define-polyfill-provider": "1.0.0",
     "@babel/plugin-transform-class-properties": "8.0.1",
     "@babel/plugin-transform-private-methods": "8.0.1",
-    "@babel/plugin-transform-runtime": "8.0.6",
+    "@babel/plugin-transform-runtime": "8.1.2",
     "@babel/preset-env": "8.0.7",
     "@bundle-stats/plugin-webpack-filter": "4.23.1",
     "@eslint/js": "10.0.1",
