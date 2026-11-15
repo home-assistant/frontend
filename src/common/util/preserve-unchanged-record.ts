@@ -37,3 +37,41 @@ export const preserveUnchangedRecord = <T>(
   }
   return changed ? next : previous;
 };
+
+/**
+ * Map counterpart of `preserveUnchangedRecord`. Maps keep insertion order for
+ * every key, so a change in order always counts as a change. Plain objects
+ * cannot do that reliably, because integer-like keys always come first.
+ */
+export const preserveUnchangedMap = <T>(
+  previous: ReadonlyMap<string, T> | undefined,
+  next: Map<string, T>,
+  equal: (a: T, b: T) => boolean
+): ReadonlyMap<string, T> => {
+  if (!previous) {
+    return next;
+  }
+
+  let changed = previous.size !== next.size;
+
+  if (!changed) {
+    const previousKeys = previous.keys();
+    for (const key of next.keys()) {
+      if (previousKeys.next().value !== key) {
+        changed = true;
+        break;
+      }
+    }
+  }
+
+  for (const [key, item] of next) {
+    const previousItem = previous.get(key);
+    if (previousItem !== undefined && equal(previousItem, item)) {
+      // Replacing the value of an existing key keeps its position.
+      next.set(key, previousItem);
+    } else {
+      changed = true;
+    }
+  }
+  return changed ? next : previous;
+};

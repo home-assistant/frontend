@@ -25,9 +25,9 @@ import {
   apiContext,
   areasContext,
   devicesContext,
-  floorsContext,
   fullEntitiesContext,
   internationalizationContext,
+  orderedFloorsContext,
   statesContext,
 } from "../data/context";
 import { getFloorAreaLookup } from "../data/floor_registry";
@@ -56,9 +56,9 @@ export class HaFilterFloorAreas extends LitElement {
   @state()
   private _areasReg!: ContextType<typeof areasContext>;
 
-  @consume({ context: floorsContext, subscribe: true })
+  @consume({ context: orderedFloorsContext, subscribe: true })
   @state()
-  private _floorsReg!: ContextType<typeof floorsContext>;
+  private _floorsReg!: ContextType<typeof orderedFloorsContext>;
 
   @consume({ context: internationalizationContext, subscribe: true })
   @state()
@@ -339,10 +339,10 @@ export class HaFilterFloorAreas extends LitElement {
   private _areas = memoizeOne(
     (
       areaReg: ContextType<typeof areasContext>,
-      floorReg: ContextType<typeof floorsContext>
+      floorReg: ContextType<typeof orderedFloorsContext>
     ) => {
       const areas = Object.values(areaReg);
-      const floors = Object.values(floorReg);
+      const floors = [...floorReg.values()];
       const floorAreaLookup = getFloorAreaLookup(areas);
 
       const unassisgnedAreas = areas.filter(

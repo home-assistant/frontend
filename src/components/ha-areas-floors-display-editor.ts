@@ -15,7 +15,11 @@ import type {
 import { computeFloorName } from "../common/entity/compute_floor_name";
 import { getAreaContext } from "../common/entity/context/get_area_context";
 import type { LocalizeFunc } from "../common/translations/localize";
-import { areasContext, floorsContext } from "../data/context";
+import {
+  areasContext,
+  floorsContext,
+  orderedFloorsContext,
+} from "../data/context";
 import type { FloorRegistryEntry } from "../data/floor_registry";
 import { getFloors } from "../panels/lovelace/strategies/areas/helpers/areas-strategy-helper";
 import type { ValueChangedEvent } from "../types";
@@ -51,6 +55,10 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
   @state()
   private _floors!: ContextType<typeof floorsContext>;
 
+  @consume({ context: orderedFloorsContext, subscribe: true })
+  @state()
+  private _orderedFloors!: ContextType<typeof orderedFloorsContext>;
+
   @property() public label?: string;
 
   @property({ attribute: false }) public value?: AreasFloorsDisplayValue;
@@ -74,7 +82,7 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
     );
 
     const filteredFloors = this._sortedFloors(
-      this._floors,
+      this._orderedFloors,
       this.value?.floors_display?.order,
       this._localize
     ).filter(
@@ -175,7 +183,7 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
 
   private _sortedFloors = memoizeOne(
     (
-      floors: ContextType<typeof floorsContext>,
+      floors: ContextType<typeof orderedFloorsContext>,
       order: string[] | undefined,
       localize: LocalizeFunc
     ): FloorRegistryEntry[] => {
@@ -201,7 +209,7 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
     const newIndex = ev.detail.newIndex;
     const oldIndex = ev.detail.oldIndex;
     const floorIds = this._sortedFloors(
-      this._floors,
+      this._orderedFloors,
       this.value?.floors_display?.order,
       this._localize
     ).map((floor) => floor.floor_id);
@@ -231,7 +239,7 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
     const currentFloorId = (ev.currentTarget as any).floorId;
 
     const floorIds = this._sortedFloors(
-      this._floors,
+      this._orderedFloors,
       this.value?.floors_display?.order,
       this._localize
     ).map((floor) => floor.floor_id);

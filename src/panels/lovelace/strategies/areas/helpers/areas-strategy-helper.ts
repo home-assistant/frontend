@@ -418,10 +418,10 @@ export const getAreas = (
 };
 
 export const getFloors = (
-  entries: HomeAssistant["floors"],
+  entries: HomeAssistant["orderedFloors"],
   floorsOrder?: string[]
 ): FloorRegistryEntry[] => {
-  const floors = Object.values(entries);
+  const floors = [...entries.values()];
 
   if (!floorsOrder) {
     return floors;

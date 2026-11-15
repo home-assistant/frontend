@@ -39,7 +39,7 @@ export interface AreaFloorValue {
 
 export const getAreasNestedInFloors = (
   states: HomeAssistant["states"],
-  haFloors: HomeAssistant["floors"],
+  haFloors: HomeAssistant["orderedFloors"],
   haAreas: HomeAssistant["areas"],
   haDevices: HomeAssistant["devices"],
   haEntities: HomeAssistant["entities"],
@@ -71,7 +71,7 @@ export const getAreasNestedInFloors = (
 
 export const getAreasAndFloors = (
   states: HomeAssistant["states"],
-  haFloors: HomeAssistant["floors"],
+  haFloors: HomeAssistant["orderedFloors"],
   haAreas: HomeAssistant["areas"],
   haDevices: HomeAssistant["devices"],
   haEntities: HomeAssistant["entities"],
@@ -125,7 +125,7 @@ export const areaFloorComboBoxKeys: FuseWeightedKey[] = [
 
 const getAreasAndFloorsItems = (
   states: HomeAssistant["states"],
-  haFloors: HomeAssistant["floors"],
+  haFloors: HomeAssistant["orderedFloors"],
   haAreas: HomeAssistant["areas"],
   haDevices: HomeAssistant["devices"],
   haEntities: HomeAssistant["entities"],
@@ -141,7 +141,7 @@ const getAreasAndFloorsItems = (
 ): (
   FloorComboBoxItem | FloorNestedComboBoxItem | UnassignedAreasFloorComboBoxItem
 )[] => {
-  const floors = Object.values(haFloors);
+  const floors = [...haFloors.values()];
   const areas = Object.values(haAreas);
   const devices = Object.values(haDevices);
   const entities = Object.values(haEntities);
@@ -309,7 +309,7 @@ const getAreasAndFloorsItems = (
   )[] = [];
 
   hierarchy.floors.forEach((f) => {
-    const floor = haFloors[f.id];
+    const floor = haFloors.get(f.id)!;
     const floorAreas = f.areas.map((areaId) => haAreas[areaId]);
 
     const floorName = computeFloorName(floor);

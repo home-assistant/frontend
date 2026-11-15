@@ -26,6 +26,7 @@ import {
   localeContext,
   localizeContext,
   manifestsContext,
+  orderedFloorsContext,
   panelsContext,
   reducedMotionContext,
   registriesContext,
@@ -136,6 +137,12 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
       floors: new ContextProvider(this, {
         context: floorsContext,
         initialValue: this.hass ? this.hass.floors : this._pendingHass.floors,
+      }),
+      orderedFloors: new ContextProvider(this, {
+        context: orderedFloorsContext,
+        initialValue: this.hass
+          ? this.hass.orderedFloors
+          : this._pendingHass.orderedFloors,
       }),
       connection: new ContextProvider(this, {
         context: connectionSingleContext,

@@ -114,6 +114,7 @@ export interface BuildEntityTreeInput {
   devices: HomeAssistant["devices"];
   areas: HomeAssistant["areas"];
   floors: HomeAssistant["floors"];
+  orderedFloors: HomeAssistant["orderedFloors"];
   language: string | undefined;
   localize: HomeAssistant["localize"];
 }
@@ -125,6 +126,7 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
     devices: deviceReg,
     areas: areaReg,
     floors: floorReg,
+    orderedFloors,
     language,
     localize,
   } = input;
@@ -285,7 +287,7 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
   };
 
   const areas = Object.values(areaReg);
-  const floors = Object.values(floorReg);
+  const floors = [...orderedFloors.values()];
   const hierarchy = getAreasFloorHierarchy(floors, areas);
 
   const floorNodes: FloorNode[] = hierarchy.floors

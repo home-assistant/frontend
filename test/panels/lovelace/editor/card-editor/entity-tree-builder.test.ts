@@ -115,6 +115,7 @@ const buildTree = (hass: HomeAssistant) =>
     devices: hass.devices,
     areas: hass.areas,
     floors: hass.floors,
+    orderedFloors: new Map(Object.entries(hass.floors)),
     language: hass.locale?.language,
     localize: hass.localize,
   });

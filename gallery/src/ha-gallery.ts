@@ -30,6 +30,7 @@ import {
   devicesContext,
   entitiesContext,
   floorsContext,
+  orderedFloorsContext,
   formattersContext,
   internationalizationContext,
   reducedMotionContext,
@@ -161,6 +162,9 @@ class HaGallery extends LitElement {
     devices: new ContextProvider(this, { context: devicesContext }),
     areas: new ContextProvider(this, { context: areasContext }),
     floors: new ContextProvider(this, { context: floorsContext }),
+    orderedFloors: new ContextProvider(this, {
+      context: orderedFloorsContext,
+    }),
   };
 
   private _reducedMotionProvider = new ContextProvider(this, {
@@ -646,6 +650,7 @@ class HaGallery extends LitElement {
       enableShortcuts: true,
       entities: {},
       floors: {},
+      orderedFloors: new Map(),
       hassUrl: (path) => path,
       kioskMode: false,
       language: "en",

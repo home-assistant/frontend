@@ -64,7 +64,7 @@ class DialogAreasFloorsOrder extends DirtyStateProviderMixin<OrderState>()(
 
   private _computeHierarchy(): void {
     this._hierarchy = getAreasFloorHierarchy(
-      Object.values(this.hass.floors),
+      [...this.hass.orderedFloors.values()],
       Object.values(this.hass.areas)
     );
     this._initDirtyTracking({ type: "deep" }, this._currentOrder());

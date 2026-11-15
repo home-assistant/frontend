@@ -225,6 +225,10 @@ export interface HomeAssistantRegistries {
   entities: Record<string, EntityRegistryDisplayEntry>;
   devices: Record<string, DeviceRegistryEntry>;
   areas: Record<string, AreaRegistryEntry>;
+  /**
+   * @deprecated Use `orderedFloors`. A plain object cannot keep the floor
+   * order: integer-like floor IDs always come first.
+   */
   floors: Record<string, FloorRegistryEntry>;
 }
 
@@ -343,6 +347,8 @@ export interface HomeAssistant
     HomeAssistantConfig {
   states: HassEntities;
   services: HassServices;
+  /** All floors in the user's order, keyed by floor ID. */
+  orderedFloors: ReadonlyMap<string, FloorRegistryEntry>;
 }
 
 export interface Route {

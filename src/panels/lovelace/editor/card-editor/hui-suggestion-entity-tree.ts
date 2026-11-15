@@ -178,6 +178,7 @@ export class HuiSuggestionEntityTree extends LitElement {
         devices: this.hass.devices,
         areas: this.hass.areas,
         floors: this.hass.floors,
+        orderedFloors: this.hass.orderedFloors,
         language: this.hass.locale?.language,
         localize: this._domainLocalize,
       });

@@ -61,6 +61,7 @@ export const createMockHass = (
     devices,
     areas,
     floors,
+    orderedFloors: new Map(Object.entries(floors)),
     config: demoConfig,
     locale: mockLocale,
     language: "en",

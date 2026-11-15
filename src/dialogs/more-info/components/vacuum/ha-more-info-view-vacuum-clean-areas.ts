@@ -64,7 +64,7 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
         mappedAreaIds.has(area.area_id)
       );
       this._mappedHierarchy = getAreasFloorHierarchy(
-        Object.values(this.hass.floors),
+        [...this.hass.orderedFloors.values()],
         mappedAreas
       );
     } catch (err: any) {

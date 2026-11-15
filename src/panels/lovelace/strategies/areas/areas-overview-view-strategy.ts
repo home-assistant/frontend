@@ -59,7 +59,7 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
       config.areas_display?.order
     );
 
-    const floors = getFloors(hass.floors, config.floors_display?.order);
+    const floors = getFloors(hass.orderedFloors, config.floors_display?.order);
 
     const floorSections = [
       ...floors,

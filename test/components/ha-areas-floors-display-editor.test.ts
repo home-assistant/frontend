@@ -18,6 +18,7 @@ import {
   areasContext,
   floorsContext,
   internationalizationContext,
+  orderedFloorsContext,
 } from "../../src/data/context";
 import type {
   HomeAssistant,
@@ -46,10 +47,12 @@ class MockResizeObserver {
 
 const UNASSIGNED_FLOOR = "__unassigned__";
 
-const FLOORS = {
-  floor_a: { floor_id: "floor_a", name: "A", level: 0 },
-  floor_b: { floor_id: "floor_b", name: "B", level: 1 },
-} as unknown as HomeAssistant["floors"];
+const ORDERED_FLOORS = new Map([
+  ["floor_a", { floor_id: "floor_a", name: "A", level: 0 }],
+  ["floor_b", { floor_id: "floor_b", name: "B", level: 1 }],
+]) as unknown as HomeAssistant["orderedFloors"];
+
+const FLOORS = Object.fromEntries(ORDERED_FLOORS);
 
 const area = (areaId: string, floorId: string | null) => ({
   area_id: areaId,
@@ -97,6 +100,10 @@ describe("ha-areas-floors-display-editor", () => {
     });
     new ContextProvider(host, { context: areasContext, initialValue: AREAS });
     new ContextProvider(host, { context: floorsContext, initialValue: FLOORS });
+    new ContextProvider(host, {
+      context: orderedFloorsContext,
+      initialValue: ORDERED_FLOORS,
+    });
     const el = document.createElement(
       "ha-areas-floors-display-editor"
     ) as HaAreasFloorsDisplayEditor;

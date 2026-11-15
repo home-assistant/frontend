@@ -107,7 +107,7 @@ export class HomeMMediaPlayersViewStrategy extends ReactiveElement {
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = Object.values(hass.areas);
-    const floors = Object.values(hass.floors);
+    const floors = [...hass.orderedFloors.values()];
     const home = getAreasFloorHierarchy(floors, areas);
 
     const sections: LovelaceSectionRawConfig[] = [];
