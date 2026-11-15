@@ -108,7 +108,7 @@
     "leaflet.markercluster": "1.5.3",
     "lit": "3.3.3",
     "lit-html": "3.3.3",
-    "maplibre-gl": "6.17.0",
+    "maplibre-gl": "6.18.0",
     "marked": "18.2.0",
     "memoize-one": "6.0.0",
     "nanoid": "6.0.2",
