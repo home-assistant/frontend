@@ -43,6 +43,7 @@ import type {
 import {
   circleBoundsPoints,
   distanceMeters,
+  unwrapLongitudes,
 } from "../../common/map/map-engine";
 import type { MapStyleConfig } from "../../common/map/map-styles";
 import { isDarkMapStyle, resolveMapStyle } from "../../common/map/map-styles";
@@ -943,20 +944,27 @@ export class HaMap extends ReactiveElement {
     }
 
     const points = [...this._focusPoints, ...zonePoints];
+    let hasAreas = zonePoints.length > 0;
 
     // Opted-out locations only count when nothing else would be fitted
     const editables = this.editableLocations ?? [];
     const fitted = editables.filter((editable) => editable.fit !== false);
     (fitted.length ? fitted : editables).forEach((editable) => {
       if (editable.radius) {
+        hasAreas = true;
         points.push(...circleBoundsPoints(editable.location, editable.radius));
       } else {
         points.push(editable.location);
       }
     });
 
+    // The shortest arc can cross ±180°, but only for lone positions: zones
+    // and radii are fitted by their corners, and the widest gap between
+    // corners can fall inside an area
+    const fitPoints = hasAreas ? points : unwrapLongitudes(points);
+
     this._withProgrammaticFit(() => {
-      this._engine!.fitBounds(points, {
+      this._engine!.fitBounds(fitPoints, {
         maxZoom: options?.zoom || this.zoom,
         pad: options?.pad ?? 0.5,
         padding: options?.padding ?? this.fitPadding,

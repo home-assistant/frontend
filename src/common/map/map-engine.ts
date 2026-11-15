@@ -381,13 +381,13 @@ export const pixelDistance = (
  * spans the shortest arc covering all points, possibly across the
  * antimeridian, with the middle of that arc kept within ±180°. The circle is
  * cut at the widest empty gap between neighbouring longitudes; points are
- * returned untouched when that gap already straddles ±180° or when they
- * cover every longitude.
+ * returned untouched when that gap already straddles ±180°. Only for lone
+ * positions: the corners of an area are not separate points, and the widest
+ * gap can fall inside the area.
  */
 export const unwrapLongitudes = (points: MapLatLng[]): MapLatLng[] => {
   const lngs = [...new Set(points.map(([, lng]) => lng))].sort((a, b) => a - b);
-  // A circle reaching a pole spans -180 to 180: it already covers everything
-  if (lngs.length < 2 || lngs[lngs.length - 1] - lngs[0] >= 360) {
+  if (lngs.length < 2) {
     return points;
   }
   // The gap across ±180° wins ties, so a fit never moves without need

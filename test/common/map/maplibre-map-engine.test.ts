@@ -821,13 +821,14 @@ describe("MapLibreMapEngine", () => {
       expect(bounds[1][0]).toBe(40);
     });
 
-    it("fits points across the antimeridian on the shorter arc", async () => {
+    it("keeps longitudes beyond 180 that fit across the antimeridian", async () => {
       const { engine, map, ready } = await createEngine();
       await ready;
 
+      // ha-map unwraps Nome's -165.4 to 194.6 for the shorter arc
       engine.fitBounds(
         [
-          [64.5, -165.4],
+          [64.5, 194.6],
           [53, 158.65],
         ],
         { pad: 0 }

@@ -52,12 +52,7 @@ import type {
   MapPathHandle,
   MapView,
 } from "../map-engine";
-import {
-  destinationPoint,
-  distanceMeters,
-  pointEastOf,
-  unwrapLongitudes,
-} from "../map-engine";
+import { destinationPoint, distanceMeters, pointEastOf } from "../map-engine";
 import type { ResolvedMapStyle } from "../map-styles";
 import {
   createResizeHandleElement,
@@ -773,12 +768,11 @@ export class MapLibreMapEngine implements MapEngine {
     if (!this._map || !this._maplibre || !points.length) {
       return undefined;
     }
-    const unwrapped = unwrapLongitudes(points);
-    let minLat = unwrapped[0][0];
-    let maxLat = unwrapped[0][0];
-    let minLng = unwrapped[0][1];
-    let maxLng = unwrapped[0][1];
-    for (const [lat, lng] of unwrapped) {
+    let minLat = points[0][0];
+    let maxLat = points[0][0];
+    let minLng = points[0][1];
+    let maxLng = points[0][1];
+    for (const [lat, lng] of points) {
       minLat = Math.min(minLat, lat);
       maxLat = Math.max(maxLat, lat);
       minLng = Math.min(minLng, lng);

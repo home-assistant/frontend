@@ -70,15 +70,6 @@ describe("unwrapLongitudes", () => {
     expect(lngs).toEqual([-170, -10, -190]);
   });
 
-  it("keeps a circle reaching a pole spanning every longitude", () => {
-    // circleBoundsPoints output for a zone that reaches the north pole
-    const points: MapLatLng[] = [
-      [80, -180],
-      [90, 180],
-    ];
-    expect(unwrapLongitudes(points)).toBe(points);
-  });
-
   it("keeps a single longitude untouched", () => {
     const points: MapLatLng[] = [
       [10, -170],
