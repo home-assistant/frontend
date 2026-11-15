@@ -2,13 +2,14 @@ import { describe, expect, it } from "vitest";
 import type { RelatedIdSets } from "../../../src/common/search/related-context";
 import {
   getEntities,
+  type GetEntitiesOptions,
   markEntitiesRelated,
   sortEntitiesByRelatedRank,
   type EntityComboBoxItem,
 } from "../../../src/data/entity/entity_picker";
 import type { HomeAssistant } from "../../../src/types";
 
-const makeHass = (entityIds: string[]): HomeAssistant => {
+const makeSources = (entityIds: string[]): GetEntitiesOptions => {
   const states: Record<string, any> = {};
   for (const id of entityIds) {
     states[id] = {
@@ -28,14 +29,14 @@ const makeHass = (entityIds: string[]): HomeAssistant => {
     floors: {},
     language: "en",
     localize: ((key: string) => key) as any,
-    translationMetadata: { translations: {} },
-  } as unknown as HomeAssistant;
+    translationMetadata: { translations: {} } as any,
+  };
 };
 
 const ids = (items: { id: string }[]) => items.map((item) => item.id).sort();
 
 describe("getEntities", () => {
-  const hass = makeHass([
+  const sources = makeSources([
     "light.kitchen",
     "light.living",
     "switch.fan",
@@ -43,7 +44,7 @@ describe("getEntities", () => {
   ]);
 
   it("returns all entities when no filters are given", () => {
-    expect(ids(getEntities(hass))).toEqual([
+    expect(ids(getEntities(sources))).toEqual([
       "light.kitchen",
       "light.living",
       "sensor.temp",
@@ -52,22 +53,22 @@ describe("getEntities", () => {
   });
 
   it("filters by includeDomains", () => {
-    expect(ids(getEntities(hass, { includeDomains: ["light"] }))).toEqual([
-      "light.kitchen",
-      "light.living",
-    ]);
+    expect(ids(getEntities({ ...sources, includeDomains: ["light"] }))).toEqual(
+      ["light.kitchen", "light.living"]
+    );
   });
 
   it("filters by excludeDomains", () => {
     expect(
-      ids(getEntities(hass, { excludeDomains: ["light", "switch"] }))
+      ids(getEntities({ ...sources, excludeDomains: ["light", "switch"] }))
     ).toEqual(["sensor.temp"]);
   });
 
   it("filters by includeEntities", () => {
     expect(
       ids(
-        getEntities(hass, {
+        getEntities({
+          ...sources,
           includeEntities: ["light.kitchen", "sensor.temp"],
         })
       )
@@ -77,7 +78,8 @@ describe("getEntities", () => {
   it("filters by excludeEntities", () => {
     expect(
       ids(
-        getEntities(hass, {
+        getEntities({
+          ...sources,
           excludeEntities: ["light.kitchen", "light.living"],
         })
       )
@@ -87,7 +89,8 @@ describe("getEntities", () => {
   it("combines include and exclude filters", () => {
     expect(
       ids(
-        getEntities(hass, {
+        getEntities({
+          ...sources,
           includeDomains: ["light"],
           excludeEntities: ["light.living"],
         })
@@ -96,7 +99,8 @@ describe("getEntities", () => {
   });
 
   it("applies idPrefix to the item id", () => {
-    const items = getEntities(hass, {
+    const items = getEntities({
+      ...sources,
       includeEntities: ["sensor.temp"],
       idPrefix: "entity-",
     });

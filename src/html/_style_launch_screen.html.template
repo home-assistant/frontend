@@ -60,14 +60,25 @@
   /* Margins, not flex `gap` (Safari 14.1). */
   #ha-launch-screen .ha-launch-screen-actions {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: -4px 16px;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 16px;
+  }
+  #ha-launch-screen .ha-launch-screen-actions label {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  #ha-launch-screen .ha-launch-screen-actions input {
+    margin: 0 8px 0 0;
+    accent-color: #009ac7;
   }
   #ha-launch-screen .ha-launch-screen-actions button {
-    margin: 4px;
     padding: 8px 16px;
-    border: 1px solid transparent;
+    border: 1px solid currentColor;
     border-radius: 18px;
     background: none;
     color: #009ac7;
@@ -75,9 +86,6 @@
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-  }
-  #ha-launch-screen .ha-launch-screen-actions .ha-launch-screen-continue {
-    border-color: currentColor;
   }
   .ohf-logo {
     margin: 48px 0;

@@ -292,6 +292,22 @@ describe("DirtyStateProviderMixin", () => {
     window.removeEventListener("dirty-state-changed", listener);
   });
 
+  it("stays clean when a removed provider updates later", async () => {
+    const element = await mountProvider();
+    element.initialize(
+      { type: "shallow" },
+      { name: "Kitchen", enabled: false }
+    );
+    element.setValue({ name: "Bedroom", enabled: false });
+    await element.updateComplete;
+    element.remove();
+
+    element.requestUpdate();
+    await element.updateComplete;
+
+    expect(window.isDirtyState).toBe(false);
+  });
+
   it("publishes a reload block without marking its own state dirty", async () => {
     const element = document.createElement("test-reload-blocking-provider");
     document.body.append(element);

@@ -250,7 +250,6 @@ class HaPanelHistory extends LitElement {
                     @clear-filter=${this._clearSources}
                   >
                     <ha-sources-picker
-                      .hass=${this.hass}
                       .value=${this._targetPickerValue}
                       .filters=${this._filters}
                       .entitySources=${this._entitySources}

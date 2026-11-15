@@ -1,11 +1,79 @@
-import { describe, expect, it } from "vitest";
+import type { Connection } from "home-assistant-js-websocket";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { MatterCommissioningParameters } from "../../src/data/matter";
 import {
   matterShareRemainingSeconds,
   matterShareTargetExternal,
+  watchForNewMatterDevice,
 } from "../../src/data/matter";
+import { subscribeDeviceRegistry } from "../../src/data/ws-device_registry";
 import type { ExternalConfig } from "../../src/external_app/external_messaging";
 import type { HomeAssistant } from "../../src/types";
+
+// The device registry collection unsubscribes from its updates once no
+// subscriber is left, so an extra unsubscribe silently breaks every other one.
+describe("watchForNewMatterDevice", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  const fakeRegistry = () => {
+    const devices: string[] = ["existing"];
+    const eventCallbacks = new Set<() => void>();
+    const connection = {
+      connected: true,
+      sendMessagePromise: vi.fn(async () =>
+        devices.map((id) => ({
+          id,
+          identifiers: [["matter", id]],
+          connections: [],
+        }))
+      ),
+      subscribeEvents: vi.fn(async (callback: () => void) => {
+        eventCallbacks.add(callback);
+        return async () => {
+          eventCallbacks.delete(callback);
+        };
+      }),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    } as unknown as Connection;
+    return {
+      connection,
+      eventCallbacks,
+      addDevice: (id: string) => {
+        devices.push(id);
+        eventCallbacks.forEach((callback) => callback());
+      },
+    };
+  };
+
+  it("keeps the registry subscribed when the caller unsubscribes after a find", async () => {
+    const registry = fakeRegistry();
+    const hass = { connection: registry.connection } as HomeAssistant;
+    subscribeDeviceRegistry(registry.connection, () => undefined);
+
+    const found = vi.fn();
+    const unsub = watchForNewMatterDevice(hass, found);
+    await vi.advanceTimersByTimeAsync(10);
+
+    registry.addDevice("new");
+    await vi.advanceTimersByTimeAsync(600);
+    expect(found).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ id: "new" })
+    );
+
+    // The add device dialog unsubscribes again when it closes.
+    unsub();
+    // Past the collection's grace period for unsubscribing.
+    await vi.advanceTimersByTimeAsync(6000);
+    expect(registry.eventCallbacks.size).toBe(1);
+  });
+});
 
 const codesOnly: MatterCommissioningParameters = {
   setup_pin_code: 20202021,

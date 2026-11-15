@@ -127,7 +127,8 @@ class DialogMatterAddDevice extends LitElement {
 
   private get _waitForCommissioningFinish(): boolean {
     // When the app supports reporting Matter commissioning status, defer
-    // advancing past the spinner until we receive matter/commission/finish.
+    // advancing past the spinner of its own flow until we receive
+    // matter/commission/finish.
     return !!this.hass.auth.external?.config.hasMatterStatusReport;
   }
 
@@ -135,7 +136,13 @@ class DialogMatterAddDevice extends LitElement {
     if (!this._newDevice) {
       return;
     }
-    if (this._waitForCommissioningFinish && !this._commissioningFinished) {
+    // Only the app's own flow, started from the "new" step, reports back.
+    // The other steps commission through core or another app.
+    if (
+      this._step === "new" &&
+      this._waitForCommissioningFinish &&
+      !this._commissioningFinished
+    ) {
       return;
     }
     this._step = "device_added";
@@ -149,6 +156,8 @@ class DialogMatterAddDevice extends LitElement {
       if (this._newDevice) {
         // Device already showed up in the registry — ignore the failure signal
         // and let the user finish the rename flow.
+        this._commissioningFinished = true;
+        this._maybeShowDeviceAdded();
         return;
       }
       showToast(this, {

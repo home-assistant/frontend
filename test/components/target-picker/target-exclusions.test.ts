@@ -313,11 +313,9 @@ describe("resolveItemExclusions", () => {
         ],
       };
     };
-    const hass = { callWS, states: {} } as unknown as HomeAssistant;
-
     expect(
       await resolveItemExclusions(
-        hass,
+        callWS as unknown as HomeAssistant["callWS"],
         { type: "entity", id: "switch.lamp_config" },
         { device_id: ["lamp"] },
         false
@@ -344,13 +342,11 @@ describe("resolveItemExclusions", () => {
   });
 
   it("doesn't ask core without an exclude", async () => {
-    const hass = {
-      callWS: async () => {
-        throw new Error("not expected");
-      },
-    } as unknown as HomeAssistant;
+    const callWS = async () => {
+      throw new Error("not expected");
+    };
     expect(
-      await resolveItemExclusions(hass, { type: "area", id: "kitchen" }, {})
+      await resolveItemExclusions(callWS, { type: "area", id: "kitchen" }, {})
     ).toEqual([]);
   });
 });
