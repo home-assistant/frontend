@@ -97,13 +97,6 @@ export const emptyHomeEnergyPreference =
     stat_energy_to: "",
   });
 
-export const emptyBatteryEnergyPreference =
-  (): BatteryTotalsSourceTypeEnergyPreference => ({
-    type: "battery",
-    stat_energy_from: "",
-    stat_energy_to: "",
-  });
-
 export const emptyGasEnergyPreference = (): GasSourceTypeEnergyPreference => ({
   type: "gas",
   stat_energy_from: "",
