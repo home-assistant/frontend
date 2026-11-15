@@ -32,12 +32,12 @@ export class HaMarqueeText extends LitElement {
 
   private _pauseTimeout?: number;
 
-  private _animationFactor = 1;
+  private get _animationFactor() {
+    return document.dir === "rtl" ? -1 : 1;
+  }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-
-    this._animationFactor = document.dir === "rtl" ? -1 : 1;
 
     this._setupAnimation();
   }
