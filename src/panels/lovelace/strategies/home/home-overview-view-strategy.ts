@@ -57,6 +57,7 @@ import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
   alert_entities?: SecurityAlertEntityConfig[];
+  security_hidden_entities?: string[];
   maintenance_hidden_entities?: string[];
   climate_hidden_entities?: string[];
   favorite_entities?: string[];
@@ -366,7 +367,9 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       hass.panels.climate &&
       hasClimateEntities(hass, config.climate_hidden_entities);
     const hasSecurity =
-      hass.panels.security && findSecurityEntities(hass).length > 0;
+      hass.panels.security &&
+      (findSecurityEntities(hass, config.security_hidden_entities).length > 0 ||
+        Boolean(config.alert_entities?.length));
     const hasMaintenance =
       hass.panels.maintenance &&
       findMaintenanceEntities(hass, config.maintenance_hidden_entities).length >
@@ -452,6 +455,9 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         };
         if (alertEntities.length) {
           card.alert_entities = alertEntities;
+        }
+        if (config.security_hidden_entities?.length) {
+          card.hidden_entities = config.security_hidden_entities;
         }
         return card;
       },

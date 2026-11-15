@@ -30,6 +30,7 @@ import {
 export interface HomeAreaViewStrategyConfig {
   type: "home-area";
   area?: string;
+  security_hidden_entities?: string[];
   climate_hidden_entities?: string[];
   home_panel?: boolean;
 }
@@ -94,6 +95,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     const areaEntities = allEntities.filter(areaFilter);
 
     const hiddenEntities: Partial<Record<HomeSummary, string[]>> = {
+      security: config.security_hidden_entities,
       climate: config.climate_hidden_entities,
     };
 

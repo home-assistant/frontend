@@ -97,6 +97,10 @@ export const filterSecurityAlertEntities = (
       ) === severity
   );
 
+export const computeSecurityAlertColor = (
+  severity: SecurityAlertSeverity
+): string => (severity === "alert" ? "red" : "amber");
+
 export const computeSecurityAlertCardConfig = (
   stateObj: HassEntity | undefined,
   alertEntity: SecurityAlertEntityConfig
@@ -105,7 +109,7 @@ export const computeSecurityAlertCardConfig = (
   return {
     type: "alert",
     entity: alertEntity.entity,
-    alert_color: severity === "alert" ? "red" : "amber",
+    alert_color: computeSecurityAlertColor(severity),
     visibility: computeDefaultSecurityAlertVisibility(alertEntity.entity),
   };
 };

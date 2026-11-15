@@ -237,13 +237,10 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
       }
       case "security": {
         // Alarm and lock status
-        const securityEntities = findSecurityEntities({
-          states,
-          entities,
-          devices,
-          areas,
-          floors,
-        });
+        const securityEntities = findSecurityEntities(
+          { states, entities, devices, areas, floors },
+          this._config.hidden_entities
+        );
 
         const locks = securityEntities.filter((entityId) => {
           const domain = computeDomain(entityId);

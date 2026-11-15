@@ -21,6 +21,7 @@ import type { HomeOverviewViewStrategyConfig } from "./home-overview-view-strate
 export interface HomeDashboardStrategyConfig {
   type: "home";
   alert_entities?: SecurityAlertEntityConfig[];
+  security_hidden_entities?: string[];
   maintenance_hidden_entities?: string[];
   climate_hidden_entities?: string[];
   favorite_entities?: string[];
@@ -74,6 +75,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
         strategy: {
           type: "home-area",
           area: area.area_id,
+          security_hidden_entities: config.security_hidden_entities,
           climate_hidden_entities: config.climate_hidden_entities,
           home_panel: config.home_panel,
         } satisfies HomeAreaViewStrategyConfig,
@@ -109,6 +111,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
           strategy: {
             type: "home-overview",
             alert_entities: config.alert_entities,
+            security_hidden_entities: config.security_hidden_entities,
             maintenance_hidden_entities: config.maintenance_hidden_entities,
             climate_hidden_entities: config.climate_hidden_entities,
             favorite_entities: config.favorite_entities,
