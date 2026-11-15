@@ -413,3 +413,7 @@ export const unwrapLongitudes = (points: MapLatLng[]): MapLatLng[] => {
     (lng < start ? lng + 360 : lng) + offset,
   ]);
 };
+
+/** The copy of a longitude closest to a reference one, e.g. the view center */
+export const nearestWorldCopy = (lng: number, referenceLng: number): number =>
+  lng + 360 * Math.round((referenceLng - lng) / 360);

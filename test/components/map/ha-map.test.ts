@@ -154,6 +154,80 @@ describe("ha-map", () => {
     expect(map.getCenter().lng).toBeCloseTo(4.8, 2);
   });
 
+  it("shows entities across the antimeridian on the world copy in view", async () => {
+    const tracker = (
+      id: string,
+      latitude: number,
+      longitude: number,
+      gps_accuracy?: number
+    ) => ({
+      entity_id: id,
+      state: "not_home",
+      attributes: { friendly_name: id, latitude, longitude, gps_accuracy },
+      context: { id, user_id: null, parent_id: null },
+      last_changed: "2026-01-01T00:00:00Z",
+      last_updated: "2026-01-01T00:00:00Z",
+    });
+    const el = await createMap({
+      states: {
+        "device_tracker.nome": tracker(
+          "device_tracker.nome",
+          64.5,
+          -165.4,
+          50000
+        ),
+        "device_tracker.kamchatka": tracker(
+          "device_tracker.kamchatka",
+          53,
+          158.65
+        ),
+      } as unknown as HassEntities,
+      entities: ["device_tracker.nome", "device_tracker.kamchatka"],
+    });
+    setMapSize(el, 800, 500);
+    fireResizeObservers();
+    await el.updateComplete;
+
+    const map = leafletMap(el)!;
+    // Fitted across ±180°, not over the Atlantic
+    expect(map.getCenter().lng).toBeCloseTo(176.6, 0);
+    const markerLngs = () => {
+      const lngs: number[] = [];
+      map.eachLayer((layer: any) => {
+        if (layer.options?.icon) {
+          lngs.push(layer.getLatLng().lng);
+        }
+      });
+      return lngs.sort((a, b) => a - b);
+    };
+    const leafletModule = (el as any)._engine.Leaflet;
+    const circleLngs = () => {
+      const lngs: number[] = [];
+      map.eachLayer((layer: any) => {
+        if (layer instanceof leafletModule.Circle) {
+          lngs.push(layer.getLatLng().lng);
+        }
+      });
+      return lngs;
+    };
+    // Nome is drawn at -165.4 + 360, on the copy the view shows
+    const [kamchatka, nome] = markerLngs();
+    expect(kamchatka).toBeCloseTo(158.65, 6);
+    expect(nome).toBeCloseTo(194.6, 6);
+    // Nome's accuracy circle follows its marker
+    expect(circleLngs()).toHaveLength(1);
+    expect(circleLngs()[0]).toBeCloseTo(194.6, 6);
+    expect(el.containsLocation([64.5, -165.4])).toBe(true);
+    expect(el.containsLocation([53, 158.65])).toBe(true);
+
+    // Moving the view west of the seam moves Kamchatka to the copy in view
+    map.setView([60, -60], map.getZoom(), { animate: false });
+    const [movedKamchatka, movedNome] = markerLngs();
+    expect(movedKamchatka).toBeCloseTo(158.65 - 360, 6);
+    expect(movedNome).toBeCloseTo(-165.4, 6);
+    expect(circleLngs()[0]).toBeCloseTo(-165.4, 6);
+  });
+
   it("does not defer fitting when the container already has a size", async () => {
     const originalWidth = Object.getOwnPropertyDescriptor(
       Element.prototype,
