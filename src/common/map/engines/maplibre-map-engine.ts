@@ -52,7 +52,13 @@ import type {
   MapPathHandle,
   MapView,
 } from "../map-engine";
-import { destinationPoint, distanceMeters, pointEastOf } from "../map-engine";
+import {
+  destinationPoint,
+  distanceMeters,
+  nearestWorldCopy,
+  pointEastOf,
+  unwrapLongitudes,
+} from "../map-engine";
 import type { ResolvedMapStyle } from "../map-styles";
 import {
   createResizeHandleElement,
@@ -222,10 +228,21 @@ interface ClusterGroup {
   iconMarker?: MapLibreMarker;
 }
 
-const centerOf = (members: ManagedMarker[]): MapLatLng => [
-  members.reduce((sum, m) => sum + m.location[0], 0) / members.length,
-  members.reduce((sum, m) => sum + m.location[1], 0) / members.length,
-];
+// Longitudes are averaged on the first member's world copy, so a group
+// across ±180° is centered on it rather than on the other side of the world.
+// This assumes a group spans less than half the world, as grouped markers
+// sit close together on screen; the center may lie beyond ±180°, which
+// MapLibre takes as is
+const centerOf = (members: ManagedMarker[]): MapLatLng => {
+  const reference = members[0].location[1];
+  return [
+    members.reduce((sum, m) => sum + m.location[0], 0) / members.length,
+    members.reduce(
+      (sum, m) => sum + nearestWorldCopy(m.location[1], reference),
+      0
+    ) / members.length,
+  ];
+};
 
 /**
  * The MapLibre GL engine: native vector rendering, requires WebGL2. The host
@@ -1643,8 +1660,9 @@ export class MapLibreMapEngine implements MapEngine {
       const zoomToMembers = () => {
         const { members } = group;
         this._openAfterRegroup = members;
+        // Members are lone positions, so the shortest arc is safe to take
         this.fitBounds(
-          members.map((managed) => managed.location),
+          unwrapLongitudes(members.map((managed) => managed.location)),
           { pad: 0.3, maxZoom: this._getMaxZoom() }
         );
         this._hideEmerging(members);
