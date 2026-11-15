@@ -820,6 +820,22 @@ describe("MapLibreMapEngine", () => {
       expect(bounds[0][0]).toBe(-40);
       expect(bounds[1][0]).toBe(40);
     });
+
+    it("fits points across the antimeridian on the shorter arc", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      engine.fitBounds(
+        [
+          [64.5, -165.4],
+          [53, 158.65],
+        ],
+        { pad: 0 }
+      );
+      const [bounds] = map.fitBounds.mock.calls[0];
+      expect(bounds[0][0]).toBe(158.65);
+      expect(bounds[1][0]).toBeCloseTo(194.6);
+    });
   });
 
   describe("markers", () => {

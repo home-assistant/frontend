@@ -26,6 +26,7 @@ import type {
   MapPathHandle,
   MapView,
 } from "../map-engine";
+import { unwrapLongitudes } from "../map-engine";
 import type { ResolvedMapStyle } from "../map-styles";
 import { setMarkerAccessibility } from "../marker-accessibility";
 
@@ -197,7 +198,9 @@ export class LeafletMapEngine implements MapEngine {
     if (!this.leafletMap || !this.Leaflet || !points.length) {
       return;
     }
-    const bounds = this.Leaflet.latLngBounds(points).pad(options?.pad ?? 0.5);
+    const bounds = this.Leaflet.latLngBounds(unwrapLongitudes(points)).pad(
+      options?.pad ?? 0.5
+    );
     const fit = options?.fly
       ? this.leafletMap.flyToBounds
       : this.leafletMap.fitBounds;
