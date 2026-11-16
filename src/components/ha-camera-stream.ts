@@ -222,10 +222,12 @@ export class HaCameraStream extends LitElement {
       return nothing;
     }
     if (stream.type === MJPEG_STREAM) {
+      const mjpegPath = computeMJPEGStreamUrl(this.stateObj);
       const streamUrl = __DEMO__
         ? this.stateObj.attributes.entity_picture
         : this._connected
-          ? computeMJPEGStreamUrl(this.stateObj)
+          ? // Like the other streams, as the frontend can be served elsewhere
+            mjpegPath && this._connection.hassUrl(mjpegPath)
           : this._posterUrl;
       if (!streamUrl) {
         return nothing;
