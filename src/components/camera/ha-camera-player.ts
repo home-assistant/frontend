@@ -80,6 +80,10 @@ export class HaCameraPlayer extends LitElement {
   @property({ type: Boolean, attribute: "allow-exoplayer" })
   public allowExoPlayer = false;
 
+  /** Keeps the screen on while the player shows, like in the more info. */
+  @property({ type: Boolean, attribute: "keep-awake" })
+  public keepAwake = false;
+
   @state() private _status: CameraStreamStatus = {
     connecting: true,
     hasAudio: false,
@@ -119,6 +123,11 @@ export class HaCameraPlayer extends LitElement {
 
   private _videoRequest = 0;
 
+  private _wakeLock?: WakeLockSentinel;
+
+  // Increased on every request and release, so older requests are dropped
+  private _wakeLockRequest = 0;
+
   // Not passive, so zooming can keep the page from scrolling
   private _wheelListener = {
     handleEvent: (ev: WheelEvent) => this._wheel(ev),
@@ -137,6 +146,11 @@ export class HaCameraPlayer extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
+    document.addEventListener("visibilitychange", this._requestWakeLock);
+    // The first update requests it, once keep-awake is set
+    if (this.hasUpdated) {
+      this._requestWakeLock();
+    }
     document.addEventListener("fullscreenchange", this._fullscreenChanged);
     document.addEventListener(
       "webkitfullscreenchange",
@@ -146,6 +160,8 @@ export class HaCameraPlayer extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    document.removeEventListener("visibilitychange", this._requestWakeLock);
+    this._releaseWakeLock();
     document.removeEventListener("fullscreenchange", this._fullscreenChanged);
     document.removeEventListener(
       "webkitfullscreenchange",
@@ -168,6 +184,13 @@ export class HaCameraPlayer extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
+    if (changedProps.has("keepAwake")) {
+      if (this.keepAwake) {
+        this._requestWakeLock();
+      } else {
+        this._releaseWakeLock();
+      }
+    }
     if (changedProps.has("_video")) {
       this._unbindVideo(changedProps.get("_video") as HTMLVideoElement);
       this._bindVideo(this._video);
@@ -318,6 +341,46 @@ export class HaCameraPlayer extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  // Screen
+
+  /**
+   * Browsers release the lock when the page is hidden, so it is requested
+   * again whenever the page shows.
+   */
+  private _requestWakeLock = async () => {
+    if (
+      !this.keepAwake ||
+      !this.isConnected ||
+      this._wakeLock ||
+      document.visibilityState !== "visible" ||
+      !("wakeLock" in navigator)
+    ) {
+      return;
+    }
+    const request = ++this._wakeLockRequest;
+    try {
+      const wakeLock = await navigator.wakeLock.request("screen");
+      if (request !== this._wakeLockRequest) {
+        wakeLock.release();
+        return;
+      }
+      this._wakeLock = wakeLock;
+      wakeLock.addEventListener("release", () => {
+        if (this._wakeLock === wakeLock) {
+          this._wakeLock = undefined;
+        }
+      });
+    } catch (_err: unknown) {
+      // Not allowed, like without HTTPS or with the battery saver on
+    }
+  };
+
+  private _releaseWakeLock() {
+    this._wakeLockRequest++;
+    this._wakeLock?.release();
+    this._wakeLock = undefined;
   }
 
   // Controls
