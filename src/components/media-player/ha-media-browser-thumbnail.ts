@@ -22,11 +22,65 @@ const SMALL_THUMBNAIL_THRESHOLD = 16;
 const isSvgUrl = (url: string): boolean =>
   /\.svg(\?|#|$)/i.test(url) || url.startsWith("data:image/svg+xml");
 
+// Local thumbnails can be slow to generate, for example when the integration
+// extracts them from a recording on a camera. Without a limit they take all of
+// the browser's connections to Home Assistant (6 for HTTP/1.1), and requests
+// such as starting media playback wait until all queued thumbnails are loaded.
+const MAX_PARALLEL_LOCAL_THUMBNAILS = 4;
+let activeLocalThumbnails = 0;
+const localThumbnailQueue: (() => void)[] = [];
+
+const acquireLocalThumbnailSlot = (signal: AbortSignal): Promise<void> => {
+  if (signal.aborted) {
+    return Promise.reject(signal.reason);
+  }
+  if (activeLocalThumbnails < MAX_PARALLEL_LOCAL_THUMBNAILS) {
+    activeLocalThumbnails++;
+    return Promise.resolve();
+  }
+  return new Promise<void>((resolve, reject) => {
+    const start = () => {
+      signal.removeEventListener("abort", onAbort);
+      activeLocalThumbnails++;
+      resolve();
+    };
+    const onAbort = () => {
+      const index = localThumbnailQueue.indexOf(start);
+      if (index !== -1) {
+        localThumbnailQueue.splice(index, 1);
+      }
+      reject(signal.reason);
+    };
+    localThumbnailQueue.push(start);
+    signal.addEventListener("abort", onAbort, { once: true });
+  });
+};
+
+const releaseLocalThumbnailSlot = (): void => {
+  activeLocalThumbnails--;
+  localThumbnailQueue.shift()?.();
+};
+
+const fetchLocalThumbnail = async (
+  fetchWithAuth: HomeAssistantApi["fetchWithAuth"],
+  thumbnailUrl: string,
+  signal: AbortSignal
+): Promise<Blob> => {
+  await acquireLocalThumbnailSlot(signal);
+  try {
+    const response = await fetchWithAuth(thumbnailUrl, { signal });
+    return await response.blob();
+  } finally {
+    releaseLocalThumbnailSlot();
+  }
+};
+
 const resolveThumbnailURL = (
   thumbnailUrl: string,
   darkMode: boolean | undefined,
   hassUrl: string | undefined,
-  fetchWithAuth: HomeAssistantApi["fetchWithAuth"]
+  fetchWithAuth: HomeAssistantApi["fetchWithAuth"],
+  signal: AbortSignal
 ): Promise<string> => {
   if (isBrandUrl(thumbnailUrl)) {
     return Promise.resolve(
@@ -42,18 +96,16 @@ const resolveThumbnailURL = (
   }
   if (thumbnailUrl.startsWith("/")) {
     // Local thumbnails require authentication; fetch and inline as base64.
-    return fetchWithAuth(thumbnailUrl)
-      .then((response) => response.blob())
-      .then(
-        (blob) =>
-          new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () =>
-              resolve(typeof reader.result === "string" ? reader.result : "");
-            reader.onerror = (e) => reject(e);
-            reader.readAsDataURL(blob);
-          })
-      );
+    return fetchLocalThumbnail(fetchWithAuth, thumbnailUrl, signal).then(
+      (blob) =>
+        new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () =>
+            resolve(typeof reader.result === "string" ? reader.result : "");
+          reader.onerror = (e) => reject(e);
+          reader.readAsDataURL(blob);
+        })
+    );
   }
   return Promise.resolve(thumbnailUrl);
 };
@@ -85,6 +137,23 @@ export class HaMediaBrowserThumbnail extends LitElement {
 
   @state() private _brand = false;
 
+  private _abortController?: AbortController;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    // Resume a thumbnail which was aborted when this element was disconnected
+    if (this.hasUpdated && this.url && !this._resolvedUrl) {
+      this._resolve();
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    // Do not keep loading thumbnails which are no longer shown
+    this._abortController?.abort();
+    this._abortController = undefined;
+  }
+
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
     if (
@@ -97,6 +166,8 @@ export class HaMediaBrowserThumbnail extends LitElement {
   }
 
   private async _resolve(): Promise<void> {
+    this._abortController?.abort();
+    this._abortController = undefined;
     this._small = false;
     this._brand = !!this.url && isBrandUrl(this.url);
     if (!this.url) {
@@ -104,18 +175,25 @@ export class HaMediaBrowserThumbnail extends LitElement {
       return;
     }
     const requested = this.url;
+    const abortController = new AbortController();
+    this._abortController = abortController;
     try {
       const resolved = await resolveThumbnailURL(
         requested,
         this._darkMode,
         this._hassUrl,
-        this._api.fetchWithAuth
+        this._api.fetchWithAuth,
+        abortController.signal
       );
       if (requested !== this.url) return;
       this._resolvedUrl = resolved;
       this._probeSize(resolved);
     } catch (_err) {
       if (requested === this.url) this._resolvedUrl = undefined;
+    } finally {
+      if (this._abortController === abortController) {
+        this._abortController = undefined;
+      }
     }
   }
 
