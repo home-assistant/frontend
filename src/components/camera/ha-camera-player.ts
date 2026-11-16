@@ -231,6 +231,7 @@ export class HaCameraPlayer extends LitElement {
           @pointerup=${this._pointerUp}
           @pointercancel=${this._pointerCancel}
           @dblclick=${this._doubleClick}
+          @dragstart=${this._preventDrag}
           @wheel=${this._wheelListener}
         >
           <ha-camera-stream
@@ -638,6 +639,12 @@ export class HaCameraPlayer extends LitElement {
     this._wheelHint = false;
   }
 
+  private _preventDrag(ev: DragEvent) {
+    // Dragging an image, like an MJPEG stream, would drag it out instead of
+    // panning
+    ev.preventDefault();
+  }
+
   private _doubleClick(ev: MouseEvent) {
     if (!this._viewport) {
       return;
@@ -766,13 +773,34 @@ export class HaCameraPlayer extends LitElement {
       background-color: black;
     }
 
+    /* Clear of notches and rounded corners, the picture in the middle */
     .player.fullscreen {
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
       display: flex;
       align-items: center;
       justify-content: center;
+      box-sizing: border-box;
       width: 100%;
       height: 100%;
-      --video-max-height: 100vh;
+      padding: var(--safe-top) var(--safe-right) var(--safe-bottom)
+        var(--safe-left);
+      --video-max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom));
+    }
+
+    .player.fullscreen ha-camera-stream {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .player.fullscreen .overlay {
+      padding: calc(var(--ha-space-2) + var(--safe-top))
+        calc(var(--ha-space-2) + var(--safe-right))
+        calc(var(--ha-space-2) + var(--safe-bottom))
+        calc(var(--ha-space-2) + var(--safe-left));
     }
 
     .player.fullscreen.idle {
