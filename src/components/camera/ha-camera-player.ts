@@ -198,7 +198,12 @@ export class HaCameraPlayer extends LitElement {
         @focusin=${this._showControls}
       >
         <div
-          class=${classMap({ viewport: true, zoomed, gesture: this._gesture })}
+          class=${classMap({
+            viewport: true,
+            zoomed,
+            "camera-player-zoomed": zoomed,
+            gesture: this._gesture,
+          })}
           @pointerdown=${this._pointerDown}
           @pointerup=${this._pointerUp}
           @pointercancel=${this._pointerCancel}
