@@ -533,20 +533,30 @@ export class HaAutomationAiSheet extends LitElement {
       flex-direction: column;
       gap: var(--ha-space-3);
     }
+    /* Like the messages in the Assist chat */
     .message {
       max-width: 85%;
-      padding: var(--ha-space-2) var(--ha-space-3);
-      border-radius: var(--ha-border-radius-lg);
+      padding: var(--ha-space-2);
+      border-radius: var(--ha-border-radius-xl);
+      overflow-wrap: break-word;
       white-space: pre-wrap;
+      direction: var(--direction);
     }
     .message.user {
       align-self: flex-end;
-      background-color: var(--ha-color-fill-primary-normal-resting);
-      color: var(--ha-color-on-primary-normal);
+      border-end-end-radius: 0;
+      --markdown-link-color: var(--text-primary-color);
+      background-color: var(--chat-background-color-user, var(--primary-color));
+      color: var(--text-primary-color);
     }
     .message.assistant {
       align-self: flex-start;
-      background-color: var(--ha-color-fill-neutral-quiet-resting);
+      border-end-start-radius: 0;
+      background-color: var(
+        --chat-background-color-hass,
+        var(--secondary-background-color)
+      );
+      color: var(--primary-text-color);
       white-space: normal;
     }
     .steps {
