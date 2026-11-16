@@ -9,6 +9,12 @@ import {
   stringifyPath,
   type ConfigPath,
 } from "../../../common/util/config-path";
+import {
+  automationDiffContext,
+  diffMarkAt,
+  type AutomationDiff,
+  type DiffMark,
+} from "./ai/automation-ai-diff";
 
 export const automationPathContext =
   createContext<ConfigPath>("automation-path");
@@ -61,6 +67,12 @@ export class AutomationRowRegistry {
       ?.path;
   }
 
+  /** The path of the row open in the sidebar. */
+  public selectedPath(): ConfigPath | undefined {
+    return [...this._rows.values()].find((entry) => owner(entry.rows)?.selected)
+      ?.path;
+  }
+
   /** The rows containing `path`, outermost first. */
   public rowsAlong(path: ConfigPath): AutomationPathRow[] {
     return path
@@ -83,10 +95,16 @@ interface AutomationPathControllerOptions {
 
 /**
  * Consumes the path of the closest ancestor and provides it extended by the
- * host's own segment to its descendants.
+ * host's own segment to its descendants. Also finds how the AI changed the
+ * config at the path, while the editor shows its changes.
  */
 export class AutomationPathController extends ContextController {
   public path: ConfigPath = [];
+
+  public diffMark?: DiffMark;
+
+  @consumeContext({ context: automationDiffContext, subscribe: true })
+  private _diff?: AutomationDiff;
 
   @consumeContext({ context: automationPathContext, subscribe: true })
   private _parentPath: ConfigPath = [];
@@ -133,6 +151,11 @@ export class AutomationPathController extends ContextController {
       this._provider.setValue(path);
     }
     this._syncRegistration();
+    const diffMark = diffMarkAt(this._diff, this.path);
+    if (diffMark !== this.diffMark) {
+      this.diffMark = diffMark;
+      this.host.requestUpdate();
+    }
   }
 
   public hostDisconnected() {

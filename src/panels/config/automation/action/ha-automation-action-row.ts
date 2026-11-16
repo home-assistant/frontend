@@ -792,6 +792,7 @@ export default class HaAutomationActionRow extends LitElement {
                 }
                 .collapsed=${this._collapsed}
                 .selected=${this._selected}
+                .diff=${this.pathController.diffMark}
                 .highlight=${this.highlight}
                 .buildingBlock=${[
                   ...ACTION_BUILDING_BLOCKS,

@@ -524,6 +524,7 @@ export default class HaAutomationConditionRow extends LitElement {
                 )}
                 .collapsed=${this._collapsed}
                 .selected=${this._selected}
+                .diff=${this.pathController.diffMark}
                 .highlight=${this.highlight}
                 .buildingBlock=${CONDITION_BUILDING_BLOCKS.includes(
                   this.condition.condition

@@ -12,6 +12,7 @@ import "../../../../components/ha-icon-button";
 import { ScrollableFadeMixin } from "../../../../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import "../ai/ha-automation-ai-changes";
 import "../ha-automation-editor-warning";
 
 export interface SidebarOverflowMenuEntry {
@@ -91,6 +92,7 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
             : nothing
         }
         <div class="card-content ha-scrollbar">
+          <ha-automation-ai-changes></ha-automation-ai-changes>
           <slot></slot>
           ${this.renderScrollableFades(this.isWide)}
         </div>

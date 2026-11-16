@@ -30,6 +30,9 @@ export class HaAutomationRow extends LitElement {
   @property({ type: Boolean, reflect: true })
   public dim = false;
 
+  /** How the AI changed the row, while the editor shows its changes. */
+  @property({ reflect: true }) public diff?: "added" | "changed" | "removed";
+
   /** Makes the row a link, with the icons slot outside of it */
   @property() public href?: string;
 
@@ -269,6 +272,28 @@ export class HaAutomationRow extends LitElement {
     }
     .row:hover {
       background-color: rgba(var(--rgb-primary-text-color), 0.04);
+    }
+    :host([diff]) .row {
+      box-shadow: inset 4px 0 0 var(--diff-border-color);
+      background-color: var(--diff-background-color);
+    }
+    :host([diff]:dir(rtl)) .row {
+      box-shadow: inset -4px 0 0 var(--diff-border-color);
+    }
+    :host([diff="added"]) {
+      --diff-border-color: var(--ha-color-border-success-loud);
+      --diff-background-color: var(--ha-color-fill-success-quiet-resting);
+    }
+    :host([diff="changed"]) {
+      --diff-border-color: var(--ha-color-border-warning-loud);
+      --diff-background-color: var(--ha-color-fill-warning-quiet-resting);
+    }
+    :host([diff="removed"]) {
+      --diff-border-color: var(--ha-color-border-danger-loud);
+      --diff-background-color: var(--ha-color-fill-danger-quiet-resting);
+    }
+    :host([diff="removed"]) ::slotted([slot="header"]) {
+      text-decoration: line-through;
     }
     :host([highlight]) .row {
       background-color: rgba(var(--rgb-primary-color), 0.08);

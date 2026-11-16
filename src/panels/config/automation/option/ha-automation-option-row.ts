@@ -501,6 +501,7 @@ export default class HaAutomationOptionRow extends LitElement {
                 left-chevron
                 .collapsed=${this._collapsed}
                 .selected=${this._selected}
+                .diff=${this.pathController.diffMark}
                 .sortSelected=${this.sortSelected}
                 @click=${this._toggleSidebar}
                 @toggle-collapsed=${this._toggleCollapse}

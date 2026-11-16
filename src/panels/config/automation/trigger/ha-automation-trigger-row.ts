@@ -662,6 +662,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                   "enabled" in this.trigger && this.trigger.enabled === false
                 }
                 .selected=${this._selected}
+                .diff=${this.pathController.diffMark}
                 .highlight=${this.highlight}
                 .sortSelected=${this.sortSelected}
                 .dim=${this._triggered}
