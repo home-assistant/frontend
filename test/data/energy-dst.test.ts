@@ -85,15 +85,10 @@ describe("energy period DST (Europe/Berlin local TZ)", () => {
     const now = new Date("2026-10-25T15:30:00.000Z");
 
     const tzInternal = calcDate(now, startOfDay, locale, tokyoConfig);
-    const browserLocalYesterday = calcDate(
-      addDays(now, -1),
-      startOfDay,
-      locale,
-      tokyoConfig
-    );
     const live = getEnergyLiveDayPeriod(now, locale, tokyoConfig);
 
     assert.equal(live.start.getTime(), tzInternal.getTime());
-    assert.notEqual(live.start.getTime(), browserLocalYesterday.getTime());
+    // Resolving the day in the browser zone would land on a different instant.
+    assert.notEqual(live.start.getTime(), startOfDay(now).getTime());
   });
 });

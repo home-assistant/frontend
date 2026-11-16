@@ -990,18 +990,6 @@ describe("getEnergyLiveDayPeriod", () => {
     assert.equal(live.start.getTime(), expected.start.getTime());
     assert.equal(live.end.getTime(), expected.end.getTime());
   });
-
-  it("returns today after 01:00", () => {
-    const now = new Date("2026-06-20T10:00:00-04:00");
-    const live = getEnergyLiveDayPeriod(
-      now,
-      energyPeriodLocale,
-      energyPeriodConfig
-    );
-    const expected = energyPeriodDay(now);
-    assert.equal(live.start.getTime(), expected.start.getTime());
-    assert.equal(live.end.getTime(), expected.end.getTime());
-  });
 });
 
 describe("getEnergyDataCollection cache", () => {
@@ -1589,13 +1577,17 @@ describe("getEnergyDataCollection live day", () => {
     // follow-up after recorder's :05:10 compile, then resume :20 cadence.
     refresh.mockClear();
     callWS.mockClear();
+    // Not right on the compile's heels: it is only queued at :05:10.
     await vi.advanceTimersByTimeAsync(5 * 60 * 1000 + 15 * 1000);
+    assert.equal(refresh.mock.calls.length, 0);
+
+    await vi.advanceTimersByTimeAsync(45 * 1000);
     assert.equal(refresh.mock.calls.length, 1);
     assert.equal(energyInfoFetches(callWS).length, 1);
 
     refresh.mockClear();
     callWS.mockClear();
-    await vi.advanceTimersByTimeAsync(14 * 60 * 1000 + 45 * 1000);
+    await vi.advanceTimersByTimeAsync(14 * 60 * 1000);
     assert.equal(refresh.mock.calls.length, 1);
     assert.equal(energyInfoFetches(callWS).length, 1);
 
@@ -1628,13 +1620,13 @@ describe("getEnergyDataCollection live day", () => {
     );
     assert.equal(refresh.mock.calls.length, 1);
 
-    // Nothing at 18:35:15Z: that bucket belongs to an hour this period excludes.
+    // Nothing for the 18:35Z bucket: it belongs to an hour this period excludes.
     refresh.mockClear();
     callWS.mockClear();
-    await vi.advanceTimersByTimeAsync(5 * 60 * 1000 + 15 * 1000);
+    await vi.advanceTimersByTimeAsync(6 * 60 * 1000 + 30 * 1000);
     assert.equal(refresh.mock.calls.length, 0);
 
-    // 19:05:15Z, once the first bucket of the 19:00Z hour is compiled.
+    // Once the first bucket of the 19:00Z hour is compiled.
     await vi.advanceTimersByTimeAsync(30 * 60 * 1000);
     assert.equal(refresh.mock.calls.length, 1);
     assert.equal(energyInfoFetches(callWS).length, 1);

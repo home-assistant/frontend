@@ -979,7 +979,10 @@ const clearEnergyCollectionPreferences = (
 
 const HOUR_IN_MS = 60 * 60 * 1000;
 const SHORT_TERM_STATS_INTERVAL = 5 * 60 * 1000;
-const SHORT_TERM_STATS_MARGIN = 15 * 1000;
+// The recorder only queues the compile at :10s, so leave it room to finish on a
+// busy instance. Refreshing late costs nothing; missing it means waiting for
+// the hourly refresh.
+const SHORT_TERM_STATS_MARGIN = 60 * 1000;
 
 // Recorder compiles short-term statistics on the UTC 5-minute grid at :10s, so
 // the first bucket covering `timestamp` is readable just after the next one.
@@ -1013,8 +1016,7 @@ const scheduleHourlyRefresh = (collection: EnergyCollection) => {
     // Before that, Core can already stitch an open hour from short-term rows,
     // so refresh as soon as the first bucket of the period's first queryable
     // hour, or of the current hour, exists.
-    const currentHourBucket = new Date(now);
-    currentHourBucket.setUTCMinutes(5, 15, 0);
+    const currentHourStart = Math.floor(now / HOUR_IN_MS) * HOUR_IN_MS;
 
     const nextFetch = Math.min(
       hourlyRefresh.getTime(),
@@ -1022,7 +1024,7 @@ const scheduleHourlyRefresh = (collection: EnergyCollection) => {
         firstShortTermStatsAfter(
           firstQueryableHour(collection.start.getTime())
         ),
-        currentHourBucket.getTime(),
+        firstShortTermStatsAfter(currentHourStart),
       ].filter((candidate) => candidate > now)
     );
 
