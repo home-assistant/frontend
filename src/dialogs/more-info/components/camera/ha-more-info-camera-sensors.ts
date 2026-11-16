@@ -18,7 +18,8 @@ import { showMoreInfoDialog } from "../../show-ha-more-info-dialog";
 
 /**
  * Shows what the camera detects, like motion, people, animals or a crying
- * baby: the binary sensors of its device.
+ * baby: the binary sensors of its device. Made to sit over the camera player,
+ * where the detected ones stay while the others fade with the controls.
  */
 @customElement("ha-more-info-camera-sensors")
 export class HaMoreInfoCameraSensors extends LitElement {
@@ -69,6 +70,7 @@ export class HaMoreInfoCameraSensors extends LitElement {
           const name =
             this._formatters.formatEntityName(stateObj, { type: "entity" }) ||
             this._formatters.formatEntityName(stateObj);
+          const label = `${name}: ${this._formatters.formatEntityState(stateObj)}`;
           return html`
             <button
               type="button"
@@ -77,12 +79,12 @@ export class HaMoreInfoCameraSensors extends LitElement {
                 active,
                 unavailable: stateObj.state === UNAVAILABLE,
               })}
-              title=${`${name}: ${this._formatters.formatEntityState(stateObj)}`}
+              title=${label}
+              aria-label=${label}
               data-entity-id=${stateObj.entity_id}
               @click=${this._showMoreInfo}
             >
               <ha-state-icon .stateObj=${stateObj}></ha-state-icon>
-              <span>${name}</span>
             </button>
           `;
         })}
@@ -101,49 +103,51 @@ export class HaMoreInfoCameraSensors extends LitElement {
 
     .sensors {
       display: flex;
-      margin-top: var(--ha-space-4);
-      gap: var(--ha-space-2);
-      overflow-x: auto;
-      padding: 0 var(--ha-space-4);
-      scrollbar-width: none;
+      flex-wrap: wrap;
+      gap: var(--ha-space-1);
     }
 
+    /* Readable on a dark and on a bright picture, like the player controls */
     .sensor {
-      flex: none;
       display: inline-flex;
       align-items: center;
-      gap: var(--ha-space-1);
-      height: 32px;
-      padding-inline: var(--ha-space-2) var(--ha-space-3);
-      border: none;
-      border-radius: var(--ha-border-radius-pill);
-      background-color: var(--ha-color-fill-neutral-quiet-resting);
-      color: var(--secondary-text-color);
-      font-family: inherit;
-      font-size: var(--ha-font-size-s);
-      font-weight: var(--ha-font-weight-medium);
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--ha-border-radius-circle);
+      background-color: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: white;
       cursor: pointer;
+      opacity: var(--camera-player-controls-opacity, 1);
+      pointer-events: var(--camera-player-controls-pointer-events, auto);
       transition:
-        background-color var(--ha-animation-duration-normal, 250ms) ease-in-out,
-        color var(--ha-animation-duration-normal, 250ms) ease-in-out;
+        opacity var(--ha-animation-duration-normal, 250ms) ease-in-out,
+        background-color var(--ha-animation-duration-normal, 250ms) ease-in-out;
     }
 
     .sensor:focus-visible {
-      outline: 2px solid var(--primary-color);
+      outline: 2px solid white;
       outline-offset: 2px;
     }
 
+    /* What the camera detects right now stays visible */
     .sensor.active {
-      background-color: var(--ha-color-fill-warning-quiet-resting);
-      color: var(--ha-color-on-warning-quiet);
+      opacity: 1;
+      pointer-events: auto;
+      background-color: var(--ha-color-fill-warning-loud-resting);
+      border-color: transparent;
     }
 
-    .sensor.unavailable {
+    .sensor.unavailable ha-state-icon {
       opacity: 0.5;
     }
 
     ha-state-icon {
-      --mdc-icon-size: 18px;
+      --mdc-icon-size: 16px;
     }
 
     @media (prefers-reduced-motion: reduce) {

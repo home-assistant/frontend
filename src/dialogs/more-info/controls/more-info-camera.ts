@@ -188,21 +188,19 @@ class MoreInfoCamera extends LitElement {
         @stream-type-changed=${this._streamTypeChanged}
         @camera-stream-status-changed=${this._streamStatusChanged}
         @camera-capabilities-changed=${this._capabilitiesChanged}
-      ></ha-camera-player>
-      ${
-        tabs.length || this._entry?.device_id
-          ? this._renderControls(tabs, tab)
-          : nothing
-      }
+      >
+        <ha-more-info-camera-sensors
+          slot="indicators"
+          .deviceId=${this._entry?.device_id}
+        ></ha-more-info-camera-sensors>
+      </ha-camera-player>
+      ${tabs.length ? this._renderControls(tabs, tab) : nothing}
     `;
   }
 
   private _renderControls(tabs: CameraControlTab[], tab?: CameraControlTab) {
     return html`
       <div class="controls">
-        <ha-more-info-camera-sensors
-          .deviceId=${this._entry?.device_id}
-        ></ha-more-info-camera-sensors>
         ${
           tabs.length > 1
             ? html`
@@ -459,11 +457,6 @@ class MoreInfoCamera extends LitElement {
         display: flex;
         flex-direction: column;
         align-items: center;
-      }
-
-      /* Every part spaces itself, so nothing takes room when it is empty */
-      ha-more-info-camera-sensors {
-        align-self: stretch;
       }
 
       .tabs {
