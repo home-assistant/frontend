@@ -13,6 +13,7 @@ import {
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { supportsFeature } from "../common/entity/supports-feature";
+import { colorTempSelectorForTargets } from "../common/color/color-temp-selector-range";
 import { hasTemplate } from "../common/string/has-template";
 import {
   fetchIntegrationManifest,
@@ -672,7 +673,7 @@ export class HaServiceControl extends LitElement {
     const fieldDataHasTemplate =
       this._value?.data && hasTemplate(this._value.data[dataField.key]);
 
-    const selector =
+    const baseSelector =
       fieldDataHasTemplate &&
       typeof this._value!.data![dataField.key] === "string"
         ? { template: null }
@@ -681,6 +682,11 @@ export class HaServiceControl extends LitElement {
           ? { object: null }
           : (this._stickySelector[dataField.key] ??
             dataField?.selector ?? { text: null });
+    const selector = colorTempSelectorForTargets(
+      baseSelector,
+      this.hass.states,
+      targetEntities
+    );
 
     if (fieldDataHasTemplate) {
       // Hold this selector type until the field is cleared
