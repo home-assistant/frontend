@@ -39,8 +39,8 @@ import type {
 } from "./automation-ai-agent";
 import { runAutomationAi } from "./automation-ai-agent";
 
-// The strip the collapsed sheet keeps visible: the header with its buttons
-const COLLAPSED_HEIGHT = 72;
+// The strip the collapsed sheet keeps visible until the header is measured
+const COLLAPSED_HEIGHT = 85;
 
 interface RunningTurn {
   prompt: string;
@@ -80,6 +80,11 @@ export class HaAutomationAiSheet extends LitElement {
   @consume({ context: narrowViewportContext, subscribe: true })
   private _narrow = false;
 
+  // The collapsed sheet keeps the whole header visible
+  @state() private _headerHeight?: number;
+
+  @query(".header") private _header?: HTMLElement;
+
   @state() private _prompt = "";
 
   @state() private _turns: AutomationAiTurn[] = [];
@@ -116,6 +121,10 @@ export class HaAutomationAiSheet extends LitElement {
 
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
+    const headerHeight = this._header?.offsetHeight;
+    if (headerHeight && headerHeight !== this._headerHeight) {
+      this._headerHeight = headerHeight;
+    }
     if (
       changedProps.has("suspended") &&
       changedProps.get("suspended") &&
@@ -139,7 +148,7 @@ export class HaAutomationAiSheet extends LitElement {
     }
     return html`
       <ha-snap-bottom-sheet
-        .minHeight=${COLLAPSED_HEIGHT}
+        .minHeight=${this._headerHeight ?? COLLAPSED_HEIGHT}
         .label=${this.hass.localize("ui.panel.config.automation.editor.ai.title")}
         @bottom-sheet-resized=${this._sheetResized}
         @bottom-sheet-closed=${this._sheetClosed}
@@ -166,7 +175,7 @@ export class HaAutomationAiSheet extends LitElement {
           ? "review"
           : "idle";
     return html`
-      <div class="header">
+      <div class="header ${this._narrow ? "" : "has-toggle"}">
         ${
           // On narrow screens people drag bottom sheets
           this._narrow
@@ -513,7 +522,7 @@ export class HaAutomationAiSheet extends LitElement {
       display: flex;
       align-items: center;
       gap: var(--ha-space-2);
-      padding: var(--ha-space-5) var(--ha-space-2) var(--ha-space-2)
+      padding: var(--ha-space-5) var(--ha-space-2) var(--ha-space-4)
         var(--ha-space-4);
       border-bottom: 1px solid var(--divider-color);
       flex-shrink: 0;
@@ -541,6 +550,10 @@ export class HaAutomationAiSheet extends LitElement {
     .accept[disabled] {
       color: var(--ha-color-on-disabled-normal);
       background-color: var(--ha-color-fill-disabled-normal-resting);
+    }
+    /* The toggle's own padding is enough space to the edge */
+    .header.has-toggle {
+      padding-inline-start: var(--ha-space-1);
     }
     .ai-icon {
       color: var(--primary-color);
