@@ -30,8 +30,6 @@ class HaConfigNavigationList extends LitElement {
       <ha-list-nav .ariaLabel=${this.label}>
         ${this.pages.map((page) => {
           const externalApp = page.path.endsWith("#external-app-configuration");
-          // Pass the text as properties instead of slotting it. Older Android
-          // WebViews (Chromium 83) can leave the button without a name otherwise
           return html`
             <ha-list-item-button
               .href=${externalApp ? undefined : page.path}
