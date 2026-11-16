@@ -53,7 +53,6 @@ import type {
 } from "../../../external_app/external_messaging";
 import { cameraControlHintStyle } from "../components/camera/camera-control-styles";
 import "../components/camera/ha-more-info-camera-ptz";
-import "../components/camera/ha-more-info-camera-sensors";
 
 type CameraControlTab = "call" | "ptz";
 
@@ -181,9 +180,6 @@ class MoreInfoCamera extends LitElement {
     const tab = this._tab && tabs.includes(this._tab) ? this._tab : tabs[0];
 
     return html`
-      <ha-more-info-camera-sensors
-        .deviceId=${this._entry?.device_id}
-      ></ha-more-info-camera-sensors>
       <ha-camera-player
         .stateObj=${this.stateObj}
         allow-exoplayer

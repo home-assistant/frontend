@@ -37,7 +37,6 @@ import {
 import { UNAVAILABLE } from "../../../../data/entity/entity";
 import { forwardHaptic } from "../../../../data/haptics";
 import { setSelectOption } from "../../../../data/select";
-import "../ha-more-info-control-select-container";
 import { cameraControlHintStyle } from "./camera-control-styles";
 
 const DIRECTION_ICONS: Record<PtzDirection, string> = {
@@ -92,21 +91,21 @@ export class HaMoreInfoCameraPtz extends LitElement {
     const hint = this._hint();
 
     return html`
-      <div class="pad">
-        ${ptz.move ? this._renderMove() : nothing}
+      <div class="ptz">
+        <div class="pad">
+          ${ptz.move ? this._renderMove() : nothing}
+          ${
+            ptz.zoom
+              ? this._renderZoomSlider(zoom)
+              : ptz.zoomIn
+                ? this._renderZoomButtons()
+                : nothing
+          }
+        </div>
+        ${hint ? html`<div class="hint">${hint}</div>` : nothing}
         ${
-          ptz.zoom
-            ? this._renderZoomSlider(zoom)
-            : ptz.zoomIn
-              ? this._renderZoomButtons()
-              : nothing
-        }
-      </div>
-      ${hint ? html`<div class="hint">${hint}</div>` : nothing}
-      ${
-        ptz.preset
-          ? html`
-              <ha-more-info-control-select-container>
+          ptz.preset
+            ? html`
                 <ha-control-select-menu
                   .label=${this._localize(
                     "ui.dialogs.more_info_control.camera.ptz.preset"
@@ -121,10 +120,10 @@ export class HaMoreInfoCameraPtz extends LitElement {
                     .path=${mdiStarFourPointsOutline}
                   ></ha-svg-icon>
                 </ha-control-select-menu>
-              </ha-more-info-control-select-container>
-            `
-          : nothing
-      }
+              `
+            : nothing
+        }
+      </div>
     `;
   }
 
@@ -412,10 +411,25 @@ export class HaMoreInfoCameraPtz extends LitElement {
     cameraControlHintStyle,
     css`
       :host {
+        display: block;
+      }
+
+      /* As wide as the pad, the note and presets below line up with it */
+      .ptz {
         display: flex;
         flex-direction: column;
-        align-items: center;
         gap: var(--ha-space-6);
+        width: fit-content;
+        margin: 0 auto;
+      }
+
+      .ptz > .hint,
+      ha-control-select-menu {
+        display: block;
+        box-sizing: border-box;
+        width: 0;
+        min-width: 100%;
+        max-width: none;
       }
 
       .pad {
@@ -552,10 +566,6 @@ export class HaMoreInfoCameraPtz extends LitElement {
       .zoom-button:focus-visible {
         outline: 2px solid var(--primary-color);
         outline-offset: 2px;
-      }
-
-      ha-more-info-control-select-container {
-        width: 100%;
       }
 
       @media (prefers-reduced-motion: reduce) {
