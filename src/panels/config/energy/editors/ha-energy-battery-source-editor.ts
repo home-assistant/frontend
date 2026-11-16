@@ -753,6 +753,9 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
             `
           : html`
               <ha-input
+                .accessibleLabel=${this._localize(
+                  "ui.panel.config.energy.battery.dialog.capacity"
+                )}
                 .value=${source.capacity != null ? String(source.capacity) : ""}
                 .hint=${this._localize(
                   "ui.panel.config.energy.battery.dialog.capacity_helper"
