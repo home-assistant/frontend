@@ -181,6 +181,7 @@ export class HaAutomationAiSheet extends LitElement {
           this._narrow
             ? nothing
             : html`<ha-icon-button
+                class="toggle"
                 .label=${this.hass.localize(
                   `ui.panel.config.automation.editor.ai.${this._collapsed ? "expand" : "collapse"}`
                 )}
@@ -554,6 +555,9 @@ export class HaAutomationAiSheet extends LitElement {
     /* The toggle's own padding is enough space to the edge */
     .header.has-toggle {
       padding-inline-start: var(--ha-space-1);
+    }
+    .toggle {
+      color: var(--secondary-text-color);
     }
     .ai-icon {
       color: var(--primary-color);
