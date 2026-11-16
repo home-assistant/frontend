@@ -144,10 +144,12 @@ class DialogCameraStreamInfo extends DialogMixin<CameraStreamInfoDialogParams>(
       ha-expansion-panel {
         display: block;
         margin-top: var(--ha-space-6);
+        --expansion-panel-summary-padding: 0 var(--ha-space-4);
+        --expansion-panel-content-padding: 0 var(--ha-space-4);
       }
 
       ul.unsupported {
-        margin: var(--ha-space-2) 0;
+        margin: var(--ha-space-2) 0 var(--ha-space-4);
       }
 
       li ha-svg-icon {
