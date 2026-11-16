@@ -8,6 +8,7 @@ import {
   mdiDotsVertical,
   mdiDownload,
   mdiHandExtendedOutline,
+  mdiHeartPulse,
   mdiPlayCircleOutline,
   mdiPlus,
   mdiProgressHelper,
@@ -48,6 +49,7 @@ import {
   updateConfigEntry,
 } from "../../../data/config_entries";
 import { groupDevicesByParent } from "../../../data/device/device_registry";
+import { showConfigEntryHealthDialog } from "./show-dialog-config-entry-health";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -335,6 +337,12 @@ export class HaConfigEntryRow extends LitElement {
                 `
               : nothing
           }
+          <ha-dropdown-item value="health">
+            <ha-svg-icon slot="icon" .path=${mdiHeartPulse}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.health.menu"
+            )}
+          </ha-dropdown-item>
           ${
             !item.disabled_by &&
             RECOVERABLE_STATES.includes(item.state) &&
@@ -470,14 +478,13 @@ export class HaConfigEntryRow extends LitElement {
                             expanded: this._devicesExpanded,
                           })}"
                         >
-                          <ha-icon-button
-                            class="expand-button ${classMap({
+                          <ha-svg-icon
+                            class="expand-icon ${classMap({
                               expanded: this._devicesExpanded,
                             })}"
                             .path=${mdiChevronDown}
                             slot="start"
-                          >
-                          </ha-icon-button>
+                          ></ha-svg-icon>
                           <span slot="headline"
                             >${this.hass.localize(
                               "ui.panel.config.integrations.config_entry.devices_without_subentry"
@@ -557,6 +564,14 @@ export class HaConfigEntryRow extends LitElement {
     const value = ev.detail.item.value;
     if (value === "reload") {
       this._handleReload();
+      return;
+    }
+    if (value === "health") {
+      showConfigEntryHealthDialog(this, {
+        entry: this.data.entry,
+        entities: this._getEntities(),
+        manifest: this.manifest,
+      });
       return;
     }
     if (value === "rename") {
@@ -874,6 +889,12 @@ export class HaConfigEntryRow extends LitElement {
         transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
       }
       .expand-button.expanded {
+        transform: rotate(180deg);
+      }
+      .expand-icon {
+        transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .expand-icon.expanded {
         transform: rotate(180deg);
       }
       .config-entry-wrapper {

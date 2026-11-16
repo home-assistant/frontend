@@ -1094,6 +1094,9 @@ export class HuiEnergySourcesTableCard
   }
 
   private _handleMoreInfo(ev): void {
+    if (window.getSelection()?.toString()) {
+      return;
+    }
     const entityId = ev.currentTarget?.entity;
     if (entityId && !isExternalStatistic(entityId)) {
       fireEvent(this, "hass-more-info", { entityId });
@@ -1128,6 +1131,7 @@ export class HuiEnergySourcesTableCard
       width: 100%;
     }
     .mdc-data-table__table {
+      user-select: text;
       width: 100%;
       min-width: 100%;
       border: 0;

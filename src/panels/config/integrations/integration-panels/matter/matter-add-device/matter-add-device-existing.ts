@@ -53,9 +53,11 @@ class MatterAddDeviceExisting extends LitElement {
           <ha-icon-next slot="end"></ha-icon-next>
         </ha-list-item-button>
         <ha-list-item-button .step=${"generic"} @click=${this._onItemClick}>
-          <div class="logo" slot="start">
-            <ha-svg-icon path=${mdiHomeAutomation}></ha-svg-icon>
-          </div>
+          <ha-svg-icon
+            class="logo-icon"
+            slot="start"
+            .path=${mdiHomeAutomation}
+          ></ha-svg-icon>
           <span slot="headline">
             ${this.hass.localize(
               `ui.dialogs.matter-add-device.existing.answer_generic`
@@ -88,8 +90,12 @@ class MatterAddDeviceExisting extends LitElement {
         justify-content: center;
         object-fit: contain;
       }
-      .logo ha-svg-icon {
+      /* 36px icon + padding + border = the 48px logo box */
+      .logo-icon {
         --mdc-icon-size: 36px;
+        padding: 5px;
+        border-radius: var(--ha-border-radius-lg);
+        border: 1px solid var(--divider-color);
       }
     `,
   ];

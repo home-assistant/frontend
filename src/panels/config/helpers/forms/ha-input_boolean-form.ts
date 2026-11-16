@@ -2,7 +2,9 @@ import { mdiInformationOutline } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-picker";
@@ -14,11 +16,12 @@ import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
 import "../../../../components/radio/ha-radio-option";
 import type { InputBoolean } from "../../../../data/input_boolean";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-input_boolean-form")
 class HaInputBooleanForm extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ type: Boolean }) public new = false;
 
@@ -52,7 +55,7 @@ class HaInputBooleanForm extends LitElement {
   }
 
   protected render() {
-    if (!this.hass) {
+    if (!this._localize) {
       return nothing;
     }
 
@@ -62,12 +65,10 @@ class HaInputBooleanForm extends LitElement {
           .value=${this._name}
           .configValue=${"name"}
           @input=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.name"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.generic.name")}
           auto-validate
           required
-          .validationMessage=${this.hass!.localize(
+          .validationMessage=${this._localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           dialogInitialFocus
@@ -77,13 +78,11 @@ class HaInputBooleanForm extends LitElement {
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.icon"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.generic.icon")}
           .disabled=${this.disabled}
         ></ha-icon-picker>
         <ha-expansion-panel
-          header=${this.hass.localize(
+          header=${this._localize(
             "ui.dialogs.helper_settings.generic.more_options"
           )}
           outlined
@@ -101,7 +100,7 @@ class HaInputBooleanForm extends LitElement {
             @change=${this._initialChanged}
           >
             <span slot="label">
-              ${this.hass.localize(
+              ${this._localize(
                 "ui.dialogs.helper_settings.input_boolean.initial"
               )}
               <ha-svg-icon
@@ -113,23 +112,23 @@ class HaInputBooleanForm extends LitElement {
               ></ha-svg-icon>
             </span>
             <ha-radio-option value="restore">
-              ${this.hass.localize(
+              ${this._localize(
                 "ui.dialogs.helper_settings.input_boolean.restore"
               )}
             </ha-radio-option>
             <ha-radio-option value="on">
-              ${this.hass.localize(
+              ${this._localize(
                 "ui.dialogs.helper_settings.input_boolean.turn_on"
               )}
             </ha-radio-option>
             <ha-radio-option value="off">
-              ${this.hass.localize(
+              ${this._localize(
                 "ui.dialogs.helper_settings.input_boolean.turn_off"
               )}
             </ha-radio-option>
           </ha-radio-group>
           <ha-tooltip for="initial-note" placement="top">
-            ${this.hass.localize(
+            ${this._localize(
               "ui.dialogs.helper_settings.input_boolean.initial_helper"
             )}
           </ha-tooltip>

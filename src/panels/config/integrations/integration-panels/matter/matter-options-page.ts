@@ -56,7 +56,7 @@ class MatterOptionsPage extends LitElement {
             }
             ${
               canCommissionMatterExternal(this.hass)
-                ? html`<ha-row-item>
+                ? html`<ha-row-item wrap-headline wrap-supporting-text>
                     <span slot="headline">
                       ${this.hass.localize(
                         "ui.panel.config.matter.panel.mobile_app_commisioning"
@@ -80,7 +80,7 @@ class MatterOptionsPage extends LitElement {
                   </ha-row-item>`
                 : nothing
             }
-            <ha-row-item>
+            <ha-row-item wrap-headline wrap-supporting-text>
               <span slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.matter.panel.commission_device"
@@ -102,7 +102,7 @@ class MatterOptionsPage extends LitElement {
                 )}
               </ha-button>
             </ha-row-item>
-            <ha-row-item>
+            <ha-row-item wrap-headline wrap-supporting-text>
               <span slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.matter.panel.add_shared_device"
@@ -124,7 +124,7 @@ class MatterOptionsPage extends LitElement {
                 )}
               </ha-button>
             </ha-row-item>
-            <ha-row-item>
+            <ha-row-item wrap-headline wrap-supporting-text>
               <span slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.matter.panel.set_wifi_credentials"
@@ -146,7 +146,7 @@ class MatterOptionsPage extends LitElement {
                 )}
               </ha-button>
             </ha-row-item>
-            <ha-row-item>
+            <ha-row-item wrap-headline wrap-supporting-text>
               <span slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.matter.panel.set_thread_credentials"

@@ -1094,7 +1094,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     if (!range) {
       return undefined;
     }
-    this._maskShown = true;
     return {
       silent: true,
       z: 10,
@@ -1111,8 +1110,12 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   // Only the first series carries the mask, merged in without resending data
   private _updateMask() {
+    const maskArea = this._getMaskArea();
+    if (maskArea) {
+      this._maskShown = true;
+    }
     this.chart?.setOption({
-      series: [{ markArea: this._getMaskArea() ?? { data: [] } }],
+      series: [{ markArea: maskArea ?? { data: [] } }],
     });
   }
 
@@ -1649,6 +1652,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     const xAxis = (this.options?.xAxis?.[0] ?? this.options?.xAxis) as
       XAXisOption | undefined;
     const maskArea = this._getMaskArea();
+    if (maskArea) {
+      this._maskShown = true;
+    }
     const series = ensureArray(this.data).map((s, index) => {
       const data = this._hiddenDatasets.has(String(s.id ?? s.name))
         ? undefined

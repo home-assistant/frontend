@@ -15,6 +15,7 @@ import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { ConfigPath } from "../../../common/util/config-path";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dropdown";
@@ -29,7 +30,6 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { duplicateSection } from "../editor/config-util";
-import type { LovelacePath } from "../editor/lovelace-path";
 import {
   deleteAtPath,
   getAtPath,
@@ -48,7 +48,7 @@ export class HuiSectionEditMode extends LitElement {
 
   @property({ attribute: false }) public lovelace!: Lovelace;
 
-  @property({ attribute: false }) public path!: LovelacePath;
+  @property({ attribute: false }) public path!: ConfigPath;
 
   @property({ type: Boolean, attribute: "is-strategy", reflect: true })
   public isStrategy = false;

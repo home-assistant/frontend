@@ -278,6 +278,13 @@ export class HaNumericThresholdSelector extends LitElement {
     `;
   }
 
+  private _getActiveChoice(entry: ThresholdValueEntry | undefined) {
+    return (
+      entry?.active_choice ??
+      (entry?.entity !== undefined ? "entity" : "number")
+    );
+  }
+
   private _renderValueRow(
     rowLabel: string,
     entry: ThresholdValueEntry | undefined,
@@ -287,7 +294,7 @@ export class HaNumericThresholdSelector extends LitElement {
     unitOptions: readonly string[] | undefined,
     choiceToggleButtons: { label: string; value: string }[]
   ) {
-    const activeChoice = entry?.active_choice ?? "number";
+    const activeChoice = this._getActiveChoice(entry);
     const isEntity = activeChoice === "entity";
     const showUnit = !isEntity && !!unitOptions && unitOptions.length > 1;
     const innerValue = isEntity ? entry?.entity : entry?.number;
@@ -409,7 +416,7 @@ export class HaNumericThresholdSelector extends LitElement {
     ev: CustomEvent
   ) {
     ev.stopPropagation();
-    const activeChoice = this.value?.[field]?.active_choice ?? "number";
+    const activeChoice = this._getActiveChoice(this.value?.[field]);
     const defaultUnit = this._getUnitOptions()?.[0];
     const entry: ThresholdValueEntry = {
       ...this.value?.[field],
@@ -450,7 +457,7 @@ export class HaNumericThresholdSelector extends LitElement {
   ) {
     const unit = ev.detail?.value;
     if (unit === this.value?.[field]?.unit_of_measurement) return;
-    const activeChoice = this.value?.[field]?.active_choice ?? "number";
+    const activeChoice = this._getActiveChoice(this.value?.[field]);
     const defaultType = field === "value" ? "above" : "between";
     fireEvent(this, "value-changed", {
       value: {

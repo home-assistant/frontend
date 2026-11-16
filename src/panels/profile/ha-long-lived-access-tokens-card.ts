@@ -2,12 +2,12 @@ import { mdiDelete } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import "@home-assistant/components/card";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
-import "../../components/ha-card";
 import "../../components/ha-icon-button";
 import type { HaIconButton } from "../../components/ha-icon-button";
 import "../../components/ha-settings-row";
@@ -37,83 +37,79 @@ class HaLongLivedTokens extends LitElement {
     const accessTokens = this._accessTokens(this.refreshTokens);
 
     return html`
-      <ha-card
-        .header=${this.hass.localize(
-          "ui.panel.profile.long_lived_access_tokens.header"
-        )}
-      >
-        <div class="card-content">
+      <hac-card>
+        <h2 slot="header" class="header">
           ${this.hass.localize(
-            "ui.panel.profile.long_lived_access_tokens.description"
+            "ui.panel.profile.long_lived_access_tokens.header"
           )}
+        </h2>
+        ${this.hass.localize(
+          "ui.panel.profile.long_lived_access_tokens.description"
+        )}
 
-          <a
-            href="https://contributors.home-assistant.io/core/internals/auth-api/#make-authenticated-requests"
-            target="_blank"
-            rel="noreferrer"
-          >
-            ${this.hass.localize(
-              "ui.panel.profile.long_lived_access_tokens.learn_auth_requests"
-            )}
-          </a>
-          ${
-            !accessTokens.length
-              ? html`<p>
-                  ${this.hass.localize(
-                    "ui.panel.profile.long_lived_access_tokens.empty_state"
-                  )}
-                </p>`
-              : accessTokens.map(
-                  (token) =>
-                    html`<ha-settings-row two-line>
-                      <span slot="heading">${token.client_name}</span>
-                      <div slot="description">
-                        ${this.hass.localize(
-                          "ui.panel.profile.long_lived_access_tokens.created",
-                          {
-                            date: relativeTime(
-                              new Date(token.created_at),
-                              this.hass.locale
-                            ),
-                          }
-                        )}
-                      </div>
-                      ${
-                        this._hasBeenUsed(token)
-                          ? html`<div slot="description">
-                              ${this.hass.localize(
-                                "ui.panel.profile.long_lived_access_tokens.last_used",
-                                {
-                                  date: relativeTime(
-                                    new Date(token.last_used_at),
-                                    this.hass.locale
-                                  ),
-                                  location: token.last_used_ip,
-                                }
-                              )}
-                            </div>`
-                          : nothing
-                      }
-                      <ha-icon-button
-                        .token=${token}
-                        .disabled=${token.is_current}
-                        .label=${this.hass.localize("ui.common.delete")}
-                        .path=${mdiDelete}
-                        @click=${this._deleteToken}
-                      ></ha-icon-button>
-                    </ha-settings-row>`
-                )
-          }
-        </div>
-
-        <div class="card-actions">
-          <ha-button @click=${this._createToken}>
-            ${this.hass.localize(
-              "ui.panel.profile.long_lived_access_tokens.create"
-            )}
-          </ha-button>
-        </div>
-      </ha-card>
+        <a
+          href="https://contributors.home-assistant.io/core/internals/auth-api/#make-authenticated-requests"
+          target="_blank"
+          rel="noreferrer"
+        >
+          ${this.hass.localize(
+            "ui.panel.profile.long_lived_access_tokens.learn_auth_requests"
+          )}
+        </a>
+        ${
+          !accessTokens.length
+            ? html`<p>
+                ${this.hass.localize(
+                  "ui.panel.profile.long_lived_access_tokens.empty_state"
+                )}
+              </p>`
+            : accessTokens.map(
+                (token) =>
+                  html`<ha-settings-row two-line>
+                    <span slot="heading">${token.client_name}</span>
+                    <div slot="description">
+                      ${this.hass.localize(
+                        "ui.panel.profile.long_lived_access_tokens.created",
+                        {
+                          date: relativeTime(
+                            new Date(token.created_at),
+                            this.hass.locale
+                          ),
+                        }
+                      )}
+                    </div>
+                    ${
+                      this._hasBeenUsed(token)
+                        ? html`<div slot="description">
+                            ${this.hass.localize(
+                              "ui.panel.profile.long_lived_access_tokens.last_used",
+                              {
+                                date: relativeTime(
+                                  new Date(token.last_used_at),
+                                  this.hass.locale
+                                ),
+                                location: token.last_used_ip,
+                              }
+                            )}
+                          </div>`
+                        : nothing
+                    }
+                    <ha-icon-button
+                      .token=${token}
+                      .disabled=${token.is_current}
+                      .label=${this.hass.localize("ui.common.delete")}
+                      .path=${mdiDelete}
+                      @click=${this._deleteToken}
+                    ></ha-icon-button>
+                  </ha-settings-row>`
+              )
+        }
+        <ha-button slot="footer" @click=${this._createToken}>
+          ${this.hass.localize(
+            "ui.panel.profile.long_lived_access_tokens.create"
+          )}
+        </ha-button>
+      </hac-card>
     `;
   }
 
@@ -174,6 +170,9 @@ class HaLongLivedTokens extends LitElement {
     return [
       haStyle,
       css`
+        hac-card::part(footer) {
+          justify-content: flex-end;
+        }
         ha-settings-row {
           padding: 0;
         }
@@ -183,9 +182,18 @@ class HaLongLivedTokens extends LitElement {
         ha-icon-button {
           color: var(--primary-text-color);
         }
-        .card-actions {
-          display: flex;
-          justify-content: flex-end;
+        .header {
+          margin: 0;
+          padding: var(--ha-space-5) var(--ha-space-4) var(--ha-space-4);
+          color: var(--ha-card-header-color, var(--primary-text-color));
+          font-family: var(--ha-card-header-font-family, inherit);
+          font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          letter-spacing: -0.012em;
+          /* haStyle truncates h2 to one line, long titles should wrap */
+          white-space: normal;
+          overflow: visible;
         }
       `,
     ];

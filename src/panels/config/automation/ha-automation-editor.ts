@@ -1162,7 +1162,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         }
 
         if (entityId) {
-          await updateEntityRegistryEntry(this.hass, entityId, {
+          await updateEntityRegistryEntry(this.hass.callWS, entityId, {
             categories: {
               automation: this.entityRegistryUpdate.category || null,
             },

@@ -1,4 +1,5 @@
 import deepClone from "deep-clone-simple";
+import { pathEquals, type ConfigPath } from "../../../common/util/config-path";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type {
@@ -9,7 +10,6 @@ import { isStrategySection } from "../../../data/lovelace/config/section";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import type { LovelacePath } from "./lovelace-path";
 import {
   appendAtPath,
   deleteAtPath,
@@ -18,20 +18,19 @@ import {
   insertAtPath,
   getPathTarget,
   moveAtPath,
-  pathEquals,
   setAtPath,
 } from "./lovelace-path";
 
 export const addCard = (
   config: LovelaceConfig,
-  containerPath: LovelacePath,
+  containerPath: ConfigPath,
   cardConfig: LovelaceCardConfig
 ): LovelaceConfig =>
   appendAtPath(config, [...containerPath, "cards"], cardConfig);
 
 export const addCards = (
   config: LovelaceConfig,
-  containerPath: LovelacePath,
+  containerPath: ConfigPath,
   cardConfigs: LovelaceCardConfig[]
 ): LovelaceConfig => {
   const cardsPath = [...containerPath, "cards"];
@@ -42,7 +41,7 @@ export const addCards = (
 
 export const addCardAtPath = (
   config: LovelaceConfig,
-  path: LovelacePath,
+  path: ConfigPath,
   cardConfig: LovelaceCardConfig
 ): LovelaceConfig =>
   getPathTarget(path) === "slot"
@@ -51,7 +50,7 @@ export const addCardAtPath = (
 
 export const moveCardToIndex = (
   config: LovelaceConfig,
-  cardPath: LovelacePath,
+  cardPath: ConfigPath,
   index: number
 ): LovelaceConfig => {
   const collectionPath = getParentPath(cardPath);
@@ -62,8 +61,8 @@ export const moveCardToIndex = (
 
 export const moveCardToContainer = (
   config: LovelaceConfig,
-  cardPath: LovelacePath,
-  containerPath: LovelacePath
+  cardPath: ConfigPath,
+  containerPath: ConfigPath
 ): LovelaceConfig => {
   const fromCardsPath = getParentPath(cardPath);
   const toCardsPath = [...containerPath, "cards"];
@@ -87,7 +86,7 @@ export const adoptViewLayout = (
 
 export const getCardSectionConfig = (
   config: LovelaceConfig,
-  path: LovelacePath
+  path: ConfigPath
 ): LovelaceSectionConfig | undefined => {
   const parentPath = getParentPath(path);
   const containerPath =
@@ -210,14 +209,14 @@ export const moveViewToDashboard = (
 
 export const addSection = (
   config: LovelaceConfig,
-  containerPath: LovelacePath,
+  containerPath: ConfigPath,
   sectionConfig: LovelaceSectionRawConfig
 ): LovelaceConfig =>
   appendAtPath(config, [...containerPath, "sections"], sectionConfig);
 
 export const duplicateSection = (
   config: LovelaceConfig,
-  sectionPath: LovelacePath
+  sectionPath: ConfigPath
 ): LovelaceConfig => {
   const index = sectionPath[sectionPath.length - 1] as number;
   const sectionsPath = getParentPath(sectionPath);
@@ -227,7 +226,7 @@ export const duplicateSection = (
 
 export const addBadges = (
   config: LovelaceConfig,
-  containerPath: LovelacePath,
+  containerPath: ConfigPath,
   badgeConfigs: LovelaceBadgeConfig[]
 ): LovelaceConfig => {
   const badgesPath = [...containerPath, "badges"];

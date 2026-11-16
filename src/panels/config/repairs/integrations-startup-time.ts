@@ -74,9 +74,9 @@ class IntegrationsStartupTime extends LitElement {
                 ${domainToName(this.hass.localize, setup.domain, manifest)}
               </span>
               <span slot="supporting-text">${setup.domain}</span>
-              <div slot="end">
+              <span slot="end">
                 ${setupSeconds ? html`${setupSeconds} s` : ""}
-              </div>
+              </span>
             </ha-list-item-button>
           `;
         })}
@@ -93,7 +93,7 @@ class IntegrationsStartupTime extends LitElement {
   }
 
   private async _fetchSetups() {
-    const setups = await fetchIntegrationSetups(this.hass);
+    const setups = await fetchIntegrationSetups(this.hass.callWS);
     this._setups = setups.sort((a, b) => {
       if (a.seconds === b.seconds) {
         return 0;
@@ -115,7 +115,7 @@ class IntegrationsStartupTime extends LitElement {
       max-width: 40px;
       border-radius: var(--ha-border-radius-square);
     }
-    div[slot="end"] {
+    span[slot="end"] {
       font-size: var(--ha-font-size-s);
     }
   `;

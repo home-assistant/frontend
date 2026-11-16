@@ -21,7 +21,7 @@ class HaBackupConfigAddon extends LitElement {
   protected render() {
     return html`
       <ha-list-base>
-        <ha-list-item-base>
+        <ha-list-item-base wrap-headline wrap-supporting-text>
           <span slot="headline">
             ${this.hass.localize(
               `ui.panel.config.backup.schedule.update_preference.label`
@@ -55,7 +55,7 @@ class HaBackupConfigAddon extends LitElement {
             ]}
           ></ha-select>
         </ha-list-item-base>
-        <ha-list-item-base>
+        <ha-list-item-base wrap-headline wrap-supporting-text>
           <span slot="headline">
             ${this.hass.localize(`ui.panel.config.backup.schedule.retention`)}
           </span>
@@ -112,10 +112,6 @@ class HaBackupConfigAddon extends LitElement {
   static styles = css`
     ha-list-base {
       --ha-row-item-padding-inline: 0;
-    }
-    ha-list-item-base::part(headline),
-    ha-list-item-base::part(supporting-text) {
-      white-space: wrap;
     }
     ha-select {
       min-width: 210px;

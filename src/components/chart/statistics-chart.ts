@@ -290,17 +290,22 @@ export class StatisticsChart extends LitElement {
   ): ChartTimeRange | undefined => {
     let start: number | undefined;
     let end: number | undefined;
-    Object.values(this.statisticsData ?? {}).forEach((values) =>
-      values.forEach((value) => {
-        const touched =
-          range.start === range.end
-            ? value.start <= range.start && range.start < value.end
-            : value.start < range.end && value.end > range.start;
-        if (touched) {
-          start = Math.min(start ?? value.start, value.start);
-          end = Math.max(end ?? value.end, value.end);
+    Object.entries(this.statisticsData ?? {}).forEach(
+      ([statisticId, values]) => {
+        if (this._hiddenStats.has(statisticId)) {
+          return;
         }
-      })
+        values.forEach((value) => {
+          const touched =
+            range.start === range.end
+              ? value.start <= range.start && range.start < value.end
+              : value.start < range.end && value.end > range.start;
+          if (touched) {
+            start = Math.min(start ?? value.start, value.start);
+            end = Math.max(end ?? value.end, value.end);
+          }
+        });
+      }
     );
     return start === undefined || end === undefined
       ? undefined

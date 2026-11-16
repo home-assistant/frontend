@@ -211,6 +211,10 @@ export const getMyRedirects = (): Redirects => ({
   tools_states: {
     redirect: "/config/tools/state",
   },
+  tools_action_history: {
+    component: "logbook",
+    redirect: "/config/tools/action-history",
+  },
   tools_actions: {
     redirect: "/config/tools/action",
   },
