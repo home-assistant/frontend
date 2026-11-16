@@ -180,15 +180,17 @@ class MoreInfoCamera extends LitElement {
     const tab = this._tab && tabs.includes(this._tab) ? this._tab : tabs[0];
 
     return html`
-      <ha-camera-player
-        .stateObj=${this.stateObj}
-        allow-exoplayer
-        @microphone-changed=${this._microphoneChanged}
-        @stream-type-changed=${this._streamTypeChanged}
-        @camera-stream-status-changed=${this._streamStatusChanged}
-        @camera-capabilities-changed=${this._capabilitiesChanged}
-      ></ha-camera-player>
-      ${tabs.length ? this._renderControls(tabs, tab) : nothing}
+      <div class="layout">
+        <ha-camera-player
+          .stateObj=${this.stateObj}
+          allow-exoplayer
+          @microphone-changed=${this._microphoneChanged}
+          @stream-type-changed=${this._streamTypeChanged}
+          @camera-stream-status-changed=${this._streamStatusChanged}
+          @camera-capabilities-changed=${this._capabilitiesChanged}
+        ></ha-camera-player>
+        ${tabs.length ? this._renderControls(tabs, tab) : nothing}
+      </div>
     `;
   }
 
@@ -445,6 +447,7 @@ class MoreInfoCamera extends LitElement {
     css`
       :host {
         display: block;
+        container-type: inline-size;
       }
 
       .controls {
@@ -455,6 +458,25 @@ class MoreInfoCamera extends LitElement {
 
       .tabs {
         margin-top: var(--ha-space-4);
+      }
+
+      /* Wide enough, like on a desktop: the controls go next to the picture */
+      @container (min-width: 760px) {
+        .layout {
+          display: flex;
+          align-items: center;
+        }
+
+        ha-camera-player {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .controls {
+          flex: none;
+          width: 340px;
+          padding: var(--ha-space-2) 0;
+        }
       }
 
       ha-more-info-camera-ptz,
