@@ -19,6 +19,7 @@ interface MinMaxFrame {
   maxPoint: Point;
   maxX: number;
   maxY: number;
+  lastX: number;
   gapPoint: Point | undefined;
 }
 
@@ -68,6 +69,7 @@ function newFrame(
     maxPoint: point,
     maxX: x,
     maxY: y,
+    lastX: x,
     gapPoint,
   };
 }
@@ -174,6 +176,7 @@ export function downSampleLineData<
     if (!frame) {
       frames.set(frameIndex, newFrame(point, x, y, undefined));
     } else if (frame.hasValue) {
+      frame.lastX = x;
       // Match the original strict-less / strict-greater comparisons so the
       // first occurrence wins on ties.
       if (y < frame.minY) {
@@ -189,6 +192,7 @@ export function downSampleLineData<
     } else {
       // the frame held nothing but a marker so far
       frame.hasValue = true;
+      frame.lastX = x;
       frame.minPoint = point;
       frame.minX = x;
       frame.minY = y;
@@ -213,11 +217,8 @@ export function downSampleLineData<
     if (frame.gapPoint !== undefined) {
       // A marker followed by a value in its own frame is a gap that closed
       // within one frame, which is about one device pixel: too narrow to show.
-      // The kept points are exactly min and max, so comparing against the
-      // later of the two catches that without any work on the ingest path. A
-      // marker-only frame compares against its own x and always passes.
-      const lastValueX = frame.minX > frame.maxX ? frame.minX : frame.maxX;
-      if (Number(getPointData(frame.gapPoint)[0]) >= lastValueX) {
+      // That value may be neither min nor max, so check the frame's last x.
+      if (Number(getPointData(frame.gapPoint)[0]) >= frame.lastX) {
         result.push(frame.gapPoint as T);
       }
     }

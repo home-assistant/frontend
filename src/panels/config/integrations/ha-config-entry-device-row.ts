@@ -130,7 +130,7 @@ class HaConfigEntryDeviceRow extends LitElement {
         )}</span
       >
       ${!this.narrow ? html`<ha-icon-next slot="end"></ha-icon-next>` : nothing}
-      <div class="vertical-divider" slot="end" @click=${stopPropagation}></div>
+      <div class="vertical-divider" slot="end"></div>
       ${
         !this.narrow
           ? html`<ha-icon-button

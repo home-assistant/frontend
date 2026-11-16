@@ -19,6 +19,7 @@ import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mi
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import "../../../components/entity/ha-favorites-editor";
+import { computeFavoriteCardsSize } from "../../lovelace/strategies/helpers/favorite-cards";
 import "../components/home-shortcuts-editor";
 import { HomeConfigDraftSession } from "./home-config-draft-session";
 import {
@@ -29,9 +30,9 @@ import {
 } from "./home-config-editor-state";
 import type { EditHomeDialogParams } from "./show-dialog-edit-home";
 
-// The common-controls strategy caps the section at 8 (or the favorites count,
-// whichever is larger); once favorites reach the cap, predictions never render
-// so the suggested-entities toggle has no effect.
+// The common-controls strategy caps the section at 8 slots (or the slots the
+// favorites use, whichever is larger); once favorites reach the cap,
+// predictions never render so the suggested-entities toggle has no effect.
 const SUGGESTED_ENTITIES_CAP = 8;
 
 const WELCOME_SCHEMA: HaFormSchema[] = [
@@ -182,7 +183,8 @@ export class DialogEditHome
                 show_suggested_entities: draft.show_suggested_entities,
               }}
               .schema=${this._suggestedSchema(
-                draft.favorite_entities.length >= SUGGESTED_ENTITIES_CAP
+                computeFavoriteCardsSize(draft.favorite_entities) >=
+                  SUGGESTED_ENTITIES_CAP
               )}
               .computeLabel=${this._computeSuggestedLabel}
               .computeHelper=${this._computeSuggestedHelper}
@@ -264,7 +266,7 @@ export class DialogEditHome
 
   private _computeSuggestedHelper = (): string => {
     const favoritesFull =
-      (this._session?.draft.favorite_entities.length ?? 0) >=
+      computeFavoriteCardsSize(this._session?.draft.favorite_entities ?? []) >=
       SUGGESTED_ENTITIES_CAP;
     return this.hass.localize(
       favoritesFull

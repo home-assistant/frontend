@@ -225,12 +225,10 @@ class MqttSubscribeCard extends LitElement {
 
   static styles = css`
     form {
-      padding: var(--ha-space-4);
-      padding-bottom: var(--ha-space-8);
+      padding: var(--ha-space-4) 0 var(--ha-space-8);
     }
     .content_subscribe_panel {
-      margin-top: var(--ha-space-6);
-      max-width: 600px;
+      max-width: var(--ha-content-width-narrow);
       margin: 0 auto;
       direction: ltr;
     }

@@ -1106,6 +1106,46 @@
         "failed_create_floor": "Failed to create floor.",
         "unknown": "Unknown floor selected"
       },
+      "rooms": {
+        "keywords": {
+          "living_room": "living room|lounge|family room|sitting room|den|living",
+          "bedroom": "bedroom|guest room|master bedroom|master suite|bed room",
+          "kids_room": "kids room|kids' room|kid's room|children's room|nursery|playroom|baby room",
+          "kitchen": "kitchen|kitchenette",
+          "dining_room": "dining room|dining area|dining",
+          "bathroom": "bathroom|bath|shower room|ensuite|washroom",
+          "toilet": "toilet|wc|restroom|powder room|loo|lavatory",
+          "office": "office|study|home office|workspace|workroom",
+          "laundry_room": "laundry|laundry room",
+          "hallway": "hallway|hall|corridor|entrance|entryway|foyer|mudroom",
+          "stairs": "stairs|staircase|stairway|stairwell|landing",
+          "garage": "garage|carport",
+          "garden": "garden|yard|backyard|front yard|lawn|greenhouse",
+          "terrace": "terrace|patio|balcony|deck|porch|veranda",
+          "basement": "basement|cellar",
+          "attic": "attic|loft",
+          "storage": "storage|storage room|pantry|closet|shed|storeroom",
+          "utility_room": "utility room|boiler room|technical room|plant room",
+          "pool": "pool|swimming pool|pool house",
+          "media_room": "media room|home cinema|home theater|home theatre|cinema room|movie room|tv room",
+          "game_room": "game room|games room|gaming room|recreation room|rec room|billiard room",
+          "music_room": "music room|music studio|piano room|practice room",
+          "library": "library|reading room|book room",
+          "bar": "bar|home bar|pub|wine room|wine cellar",
+          "dressing_room": "dressing room|walk-in closet|walk-in wardrobe",
+          "workshop": "workshop|tool room|craft room|hobby room",
+          "server_room": "server room|network room|rack room",
+          "safe_room": "safe room|panic room|shelter|storm shelter|bunker",
+          "prayer_room": "prayer room|chapel|meditation room",
+          "sauna": "sauna|steam room",
+          "outdoor_kitchen": "outdoor kitchen|summer kitchen|barbecue area|bbq area|grill area",
+          "driveway": "driveway|parking|parking space"
+        }
+      },
+      "icon_picker": {
+        "suggested": "Suggested",
+        "all_icons": "All icons"
+      },
       "area-filter": {
         "title": "Areas",
         "no_areas": "No areas",
@@ -1333,6 +1373,7 @@
         "not_supported": "WebRTC is not supported in this browser.",
         "start_failed": "Failed to start the WebRTC stream: {message}",
         "connect_failed": "Failed to connect the WebRTC stream: {message}",
+        "no_connection": "Could not connect the WebRTC stream.",
         "microphone_failed": "Could not access the microphone: {message}",
         "microphone_connect_failed": "Could not connect the microphone to the camera: {message}"
       },
@@ -1891,6 +1932,7 @@
       "image_cropper": {
         "crop": "Crop",
         "crop_image": "Picture to crop",
+        "load_error": "This picture could not be loaded. Try another file.",
         "use_original": "Use original"
       },
       "date-picker": {
@@ -2027,10 +2069,17 @@
           "copy_favorites": "Copy favorites to...",
           "copy_favorites_helper": "Select one or more covers to receive the copied favorites from this cover. Covers must support the same position controls.",
           "copy_favorites_entities": "[%key:ui::panel::lovelace::editor::card::generic::entities%]",
-          "switch_mode": {
-            "button": "Switch to button mode",
-            "position": "Switch to position mode"
-          },
+          "open": "Open",
+          "close": "Close",
+          "stop": "Stop",
+          "requested": "Requested {value}",
+          "requested_open": "Requested open",
+          "requested_closed": "Requested closed",
+          "currently": "Currently {value}",
+          "currently_unknown": "Currently unknown",
+          "requested_value_text": "{value}, currently {current}",
+          "opens_on_release": "Opens on release",
+          "closes_on_release": "Closes on release",
           "favorite_position": {
             "set": "Set position to {value}",
             "edit": "Set position to {value}",
@@ -2114,8 +2163,8 @@
           "copy_favorites_helper": "Select one or more valves to receive the copied favorites from this valve.",
           "copy_favorites_entities": "[%key:ui::panel::lovelace::editor::card::generic::entities%]",
           "switch_mode": {
-            "button": "[%key:ui::dialogs::more_info_control::cover::switch_mode::button%]",
-            "position": "[%key:ui::dialogs::more_info_control::cover::switch_mode::position%]"
+            "button": "Switch to button mode",
+            "position": "Switch to position mode"
           },
           "favorite_position": {
             "set": "[%key:ui::dialogs::more_info_control::cover::favorite_position::set%]",
@@ -3243,13 +3292,13 @@
         },
         "mcp": {
           "header": "Model Context Protocol",
-          "description": "Add one of the URLs below to your AI agent. See the {documentation_link} for agent-specific instructions.",
-          "description_disabled": "See the {documentation_link} to learn how to connect your AI agent to Home Assistant.",
+          "description": "Add one of the URLs below to your AI app. See the {documentation_link} for app-specific instructions.",
+          "description_disabled": "See the {documentation_link} to learn how to connect your AI app to Home Assistant.",
           "documentation": "documentation",
           "enable": "[%key:ui::common::enable%]",
           "disable": "[%key:ui::common::disable%]",
           "disable_confirm_title": "Disable the Model Context Protocol server?",
-          "disable_confirm_text": "AI agents connected to the server will lose access to Home Assistant.",
+          "disable_confirm_text": "AI apps connected to the server will lose access to Home Assistant.",
           "your_api_header": "Main URL",
           "apis_header": "Individual URLs",
           "copy_url": "Copy URL",
@@ -4663,6 +4712,8 @@
           },
           "delete_source": "Are you sure you want to remove this source?",
           "save_config_failed": "Failed to save config: {error}",
+          "unsaved_confirm_title": "[%key:ui::panel::config::automation::editor::unsaved_confirm_title%]",
+          "unsaved_confirm_text": "[%key:ui::panel::config::automation::editor::unsaved_confirm_text%]",
           "delete_integration": "Are you sure you want to remove this integration? It will remove the entities it provides",
           "grid": {
             "title": "Electricity grid",
@@ -4670,7 +4721,6 @@
             "learn_more": "More information on how to get started",
             "grid_connections": "Grid connections",
             "add_connection": "Add grid connection",
-            "edit_connection": "Edit grid connection",
             "delete_connection": "Delete grid connection",
             "grid_carbon_footprint": "Grid carbon footprint",
             "remove_co2_signal": "Remove Electricity Maps integration",
@@ -4736,7 +4786,6 @@
             "sub": "Let Home Assistant monitor your solar panels and give you insight on their performance.",
             "learn_more": "More information on how to get started",
             "solar_production": "Solar production",
-            "edit_solar_production": "Edit solar production",
             "delete_solar_production": "Remove solar production",
             "add_solar_production": "Add solar production",
             "stat_production": "Your solar energy production",
@@ -4750,8 +4799,6 @@
               "solar_production_power": "Solar production power",
               "solar_production_forecast": "Solar production forecast",
               "solar_production_forecast_description": "Adding solar production forecast information will allow you to quickly see your expected production for today.",
-              "dont_forecast_production": "Don't forecast production",
-              "forecast_production": "Forecast production",
               "add_forecast": "Add forecast",
               "energy_sensor_needed": "To track your solar production, you need an energy sensor."
             }
@@ -4761,7 +4808,6 @@
             "sub": "If you have a meter that measures your whole house consumption, you can configure it here.",
             "add_home_meter": "Add home meter",
             "remove_home_meter": "Remove home meter",
-            "edit_home_meter": "Edit home meter",
             "dialog": {
               "header": "Configure home consumption",
               "entity_para": "Pick a sensor which measures home consumption in either of {unit}.",
@@ -4776,9 +4822,17 @@
             "sub": "If you have a battery system, you can configure it to monitor how much energy was stored and used from your battery.",
             "learn_more": "More information on how to get started",
             "battery_systems": "Battery systems",
-            "edit_battery_system": "Edit battery system",
             "delete_battery_system": "Remove battery system",
             "add_battery_system": "Add battery system",
+            "summary": {
+              "directions": "{charge} · {discharge}",
+              "charges_from_grid": "Charges from grid",
+              "charges_from_solar": "Charges from solar",
+              "charges_from_grid_and_solar": "Charges from grid and solar",
+              "discharges_to_home": "Discharges to home",
+              "discharges_to_grid": "Discharges to grid",
+              "discharges_to_home_and_grid": "Discharges to home and grid"
+            },
             "dialog": {
               "header": "Configure battery system",
               "energy_helper_into": "Pick a sensor that measures the electricity flowing into the battery in either of {unit}.",
@@ -4805,7 +4859,50 @@
               "helper_sensor_in_use": "Currently using entity {entity}",
               "energy_sensors_needed": "To track your battery, you need sensors for the energy charged into and discharged from it.",
               "discharged_energy_name": "{name} discharged energy",
-              "charged_energy_name": "{name} charged energy"
+              "charged_energy_name": "{name} charged energy",
+              "measurement_intro": "Some batteries only measure the electricity that goes in and comes out. Others also measure where it comes from (grid or solar) and where it goes (home or grid). Check your battery's sensors and pick what they measure.",
+              "measurement": "What does your battery measure?",
+              "measurement_total": "Only total in and out",
+              "measurement_total_description": "One sensor for electricity going into the battery and one for electricity coming out.",
+              "measurement_directions": "Separately for grid, solar, and home",
+              "measurement_directions_description": "Separate sensors for charging from the grid and from solar, and for discharging to the home and to the grid.",
+              "measurement_directions_helper": "Pick at least one sensor for charging and one for discharging.",
+              "direction_hint": "Leave empty if this never happens.",
+              "direction_energy_needed": "Pick an energy sensor for this power sensor.",
+              "energy_sensors_needed_directions": "To track your battery, you need an energy sensor for each direction with a power sensor.",
+              "directions": {
+                "from_grid": {
+                  "title": "Charging from the grid",
+                  "energy": "Energy charged from the grid",
+                  "power": "Charging power from the grid",
+                  "helper": "Pick a sensor that measures the electricity flowing from the grid into the battery in either of {unit}.",
+                  "missing_source": "Your grid import isn't set up. Add it under Electricity grid, so the energy dashboard can show where this energy comes from.",
+                  "energy_name": "{name} energy charged from grid"
+                },
+                "from_solar": {
+                  "title": "Charging from solar",
+                  "energy": "Energy charged from solar",
+                  "power": "Charging power from solar",
+                  "helper": "Pick a sensor that measures the electricity flowing from solar into the battery in either of {unit}.",
+                  "missing_source": "Your solar panels aren't set up. Add them under Solar panels, so the energy dashboard can show where this energy comes from.",
+                  "energy_name": "{name} energy charged from solar"
+                },
+                "to_home": {
+                  "title": "Discharging to the home",
+                  "energy": "Energy discharged to the home",
+                  "power": "Discharging power to the home",
+                  "helper": "Pick a sensor that measures the electricity flowing out of the battery to the home in either of {unit}.",
+                  "energy_name": "{name} energy discharged to home"
+                },
+                "to_grid": {
+                  "title": "Discharging to the grid",
+                  "energy": "Energy discharged to the grid",
+                  "power": "Discharging power to the grid",
+                  "helper": "Pick a sensor that measures the electricity flowing out of the battery to the grid in either of {unit}.",
+                  "missing_source": "Your grid export isn't set up. Add it under Electricity grid, so the energy dashboard can show where this energy goes.",
+                  "energy_name": "{name} energy discharged to grid"
+                }
+              }
             }
           },
           "gas": {
@@ -4813,7 +4910,6 @@
             "sub": "Let Home Assistant monitor your gas usage.",
             "learn_more": "More information on how to get started",
             "gas_consumption": "Gas consumption",
-            "edit_gas_source": "Edit gas source",
             "delete_gas_source": "Remove gas source",
             "add_gas_source": "Add gas source",
             "dialog": {
@@ -4822,6 +4918,7 @@
               "entity_para": "Pick a sensor which measures gas consumption in either of {unit}.",
               "note_para": "Note: It is not possible to add both sensors measuring a volume of gas and sensors measuring the amount of energy contained in the gas.",
               "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
+              "cost_tracking": "[%key:ui::panel::config::energy::grid::dialog::import_cost%]",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed gas.",
               "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
               "cost_stat": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat%]",
@@ -4846,13 +4943,13 @@
             "sub": "Let Home Assistant monitor your water usage.",
             "learn_more": "More information on how to get started",
             "water_consumption": "Water consumption",
-            "edit_water_source": "Edit water source",
             "delete_water_source": "Remove water source",
             "add_water_source": "Add water source",
             "dialog": {
               "header": "Configure water consumption",
               "paragraph": "Water consumption is the volume of water that flows to your home.",
               "entity_para": "Pick a sensor which measures water consumption in either of {unit}.",
+              "cost_tracking": "[%key:ui::panel::config::energy::grid::dialog::import_cost%]",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed water.",
               "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
@@ -5312,6 +5409,7 @@
               },
               "open": "Open",
               "edit": "Edit",
+              "duplicate": "Duplicate",
               "delete": "Delete",
               "add_dashboard": "Add dashboard",
               "set_as_default": "Set as default",
@@ -5328,6 +5426,8 @@
             "confirm_delete_selected_partly": "You can only delete {deletable} of the {selected} dashboards. The others are built-in or configured in YAML.",
             "delete_failed_title": "Delete failed",
             "delete_failed": "Some dashboards could not be deleted. Check system logs for more information.",
+            "duplicate_title": "{title} (copy)",
+            "duplicate_failed": "This dashboard could not be duplicated.",
             "cant_edit_yaml": "Dashboards created in YAML cannot be edited from the UI. Change them in configuration.yaml.",
             "cant_edit_lovelace": "The Overview dashboard title and icon cannot be changed. You can create a new dashboard to get more customization options.",
             "detail": {
@@ -6401,6 +6501,8 @@
                   "label": "Triggered by",
                   "no_triggers": "There are no triggers in this automation. Add a trigger first.",
                   "no_triggers_selected": "No triggers selected.",
+                  "blueprint_no_trigger_ids": "This blueprint has no triggers with IDs, so there is nothing to choose.",
+                  "blueprint_triggers_unavailable": "Complete all of the blueprint's required inputs to see its triggers.",
                   "id": "Trigger",
                   "missing_trigger": "Missing trigger",
                   "missing_triggers": "This condition references a trigger that no longer exists. Uncheck it to clear it.",
