@@ -19,7 +19,10 @@ import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-markdown";
 import "../../../../components/ha-snap-bottom-sheet";
-import type { HaSnapBottomSheet } from "../../../../components/ha-snap-bottom-sheet";
+import type {
+  BottomSheetPosition,
+  HaSnapBottomSheet,
+} from "../../../../components/ha-snap-bottom-sheet";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-textarea";
@@ -88,13 +91,38 @@ export class HaAutomationAiSheet extends LitElement {
 
   @query("ha-snap-bottom-sheet") private _sheet?: HaSnapBottomSheet;
 
-  @query("ha-textarea") private _textarea?: HaTextArea;
-
   @query(".content") private _content?: HTMLElement;
+
+  // Where the sheet rests, so it comes back there after it was suspended
+  private _position: BottomSheetPosition = "half";
+
+  // Set when a request returned changes, until the editor shows them
+  private _collapseForReview = false;
+
+  // Only when the sheet opens, not when it comes back after being suspended
+  private _autofocusPrompt = true;
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    this._textarea?.focus();
+    this._autofocusPrompt = false;
+  }
+
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
+    if (
+      changedProps.has("suspended") &&
+      changedProps.get("suspended") &&
+      !this.suspended
+    ) {
+      this._sheet?.snapTo(this._position);
+    }
+    // Out of the way, so the user can review the changes
+    if (this._collapseForReview && this.reviewing) {
+      this._collapseForReview = false;
+      if (this.hasChanges) {
+        this._sheet?.snapTo("collapsed");
+      }
+    }
   }
 
   protected render(): TemplateResult | typeof nothing {
@@ -326,6 +354,7 @@ export class HaAutomationAiSheet extends LitElement {
     return html`
       <form class="prompt" @submit=${this._submit}>
         <ha-textarea
+          .autofocus=${this._autofocusPrompt}
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.ai.prompt_label"
           )}
@@ -394,6 +423,7 @@ export class HaAutomationAiSheet extends LitElement {
         },
       });
       config = result.config;
+      this._collapseForReview = true;
       this._problems = result.problems;
       this._turns = [...this._turns, { prompt, summary: result.summary }];
     } catch (err) {
@@ -414,7 +444,8 @@ export class HaAutomationAiSheet extends LitElement {
   }
 
   private _sheetResized() {
-    this._collapsed = this._sheet?.position === "collapsed";
+    this._position = this._sheet?.position ?? this._position;
+    this._collapsed = this._position === "collapsed";
   }
 
   private _expand() {
