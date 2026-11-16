@@ -16,6 +16,7 @@ import {
   fetchFrontendSystemData,
   saveFrontendSystemData,
   subscribeFrontendSystemData,
+  type ClimateFrontendSystemData,
   type HomeFrontendSystemData,
   type MaintenanceFrontendSystemData,
   type SecurityFrontendSystemData,
@@ -57,6 +58,8 @@ class PanelHome extends SubscribeMixin(LitElement) {
 
   @state() private _maintenanceConfig: MaintenanceFrontendSystemData = {};
 
+  @state() private _climateConfig: ClimateFrontendSystemData = {};
+
   @state() private _extraActionItems?: ExtraActionItem[];
 
   @query(".banner") private _banner?: HTMLElement;
@@ -66,6 +69,8 @@ class PanelHome extends SubscribeMixin(LitElement) {
   private _securityConfigRevision = 0;
 
   private _maintenanceConfigRevision = 0;
+
+  private _climateConfigRevision = 0;
 
   public hassSubscribe() {
     return [
@@ -94,6 +99,21 @@ class PanelHome extends SubscribeMixin(LitElement) {
             return;
           }
           this._maintenanceConfig = config;
+          if (this.hasUpdated) {
+            this._setLovelace();
+          }
+        }
+      ),
+      subscribeFrontendSystemData(
+        this.hass.connection,
+        "climate",
+        ({ value }) => {
+          this._climateConfigRevision++;
+          const config = value || {};
+          if (deepEqual(config, this._climateConfig)) {
+            return;
+          }
+          this._climateConfig = config;
           if (this.hasUpdated) {
             this._setLovelace();
           }
@@ -200,13 +220,20 @@ class PanelHome extends SubscribeMixin(LitElement) {
   private async _loadConfig() {
     const securityConfigRevision = this._securityConfigRevision;
     const maintenanceConfigRevision = this._maintenanceConfigRevision;
-    const [translationsResult, homeResult, securityResult, maintenanceResult] =
-      await Promise.allSettled([
-        this.hass.loadFragmentTranslation("lovelace"),
-        fetchFrontendSystemData(this.hass.connection, "home"),
-        fetchFrontendSystemData(this.hass.connection, "security"),
-        fetchFrontendSystemData(this.hass.connection, "maintenance"),
-      ]);
+    const climateConfigRevision = this._climateConfigRevision;
+    const [
+      translationsResult,
+      homeResult,
+      securityResult,
+      maintenanceResult,
+      climateResult,
+    ] = await Promise.allSettled([
+      this.hass.loadFragmentTranslation("lovelace"),
+      fetchFrontendSystemData(this.hass.connection, "home"),
+      fetchFrontendSystemData(this.hass.connection, "security"),
+      fetchFrontendSystemData(this.hass.connection, "maintenance"),
+      fetchFrontendSystemData(this.hass.connection, "climate"),
+    ]);
 
     if (translationsResult.status === "rejected") {
       // eslint-disable-next-line no-console
@@ -248,6 +275,19 @@ class PanelHome extends SubscribeMixin(LitElement) {
       }
     } else if (maintenanceConfigRevision === this._maintenanceConfigRevision) {
       this._maintenanceConfig = maintenanceResult.value || {};
+    }
+
+    if (climateResult.status === "rejected") {
+      // eslint-disable-next-line no-console
+      console.error(
+        "Failed to load climate configuration:",
+        climateResult.reason
+      );
+      if (climateConfigRevision === this._climateConfigRevision) {
+        this._climateConfig = {};
+      }
+    } else if (climateConfigRevision === this._climateConfigRevision) {
+      this._climateConfig = climateResult.value || {};
     }
   }
 
@@ -436,6 +476,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
         type: "home",
         alert_entities: this._securityConfig.alert_entities,
         maintenance_hidden_entities: this._maintenanceConfig.hidden_entities,
+        climate_hidden_entities: this._climateConfig.hidden_entities,
         favorite_entities: this._config?.favorite_entities,
         home_panel: true,
         hide_welcome_message: this._config?.hide_welcome_message,
