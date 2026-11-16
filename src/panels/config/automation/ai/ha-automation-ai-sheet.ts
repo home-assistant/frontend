@@ -105,6 +105,8 @@ export class HaAutomationAiSheet extends LitElement {
 
   @query(".content") private _content?: HTMLElement;
 
+  @query("ha-textarea") private _textarea?: HaTextArea;
+
   // Where the sheet rests, so it comes back there after it was suspended
   private _position: BottomSheetPosition = "half";
 
@@ -248,6 +250,15 @@ export class HaAutomationAiSheet extends LitElement {
         breaks
         .content=${turn.summary}
       ></ha-markdown>
+      ${
+        turn.declined
+          ? html`<div class="declined">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.ai.declined"
+              )}
+            </div>`
+          : nothing
+      }
     `;
   }
 
@@ -487,9 +498,13 @@ export class HaAutomationAiSheet extends LitElement {
     this._sheet?.closeSheet();
   }
 
+  // Keeps the sheet open, so the user can ask for something else
   private _decline() {
     fireEvent(this, "ai-decline");
-    this._sheet?.closeSheet();
+    this._turns = this._turns.map((turn) => ({ ...turn, declined: true }));
+    this._problems = [];
+    this._sheet?.snapTo("half");
+    this._textarea?.focus();
   }
 
   private _close() {
@@ -613,6 +628,12 @@ export class HaAutomationAiSheet extends LitElement {
       );
       color: var(--primary-text-color);
       white-space: normal;
+    }
+    .declined {
+      align-self: flex-start;
+      margin-top: calc(var(--ha-space-2) * -1);
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
     }
     .steps {
       list-style: none;
