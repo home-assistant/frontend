@@ -193,6 +193,10 @@ export const getScheduleWeek = (schedule: ScheduleDays): ScheduleWeek =>
     ])
   ) as ScheduleWeek;
 
+/** Whether a schedule has at least one time block. */
+export const hasScheduleBlocks = (schedule: ScheduleDays): boolean =>
+  WEEKDAYS_LONG.some((day) => !!schedule[day]?.length);
+
 /** The days of the week in the user's order. */
 export const localeWeekdays = memoizeOne((locale: FrontendLocaleData) =>
   weekdaysFromFirst(locale).map((day) => WEEKDAY_SHORT_TO_LONG[day])

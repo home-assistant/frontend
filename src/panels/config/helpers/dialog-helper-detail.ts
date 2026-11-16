@@ -55,7 +55,8 @@ import {
   fetchIntegrationManifest,
   type IntegrationManifest,
 } from "../../../data/integration";
-import { createSchedule } from "../../../data/schedule";
+import type { Schedule } from "../../../data/schedule";
+import { createSchedule, hasScheduleBlocks } from "../../../data/schedule";
 import { createTimer } from "../../../data/timer";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -353,7 +354,12 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
           <ha-button
             slot="primaryAction"
             @click=${this._createItem}
-            .disabled=${this._submitting}
+            .disabled=${
+              this._submitting ||
+              // A schedule without time blocks is never on.
+              (isSchedule &&
+                !hasScheduleBlocks((this._item ?? {}) as Partial<Schedule>))
+            }
           >
             ${this._i18n.localize("ui.panel.config.helpers.dialog.create")}
           </ha-button>
