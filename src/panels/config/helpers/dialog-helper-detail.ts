@@ -304,23 +304,36 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     let content: TemplateResult;
     let footer: TemplateResult | typeof nothing = nothing;
     let showPicker = false;
+    // The schedule editor shows its time block panel beside the week, and
+    // the area with the name and icon.
+    const isSchedule = this._domain === "schedule";
 
     if (this._domain && !this._loading) {
+      const areaPicker = html`
+        <ha-area-picker
+          slot="area"
+          .value=${this._area}
+          .disabled=${this._submitting}
+          @value-changed=${this._areaChanged}
+        ></ha-area-picker>
+      `;
       content = html`
         <div class="form" @value-changed=${this._valueChanged}>
           ${this._error ? html`<div class="error">${this._error}</div>` : ""}
           <div class="helper-form">
-            ${dynamicElement(`ha-${this._domain}-form`, {
-              item: this._item,
-              new: true,
-              autofocus: true,
-            })}
+            ${
+              isSchedule
+                ? html`<ha-schedule-form .item=${this._item} new autofocus>
+                    ${areaPicker}
+                  </ha-schedule-form>`
+                : dynamicElement(`ha-${this._domain}-form`, {
+                    item: this._item,
+                    new: true,
+                    autofocus: true,
+                  })
+            }
           </div>
-          <ha-area-picker
-            .value=${this._area}
-            .disabled=${this._submitting}
-            @value-changed=${this._areaChanged}
-          ></ha-area-picker>
+          ${isSchedule ? nothing : areaPicker}
         </div>
       `;
       footer = html`
@@ -378,10 +391,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         class=${showPicker ? "picker" : ""}
         .flexContent=${showPicker}
         .open=${this._open}
-        .width=${
-          // The schedule editor shows its time block panel beside the week.
-          this._domain === "schedule" ? "large" : "medium"
-        }
+        .width=${isSchedule ? "large" : "medium"}
         .preventScrimClose=${this.isDirtyState}
         header-title=${
           this._domain

@@ -97,7 +97,7 @@ describe("ha-schedule-form", () => {
     expect(host!.isDirtyState).toBe(true);
 
     // Closing the draft leaves nothing unsaved.
-    form["_panel"] = { type: "block" };
+    form["_panel"] = undefined;
     await settle(form);
     expect(host!.isDirtyState).toBe(false);
   });

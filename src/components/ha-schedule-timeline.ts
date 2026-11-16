@@ -686,10 +686,12 @@ export class HaScheduleTimeline extends LitElement {
       --schedule-menu-width: 0px;
     }
 
+    /* Given more height, like a stretched host, the days spread out. */
     .timeline {
       display: flex;
       flex-direction: column;
-      gap: var(--ha-space-1);
+      height: 100%;
+      gap: var(--ha-space-3);
       user-select: none;
       -webkit-user-select: none;
     }
@@ -716,6 +718,7 @@ export class HaScheduleTimeline extends LitElement {
     }
 
     .row {
+      flex: 1;
       display: flex;
       align-items: center;
     }
