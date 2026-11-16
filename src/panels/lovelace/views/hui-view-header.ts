@@ -22,6 +22,7 @@ import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog"
 import { setAtPath } from "../editor/lovelace-path";
 import { showEditViewHeaderDialog } from "../editor/view-header/show-edit-view-header-dialog";
 import type { Lovelace } from "../types";
+import { isLayoutEditMode } from "../types";
 
 export const DEFAULT_VIEW_HEADER_LAYOUT = "center";
 export const DEFAULT_VIEW_HEADER_BADGES_POSITION = "bottom";
@@ -44,7 +45,7 @@ export class HuiViewHeader extends LitElement {
   private _checkHidden() {
     const allHidden =
       !this.card &&
-      !this.lovelace.editMode &&
+      !isLayoutEditMode(this.lovelace) &&
       this.badges.every((badges) => badges.hidden);
     this.toggleAttribute("hidden", allHidden);
   }
@@ -87,7 +88,8 @@ export class HuiViewHeader extends LitElement {
 
     if (changedProperties.has("config") || changedProperties.has("lovelace")) {
       this._dragScrollController.enabled =
-        !this.lovelace.editMode && this.config?.badges_wrap === "scroll";
+        !isLayoutEditMode(this.lovelace) &&
+        this.config?.badges_wrap === "scroll";
     }
 
     if (changedProperties.has("config")) {
@@ -105,7 +107,7 @@ export class HuiViewHeader extends LitElement {
         this.card.hass = this.hass;
       }
       if (changedProperties.has("lovelace")) {
-        this.card.preview = this.lovelace.editMode;
+        this.card.preview = isLayoutEditMode(this.lovelace);
       }
     }
   }
@@ -113,7 +115,7 @@ export class HuiViewHeader extends LitElement {
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
     element.hass = this.hass;
-    element.preview = this.lovelace.editMode;
+    element.preview = isLayoutEditMode(this.lovelace);
     element.config = cardConfig;
     element.load();
     return element;
@@ -163,7 +165,7 @@ export class HuiViewHeader extends LitElement {
   render() {
     if (!this.lovelace) return nothing;
 
-    const editMode = Boolean(this.lovelace?.editMode);
+    const editMode = isLayoutEditMode(this.lovelace);
 
     const card = this.card;
 

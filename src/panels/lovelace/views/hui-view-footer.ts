@@ -19,6 +19,7 @@ import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dia
 import { setAtPath } from "../editor/lovelace-path";
 import { showEditViewFooterDialog } from "../editor/view-footer/show-edit-view-footer-dialog";
 import type { Lovelace } from "../types";
+import { isLayoutEditMode } from "../types";
 
 @customElement("hui-view-footer")
 export class HuiViewFooter extends LitElement {
@@ -53,7 +54,7 @@ export class HuiViewFooter extends LitElement {
         this.card.hass = this.hass;
       }
       if (changedProperties.has("lovelace")) {
-        this.card.preview = this.lovelace.editMode;
+        this.card.preview = isLayoutEditMode(this.lovelace);
       }
     }
 
@@ -69,7 +70,7 @@ export class HuiViewFooter extends LitElement {
 
   private _checkHidden() {
     const hidden =
-      !this.lovelace?.editMode &&
+      !isLayoutEditMode(this.lovelace) &&
       (!this.card || this.card.hasAttribute("hidden"));
     this.toggleAttribute("hidden", hidden);
     this.toggleAttribute("sticky", Boolean(this.card));
@@ -78,7 +79,7 @@ export class HuiViewFooter extends LitElement {
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
     element.hass = this.hass;
-    element.preview = this.lovelace.editMode;
+    element.preview = isLayoutEditMode(this.lovelace);
     element.layout = "grid";
     element.config = cardConfig;
     element.addEventListener("card-updated", (ev: Event) => {
@@ -150,7 +151,7 @@ export class HuiViewFooter extends LitElement {
   render() {
     if (!this.lovelace) return nothing;
 
-    const editMode = Boolean(this.lovelace?.editMode);
+    const editMode = isLayoutEditMode(this.lovelace);
     const card = this.card;
 
     if (!editMode && !card) {
