@@ -180,12 +180,6 @@ export class HaCameraPlayer extends LitElement {
     }
     const zoomed = isZoomed(this._zoom);
     const status = this._status;
-    // Stays while the connection changes, so the user sees what happens
-    const badgeVisible =
-      this._controlsVisible ||
-      status.connecting ||
-      status.upgrading !== undefined;
-
     return html`
       <div
         class=${classMap({
@@ -229,7 +223,6 @@ export class HaCameraPlayer extends LitElement {
         >
           <div class="row">
             <ha-camera-stream-badge
-              class=${classMap({ visible: badgeVisible })}
               .status=${status}
               @click=${this._showStreamInfo}
             ></ha-camera-stream-badge>
@@ -263,7 +256,11 @@ export class HaCameraPlayer extends LitElement {
               ${
                 status.hasAudio
                   ? html`<ha-icon-button
-                      class="control"
+                      class=${classMap({
+                        control: true,
+                        // Stays while muted, so it is clear there is sound
+                        pinned: this._muted,
+                      })}
                       .label=${this._localize(
                         this._muted
                           ? "ui.components.camera-player.unmute"
@@ -762,14 +759,15 @@ export class HaCameraPlayer extends LitElement {
       gap: var(--ha-space-2);
     }
 
-    .control,
-    ha-camera-stream-badge {
+    .control {
       opacity: 0;
       transition: opacity var(--ha-animation-duration-normal, 250ms) ease-in-out;
     }
 
+    /* The connection always shows, like the mute button while muted */
     .overlay.visible .control,
-    ha-camera-stream-badge.visible {
+    .control.pinned,
+    ha-camera-stream-badge {
       opacity: 1;
       pointer-events: auto;
     }
