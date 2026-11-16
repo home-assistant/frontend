@@ -1,5 +1,6 @@
 import {
   mdiAlertCircleOutline,
+  mdiCheck,
   mdiCheckCircleOutline,
   mdiChevronDown,
   mdiChevronUp,
@@ -11,6 +12,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { live } from "lit/directives/live";
+import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
@@ -28,6 +30,7 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-textarea";
 import type { HaTextArea } from "../../../../components/ha-textarea";
 import type { AutomationConfig } from "../../../../data/automation";
+import { narrowViewportContext } from "../../../../data/context";
 import type { HomeAssistant } from "../../../../types";
 import type {
   AutomationAiMessage,
@@ -72,6 +75,10 @@ export class HaAutomationAiSheet extends LitElement {
 
   /** Hides the sheet without losing its state, e.g. for another sheet. */
   @property({ type: Boolean }) public suspended = false;
+
+  @state()
+  @consume({ context: narrowViewportContext, subscribe: true })
+  private _narrow = false;
 
   @state() private _prompt = "";
 
@@ -160,6 +167,18 @@ export class HaAutomationAiSheet extends LitElement {
           : "idle";
     return html`
       <div class="header">
+        ${
+          // On narrow screens people drag bottom sheets
+          this._narrow
+            ? nothing
+            : html`<ha-icon-button
+                .label=${this.hass.localize(
+                  `ui.panel.config.automation.editor.ai.${this._collapsed ? "expand" : "collapse"}`
+                )}
+                .path=${this._collapsed ? mdiChevronUp : mdiChevronDown}
+                @click=${this._toggleCollapsed}
+              ></ha-icon-button>`
+        }
         <ha-svg-icon class="ai-icon" .path=${mdiStarFourPoints}></ha-svg-icon>
         <div class="title">
           <span class="name"
@@ -176,31 +195,26 @@ export class HaAutomationAiSheet extends LitElement {
         ${
           this.reviewing && !this._running
             ? html`
-                <ha-button appearance="plain" size="s" @click=${this._decline}>
-                  ${this.hass.localize(
+                <ha-icon-button
+                  class="decline"
+                  .label=${this.hass.localize(
                     "ui.panel.config.automation.editor.ai.decline"
                   )}
-                </ha-button>
-                <ha-button
-                  appearance="filled"
-                  size="s"
-                  .disabled=${!this.hasChanges}
-                  @click=${this._accept}
-                >
-                  ${this.hass.localize(
+                  .path=${mdiClose}
+                  @click=${this._decline}
+                ></ha-icon-button>
+                <ha-icon-button
+                  class="accept"
+                  .label=${this.hass.localize(
                     "ui.panel.config.automation.editor.ai.accept"
                   )}
-                </ha-button>
+                  .path=${mdiCheck}
+                  .disabled=${!this.hasChanges}
+                  @click=${this._accept}
+                ></ha-icon-button>
               `
             : nothing
         }
-        <ha-icon-button
-          .label=${this.hass.localize(
-            `ui.panel.config.automation.editor.ai.${this._collapsed ? "expand" : "collapse"}`
-          )}
-          .path=${this._collapsed ? mdiChevronUp : mdiChevronDown}
-          @click=${this._toggleCollapsed}
-        ></ha-icon-button>
         ${
           !this.reviewing && !this._running
             ? html`<ha-icon-button
@@ -503,6 +517,12 @@ export class HaAutomationAiSheet extends LitElement {
         var(--ha-space-4);
       border-bottom: 1px solid var(--divider-color);
       flex-shrink: 0;
+    }
+    .accept:not([disabled]) {
+      color: var(--ha-color-on-success-normal);
+    }
+    .decline {
+      color: var(--ha-color-on-danger-normal);
     }
     .ai-icon {
       color: var(--primary-color);
