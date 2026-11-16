@@ -101,8 +101,15 @@ export { unifiedMergeView } from "@codemirror/merge";
 // Colors the changes of a unified merge view like the rest of the UI. The
 // extra .cm-editor wins over the light and dark rules of its base theme.
 export const haMergeTheme = EditorView.theme({
-  "&.cm-editor.cm-merge-b .cm-changedLine, &.cm-editor .cm-inlineChangedLine": {
+  "&.cm-editor.cm-merge-b .cm-changedLine": {
     backgroundColor: "var(--ha-color-fill-success-quiet-resting)",
+  },
+  // A line with small changes shown inside it is changed, like a changed row
+  "&.cm-editor .cm-inlineChangedLine": {
+    backgroundColor: "var(--ha-color-fill-warning-quiet-resting)",
+  },
+  "&.cm-editor .cm-inlineChangedLineGutter": {
+    background: "var(--ha-color-border-warning-loud)",
   },
   "&.cm-editor.cm-merge-b .cm-changedText": {
     background: "var(--ha-color-fill-success-normal-resting)",

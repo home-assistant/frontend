@@ -423,6 +423,7 @@ export class HaCodeEditor extends ReactiveElement {
       : this._loadedCodeMirror!.unifiedMergeView({
           original: this.original,
           mergeControls: false,
+          allowInlineDiffs: true,
         });
   }
 
