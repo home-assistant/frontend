@@ -513,7 +513,7 @@ export class HaStateControlCover extends LitElement {
 
   private _keyStep(ev: KeyboardEvent): number | undefined {
     const step = ev.shiftKey ? 10 : 1;
-    const horizontalSign = isHorizontal(this._shape) && !this._isRtl ? -1 : 1;
+    const horizontalSign = this._isRtl ? -1 : 1;
     switch (ev.key) {
       case "ArrowUp":
         return step;
