@@ -23,7 +23,7 @@ import { brandsUrl } from "../../util/brands-url";
 import type { LogbookCause, LogbookGlyph } from "./logbook-entry-model";
 
 // Names are the fixed system user names set by core (cloud/cast integrations).
-// Cloud users created before the rename to Home Assistant Link keep the old name.
+// Core only renames the old "Home Assistant Cloud" user when Link first uses it.
 const SYSTEM_USER_ICONS: Record<string, string> = {
   "Home Assistant Link": mdiNabuCasaLogo,
   "Home Assistant Cloud": mdiNabuCasaLogo,

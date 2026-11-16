@@ -206,7 +206,7 @@ class OnboardingRestoreBackup extends LitElement {
           if ((await waitForIntegration("cloud")).integration_loaded) {
             this._loadedIntegrations.add("cloud");
           } else {
-            this._error = "Cloud integration not loaded";
+            this._error = "Home Assistant Link integration not loaded";
             return;
           }
         }
