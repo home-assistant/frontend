@@ -2832,6 +2832,8 @@
       "camera_stream_info": {
         "title": "Stream connection",
         "intro": "Home Assistant starts with the connection that works most reliably and switches to a faster one as soon as it is ready.",
+        "still_images_only": "This camera has no video stream, so it shows a series of still images.",
+        "fallback_in_use": "The video streams of this camera could not be started, so still images are shown instead.",
         "in_use": "In use",
         "connecting": "Connecting",
         "not_supported_count": "Not supported by this camera ({count})",
