@@ -2,7 +2,8 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { load, YAML11_SCHEMA } from "js-yaml";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, queryAll } from "lit/decorators";
+import { customElement, property, queryAll, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import {
   any,
   array,
@@ -15,6 +16,7 @@ import {
 } from "superstruct";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
+import { consume } from "../../../common/decorators/consume";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
@@ -32,6 +34,10 @@ import {
   normalizeAutomationConfig,
 } from "../../../data/automation";
 import { getActionType, type Action } from "../../../data/script";
+import {
+  automationDiffContext,
+  type AutomationDiff,
+} from "./ai/automation-ai-diff";
 import { showEditorToast } from "./editor-toast";
 import "./action/ha-automation-action";
 import type HaAutomationAction from "./action/ha-automation-action";
@@ -76,6 +82,10 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
 ) {
   @property({ attribute: false }) public stateObj?: HassEntity;
 
+  @state()
+  @consume({ context: automationDiffContext, subscribe: true })
+  private _diff?: AutomationDiff;
+
   @queryAll("ha-automation-action, ha-automation-condition")
   protected collapsableElements?: NodeListOf<
     HaAutomationAction | HaAutomationCondition
@@ -83,15 +93,7 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
 
   protected renderContent() {
     return html`
-      ${
-        this.config.description
-          ? html`<ha-markdown
-              class="description"
-              breaks
-              .content=${this.config.description}
-            ></ha-markdown>`
-          : nothing
-      }
+      ${this._renderDescription()}
       <div class="header">
         <h2 id="triggers-heading" class="name">
           ${this.hass.localize(
@@ -201,6 +203,23 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
         sidebar
       ></ha-automation-action>
     `;
+  }
+
+  private _renderDescription() {
+    const mark = this._diff?.settings.description;
+    // A removed description is shown as it was, struck through
+    const description =
+      mark === "removed"
+        ? this._diff?.before.description
+        : this.config.description;
+    if (!description) {
+      return nothing;
+    }
+    return html`<ha-markdown
+      class=${classMap({ description: true, [`diff-${mark}`]: !!mark })}
+      breaks
+      .content=${description}
+    ></ha-markdown>`;
   }
 
   protected saveConfig() {
@@ -497,6 +516,21 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
 
         .description {
           margin-top: 16px;
+        }
+        .description[class*="diff-"] {
+          padding: var(--ha-space-1) var(--ha-space-3);
+          border-radius: var(--ha-border-radius-md);
+          border-inline-start: 4px solid var(--ha-color-border-warning-loud);
+          background-color: var(--ha-color-fill-warning-quiet-resting);
+        }
+        .description.diff-added {
+          border-inline-start-color: var(--ha-color-border-success-loud);
+          background-color: var(--ha-color-fill-success-quiet-resting);
+        }
+        .description.diff-removed {
+          border-inline-start-color: var(--ha-color-border-danger-loud);
+          background-color: var(--ha-color-fill-danger-quiet-resting);
+          text-decoration: line-through;
         }
       `,
     ];

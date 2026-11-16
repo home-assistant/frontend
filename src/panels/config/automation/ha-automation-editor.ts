@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
+import { provide } from "@lit/context";
 import {
   mdiCog,
   mdiContentSave,
@@ -14,6 +15,7 @@ import {
   mdiRedo,
   mdiRenameBox,
   mdiRobotConfused,
+  mdiStarFourPoints,
   mdiStopCircleOutline,
   mdiTag,
   mdiTransitConnection,
@@ -22,9 +24,12 @@ import {
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isNavigationClick } from "../../../common/dom/is-navigation-click";
 import { goBack, navigate } from "../../../common/navigate";
@@ -36,6 +41,7 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
+import { fetchAITaskPreferences } from "../../../data/ai_task";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import type {
   AutomationConfig,
@@ -88,6 +94,11 @@ import {
 import "./manual-automation-editor";
 import type { HaManualAutomationEditor } from "./manual-automation-editor";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import {
+  automationDiffContext,
+  diffAutomationConfigs,
+  type AutomationDiff,
+} from "./ai/automation-ai-diff";
 
 import { AutomationTriggerController } from "./trigger/automation-trigger-controller";
 import { renderCtrlOrCmd } from "../../../common/keyboard/ctrl-or-cmd";
@@ -141,7 +152,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   private _triggerController = new AutomationTriggerController(this, {
     getConfig: () => this.config,
-    canEdit: () => !this.readOnly && !this.saving,
+    canEdit: () => !this.readOnly && !this.saving && !this._aiActive,
     commit: (config) => {
       this._manualEditor?.resetPastedConfig();
       this._updateConfig(config);
@@ -158,6 +169,33 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   });
 
   private _newAutomationId?: string;
+
+  /** Whether an AI task entity for data generation is set up. */
+  @state() private _aiAvailable = false;
+
+  @state() private _aiSheetOpen = false;
+
+  @state() private _aiBusy = false;
+
+  /** The config the AI changes, while it works on it or the user reviews it. */
+  @state() private _aiBaseConfig?: AutomationConfig;
+
+  /** The config the AI suggests, until the user accepts or declines it. */
+  @state() private _aiConfig?: AutomationConfig;
+
+  @provide({ context: automationDiffContext })
+  @state()
+  private _aiDiff?: AutomationDiff;
+
+  private _computeAiDiff = memoizeOne(
+    (before?: AutomationConfig, after?: AutomationConfig) =>
+      before && after ? diffAutomationConfigs(before, after) : undefined
+  );
+
+  /** Whether editing is locked for the AI. */
+  private get _aiActive(): boolean {
+    return this._aiBusy || !!this._aiConfig;
+  }
 
   protected domainHooks: EditorDomainHooks<AutomationConfig> = {
     domain: "automation",
@@ -182,6 +220,14 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
+
+    this._aiDiff = this._computeAiDiff(this._aiBaseConfig, this._aiConfig);
+
+    if (!this.hasUpdated && isComponentLoaded(this.hass.config, "ai_task")) {
+      fetchAITaskPreferences(this.hass.callWS).then((prefs) => {
+        this._aiAvailable = !!prefs.gen_data_entity_id;
+      });
+    }
 
     if (
       this.entityRegCreated &&
@@ -237,6 +283,13 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
     const useBlueprint = "use_blueprint" in this.config;
     const shortcutIcon = renderCtrlOrCmd(this.hass.localize);
+    const aiSettings = this._aiDiff?.settings ?? {};
+    const aiRenameChanged = !!(aiSettings.alias || aiSettings.description);
+    const aiModeChanged = !!(
+      aiSettings.mode ||
+      aiSettings.max ||
+      aiSettings.max_exceeded
+    );
 
     return html`
       <hass-subpage
@@ -250,13 +303,29 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         }
       >
         ${
+          aiSettings.alias
+            ? html`<span slot="header" class="ai-alias diff-${aiSettings.alias}"
+                >${
+                  (aiSettings.alias === "removed"
+                    ? this._aiDiff?.before.alias
+                    : this._aiDiff?.config.alias) ||
+                  this.hass.localize(
+                    "ui.panel.config.automation.editor.default_name"
+                  )
+                }</span
+              >`
+            : nothing
+        }
+        ${
           this.mode === "gui" && !this.narrow
             ? html`<ha-icon-button
                   slot="toolbar-icon"
                   .label=${this.hass.localize("ui.common.undo")}
                   .path=${mdiUndo}
                   @click=${this._undo}
-                  .disabled=${!this._undoRedoController.canUndo}
+                  .disabled=${
+                    !this._undoRedoController.canUndo || this._aiActive
+                  }
                   id="button-undo"
                 >
                 </ha-icon-button>
@@ -274,7 +343,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                   .label=${this.hass.localize("ui.common.redo")}
                   .path=${mdiRedo}
                   @click=${this._redo}
-                  .disabled=${!this._undoRedoController.canRedo}
+                  .disabled=${
+                    !this._undoRedoController.canRedo || this._aiActive
+                  }
                   id="button-redo"
                 >
                 </ha-icon-button>
@@ -322,6 +393,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         >
           <ha-icon-button
             slot="trigger"
+            class=${classMap({
+              "ai-changes": aiRenameChanged || aiModeChanged,
+            })}
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
@@ -330,18 +404,38 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
             this.mode === "gui" && this.narrow
               ? html`<ha-dropdown-item
                     value="undo"
-                    .disabled=${!this._undoRedoController.canUndo}
+                    .disabled=${
+                      !this._undoRedoController.canUndo || this._aiActive
+                    }
                   >
                     ${this.hass.localize("ui.common.undo")}
                     <ha-svg-icon slot="icon" .path=${mdiUndo}></ha-svg-icon>
                   </ha-dropdown-item>
                   <ha-dropdown-item
                     value="redo"
-                    .disabled=${!this._undoRedoController.canRedo}
+                    .disabled=${
+                      !this._undoRedoController.canRedo || this._aiActive
+                    }
                   >
                     ${this.hass.localize("ui.common.redo")}
                     <ha-svg-icon slot="icon" .path=${mdiRedo}></ha-svg-icon>
                   </ha-dropdown-item>`
+              : nothing
+          }
+          ${
+            this._aiAvailable && !useBlueprint
+              ? html`<ha-dropdown-item
+                  value="ai_edit"
+                  .disabled=${
+                    this.readOnly || this.mode === "yaml" || this._aiSheetOpen
+                  }
+                >
+                  ${this.hass.localize("ui.panel.config.automation.editor.ai.menu")}
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiStarFourPoints}
+                  ></ha-svg-icon>
+                </ha-dropdown-item>`
               : nothing
           }
 
@@ -389,10 +483,14 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           <ha-dropdown-item
             value="rename"
             .disabled=${
-              this.readOnly || !this.automationId || this.mode === "yaml"
+              this.readOnly ||
+              !this.automationId ||
+              this.mode === "yaml" ||
+              this._aiActive
             }
           >
             ${this.hass.localize("ui.panel.config.automation.editor.rename")}
+            ${aiRenameChanged ? this._renderAiDot() : nothing}
             <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
           </ha-dropdown-item>
           ${
@@ -400,11 +498,14 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
               ? html`
                   <ha-dropdown-item
                     @click=${this._promptAutomationMode}
-                    .disabled=${this.readOnly || this.mode === "yaml"}
+                    .disabled=${
+                      this.readOnly || this.mode === "yaml" || this._aiActive
+                    }
                   >
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.change_mode"
                     )}
+                    ${aiModeChanged ? this._renderAiDot() : nothing}
                     <ha-svg-icon
                       slot="icon"
                       .path=${mdiDebugStepOver}
@@ -447,7 +548,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
               : nothing
           }
 
-          <ha-dropdown-item value="toggle_yaml_mode">
+          <ha-dropdown-item
+            value="toggle_yaml_mode"
+            .disabled=${this._aiActive}
+          >
             ${this.hass.localize(
               `ui.panel.config.automation.editor.edit_${this.mode === "gui" ? "yaml" : "ui"}`
             )}
@@ -528,8 +632,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                               .narrow=${this.narrow}
                               .isWide=${this.isWide}
                               .stateObj=${stateObj}
-                              .config=${this.config}
-                              .disabled=${this.readOnly}
+                              .config=${this._aiDiff?.config ?? this.config}
+                              .disabled=${this.readOnly || this._aiActive}
+                              .hideSave=${this._aiActive}
                               .saving=${this.saving}
                               @value-changed=${this._valueChanged}
                               @save-automation=${this._handleSaveAutomation}
@@ -681,8 +786,76 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                 : nothing
           }
         </div>
+        ${
+          this._aiSheetOpen
+            ? html`<ha-automation-ai-sheet
+                .hass=${this.hass}
+                .config=${this._aiConfig ?? this.config}
+                .reviewing=${!!this._aiConfig}
+                .hasChanges=${!!this._aiDiff?.hasChanges}
+                @ai-request-started=${this._aiRequestStarted}
+                @ai-request-finished=${this._aiRequestFinished}
+                @ai-accept=${this._aiAccept}
+                @ai-decline=${this._endAiSession}
+                @ai-sheet-closed=${this._aiSheetClosed}
+              ></ha-automation-ai-sheet>`
+            : nothing
+        }
       </hass-subpage>
     `;
+  }
+
+  private _renderAiDot() {
+    return html`<span
+      class="ai-dot"
+      role="img"
+      aria-label=${this.hass.localize(
+        "ui.panel.config.automation.editor.ai.pending_changes"
+      )}
+    ></span>`;
+  }
+
+  private async _openAiSheet() {
+    await import("./ai/ha-automation-ai-sheet");
+    this._aiSheetOpen = true;
+  }
+
+  private _aiRequestStarted() {
+    this._manualEditor?.triggerCloseSidebar();
+    this._aiBaseConfig ??= this.config;
+    this._aiBusy = true;
+  }
+
+  private _aiRequestFinished(
+    ev: HASSDomEvent<HASSDomEvents["ai-request-finished"]>
+  ) {
+    this._aiBusy = false;
+    if (ev.detail.config) {
+      this._aiConfig = ev.detail.config;
+    } else if (!this._aiConfig) {
+      this._aiBaseConfig = undefined;
+    }
+  }
+
+  private _aiAccept() {
+    const config = this._aiConfig;
+    this._endAiSession();
+    if (config) {
+      // One history entry, so one undo takes back all changes of the AI
+      this._updateConfig(config);
+    }
+  }
+
+  private _endAiSession() {
+    this._manualEditor?.triggerCloseSidebar();
+    this._aiBusy = false;
+    this._aiConfig = undefined;
+    this._aiBaseConfig = undefined;
+  }
+
+  private _aiSheetClosed() {
+    this._aiSheetOpen = false;
+    this._endAiSession();
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -812,6 +985,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   private _valueChanged(ev: ValueChangedEvent<AutomationConfig>) {
     ev.stopPropagation();
+    // The editor shows the changes of the AI, which are not the config
+    if (this._aiActive) {
+      return;
+    }
     const config = ev.detail.value;
     this._updateConfig(
       "use_blueprint" in config
@@ -1100,6 +1277,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   }
 
   private async _handleSaveAutomation(): Promise<void> {
+    if (this._aiActive) {
+      return;
+    }
     if (this.yamlErrors) {
       showEditorToast(this, {
         message: this.yamlErrors,
@@ -1228,6 +1408,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   }
 
   private async _toggleYamlMode() {
+    if (this._aiActive) {
+      return;
+    }
     if (this.mode === "gui") {
       this.switchYamlMode();
       await this.updateComplete;
@@ -1261,11 +1444,15 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   }
 
   private _cutSelectedRow() {
-    this._manualEditor?.cutSelectedRow();
+    if (!this._aiActive) {
+      this._manualEditor?.cutSelectedRow();
+    }
   }
 
   private _deleteSelectedRow() {
-    this._manualEditor?.deleteSelectedRow();
+    if (!this._aiActive) {
+      this._manualEditor?.deleteSelectedRow();
+    }
   }
 
   private _applyUndoRedo(config: AutomationConfig) {
@@ -1278,11 +1465,15 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   }
 
   private _undo() {
-    this._undoRedoController.undo();
+    if (!this._aiActive) {
+      this._undoRedoController.undo();
+    }
   }
 
   private _redo() {
-    this._undoRedoController.redo();
+    if (!this._aiActive) {
+      this._undoRedoController.redo();
+    }
   }
 
   private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
@@ -1298,6 +1489,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         break;
       case "redo":
         this._redo();
+        break;
+      case "ai_edit":
+        this._openAiSheet();
         break;
       case "info":
         this._showInfo();
@@ -1363,6 +1557,43 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         }
         h1 {
           margin: 0;
+        }
+        .ai-alias {
+          padding: 0 var(--ha-space-2);
+          border-radius: var(--ha-border-radius-sm);
+          background-color: var(--ha-color-fill-warning-normal-resting);
+          color: var(--ha-color-on-warning-normal);
+        }
+        .ai-alias.diff-added {
+          background-color: var(--ha-color-fill-success-normal-resting);
+          color: var(--ha-color-on-success-normal);
+        }
+        .ai-alias.diff-removed {
+          background-color: var(--ha-color-fill-danger-normal-resting);
+          color: var(--ha-color-on-danger-normal);
+          text-decoration: line-through;
+        }
+        ha-icon-button.ai-changes {
+          position: relative;
+        }
+        ha-icon-button.ai-changes::after,
+        .ai-dot {
+          content: "";
+          display: inline-block;
+          width: 8px;
+          height: 8px;
+          border-radius: var(--ha-border-radius-circle);
+          background-color: var(--ha-color-fill-warning-loud-resting);
+        }
+        ha-icon-button.ai-changes::after {
+          position: absolute;
+          top: 8px;
+          inset-inline-end: 8px;
+          pointer-events: none;
+        }
+        .ai-dot {
+          margin-inline-start: var(--ha-space-2);
+          vertical-align: middle;
         }
         .header-name {
           display: flex;

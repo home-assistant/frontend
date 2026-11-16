@@ -59,6 +59,10 @@ export const ManualEditorMixin = <TConfig>(
 
     @property({ type: Boolean }) public saving = false;
 
+    /** Hides the save button, e.g. while the user reviews changes of the AI. */
+    @property({ type: Boolean, attribute: "hide-save" }) public hideSave =
+      false;
+
     @property({ attribute: false }) public config!: TConfig;
 
     @consume({ context: dirtyStateContext, subscribe: true })
@@ -147,8 +151,8 @@ export const ManualEditorMixin = <TConfig>(
               <ha-button
                 slot="fab"
                 size="l"
-                class=${this.dirty ? "dirty" : ""}
-                .disabled=${this.saving}
+                class=${this.dirty && !this.hideSave ? "dirty" : ""}
+                .disabled=${this.saving || this.hideSave}
                 @click=${this.saveConfig}
               >
                 <ha-svg-icon slot="start" .path=${mdiContentSave}></ha-svg-icon>
