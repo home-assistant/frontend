@@ -101,7 +101,7 @@ export class HaMoreInfoCameraSensors extends LitElement {
 
     .sensors {
       display: flex;
-      margin-bottom: var(--ha-space-4);
+      margin-top: var(--ha-space-4);
       gap: var(--ha-space-2);
       overflow-x: auto;
       padding: 0 var(--ha-space-4);

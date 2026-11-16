@@ -459,21 +459,21 @@ class MoreInfoCamera extends LitElement {
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: var(--ha-space-4) 0 var(--ha-space-6);
       }
 
-      /* Spaces itself, as it is empty without sensors */
+      /* Every part spaces itself, so nothing takes room when it is empty */
       ha-more-info-camera-sensors {
         align-self: stretch;
       }
 
       .tabs {
-        margin-bottom: var(--ha-space-6);
+        margin-top: var(--ha-space-4);
       }
 
       ha-more-info-camera-ptz,
       .call {
         padding: 0 var(--ha-space-4);
+        margin: var(--ha-space-6) 0;
       }
 
       .call {
