@@ -125,7 +125,13 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
   }
 
   private _handleKeyDown(ev: KeyboardEvent): void {
-    if (!this._hasImageNavigation) {
+    if (
+      !this._hasImageNavigation ||
+      ev.altKey ||
+      ev.ctrlKey ||
+      ev.metaKey ||
+      ev.shiftKey
+    ) {
       return;
     }
     // The arrow buttons are mirrored in right-to-left languages, so are the keys
