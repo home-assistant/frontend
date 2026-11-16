@@ -219,15 +219,6 @@ export class HaCameraPlayer extends LitElement {
             @camera-capabilities-changed=${this._capabilitiesChanged}
           ></ha-camera-stream>
         </div>
-        ${
-          this._wheelHint
-            ? html`<div class="wheel-hint" aria-hidden="true">
-                ${this._localize("ui.components.camera-player.zoom_hint", {
-                  modifier: ctrlOrCmdLabel(this._localize),
-                })}
-              </div>`
-            : nothing
-        }
         <div
           class=${classMap({ overlay: true, visible: this._controlsVisible })}
         >
@@ -237,18 +228,30 @@ export class HaCameraPlayer extends LitElement {
               .status=${status}
               @click=${this._showStreamInfo}
             ></ha-camera-stream-badge>
-            ${
-              zoomed
-                ? html`<ha-icon-button
-                    class="control"
-                    .label=${this._localize(
-                      "ui.components.camera-player.reset_zoom"
-                    )}
-                    .path=${mdiMagnifyMinusOutline}
-                    @click=${this._resetZoom}
-                  ></ha-icon-button>`
-                : nothing
-            }
+            <div class="group">
+              ${
+                this._wheelHint
+                  ? html`<span class="wheel-hint" aria-hidden="true">
+                      ${this._localize(
+                        "ui.components.camera-player.zoom_hint",
+                        { modifier: ctrlOrCmdLabel(this._localize) }
+                      )}
+                    </span>`
+                  : nothing
+              }
+              ${
+                zoomed
+                  ? html`<ha-icon-button
+                      class="control"
+                      .label=${this._localize(
+                        "ui.components.camera-player.reset_zoom"
+                      )}
+                      .path=${mdiMagnifyMinusOutline}
+                      @click=${this._resetZoom}
+                    ></ha-icon-button>`
+                  : nothing
+              }
+            </div>
           </div>
           <div class="row">
             <div class="group">
@@ -535,6 +538,7 @@ export class HaCameraPlayer extends LitElement {
     }
     // Also keeps the browser from zooming the whole page
     ev.preventDefault();
+    this._hideWheelHint();
     const { rect, size } = this._viewportSize();
     // Lines instead of pixels, like in Firefox with a mouse wheel
     const delta =
@@ -554,6 +558,11 @@ export class HaCameraPlayer extends LitElement {
     this._wheelHintTimeout = window.setTimeout(() => {
       this._wheelHint = false;
     }, WHEEL_HINT_TIMEOUT);
+  }
+
+  private _hideWheelHint() {
+    clearTimeout(this._wheelHintTimeout);
+    this._wheelHint = false;
   }
 
   private _doubleClick(ev: MouseEvent) {
@@ -772,24 +781,36 @@ export class HaCameraPlayer extends LitElement {
       -webkit-backdrop-filter: blur(8px);
     }
 
+    /* Where the reset zoom button comes once zoomed in */
     .wheel-hint {
-      position: absolute;
-      inset: 0;
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      padding: var(--ha-space-4);
-      text-align: center;
+      height: 28px;
+      padding-inline: var(--ha-space-3);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--ha-border-radius-pill);
+      background-color: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       color: white;
-      font-size: var(--ha-font-size-l);
+      font-size: var(--ha-font-size-s);
       font-weight: var(--ha-font-weight-medium);
-      background-color: rgba(0, 0, 0, 0.5);
-      pointer-events: none;
+      white-space: nowrap;
+      animation: fade-in var(--ha-animation-duration-fast, 150ms) ease-out;
+    }
+
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
       ha-camera-stream {
         transition: none;
+      }
+      .wheel-hint {
+        animation: none;
       }
     }
   `;
