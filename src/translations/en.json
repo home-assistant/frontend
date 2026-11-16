@@ -2197,6 +2197,27 @@
           "failed_to_download": "Failed to download snapshot. Please check the logs for more information.",
           "start_talking": "Start talking",
           "stop_talking": "Stop talking",
+          "connecting_microphone": "Connecting microphone",
+          "microphone_unavailable": "The camera is unavailable.",
+          "microphone_webrtc_connecting": "You can talk to this camera as soon as the WebRTC stream is connected.",
+          "tabs": {
+            "call": "Talk",
+            "ptz": "Move camera"
+          },
+          "ptz": {
+            "move": "Move camera",
+            "up": "Tilt up",
+            "down": "Tilt down",
+            "left": "Pan left",
+            "right": "Pan right",
+            "zoom": "Zoom",
+            "zoom_in": "Zoom in",
+            "zoom_out": "Zoom out",
+            "preset": "Preset position",
+            "unavailable": "The camera controls are unavailable.",
+            "disabled_entities": "Some camera controls are disabled. Enable them in the {device_settings} to use them.",
+            "device_settings": "device settings"
+          },
           "microphone_not_secure": "[%key:ui::components::secure_connection_required::microphone%]",
           "microphone_webrtc_only": "Talking to this camera is only possible when the stream uses WebRTC.",
           "microphone_denied": "Microphone access was denied. Allow it in your browser settings to talk to this camera.",

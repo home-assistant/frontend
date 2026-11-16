@@ -1,24 +1,45 @@
 import type { ContextType } from "@lit/context";
-import { mdiMicrophone, mdiMicrophoneOff } from "@mdi/js";
+import {
+  mdiArrowAll,
+  mdiMicrophone,
+  mdiMicrophoneOff,
+  mdiPhone,
+} from "@mdi/js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
+import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import { watchAudioLevel } from "../../../common/audio/watch-audio-level";
 import { consume } from "../../../common/decorators/consume";
-import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import {
+  consumeEntityRegistryEntry,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import "../../../components/ha-button";
 import "../../../components/camera/ha-camera-player";
 import type { HaCameraPlayer } from "../../../components/camera/ha-camera-player";
-import type { CameraStreamType } from "../../../components/ha-camera-stream";
+import type {
+  CameraStreamStatus,
+  CameraStreamType,
+} from "../../../components/ha-camera-stream";
+import "../../../components/ha-control-button";
+import "../../../components/ha-icon-button-group";
+import "../../../components/ha-icon-button-toggle";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-tooltip";
 import type { WebRtcMicrophoneState } from "../../../components/ha-web-rtc-player";
 import { STREAM_TYPE_WEB_RTC, type CameraEntity } from "../../../data/camera";
-import { configContext } from "../../../data/context";
+import { findCameraPtzEntities } from "../../../data/camera-controls";
+import { configContext, fullEntitiesContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
+import type {
+  EntityRegistryDisplayEntry,
+  EntityRegistryEntry,
+} from "../../../data/entity/entity_registry";
 import {
   canAppStreamMicrophone,
   isWebRtcStreamErrorCode,
@@ -30,7 +51,11 @@ import type {
   EMError,
   WebRtcStreamStopped,
 } from "../../../external_app/external_messaging";
-import { showToast } from "../../../util/toast";
+import { cameraControlHintStyle } from "../components/camera/camera-control-styles";
+import "../components/camera/ha-more-info-camera-ptz";
+import "../components/camera/ha-more-info-camera-sensors";
+
+type CameraControlTab = "call" | "ptz";
 
 @customElement("more-info-camera")
 class MoreInfoCamera extends LitElement {
@@ -42,7 +67,15 @@ class MoreInfoCamera extends LitElement {
   @consume({ context: configContext, subscribe: true })
   private _config!: ContextType<typeof configContext>;
 
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  private _fullEntities?: EntityRegistryEntry[];
+
   @property({ attribute: false }) public stateObj?: CameraEntity;
+
+  @state()
+  @consumeEntityRegistryEntry({ entityIdPath: ["stateObj", "entity_id"] })
+  private _entry?: EntityRegistryDisplayEntry;
 
   @state() private _attached = false;
 
@@ -52,9 +85,21 @@ class MoreInfoCamera extends LitElement {
 
   @state() private _supportsTwoWayAudio = false;
 
+  @state() private _streamStatus?: CameraStreamStatus;
+
+  @state() private _tab?: CameraControlTab;
+
+  // Why the app could not start or keep the microphone
+  @state() private _microphoneError?: string;
+
   @query("ha-camera-player") private _cameraStream?: HaCameraPlayer;
 
-  @query(".microphone-meter") private _microphoneMeter?: HTMLElement;
+  @query(".microphone") private _microphoneMeter?: HTMLElement;
+
+  private _ptzEntities = memoizeOne(
+    (entityId: string, entities?: EntityRegistryEntry[]) =>
+      entities ? findCameraPtzEntities(entityId, entities) : undefined
+  );
 
   private _stopAudioLevel?: () => void;
 
@@ -82,6 +127,7 @@ class MoreInfoCamera extends LitElement {
     const oldStateObj = changedProps.get("stateObj");
     if (oldStateObj && oldStateObj.entity_id !== this.stateObj?.entity_id) {
       this._resetMicrophone();
+      this._tab = undefined;
     }
   }
 
@@ -89,6 +135,7 @@ class MoreInfoCamera extends LitElement {
   private _resetMicrophone() {
     this._stopAppMicrophone();
     this._microphoneState = "off";
+    this._microphoneError = undefined;
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -114,10 +161,24 @@ class MoreInfoCamera extends LitElement {
     this._microphoneMeter?.style.removeProperty("--microphone-level");
   }
 
+  private _tabs(): CameraControlTab[] {
+    const tabs: CameraControlTab[] = [];
+    if (this._supportsTwoWayAudio) {
+      tabs.push("call");
+    }
+    if (this._ptzEntities(this.stateObj!.entity_id, this._fullEntities)) {
+      tabs.push("ptz");
+    }
+    return tabs;
+  }
+
   protected render() {
     if (!this._attached || !this.stateObj) {
       return nothing;
     }
+
+    const tabs = this._tabs();
+    const tab = this._tab && tabs.includes(this._tab) ? this._tab : tabs[0];
 
     return html`
       <ha-camera-player
@@ -125,10 +186,63 @@ class MoreInfoCamera extends LitElement {
         allow-exoplayer
         @microphone-changed=${this._microphoneChanged}
         @stream-type-changed=${this._streamTypeChanged}
+        @camera-stream-status-changed=${this._streamStatusChanged}
         @camera-capabilities-changed=${this._capabilitiesChanged}
       ></ha-camera-player>
-      ${this._supportsTwoWayAudio ? this._renderMicrophoneButton() : nothing}
+      ${
+        tabs.length || this._entry?.device_id
+          ? this._renderControls(tabs, tab)
+          : nothing
+      }
     `;
+  }
+
+  private _renderControls(tabs: CameraControlTab[], tab?: CameraControlTab) {
+    return html`
+      <div class="controls">
+        <ha-more-info-camera-sensors
+          .deviceId=${this._entry?.device_id}
+        ></ha-more-info-camera-sensors>
+        ${
+          tabs.length > 1
+            ? html`
+                <ha-icon-button-group class="tabs">
+                  ${tabs.map(
+                    (item) => html`
+                      <ha-icon-button-toggle
+                        .label=${this._localize(
+                          `ui.dialogs.more_info_control.camera.tabs.${item}`
+                        )}
+                        .selected=${tab === item}
+                        .path=${item === "call" ? mdiPhone : mdiArrowAll}
+                        data-tab=${item}
+                        @click=${this._selectTab}
+                      ></ha-icon-button-toggle>
+                    `
+                  )}
+                </ha-icon-button-group>
+              `
+            : nothing
+        }
+        ${
+          tab === "call"
+            ? this._renderCall()
+            : tab === "ptz"
+              ? html`<ha-more-info-camera-ptz
+                  .ptz=${this._ptzEntities(
+                    this.stateObj!.entity_id,
+                    this._fullEntities
+                  )}
+                  .deviceId=${this._entry?.device_id}
+                ></ha-more-info-camera-ptz>`
+              : nothing
+        }
+      </div>
+    `;
+  }
+
+  private _selectTab(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
+    this._tab = ev.currentTarget.dataset.tab as CameraControlTab;
   }
 
   /**
@@ -144,6 +258,11 @@ class MoreInfoCamera extends LitElement {
   }
 
   private _microphoneDisabledReason(): string | undefined {
+    if (this.stateObj!.state === UNAVAILABLE) {
+      return this._localize(
+        "ui.dialogs.more_info_control.camera.microphone_unavailable"
+      );
+    }
     if (!window.isSecureContext && !this._useAppMicrophone) {
       return this._localize(
         "ui.dialogs.more_info_control.camera.microphone_not_secure"
@@ -151,7 +270,9 @@ class MoreInfoCamera extends LitElement {
     }
     if (this._streamType !== STREAM_TYPE_WEB_RTC) {
       return this._localize(
-        "ui.dialogs.more_info_control.camera.microphone_webrtc_only"
+        this._streamStatus?.upgrading === STREAM_TYPE_WEB_RTC
+          ? "ui.dialogs.more_info_control.camera.microphone_webrtc_connecting"
+          : "ui.dialogs.more_info_control.camera.microphone_webrtc_only"
       );
     }
     if (this._microphoneState === "denied") {
@@ -162,61 +283,60 @@ class MoreInfoCamera extends LitElement {
     return undefined;
   }
 
-  private _renderMicrophoneButton() {
+  private _renderCall() {
     const disabledReason = this._microphoneDisabledReason();
 
     const microphoneOn =
       this._microphoneState === "on" || this._microphoneState === "connecting";
 
     // Stopping is always possible, so the microphone is never stuck on
-    const disabled =
-      !microphoneOn &&
-      (disabledReason !== undefined || this.stateObj!.state === UNAVAILABLE);
+    const disabled = !microphoneOn && disabledReason !== undefined;
 
-    const button = html`
-      <ha-button
-        .appearance=${microphoneOn ? "accent" : "filled"}
-        .disabled=${disabled}
-        @click=${this._toggleMicrophone}
-      >
-        ${
-          this._microphoneState === "connecting"
-            ? html`<ha-spinner slot="start" size="tiny"></ha-spinner>`
-            : html`<ha-svg-icon
-                slot="start"
-                .path=${microphoneOn ? mdiMicrophone : mdiMicrophoneOff}
-              ></ha-svg-icon>`
-        }
-        ${this._localize(`ui.dialogs.more_info_control.camera.${microphoneOn ? "stop_talking" : "start_talking"}`)}
-      </ha-button>
-    `;
+    const hint = disabled ? disabledReason : this._microphoneError;
+
+    const label = this._localize(
+      `ui.dialogs.more_info_control.camera.${
+        this._microphoneState === "connecting"
+          ? "connecting_microphone"
+          : microphoneOn
+            ? "stop_talking"
+            : "start_talking"
+      }`
+    );
 
     return html`
-      <div class="buttons">
+      <div class="call">
         <div
-          id="microphone-button"
-          class="microphone-meter"
-          tabindex=${ifDefined(disabled && disabledReason ? "0" : undefined)}
+          class=${classMap({
+            microphone: true,
+            on: this._microphoneState === "on",
+          })}
         >
-          ${
-            this._microphoneState === "on"
-              ? html`<span class="microphone-waves"></span>`
-              : nothing
-          }
-          ${button}
+          <span class="waves"></span>
+          <span class="level"></span>
+          <ha-control-button
+            .label=${label}
+            .disabled=${disabled}
+            class=${classMap({ active: microphoneOn })}
+            @click=${this._toggleMicrophone}
+          >
+            ${
+              this._microphoneState === "connecting"
+                ? html`<ha-spinner size="small"></ha-spinner>`
+                : html`<ha-svg-icon
+                    .path=${microphoneOn ? mdiMicrophone : mdiMicrophoneOff}
+                  ></ha-svg-icon>`
+            }
+          </ha-control-button>
         </div>
-        ${
-          disabled && disabledReason
-            ? html`<ha-tooltip for="microphone-button"
-                >${disabledReason}</ha-tooltip
-              >`
-            : nothing
-        }
+        <span class="call-label" aria-hidden="true">${label}</span>
+        ${hint ? html`<div class="hint" role="status">${hint}</div>` : nothing}
       </div>
     `;
   }
 
   private _toggleMicrophone() {
+    this._microphoneError = undefined;
     if (this._useAppMicrophone) {
       this._toggleAppMicrophone();
       return;
@@ -253,7 +373,7 @@ class MoreInfoCamera extends LitElement {
         return;
       }
       this._microphoneState = "off";
-      showToast(this, { message: this._appErrorMessage(err as EMError) });
+      this._microphoneError = this._appErrorMessage(err as EMError);
     }
   }
 
@@ -298,13 +418,19 @@ class MoreInfoCamera extends LitElement {
     if (stopped.code === "interrupted") {
       return;
     }
-    showToast(this, { message: this._appErrorMessage(stopped) });
+    this._microphoneError = this._appErrorMessage(stopped);
   };
 
   private _streamTypeChanged(
     ev: HASSDomEvent<HASSDomEvents["stream-type-changed"]>
   ) {
     this._streamType = ev.detail.type;
+  }
+
+  private _streamStatusChanged(
+    ev: HASSDomEvent<HASSDomEvents["camera-stream-status-changed"]>
+  ) {
+    this._streamStatus = ev.detail;
   }
 
   private _capabilitiesChanged(
@@ -322,67 +448,141 @@ class MoreInfoCamera extends LitElement {
     this._microphoneState = ev.detail.state;
   }
 
-  static styles = css`
-    :host {
-      display: block;
-    }
-
-    .buttons {
-      display: flex;
-      justify-content: flex-end;
-      padding: var(--ha-space-4);
-    }
-
-    .microphone-meter {
-      position: relative;
-      isolation: isolate;
-    }
-
-    ha-spinner {
-      --ha-spinner-indicator-color: currentColor;
-    }
-
-    .microphone-waves {
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      opacity: var(--microphone-level, 0);
-      transition: opacity 150ms linear;
-    }
-
-    .microphone-waves::before,
-    .microphone-waves::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: var(--ha-border-radius-pill);
-      background-color: var(--ha-color-fill-primary-loud-resting);
-      animation: microphone-wave 1.4s ease-out infinite;
-    }
-
-    .microphone-waves::after {
-      animation-delay: 0.7s;
-    }
-
-    @keyframes microphone-wave {
-      from {
-        transform: scale(1);
-        opacity: 0.4;
+  static styles = [
+    cameraControlHintStyle,
+    css`
+      :host {
+        display: block;
       }
-      to {
-        transform: scale(1.15, 1.6);
+
+      .controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: var(--ha-space-4) 0 var(--ha-space-6);
+      }
+
+      /* Spaces itself, as it is empty without sensors */
+      ha-more-info-camera-sensors {
+        align-self: stretch;
+      }
+
+      .tabs {
+        margin-bottom: var(--ha-space-6);
+      }
+
+      ha-more-info-camera-ptz,
+      .call {
+        padding: 0 var(--ha-space-4);
+      }
+
+      .call {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--ha-space-3);
+        align-self: stretch;
+      }
+
+      .call-label {
+        font-size: var(--ha-font-size-m);
+        font-weight: var(--ha-font-weight-medium);
+        color: var(--primary-text-color);
+      }
+
+      .microphone {
+        --microphone-size: 88px;
+        position: relative;
+        width: var(--microphone-size);
+        height: var(--microphone-size);
+        margin: var(--ha-space-4);
+        isolation: isolate;
+      }
+
+      ha-control-button {
+        width: 100%;
+        height: 100%;
+        --control-button-border-radius: var(--ha-border-radius-circle);
+        --mdc-icon-size: 36px;
+        transition: transform var(--ha-animation-duration-fast, 150ms) ease-out;
+      }
+
+      ha-control-button.active {
+        --control-button-background-color: var(--primary-color);
+        --control-button-background-opacity: 1;
+        --control-button-icon-color: var(--text-primary-color, white);
+      }
+
+      ha-control-button:active:not([disabled]) {
+        transform: scale(0.95);
+      }
+
+      ha-spinner {
+        --ha-spinner-indicator-color: currentColor;
+      }
+
+      /* Rings that keep moving out while the microphone is on */
+      .waves,
+      .level {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        border-radius: var(--ha-border-radius-circle);
+        pointer-events: none;
+      }
+
+      .waves::before,
+      .waves::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        border: 2px solid var(--primary-color);
         opacity: 0;
       }
-    }
 
-    @media (prefers-reduced-motion: reduce) {
-      .microphone-waves::before,
-      .microphone-waves::after {
-        animation: none;
-        transform: scale(1.08, 1.3);
+      .microphone.on .waves::before,
+      .microphone.on .waves::after {
+        animation: microphone-wave 2s ease-out infinite;
       }
-    }
-  `;
+
+      .microphone.on .waves::after {
+        animation-delay: 1s;
+      }
+
+      /* Grows with the voice going into the microphone */
+      .level {
+        background-color: var(--primary-color);
+        opacity: calc(var(--microphone-level, 0) * 0.35);
+        transform: scale(calc(1 + var(--microphone-level, 0) * 0.45));
+        transition:
+          transform 100ms linear,
+          opacity 100ms linear;
+      }
+
+      @keyframes microphone-wave {
+        from {
+          transform: scale(1);
+          opacity: 0.6;
+        }
+        to {
+          transform: scale(1.7);
+          opacity: 0;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .microphone.on .waves::before,
+        .microphone.on .waves::after {
+          animation: none;
+        }
+        .level,
+        ha-control-button {
+          transition: none;
+        }
+      }
+    `,
+  ];
 }
 
 declare global {
