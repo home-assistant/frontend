@@ -58,7 +58,15 @@ export class HaYamlEditor extends LitElement {
   @property({ attribute: "has-extra-actions", type: Boolean })
   public hasExtraActions = false;
 
+  /**
+   * When set, the editor shows how the YAML differs from this value. With
+   * `null`, all of the YAML shows as added.
+   */
+  @property({ attribute: false }) public original?: unknown;
+
   @state() private _yaml = "";
+
+  @state() private _originalYaml?: string;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -68,14 +76,18 @@ export class HaYamlEditor extends LitElement {
 
   private _focusPending = false;
 
+  private _dump(value: any): string {
+    return !isEmpty(value)
+      ? dump(value, {
+          schema: this.yamlSchema,
+          noRefs: true,
+        })
+      : "";
+  }
+
   public setValue(value): void {
     try {
-      this._yaml = !isEmpty(value)
-        ? dump(value, {
-            schema: this.yamlSchema,
-            noRefs: true,
-          })
-        : "";
+      this._yaml = this._dump(value);
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error(err, value);
@@ -93,6 +105,14 @@ export class HaYamlEditor extends LitElement {
     super.willUpdate(changedProperties);
     if (this.autoUpdate && changedProperties.has("value")) {
       this.setValue(this.value);
+    }
+    if (changedProperties.has("original")) {
+      this._originalYaml =
+        this.original === undefined
+          ? undefined
+          : this.original === null
+            ? ""
+            : this._dump(this.original);
     }
   }
 
@@ -139,6 +159,7 @@ export class HaYamlEditor extends LitElement {
       <ha-code-editor
         .value=${this._yaml}
         .readOnly=${this.readOnly}
+        .original=${this._originalYaml}
         .disableFullscreen=${this.disableFullscreen}
         .inDialog=${this.inDialog}
         mode="yaml"

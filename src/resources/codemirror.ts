@@ -94,6 +94,32 @@ export const readonlyCompartment = new Compartment();
 export const linewrapCompartment = new Compartment();
 export const yamlLintCompartment = new Compartment();
 export const phrasesCompartment = new Compartment();
+export const mergeCompartment = new Compartment();
+
+export { unifiedMergeView } from "@codemirror/merge";
+
+// Colors the changes of a unified merge view like the rest of the UI. The
+// extra .cm-editor wins over the light and dark rules of its base theme.
+export const haMergeTheme = EditorView.theme({
+  "&.cm-editor.cm-merge-b .cm-changedLine, &.cm-editor .cm-inlineChangedLine": {
+    backgroundColor: "var(--ha-color-fill-success-quiet-resting)",
+  },
+  "&.cm-editor.cm-merge-b .cm-changedText": {
+    background: "var(--ha-color-fill-success-normal-resting)",
+  },
+  "&.cm-editor .cm-deletedChunk": {
+    backgroundColor: "var(--ha-color-fill-danger-quiet-resting)",
+  },
+  "&.cm-editor .cm-deletedChunk .cm-deletedText": {
+    background: "var(--ha-color-fill-danger-normal-resting)",
+  },
+  "&.cm-editor.cm-merge-b .cm-changedLineGutter": {
+    background: "var(--ha-color-border-success-loud)",
+  },
+  "&.cm-editor .cm-deletedLineGutter": {
+    background: "var(--ha-color-border-danger-loud)",
+  },
+});
 
 // CodeMirror renders the search panel, the go to line dialog and the fold
 // markers with hardcoded English text, looked up through `state.phrase()`.

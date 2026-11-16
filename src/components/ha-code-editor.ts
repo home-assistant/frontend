@@ -135,6 +135,12 @@ export class HaCodeEditor extends ReactiveElement {
 
   @property({ type: String }) public placeholder?: string;
 
+  /**
+   * When set, the editor shows how its value differs from this text, with
+   * removed lines above the lines that replaced them.
+   */
+  @property({ attribute: false }) public original?: string;
+
   @state() private _value = "";
 
   @state() private _isFullscreen = false;
@@ -354,6 +360,13 @@ export class HaCodeEditor extends ReactiveElement {
         ),
       });
     }
+    if (changedProps.has("original")) {
+      transactions.push({
+        effects: this._loadedCodeMirror!.mergeCompartment.reconfigure(
+          this._merge
+        ),
+      });
+    }
     if (changedProps.has("linewrap")) {
       transactions.push({
         effects: this._loadedCodeMirror!.linewrapCompartment!.reconfigure(
@@ -404,6 +417,15 @@ export class HaCodeEditor extends ReactiveElement {
     return this._loadedCodeMirror!.langs[this.mode];
   }
 
+  private get _merge(): Extension {
+    return this.original === undefined
+      ? []
+      : this._loadedCodeMirror!.unifiedMergeView({
+          original: this.original,
+          mergeControls: false,
+        });
+  }
+
   private get _phrases(): Extension {
     return this._i18n
       ? this._loadedCodeMirror!.localizedPhrases(this._i18n.localize)
@@ -449,6 +471,8 @@ export class HaCodeEditor extends ReactiveElement {
       this._loadedCodeMirror.phrasesCompartment.of(this._phrases),
       this._loadedCodeMirror.langCompartment.of(this._mode),
       this._loadedCodeMirror.haTheme,
+      this._loadedCodeMirror.haMergeTheme,
+      this._loadedCodeMirror.mergeCompartment.of(this._merge),
       this._loadedCodeMirror.haSyntaxHighlighting,
       this._loadedCodeMirror.yamlScalarHighlighter,
       this._loadedCodeMirror.yamlScalarHighlightStyle,
