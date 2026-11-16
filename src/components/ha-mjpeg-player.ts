@@ -7,6 +7,9 @@ import { fireEvent } from "../common/dom/fire_event";
 // costs battery
 const FRAME_RATE = 15;
 
+// Shows the image itself when no frame could be copied by then
+const FALLBACK_TIMEOUT = 5000;
+
 /**
  * Plays an MJPEG stream in a video element, so it can be shown picture in
  * picture like the other camera streams. The image of the stream is copied
@@ -39,6 +42,8 @@ export class HaMjpegPlayer extends LitElement {
   private _stream?: MediaStream;
 
   private _drawInterval?: number;
+
+  private _fallbackTimeout?: number;
 
   private _loaded = false;
 
@@ -95,10 +100,23 @@ export class HaMjpegPlayer extends LitElement {
   }
 
   private _imageLoaded() {
-    if (this._imageFallback && !this._loaded) {
+    if (this._imageFallback) {
+      this._setLoaded();
+    }
+  }
+
+  private _setLoaded() {
+    if (!this._loaded) {
       this._loaded = true;
       fireEvent(this, "load");
     }
+  }
+
+  private _useImageFallback() {
+    this._stopDrawing();
+    this._imageFallback = true;
+    // The image shows whatever arrived, a stream may never finish loading
+    this._setLoaded();
   }
 
   private _startDrawing() {
@@ -110,11 +128,18 @@ export class HaMjpegPlayer extends LitElement {
       () => this._drawFrame(),
       1000 / FRAME_RATE
     );
+    this._fallbackTimeout = window.setTimeout(() => {
+      if (!this._stream) {
+        this._useImageFallback();
+      }
+    }, FALLBACK_TIMEOUT);
   }
 
   private _stopDrawing() {
     clearInterval(this._drawInterval);
     this._drawInterval = undefined;
+    clearTimeout(this._fallbackTimeout);
+    this._fallbackTimeout = undefined;
     this._stream?.getTracks().forEach((track) => track.stop());
     this._stream = undefined;
     if (this._videoEl) {
@@ -125,7 +150,8 @@ export class HaMjpegPlayer extends LitElement {
   private _drawFrame() {
     const image = this._imageEl;
     const video = this._videoEl;
-    if (!image?.complete || !image.naturalWidth || !video) {
+    // An MJPEG stream never completes loading, so only wait for a first frame
+    if (!image?.naturalWidth || !video) {
       return;
     }
     if (!this._canvas) {
@@ -149,18 +175,12 @@ export class HaMjpegPlayer extends LitElement {
       this._stream = canvas.captureStream();
     } catch (_err: unknown) {
       // An image from another origin taints the canvas, it can't be captured
-      this._stopDrawing();
-      this._imageFallback = true;
-      this._loaded = true;
-      fireEvent(this, "load");
+      this._useImageFallback();
       return;
     }
     video.srcObject = this._stream;
     video.play().catch(() => undefined);
-    if (!this._loaded) {
-      this._loaded = true;
-      fireEvent(this, "load");
-    }
+    this._setLoaded();
   }
 
   static styles = css`

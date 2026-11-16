@@ -8,7 +8,7 @@ import { customElement, state } from "lit/decorators";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { CAMERA_STREAM_TYPE_NAMES } from "../../components/camera/ha-camera-stream-badge";
-import "../../components/ha-dialog";
+import "../../components/ha-adaptive-dialog";
 import "../../components/ha-svg-icon";
 import {
   MJPEG_STREAM,
@@ -16,6 +16,7 @@ import {
   STREAM_TYPE_WEB_RTC,
   type CameraStreamType,
 } from "../../data/camera-streams";
+import { haStyleDialog, haStyleDialogFixedTop } from "../../resources/styles";
 import { DialogMixin } from "../dialog-mixin";
 import type { CameraStreamInfoDialogParams } from "./show-dialog-camera-stream-info";
 
@@ -40,7 +41,7 @@ class DialogCameraStreamInfo extends DialogMixin<CameraStreamInfoDialogParams>(
     }
     const { status, supportedTypes } = this.params;
     return html`
-      <ha-dialog
+      <ha-adaptive-dialog
         open
         width="medium"
         .headerTitle=${this._localize("ui.dialogs.camera_stream_info.title")}
@@ -93,66 +94,71 @@ class DialogCameraStreamInfo extends DialogMixin<CameraStreamInfoDialogParams>(
             `;
           })}
         </ul>
-      </ha-dialog>
+      </ha-adaptive-dialog>
     `;
   }
 
-  static styles = css`
-    p {
-      margin: 0;
-      color: var(--secondary-text-color);
-    }
+  static styles = [
+    haStyleDialog,
+    // At the top like the more info dialog it opens from
+    haStyleDialogFixedTop,
+    css`
+      p {
+        margin: 0;
+        color: var(--secondary-text-color);
+      }
 
-    ul {
-      list-style: none;
-      margin: var(--ha-space-4) 0 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      gap: var(--ha-space-4);
-    }
+      ul {
+        list-style: none;
+        margin: var(--ha-space-4) 0 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--ha-space-4);
+      }
 
-    li {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--ha-space-4);
-    }
+      li {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--ha-space-4);
+      }
 
-    li.unsupported {
-      opacity: 0.6;
-    }
+      li.unsupported {
+        opacity: 0.6;
+      }
 
-    li ha-svg-icon {
-      flex: none;
-      padding: var(--ha-space-2);
-      border-radius: var(--ha-border-radius-circle);
-      background-color: var(--ha-color-fill-neutral-quiet-resting);
-      color: var(--primary-text-color);
-    }
+      li ha-svg-icon {
+        flex: none;
+        padding: var(--ha-space-2);
+        border-radius: var(--ha-border-radius-circle);
+        background-color: var(--ha-color-fill-neutral-quiet-resting);
+        color: var(--primary-text-color);
+      }
 
-    .name {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: var(--ha-space-2);
-      font-weight: var(--ha-font-weight-medium);
-      margin-bottom: var(--ha-space-1);
-    }
+      .name {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--ha-space-2);
+        font-weight: var(--ha-font-weight-medium);
+        margin-bottom: var(--ha-space-1);
+      }
 
-    .tag {
-      font-size: var(--ha-font-size-xs);
-      font-weight: var(--ha-font-weight-medium);
-      padding: 2px var(--ha-space-2);
-      border-radius: var(--ha-border-radius-pill);
-      background-color: var(--ha-color-fill-neutral-quiet-resting);
-      color: var(--secondary-text-color);
-    }
+      .tag {
+        font-size: var(--ha-font-size-xs);
+        font-weight: var(--ha-font-weight-medium);
+        padding: 2px var(--ha-space-2);
+        border-radius: var(--ha-border-radius-pill);
+        background-color: var(--ha-color-fill-neutral-quiet-resting);
+        color: var(--secondary-text-color);
+      }
 
-    .tag.current {
-      background-color: var(--ha-color-fill-success-quiet-resting);
-      color: var(--ha-color-on-success-quiet);
-    }
-  `;
+      .tag.current {
+        background-color: var(--ha-color-fill-success-quiet-resting);
+        color: var(--ha-color-on-success-quiet);
+      }
+    `,
+  ];
 }
 
 declare global {
