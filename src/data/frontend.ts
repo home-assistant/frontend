@@ -59,7 +59,11 @@ export interface ClimateFrontendSystemData {
   hidden_entities?: string[];
 }
 
-export type HomeSummaryPanelSystemDataKey = "maintenance" | "climate";
+export interface LightFrontendSystemData {
+  hidden_entities?: string[];
+}
+
+export type HomeSummaryPanelSystemDataKey = "maintenance" | "climate" | "light";
 
 export interface EnergyFrontendSystemData {
   // Stable "<view>.<card-type>" keys of energy dashboard cards the user has
@@ -81,6 +85,7 @@ declare global {
     security: SecurityFrontendSystemData;
     maintenance: MaintenanceFrontendSystemData;
     climate: ClimateFrontendSystemData;
+    light: LightFrontendSystemData;
   }
 }
 

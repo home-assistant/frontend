@@ -31,6 +31,7 @@ export interface HomeAreaViewStrategyConfig {
   type: "home-area";
   area?: string;
   climate_hidden_entities?: string[];
+  light_hidden_entities?: string[];
   home_panel?: boolean;
 }
 
@@ -95,6 +96,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
 
     const hiddenEntities: Partial<Record<HomeSummary, string[]>> = {
       climate: config.climate_hidden_entities,
+      light: config.light_hidden_entities,
     };
 
     const summaryEntitiesBySummary = HOME_SUMMARIES.reduce(
@@ -169,9 +171,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
                 tap_action: {
                   action: "perform-action",
                   perform_action: "light.turn_on",
-                  target: {
-                    area_id: config.area,
-                  },
+                  target: { entity_id: light },
                 },
                 visibility: [
                   {
@@ -192,9 +192,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
                 tap_action: {
                   action: "perform-action",
                   perform_action: "light.turn_off",
-                  target: {
-                    area_id: config.area,
-                  },
+                  target: { entity_id: light },
                 },
                 visibility: [anyOnCondition],
               } satisfies ButtonHeadingBadgeConfig,
