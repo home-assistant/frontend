@@ -117,6 +117,7 @@ class MoreInfoContent extends LitElement {
 
       const memberIds =
         (entry?.capabilities?.group_entities as string[] | undefined) ??
+        (entry?.capabilities?.source_entities as string[] | undefined) ??
         (Array.isArray(stateObj.attributes.entity_id)
           ? (stateObj.attributes.entity_id as string[])
           : undefined);
