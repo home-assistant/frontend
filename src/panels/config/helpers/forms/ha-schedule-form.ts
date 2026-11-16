@@ -238,15 +238,21 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
   }
 
   private async _fetchReadonlyWeek(entityId: string) {
+    // Show loading, not the week of a previous entry.
+    this._readonlyWeek = undefined;
     this._readonlyError = false;
     try {
-      this._readonlyWeek = await fetchScheduleEntityWeek(
+      const week = await fetchScheduleEntityWeek(
         this._api.callService,
         entityId
       );
+      if (this.entry?.entity_id === entityId) {
+        this._readonlyWeek = week;
+      }
     } catch (_err) {
-      this._readonlyWeek = undefined;
-      this._readonlyError = true;
+      if (this.entry?.entity_id === entityId) {
+        this._readonlyError = true;
+      }
     }
   }
 
@@ -465,10 +471,14 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
     // Selecting the block being edited again keeps its unsaved changes.
     const sameBlock =
       current?.day === source?.day && current?.index === source?.index;
+    const week = this._week;
     if ((!source && !current) || sameBlock || !(await this._confirmDiscard())) {
       return;
     }
-    this._panel = source ? { type: "block", source } : undefined;
+    // A block selected on a week that was replaced while confirming may be
+    // gone or be another block now, so then the editor only closes.
+    this._panel =
+      source && this._week === week ? { type: "block", source } : undefined;
   }
 
   private _draftChanged(
