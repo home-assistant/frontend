@@ -21,21 +21,6 @@ This is the repository for the official [Home Assistant](https://home-assistant.
 
 A complete guide can be found at the following [link](https://www.home-assistant.io/developers/frontend/). It describes a short guide for the build of project.
 
-## Custom card color helpers
-
-Custom cards can use the frontend's color helpers through `window.loadCardHelpers()`:
-
-```javascript
-const helpers = await window.loadCardHelpers();
-helpers.computeCssVariableName("amber"); // "--amber-color"
-helpers.computeCssColor("amber"); // "var(--amber-color)"
-```
-
-Both helpers leave custom CSS color strings unchanged. They return CSS variable
-names or expressions, not resolved RGB values, so palette colors follow the active
-theme. Cards supporting older frontend versions should check that the helpers are
-available before using them.
-
 ## License
 
 Home Assistant is open-source and Apache 2 licensed. Feel free to browse the repository, learn and reuse parts in your own projects.
