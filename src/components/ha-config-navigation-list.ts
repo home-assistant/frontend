@@ -30,9 +30,13 @@ class HaConfigNavigationList extends LitElement {
       <ha-list-nav .ariaLabel=${this.label}>
         ${this.pages.map((page) => {
           const externalApp = page.path.endsWith("#external-app-configuration");
+          // Pass the text as properties instead of slotting it. Older Android
+          // WebViews (Chromium 83) can leave the button without a name otherwise
           return html`
             <ha-list-item-button
               .href=${externalApp ? undefined : page.path}
+              .headline=${page.name}
+              .supportingText=${this.hasSecondary ? page.description : undefined}
               @click=${externalApp ? this._handleExternalApp : undefined}
             >
               <ha-svg-icon
@@ -43,14 +47,6 @@ class HaConfigNavigationList extends LitElement {
                 .secondaryPath=${page.iconSecondaryPath}
                 .viewBox=${page.iconViewBox}
               ></ha-svg-icon>
-              <span slot="headline">${page.name}</span>
-              ${
-                this.hasSecondary
-                  ? html`<span slot="supporting-text"
-                      >${page.description}</span
-                    >`
-                  : ""
-              }
               ${
                 !this.narrow
                   ? html`<ha-icon-next slot="end"></ha-icon-next>`
