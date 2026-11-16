@@ -1,5 +1,4 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -38,10 +37,6 @@ export class HaColorTempSelector extends LitElement {
   @consumeEntityStates({ entityIdPath: ["context", "filter_entity"] })
   private _filterEntityStates?: Record<string, HassEntity>;
 
-  private _rangeSettled = false;
-
-  private _clampWhenRangeArrives = false;
-
   protected render() {
     const { min, max } = this._bounds();
     const gradient = this._generateTemperatureGradient(
@@ -69,52 +64,6 @@ export class HaColorTempSelector extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
-    // The first pass is the value already stored on the action. Correcting it
-    // here would change that action just by opening the editor.
-    if (!this._rangeSettled) {
-      this._rangeSettled = true;
-      return;
-    }
-    if (changedProps.has("value")) {
-      this._clampWhenRangeArrives = true;
-    }
-
-    const initialStates =
-      !this._clampWhenRangeArrives &&
-      changedProps.has("_filterEntityStates") &&
-      changedProps.get("_filterEntityStates") === undefined &&
-      !changedProps.has("value") &&
-      !changedProps.has("context") &&
-      !changedProps.has("selector");
-    const relevant =
-      changedProps.has("value") ||
-      changedProps.has("context") ||
-      changedProps.has("selector") ||
-      changedProps.has("_filterEntityStates") ||
-      changedProps.has("disabled");
-    if (
-      !relevant ||
-      initialStates ||
-      this.disabled ||
-      this.selector.color_temp?.unit !== "kelvin"
-    ) {
-      return;
-    }
-
-    const range = kelvinRangeFromEntityStates(this._filterEntityStates);
-    const numeric = this._numericValue();
-    if (!range || numeric === undefined) {
-      return;
-    }
-    this._clampWhenRangeArrives = false;
-    const clamped = Math.min(range.max, Math.max(range.min, numeric));
-    if (clamped !== numeric) {
-      fireEvent(this, "value-changed", { value: clamped });
-    }
-  }
-
   private _bounds(): { min: number; max: number } {
     switch (this.selector.color_temp?.unit) {
       case "kelvin":
@@ -137,17 +86,6 @@ export class HaColorTempSelector extends LitElement {
             500,
         };
     }
-  }
-
-  private _numericValue(): number | undefined {
-    if (typeof this.value === "number") {
-      return Number.isFinite(this.value) ? this.value : undefined;
-    }
-    if (typeof this.value !== "string" || this.value === "") {
-      return undefined;
-    }
-    const numeric = Number(this.value);
-    return Number.isFinite(numeric) ? numeric : undefined;
   }
 
   private _generateTemperatureGradient = memoizeOne(
