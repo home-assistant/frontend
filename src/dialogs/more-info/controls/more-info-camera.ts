@@ -123,6 +123,7 @@ class MoreInfoCamera extends LitElement {
       <ha-camera-player
         .stateObj=${this.stateObj}
         allow-exoplayer
+        keep-awake
         @microphone-changed=${this._microphoneChanged}
         @stream-type-changed=${this._streamTypeChanged}
         @camera-capabilities-changed=${this._capabilitiesChanged}
