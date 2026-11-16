@@ -1,5 +1,12 @@
 import type { HassEntities } from "home-assistant-js-websocket";
-import type { Selector } from "../../data/selector";
+import { hasTemplate } from "../string/has-template";
+import {
+  resolveEntityIDs,
+  type Selector,
+  type TargetSelector,
+} from "../../data/selector";
+import type { HassServiceTargetWithExclude } from "../../data/target";
+import type { HomeAssistant } from "../../types";
 
 interface KelvinColorTempConfig {
   unit?: "kelvin" | "mired";
@@ -88,4 +95,96 @@ export const colorTempSelectorForTargets = (
       max,
     },
   };
+};
+
+const LIGHT_COLOR_TEMP_FIELD = "color_temp_kelvin";
+
+type ColorTempHass = Pick<
+  HomeAssistant,
+  "states" | "entities" | "devices" | "areas"
+>;
+
+export interface ServiceColorTempValue {
+  target?: HassServiceTargetWithExclude;
+  data?: Record<string, unknown>;
+}
+
+const targetId = (
+  fromTarget: string | string[] | undefined,
+  fromData: unknown
+): string | string[] | undefined => {
+  if (fromTarget) {
+    return fromTarget;
+  }
+  if (typeof fromData === "string") {
+    return fromData;
+  }
+  if (
+    Array.isArray(fromData) &&
+    fromData.every((item) => typeof item === "string")
+  ) {
+    return fromData;
+  }
+  return undefined;
+};
+
+/**
+ * Entities a light action will actually call. Area targets skip a device
+ * entity that is assigned to another area. A template target cannot be
+ * resolved, so the caller keeps the original selector.
+ */
+const colorTempTargetEntityIds = (
+  hass: ColorTempHass,
+  value: ServiceColorTempValue | undefined,
+  serviceTarget?: TargetSelector["target"]
+): string[] | null => {
+  const data = value?.data;
+  if (
+    hasTemplate(value?.target) ||
+    hasTemplate(data?.entity_id) ||
+    hasTemplate(data?.device_id) ||
+    hasTemplate(data?.area_id) ||
+    hasTemplate(data?.floor_id) ||
+    hasTemplate(data?.label_id)
+  ) {
+    return null;
+  }
+
+  return resolveEntityIDs(
+    hass,
+    {
+      entity_id: targetId(value?.target?.entity_id, data?.entity_id),
+      device_id: targetId(value?.target?.device_id, data?.device_id),
+      area_id: targetId(value?.target?.area_id, data?.area_id),
+      floor_id: targetId(value?.target?.floor_id, data?.floor_id),
+      label_id: targetId(value?.target?.label_id, data?.label_id),
+      exclude: value?.target?.exclude,
+    },
+    hass.entities,
+    hass.devices,
+    hass.areas,
+    serviceTarget ? { target: serviceTarget } : { target: {} }
+  );
+};
+
+/**
+ * Adjust only the light service color-temperature field. Other Kelvin
+ * selectors, including a script field with its own bounds, stay as authored.
+ */
+export const colorTempSelectorForServiceField = (
+  domain: string | undefined,
+  fieldKey: string,
+  selector: Selector,
+  hass: ColorTempHass,
+  value: ServiceColorTempValue | undefined,
+  serviceTarget?: TargetSelector["target"]
+): Selector => {
+  if (domain !== "light" || fieldKey !== LIGHT_COLOR_TEMP_FIELD) {
+    return selector;
+  }
+  return colorTempSelectorForTargets(
+    selector,
+    hass.states,
+    colorTempTargetEntityIds(hass, value, serviceTarget)
+  );
 };

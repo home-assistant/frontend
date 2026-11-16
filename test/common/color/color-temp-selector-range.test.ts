@@ -1,6 +1,9 @@
 import type { HassEntities } from "home-assistant-js-websocket";
 import { assert, describe, it } from "vitest";
-import { colorTempSelectorForTargets } from "../../../src/common/color/color-temp-selector-range";
+import {
+  colorTempSelectorForServiceField,
+  colorTempSelectorForTargets,
+} from "../../../src/common/color/color-temp-selector-range";
 import type { Selector } from "../../../src/data/selector";
 
 const genericKelvinSelector: Selector = {
@@ -122,6 +125,101 @@ describe("colorTempSelectorForTargets", () => {
         "light.oranzovka",
       ]),
       { color_temp: { unit: "kelvin", min: 1600, max: 4000 } }
+    );
+  });
+});
+
+const lightServiceTarget = { entity: { domain: "light" } };
+
+const areaHass = {
+  states: {
+    "light.kitchen": {
+      entity_id: "light.kitchen",
+      state: "on",
+      attributes: {
+        min_color_temp_kelvin: 1600,
+        max_color_temp_kelvin: 4000,
+      },
+    },
+    "light.hallway": {
+      entity_id: "light.hallway",
+      state: "on",
+      attributes: {
+        min_color_temp_kelvin: 2700,
+        max_color_temp_kelvin: 6500,
+      },
+    },
+  },
+  entities: {
+    "light.kitchen": { entity_id: "light.kitchen", device_id: "hub" },
+    "light.hallway": {
+      entity_id: "light.hallway",
+      device_id: "hub",
+      area_id: "hallway",
+    },
+  },
+  devices: { hub: { id: "hub", area_id: "kitchen" } },
+  areas: {
+    kitchen: { area_id: "kitchen" },
+    hallway: { area_id: "hallway" },
+  },
+} as unknown as Parameters<typeof colorTempSelectorForServiceField>[3];
+
+describe("colorTempSelectorForServiceField", () => {
+  it("keeps a selector that is not the light color temperature field", () => {
+    const scriptSelector: Selector = {
+      color_temp: { unit: "kelvin", min: 3000, max: 3500 },
+    };
+
+    assert.strictEqual(
+      colorTempSelectorForServiceField(
+        "script",
+        "color_temp_kelvin",
+        scriptSelector,
+        areaHass,
+        { data: { entity_id: "light.kitchen" } },
+        lightServiceTarget
+      ),
+      scriptSelector
+    );
+    assert.strictEqual(
+      colorTempSelectorForServiceField(
+        "light",
+        "brightness_pct",
+        genericKelvinSelector,
+        areaHass,
+        { target: { entity_id: "light.kitchen" } },
+        lightServiceTarget
+      ),
+      genericKelvinSelector
+    );
+  });
+
+  it("ignores a light on an area device that belongs to another area", () => {
+    assert.deepEqual(
+      colorTempSelectorForServiceField(
+        "light",
+        "color_temp_kelvin",
+        genericKelvinSelector,
+        areaHass,
+        { target: { area_id: "kitchen" } },
+        lightServiceTarget
+      ),
+      { color_temp: { unit: "kelvin", min: 1600, max: 4000 } }
+    );
+  });
+
+  it("keeps the generic slider when the target is a template", () => {
+    assert.strictEqual(
+      colorTempSelectorForServiceField(
+        "light",
+        "color_temp_kelvin",
+        genericKelvinSelector,
+        areaHass,
+        { target: { entity_id: "{{ lights }}" } },
+        lightServiceTarget
+      ),
+      genericKelvinSelector
     );
   });
 });
