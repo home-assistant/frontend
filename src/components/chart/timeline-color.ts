@@ -45,8 +45,15 @@ function computeTimelineStateColor(
     : stateColorProperties(stateObj, state);
 
   if (!properties) {
+    const stateKey = slugify(state, "_");
+    const deviceClass = stateObj.attributes.device_class;
     return computeCssValue(
-      `--state-${domain}-${slugify(state, "_")}-color`,
+      [
+        ...(deviceClass
+          ? [`--state-${domain}-${deviceClass}-${stateKey}-color`]
+          : []),
+        `--state-${domain}-${stateKey}-color`,
+      ],
       computedStyles
     );
   }

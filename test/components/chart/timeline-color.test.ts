@@ -20,11 +20,19 @@ describe("computeTimelineColor", () => {
   it("uses a themed color for a custom state of an uncolored domain", () => {
     const styles = createMockComputedStyle({
       "--state-sensor-heating-color": "#ff0000",
+      "--state-sensor-power-heating-color": "#00ff00",
     });
 
     expect(
       computeTimelineColor("Heating", styles, entity("sensor.heat_pump"))
     ).toBe("#ff0000");
+    expect(
+      computeTimelineColor(
+        "Heating",
+        styles,
+        entity("sensor.heat_pump", { device_class: "power" })
+      )
+    ).toBe("#00ff00");
   });
 
   it("keeps active/inactive fallbacks away from uncolored domains", () => {
