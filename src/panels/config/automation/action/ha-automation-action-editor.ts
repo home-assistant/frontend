@@ -1,13 +1,18 @@
 import { html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
+import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import {
   ACTION_ROW_CONFIG_KEYS,
   pickRowConfig,
 } from "../../../../data/automation";
 import "../../../../components/ha-yaml-editor";
+import {
+  automationRowChangeContext,
+  type RowChange,
+} from "../ai/automation-ai-diff";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import {
   COLLAPSIBLE_ACTION_ELEMENTS,
@@ -22,6 +27,11 @@ import type { ActionElement } from "./ha-automation-action-row";
 @customElement("ha-automation-action-editor")
 export default class HaAutomationActionEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  // In the sidebar while the user reviews changes of the AI
+  @state()
+  @consume({ context: automationRowChangeContext, subscribe: true })
+  private _aiChange?: RowChange;
 
   @property({ attribute: false }) action!: Action;
 
@@ -74,11 +84,20 @@ export default class HaAutomationActionEditor extends LitElement {
                       `
                     : nothing
                 }
-                <ha-yaml-editor
-                  .defaultValue=${this.action}
-                  @value-changed=${this._onYamlChange}
-                  .readOnly=${this.disabled}
-                ></ha-yaml-editor>
+                ${
+                  this._aiChange
+                    ? html`<ha-yaml-editor
+                        .value=${this._aiChange.after ?? this.action}
+                        .original=${this._aiChange.before}
+                        auto-update
+                        read-only
+                      ></ha-yaml-editor>`
+                    : html`<ha-yaml-editor
+                        .defaultValue=${this.action}
+                        @value-changed=${this._onYamlChange}
+                        .readOnly=${this.disabled}
+                      ></ha-yaml-editor>`
+                }
               `
             : html`
                 <div @value-changed=${this._onUiChanged}>

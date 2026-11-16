@@ -1,6 +1,6 @@
 import { mdiStarFourPoints } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
 import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -29,6 +29,9 @@ const formatValue = (value: unknown): string =>
  */
 @customElement("ha-automation-ai-changes")
 export class HaAutomationAiChanges extends LitElement {
+  /** In YAML mode the editor shows the changes, except of a removed row. */
+  @property({ type: Boolean, attribute: "yaml-mode" }) public yamlMode = false;
+
   @state()
   @consume({ context: automationDiffContext, subscribe: true })
   private _diff?: AutomationDiff;
@@ -44,7 +47,7 @@ export class HaAutomationAiChanges extends LitElement {
   protected render() {
     const path = this._diff && this._registry?.selectedPath();
     const mark = path && diffMarkAt(this._diff, path);
-    if (!path || !mark) {
+    if (!path || !mark || (this.yamlMode && mark !== "removed")) {
       return nothing;
     }
     const changes: FieldChange[] =

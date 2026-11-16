@@ -1,7 +1,10 @@
 import { mdiClose, mdiDotsVertical } from "@mdi/js";
+import { ContextProvider } from "@lit/context";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -12,7 +15,17 @@ import "../../../../components/ha-icon-button";
 import { ScrollableFadeMixin } from "../../../../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import {
+  automationDiffContext,
+  automationRowChangeContext,
+  diffRowChangeAt,
+  type AutomationDiff,
+} from "../ai/automation-ai-diff";
 import "../ai/ha-automation-ai-changes";
+import {
+  automationRowRegistryContext,
+  type AutomationRowRegistry,
+} from "../automation-path";
 import "../ha-automation-editor-warning";
 
 export interface SidebarOverflowMenuEntry {
@@ -44,6 +57,28 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
   @property({ type: Boolean }) public narrow = false;
 
   @query(".card-content") private _contentElement!: HTMLDivElement;
+
+  @consume({ context: automationDiffContext, subscribe: true })
+  @state()
+  private _aiDiff?: AutomationDiff;
+
+  @consume({ context: automationRowRegistryContext })
+  private _rowRegistry?: AutomationRowRegistry;
+
+  // The YAML editor of the row shows how the AI changed it
+  private _aiRowChangeProvider = new ContextProvider(this, {
+    context: automationRowChangeContext,
+    initialValue: undefined,
+  });
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    const path = this._aiDiff && this._rowRegistry?.selectedPath();
+    const change = path ? diffRowChangeAt(this._aiDiff, path) : undefined;
+    if (change !== this._aiRowChangeProvider.value) {
+      this._aiRowChangeProvider.setValue(change);
+    }
+  }
 
   protected get scrollableElement(): HTMLElement | null {
     return this._contentElement;
@@ -92,7 +127,9 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
             : nothing
         }
         <div class="card-content ha-scrollbar">
-          <ha-automation-ai-changes></ha-automation-ai-changes>
+          <ha-automation-ai-changes
+            .yamlMode=${this.yamlMode}
+          ></ha-automation-ai-changes>
           <slot></slot>
           ${this.renderScrollableFades(this.isWide)}
         </div>

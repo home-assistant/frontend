@@ -1,10 +1,15 @@
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
+import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
+import {
+  automationRowChangeContext,
+  type RowChange,
+} from "../ai/automation-ai-diff";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { Condition } from "../../../../data/automation";
 import {
@@ -23,6 +28,11 @@ import "./types/ha-automation-condition-platform";
 @customElement("ha-automation-condition-editor")
 export default class HaAutomationConditionEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  // In the sidebar while the user reviews changes of the AI
+  @state()
+  @consume({ context: automationRowChangeContext, subscribe: true })
+  private _aiChange?: RowChange;
 
   @property({ attribute: false }) condition!: Condition;
 
@@ -82,11 +92,20 @@ export default class HaAutomationConditionEditor extends LitElement {
                       `
                     : nothing
                 }
-                <ha-yaml-editor
-                  .defaultValue=${this.condition}
-                  @value-changed=${this._onYamlChange}
-                  .readOnly=${this.disabled}
-                ></ha-yaml-editor>
+                ${
+                  this._aiChange
+                    ? html`<ha-yaml-editor
+                        .value=${this._aiChange.after ?? this.condition}
+                        .original=${this._aiChange.before}
+                        auto-update
+                        read-only
+                      ></ha-yaml-editor>`
+                    : html`<ha-yaml-editor
+                        .defaultValue=${this.condition}
+                        @value-changed=${this._onYamlChange}
+                        .readOnly=${this.disabled}
+                      ></ha-yaml-editor>`
+                }
               `
             : html`
                 <div @value-changed=${this._onUiChanged}>

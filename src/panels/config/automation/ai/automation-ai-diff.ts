@@ -40,14 +40,30 @@ export interface AutomationDiff {
   config: AutomationConfig;
   /** Marks of rows, keyed by their stringified path in `config`. */
   rows: Map<string, DiffMark>;
+  /**
+   * The old and new config of rows the AI added or changed, keyed by their
+   * stringified path in `config`. The new config is without removed rows.
+   */
+  items: Map<string, RowChange>;
   /** Changed values of changed rows, keyed by the row's stringified path. */
   fields: Map<string, FieldChange[]>;
   settings: Partial<Record<AutomationSettingKey, DiffMark>>;
   hasChanges: boolean;
 }
 
+export interface RowChange {
+  /** `null` for an added row. */
+  before: unknown;
+  after?: unknown;
+}
+
 export const automationDiffContext = createContext<AutomationDiff | undefined>(
   "automation-diff"
+);
+
+/** How the AI changed the row open in the sidebar, for its YAML editor. */
+export const automationRowChangeContext = createContext<RowChange | undefined>(
+  "automation-row-change"
 );
 
 /**
@@ -146,6 +162,8 @@ const equalPairs = (
 class DiffBuilder {
   public rows = new Map<string, DiffMark>();
 
+  public items = new Map<string, RowChange>();
+
   public fields = new Map<string, FieldChange[]>();
 
   /** Diffs a list of rows and returns it with the removed rows put back. */
@@ -156,8 +174,12 @@ class DiffBuilder {
   ): unknown[] {
     const merged: unknown[] = [];
     const add = (item: unknown, mark?: DiffMark) => {
+      const key = stringifyPath([...path, merged.length]);
       if (mark) {
-        this.rows.set(stringifyPath([...path, merged.length]), mark);
+        this.rows.set(key, mark);
+      }
+      if (mark === "added") {
+        this.items.set(key, { before: null, after: item });
       }
       merged.push(item);
     };
@@ -217,6 +239,7 @@ class DiffBuilder {
 
   /** Diffs two rows of the same kind and returns the new one to show. */
   private _row(before: unknown, after: unknown, path: ConfigPath): unknown {
+    this.items.set(stringifyPath(path), { before, after });
     if (!isPlainObject(before) || !isPlainObject(after)) {
       this.rows.set(stringifyPath(path), "changed");
       this.fields.set(stringifyPath(path), [
@@ -322,6 +345,7 @@ export const diffAutomationConfigs = (
     before,
     config: config as unknown as AutomationConfig,
     rows: builder.rows,
+    items: builder.items,
     fields: builder.fields,
     settings,
     hasChanges: builder.rows.size > 0 || Object.keys(settings).length > 0,
@@ -346,4 +370,23 @@ export const diffMarkAt = (
     }
   }
   return diff.rows.get(stringifyPath(path));
+};
+
+/**
+ * The old and new config of the row at `path`, if the AI added or changed it.
+ * A row inside an added row is added with it, its new config is the one the
+ * editor shows.
+ */
+export const diffRowChangeAt = (
+  diff: AutomationDiff | undefined,
+  path: ConfigPath
+): RowChange | undefined => {
+  if (!diff || !path.length) {
+    return undefined;
+  }
+  const change = diff.items.get(stringifyPath(path));
+  if (change) {
+    return change;
+  }
+  return diffMarkAt(diff, path) === "added" ? { before: null } : undefined;
 };

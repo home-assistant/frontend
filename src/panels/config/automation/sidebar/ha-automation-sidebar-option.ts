@@ -11,6 +11,7 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 
+import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
@@ -21,6 +22,10 @@ import type { OptionSidebarConfig } from "../../../../data/automation";
 import { getRowNote } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
+import {
+  automationRowChangeContext,
+  type RowChange,
+} from "../ai/automation-ai-diff";
 import "../ha-automation-note";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import { getUiSupportWarnings, isConfigObject } from "../ui-support";
@@ -45,6 +50,11 @@ export default class HaAutomationSidebarOption extends LitElement {
   public sidebarKey?: number;
 
   @state() private _warnings?: string[];
+
+  // While the user reviews changes of the AI
+  @state()
+  @consume({ context: automationRowChangeContext, subscribe: true })
+  private _aiChange?: RowChange;
 
   @query(".sidebar-editor")
   public editor?: HaYamlEditor;
@@ -199,12 +209,20 @@ export default class HaAutomationSidebarOption extends LitElement {
         this.yamlMode && this.config.config.option
           ? keyed(
               this.sidebarKey,
-              html`<ha-yaml-editor
-                class="sidebar-editor"
-                .defaultValue=${this.config.config.option}
-                .readOnly=${this.disabled}
-                @value-changed=${this._yamlChanged}
-              ></ha-yaml-editor>`
+              this._aiChange
+                ? html`<ha-yaml-editor
+                    class="sidebar-editor"
+                    .value=${this._aiChange.after ?? this.config.config.option}
+                    .original=${this._aiChange.before}
+                    auto-update
+                    read-only
+                  ></ha-yaml-editor>`
+                : html`<ha-yaml-editor
+                    class="sidebar-editor"
+                    .defaultValue=${this.config.config.option}
+                    .readOnly=${this.disabled}
+                    @value-changed=${this._yamlChanged}
+                  ></ha-yaml-editor>`
             )
           : html`<div class="description">${description}</div>`
       }

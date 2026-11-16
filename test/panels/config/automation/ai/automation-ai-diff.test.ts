@@ -3,6 +3,7 @@ import type { AutomationConfig } from "../../../../../src/data/automation";
 import {
   diffAutomationConfigs,
   diffMarkAt,
+  diffRowChangeAt,
 } from "../../../../../src/panels/config/automation/ai/automation-ai-diff";
 
 const light = (service: string, entity = "light.kitchen") => ({
@@ -138,5 +139,41 @@ describe("diffAutomationConfigs", () => {
       mode: "removed",
     });
     expect(diff.rows.size).toBe(0);
+  });
+
+  // The YAML editor of a row diffs its new config against these, so a
+  // removed child left in the new config would show as unchanged
+  it("keeps the old and new config of changed and added rows", () => {
+    const before: AutomationConfig = {
+      ...base,
+      actions: [{ if: [], then: [light("turn_on"), light("turn_off")] }],
+    };
+    const after = {
+      if: [],
+      then: [{ ...light("turn_on"), data: { brightness_pct: 50 } }],
+    };
+    const diff = diffAutomationConfigs(before, { ...base, actions: [after] });
+
+    expect(diffRowChangeAt(diff, ["actions", 0, "then", 0])).toEqual({
+      before: light("turn_on"),
+      after: { ...light("turn_on"), data: { brightness_pct: 50 } },
+    });
+    expect(diffRowChangeAt(diff, ["actions", 0])).toEqual({
+      before: before.actions[0],
+      after,
+    });
+    expect(diffRowChangeAt(diff, ["actions", 0, "then", 1])).toBeUndefined();
+
+    const added = diffAutomationConfigs(base, {
+      ...base,
+      actions: [...base.actions, { parallel: [light("toggle")] }],
+    });
+    expect(diffRowChangeAt(added, ["actions", 3])).toEqual({
+      before: null,
+      after: { parallel: [light("toggle")] },
+    });
+    expect(diffRowChangeAt(added, ["actions", 3, "parallel", 0])).toEqual({
+      before: null,
+    });
   });
 });

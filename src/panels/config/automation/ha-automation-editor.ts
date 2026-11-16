@@ -131,6 +131,14 @@ declare global {
   }
 }
 
+const withoutId = (config?: AutomationConfig) => {
+  if (!config) {
+    return undefined;
+  }
+  const { id: _id, ...rest } = config;
+  return rest;
+};
+
 @customElement("ha-automation-editor")
 export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationConfig>(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
@@ -564,10 +572,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
               : nothing
           }
 
-          <ha-dropdown-item
-            value="toggle_yaml_mode"
-            .disabled=${this._aiActive}
-          >
+          <ha-dropdown-item value="toggle_yaml_mode">
             ${this.hass.localize(
               `ui.panel.config.automation.editor.edit_${this.mode === "gui" ? "yaml" : "ui"}`
             )}
@@ -610,6 +615,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         </ha-dropdown>
         <div
           class=${this.mode === "yaml" ? "yaml-mode" : ""}
+          style=${styleMap({
+            "padding-bottom":
+              this.mode === "yaml" && this._aiSheetOpen && !aiSheetHidden
+                ? `${this._aiSheetHeight}px`
+                : undefined,
+          })}
           @subscribe-automation-config=${this._subscribeAutomationConfig}
         >
           ${
@@ -785,18 +796,34 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                           `
                         : nothing
                     }
-                    <ha-yaml-editor
-                      .defaultValue=${this._preprocessYaml()}
-                      .readOnly=${this.readOnly}
-                      @value-changed=${this._yamlChanged}
-                      @editor-save=${this._handleSaveAutomation}
-                      disable-fullscreen
-                    ></ha-yaml-editor>
+                    ${
+                      this._aiActive
+                        ? html`<ha-yaml-editor
+                            .value=${this._aiYaml(
+                              this._aiConfig ?? this.config
+                            )}
+                            .original=${
+                              this._aiConfig
+                                ? this._aiOriginalYaml(this._aiBaseConfig)
+                                : undefined
+                            }
+                            auto-update
+                            read-only
+                            disable-fullscreen
+                          ></ha-yaml-editor>`
+                        : html`<ha-yaml-editor
+                            .defaultValue=${this._preprocessYaml()}
+                            .readOnly=${this.readOnly}
+                            @value-changed=${this._yamlChanged}
+                            @editor-save=${this._handleSaveAutomation}
+                            disable-fullscreen
+                          ></ha-yaml-editor>`
+                    }
                     <ha-button
                       slot="fab"
                       size="l"
-                      class=${this.isDirtyState ? "dirty" : ""}
-                      .disabled=${this.saving}
+                      class=${this.isDirtyState && !this._aiActive ? "dirty" : ""}
+                      .disabled=${this.saving || this._aiActive}
                       @click=${this._handleSaveAutomation}
                     >
                       <ha-svg-icon
@@ -1112,6 +1139,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       entity_id: stateObj.entity_id,
     });
   }
+
+  // The YAML editor hides the id, see _preprocessYaml. Kept per argument, so
+  // the editor only gets a new value when the config changes.
+  private _aiYaml = memoizeOne(withoutId);
+
+  private _aiOriginalYaml = memoizeOne(withoutId);
 
   private _preprocessYaml() {
     if (!this.config) {
@@ -1448,9 +1481,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   }
 
   private async _toggleYamlMode() {
-    if (this._aiActive) {
-      return;
-    }
     if (this.mode === "gui") {
       this.switchYamlMode();
       await this.updateComplete;
