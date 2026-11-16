@@ -153,12 +153,15 @@ export class AutomationTriggerController implements ReactiveController {
       return false;
     }
     const config = sidebarConfig.config as
-      { condition?: unknown } | { action?: { condition?: unknown } };
+      { condition?: unknown } | { action?: unknown };
     if ("condition" in config && config.condition === "trigger") {
       return true;
     }
+    // A row can hold any YAML, so `action` may be a service name instead of
+    // the wrapped action of an action sidebar.
     return !!(
       "action" in config &&
+      typeof config.action === "object" &&
       config.action &&
       "condition" in config.action &&
       config.action.condition === "trigger"
