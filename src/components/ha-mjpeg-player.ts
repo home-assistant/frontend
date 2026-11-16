@@ -6,10 +6,6 @@ import { fireEvent } from "../common/dom/fire_event";
 // How often the image is checked for its first frame
 const LOAD_CHECK_INTERVAL = 250;
 
-// Some browsers never tell when the first frame of a stream arrived, it
-// counts as loaded by then unless it failed
-const LOADED_TIMEOUT = 5000;
-
 // MJPEG streams rarely send more frames than this
 const PICTURE_IN_PICTURE_FRAME_RATE = 15;
 
@@ -43,8 +39,6 @@ export class HaMjpegPlayer extends LitElement {
   private _stream?: MediaStream;
 
   private _loadCheckInterval?: number;
-
-  private _loadedTimeout?: number;
 
   private _drawInterval?: number;
 
@@ -123,17 +117,11 @@ export class HaMjpegPlayer extends LitElement {
       () => this._checkLoaded(),
       LOAD_CHECK_INTERVAL
     );
-    this._loadedTimeout = window.setTimeout(
-      () => this._setLoaded(),
-      LOADED_TIMEOUT
-    );
   }
 
   private _stopLoadCheck() {
     clearInterval(this._loadCheckInterval);
     this._loadCheckInterval = undefined;
-    clearTimeout(this._loadedTimeout);
-    this._loadedTimeout = undefined;
   }
 
   // An MJPEG stream never completes loading, so only wait for a first frame
