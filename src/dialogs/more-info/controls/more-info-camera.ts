@@ -288,6 +288,7 @@ class MoreInfoCamera extends LitElement {
 
     const hint = disabled ? disabledReason : this._microphoneError;
 
+    // Only for screen readers, the icon says enough
     const label = this._localize(
       `ui.dialogs.more_info_control.camera.${
         this._microphoneState === "connecting"
@@ -323,7 +324,6 @@ class MoreInfoCamera extends LitElement {
             }
           </ha-control-button>
         </div>
-        <span class="call-label" aria-hidden="true">${label}</span>
         ${hint ? html`<div class="hint" role="status">${hint}</div>` : nothing}
       </div>
     `;
@@ -464,15 +464,20 @@ class MoreInfoCamera extends LitElement {
       @container (min-width: 760px) {
         .layout {
           display: flex;
-          align-items: center;
         }
 
+        /* Fills the height down to the dialog's corner, the picture centered */
         ha-camera-player {
           flex: 1;
           min-width: 0;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          background-color: black;
         }
 
         .controls {
+          justify-content: center;
           flex: none;
           width: 340px;
           padding: var(--ha-space-2) 0;
@@ -489,14 +494,8 @@ class MoreInfoCamera extends LitElement {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: var(--ha-space-3);
+        gap: var(--ha-space-4);
         align-self: stretch;
-      }
-
-      .call-label {
-        font-size: var(--ha-font-size-m);
-        font-weight: var(--ha-font-weight-medium);
-        color: var(--primary-text-color);
       }
 
       .microphone {
