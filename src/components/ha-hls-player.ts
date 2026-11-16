@@ -72,7 +72,7 @@ class HaHLSPlayer extends LitElement {
 
   @state() private _errorIsFatal = false;
 
-  @state() private _url!: string;
+  private _url?: string;
 
   private _hlsPolyfillInstance?: HlsLite;
 
@@ -81,6 +81,10 @@ class HaHLSPlayer extends LitElement {
   private static streamCount = 0;
 
   private _hiddenCleanupTimeout?: number;
+
+  // Increased on every clean up, so a start that is still waiting on the
+  // network knows it is outdated
+  private _cleanUpCount = 0;
 
   private _handleVisibilityChange = () => {
     if (document.pictureInPictureElement) {
@@ -103,8 +107,7 @@ class HaHLSPlayer extends LitElement {
       clearTimeout(this._hiddenCleanupTimeout);
       this._hiddenCleanupTimeout = undefined;
     } else {
-      this._resetError();
-      this._startHls();
+      this._restartHls();
     }
   };
 
@@ -112,8 +115,7 @@ class HaHLSPlayer extends LitElement {
     super.connectedCallback();
     HaHLSPlayer.streamCount += 1;
     if (this.hasUpdated) {
-      this._resetError();
-      this._startHls();
+      this._restartHls();
     }
     document.addEventListener("visibilitychange", this._handleVisibilityChange);
   }
@@ -178,9 +180,22 @@ class HaHLSPlayer extends LitElement {
     }
   }
 
+  /** Starts the stream again, replacing a start that is still pending. */
+  private _restartHls() {
+    if (this.entityid) {
+      // The stream URL stops working once the stream has been idle for a while
+      this._getStreamUrlFromEntityId();
+      return;
+    }
+    this._cleanUp();
+    this._resetError();
+    this._startHls();
+  }
+
   private async _getStreamUrlFromEntityId(): Promise<void> {
     this._cleanUp();
     this._resetError();
+    this._url = undefined;
 
     if (!isComponentLoaded(this._config.config, "stream")) {
       this._setFatalError("Streaming component is not loaded.");
@@ -191,11 +206,17 @@ class HaHLSPlayer extends LitElement {
     if (!entityId) {
       return;
     }
+    const cleanUpCount = this._cleanUpCount;
     try {
       const { url } = await fetchStreamUrl(
         { callWS: this._api.callWS, hassUrl: this._connection.hassUrl },
         entityId
       );
+
+      if (cleanUpCount !== this._cleanUpCount) {
+        // Removed, hidden or switched camera while fetching
+        return;
+      }
 
       this._url = this._connection.hassUrl(url);
       this._cleanUp();
@@ -206,8 +227,8 @@ class HaHLSPlayer extends LitElement {
       // eslint-disable-next-line
       console.error(err);
 
-      if (!this.isConnected || entityId !== this.entityid) {
-        // Removed or switched camera while fetching, the result is outdated
+      if (cleanUpCount !== this._cleanUpCount || entityId !== this.entityid) {
+        // Removed, hidden or switched camera while fetching
         return;
       }
       fireEvent(this, "streams", { hasAudio: false, hasVideo: false });
@@ -215,13 +236,18 @@ class HaHLSPlayer extends LitElement {
   }
 
   private async _startHls(): Promise<void> {
-    const masterPlaylistPromise = fetch(this._url);
+    const url = this._url;
+    if (!url) {
+      return;
+    }
+    const cleanUpCount = this._cleanUpCount;
+    const masterPlaylistPromise = fetch(url);
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const Hls: typeof HlsType = (await import("hls.js/dist/hls.light.mjs"))
       .default;
 
-    if (!this.isConnected) {
+    if (cleanUpCount !== this._cleanUpCount || !this.isConnected) {
       return;
     }
 
@@ -243,7 +269,7 @@ class HaHLSPlayer extends LitElement {
       this.allowExoPlayer && this._config.auth.external?.config.hasExoPlayer;
     const masterPlaylist = await (await masterPlaylistPromise).text();
 
-    if (!this.isConnected) {
+    if (cleanUpCount !== this._cleanUpCount || !this.isConnected) {
       return;
     }
 
@@ -259,9 +285,9 @@ class HaHLSPlayer extends LitElement {
     let playlist_url: string;
     if (match !== null && matchTwice === null) {
       // Only send the regular playlist url if we match exactly once
-      playlist_url = new URL(match[3], this._url).href;
+      playlist_url = new URL(match[3], url).href;
     } else {
-      playlist_url = this._url;
+      playlist_url = url;
     }
 
     const codecs = match ? `${match[1]},${match[2]}` : undefined;
@@ -399,12 +425,17 @@ class HaHLSPlayer extends LitElement {
 
   private async _renderHLSNative(videoEl: HTMLVideoElement, url: string) {
     videoEl.src = url;
-    videoEl.addEventListener("loadedmetadata", () => {
-      videoEl.play();
-    });
+    videoEl.addEventListener(
+      "loadedmetadata",
+      () => {
+        videoEl.play();
+      },
+      { once: true }
+    );
   }
 
   private _cleanUp() {
+    this._cleanUpCount++;
     if (this._hlsPolyfillInstance) {
       this._hlsPolyfillInstance.destroy();
       this._hlsPolyfillInstance = undefined;
