@@ -1,4 +1,4 @@
-import { css, html, LitElement, nothing, type PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
@@ -57,13 +57,6 @@ export class HaMjpegPlayer extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._stopDrawing();
-  }
-
-  protected willUpdate(changedProps: PropertyValues<this>) {
-    super.willUpdate(changedProps);
-    if (changedProps.has("src")) {
-      this._loaded = false;
-    }
   }
 
   protected firstUpdated() {

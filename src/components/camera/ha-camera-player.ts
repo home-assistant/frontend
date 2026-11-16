@@ -160,6 +160,7 @@ export class HaCameraPlayer extends LitElement {
     clearTimeout(this._controlsTimeout);
     clearTimeout(this._wheelHintTimeout);
     this._unbindVideo(this._video);
+    this._video = undefined;
     this._pointers.clear();
   }
 
