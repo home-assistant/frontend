@@ -201,7 +201,7 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
       isolation: isolate;
       border-radius: var(
         --ha-badge-border-radius,
-        calc(var(--ha-picture-border-radius) + 3px)
+        calc(var(--ha-border-radius-lg) + 3px)
       );
       background: var(--ha-alert-badge-background);
       --ha-card-background: transparent;
