@@ -24,9 +24,6 @@ export class HaMjpegPlayer extends LitElement {
 
   @property() public alt?: string;
 
-  /** Shown until the stream sends its first frame */
-  @property({ attribute: "poster-url" }) public posterUrl?: string;
-
   @property({ attribute: false }) public aspectRatio?: number;
 
   @property({ attribute: false }) public fitMode?: "cover" | "contain" | "fill";
@@ -83,21 +80,7 @@ export class HaMjpegPlayer extends LitElement {
       objectFit: this.fitMode,
     });
     return html`
-      ${
-        this._loaded
-          ? nothing
-          : html`<div class="placeholder">
-              ${
-                this.posterUrl
-                  ? html`<img
-                      .src=${this.posterUrl}
-                      alt=""
-                      draggable="false"
-                    />`
-                  : nothing
-              }
-            </div>`
-      }
+      ${this._loaded ? nothing : html`<div class="placeholder"></div>`}
       <img
         id="stream"
         class=${this._loaded ? "" : "loading"}
@@ -248,10 +231,6 @@ export class HaMjpegPlayer extends LitElement {
     .placeholder {
       aspect-ratio: 16 / 9;
       max-height: var(--video-max-height, calc(100vh - 97px));
-    }
-
-    .placeholder img {
-      height: 100%;
     }
 
     /* Shows over the placeholder as soon as the browser draws a frame, some

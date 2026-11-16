@@ -233,7 +233,6 @@ export class HaCameraStream extends LitElement {
       if (this.mjpegVideo) {
         return html`<ha-mjpeg-player
           .src=${streamUrl}
-          .posterUrl=${this._posterUrl}
           .alt=${`Preview of the ${this._formatters?.formatEntityName(this.stateObj) ?? ""} camera.`}
           .aspectRatio=${this.aspectRatio}
           .fitMode=${this.fitMode}
