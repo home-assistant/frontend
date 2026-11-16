@@ -79,8 +79,8 @@ export class HaCameraStream extends LitElement {
   public allowExoPlayer = false;
 
   /**
-   * Plays an MJPEG stream as a video instead of an image, so it can be shown
-   * picture in picture. Costs more, as every frame is copied.
+   * Shows an MJPEG stream in a player that can also open it picture in
+   * picture, which copies its frames into a video while open.
    */
   @property({ type: Boolean, attribute: "mjpeg-video" })
   public mjpegVideo = false;
