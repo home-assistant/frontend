@@ -21,7 +21,6 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
         entity_energy_price_export: null,
         number_energy_price_export: null,
         stat_rate: "sensor.power_grid",
-        cost_adjustment_day: 0,
       },
       {
         type: "grid",
@@ -34,7 +33,6 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
         entity_energy_price_export: null,
         number_energy_price_export: null,
         stat_rate: "sensor.power_grid_return",
-        cost_adjustment_day: 0,
       },
       {
         type: "solar",
