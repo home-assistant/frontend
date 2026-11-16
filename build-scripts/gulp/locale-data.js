@@ -50,7 +50,9 @@ const convertToJSON = async (
   const encodedData = localeData.match(
     /JSON\.parse\((?<data>"(?:[^"\\]|\\.)*")\)/
   )?.groups?.data;
-  localeData = firstBlock.match(dataRegex)?.groups?.data;
+  localeData =
+    localeData.match(/\}\)\((?<data>\{.*\})\)\s*;?\s*$/s)?.groups?.data ??
+    firstBlock.match(dataRegex)?.groups?.data;
   if (!localeData && !encodedData) {
     throw Error(`Failed to extract data for language ${lang} from ${pkg}`);
   }
