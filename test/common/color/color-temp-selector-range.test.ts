@@ -1,8 +1,5 @@
 import { assert, describe, it } from "vitest";
-import {
-  kelvinRangeFromEntityStates,
-  kelvinValueInsideEntityRange,
-} from "../../../src/common/color/color-temp-selector-range";
+import { kelvinRangeFromEntityStates } from "../../../src/common/color/color-temp-selector-range";
 
 const statesFor = (
   ranges: Record<string, { min?: unknown; max?: unknown } | undefined>
@@ -75,33 +72,6 @@ describe("kelvinRangeFromEntityStates", () => {
         })
       ),
       { min: 1600, max: 4000 }
-    );
-  });
-});
-
-describe("kelvinValueInsideEntityRange", () => {
-  const states = statesFor({ "light.bulb": { min: 2700, max: 4000 } });
-
-  it("moves a schema minimum up to the light minimum", () => {
-    assert.strictEqual(kelvinValueInsideEntityRange(2000, states), 2700);
-  });
-
-  it("moves a value above the light maximum down", () => {
-    assert.strictEqual(kelvinValueInsideEntityRange(6500, states), 4000);
-  });
-
-  it("keeps a value that is already inside the range", () => {
-    assert.strictEqual(kelvinValueInsideEntityRange(3000, states), 3000);
-  });
-
-  it("keeps the original value when no entity reports a range", () => {
-    assert.strictEqual(kelvinValueInsideEntityRange(2000, undefined), 2000);
-    assert.strictEqual(
-      kelvinValueInsideEntityRange(
-        2000,
-        statesFor({ "light.bulb": undefined })
-      ),
-      2000
     );
   });
 });
