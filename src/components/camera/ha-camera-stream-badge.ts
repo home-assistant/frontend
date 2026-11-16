@@ -1,4 +1,3 @@
-import { mdiInformationOutline } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
@@ -8,7 +7,6 @@ import type {
   CameraStreamType,
 } from "../../data/camera-streams";
 import "../ha-spinner";
-import "../ha-svg-icon";
 
 /** Names of the protocols, the same in every language. */
 export const CAMERA_STREAM_TYPE_NAMES: Record<CameraStreamType, string> = {
@@ -55,7 +53,6 @@ export class HaCameraStreamBadge extends LitElement {
               </span>`
             : nothing
         }
-        <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
       </button>
     `;
   }
@@ -91,7 +88,7 @@ export class HaCameraStreamBadge extends LitElement {
       align-items: center;
       gap: var(--ha-space-1);
       height: 28px;
-      padding-inline: var(--ha-space-2) var(--ha-space-1);
+      padding-inline: var(--ha-space-2);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: var(--ha-border-radius-pill);
       background-color: rgba(0, 0, 0, 0.45);
@@ -132,11 +129,6 @@ export class HaCameraStreamBadge extends LitElement {
       --ha-spinner-indicator-color: white;
       --ha-spinner-size: 10px;
       --ha-spinner-divider-color: rgba(255, 255, 255, 0.3);
-    }
-
-    ha-svg-icon {
-      --mdc-icon-size: 16px;
-      opacity: 0.8;
     }
 
     @keyframes pulse {
