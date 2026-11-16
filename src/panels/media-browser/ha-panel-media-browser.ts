@@ -33,7 +33,10 @@ import type {
 } from "../../data/media-player";
 import { BROWSER_PLAYER, mediaPlayerPlayMedia } from "../../data/media-player";
 import type { ResolvedMediaSource } from "../../data/media_source";
-import { resolveMediaSource } from "../../data/media_source";
+import {
+  resolveMediaSource,
+  resolveMediaSourceWithCache,
+} from "../../data/media_source";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
@@ -296,7 +299,11 @@ class PanelMediaBrowser extends LitElement {
     this._player.showResolvingNewMediaPicked();
     let resolvedUrl: ResolvedMediaSource;
     try {
-      resolvedUrl = await resolveMediaSource(this.hass, item.media_content_id);
+      // A picture is resolved through the cache, like the dialog does when
+      // browsing, so coming back to it does not download it again
+      resolvedUrl = await (isImage(item)
+        ? resolveMediaSourceWithCache(this.hass, item.media_content_id)
+        : resolveMediaSource(this.hass, item.media_content_id));
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
