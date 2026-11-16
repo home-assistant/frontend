@@ -27,6 +27,7 @@ const HEADERS = {
     water: "ui.panel.config.energy.device_consumption_water.dialog.header",
     gas: "ui.panel.config.energy.device_consumption_gas.dialog.header",
   },
+  fixed_cost: "ui.panel.config.energy.fixed_costs.dialog.header",
 } as const;
 
 @customElement("dialog-energy-settings")
