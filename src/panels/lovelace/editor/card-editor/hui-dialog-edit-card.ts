@@ -275,7 +275,11 @@ export class HuiDialogEditCard
             ${
               this._error
                 ? html`
-                    <ha-spinner aria-label="Can't update card"></ha-spinner>
+                    <ha-spinner
+                      aria-label=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_card.preview_error"
+                      )}
+                    ></ha-spinner>
                   `
                 : ``
             }
