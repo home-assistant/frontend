@@ -110,6 +110,9 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
 
   @state() private _readonlyError = false;
 
+  /** Counts read-only week requests, so only the latest one is shown. */
+  private _readonlyRequest = 0;
+
   // Hosts warn before closing with unsaved changes, including block drafts.
   @consume({ context: dirtyStateContext, subscribe: true })
   @state()
@@ -238,6 +241,7 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
   }
 
   private async _fetchReadonlyWeek(entityId: string) {
+    const request = ++this._readonlyRequest;
     // Show loading, not the week of a previous entry.
     this._readonlyWeek = undefined;
     this._readonlyError = false;
@@ -246,11 +250,11 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
         this._api.callService,
         entityId
       );
-      if (this.entry?.entity_id === entityId) {
+      if (request === this._readonlyRequest) {
         this._readonlyWeek = week;
       }
     } catch (_err) {
-      if (this.entry?.entity_id === entityId) {
+      if (request === this._readonlyRequest) {
         this._readonlyError = true;
       }
     }
