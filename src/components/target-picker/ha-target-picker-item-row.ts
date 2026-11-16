@@ -161,6 +161,9 @@ export class HaTargetPickerItemRow extends LitElement {
   @property({ type: Boolean, reflect: true })
   public exclusion = false;
 
+  /** Hides the buttons that change the target. */
+  @property({ type: Boolean }) public disabled = false;
+
   /** On an exclusion row: how many entities it takes out of the row above. */
   @property({ attribute: false })
   public removedCount?: number;
@@ -434,7 +437,7 @@ export class HaTargetPickerItemRow extends LitElement {
           : nothing
       }
       ${
-        canMigrate
+        canMigrate && !this.disabled
           ? html`
               <ha-button
                 class="migrate"
@@ -452,7 +455,7 @@ export class HaTargetPickerItemRow extends LitElement {
           : nothing
       }
       ${
-        !this.expand && !this.subEntry
+        !this.expand && !this.subEntry && !this.disabled
           ? html`
               <ha-icon-button
                 .path=${mdiClose}

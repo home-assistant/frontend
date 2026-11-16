@@ -159,6 +159,7 @@ class HaServicePicker extends LitElement {
         .label=${this.label}
         .placeholder=${placeholder}
         .value=${this.value}
+        .disabled=${this.disabled}
         .getItems=${this._getItems}
         .rowRenderer=${this._rowRenderer}
         .valueRenderer=${this._valueRenderer(

@@ -31,6 +31,8 @@ export class HaTargetPickerItemGroup extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public collapsed = false;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property({ attribute: false })
   public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
@@ -109,6 +111,7 @@ export class HaTargetPickerItemGroup extends LitElement {
                       .primaryEntitiesOnly=${this.primaryEntitiesOnly}
                       .compositeSplits=${this.compositeSplits}
                       .exclusions=${exclusions}
+                      .disabled=${this.disabled}
                     ></ha-target-picker-item-row>
                     ${(exclusions ?? []).map(
                       (exclusion) =>
@@ -117,6 +120,7 @@ export class HaTargetPickerItemGroup extends LitElement {
                           .type=${exclusion.type}
                           .itemId=${exclusion.id}
                           .removedCount=${exclusion.removed.length}
+                          .disabled=${this.disabled}
                         ></ha-target-picker-item-row>`
                     )}`;
                 }

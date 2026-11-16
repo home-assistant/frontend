@@ -408,6 +408,7 @@ export class HaTargetPicker extends LitElement {
           entityIds.length
             ? html`
                 <ha-target-picker-item-group
+                  .disabled=${this.disabled}
                   @remove-target-item=${this._handleRemove}
                   @replace-target-item=${this._handleReplace}
                   type="entity"
@@ -428,6 +429,7 @@ export class HaTargetPicker extends LitElement {
           deviceIds.length
             ? html`
                 <ha-target-picker-item-group
+                  .disabled=${this.disabled}
                   @remove-target-item=${this._handleRemove}
                   @replace-target-item=${this._handleReplace}
                   @migrate-target-item=${this._handleMigrate}
@@ -450,6 +452,7 @@ export class HaTargetPicker extends LitElement {
           floorIds.length || areaIds.length
             ? html`
                 <ha-target-picker-item-group
+                  .disabled=${this.disabled}
                   @remove-target-item=${this._handleRemove}
                   @replace-target-item=${this._handleReplace}
                   type="area"
@@ -473,6 +476,7 @@ export class HaTargetPicker extends LitElement {
           labelIds.length
             ? html`
                 <ha-target-picker-item-group
+                  .disabled=${this.disabled}
                   @remove-target-item=${this._handleRemove}
                   @replace-target-item=${this._handleReplace}
                   type="label"
