@@ -307,13 +307,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     const useBlueprint = "use_blueprint" in this.config;
     const shortcutIcon = renderCtrlOrCmd(this.hass.localize);
     const aiSettings = this._aiDiff?.settings ?? {};
-    const aiRenameChanged = !!(aiSettings.alias || aiSettings.description);
     const aiSheetHidden = this.narrow && this._sidebarOpen;
-    const aiModeChanged = !!(
-      aiSettings.mode ||
-      aiSettings.max ||
-      aiSettings.max_exceeded
-    );
+    // The name and description show their changes on the page, the mode only
+    // in its dialog
+    const aiModeChanged = !!(aiSettings.mode || aiSettings.max);
 
     return html`
       <hass-subpage
@@ -418,7 +415,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           <ha-icon-button
             slot="trigger"
             class=${classMap({
-              "ai-changes": aiRenameChanged || aiModeChanged,
+              "ai-changes": aiModeChanged,
             })}
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
@@ -514,7 +511,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
             }
           >
             ${this.hass.localize("ui.panel.config.automation.editor.rename")}
-            ${aiRenameChanged ? this._renderAiDot() : nothing}
             <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
           </ha-dropdown-item>
           ${
@@ -523,7 +519,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                   <ha-dropdown-item
                     @click=${this._promptAutomationMode}
                     .disabled=${
-                      this.readOnly || this.mode === "yaml" || this._aiActive
+                      this.readOnly || this.mode === "yaml" || this._aiBusy
                     }
                   >
                     ${this.hass.localize(
@@ -1332,6 +1328,16 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   }
 
   private async _promptAutomationMode(): Promise<void> {
+    // Shows the suggested mode and how it changed, without changing it
+    if (this._aiConfig) {
+      showAutomationModeDialog(this, {
+        config: this._aiConfig,
+        previousConfig: this._aiBaseConfig,
+        updateConfig: () => undefined,
+        onClose: () => undefined,
+      });
+      return undefined;
+    }
     return new Promise((resolve) => {
       showAutomationModeDialog(this, {
         config: this.config!,

@@ -5950,7 +5950,8 @@
                 "added": "Added",
                 "removed": "Removed",
                 "changed": "Changed",
-                "whole_item": "Whole item"
+                "whole_item": "Whole item",
+                "value_changed": "{name}: {old} → {new}"
               },
               "pending_changes": "Has changes by AI",
               "error": "The AI couldn't change the automation: {error}"
