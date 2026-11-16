@@ -518,11 +518,29 @@ export class HaAutomationAiSheet extends LitElement {
       border-bottom: 1px solid var(--divider-color);
       flex-shrink: 0;
     }
-    .accept:not([disabled]) {
+    .accept,
+    .decline {
+      border-radius: var(--ha-border-radius-circle);
+    }
+    .accept {
       color: var(--ha-color-on-success-normal);
+      background-color: var(--ha-color-fill-success-normal-resting);
     }
     .decline {
       color: var(--ha-color-on-danger-normal);
+      background-color: var(--ha-color-fill-danger-normal-resting);
+    }
+    @media (hover: hover) {
+      .accept:hover:not([disabled]) {
+        background-color: var(--ha-color-fill-success-normal-hover);
+      }
+      .decline:hover {
+        background-color: var(--ha-color-fill-danger-normal-hover);
+      }
+    }
+    .accept[disabled] {
+      color: var(--ha-color-on-disabled-normal);
+      background-color: var(--ha-color-fill-disabled-normal-resting);
     }
     .ai-icon {
       color: var(--primary-color);
