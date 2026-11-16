@@ -153,6 +153,18 @@ describe("moveRange and resizeRange", () => {
       })
     );
     assert.deepEqual(block, { from: "10:00", to: "11:00:30" });
+
+    // Rounding to whole seconds would overlap a neighbor at 11:00:30.6.
+    const neighbor = timeToMinutes("11:00:30.600000");
+    assert.deepEqual(
+      rangeToBlock(
+        resizeRange({ start: 600, end: 660 }, "end", 700, {
+          start: 480,
+          end: neighbor,
+        })
+      ),
+      { from: "10:00", to: "11:00:30.600000" }
+    );
   });
 
   it("keeps at least 15 minutes when resizing", () => {

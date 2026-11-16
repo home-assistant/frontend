@@ -162,7 +162,9 @@ export class EntitySettingsHelperTab extends LitElement {
 
   private async _updateItem(): Promise<void> {
     // Updates `_item` through `value-changed`.
-    this._helperForm?.applyPendingChanges?.();
+    if ((await this._helperForm?.applyPendingChanges?.()) === false) {
+      return;
+    }
     this._submitting = true;
     this._error = undefined;
     try {

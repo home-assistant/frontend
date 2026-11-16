@@ -170,37 +170,37 @@ export class HaScheduleBlockEditor extends LitElement {
             </ha-alert>`
           : nothing
       }
-      <ha-expansion-panel
-        outlined
-        .header=${localize("ui.dialogs.helper_settings.schedule.data")}
-        .secondary=${localize(
-          "ui.dialogs.helper_settings.schedule.data_description"
-        )}
-        .expanded=${!!this.block.data}
-        @expanded-will-change=${this._expandedWillChange}
-      >
-        ${
-          this._dataOpened
-            ? keyed(
-                // A new editor for each block, so no text of the previous
-                // one stays.
-                this.block,
-                html`<ha-yaml-editor
+      ${keyed(
+        // A new panel for each block, so its expansion and the text of its
+        // editor start over.
+        this.block,
+        html`<ha-expansion-panel
+          outlined
+          .header=${localize("ui.dialogs.helper_settings.schedule.data")}
+          .secondary=${localize(
+            "ui.dialogs.helper_settings.schedule.data_description"
+          )}
+          .expanded=${!!this.block.data}
+          @expanded-will-change=${this._expandedWillChange}
+        >
+          ${
+            this._dataOpened
+              ? html`<ha-yaml-editor
                   in-dialog
                   .defaultValue=${this.block.data}
                   @value-changed=${this._dataChanged}
                 ></ha-yaml-editor>`
-              )
-            : nothing
-        }
-        ${
-          this._dataValid
-            ? nothing
-            : html`<ha-alert alert-type="error">
-                ${localize("ui.dialogs.helper_settings.schedule.error_data")}
-              </ha-alert>`
-        }
-      </ha-expansion-panel>
+              : nothing
+          }
+          ${
+            this._dataValid
+              ? nothing
+              : html`<ha-alert alert-type="error">
+                  ${localize("ui.dialogs.helper_settings.schedule.error_data")}
+                </ha-alert>`
+          }
+        </ha-expansion-panel>`
+      )}
     `;
   }
 

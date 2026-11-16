@@ -576,7 +576,9 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
 
   private async _createItem(): Promise<void> {
     // Updates `_item` through `value-changed`.
-    this._helperForm?.applyPendingChanges?.();
+    if ((await this._helperForm?.applyPendingChanges?.()) === false) {
+      return;
+    }
     if (!this._domain || !this._item) {
       return;
     }

@@ -117,11 +117,11 @@ describe("ha-schedule-form", () => {
 
     // An overlapping or incomplete draft stays in the editor.
     form["_panel"] = { type: "block", preview, valid: false };
-    form.applyPendingChanges();
+    expect(await form.applyPendingChanges()).toBe(true);
     expect(values).toEqual([]);
 
     form["_panel"] = { type: "block", preview, valid: true };
-    form.applyPendingChanges();
+    expect(await form.applyPendingChanges()).toBe(true);
     expect(values).toHaveLength(1);
     expect(values[0].monday).toEqual([{ from: "09:00", to: "10:00" }]);
     expect(values[0].name).toBe("Office");

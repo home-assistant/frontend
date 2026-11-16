@@ -294,13 +294,21 @@ export const resizeRange = (
 };
 
 /**
- * Like `minutesToTime`, but keeps the seconds of a range that ends at a
- * neighbor with seconds, so the block does not overlap it.
+ * Like `minutesToTime`, but keeps the seconds, down to the microseconds the
+ * backend stores, of a range that ends at a neighbor with seconds, so the
+ * block does not overlap it.
  */
 const rangeTime = (minutes: number): string => {
-  const seconds = Math.round(minutes * 60);
+  const microseconds = Math.round(minutes * 60_000_000);
+  const seconds = Math.floor(microseconds / 1_000_000);
+  const fraction = microseconds % 1_000_000;
   const time = minutesToTime(Math.floor(seconds / 60));
-  return seconds % 60 ? `${time}:${pad(seconds % 60)}` : time;
+  if (!(seconds % 60) && !fraction) {
+    return time;
+  }
+  return `${time}:${pad(seconds % 60)}${
+    fraction ? `.${String(fraction).padStart(6, "0")}` : ""
+  }`;
 };
 
 export const rangeToBlock = (

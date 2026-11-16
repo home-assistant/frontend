@@ -11,8 +11,10 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-schedule-timeline";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/input/ha-input";
+import type { HaButton } from "../../../../components/ha-button";
 import type { HaInput } from "../../../../components/input/ha-input";
 import {
   apiContext,
@@ -129,6 +131,13 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
 
   @query(".panel") private _panelElement?: HTMLElement;
 
+  @query(".panel .heading") private _panelHeading?: HTMLElement;
+
+  @query(".new-block") private _newBlockButton?: HaButton;
+
+  /** The panel or button with focus, while an update may remove it. */
+  private _focusedArea?: HTMLElement;
+
   public focus() {
     this.updateComplete.then(() => this._focusElement?.focus());
   }
@@ -162,6 +171,11 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
     ) {
       this._fetchReadonlyWeek(this.entry.entity_id);
     }
+    if ((changedProps as PropertyValues).has("_panel")) {
+      this._focusedArea = [this._panelElement, this._newBlockButton].find(
+        (element) => element?.matches(":focus-within")
+      );
+    }
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -183,6 +197,12 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
     this._reportDraftDirty(
       this._panel?.type === "block" && !!this._panel.dirty
     );
+    // Opening or closing the panel removes the element with focus, so the
+    // one in its place takes it and keyboard users keep their place.
+    if (this._focusedArea && !this._focusedArea.isConnected) {
+      (this._panelHeading ?? this._newBlockButton)?.focus();
+    }
+    this._focusedArea = undefined;
     const oldPanel = changedProps.get("_panel") as SchedulePanel | undefined;
     if (this._panel && panelKind(this._panel) !== panelKind(oldPanel)) {
       this._panelElement?.scrollIntoView({
@@ -208,6 +228,12 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
       : this._cleanDraftValue;
     if (this._draftDirty) {
       this._dirtyState?.setState(this._draftValue, DRAFT_DIRTY_KEY);
+    }
+  }
+
+  private _retryReadonlyWeek() {
+    if (this.entry) {
+      this._fetchReadonlyWeek(this.entry.entity_id);
     }
   }
 
@@ -272,10 +298,13 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
     if (this._readonlyError) {
       return html`<ha-alert alert-type="error">
         ${this._i18n.localize("ui.dialogs.helper_settings.schedule.error_load")}
+        <ha-button slot="action" @click=${this._retryReadonlyWeek}>
+          ${this._i18n.localize("ui.common.retry")}
+        </ha-button>
       </ha-alert>`;
     }
     if (!this._readonlyWeek) {
-      return nothing;
+      return html`<ha-spinner size="small"></ha-spinner>`;
     }
     return html`
       <ha-schedule-timeline
@@ -334,7 +363,7 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
       // while switching between blocks keeps it.
       panelKind(panel),
       html`<div class="panel">
-        <h3 class="heading">${this._panelTitle(panel)}</h3>
+        <h3 class="heading" tabindex="-1">${this._panelTitle(panel)}</h3>
         ${
           panel.type === "block"
             ? html`<ha-schedule-block-editor
@@ -509,9 +538,22 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
     this._panel = undefined;
   }
 
-  /** Applies a valid time block draft, so saving the schedule keeps it. */
-  public applyPendingChanges() {
-    this._applyBlock();
+  /**
+   * Applies a valid time block draft, so saving the schedule keeps it. Any
+   * other draft with changes is only dropped once the user confirms.
+   */
+  public async applyPendingChanges(): Promise<boolean> {
+    if (this._panel?.type === "block" && this._panel.valid) {
+      this._applyBlock();
+      return true;
+    }
+    if (!(await this._confirmDiscard())) {
+      return false;
+    }
+    if (this._panel?.type === "block") {
+      this._panel = undefined;
+    }
+    return true;
   }
 
   private _applyBlock() {
@@ -662,6 +704,15 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
         .new-block {
           align-self: start;
           justify-self: start;
+        }
+
+        /* Only focused to keep the place of keyboard users, not to edit. */
+        .panel .heading:focus {
+          outline: none;
+        }
+
+        .form > ha-spinner {
+          align-self: center;
         }
 
         .panel {

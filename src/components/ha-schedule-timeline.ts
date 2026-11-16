@@ -663,7 +663,13 @@ export class HaScheduleTimeline extends LitElement {
     value: ScheduleWeek,
     selected?: ScheduleBlockRef
   ): Promise<void> {
+    const base = this.value;
     if (this.confirmChange && !(await this.confirmChange())) {
+      return;
+    }
+    // The change was made on the week from before confirming, so it would
+    // undo anything the week got in the meantime.
+    if (this.value !== base) {
       return;
     }
     fireEvent(this, "value-changed", { value });
