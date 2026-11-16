@@ -33,6 +33,7 @@ import {
   getSummedData,
 } from "../../../data/energy";
 import { EnergyCollectionController } from "../../../data/energy-collection-controller";
+import { filterGroupsWithListedMembers } from "../../../data/group";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type {
   HomeAssistantConfig,
@@ -176,7 +177,10 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
           generateEntityFilter(states, entities, devices, areas, floors, filter)
         );
 
-        const lightEntities = findEntities(allEntities, lightsFilters);
+        const lightEntities = filterGroupsWithListedMembers(
+          findEntities(allEntities, lightsFilters),
+          states
+        );
 
         const onLights = lightEntities.filter((entityId) => {
           const s = states[entityId]?.state;

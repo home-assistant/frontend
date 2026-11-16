@@ -14,6 +14,7 @@ import type { EntityRegistryEntry } from "../../../../data/entity/entity_registr
 import type { HomeAssistant } from "../../../../types";
 import {
   automationTriggerContext,
+  triggerOptionsResolved,
   type AutomationTriggerContext,
 } from "./automation-trigger-id";
 
@@ -41,6 +42,7 @@ export class HaAutomationTriggerReferences extends LitElement {
     const missingIds = selectedIds.filter(
       (id) => !options.some((option) => option.id === id)
     );
+    const resolved = triggerOptionsResolved(this._triggers);
 
     if (options.length && !selectedIds.length) {
       return html`<span class="trigger-reference no-selection">
@@ -87,17 +89,21 @@ export class HaAutomationTriggerReferences extends LitElement {
           </span>
         `
       ),
-      missingIds.map(
-        () => html`
-          <span class="trigger-reference missing">
-            <ha-svg-icon .path=${mdiLinkVariantOff}></ha-svg-icon>
-            <span>
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.type.trigger.missing_trigger"
-              )}
-            </span>
-          </span>
-        `
+      missingIds.map((id) =>
+        resolved
+          ? html`
+              <span class="trigger-reference missing">
+                <ha-svg-icon .path=${mdiLinkVariantOff}></ha-svg-icon>
+                <span>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.conditions.type.trigger.missing_trigger"
+                  )}
+                </span>
+              </span>
+            `
+          : html`<span class="trigger-reference">
+              <span class="trigger-reference-label">${id}</span>
+            </span>`
       ),
     ];
   }

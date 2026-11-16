@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing, unsafeCSS } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../../common/decorators/consume";
@@ -14,6 +14,7 @@ import { computeAttributeNameDisplay } from "../../../common/entity/compute_attr
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import "../../../components/ha-control-slider";
 import type { CoverEntity } from "../../../data/cover";
 import { coverSupportsTiltPosition } from "../../../data/cover";
 import {
@@ -24,7 +25,6 @@ import {
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity/entity_attributes";
 import type { FrontendLocaleData } from "../../../data/translation";
-import { generateTiltSliderTrackBackgroundGradient } from "../../../state-control/cover/ha-state-control-cover-tilt-position";
 import type {
   HomeAssistant,
   HomeAssistantApi,
@@ -36,6 +36,33 @@ import type {
   CoverTiltPositionCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
+
+function generateTiltSliderTrackBackgroundGradient() {
+  const count = 24;
+  const minStrokeWidth = 0.2;
+  const gradient: [number, string][] = [];
+
+  for (let i = 0; i < count; i++) {
+    const stopOffset1 = i / count;
+    const stopOffset2 =
+      stopOffset1 +
+      (i / count ** 2) * (1 - minStrokeWidth) +
+      minStrokeWidth / count;
+
+    if (i !== 0) {
+      gradient.push([stopOffset1, "transparent"]);
+    }
+    gradient.push([stopOffset1, "var(--control-slider-color)"]);
+    gradient.push([stopOffset2, "var(--control-slider-color)"]);
+    gradient.push([stopOffset2, "transparent"]);
+  }
+
+  return unsafeCSS(
+    gradient
+      .map(([stop, color]) => `${color} ${(stop as number) * 100}%`)
+      .join(", ")
+  );
+}
 
 const GRADIENT = generateTiltSliderTrackBackgroundGradient();
 

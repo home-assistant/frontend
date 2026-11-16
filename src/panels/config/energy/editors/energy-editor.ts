@@ -40,6 +40,10 @@ export interface EnergyHomeSourceEditorParams {
 export interface EnergyBatterySourceEditorParams {
   source?: BatterySourceTypeEnergyPreference;
   battery_sources: BatterySourceTypeEnergyPreference[];
+  /** The sources a battery measured per direction charges from or discharges to */
+  has_grid_import: boolean;
+  has_grid_export: boolean;
+  has_solar: boolean;
   statsMetadata?: Record<string, StatisticsMetaData>;
   saveCallback: (source: BatterySourceTypeEnergyPreference) => Promise<void>;
 }

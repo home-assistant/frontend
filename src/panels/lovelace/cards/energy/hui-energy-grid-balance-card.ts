@@ -129,7 +129,11 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
               <span class="imported" id="eq-imported">
                 ${fmtEnergy(imported)}
               </span>
-              <ha-tooltip for="eq-imported" placement="top">
+              <ha-tooltip
+                trigger="hover focus click"
+                for="eq-imported"
+                placement="top"
+              >
                 ${this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.grid_balance.imported",
                   { value: fmt(imported) }
@@ -139,7 +143,11 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
               <span class="exported" id="eq-exported">
                 ${fmtEnergy(exported)}
               </span>
-              <ha-tooltip for="eq-exported" placement="top">
+              <ha-tooltip
+                trigger="hover focus click"
+                for="eq-exported"
+                placement="top"
+              >
                 ${this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.grid_balance.exported",
                   { value: fmt(exported) }
@@ -152,7 +160,11 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
               >
                 ${fmtEnergy(net)}
               </span>
-              <ha-tooltip for="eq-net" placement="top">
+              <ha-tooltip
+                trigger="hover focus click"
+                for="eq-net"
+                placement="top"
+              >
                 ${this._i18n.localize(
                   `ui.panel.lovelace.cards.energy.grid_balance.net_${isConsumption ? "import" : "export"}`,
                   { value: fmt(Math.abs(net)) }
@@ -168,7 +180,11 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
               class="bar-fill return"
               style="width: ${leftPercent}%"
             ></div>
-            <ha-tooltip for="bar-exported" placement="top">
+            <ha-tooltip
+              trigger="hover focus click"
+              for="bar-exported"
+              placement="top"
+            >
               ${this._i18n.localize(
                 "ui.panel.lovelace.cards.energy.grid_balance.exported",
                 { value: fmt(exported) }
@@ -181,7 +197,11 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
                       class="bar-net return"
                       style="width: ${netBarWidth}%"
                     ></div>
-                    <ha-tooltip for="bar-net-left" placement="top">
+                    <ha-tooltip
+                      trigger="hover focus click"
+                      for="bar-net-left"
+                      placement="top"
+                    >
                       ${this._i18n.localize(
                         "ui.panel.lovelace.cards.energy.grid_balance.net_export",
                         {
@@ -199,7 +219,11 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
               class="bar-fill consumption"
               style="width: ${rightPercent}%"
             ></div>
-            <ha-tooltip for="bar-imported" placement="top">
+            <ha-tooltip
+              trigger="hover focus click"
+              for="bar-imported"
+              placement="top"
+            >
               ${this._i18n.localize(
                 "ui.panel.lovelace.cards.energy.grid_balance.imported",
                 { value: fmt(imported) }
@@ -212,7 +236,11 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
                       class="bar-net consumption"
                       style="width: ${netBarWidth}%"
                     ></div>
-                    <ha-tooltip for="bar-net-right" placement="top">
+                    <ha-tooltip
+                      trigger="hover focus click"
+                      for="bar-net-right"
+                      placement="top"
+                    >
                       ${this._i18n.localize(
                         "ui.panel.lovelace.cards.energy.grid_balance.net_import",
                         {

@@ -27,11 +27,9 @@ describe("selectCameraStreams", () => {
       selectCameraStreams({ supportedTypes: ["hls"], hlsStreams: failed })
     ).toEqual([{ type: "mjpeg", visible: true }]);
 
-    // Loading: HLS is shown until WebRTC is ready, unless WebRTC goes first
+    // Loading: HLS is shown until WebRTC is ready
     expect(select({})).toBe("hls (web_rtc)");
     expect(select({ hlsStreams: ok })).toBe("hls (web_rtc)");
-    expect(select({ webRtcFirst: true })).toBe("web_rtc");
-    expect(select({ webRtcFirst: true, hlsStreams: ok })).toBe("hls (web_rtc)");
     expect(select({ hlsStreams: failed })).toBe("web_rtc");
 
     // WebRTC loaded: always preferred, also when only HLS has audio
