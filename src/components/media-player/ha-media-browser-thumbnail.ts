@@ -150,8 +150,13 @@ export class HaMediaBrowserThumbnail extends LitElement {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     // Do not keep loading thumbnails which are no longer shown
-    this._abortController?.abort();
-    this._abortController = undefined;
+    if (this._abortController) {
+      this._abortController.abort();
+      this._abortController = undefined;
+      // A shown image can belong to a previous url, clear it so
+      // connectedCallback restarts loading the current url.
+      this._resolvedUrl = undefined;
+    }
   }
 
   protected willUpdate(changedProps: PropertyValues): void {
@@ -189,6 +194,9 @@ export class HaMediaBrowserThumbnail extends LitElement {
       this._resolvedUrl = resolved;
       this._probeSize(resolved);
     } catch (_err) {
+      // Aborted when the url changed or this element was disconnected,
+      // which already restarted or reset the resolution.
+      if (abortController.signal.aborted) return;
       if (requested === this.url) this._resolvedUrl = undefined;
     } finally {
       if (this._abortController === abortController) {
