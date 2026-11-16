@@ -355,6 +355,9 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
         .picture:focus {
           outline: none;
         }
+        .picture:focus-visible {
+          outline: 2px solid var(--primary-color);
+        }
         .picture.placeholder {
           min-height: var(--ha-space-20);
         }
