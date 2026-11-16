@@ -9,6 +9,10 @@ const IDLE_FRAME_RATE = 2;
 // MJPEG streams rarely send more frames than this
 const PICTURE_IN_PICTURE_FRAME_RATE = 15;
 
+// Some browsers never tell when the first frame of a stream arrived, it
+// counts as loaded by then unless it failed
+const LOADED_TIMEOUT = 5000;
+
 /**
  * Shows an MJPEG stream as an image, like any browser can. For picture in
  * picture, which only works with a video, the image is also copied into a
@@ -43,6 +47,8 @@ export class HaMjpegPlayer extends LitElement {
   private _frameRate = IDLE_FRAME_RATE;
 
   @state() private _loaded = false;
+
+  private _loadedTimeout?: number;
 
   // Copying the canvas failed, like for an image from another origin
   private _captureFailed = false;
@@ -83,7 +89,11 @@ export class HaMjpegPlayer extends LitElement {
           : html`<div class="placeholder">
               ${
                 this.posterUrl
-                  ? html`<img .src=${this.posterUrl} alt="" />`
+                  ? html`<img
+                      .src=${this.posterUrl}
+                      alt=""
+                      draggable="false"
+                    />`
                   : nothing
               }
             </div>`
@@ -94,7 +104,9 @@ export class HaMjpegPlayer extends LitElement {
         .src=${this.src}
         alt=${this.alt ?? ""}
         style=${style}
+        draggable="false"
         @load=${this._frameArrived}
+        @error=${this._streamFailed}
       />
       <video
         muted
@@ -108,10 +120,23 @@ export class HaMjpegPlayer extends LitElement {
   }
 
   private _frameArrived() {
-    if (!this._loaded && this._imageEl?.naturalWidth) {
+    if (this._imageEl?.naturalWidth) {
+      this._setLoaded();
+    }
+  }
+
+  private _setLoaded() {
+    clearTimeout(this._loadedTimeout);
+    this._loadedTimeout = undefined;
+    if (!this._loaded) {
       this._loaded = true;
       fireEvent(this, "load");
     }
+  }
+
+  private _streamFailed() {
+    clearTimeout(this._loadedTimeout);
+    this._loadedTimeout = undefined;
   }
 
   private _pictureInPictureChanged() {
@@ -126,6 +151,12 @@ export class HaMjpegPlayer extends LitElement {
 
   private _startDrawing() {
     this._stopDrawing();
+    if (!this._loaded) {
+      this._loadedTimeout = window.setTimeout(
+        () => this._setLoaded(),
+        LOADED_TIMEOUT
+      );
+    }
     if (this._captureFailed) {
       return;
     }
@@ -141,6 +172,8 @@ export class HaMjpegPlayer extends LitElement {
   }
 
   private _stopDrawing() {
+    clearTimeout(this._loadedTimeout);
+    this._loadedTimeout = undefined;
     clearInterval(this._drawInterval);
     this._drawInterval = undefined;
     this._stream?.getTracks().forEach((track) => track.stop());
@@ -206,6 +239,9 @@ export class HaMjpegPlayer extends LitElement {
       display: block;
       width: 100%;
       max-height: var(--video-max-height, calc(100vh - 97px));
+      object-fit: contain;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     /* Keeps the room of a picture until the first frame, so nothing jumps */
@@ -216,11 +252,16 @@ export class HaMjpegPlayer extends LitElement {
 
     .placeholder img {
       height: 100%;
-      object-fit: contain;
     }
 
-    /* Loads behind the placeholder, kept rendered so it keeps loading */
-    img.loading,
+    /* Shows over the placeholder as soon as the browser draws a frame, some
+       browsers don't load a stream they don't show */
+    img.loading {
+      position: absolute;
+      inset: 0;
+      height: 100%;
+    }
+
     /* Only plays for picture in picture, kept rendered so it keeps playing */
     video {
       position: absolute;
