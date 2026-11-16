@@ -477,11 +477,19 @@ class MoreInfoCamera extends LitElement {
           background-color: black;
         }
 
+        /* The tabs stay at the top, so they don't move between tabs */
         .controls {
-          justify-content: center;
           flex: none;
           width: 340px;
           padding: var(--ha-space-2) 0;
+        }
+
+        ha-more-info-camera-ptz,
+        .call {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
         }
       }
 
