@@ -2,7 +2,6 @@ import {
   mdiDelete,
   mdiDevices,
   mdiDotsVertical,
-  mdiImagePlus,
   mdiPalette,
   mdiPencil,
   mdiPlus,
@@ -402,21 +401,6 @@ class HaConfigAreaPage extends LitElement {
           </div>
           <div class="area-actions">
             <ha-button
-              appearance=${area.picture ? "plain" : "filled"}
-              .entry=${area}
-              @click=${this._showSettings}
-            >
-              <ha-svg-icon
-                slot="start"
-                .path=${area.picture ? mdiPencil : mdiImagePlus}
-              ></ha-svg-icon>
-              ${this.hass.localize(
-                area.picture
-                  ? "ui.panel.config.areas.edit_picture"
-                  : "ui.panel.config.areas.add_picture"
-              )}
-            </ha-button>
-            <ha-button
               appearance="filled"
               variant="brand"
               @click=${this._showAddToDialog}
@@ -747,6 +731,13 @@ class HaConfigAreaPage extends LitElement {
         back-path="/config/areas/dashboard"
         .header=${this.hass.localize("ui.panel.config.areas.caption")}
       >
+        <ha-icon-button
+          slot="toolbar-icon"
+          .entry=${area}
+          .path=${mdiPencil}
+          .label=${this.hass.localize("ui.panel.config.areas.edit_settings")}
+          @click=${this._showSettings}
+        ></ha-icon-button>
         <ha-dropdown slot="toolbar-icon" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
@@ -775,11 +766,6 @@ class HaConfigAreaPage extends LitElement {
               ? html`<wa-divider></wa-divider>`
               : nothing
           }
-
-          <ha-dropdown-item value="edit" .data=${area}>
-            <ha-svg-icon slot="icon" .path=${mdiPencil}> </ha-svg-icon>
-            ${this.hass.localize("ui.panel.config.areas.edit_settings")}
-          </ha-dropdown-item>
 
           <ha-dropdown-item value="delete" variant="danger">
             <ha-svg-icon slot="icon" .path=${mdiDelete}> </ha-svg-icon>
@@ -1001,11 +987,8 @@ class HaConfigAreaPage extends LitElement {
     return this._allEntities(memberships);
   }
 
-  private _handleMenuAction(
-    ev: HaDropdownSelectEvent<string, AreaRegistryEntry>
-  ) {
+  private _handleMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
-    const entry = ev.detail?.item?.data;
 
     const navAction = NAVIGATION_ACTIONS.find((a) => a.value === action);
     if (navAction) {
@@ -1016,9 +999,6 @@ class HaConfigAreaPage extends LitElement {
     }
 
     switch (action) {
-      case "edit":
-        this._openDialog(entry);
-        break;
       case "delete":
         this._deleteConfirm();
         break;
