@@ -3,20 +3,21 @@ import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 
-// Keeps the picture in picture video ready without costing much battery
-const IDLE_FRAME_RATE = 2;
-
-// MJPEG streams rarely send more frames than this
-const PICTURE_IN_PICTURE_FRAME_RATE = 15;
+// How often the image is checked for its first frame
+const LOAD_CHECK_INTERVAL = 250;
 
 // Some browsers never tell when the first frame of a stream arrived, it
 // counts as loaded by then unless it failed
 const LOADED_TIMEOUT = 5000;
 
+// MJPEG streams rarely send more frames than this
+const PICTURE_IN_PICTURE_FRAME_RATE = 15;
+
 /**
- * Shows an MJPEG stream as an image, like any browser can. For picture in
- * picture, which only works with a video, the image is also copied into a
- * canvas that a hidden video plays.
+ * Shows an MJPEG stream as an image, like any browser can. Picture in
+ * picture only works with a video, so while it is open, the image is copied
+ * into a canvas that a hidden video plays. The video only plays then, so
+ * browsers don't offer picture in picture on their own.
  */
 @customElement("ha-mjpeg-player")
 export class HaMjpegPlayer extends LitElement {
@@ -28,8 +29,10 @@ export class HaMjpegPlayer extends LitElement {
 
   @property({ attribute: false }) public fitMode?: "cover" | "contain" | "fill";
 
-  /** The canvas plays in the video, so it can be shown picture in picture */
-  @state() private _videoReady = false;
+  @state() private _loaded = false;
+
+  // The image can be copied, it is not from another origin
+  @state() private _canCopy = false;
 
   @query("#stream") private _imageEl?: HTMLImageElement;
 
@@ -39,36 +42,49 @@ export class HaMjpegPlayer extends LitElement {
 
   private _stream?: MediaStream;
 
-  private _drawInterval?: number;
-
-  private _frameRate = IDLE_FRAME_RATE;
-
-  @state() private _loaded = false;
+  private _loadCheckInterval?: number;
 
   private _loadedTimeout?: number;
 
-  // Copying the canvas failed, like for an image from another origin
-  private _captureFailed = false;
+  private _drawInterval?: number;
 
-  /** The video for picture in picture, undefined until it plays. */
+  /** The video for picture in picture, undefined when it can't be shown. */
   public get videoElement(): HTMLVideoElement | undefined {
-    return this._videoReady ? this._videoEl : undefined;
+    return this._canCopy ? this._videoEl : undefined;
+  }
+
+  /** Starts playing the video, which picture in picture needs first. */
+  public async preparePictureInPicture(): Promise<void> {
+    const video = this._videoEl;
+    if (!this._canCopy || !video || this._stream) {
+      return;
+    }
+    this._drawFrame();
+    // Captures a frame whenever the canvas is drawn
+    this._stream = this._canvas!.captureStream();
+    video.srcObject = this._stream;
+    this._drawInterval = window.setInterval(
+      () => this._drawFrame(),
+      1000 / PICTURE_IN_PICTURE_FRAME_RATE
+    );
+    await video.play();
   }
 
   public connectedCallback() {
     super.connectedCallback();
-    if (this.hasUpdated) {
-      this._startDrawing();
+    if (this.hasUpdated && !this._loaded) {
+      this._startLoadCheck();
     }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._stopDrawing();
+    this._stopLoadCheck();
+    this._stopVideo();
   }
 
   protected firstUpdated() {
-    this._startDrawing();
+    this._startLoadCheck();
   }
 
   protected render() {
@@ -88,94 +104,71 @@ export class HaMjpegPlayer extends LitElement {
         alt=${this.alt ?? ""}
         style=${style}
         draggable="false"
-        @load=${this._frameArrived}
-        @error=${this._streamFailed}
+        @load=${this._checkLoaded}
+        @error=${this._stopLoadCheck}
       />
       <video
         muted
         playsinline
         disableremoteplayback
         aria-hidden="true"
-        @enterpictureinpicture=${this._pictureInPictureChanged}
-        @leavepictureinpicture=${this._pictureInPictureChanged}
+        @leavepictureinpicture=${this._stopVideo}
       ></video>
     `;
   }
 
-  private _frameArrived() {
-    if (this._imageEl?.naturalWidth) {
-      this._setLoaded();
+  private _startLoadCheck() {
+    this._stopLoadCheck();
+    this._loadCheckInterval = window.setInterval(
+      () => this._checkLoaded(),
+      LOAD_CHECK_INTERVAL
+    );
+    this._loadedTimeout = window.setTimeout(
+      () => this._setLoaded(),
+      LOADED_TIMEOUT
+    );
+  }
+
+  private _stopLoadCheck() {
+    clearInterval(this._loadCheckInterval);
+    this._loadCheckInterval = undefined;
+    clearTimeout(this._loadedTimeout);
+    this._loadedTimeout = undefined;
+  }
+
+  // An MJPEG stream never completes loading, so only wait for a first frame
+  private _checkLoaded() {
+    if (!this._imageEl?.naturalWidth) {
+      return;
     }
+    this._canCopy = this._testCopy();
+    this._setLoaded();
   }
 
   private _setLoaded() {
-    clearTimeout(this._loadedTimeout);
-    this._loadedTimeout = undefined;
+    this._stopLoadCheck();
     if (!this._loaded) {
       this._loaded = true;
       fireEvent(this, "load");
     }
   }
 
-  private _streamFailed() {
-    clearTimeout(this._loadedTimeout);
-    this._loadedTimeout = undefined;
-  }
-
-  private _pictureInPictureChanged() {
-    this._frameRate =
-      document.pictureInPictureElement === this._videoEl
-        ? PICTURE_IN_PICTURE_FRAME_RATE
-        : IDLE_FRAME_RATE;
-    if (this._drawInterval !== undefined) {
-      this._scheduleDrawing();
-    }
-  }
-
-  private _startDrawing() {
-    this._stopDrawing();
-    if (!this._loaded) {
-      this._loadedTimeout = window.setTimeout(
-        () => this._setLoaded(),
-        LOADED_TIMEOUT
-      );
-    }
-    if (this._captureFailed) {
-      return;
-    }
-    this._scheduleDrawing();
-  }
-
-  private _scheduleDrawing() {
-    clearInterval(this._drawInterval);
-    this._drawInterval = window.setInterval(
-      () => this._drawFrame(),
-      1000 / this._frameRate
-    );
-  }
-
-  private _stopDrawing() {
-    clearTimeout(this._loadedTimeout);
-    this._loadedTimeout = undefined;
-    clearInterval(this._drawInterval);
-    this._drawInterval = undefined;
-    this._stream?.getTracks().forEach((track) => track.stop());
-    this._stream = undefined;
-    this._videoReady = false;
-    if (this._videoEl) {
-      this._videoEl.srcObject = null;
+  /** An image from another origin can't be copied out of a canvas. */
+  private _testCopy(): boolean {
+    try {
+      this._drawFrame();
+      this._canvas?.getContext("2d")?.getImageData(0, 0, 1, 1);
+      return Boolean(this._canvas);
+    } catch (_err: unknown) {
+      return false;
     }
   }
 
   private _drawFrame() {
     const image = this._imageEl;
-    const video = this._videoEl;
-    // An MJPEG stream never completes loading, so only wait for a first frame
-    if (!image?.naturalWidth || !video) {
+    if (!image?.naturalWidth) {
       return;
     }
-    // Some browsers report no load event for the frames of a stream
-    this._frameArrived();
     if (!this._canvas) {
       this._canvas = document.createElement("canvas");
     }
@@ -188,29 +181,17 @@ export class HaMjpegPlayer extends LitElement {
       canvas.height = image.naturalHeight;
     }
     canvas.getContext("2d")?.drawImage(image, 0, 0);
-
-    if (this._stream) {
-      return;
-    }
-    try {
-      // Captures a frame whenever the canvas is drawn
-      this._stream = canvas.captureStream();
-    } catch (_err: unknown) {
-      // The image only shows, without picture in picture
-      this._captureFailed = true;
-      this._stopDrawing();
-      return;
-    }
-    video.srcObject = this._stream;
-    video
-      .play()
-      .then(() => {
-        this._videoReady = true;
-        // Tells the player a video is there now
-        fireEvent(this, "load");
-      })
-      .catch(() => undefined);
   }
+
+  private _stopVideo = () => {
+    clearInterval(this._drawInterval);
+    this._drawInterval = undefined;
+    this._stream?.getTracks().forEach((track) => track.stop());
+    this._stream = undefined;
+    if (this._videoEl) {
+      this._videoEl.srcObject = null;
+    }
+  };
 
   static styles = css`
     :host {
@@ -241,7 +222,7 @@ export class HaMjpegPlayer extends LitElement {
       height: 100%;
     }
 
-    /* Only plays for picture in picture, kept rendered so it keeps playing */
+    /* Only plays for picture in picture, kept rendered so it can play */
     video {
       position: absolute;
       top: 0;

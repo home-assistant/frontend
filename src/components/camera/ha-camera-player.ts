@@ -460,7 +460,8 @@ export class HaCameraPlayer extends LitElement {
   /** Browsers can block playing with sound, then it plays muted instead. */
   private async _ensurePlaying() {
     const video = this._video;
-    if (!video || !video.paused) {
+    // An MJPEG stream's video only plays for picture in picture
+    if (!video || !video.paused || (!video.srcObject && !video.currentSrc)) {
       return;
     }
     try {
@@ -487,7 +488,7 @@ export class HaCameraPlayer extends LitElement {
       "leavepictureinpicture",
       this._pictureInPictureChanged
     );
-    this._pictureInPictureChanged();
+    this._pictureInPicture = false;
   }
 
   private _unbindVideo(video?: HTMLVideoElement) {
@@ -516,10 +517,10 @@ export class HaCameraPlayer extends LitElement {
     );
   }
 
-  private _pictureInPictureChanged = () => {
-    this._pictureInPicture = Boolean(
-      this._video && document.pictureInPictureElement === this._video
-    );
+  // document.pictureInPictureElement is only the outermost shadow host, so
+  // the events of the video tell which one it is
+  private _pictureInPictureChanged = (ev: Event) => {
+    this._pictureInPicture = ev.type === "enterpictureinpicture";
   };
 
   private async _togglePictureInPicture() {
@@ -527,6 +528,8 @@ export class HaCameraPlayer extends LitElement {
       if (this._pictureInPicture) {
         await document.exitPictureInPicture();
       } else {
+        // An MJPEG stream only plays its video for picture in picture
+        await this._stream?.preparePictureInPicture();
         await this._video?.requestPictureInPicture();
       }
     } catch (_err: unknown) {

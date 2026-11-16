@@ -155,6 +155,14 @@ export class HaCameraStream extends LitElement {
     return this._visiblePlayer?.videoElement;
   }
 
+  /** Gets the video of the shown stream ready for picture in picture. */
+  public async preparePictureInPicture() {
+    const player = this._visiblePlayer;
+    if (player && "preparePictureInPicture" in player) {
+      await player.preparePictureInPicture();
+    }
+  }
+
   /** Toggles sending the microphone to the camera, only on WebRTC streams. */
   public async toggleMicrophone() {
     await this._webRtcPlayer?.toggleMicrophone();
