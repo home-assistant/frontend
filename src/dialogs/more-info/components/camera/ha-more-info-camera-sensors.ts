@@ -18,8 +18,7 @@ import { showMoreInfoDialog } from "../../show-ha-more-info-dialog";
 
 /**
  * Shows what the camera detects, like motion, people, animals or a crying
- * baby: the binary sensors of its device. Made to sit over the camera player,
- * where the detected ones stay while the others fade with the controls.
+ * baby: the binary sensors of its device, as a row of icons.
  */
 @customElement("ha-more-info-camera-sensors")
 export class HaMoreInfoCameraSensors extends LitElement {
@@ -103,43 +102,39 @@ export class HaMoreInfoCameraSensors extends LitElement {
 
     .sensors {
       display: flex;
-      flex-wrap: wrap;
-      gap: var(--ha-space-1);
+      gap: var(--ha-space-2);
+      padding: var(--ha-space-2) var(--ha-space-4);
+      overflow-x: auto;
+      scrollbar-width: none;
     }
 
-    /* Readable on a dark and on a bright picture, like the player controls */
     .sensor {
+      flex: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 28px;
-      height: 28px;
+      width: 36px;
+      height: 36px;
       padding: 0;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: none;
       border-radius: var(--ha-border-radius-circle);
-      background-color: rgba(0, 0, 0, 0.45);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      color: white;
+      background-color: var(--ha-color-fill-neutral-quiet-resting);
+      color: var(--secondary-text-color);
       cursor: pointer;
-      opacity: var(--camera-player-controls-opacity, 1);
-      pointer-events: var(--camera-player-controls-pointer-events, auto);
       transition:
-        opacity var(--ha-animation-duration-normal, 250ms) ease-in-out,
-        background-color var(--ha-animation-duration-normal, 250ms) ease-in-out;
+        background-color var(--ha-animation-duration-normal, 250ms) ease-in-out,
+        color var(--ha-animation-duration-normal, 250ms) ease-in-out;
     }
 
     .sensor:focus-visible {
-      outline: 2px solid white;
+      outline: 2px solid var(--primary-color);
       outline-offset: 2px;
     }
 
-    /* What the camera detects right now stays visible */
+    /* What the camera detects right now */
     .sensor.active {
-      opacity: 1;
-      pointer-events: auto;
-      background-color: var(--ha-color-fill-warning-loud-resting);
-      border-color: transparent;
+      background-color: var(--ha-color-fill-warning-quiet-resting);
+      color: var(--ha-color-on-warning-quiet);
     }
 
     .sensor.unavailable ha-state-icon {
@@ -147,7 +142,7 @@ export class HaMoreInfoCameraSensors extends LitElement {
     }
 
     ha-state-icon {
-      --mdc-icon-size: 16px;
+      --mdc-icon-size: 20px;
     }
 
     @media (prefers-reduced-motion: reduce) {

@@ -181,6 +181,9 @@ class MoreInfoCamera extends LitElement {
     const tab = this._tab && tabs.includes(this._tab) ? this._tab : tabs[0];
 
     return html`
+      <ha-more-info-camera-sensors
+        .deviceId=${this._entry?.device_id}
+      ></ha-more-info-camera-sensors>
       <ha-camera-player
         .stateObj=${this.stateObj}
         allow-exoplayer
@@ -188,12 +191,7 @@ class MoreInfoCamera extends LitElement {
         @stream-type-changed=${this._streamTypeChanged}
         @camera-stream-status-changed=${this._streamStatusChanged}
         @camera-capabilities-changed=${this._capabilitiesChanged}
-      >
-        <ha-more-info-camera-sensors
-          slot="indicators"
-          .deviceId=${this._entry?.device_id}
-        ></ha-more-info-camera-sensors>
-      </ha-camera-player>
+      ></ha-camera-player>
       ${tabs.length ? this._renderControls(tabs, tab) : nothing}
     `;
   }
