@@ -309,7 +309,7 @@ export default class HaAutomationConditionRow extends LitElement {
             )
           )}
         </ha-dropdown-item>
-        <ha-dropdown-item value="edit_note">
+        <ha-dropdown-item value="edit_note" .disabled=${this.disabled}>
           <ha-svg-icon slot="icon" .path=${mdiCommentEditOutline}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(

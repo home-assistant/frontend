@@ -442,7 +442,10 @@ export default class HaAutomationTriggerRow extends LitElement {
         </ha-dropdown-item>
         ${
           type !== "list"
-            ? html`<ha-dropdown-item value="edit_note">
+            ? html`<ha-dropdown-item
+                  value="edit_note"
+                  .disabled=${this.disabled}
+                >
                   <ha-svg-icon
                     slot="icon"
                     .path=${mdiCommentEditOutline}

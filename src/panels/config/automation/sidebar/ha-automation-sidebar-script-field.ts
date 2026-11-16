@@ -66,7 +66,11 @@ export default class HaAutomationSidebarScriptField extends LitElement {
       @wa-select=${this._handleDropdownSelect}
     >
       <span slot="title">${title}</span>
-      <ha-dropdown-item slot="menu-items" value="edit_note">
+      <ha-dropdown-item
+        slot="menu-items"
+        value="edit_note"
+        .disabled=${this.disabled}
+      >
         <ha-svg-icon slot="icon" .path=${mdiCommentEditOutline}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(
@@ -141,6 +145,7 @@ export default class HaAutomationSidebarScriptField extends LitElement {
       ${
         note && !this.yamlMode
           ? html`<ha-automation-note
+              .disabled=${this.disabled}
               @edit-note=${this.config.editNote}
               .note=${note}
             ></ha-automation-note>`

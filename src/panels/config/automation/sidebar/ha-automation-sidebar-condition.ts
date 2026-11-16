@@ -366,6 +366,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
       ${
         note && !this.yamlMode
           ? html`<ha-automation-note
+              .disabled=${this.disabled}
               @edit-note=${this.config.editNote}
               .note=${note}
             ></ha-automation-note>`

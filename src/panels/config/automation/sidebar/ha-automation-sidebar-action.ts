@@ -208,7 +208,11 @@ export default class HaAutomationSidebarAction extends LitElement {
           <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </div>
       </ha-dropdown-item>
-      <ha-dropdown-item slot="menu-items" value="edit_note">
+      <ha-dropdown-item
+        slot="menu-items"
+        value="edit_note"
+        .disabled=${this.disabled}
+      >
         <ha-svg-icon slot="icon" .path=${mdiCommentEditOutline}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(
@@ -418,6 +422,7 @@ export default class HaAutomationSidebarAction extends LitElement {
       ${
         note && !this.yamlMode
           ? html`<ha-automation-note
+              .disabled=${this.disabled}
               @edit-note=${this.config.editNote}
               .note=${note}
             ></ha-automation-note>`

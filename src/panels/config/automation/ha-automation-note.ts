@@ -1,5 +1,5 @@
 import type { ContextType } from "@lit/context";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../common/decorators/consume";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -10,6 +10,8 @@ import { internationalizationContext } from "../../../data/context";
 @customElement("ha-automation-note")
 export class HaAutomationNote extends LitElement {
   @property() public note!: string;
+
+  @property({ type: Boolean }) public disabled = false;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -24,9 +26,17 @@ export class HaAutomationNote extends LitElement {
               "ui.panel.config.automation.editor.note.label"
             )}
           </span>
-          <ha-button @click=${this._handleClick} size="s" appearance="plain">
-            ${this._i18n.localize("ui.common.edit")}
-          </ha-button>
+          ${
+            this.disabled
+              ? nothing
+              : html`<ha-button
+                  @click=${this._handleClick}
+                  size="s"
+                  appearance="plain"
+                >
+                  ${this._i18n.localize("ui.common.edit")}
+                </ha-button>`
+          }
         </div>
         <p aria-labelledby="note-label">${this.note}</p>
       </ha-settings-row>
