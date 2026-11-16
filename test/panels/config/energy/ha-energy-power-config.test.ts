@@ -33,6 +33,26 @@ describe("getPowerHelperEntityId", () => {
     );
   });
 
+  it("returns the helper for a battery direction config", () => {
+    const powerConfig = {
+      stat_rate_from_solar: "sensor.solar_charge",
+      stat_rate_to_home: "sensor.home_discharge",
+    };
+    const source = {
+      stat_rate: "sensor.energy_battery_solar_charge_home_discharge_net_power",
+      power_config: powerConfig,
+    };
+    assert.strictEqual(
+      getPowerHelperEntityId(source, { ...powerConfig }),
+      "sensor.energy_battery_solar_charge_home_discharge_net_power"
+    );
+    assert.isUndefined(
+      getPowerHelperEntityId(source, {
+        stat_rate_from_solar: "sensor.solar_charge",
+      })
+    );
+  });
+
   it("returns nothing for a standard config, as no helper is created", () => {
     const powerConfig = { stat_rate: "sensor.battery_power" };
     assert.isUndefined(

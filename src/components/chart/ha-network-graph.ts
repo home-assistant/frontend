@@ -82,6 +82,18 @@ export interface NetworkData {
 
 const PHYSICS_DISABLE_THRESHOLD = 512;
 
+const LAYOUT_ANIMATION_THRESHOLD = 100;
+
+// Every event of a change of the legend selection, each with the whole
+// selection
+const LEGEND_SELECT_EVENTS = [
+  "legendselectchanged",
+  "legendselected",
+  "legendunselected",
+  "legendselectall",
+  "legendinverseselect",
+];
+
 const SELECTED_NODE_MAX_ZOOM = 2;
 
 // Keeps neighbors clear of the search field, buttons and legend
@@ -93,16 +105,6 @@ const FIXED_LAYOUT_SELECTED_NODE_X = 0.25;
 const FIXED_LAYOUT_LABEL_ROOM = 240;
 
 const FOLLOW_ROAM = "follow-selected-node";
-
-// Every event of a change of the legend selection, each with the whole
-// selection
-const LEGEND_SELECT_EVENTS = [
-  "legendselectchanged",
-  "legendselected",
-  "legendunselected",
-  "legendselectall",
-  "legendinverseselect",
-];
 
 const SELECTED_NODE_ANIMATION_DURATION = 800;
 
@@ -215,7 +217,21 @@ export class HaNetworkGraph extends LitElement {
 
   @state() private _showLabels = true;
 
+  // Not reactive: a new series option starts the layout again, so a drop only
+  // reaches the option with the next render
   private _nodePositions: Record<string, { x: number; y: number }> = {};
+
+  // Dragged nodes stay where they are dropped, the force layout moves the others
+  private _pinnedNodes: string[] = [];
+
+  // Names of the legend categories that are switched off. Not reactive: the
+  // legend lays the graph out itself, only the layout animation threshold
+  // needs a render
+  private _hiddenCategories: string[] = [];
+
+  private _dragNode?: string;
+
+  private _dragMoved = false;
 
   private _followSelectedNode = false;
 
@@ -326,6 +342,10 @@ export class HaNetworkGraph extends LitElement {
     if (changedProperties.has("data") && !this._reducedMotion) {
       this._previousStyles = this._getStyles();
     }
+    // Before the first render, which counts the visible nodes
+    if (changedProperties.has("hiddenCategories") && this.hiddenCategories) {
+      this._hiddenCategories = this.hiddenCategories;
+    }
   }
 
   protected render() {
@@ -350,7 +370,10 @@ export class HaNetworkGraph extends LitElement {
         hasHighlightedNodes,
         this.selectedNode,
         this.hoverFocus,
-        this.fixedLayout
+        this.fixedLayout,
+        this._nodePositions,
+        this._pinnedNodes,
+        this._fewVisibleNodes()
       )}
       .options=${this._createOptions(
         this.data?.categories,
@@ -489,7 +512,10 @@ export class HaNetworkGraph extends LitElement {
       hasHighlightedNodes?: boolean,
       selectedNode?: string,
       hoverFocus = true,
-      fixedLayout = false
+      fixedLayout = false,
+      nodePositions: Record<string, { x: number; y: number }> = {},
+      pinnedNodes: string[] = [],
+      fewVisibleNodes = true
     ) => ({
       id: "network",
       type: "graph",
@@ -531,14 +557,15 @@ export class HaNetworkGraph extends LitElement {
         repulsion: [400, 600],
         edgeLength: [200, 350],
         gravity: 0.05,
-        layoutAnimation: !reducedMotion && data.nodes.length < 100,
+        layoutAnimation: !reducedMotion && fewVisibleNodes,
       },
       edgeSymbol: ["none", "arrow"],
       edgeSymbolSize: 10,
       data: this._getSeriesData(
         data.nodes,
         data.links,
-        fixedLayout ? {} : this._nodePositions,
+        fixedLayout ? {} : nodePositions,
+        pinnedNodes,
         selectedNode
       ),
       links: data.links.map((link) => ({
@@ -554,11 +581,25 @@ export class HaNetworkGraph extends LitElement {
     deepEqual
   );
 
+  // The legend leaves the nodes of hidden categories out of the layout
+  private _fewVisibleNodes() {
+    const hidden = this._hiddenCategories;
+    const visibleNodes = hidden.length
+      ? this.data.nodes.filter(
+          (node) =>
+            node.category === undefined ||
+            !hidden.includes(this.data.categories?.[node.category]?.name ?? "")
+        ).length
+      : this.data.nodes.length;
+    return visibleNodes < LAYOUT_ANIMATION_THRESHOLD;
+  }
+
   private _getSeriesData = memoizeOne(
     (
       nodes: NetworkNode[],
       links: NetworkLink[],
       nodePositions: Record<string, { x: number; y: number }>,
+      pinnedNodes: string[],
       selectedNode?: string
     ) =>
       this._getPositionedNodes(nodes, links, nodePositions).map((node) => {
@@ -576,7 +617,7 @@ export class HaNetworkGraph extends LitElement {
             : node.itemStyle || {},
           label: selected ? { ...node.label, fontWeight: "bold" } : node.label,
           select: node.selectable === false ? { disabled: true } : undefined,
-          fixed: node.fixed,
+          fixed: node.fixed || pinnedNodes.includes(node.id),
           x: node.x,
           y: node.y,
         } as NonNullable<GraphSeriesOption["data"]>[number];
@@ -740,18 +781,42 @@ export class HaNetworkGraph extends LitElement {
     const chart = this._baseChart?.chart;
     chart?.getZr().on("click", this._handleEmptyClick);
     chart?.on("click", this._handleEdgeClick);
+    chart?.on("mousedown", this._handleNodeMouseDown);
+    chart?.getZr().on("drag", this._handleDrag);
+    chart?.getZr().on("dragend", this._handleDragEnd);
     for (const event of LEGEND_SELECT_EVENTS) {
       chart?.on(event, this._handleLegendChange);
     }
+    const legend = (
+      chart?.getOption() as
+        { legend?: { selected?: Record<string, boolean> }[] } | undefined
+    )?.legend?.[0];
+    this._setHiddenCategories(legend?.selected ?? {});
+    // A recreated chart, e.g. after a theme change, lacks the drops since the
+    // last render
+    this.requestUpdate();
     this._updateFollowing();
   }
 
   private _handleLegendChange = (params: unknown) => {
     const { selected } = params as { selected: Record<string, boolean> };
+    const fewVisibleNodes = this._fewVisibleNodes();
+    this._setHiddenCategories(selected);
+    if (this._fewVisibleNodes() !== fewVisibleNodes) {
+      // The new series option lays out again from where the nodes are now
+      this._saveNodePositions();
+      this.requestUpdate();
+    }
     fireEvent(this, "network-legend-changed", {
-      hidden: Object.keys(selected).filter((name) => !selected[name]),
+      hidden: this._hiddenCategories,
     });
   };
+
+  private _setHiddenCategories(selected: Record<string, boolean>) {
+    this._hiddenCategories = Object.keys(selected).filter(
+      (name) => !selected[name]
+    );
+  }
 
   // A click next to a small node hits nothing, or a link that runs to its
   // center, so it clicks the nearest node within nodeClickRadius instead
@@ -779,10 +844,7 @@ export class HaNetworkGraph extends LitElement {
     if (!this.nodeClickRadius || !chart || chart.isDisposed()) {
       return;
     }
-    const series: any = chart
-      // @ts-ignore private method but no other way to get the graph positions
-      .getModel()
-      .getSeriesByIndex(0);
+    const series = this._getGraphSeries(chart);
     let nearest: { id: string; distance: number } | undefined;
     series?.getGraph().eachNode((node: any) => {
       const layout: number[] | undefined = node.getLayout();
@@ -804,6 +866,53 @@ export class HaNetworkGraph extends LitElement {
         data: { id: nearest.id },
       } as unknown as HASSDomEvents["chart-click"]);
     }
+  }
+
+  private _handleNodeMouseDown = (params: {
+    dataType?: string;
+    data?: unknown;
+  }) => {
+    this._dragNode =
+      params.dataType === "node" ? (params.data as NetworkNode).id : undefined;
+    this._dragMoved = false;
+  };
+
+  private _handleDrag = () => {
+    this._dragMoved = true;
+  };
+
+  private _handleDragEnd = () => {
+    const id = this._dragNode;
+    const moved = this._dragMoved;
+    this._dragNode = undefined;
+    this._dragMoved = false;
+    // A click also ends a drag, which releases a pinned node in ECharts
+    if (!id || (!moved && !this._pinnedNodes.includes(id))) {
+      return;
+    }
+    this._pinNodeInChart(id);
+    if (!this._pinnedNodes.includes(id)) {
+      this._pinnedNodes = [...this._pinnedNodes, id];
+    }
+    this._saveNodePositions();
+  };
+
+  // A new series option would start the layout again, so the pin goes into
+  // the running force layout, and into the item option that ECharts lays out
+  // from again, e.g. on a legend change
+  private _pinNodeInChart(id: string) {
+    const series = this._getGraphSeries();
+    const node = series?.getGraph().getNodeById(id);
+    if (!node) {
+      return;
+    }
+    series.forceLayout?.setFixed(node.dataIndex);
+    const [x, y] = node.getLayout();
+    Object.assign(series.getData().getRawDataItem(node.dataIndex), {
+      fixed: true,
+      x,
+      y,
+    });
   }
 
   private _updateFollowing() {
@@ -905,11 +1014,7 @@ export class HaNetworkGraph extends LitElement {
     if (!chart || chart.isDisposed()) {
       return undefined;
     }
-    const series: any = chart
-      // @ts-ignore private method but no other way to get the graph positions
-      .getModel()
-      .getSeriesByIndex(0);
-    const position: number[] | undefined = series
+    const position: number[] | undefined = this._getGraphSeries(chart)
       ?.getGraph()
       .getNodeById(id)
       ?.getLayout();
@@ -1029,10 +1134,7 @@ export class HaNetworkGraph extends LitElement {
   // The roam that centers the selected node, zoomed so its neighbors stay in
   // view, or undefined when it is centered already
   private _selectedNodeRoam(chart: EChartsType): FollowRoam | undefined {
-    const series: any = chart
-      // @ts-ignore private method but no other way to get the graph positions
-      .getModel()
-      .getSeriesByIndex(0);
+    const series = this._getGraphSeries(chart);
     const node = series?.getGraph().getNodeById(this.selectedNode);
     const position: number[] | undefined = node?.getLayout();
     if (!position) {
@@ -1110,6 +1212,7 @@ export class HaNetworkGraph extends LitElement {
 
   private _togglePhysics() {
     this._saveNodePositions();
+    this._pinnedNodes = [];
     this._physicsEnabled = !this._physicsEnabled;
   }
 
@@ -1118,24 +1221,28 @@ export class HaNetworkGraph extends LitElement {
   }
 
   private _saveNodePositions() {
-    const positions = {};
-    if (this._baseChart?.chart) {
-      this._baseChart.chart
-        // @ts-ignore private method but no other way to get the graph positions
-        .getModel()
-        .getSeriesByIndex(0)
-        .getGraph()
-        .eachNode((node: any) => {
-          const layout = node.getLayout();
-          if (layout) {
-            positions[node.id] = {
-              x: layout[0],
-              y: layout[1],
-            };
-          }
-        });
-    }
+    // Nodes that are not drawn keep their earlier position
+    const positions = { ...this._nodePositions };
+    this._getGraphSeries()
+      ?.getGraph()
+      .eachNode((node: any) => {
+        const layout = node.getLayout();
+        if (layout) {
+          positions[node.id] = {
+            x: layout[0],
+            y: layout[1],
+          };
+        }
+      });
     this._nodePositions = positions;
+  }
+
+  private _getGraphSeries(chart = this._baseChart?.chart): any {
+    if (!chart || chart.isDisposed()) {
+      return undefined;
+    }
+    // @ts-ignore private method but no other way to get the graph
+    return chart.getModel().getSeriesByIndex(0);
   }
 
   static styles = css`
