@@ -9,6 +9,7 @@ import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { CAMERA_STREAM_TYPE_NAMES } from "../../components/camera/ha-camera-stream-badge";
 import "../../components/ha-adaptive-dialog";
+import "../../components/ha-expansion-panel";
 import "../../components/ha-svg-icon";
 import {
   MJPEG_STREAM,
@@ -39,7 +40,13 @@ class DialogCameraStreamInfo extends DialogMixin<CameraStreamInfoDialogParams>(
     if (!this.params) {
       return nothing;
     }
-    const { status, supportedTypes } = this.params;
+    const { supportedTypes } = this.params;
+    // MJPEG is the fallback of every camera
+    const isSupported = (type: CameraStreamType) =>
+      type === MJPEG_STREAM || !supportedTypes || supportedTypes.includes(type);
+    const supported = STREAM_TYPES.filter(({ type }) => isSupported(type));
+    const unsupported = STREAM_TYPES.filter(({ type }) => !isSupported(type));
+
     return html`
       <ha-adaptive-dialog
         open
@@ -48,53 +55,64 @@ class DialogCameraStreamInfo extends DialogMixin<CameraStreamInfoDialogParams>(
       >
         <p>${this._localize("ui.dialogs.camera_stream_info.intro")}</p>
         <ul>
-          ${STREAM_TYPES.map(({ type, icon }) => {
-            const current = !status.connecting && status.type === type;
-            const upgrading = status.upgrading === type;
-            // MJPEG is the fallback of every camera
-            const supported =
-              type === MJPEG_STREAM ||
-              !supportedTypes ||
-              supportedTypes.includes(type);
-            return html`
-              <li class=${supported ? "" : "unsupported"}>
-                <ha-svg-icon .path=${icon}></ha-svg-icon>
-                <div>
-                  <div class="name">
-                    ${CAMERA_STREAM_TYPE_NAMES[type]}
-                    ${
-                      current
-                        ? html`<span class="tag current"
-                            >${this._localize(
-                              "ui.dialogs.camera_stream_info.in_use"
-                            )}</span
-                          >`
-                        : upgrading
-                          ? html`<span class="tag"
-                              >${this._localize(
-                                "ui.dialogs.camera_stream_info.connecting"
-                              )}</span
-                            >`
-                          : !supported
-                            ? html`<span class="tag"
-                                >${this._localize(
-                                  "ui.dialogs.camera_stream_info.not_supported"
-                                )}</span
-                              >`
-                            : nothing
-                    }
-                  </div>
-                  <p>
-                    ${this._localize(
-                      `ui.dialogs.camera_stream_info.description.${type}`
-                    )}
-                  </p>
-                </div>
-              </li>
-            `;
-          })}
+          ${supported.map((item) => this._renderType(item))}
         </ul>
+        ${
+          unsupported.length
+            ? html`
+                <ha-expansion-panel
+                  outlined
+                  .header=${this._localize(
+                    "ui.dialogs.camera_stream_info.not_supported_count",
+                    { count: unsupported.length }
+                  )}
+                >
+                  <ul class="unsupported">
+                    ${unsupported.map((item) => this._renderType(item))}
+                  </ul>
+                </ha-expansion-panel>
+              `
+            : nothing
+        }
       </ha-adaptive-dialog>
+    `;
+  }
+
+  private _renderType({
+    type,
+    icon,
+  }: {
+    type: CameraStreamType;
+    icon: string;
+  }) {
+    const { status } = this.params!;
+    const current = !status.connecting && status.type === type;
+    const upgrading = status.upgrading === type;
+    return html`
+      <li>
+        <ha-svg-icon .path=${icon}></ha-svg-icon>
+        <div>
+          <div class="name">
+            ${CAMERA_STREAM_TYPE_NAMES[type]}
+            ${
+              current
+                ? html`<span class="tag current"
+                    >${this._localize("ui.dialogs.camera_stream_info.in_use")}</span
+                  >`
+                : upgrading
+                  ? html`<span class="tag"
+                      >${this._localize(
+                        "ui.dialogs.camera_stream_info.connecting"
+                      )}</span
+                    >`
+                  : nothing
+            }
+          </div>
+          <p>
+            ${this._localize(`ui.dialogs.camera_stream_info.description.${type}`)}
+          </p>
+        </div>
+      </li>
     `;
   }
 
@@ -123,8 +141,13 @@ class DialogCameraStreamInfo extends DialogMixin<CameraStreamInfoDialogParams>(
         gap: var(--ha-space-4);
       }
 
-      li.unsupported {
-        opacity: 0.6;
+      ha-expansion-panel {
+        display: block;
+        margin-top: var(--ha-space-6);
+      }
+
+      ul.unsupported {
+        margin: var(--ha-space-2) 0;
       }
 
       li ha-svg-icon {

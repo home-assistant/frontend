@@ -221,6 +221,7 @@ export class HaCameraPlayer extends LitElement {
                 : undefined,
             })}
             @camera-stream-status-changed=${this._statusChanged}
+            @load=${this._updateVideo}
             @camera-capabilities-changed=${this._capabilitiesChanged}
           ></ha-camera-stream>
         </div>
