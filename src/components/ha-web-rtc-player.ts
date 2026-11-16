@@ -120,6 +120,11 @@ export class HaWebRtcPlayer extends LitElement {
     return this._localReturnAudioTrack ? "on" : "off";
   }
 
+  /** The video that plays the stream, undefined while showing an error. */
+  public get videoElement(): HTMLVideoElement | undefined {
+    return this._videoEl ?? undefined;
+  }
+
   public get microphoneTrack(): MediaStreamTrack | undefined {
     return this._localReturnAudioTrack;
   }
@@ -624,10 +629,7 @@ export class HaWebRtcPlayer extends LitElement {
     if (!this._remoteStream) {
       return;
     }
-    // If the track is audio and the player is muted, we do not add it to the stream.
-    if (event.track.kind === "audio" && this.muted) {
-      return;
-    }
+    // Audio is always added, even when muted, so it can be unmuted later
     this._remoteStream.addTrack(event.track);
     if (!this.hasUpdated) {
       await this.updateComplete;

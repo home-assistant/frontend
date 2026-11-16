@@ -22,7 +22,7 @@ type HlsLite = Omit<
 const HIDDEN_CLEANUP_DELAY = 60000;
 
 @customElement("ha-hls-player")
-class HaHLSPlayer extends LitElement {
+export class HaHLSPlayer extends LitElement {
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
@@ -100,6 +100,11 @@ class HaHLSPlayer extends LitElement {
       this._startHls();
     }
   };
+
+  /** The video that plays the stream, undefined while the app plays it. */
+  public get videoElement(): HTMLVideoElement | undefined {
+    return this._exoPlayer ? undefined : (this._videoEl ?? undefined);
+  }
 
   public connectedCallback() {
     super.connectedCallback();

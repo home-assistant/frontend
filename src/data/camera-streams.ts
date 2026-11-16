@@ -78,3 +78,43 @@ export const selectCameraStreams = ({
     { type: STREAM_TYPE_WEB_RTC, visible: false },
   ];
 };
+
+/** What the player tells the user about the connection of its stream. */
+export interface CameraStreamStatus {
+  /** The stream that is shown, undefined until the camera's types are known */
+  type?: CameraStreamType;
+  /** The shown stream has not played its first frame yet */
+  connecting: boolean;
+  /** A faster stream that connects in the background to replace the shown one */
+  upgrading?: CameraStreamType;
+  /** The shown stream has sound */
+  hasAudio: boolean;
+}
+
+export const computeCameraStreamStatus = (
+  streams: CameraStream[],
+  loaded: ReadonlySet<CameraStreamType>,
+  hlsStreams?: CameraStreamTracks,
+  webRtcStreams?: CameraStreamTracks
+): CameraStreamStatus => {
+  const visible = streams.find((stream) => stream.visible);
+  if (!visible) {
+    return { connecting: true, hasAudio: false };
+  }
+  const hidden = streams.find((stream) => !stream.visible);
+  const tracks =
+    visible.type === STREAM_TYPE_HLS
+      ? hlsStreams
+      : visible.type === STREAM_TYPE_WEB_RTC
+        ? webRtcStreams
+        : undefined;
+  const connecting = !loaded.has(visible.type);
+  return {
+    type: visible.type,
+    connecting,
+    // Only worth mentioning once the shown stream plays, before that the
+    // whole player is connecting
+    upgrading: hidden && !connecting ? hidden.type : undefined,
+    hasAudio: !connecting && (tracks?.hasAudio ?? false),
+  };
+};

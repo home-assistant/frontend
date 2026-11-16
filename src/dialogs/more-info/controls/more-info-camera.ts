@@ -9,11 +9,9 @@ import { consumeLocalize } from "../../../common/decorators/consume-context-entr
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-button";
-import "../../../components/ha-camera-stream";
-import type {
-  CameraStreamType,
-  HaCameraStream,
-} from "../../../components/ha-camera-stream";
+import "../../../components/camera/ha-camera-player";
+import type { HaCameraPlayer } from "../../../components/camera/ha-camera-player";
+import type { CameraStreamType } from "../../../components/ha-camera-stream";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
@@ -54,7 +52,7 @@ class MoreInfoCamera extends LitElement {
 
   @state() private _supportsTwoWayAudio = false;
 
-  @query("ha-camera-stream") private _cameraStream?: HaCameraStream;
+  @query("ha-camera-player") private _cameraStream?: HaCameraPlayer;
 
   @query(".microphone-meter") private _microphoneMeter?: HTMLElement;
 
@@ -122,14 +120,13 @@ class MoreInfoCamera extends LitElement {
     }
 
     return html`
-      <ha-camera-stream
+      <ha-camera-player
         .stateObj=${this.stateObj}
         allow-exoplayer
-        controls
         @microphone-changed=${this._microphoneChanged}
         @stream-type-changed=${this._streamTypeChanged}
         @camera-capabilities-changed=${this._capabilitiesChanged}
-      ></ha-camera-stream>
+      ></ha-camera-player>
       ${this._supportsTwoWayAudio ? this._renderMicrophoneButton() : nothing}
     `;
   }
