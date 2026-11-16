@@ -13,7 +13,6 @@ import {
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { supportsFeature } from "../common/entity/supports-feature";
-import { colorTempSelectorForServiceField } from "../common/color/color-temp-selector-range";
 import { hasTemplate } from "../common/string/has-template";
 import {
   fetchIntegrationManifest,
@@ -385,21 +384,6 @@ export class HaServiceControl extends LitElement {
     return targetEntities;
   });
 
-  private _targetEntitiesForService(
-    serviceData: ExtHassService | undefined
-  ): string[] | null {
-    if (
-      !serviceData ||
-      !(
-        "target" in serviceData ||
-        serviceData.flatFields.some((field) => field.key === "entity_id")
-      )
-    ) {
-      return null;
-    }
-    return this._getTargetedEntities(serviceData.target, this._value);
-  }
-
   private _filterField(
     filter: ExtHassService["fields"][number]["filter"],
     targetEntities: string[] | null
@@ -482,7 +466,12 @@ export class HaServiceControl extends LitElement {
     );
 
     // Actions that can never have targets get null, like template targets
-    const targetEntities = this._targetEntitiesForService(serviceData);
+    const targetEntities =
+      serviceData &&
+      ("target" in serviceData ||
+        serviceData.flatFields.some((field) => field.key === "entity_id"))
+        ? this._getTargetedEntities(serviceData.target, this._value)
+        : null;
 
     const domain = this._value?.action
       ? computeDomain(this._value.action)
@@ -683,7 +672,7 @@ export class HaServiceControl extends LitElement {
     const fieldDataHasTemplate =
       this._value?.data && hasTemplate(this._value.data[dataField.key]);
 
-    const baseSelector =
+    const selector =
       fieldDataHasTemplate &&
       typeof this._value!.data![dataField.key] === "string"
         ? { template: null }
@@ -692,14 +681,6 @@ export class HaServiceControl extends LitElement {
           ? { object: null }
           : (this._stickySelector[dataField.key] ??
             dataField?.selector ?? { text: null });
-    const selector = colorTempSelectorForServiceField(
-      domain,
-      dataField.key,
-      baseSelector,
-      this.hass,
-      this._value,
-      this._getServiceInfo(this._value?.action, this.hass.services)?.target
-    );
 
     if (fieldDataHasTemplate) {
       // Hold this selector type until the field is cleared
@@ -821,27 +802,15 @@ export class HaServiceControl extends LitElement {
 
     if (checked) {
       this._checkedKeys.add(key);
-      const serviceData = this._getServiceInfo(
+      const field = this._getServiceInfo(
         this._value?.action,
         this.hass.services
-      );
-      const field = serviceData?.flatFields.find(
-        (_field) => _field.key === key
-      );
+      )?.flatFields.find((_field) => _field.key === key);
 
       let defaultValue = field?.default;
 
       if (defaultValue == null && field?.selector) {
-        defaultValue = getSelectorFallbackValue(
-          colorTempSelectorForServiceField(
-            this._value?.action ? computeDomain(this._value.action) : undefined,
-            key,
-            field.selector,
-            this.hass,
-            this._value,
-            serviceData?.target
-          )
-        );
+        defaultValue = getSelectorFallbackValue(field.selector);
       }
 
       if (defaultValue != null) {
