@@ -14,10 +14,12 @@ import {
   string,
   union,
 } from "superstruct";
+import { mdiStarFourPoints } from "@mdi/js";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { consume } from "../../../common/decorators/consume";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
@@ -82,6 +84,9 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
 ) {
   @property({ attribute: false }) public stateObj?: HassEntity;
 
+  /** Shows a button to change the automation with AI, or to create it. */
+  @property({ attribute: false }) public aiAction?: "create" | "edit";
+
   @state()
   @consume({ context: automationDiffContext, subscribe: true })
   private _diff?: AutomationDiff;
@@ -92,14 +97,21 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
   >;
 
   protected renderContent() {
+    const description = this._renderDescription();
+    const hasDescription = description !== nothing;
     return html`
-      ${this._renderDescription()}
+      ${
+        hasDescription
+          ? html`<div class="top">${description}${this._renderAiButton()}</div>`
+          : nothing
+      }
       <div class="header">
         <h2 id="triggers-heading" class="name">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.header"
           )}
         </h2>
+        ${hasDescription ? nothing : this._renderAiButton()}
       </div>
       ${
         !ensureArray(this.config.triggers)?.length
@@ -203,6 +215,25 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
         sidebar
       ></ha-automation-action>
     `;
+  }
+
+  private _renderAiButton() {
+    if (!this.aiAction) {
+      return nothing;
+    }
+    return html`<ha-assist-chip
+      class="ai-button"
+      .label=${this.hass.localize(
+        `ui.panel.config.automation.editor.ai.${this.aiAction === "create" ? "create" : "menu"}`
+      )}
+      @click=${this._requestAiEdit}
+    >
+      <ha-svg-icon slot="icon" .path=${mdiStarFourPoints}></ha-svg-icon>
+    </ha-assist-chip>`;
+  }
+
+  private _requestAiEdit() {
+    fireEvent(this, "ai-edit-requested");
   }
 
   private _renderDescription() {
@@ -517,6 +548,20 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
         .description {
           margin-top: 16px;
         }
+        .top {
+          display: flex;
+          align-items: flex-start;
+          gap: var(--ha-space-2);
+        }
+        .top .description {
+          flex: 1;
+          min-width: 0;
+        }
+        .top .ai-button {
+          margin-top: 16px;
+          margin-inline-start: auto;
+          flex-shrink: 0;
+        }
         .description[class*="diff-"] {
           padding: var(--ha-space-1) var(--ha-space-3);
           border-radius: var(--ha-border-radius-md);
@@ -543,6 +588,7 @@ declare global {
   }
 
   interface HASSDomEvents {
+    "ai-edit-requested": undefined;
     "open-sidebar": SidebarConfig;
     "request-close-sidebar": undefined;
     "close-sidebar": undefined;

@@ -5954,6 +5954,8 @@
                 "value_changed": "{name}: {old} → {new}"
               },
               "pending_changes": "Has changes by AI",
+              "declined": "Changes declined",
+              "create": "Create with AI",
               "error": "The AI couldn't change the automation: {error}"
             },
             "modes": {

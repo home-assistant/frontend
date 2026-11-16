@@ -15,7 +15,6 @@ import {
   mdiRedo,
   mdiRenameBox,
   mdiRobotConfused,
-  mdiStarFourPoints,
   mdiStopCircleOutline,
   mdiTag,
   mdiTransitConnection,
@@ -28,6 +27,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../../../common/array/ensure-array";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -443,23 +443,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                   </ha-dropdown-item>`
               : nothing
           }
-          ${
-            this._aiAvailable && !useBlueprint
-              ? html`<ha-dropdown-item
-                  value="ai_edit"
-                  .disabled=${
-                    this.readOnly || this.mode === "yaml" || this._aiSheetOpen
-                  }
-                >
-                  ${this.hass.localize("ui.panel.config.automation.editor.ai.menu")}
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiStarFourPoints}
-                  ></ha-svg-icon>
-                </ha-dropdown-item>`
-              : nothing
-          }
-
           <ha-dropdown-item .disabled=${!stateObj} value="info">
             ${this.hass.localize("ui.panel.config.automation.editor.show_info")}
             <ha-svg-icon
@@ -658,6 +641,16 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                               .config=${this._aiDiff?.config ?? this.config}
                               .disabled=${this.readOnly || this._aiActive}
                               .hideSave=${this._aiActive}
+                              .aiAction=${
+                                this._aiAvailable &&
+                                !this.readOnly &&
+                                !this._aiSheetOpen
+                                  ? this._isEmptyAutomation(this.config)
+                                    ? "create"
+                                    : "edit"
+                                  : undefined
+                              }
+                              @ai-edit-requested=${this._openAiSheet}
                               style=${styleMap({
                                 "padding-bottom":
                                   this._aiSheetOpen && !aiSheetHidden
@@ -850,6 +843,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         }
       </hass-subpage>
     `;
+  }
+
+  private _isEmptyAutomation(config: AutomationConfig) {
+    return (["triggers", "conditions", "actions"] as const).every(
+      (key) => !ensureArray(config[key] ?? []).length
+    );
   }
 
   private _renderAiDot() {
@@ -1565,9 +1564,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         break;
       case "redo":
         this._redo();
-        break;
-      case "ai_edit":
-        this._openAiSheet();
         break;
       case "info":
         this._showInfo();
