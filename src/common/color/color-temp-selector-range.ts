@@ -5,6 +5,7 @@ import {
   type Selector,
   type TargetSelector,
 } from "../../data/selector";
+import { getServiceCallEntityIds } from "../../data/service";
 import type { HassServiceTargetWithExclude } from "../../data/target";
 import type { HomeAssistant } from "../../types";
 
@@ -128,10 +129,17 @@ const targetId = (
   return undefined;
 };
 
+const isPrimaryEntity = (hass: ColorTempHass, entityId: string): boolean => {
+  const entity = hass.entities[entityId];
+  return !entity?.entity_category && !entity?.hidden;
+};
+
 /**
  * Entities a light action will actually call. Area targets skip a device
- * entity that is assigned to another area. A template target cannot be
- * resolved, so the caller keeps the original selector.
+ * entity that is assigned to another area. Hidden and categorized lights
+ * reached only through a device, area, floor, or label are left out, matching
+ * service calls. An explicitly chosen entity is kept. A template target cannot
+ * be resolved, so the caller keeps the original selector.
  */
 const colorTempTargetEntityIds = (
   hass: ColorTempHass,
@@ -150,10 +158,15 @@ const colorTempTargetEntityIds = (
     return null;
   }
 
-  return resolveEntityIDs(
+  const explicitEntityIds = getServiceCallEntityIds(
+    { entity_id: data?.entity_id },
+    value?.target
+  );
+  const explicit = new Set(explicitEntityIds);
+  const resolved = resolveEntityIDs(
     hass,
     {
-      entity_id: targetId(value?.target?.entity_id, data?.entity_id),
+      entity_id: explicitEntityIds,
       device_id: targetId(value?.target?.device_id, data?.device_id),
       area_id: targetId(value?.target?.area_id, data?.area_id),
       floor_id: targetId(value?.target?.floor_id, data?.floor_id),
@@ -164,6 +177,10 @@ const colorTempTargetEntityIds = (
     hass.devices,
     hass.areas,
     serviceTarget ? { target: serviceTarget } : { target: {} }
+  );
+
+  return resolved.filter(
+    (entityId) => explicit.has(entityId) || isPrimaryEntity(hass, entityId)
   );
 };
 

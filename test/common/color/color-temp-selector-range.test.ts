@@ -209,6 +209,95 @@ describe("colorTempSelectorForServiceField", () => {
     );
   });
 
+  it("normalizes comma-separated and mixed-case entity ids", () => {
+    const hass = {
+      states: {
+        "light.warm": {
+          entity_id: "light.warm",
+          state: "on",
+          attributes: {
+            min_color_temp_kelvin: 1600,
+            max_color_temp_kelvin: 4000,
+          },
+        },
+        "light.other": {
+          entity_id: "light.other",
+          state: "on",
+          attributes: {
+            min_color_temp_kelvin: 1600,
+            max_color_temp_kelvin: 4000,
+          },
+        },
+      },
+      entities: {
+        "light.warm": { entity_id: "light.warm" },
+        "light.other": { entity_id: "light.other" },
+      },
+      devices: {},
+      areas: {},
+    } as unknown as Parameters<typeof colorTempSelectorForServiceField>[3];
+
+    assert.deepEqual(
+      colorTempSelectorForServiceField(
+        "light",
+        "color_temp_kelvin",
+        genericKelvinSelector,
+        hass,
+        { data: { entity_id: "Light.Warm, light.other" } },
+        lightServiceTarget
+      ),
+      { color_temp: { unit: "kelvin", min: 1600, max: 4000 } }
+    );
+  });
+
+  it("ignores a categorized light reached through an area", () => {
+    const hass = {
+      ...areaHass,
+      states: {
+        ...areaHass.states,
+        "light.config": {
+          entity_id: "light.config",
+          state: "on",
+          attributes: {
+            min_color_temp_kelvin: 2700,
+            max_color_temp_kelvin: 6500,
+          },
+        },
+      },
+      entities: {
+        ...areaHass.entities,
+        "light.config": {
+          entity_id: "light.config",
+          device_id: "hub",
+          entity_category: "config",
+        },
+      },
+    } as unknown as Parameters<typeof colorTempSelectorForServiceField>[3];
+
+    assert.deepEqual(
+      colorTempSelectorForServiceField(
+        "light",
+        "color_temp_kelvin",
+        genericKelvinSelector,
+        hass,
+        { target: { area_id: "kitchen" } },
+        lightServiceTarget
+      ),
+      { color_temp: { unit: "kelvin", min: 1600, max: 4000 } }
+    );
+    assert.deepEqual(
+      colorTempSelectorForServiceField(
+        "light",
+        "color_temp_kelvin",
+        genericKelvinSelector,
+        hass,
+        { target: { entity_id: "light.config" } },
+        lightServiceTarget
+      ),
+      { color_temp: { unit: "kelvin", min: 2700, max: 6500 } }
+    );
+  });
+
   it("keeps the generic slider when the target is a template", () => {
     assert.strictEqual(
       colorTempSelectorForServiceField(
