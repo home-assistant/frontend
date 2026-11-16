@@ -99,9 +99,12 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
   protected renderContent() {
     const description = this._renderDescription();
     const hasDescription = description !== nothing;
+    // On narrow screens the button gets its own row, the heading leaves no
+    // room for it
+    const ownRow = hasDescription || this.narrow;
     return html`
       ${
-        hasDescription
+        ownRow && (hasDescription || this.aiAction)
           ? html`<div class="top">${description}${this._renderAiButton()}</div>`
           : nothing
       }
@@ -111,7 +114,7 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
             "ui.panel.config.automation.editor.triggers.header"
           )}
         </h2>
-        ${hasDescription ? nothing : this._renderAiButton()}
+        ${ownRow ? nothing : this._renderAiButton()}
       </div>
       ${
         !ensureArray(this.config.triggers)?.length
