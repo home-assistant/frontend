@@ -53,3 +53,18 @@ export const kelvinRangeFromEntityStates = (
   }
   return { min, max };
 };
+
+/**
+ * Move a newly created Kelvin value inside the range reported by the targeted
+ * entities. An unchanged value is returned when they report no range.
+ */
+export const kelvinValueInsideEntityRange = (
+  value: number,
+  states: Readonly<Record<string, EntityWithColorTemp | undefined>> | undefined
+): number => {
+  const range = kelvinRangeFromEntityStates(states);
+  if (!range || !Number.isFinite(value)) {
+    return value;
+  }
+  return Math.min(range.max, Math.max(range.min, value));
+};
