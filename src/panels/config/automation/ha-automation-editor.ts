@@ -26,6 +26,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
@@ -173,9 +174,14 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   /** Whether an AI task entity for data generation is set up. */
   @state() private _aiAvailable = false;
 
+  private _aiPreferencesRequested = false;
+
   @state() private _aiSheetOpen = false;
 
   @state() private _aiBusy = false;
+
+  // The editor leaves room for the sheet so it doesn't cover the last rows
+  @state() private _aiSheetHeight = 0;
 
   /** The config the AI changes, while it works on it or the user reviews it. */
   @state() private _aiBaseConfig?: AutomationConfig;
@@ -223,7 +229,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
     this._aiDiff = this._computeAiDiff(this._aiBaseConfig, this._aiConfig);
 
-    if (!this.hasUpdated && isComponentLoaded(this.hass.config, "ai_task")) {
+    if (
+      !this._aiPreferencesRequested &&
+      this.hass &&
+      isComponentLoaded(this.hass.config, "ai_task")
+    ) {
+      this._aiPreferencesRequested = true;
       fetchAITaskPreferences(this.hass.callWS).then((prefs) => {
         this._aiAvailable = !!prefs.gen_data_entity_id;
       });
@@ -635,6 +646,11 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                               .config=${this._aiDiff?.config ?? this.config}
                               .disabled=${this.readOnly || this._aiActive}
                               .hideSave=${this._aiActive}
+                              style=${styleMap({
+                                "padding-bottom": this._aiSheetOpen
+                                  ? `${this._aiSheetHeight}px`
+                                  : undefined,
+                              })}
                               .saving=${this.saving}
                               @value-changed=${this._valueChanged}
                               @save-automation=${this._handleSaveAutomation}
@@ -798,6 +814,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                 @ai-accept=${this._aiAccept}
                 @ai-decline=${this._endAiSession}
                 @ai-sheet-closed=${this._aiSheetClosed}
+                @bottom-sheet-resized=${this._aiSheetResized}
               ></ha-automation-ai-sheet>`
             : nothing
         }
@@ -851,6 +868,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     this._aiBusy = false;
     this._aiConfig = undefined;
     this._aiBaseConfig = undefined;
+  }
+
+  private _aiSheetResized(
+    ev: HASSDomEvent<HASSDomEvents["bottom-sheet-resized"]>
+  ) {
+    this._aiSheetHeight = ev.detail.height;
   }
 
   private _aiSheetClosed() {
@@ -1560,6 +1583,8 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         }
         .ai-alias {
           padding: 0 var(--ha-space-2);
+          box-decoration-break: clone;
+          -webkit-box-decoration-break: clone;
           border-radius: var(--ha-border-radius-sm);
           background-color: var(--ha-color-fill-warning-normal-resting);
           color: var(--ha-color-on-warning-normal);

@@ -10,6 +10,7 @@ import {
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { live } from "lit/directives/live";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
@@ -324,8 +325,7 @@ export class HaAutomationAiSheet extends LitElement {
           .placeholder=${this.hass.localize(
             `ui.panel.config.automation.editor.ai.${followUp ? "follow_up_placeholder" : "prompt_placeholder"}`
           )}
-          .value=${this._prompt}
-          .disabled=${!!this._running}
+          .value=${live(this._prompt)}
           resize="auto"
           rows="1"
           @input=${this._promptChanged}
