@@ -183,6 +183,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   // The editor leaves room for the sheet so it doesn't cover the last rows
   @state() private _aiSheetHeight = 0;
 
+  // On narrow screens the sidebar is a bottom sheet too, and hides this one
+  @state() private _sidebarOpen = false;
+
   /** The config the AI changes, while it works on it or the user reviews it. */
   @state() private _aiBaseConfig?: AutomationConfig;
 
@@ -221,7 +224,8 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   });
 
   public override get isDirtyState(): boolean {
-    return super.isDirtyState || !!this.yamlErrors;
+    // Leaving with changes of the AI the user hasn't decided on loses them
+    return super.isDirtyState || !!this.yamlErrors || this._aiActive;
   }
 
   protected willUpdate(changedProps: PropertyValues<this>) {
@@ -296,6 +300,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     const shortcutIcon = renderCtrlOrCmd(this.hass.localize);
     const aiSettings = this._aiDiff?.settings ?? {};
     const aiRenameChanged = !!(aiSettings.alias || aiSettings.description);
+    const aiSheetHidden = this.narrow && this._sidebarOpen;
     const aiModeChanged = !!(
       aiSettings.mode ||
       aiSettings.max ||
@@ -647,9 +652,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                               .disabled=${this.readOnly || this._aiActive}
                               .hideSave=${this._aiActive}
                               style=${styleMap({
-                                "padding-bottom": this._aiSheetOpen
-                                  ? `${this._aiSheetHeight}px`
-                                  : undefined,
+                                "padding-bottom":
+                                  this._aiSheetOpen && !aiSheetHidden
+                                    ? `${this._aiSheetHeight}px`
+                                    : undefined,
                               })}
                               .saving=${this.saving}
                               @value-changed=${this._valueChanged}
@@ -809,6 +815,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                 .config=${this._aiConfig ?? this.config}
                 .reviewing=${!!this._aiConfig}
                 .hasChanges=${!!this._aiDiff?.hasChanges}
+                .suspended=${aiSheetHidden}
                 @ai-request-started=${this._aiRequestStarted}
                 @ai-request-finished=${this._aiRequestFinished}
                 @ai-accept=${this._aiAccept}
@@ -1024,6 +1031,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     ev: CustomEvent<{ value: SidebarConfig | undefined }>
   ) => {
     this._triggerController.checkShowIndices(ev.detail.value);
+    this._sidebarOpen = !!ev.detail.value;
   };
 
   private _updateConfig(config: AutomationConfig) {
@@ -1137,12 +1145,19 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       return true;
     }
 
+    // Saving keeps what the editor shows, so it accepts the changes of the AI
+    const aiConfig = this._aiConfig;
+
     return new Promise<boolean>((resolve) => {
       showAutomationSaveDialog(this, {
         addHistory,
-        config: this.config!,
+        config: aiConfig ?? this.config!,
         domain: "automation",
         updateConfig: async (config, entityRegistryUpdate) => {
+          if (aiConfig) {
+            this._aiSheetOpen = false;
+            this._aiAccept();
+          }
           this.config = config;
           this.entityRegistryUpdate = entityRegistryUpdate;
           this._updateDirtyState({
@@ -1165,6 +1180,8 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         },
         onClose: () => resolve(false),
         onDiscard: () => {
+          this._aiSheetOpen = false;
+          this._endAiSession();
           this.yamlErrors = undefined;
           this._markDirtyStateClean();
           resolve(true);

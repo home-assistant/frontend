@@ -67,6 +67,9 @@ export class HaAutomationAiSheet extends LitElement {
   @property({ type: Boolean, attribute: "has-changes" }) public hasChanges =
     false;
 
+  /** Hides the sheet without losing its state, e.g. for another sheet. */
+  @property({ type: Boolean }) public suspended = false;
+
   @state() private _prompt = "";
 
   @state() private _turns: AutomationAiTurn[] = [];
@@ -94,7 +97,11 @@ export class HaAutomationAiSheet extends LitElement {
     this._textarea?.focus();
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | typeof nothing {
+    // The state stays here while the sheet is hidden, so it comes back as it was
+    if (this.suspended) {
+      return nothing;
+    }
     return html`
       <ha-snap-bottom-sheet
         .minHeight=${COLLAPSED_HEIGHT}
