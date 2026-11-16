@@ -29,7 +29,7 @@ const formatValue = (value: unknown): string =>
  */
 @customElement("ha-automation-ai-changes")
 export class HaAutomationAiChanges extends LitElement {
-  /** In YAML mode the editor shows the changes, except of a removed row. */
+  /** In YAML mode the editor shows the changes instead. */
   @property({ type: Boolean, attribute: "yaml-mode" }) public yamlMode = false;
 
   @state()
@@ -47,7 +47,7 @@ export class HaAutomationAiChanges extends LitElement {
   protected render() {
     const path = this._diff && this._registry?.selectedPath();
     const mark = path && diffMarkAt(this._diff, path);
-    if (!path || !mark || (this.yamlMode && mark !== "removed")) {
+    if (!path || !mark || this.yamlMode) {
       return nothing;
     }
     const changes: FieldChange[] =

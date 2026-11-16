@@ -8,6 +8,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
 import {
   automationRowChangeContext,
+  rowChangeYaml,
   type RowChange,
 } from "../ai/automation-ai-diff";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
@@ -81,8 +82,8 @@ export default class HaAutomationTriggerEditor extends LitElement {
                 ${
                   this._aiChange
                     ? html`<ha-yaml-editor
-                        .value=${this._aiChange.after ?? this.trigger}
-                        .original=${this._aiChange.before}
+                        .value=${rowChangeYaml(this._aiChange, this.trigger).value}
+                        .original=${rowChangeYaml(this._aiChange, this.trigger).original}
                         auto-update
                         read-only
                       ></ha-yaml-editor>`

@@ -52,10 +52,23 @@ export interface AutomationDiff {
 }
 
 export interface RowChange {
-  /** `null` for an added row. */
-  before: unknown;
+  /** `null` for an added row, left out for the config the editor shows. */
+  before?: unknown;
+  /** `null` for a removed row, left out for the config the editor shows. */
   after?: unknown;
 }
+
+const NO_CONFIG = {};
+
+/**
+ * What the YAML editor of a row shows: its new config, with the changes
+ * against its old config. A removed row has no new config, so all of it
+ * shows as removed.
+ */
+export const rowChangeYaml = (change: RowChange, current: unknown) => ({
+  value: change.after === null ? NO_CONFIG : (change.after ?? current),
+  original: change.before === undefined ? current : change.before,
+});
 
 export const automationDiffContext = createContext<AutomationDiff | undefined>(
   "automation-diff"
@@ -180,6 +193,8 @@ class DiffBuilder {
       }
       if (mark === "added") {
         this.items.set(key, { before: null, after: item });
+      } else if (mark === "removed") {
+        this.items.set(key, { before: item, after: null });
       }
       merged.push(item);
     };
@@ -373,9 +388,8 @@ export const diffMarkAt = (
 };
 
 /**
- * The old and new config of the row at `path`, if the AI added or changed it.
- * A row inside an added row is added with it, its new config is the one the
- * editor shows.
+ * The old and new config of the row at `path`, if the AI changed it. A row
+ * inside an added or removed row is added or removed with it.
  */
 export const diffRowChangeAt = (
   diff: AutomationDiff | undefined,
@@ -388,5 +402,10 @@ export const diffRowChangeAt = (
   if (change) {
     return change;
   }
-  return diffMarkAt(diff, path) === "added" ? { before: null } : undefined;
+  const mark = diffMarkAt(diff, path);
+  return mark === "added"
+    ? { before: null }
+    : mark === "removed"
+      ? { after: null }
+      : undefined;
 };

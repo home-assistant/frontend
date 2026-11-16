@@ -24,6 +24,7 @@ import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import {
   automationRowChangeContext,
+  rowChangeYaml,
   type RowChange,
 } from "../ai/automation-ai-diff";
 import "../ha-automation-note";
@@ -212,8 +213,8 @@ export default class HaAutomationSidebarOption extends LitElement {
               this._aiChange
                 ? html`<ha-yaml-editor
                     class="sidebar-editor"
-                    .value=${this._aiChange.after ?? this.config.config.option}
-                    .original=${this._aiChange.before}
+                    .value=${rowChangeYaml(this._aiChange, this.config.config.option).value}
+                    .original=${rowChangeYaml(this._aiChange, this.config.config.option).original}
                     auto-update
                     read-only
                   ></ha-yaml-editor>`

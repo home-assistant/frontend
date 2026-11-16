@@ -143,7 +143,7 @@ describe("diffAutomationConfigs", () => {
 
   // The YAML editor of a row diffs its new config against these, so a
   // removed child left in the new config would show as unchanged
-  it("keeps the old and new config of changed and added rows", () => {
+  it("keeps the old and new config of changed, added and removed rows", () => {
     const before: AutomationConfig = {
       ...base,
       actions: [{ if: [], then: [light("turn_on"), light("turn_off")] }],
@@ -162,7 +162,12 @@ describe("diffAutomationConfigs", () => {
       before: before.actions[0],
       after,
     });
-    expect(diffRowChangeAt(diff, ["actions", 0, "then", 1])).toBeUndefined();
+    // A removed row has no new config, so all of it shows as removed
+    expect(diffRowChangeAt(diff, ["actions", 0, "then", 1])).toEqual({
+      before: light("turn_off"),
+      after: null,
+    });
+    expect(diffRowChangeAt(diff, ["triggers", 0])).toBeUndefined();
 
     const added = diffAutomationConfigs(base, {
       ...base,

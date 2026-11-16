@@ -11,6 +11,7 @@ import {
 import "../../../../components/ha-yaml-editor";
 import {
   automationRowChangeContext,
+  rowChangeYaml,
   type RowChange,
 } from "../ai/automation-ai-diff";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
@@ -87,8 +88,8 @@ export default class HaAutomationActionEditor extends LitElement {
                 ${
                   this._aiChange
                     ? html`<ha-yaml-editor
-                        .value=${this._aiChange.after ?? this.action}
-                        .original=${this._aiChange.before}
+                        .value=${rowChangeYaml(this._aiChange, this.action).value}
+                        .original=${rowChangeYaml(this._aiChange, this.action).original}
                         auto-update
                         read-only
                       ></ha-yaml-editor>`
