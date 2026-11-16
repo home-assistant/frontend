@@ -65,8 +65,9 @@ interface WebKitVideoElement extends HTMLVideoElement {
 /**
  * Plays a live camera stream with its own controls, which look the same in
  * every browser: the connection of the stream, sound, picture in picture and
- * full screen. It zooms with the scroll wheel, a pinch or a double click, and
- * pans by dragging while zoomed in.
+ * full screen. It zooms with ctrl or cmd and the scroll wheel, a pinch or a
+ * double click, and pans by dragging while zoomed in. The scroll wheel alone
+ * keeps scrolling the page around it.
  */
 @customElement("ha-camera-player")
 export class HaCameraPlayer extends LitElement {
@@ -78,13 +79,6 @@ export class HaCameraPlayer extends LitElement {
 
   @property({ type: Boolean, attribute: "allow-exoplayer" })
   public allowExoPlayer = false;
-
-  /**
-   * "modifier" only zooms with the scroll wheel while ctrl or cmd is held, so
-   * a page around the player keeps scrolling, like on a dashboard.
-   */
-  @property({ attribute: "wheel-zoom" })
-  public wheelZoom: "always" | "modifier" = "always";
 
   @state() private _status: CameraStreamStatus = {
     connecting: true,
@@ -535,15 +529,11 @@ export class HaCameraPlayer extends LitElement {
       return;
     }
     // A pinch on a touchpad scrolls with ctrl held
-    const modifier = ev.ctrlKey || ev.metaKey;
-    if (this.wheelZoom === "modifier" && !modifier) {
+    if (!ev.ctrlKey && !ev.metaKey) {
       this._showWheelHint();
       return;
     }
-    // Zooming out further than the whole picture scrolls the page instead
-    if (ev.deltaY > 0 && !isZoomed(this._zoom)) {
-      return;
-    }
+    // Also keeps the browser from zooming the whole page
     ev.preventDefault();
     const { rect, size } = this._viewportSize();
     // Lines instead of pixels, like in Firefox with a mouse wheel
