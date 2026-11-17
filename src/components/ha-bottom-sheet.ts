@@ -7,6 +7,7 @@ import { consume } from "../common/decorators/consume";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { isSwipeLocked } from "../common/dom/is-swipe-locked";
+import { addOpenModal, removeOpenModal } from "../common/dom/modal-stack";
 import { SwipeGestureRecognizer } from "../common/util/swipe-gesture-recognizer";
 import { configContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
@@ -20,6 +21,8 @@ export const BOTTOM_SHEET_ANIMATION_DURATION_MS = 300;
  *
  * @element ha-bottom-sheet
  * @extends {LitElement}
+ *
+ * @slot toast-host - Toasts moved in by the notification manager, so they stay usable while the sheet is open.
  *
  * @cssprop --ha-bottom-sheet-height - Preferred height of the bottom sheet.
  * @cssprop --ha-bottom-sheet-max-height - Maximum height of the bottom sheet.
@@ -106,7 +109,12 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     });
   };
 
-  private _handleAfterShow = () => {
+  private _handleAfterShow = (ev: Event) => {
+    if (ev.eventPhase === Event.AT_TARGET) {
+      // Only after the sheet moved focus into itself, so a toast moving in
+      // can't take the initial focus.
+      addOpenModal(this);
+    }
     fireEvent(this, "after-show");
   };
 
@@ -119,6 +127,12 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   };
 
   private _handleAfterHide = (ev: CustomEvent<{ source: Element }>) => {
+    if (ev.eventPhase === Event.AT_TARGET) {
+      // Fired right after the native dialog closed, before it repaints, so
+      // toasts move out without disappearing.
+      removeOpenModal(this);
+    }
+
     if (this._sliderInteractionActive) {
       this._drawerOpen = true;
       this.open = true;
@@ -234,6 +248,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
           ${this.renderScrollableFades()}
         </div>
         <slot name="footer"></slot>
+        <slot name="toast-host"></slot>
       </wa-drawer>
     `;
   }
@@ -345,6 +360,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    removeOpenModal(this);
     this.removeEventListener(
       "slider-interaction-start",
       this._handleSliderInteractionStart,

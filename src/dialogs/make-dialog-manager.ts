@@ -229,7 +229,12 @@ export const showDialog = async (
   }
 
   const targetParent = (parentElement || element).shadowRoot!;
-  if (dialogElement!.parentNode !== targetParent) {
+  if (
+    dialogElement!.parentNode !== targetParent &&
+    // The notification manager moves itself into the topmost open modal, so
+    // its toasts stay usable. Only place it when it's not on the page yet.
+    !(NON_MODAL_DIALOG_TAGS.has(dialogTag) && dialogElement!.isConnected)
+  ) {
     targetParent.appendChild(dialogElement!);
   }
 
