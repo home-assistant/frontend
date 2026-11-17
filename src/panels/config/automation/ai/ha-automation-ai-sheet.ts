@@ -673,6 +673,15 @@ export class HaAutomationAiSheet extends LitElement {
     .header {
       position: relative;
       overflow: hidden;
+      /* The rounded top of the sheet, so the light stays inside it */
+      border-start-start-radius: var(
+        --ha-bottom-sheet-border-radius,
+        var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
+      );
+      border-start-end-radius: var(
+        --ha-bottom-sheet-border-radius,
+        var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
+      );
       padding-top: var(--ha-space-3);
       border-bottom: 1px solid var(--divider-color);
       flex-shrink: 0;
