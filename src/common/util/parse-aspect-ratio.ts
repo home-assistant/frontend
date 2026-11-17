@@ -7,7 +7,8 @@ const RATIO_REGEX = new RegExp(
 const PERCENTAGE_REGEX = new RegExp(String.raw`^\s*${NUMBER}\s*%\s*$`);
 
 export default function parseAspectRatio(input: string) {
-  if (!input) {
+  // YAML loads an unquoted 16:9 as the base-60 number 969, so skip non-strings
+  if (!input || typeof input !== "string") {
     return null;
   }
 
