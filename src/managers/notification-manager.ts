@@ -79,8 +79,22 @@ class NotificationManager extends LitElement {
 
   private _unsubscribeOpenModals?: () => void;
 
+  // The element that had focus before it moved into a toast, to return focus
+  // to when that toast closes
+  private _focusReturnTarget?: HTMLElement;
+
+  private _focusRoot?: Node;
+
   public connectedCallback(): void {
     super.connectedCallback();
+    // A focus event isn't delivered where the element losing focus and the
+    // one gaining it retarget to the same element, so it never reaches the
+    // window when focus moves from a dialog into a toast inside it. On this
+    // element's root node, both are still apart. Attach on every connect, as
+    // this element moves between roots.
+    this._focusRoot?.removeEventListener("focusout", this._trackFocusOut, true);
+    this._focusRoot = this.getRootNode();
+    this._focusRoot.addEventListener("focusout", this._trackFocusOut, true);
     this._unsubscribeOpenModals?.();
     this._unsubscribeOpenModals = subscribeOpenModals(this._scheduleFollow);
     if (this._moving) {
@@ -97,6 +111,8 @@ class NotificationManager extends LitElement {
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
+    this._focusRoot?.removeEventListener("focusout", this._trackFocusOut, true);
+    this._focusRoot = undefined;
     this._unsubscribeOpenModals?.();
     this._unsubscribeOpenModals = undefined;
   }
@@ -135,6 +151,19 @@ class NotificationManager extends LitElement {
       this._moving = false;
     }
   }
+
+  private _trackFocusOut = (ev: Event) => {
+    const path = ev.composedPath();
+    if (path.includes(this)) {
+      return;
+    }
+    // Without a related target, focus went nowhere, so there is nothing to
+    // return to
+    this._focusReturnTarget =
+      (ev as FocusEvent).relatedTarget && path[0] instanceof HTMLElement
+        ? path[0]
+        : undefined;
+  };
 
   public async showDialog(parameters: ShowToastParams) {
     if (parameters.duration === 0) {
@@ -186,11 +215,27 @@ class NotificationManager extends LitElement {
     ev: HASSDomEvent<ToastClosedEventDetail> &
       HASSDomCurrentTargetEvent<HTMLElementTagNameMap["ha-toast"]>
   ) {
-    const key = ev.currentTarget.dataset.notificationKey!;
+    const toast = ev.currentTarget;
+    const key = toast.dataset.notificationKey!;
     if (ev.detail.reason === "dismiss") {
       this._getNotification(key)?.parameters.dismiss?.();
     }
+    // Only return focus the toast still holds. An action that moved focus
+    // elsewhere keeps it there.
+    const activeElement = this.shadowRoot!.activeElement;
+    const hadFocus = activeElement !== null && toast.contains(activeElement);
     this._removeNotification(key);
+    if (hadFocus) {
+      this._returnFocus();
+    }
+  }
+
+  private async _returnFocus() {
+    const target = this._focusReturnTarget;
+    await this.updateComplete;
+    if (target?.isConnected) {
+      target.focus();
+    }
   }
 
   protected render() {
