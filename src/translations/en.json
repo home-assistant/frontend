@@ -11329,7 +11329,7 @@
               "description": "This card shows the amount of water consumed per source."
             },
             "power-sources-graph": {
-              "name": "Power sources graph",
+              "name": "Power profile graph",
               "description": "This card shows historical power data.",
               "show_legend": "Show legend"
             },
@@ -13272,7 +13272,7 @@
           "power_sankey_title": "Current power flow",
           "water_flow_sankey_title": "Current water flow",
           "gas_flow_sankey_title": "Current gas flow",
-          "power_sources_graph_title": "Power sources",
+          "power_sources_graph_title": "Power profile",
           "energy_grid_balance_title": "Grid energy balance",
           "energy_grid_neutrality_gauge_title": "Grid neutrality gauge",
           "energy_solar_consumed_gauge_title": "Solar consumed gauge",
