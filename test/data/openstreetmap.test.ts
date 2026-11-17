@@ -30,21 +30,21 @@ describe("searchPlaces", () => {
 });
 
 describe("formatOpenStreetMapPlace", () => {
-  it("formats a place and its regional details consistently", () => {
+  it("formats a street address and its regional details", () => {
     const place = {
       place_id: 1,
       licence: "",
-      osm_type: "relation",
+      osm_type: "way",
       osm_id: 1,
       lat: "51.5034",
       lon: "-0.1276",
-      place_rank: 1,
-      category: "place",
-      type: "city",
+      place_rank: 30,
+      category: "building",
+      type: "house",
       importance: 1,
-      addresstype: "city",
-      name: "London",
-      display_name: "London, England, United Kingdom",
+      addresstype: "building",
+      name: null,
+      display_name: "10, Downing Street, London, England, United Kingdom",
       address: {
         house_number: "10",
         road: "Downing Street",
@@ -57,7 +57,37 @@ describe("formatOpenStreetMapPlace", () => {
     } satisfies OpenStreetMapPlace;
 
     expect(formatOpenStreetMapPlace(place)).toEqual({
-      primary: "London, 10, Downing Street, London",
+      primary: "10, Downing Street, London",
+      secondary: "England, United Kingdom",
+    });
+  });
+
+  it("formats a city without street address fields", () => {
+    const place = {
+      place_id: 2,
+      licence: "",
+      osm_type: "relation",
+      osm_id: 2,
+      lat: "51.5074",
+      lon: "-0.1278",
+      place_rank: 16,
+      category: "place",
+      type: "city",
+      importance: 1,
+      addresstype: "city",
+      name: "London",
+      display_name: "London, England, United Kingdom",
+      address: {
+        city: "London",
+        state: "England",
+        country: "United Kingdom",
+        country_code: "gb",
+      },
+      boundingbox: [],
+    } satisfies OpenStreetMapPlace;
+
+    expect(formatOpenStreetMapPlace(place)).toEqual({
+      primary: "London, London",
       secondary: "England, United Kingdom",
     });
   });

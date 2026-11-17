@@ -631,8 +631,7 @@
           "searching": "Searching for places.",
           "search_results_label": "Search results",
           "search_results": "{count, plural, one {# place found.} other {# places found.}}",
-          "search_no_results": "No places found.",
-          "place_type": "Type: {type}"
+          "search_no_results": "No places found."
         },
         "period": {
           "periods": {

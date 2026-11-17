@@ -50,6 +50,8 @@ export class HaLocationSelector extends LitElement {
 
   @state() private _searchError = false;
 
+  private _pendingSearch?: string;
+
   @query("ha-input") private _input?: HaInput;
 
   @query("ha-locations-editor") private _map!: HaLocationsEditor;
@@ -121,14 +123,17 @@ export class HaLocationSelector extends LitElement {
         >
           <ha-svg-icon slot="start" .path=${mdiMagnify}></ha-svg-icon>
 
-          <ha-icon-button
-            slot="end"
-            .path=${mdiMapSearchOutline}
-            .label=${this.hass.localize("ui.common.search")}
-            .disabled=${this.disabled}
-            @click=${this._searchButtonClicked}
-          ></ha-icon-button>
-          ${this._working ? html`<ha-spinner slot="end" size="small"></ha-spinner>` : nothing}
+          ${
+            this._working
+              ? html`<ha-spinner slot="end" size="small"></ha-spinner>`
+              : html`<ha-icon-button
+                  slot="end"
+                  .path=${mdiMapSearchOutline}
+                  .label=${this.hass.localize("ui.common.search")}
+                  .disabled=${this.disabled}
+                  @click=${this._searchButtonClicked}
+                ></ha-icon-button>`
+          }
         </ha-input>
 
         ${
@@ -319,6 +324,7 @@ export class HaLocationSelector extends LitElement {
   private _inputChanged(): void {
     this._places = undefined;
     this._searchError = false;
+    this._pendingSearch = undefined;
   }
 
   private _searchButtonClicked() {
@@ -326,7 +332,12 @@ export class HaLocationSelector extends LitElement {
   }
 
   private async _searchPlaces(address: string) {
-    if (!address.trim() || this._working) {
+    if (!address.trim() || this.disabled) {
+      return;
+    }
+
+    if (this._working) {
+      this._pendingSearch = address;
       return;
     }
 
@@ -346,29 +357,27 @@ export class HaLocationSelector extends LitElement {
       }
     } finally {
       this._working = false;
+      const pendingSearch = this._pendingSearch;
+      this._pendingSearch = undefined;
+      if (pendingSearch && this.isConnected) {
+        this._searchPlaces(pendingSearch);
+      }
     }
   }
 
   private _renderPlace = (place: OpenStreetMapPlace) => {
     const { primary, secondary } = formatOpenStreetMapPlace(place);
-    const placeType = this.hass.localize(
-      "ui.components.selectors.location.place_type",
-      { type: place.type.replaceAll("_", " ") }
-    );
-    const details = [placeType, secondary].filter(Boolean).join(", ");
-    const title = primary || secondary;
 
     return html`
       <ha-list-item-button
         @click=${this._placeSelected}
         .disabled=${this.disabled}
         .placeId=${place.place_id}
-        .twoline=${Boolean(title && details)}
       >
-        ${title}
+        <span slot="headline">${primary || secondary}</span>
         ${
-          title && details
-            ? html`<span slot="secondary">${details}</span>`
+          primary && secondary
+            ? html`<span slot="supporting-text">${secondary}</span>`
             : nothing
         }
       </ha-list-item-button>
