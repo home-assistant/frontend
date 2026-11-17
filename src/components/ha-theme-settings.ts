@@ -1,11 +1,20 @@
 import type { ContextType } from "@lit/context";
 import type { TemplateResult } from "lit";
+import { formatHex } from "culori";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { normalizeLuminance } from "../common/color/palette";
 import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
-import { uiContext } from "../data/context";
+import { internationalizationContext, uiContext } from "../data/context";
+import {
+  getThemeModeSupport,
+  getThemeVariables,
+  themeDefinesColor,
+  type Theme,
+  type ThemeModeSupport,
+} from "../data/ws-themes";
 import {
   DefaultAccentColor,
   DefaultPrimaryColor,
@@ -41,6 +50,10 @@ export class HaThemeSettings extends LitElement {
   @consume({ context: uiContext, subscribe: true })
   private _ui!: ContextType<typeof uiContext>;
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
   @property({ attribute: false }) public selectedTheme?: ThemeSettings | null;
 
   @property({ attribute: false }) public labels?: ThemeSettingsLabels;
@@ -69,12 +82,31 @@ export class HaThemeSettings extends LitElement {
         ? this._ui.themes.default_dark_theme || this._ui.themes.default_theme
         : this._ui.themes.default_theme;
 
-    const showDarkMode =
-      curTheme === HOME_ASSISTANT_THEME ||
+    const customTheme =
+      curTheme && curTheme !== HOME_ASSISTANT_THEME
+        ? this._ui.themes.themes[curTheme]
+        : undefined;
+    const showThemeOptions = curTheme === HOME_ASSISTANT_THEME || !!customTheme;
+
+    // With "use default theme" and both a default light and dark theme set,
+    // the mode picks which of the two themes is used.
+    const modeSupport: ThemeModeSupport =
+      !customTheme ||
       (curThemeIsUseDefault &&
         this._ui.themes.default_dark_theme &&
-        this._ui.themes.default_theme) ||
-      this._supportsModeSelection(curTheme);
+        this._ui.themes.default_theme)
+        ? "both"
+        : getThemeModeSupport(customTheme);
+
+    const themeColors = this._themeColors(
+      customTheme,
+      this._ui.themes.darkMode
+    );
+    const primaryColorLocked = themeColors.primary !== undefined;
+    const accentColorLocked = themeColors.accent !== undefined;
+    const showReset =
+      (!!themeSettings?.primaryColor && !primaryColorLocked) ||
+      (!!themeSettings?.accentColor && !accentColorLocked);
 
     return html`
       <ha-list-base>
@@ -108,23 +140,28 @@ export class HaThemeSettings extends LitElement {
             : nothing
         }
         ${
-          showDarkMode
+          showThemeOptions
             ? html`
                 <ha-list-item-base>
                   <span slot="headline"
                     >${this.labels?.mode ?? "Theme mode"}</span
                   >
+                  ${
+                    modeSupport !== "both"
+                      ? html`<span slot="supporting-text"
+                          >${this._i18n.localize(
+                            `ui.panel.profile.themes.mode_set_by_theme.${modeSupport}`,
+                            { theme: curTheme }
+                          )}</span
+                        >`
+                      : nothing
+                  }
                   <ha-radio-group
                     slot="end"
                     @change=${this._handleDarkMode}
                     name="dark_mode"
-                    .value=${
-                      themeSettings?.dark === undefined
-                        ? "auto"
-                        : themeSettings.dark
-                          ? "dark"
-                          : "light"
-                    }
+                    .value=${this._modeValue(modeSupport, themeSettings?.dark)}
+                    .disabled=${modeSupport !== "both"}
                     orientation="horizontal"
                   >
                     <ha-radio-option value="auto">
@@ -142,31 +179,55 @@ export class HaThemeSettings extends LitElement {
             : nothing
         }
         ${
-          curTheme === HOME_ASSISTANT_THEME
+          showThemeOptions
             ? html`
                 <ha-list-item-base>
                   <span slot="headline"
                     >${this.labels?.colors ?? "Custom colors"}</span
                   >
+                  ${
+                    primaryColorLocked || accentColorLocked
+                      ? html`<span slot="supporting-text"
+                          >${this._i18n.localize(
+                            `ui.panel.profile.themes.colors_set_by_theme.${
+                              primaryColorLocked && accentColorLocked
+                                ? "both"
+                                : primaryColorLocked
+                                  ? "primary"
+                                  : "accent"
+                            }`,
+                            { theme: curTheme }
+                          )}</span
+                        >`
+                      : nothing
+                  }
                   <div slot="end" class="color-pickers">
                     <ha-input
-                      .value=${themeSettings?.primaryColor || DefaultPrimaryColor}
+                      .value=${
+                        themeColors.primary ??
+                        (themeSettings?.primaryColor || DefaultPrimaryColor)
+                      }
                       type="color"
                       .label=${this.labels?.primaryColor ?? "Primary color"}
                       .name=${"primaryColor"}
+                      .disabled=${primaryColorLocked}
                       @change=${this._handleColorChange}
                     ></ha-input>
                     <ha-input
-                      .value=${themeSettings?.accentColor || DefaultAccentColor}
+                      .value=${
+                        themeColors.accent ??
+                        (themeSettings?.accentColor || DefaultAccentColor)
+                      }
                       type="color"
                       .label=${this.labels?.accentColor ?? "Accent color"}
                       .name=${"accentColor"}
+                      .disabled=${accentColorLocked}
                       @change=${this._handleColorChange}
                     ></ha-input>
                   </div>
                 </ha-list-item-base>
                 ${
-                  themeSettings?.primaryColor || themeSettings?.accentColor
+                  showReset
                     ? html`
                         <div class="reset-row">
                           <ha-button
@@ -207,14 +268,47 @@ export class HaThemeSettings extends LitElement {
     });
   }
 
-  private _supportsModeSelection(themeName: string): boolean {
-    const theme = this._ui.themes.themes[themeName];
-    if (!theme) {
-      return false;
+  private _modeValue(
+    modeSupport: ThemeModeSupport,
+    dark: boolean | undefined
+  ): string {
+    switch (modeSupport) {
+      case "light":
+      case "dark":
+        return modeSupport;
+      case "none":
+        // The theme has fixed colors, so neither light nor dark is accurate.
+        return "";
+      default:
+        return dark === undefined ? "auto" : dark ? "dark" : "light";
     }
-
-    return !!(theme.modes && "light" in theme.modes && "dark" in theme.modes);
   }
+
+  /**
+   * The primary and accent colors the current theme sets itself, as hex for
+   * the color pickers. `undefined` when the user can pick that color.
+   */
+  private _themeColors = memoizeOne(
+    (
+      theme: Theme | undefined,
+      darkMode: boolean
+    ): { primary?: string; accent?: string } => {
+      if (!theme) {
+        return {};
+      }
+      const variables = getThemeVariables(theme, darkMode);
+      const toHex = (value: string | undefined, fallback: string) =>
+        (value && formatHex(value)) || fallback;
+      return {
+        primary: themeDefinesColor(variables, "primary")
+          ? toHex(variables["primary-color"], DefaultPrimaryColor)
+          : undefined,
+        accent: themeDefinesColor(variables, "accent")
+          ? toHex(variables["accent-color"], DefaultAccentColor)
+          : undefined,
+      };
+    }
+  );
 
   private _handleDarkMode(ev: Event) {
     let dark: boolean | undefined;
