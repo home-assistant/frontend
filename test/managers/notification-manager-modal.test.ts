@@ -198,4 +198,24 @@ describe("notification-manager with open modals", () => {
 
     expect(document.activeElement).toBe(input);
   });
+
+  it("leaves focus where a toast action moved it", async () => {
+    const manager = await mountManager();
+    const modal = await openModal();
+    const input = document.createElement("input");
+    const otherInput = document.createElement("input");
+    modal.append(input, otherInput);
+    input.focus();
+    const toast = await showActionToast(manager, () => otherInput.focus());
+
+    manager.shadowRoot!.querySelector<HTMLElement>("ha-button")!.focus();
+    const closed = new Promise<void>((resolve) => {
+      toast.addEventListener("toast-closed", () => resolve(), { once: true });
+    });
+    manager.shadowRoot!.querySelector<HTMLElement>("ha-button")!.click();
+    await closed;
+    await manager.updateComplete;
+
+    expect(document.activeElement).toBe(otherInput);
+  });
 });
