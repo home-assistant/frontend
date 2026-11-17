@@ -5922,6 +5922,7 @@
               "prompt_placeholder": "Turn on the hallway light when motion is detected after sunset",
               "follow_up_placeholder": "Ask for more changes",
               "send": "Send",
+              "add_target": "Add entity, device, area, or label",
               "accept": "Accept changes",
               "decline": "Decline changes",
               "collapse": "Show automation",

@@ -22,6 +22,14 @@ export interface AutomationAiMessage {
   thinking?: string;
 }
 
+/** A target the user put into the prompt as `@label`. */
+export interface AutomationAiMention {
+  label: string;
+  /** The target key it belongs to, like `entity_id` or `area_id`. */
+  key: string;
+  id: string;
+}
+
 /** A request the user made in the sheet and what the AI answered. */
 export interface AutomationAiTurn {
   prompt: string;
@@ -37,6 +45,8 @@ export interface AutomationAiRequest {
   prompt: string;
   /** Earlier requests of the same session, oldest first. */
   history: AutomationAiTurn[];
+  /** Targets the user picked into the prompt. */
+  mentions?: AutomationAiMention[];
   onStep: (steps: AutomationAiStep[]) => void;
   onMessages: (messages: AutomationAiMessage[]) => void;
 }
@@ -112,7 +122,7 @@ const configYaml = (config: AutomationConfig): string => {
 };
 
 const buildInstructions = (request: AutomationAiRequest): string => {
-  const { hass, config, prompt, history } = request;
+  const { hass, config, prompt, history, mentions } = request;
   return [
     "You edit a Home Assistant automation in the automation editor for the user. Apply the user's request to the current automation and return the complete updated automation.",
     "",
@@ -176,6 +186,15 @@ const buildInstructions = (request: AutomationAiRequest): string => {
     "Actions by domain:",
     describeActions(hass),
     "",
+    ...(mentions?.length
+      ? [
+          "Targets the user referenced in the request with @:",
+          ...mentions.map(
+            (mention) => `- @${mention.label}: ${mention.key} ${mention.id}`
+          ),
+          "",
+        ]
+      : []),
     "Request of the user:",
     prompt,
   ].join("\n");

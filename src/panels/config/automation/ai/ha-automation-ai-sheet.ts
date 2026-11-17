@@ -1,6 +1,7 @@
 import {
   mdiAlertCircleOutline,
   mdiCheck,
+  mdiPlus,
   mdiCheckCircleOutline,
   mdiChevronDown,
   mdiChevronUp,
@@ -8,6 +9,7 @@ import {
   mdiSend,
   mdiStarFourPoints,
 } from "@mdi/js";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -30,9 +32,15 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-textarea";
 import type { HaTextArea } from "../../../../components/ha-textarea";
 import type { AutomationConfig } from "../../../../data/automation";
-import { narrowViewportContext } from "../../../../data/context";
-import type { HomeAssistant } from "../../../../types";
+import { labelsContext, narrowViewportContext } from "../../../../data/context";
+import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
+import { ensureArray } from "../../../../common/array/ensure-array";
+import { computeDeviceName } from "../../../../common/entity/compute_device_name";
+import "../../../../components/ha-target-picker";
+import type { HaTargetPicker } from "../../../../components/ha-target-picker";
+import type { ValueChangedEvent, HomeAssistant } from "../../../../types";
 import type {
+  AutomationAiMention,
   AutomationAiMessage,
   AutomationAiStep,
   AutomationAiTurn,
@@ -106,6 +114,12 @@ export class HaAutomationAiSheet extends LitElement {
   @query(".content") private _content?: HTMLElement;
 
   @query("ha-textarea") private _textarea?: HaTextArea;
+
+  @query("ha-target-picker") private _targetPicker?: HaTargetPicker;
+
+  // For the names of picked labels, the other names are in hass
+  @consume({ context: labelsContext, subscribe: true })
+  private _labels?: LabelRegistryEntry[];
 
   // Where the sheet rests, so it comes back there after it was suspended
   private _position: BottomSheetPosition = "half";
@@ -388,6 +402,16 @@ export class HaAutomationAiSheet extends LitElement {
     const followUp = this._turns.length > 0;
     return html`
       <form class="prompt" @submit=${this._submit}>
+        <ha-target-picker custom-field @value-changed=${this._targetPicked}>
+          <ha-icon-button
+            slot="field"
+            .label=${this.hass.localize(
+              "ui.panel.config.automation.editor.ai.add_target"
+            )}
+            .path=${mdiPlus}
+            @click=${this._openTargetPicker}
+          ></ha-icon-button>
+        </ha-target-picker>
         <ha-textarea
           .autofocus=${this._autofocusPrompt}
           .label=${this.hass.localize(
@@ -401,6 +425,8 @@ export class HaAutomationAiSheet extends LitElement {
           rows="1"
           @input=${this._promptChanged}
           @keydown=${this._promptKeyDown}
+          @keyup=${this._storeCaret}
+          @click=${this._storeCaret}
         ></ha-textarea>
         <ha-icon-button
           .label=${this.hass.localize(
@@ -416,6 +442,70 @@ export class HaAutomationAiSheet extends LitElement {
 
   private _promptChanged(ev: HASSDomCurrentTargetEvent<HaTextArea>) {
     this._prompt = ev.currentTarget.value ?? "";
+    this._storeCaret(ev);
+  }
+
+  // Where a picked target goes, the picker takes the focus from the prompt
+  private _caret?: number;
+
+  private _storeCaret(ev: Event) {
+    const textarea = ev.composedPath()[0];
+    if (textarea instanceof HTMLTextAreaElement) {
+      this._caret = textarea.selectionStart;
+    }
+  }
+
+  // Targets put into the prompt, by their label
+  private _mentions = new Map<string, AutomationAiMention>();
+
+  private _openTargetPicker(ev: Event) {
+    // The click would close the picker again as a click outside of it
+    ev.stopPropagation();
+    this._targetPicker?.open();
+  }
+
+  private async _targetPicked(ev: ValueChangedEvent<HassServiceTarget>) {
+    ev.stopPropagation();
+    const mention = this._mentionFor(ev.detail.value);
+    if (!mention) {
+      return;
+    }
+    this._mentions.set(mention.label, mention);
+    const caret = Math.min(
+      this._caret ?? this._prompt.length,
+      this._prompt.length
+    );
+    const before = this._prompt.slice(0, caret);
+    const after = this._prompt.slice(caret);
+    const text = `${before && !before.endsWith(" ") ? " " : ""}@${mention.label}${after.startsWith(" ") ? "" : " "}`;
+    this._prompt = before + text + after;
+    this._caret = caret + text.length;
+    await this.updateComplete;
+    this._textarea?.focus();
+    this._textarea?.setSelectionRange(this._caret, this._caret);
+  }
+
+  private _mentionFor(
+    target: HassServiceTarget | undefined
+  ): AutomationAiMention | undefined {
+    const [key, ids] =
+      Object.entries(target ?? {}).find(([, value]) => value?.length) ?? [];
+    const id = ids ? ensureArray(ids)[0] : undefined;
+    if (!key || !id) {
+      return undefined;
+    }
+    const { states, devices, areas, floors } = this.hass;
+    const label =
+      key === "entity_id"
+        ? states[id]?.attributes.friendly_name
+        : key === "device_id"
+          ? devices[id] && computeDeviceName(devices[id])
+          : key === "area_id"
+            ? areas[id]?.name
+            : key === "floor_id"
+              ? floors[id]?.name
+              : this._labels?.find((label_) => label_.label_id === id)?.name;
+    return { label: label?.trim() || id, key, id };
   }
 
   private _promptKeyDown(ev: KeyboardEvent) {
@@ -448,6 +538,9 @@ export class HaAutomationAiSheet extends LitElement {
         config: this.config,
         prompt,
         history: this._turns,
+        mentions: [...this._mentions.values()].filter((mention) =>
+          prompt.includes(`@${mention.label}`)
+        ),
         onStep: (steps) => {
           this._steps = [...baseSteps, ...steps];
           this._running = { prompt, steps };
@@ -690,6 +783,10 @@ export class HaAutomationAiSheet extends LitElement {
       );
       border-top: 1px solid var(--divider-color);
       flex-shrink: 0;
+    }
+    .prompt ha-target-picker {
+      flex-shrink: 0;
+      --ha-generic-picker-width: 360px;
     }
     .prompt ha-textarea {
       flex: 1;
