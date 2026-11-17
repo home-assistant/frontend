@@ -92,7 +92,6 @@ class NotificationManager extends LitElement {
     // window when focus moves from a dialog into a toast inside it. On this
     // element's root node, both are still apart. Attach on every connect, as
     // this element moves between roots.
-    this._focusRoot?.removeEventListener("focusout", this._trackFocusOut, true);
     this._focusRoot = this.getRootNode();
     this._focusRoot.addEventListener("focusout", this._trackFocusOut, true);
     this._unsubscribeOpenModals?.();
