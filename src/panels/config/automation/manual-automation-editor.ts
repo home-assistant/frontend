@@ -14,7 +14,7 @@ import {
   string,
   union,
 } from "superstruct";
-import { mdiStarFourPoints } from "@mdi/js";
+import { mdiDebugStepOver, mdiStarFourPoints } from "@mdi/js";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { consume } from "../../../common/decorators/consume";
@@ -23,6 +23,7 @@ import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
+import "../../../components/ha-svg-icon";
 import type {
   AutomationConfig,
   Condition,
@@ -111,12 +112,12 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
     // room for it
     const ownRow = hasDescription || this.narrow;
     return html`
+      ${this._renderModeChange()}
       ${
         ownRow && (hasDescription || this.aiAction)
           ? html`<div class="top">${description}${this._renderAiButton()}</div>`
           : nothing
       }
-      ${this._renderModeChange()}
       <div class="header">
         <h2 id="triggers-heading" class="name">
           ${this.hass.localize(
@@ -299,8 +300,13 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
     if (!changes.length) {
       return nothing;
     }
-    return html`<div class="mode-change">
-      ${changes.map((change) => html`<div>${change}</div>`)}
+    return html`<div class="mode-changes">
+      ${changes.map(
+        (change) =>
+          html`<span class="mode-change">
+            <ha-svg-icon .path=${mdiDebugStepOver}></ha-svg-icon>${change}
+          </span>`
+      )}
     </div>`;
   }
 
@@ -616,12 +622,29 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
         .description {
           margin-top: 16px;
         }
-        .mode-change {
+        /* Chips, so the mode doesn't look like the description */
+        .mode-changes {
+          display: flex;
+          flex-wrap: wrap;
+          gap: var(--ha-space-2);
           margin-top: 16px;
-          padding: var(--ha-space-1) var(--ha-space-3);
-          border-radius: var(--ha-border-radius-md);
-          border-inline-start: 4px solid var(--ha-color-border-warning-loud);
-          background-color: var(--ha-color-fill-warning-quiet-resting);
+        }
+        .mode-change {
+          display: inline-flex;
+          align-items: center;
+          gap: var(--ha-space-1);
+          height: 32px;
+          box-sizing: border-box;
+          padding: 0 var(--ha-space-3) 0 var(--ha-space-2);
+          border-radius: var(--ha-border-radius-pill);
+          border: 1px solid var(--ha-color-border-warning-normal);
+          background-color: var(--ha-color-fill-warning-normal-resting);
+          color: var(--ha-color-on-warning-normal);
+          font-size: var(--ha-font-size-s);
+          font-weight: var(--ha-font-weight-medium);
+        }
+        .mode-change ha-svg-icon {
+          --mdc-icon-size: 18px;
         }
         .top {
           display: flex;
