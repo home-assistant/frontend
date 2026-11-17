@@ -204,9 +204,16 @@ export const startExternalCommissioning = async (hass: HomeAssistant) => {
   });
 };
 
+// Core's ID_TYPE_DEVICE_ID: each Matter node adds a `deviceid_` identifier
+// to its device, next to an optional `serial_` one.
+const MATTER_NODE_IDENTIFIER_PREFIX = "deviceid_";
+
 const matterNodeIdentifiers = (device: DeviceRegistryEntry) =>
   device.identifiers
-    .filter(([domain, id]) => domain === "matter" && id.startsWith("deviceid_"))
+    .filter(
+      ([domain, id]) =>
+        domain === "matter" && id.startsWith(MATTER_NODE_IDENTIFIER_PREFIX)
+    )
     .map(([, id]) => id);
 
 export const watchForNewMatterDevice = (
