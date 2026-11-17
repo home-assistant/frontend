@@ -204,7 +204,7 @@ export class HaAutomationAiSheet extends LitElement {
           : "idle";
     // Like the header of other dialogs, with room for the handle above it
     return html`
-      <div class="header">
+      <div class=${classMap({ header: true, working: !!this._running })}>
         <ha-dialog-header>
           ${this._renderNavigation()}
           <span slot="title"
@@ -671,9 +671,39 @@ export class HaAutomationAiSheet extends LitElement {
       min-height: 0;
     }
     .header {
+      position: relative;
+      overflow: hidden;
       padding-top: var(--ha-space-3);
       border-bottom: 1px solid var(--divider-color);
       flex-shrink: 0;
+    }
+    .header ha-dialog-header {
+      position: relative;
+    }
+    /* While the AI works, light sweeps over the header to the AI icon,
+       which lights up when it gets there */
+    .header.working::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      width: 40%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--rgb-primary-color), 0.18),
+        transparent
+      );
+      animation: ai-sweep 1.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes ai-sweep {
+      0% {
+        transform: translateX(-100%);
+      }
+      85%,
+      100% {
+        transform: translateX(250%);
+      }
     }
     .actions {
       display: flex;
@@ -714,20 +744,25 @@ export class HaAutomationAiSheet extends LitElement {
     }
     /* Shines while the AI works on the request */
     .ai-icon.working {
-      animation: ai-shine 1.5s ease-in-out infinite;
+      animation: ai-shine 1.8s ease-in-out infinite;
     }
     @keyframes ai-shine {
       0%,
+      55%,
       100% {
         filter: drop-shadow(0 0 0 rgba(var(--rgb-primary-color), 0));
-        transform: scale(1);
+        transform: scale(1) rotate(0deg);
       }
-      50% {
-        filter: drop-shadow(0 0 6px rgba(var(--rgb-primary-color), 0.9));
-        transform: scale(1.15);
+      80% {
+        filter: drop-shadow(0 0 8px rgba(var(--rgb-primary-color), 0.9));
+        transform: scale(1.2) rotate(45deg);
       }
     }
     @media (prefers-reduced-motion: reduce) {
+      .header.working::before {
+        animation: none;
+        display: none;
+      }
       .ai-icon.working {
         animation: none;
         filter: drop-shadow(0 0 6px rgba(var(--rgb-primary-color), 0.9));
