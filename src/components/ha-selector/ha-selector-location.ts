@@ -173,6 +173,7 @@ export class HaLocationSelector extends LitElement {
                   aria-label=${this.hass.localize(
                     "ui.components.selectors.location.search_results_label"
                   )}
+                  @keydown=${this._searchResultsKeyDown}
                 >
                   ${this._places.map(this._renderPlace)}
                 </ha-list-base>
@@ -311,14 +312,24 @@ export class HaLocationSelector extends LitElement {
   };
 
   private _addressSearch(ev: KeyboardEvent) {
-    if (ev.key !== "Enter" || ev.isComposing) {
+    if (ev.key !== "Enter") {
+      return;
+    }
+
+    ev.stopPropagation();
+    if (ev.isComposing) {
       return;
     }
 
     ev.preventDefault();
-    ev.stopPropagation();
 
     this._searchPlaces(this._input?.value ?? "");
+  }
+
+  private _searchResultsKeyDown(ev: KeyboardEvent) {
+    if (ev.key === "Enter") {
+      ev.stopPropagation();
+    }
   }
 
   private _inputChanged(): void {

@@ -72,8 +72,33 @@ for (const failFirstSearch of [false, true]) {
     );
 
     await goToPanel(page, "/config/zone/new");
+    const selector = page.locator("ha-selector-location");
+    await selector.evaluate((element) => {
+      element.addEventListener("keydown", (event) => {
+        if (event instanceof KeyboardEvent && event.key === "Enter") {
+          element.setAttribute("data-enter-bubbled", "");
+        }
+      });
+    });
     const input = page.getByRole("textbox", { name: "Search address" });
     await input.fill("London");
+    const compositionPrevented = await input.evaluate((element) => {
+      const event = new KeyboardEvent("keydown", {
+        key: "Enter",
+        code: "Enter",
+        isComposing: true,
+        bubbles: true,
+        composed: true,
+        cancelable: true,
+      });
+      element.dispatchEvent(event);
+      return event.defaultPrevented;
+    });
+    expect(compositionPrevented).toBe(false);
+    await expect(selector).not.toHaveAttribute("data-enter-bubbled");
+    await expect(selector.locator("ha-spinner")).not.toBeAttached();
+    expect(queries).toEqual([]);
+
     const requested = page.waitForRequest((request) =>
       request.url().includes("nominatim.openstreetmap.org/search.php")
     );
@@ -86,7 +111,6 @@ for (const failFirstSearch of [false, true]) {
     await expect(input).toBeFocused();
     firstSearch.resolve(undefined);
 
-    const selector = page.locator("ha-selector-location");
     const result = selector.getByRole("button", {
       name: "Paris Ile-de-France, France",
       exact: true,
@@ -103,6 +127,7 @@ for (const failFirstSearch of [false, true]) {
       selector.getByRole("spinbutton", { name: "Longitude*", exact: true })
     ).toHaveValue("2.3522");
     await expect(result).not.toBeAttached();
+    await expect(selector).not.toHaveAttribute("data-enter-bubbled");
   });
 }
 
