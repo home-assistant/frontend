@@ -8,6 +8,9 @@ import type { Theme, Themes } from "../../../src/data/ws-themes";
 const PICKED_PRIMARY = "#e91e63";
 const PICKED_ACCENT = "#4caf50";
 
+// Themes from YAML are partial, the `Theme` type lists keys most themes set.
+const asTheme = (variables: object) => variables as Theme;
+
 const makeThemes = (themes: Record<string, Theme>): Themes => ({
   default_theme: "default",
   default_dark_theme: null,
@@ -42,7 +45,7 @@ describe("applyThemesOnElement user colors", () => {
 
   it("applies picked colors and the primary palette to a theme that doesn't set them", () => {
     const style = apply(
-      makeThemes({ oled: { "primary-background-color": "#000000" } as Theme }),
+      makeThemes({ oled: asTheme({ "primary-background-color": "#000000" }) }),
       "oled"
     );
 
@@ -56,7 +59,7 @@ describe("applyThemesOnElement user colors", () => {
 
   it("keeps a primary color set by the theme and still applies the picked accent", () => {
     const style = apply(
-      makeThemes({ pink: { "primary-color": "#ff00ff" } as Theme }),
+      makeThemes({ pink: asTheme({ "primary-color": "#ff00ff" }) }),
       "pink"
     );
 
@@ -67,7 +70,7 @@ describe("applyThemesOnElement user colors", () => {
 
   it("treats a theme that sets primary palette keys as setting the primary color", () => {
     const style = apply(
-      makeThemes({ palette: { "ha-color-primary-40": "#123456" } as Theme }),
+      makeThemes({ palette: asTheme({ "ha-color-primary-40": "#123456" }) }),
       "palette"
     );
 
@@ -77,12 +80,9 @@ describe("applyThemesOnElement user colors", () => {
 
   it("reads theme colors from the active mode", () => {
     const themes = makeThemes({
-      modes: {
-        modes: {
-          light: {} as Theme,
-          dark: { "primary-color": "#ff00ff" } as Theme,
-        },
-      } as Theme,
+      modes: asTheme({
+        modes: { light: {}, dark: { "primary-color": "#ff00ff" } },
+      }),
     });
 
     expect(apply(themes, "modes").getPropertyValue("--primary-color")).toBe(
@@ -96,11 +96,9 @@ describe("applyThemesOnElement user colors", () => {
   it("lets the theme header color win over the tint derived in dark mode", () => {
     const style = apply(
       makeThemes({
-        oled: {
-          modes: {
-            dark: { "app-header-background-color": "#000000" } as Theme,
-          },
-        } as Theme,
+        oled: asTheme({
+          modes: { dark: { "app-header-background-color": "#000000" } },
+        }),
       }),
       "oled",
       true
