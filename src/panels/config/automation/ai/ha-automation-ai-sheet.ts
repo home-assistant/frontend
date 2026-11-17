@@ -431,6 +431,7 @@ export class HaAutomationAiSheet extends LitElement {
             `ui.panel.config.automation.editor.ai.${followUp ? "follow_up_placeholder" : "prompt_placeholder"}`
           )}
           .value=${this._prompt}
+          .working=${!!this._running}
           @value-changed=${this._promptChanged}
           @prompt-submit=${this._submit}
           @pick-target=${this._pickTarget}
