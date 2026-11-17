@@ -203,7 +203,13 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
     // Opening or closing the panel removes the element with focus, so the
     // one in its place takes it and keyboard users keep their place.
     if (this._focusedArea && !this._focusedArea.isConnected) {
-      (this._panelHeading ?? this._newBlockButton)?.focus();
+      const button = this._newBlockButton;
+      if (this._panelHeading) {
+        this._panelHeading.focus();
+      } else if (button) {
+        // The new button can only take focus once it has rendered.
+        button.updateComplete.then(() => button.focus());
+      }
     }
     this._focusedArea = undefined;
     const oldPanel = changedProps.get("_panel") as SchedulePanel | undefined;
