@@ -16,6 +16,7 @@ import "../../../components/ha-svg-icon";
 import "../components/hui-badge-edit-mode";
 import { moveAtPath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
+import { isLayoutEditMode } from "../types";
 import type { HuiBadge } from "./hui-badge";
 
 const BADGE_SORTABLE_OPTIONS: HaSortableOptions = {
@@ -46,7 +47,8 @@ export class HuiViewBadges extends LitElement {
 
   private _checkAllHidden() {
     const allHidden =
-      !this.lovelace.editMode && this.badges.every((section) => section.hidden);
+      !isLayoutEditMode(this.lovelace) &&
+      this.badges.every((section) => section.hidden);
     this.toggleAttribute("hidden", allHidden);
   }
 
@@ -125,7 +127,7 @@ export class HuiViewBadges extends LitElement {
   render() {
     if (!this.lovelace) return nothing;
 
-    const editMode = this.lovelace.editMode;
+    const editMode = isLayoutEditMode(this.lovelace);
 
     const badges = this.badges;
 

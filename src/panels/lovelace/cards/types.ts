@@ -71,12 +71,6 @@ export interface ConditionalCardConfig extends LovelaceCardConfig {
   conditions: VisibilityCondition[];
 }
 
-export interface EntityVisibilityCardConfig extends LovelaceCardConfig {
-  entity: string;
-  hidden?: boolean;
-  card: LovelaceCardConfig;
-}
-
 export interface EmptyStateButtonConfig {
   text: string;
   icon?: string;

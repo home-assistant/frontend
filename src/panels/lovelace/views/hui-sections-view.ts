@@ -37,6 +37,7 @@ import {
   sectionContainerStyles,
 } from "../sections/section-container";
 import type { Lovelace } from "../types";
+import { isLayoutEditMode } from "../types";
 import { generateDefaultSection } from "./default-section";
 import "./hui-view-footer";
 import "./hui-view-header";
@@ -191,7 +192,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     if (!this.lovelace) return nothing;
 
     const sections = this.sections;
-    const editMode = this.lovelace.editMode;
+    const editMode = isLayoutEditMode(this.lovelace);
     const hasSidebar =
       this._config?.sidebar && (this._sidebarVisible || editMode);
     const singleColumn = this._maxColumns <= 1;

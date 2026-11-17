@@ -48,7 +48,15 @@ export interface Lovelace {
    * window's history and scroll position.
    */
   embedded?: boolean;
+  /**
+   * Limits edit mode to showing and hiding the entity cards of a generated
+   * view, instead of editing its layout.
+   */
+  entityVisibility?: { hiddenEntities: string[] };
 }
+
+export const isLayoutEditMode = (lovelace?: Lovelace): boolean =>
+  Boolean(lovelace?.editMode && !lovelace.entityVisibility);
 
 export interface LovelaceBadge extends HTMLElement {
   hass?: HomeAssistant;

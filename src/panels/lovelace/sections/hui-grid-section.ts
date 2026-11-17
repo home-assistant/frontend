@@ -18,8 +18,10 @@ import type { HomeAssistant } from "../../../types";
 import type { HuiCard } from "../cards/hui-card";
 import { computeCardGridSize } from "../common/compute-card-grid-size";
 import "../components/hui-card-edit-mode";
+import "../components/hui-card-visibility-edit-mode";
 import { moveAtPath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
+import { isLayoutEditMode } from "../types";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,
@@ -78,7 +80,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
     const cardsConfig = this._config?.cards ?? [];
 
-    const editMode = Boolean(this.lovelace?.editMode && !this.isStrategy);
+    const editMode = isLayoutEditMode(this.lovelace) && !this.isStrategy;
+    const visibility = this.lovelace?.editMode
+      ? this.lovelace.entityVisibility
+      : undefined;
 
     const sortableOptions = this.importOnly
       ? IMPORT_MODE_CARD_SORTABLE_OPTIONS
@@ -104,7 +109,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           ${repeat(
             cardsConfig,
             (cardConfig) => this._getKey(cardConfig),
-            (_cardConfig, idx) => {
+            (cardConfig, idx) => {
               const card = this.cards![idx];
               card.layout = "grid";
               const gridOptions = card.getGridOptions();
@@ -126,6 +131,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                     "full-width": columns === "full",
                     hidden: !editMode && card.hidden,
                   })}"
+                  ?inert=${
+                    visibility !== undefined &&
+                    typeof cardConfig.entity !== "string"
+                  }
                   .sortableData=${cardPath}
                 >
                   ${
@@ -141,7 +150,18 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                             ${card}
                           </hui-card-edit-mode>
                         `
-                      : card
+                      : visibility && typeof cardConfig.entity === "string"
+                        ? html`
+                            <hui-card-visibility-edit-mode
+                              .entity=${cardConfig.entity}
+                              .entityHidden=${visibility.hiddenEntities.includes(
+                                cardConfig.entity
+                              )}
+                            >
+                              ${card}
+                            </hui-card-visibility-edit-mode>
+                          `
+                        : card
                   }
                 </div>
               `;
