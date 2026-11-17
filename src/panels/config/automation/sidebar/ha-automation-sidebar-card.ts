@@ -1,10 +1,9 @@
 import {
   mdiClose,
-  mdiCodeBraces,
   mdiDotsVertical,
   mdiFlask,
-  mdiFormTextbox,
   mdiPlay,
+  mdiPlaylistEdit,
 } from "@mdi/js";
 import { ContextProvider } from "@lit/context";
 import type { PropertyValues } from "lit";
@@ -12,14 +11,14 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { consume } from "../../../../common/decorators/consume";
-import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
+import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-icon-button";
 import { ScrollableFadeMixin } from "../../../../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../../../../resources/styles";
@@ -152,72 +151,58 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
     `;
   }
 
-  // While the user reviews changes of the AI the menu would only have
-  // these, the rest changes the automation
+  // While the user reviews changes of the AI the menu only has what helps
+  // to review, the rest would change the automation. The sidebar handles
+  // the select like the one of its own menu.
   private _renderReviewActions() {
     const path = this._rowRegistry?.selectedPath();
     const removed = !!path && diffMarkAt(this._aiDiff, path) === "removed";
-    const item = (value: string) =>
-      this.querySelector<HaDropdownItem>(
-        `:scope > ha-dropdown-item[slot="menu-items"][value="${value}"]`
+    const has = (value: string) =>
+      !!this.querySelector(
+        `:scope > ha-dropdown-item[slot="menu-items"][value="${value}"]:not([disabled])`
       );
-    const run = removed ? null : item("run");
-    const test = removed ? null : item("test");
-    const yaml = item("toggle_yaml_mode");
-    return html`<div slot="actionItems" class="review-actions">
+    return html`<ha-dropdown
+      slot="actionItems"
+      @click=${preventDefaultStopPropagation}
+      @keydown=${stopPropagation}
+      placement="bottom-end"
+    >
+      <ha-icon-button
+        slot="trigger"
+        .label=${this.hass.localize("ui.common.menu")}
+        .path=${mdiDotsVertical}
+      ></ha-icon-button>
       ${
-        run
-          ? html`<ha-icon-button
-              .label=${this.hass.localize(
+        !removed && has("run")
+          ? html`<ha-dropdown-item value="run">
+              <ha-svg-icon slot="icon" .path=${mdiPlay}></ha-svg-icon>
+              ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.run"
               )}
-              .path=${mdiPlay}
-              data-value=${run.value}
-              @click=${this._selectItem}
-            ></ha-icon-button>`
+            </ha-dropdown-item>`
           : nothing
       }
       ${
-        test
-          ? html`<ha-icon-button
-              .label=${this.hass.localize(
+        !removed && has("test")
+          ? html`<ha-dropdown-item value="test">
+              <ha-svg-icon slot="icon" .path=${mdiFlask}></ha-svg-icon>
+              ${this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.test"
               )}
-              .path=${mdiFlask}
-              data-value=${test.value}
-              @click=${this._selectItem}
-            ></ha-icon-button>`
+            </ha-dropdown-item>`
           : nothing
       }
       ${
-        yaml && !yaml.disabled
-          ? html`<ha-icon-button
-              .label=${this.hass.localize(
+        has("toggle_yaml_mode")
+          ? html`<ha-dropdown-item value="toggle_yaml_mode">
+              <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
+              ${this.hass.localize(
                 `ui.panel.config.automation.editor.edit_${this.yamlMode ? "ui" : "yaml"}`
               )}
-              .path=${this.yamlMode ? mdiFormTextbox : mdiCodeBraces}
-              data-value=${yaml.value}
-              @click=${this._selectItem}
-            ></ha-icon-button>`
+            </ha-dropdown-item>`
           : nothing
       }
-    </div>`;
-  }
-
-  // Runs the menu item like the menu does, the sidebar handles its select
-  private _selectItem(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
-    const item = this.querySelector<HaDropdownItem>(
-      `:scope > ha-dropdown-item[slot="menu-items"][value="${ev.currentTarget.dataset.value}"]`
-    );
-    if (item) {
-      this.dispatchEvent(
-        new CustomEvent("wa-select", {
-          detail: { item },
-          bubbles: true,
-          composed: true,
-        })
-      );
-    }
+    </ha-dropdown>`;
   }
 
   private _closeSidebar() {
@@ -229,9 +214,6 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
       ...super.styles,
       haStyleScrollbar,
       css`
-        .review-actions {
-          display: flex;
-        }
         ha-card {
           position: relative;
           height: 100%;
