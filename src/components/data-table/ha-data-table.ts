@@ -1495,6 +1495,13 @@ export class HaDataTable extends LitElement {
       }
     }
 
+    // A collapsed group has no rows under its header, so there is nothing to
+    // keep in context. Let its header scroll naturally instead of pinning a
+    // copy of it over the next group's header.
+    if (group !== undefined && this._collapsedGroups.includes(group)) {
+      group = undefined;
+    }
+
     this._stickyGroup = group;
     this._stickyGroupPosition = {
       top: scroller.offsetTop,
