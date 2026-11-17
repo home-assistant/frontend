@@ -485,11 +485,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
             <ha-svg-icon slot="icon" .path=${mdiTag}></ha-svg-icon>
           </ha-dropdown-item>
 
-          <ha-dropdown-item
-            ?hidden=${this._aiActive}
-            .disabled=${!stateObj}
-            value="run"
-          >
+          <ha-dropdown-item .disabled=${!stateObj} value="run">
             ${this.hass.localize("ui.panel.config.automation.editor.run")}
             <ha-svg-icon slot="icon" .path=${mdiPlay}></ha-svg-icon>
           </ha-dropdown-item>
