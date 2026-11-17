@@ -415,7 +415,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   }
 
   private _onHidden() {
-    if (this._visiblePromiseResolve) {
+    if (!this.isConnected || this._visiblePromiseResolve) {
       return;
     }
     this.hass!.connection.suspendReconnectUntil(
