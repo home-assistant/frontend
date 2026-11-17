@@ -81,7 +81,6 @@ export const emptyGridSourceEnergyPreference =
     number_energy_price: null,
     entity_energy_price_export: null,
     number_energy_price_export: null,
-    cost_adjustment_day: 0,
   });
 
 export const emptySolarEnergyPreference =
@@ -94,13 +93,6 @@ export const emptySolarEnergyPreference =
 export const emptyHomeEnergyPreference =
   (): HomeSourceTypeEnergyPreference => ({
     type: "home",
-    stat_energy_to: "",
-  });
-
-export const emptyBatteryEnergyPreference =
-  (): BatteryTotalsSourceTypeEnergyPreference => ({
-    type: "battery",
-    stat_energy_from: "",
     stat_energy_to: "",
   });
 
@@ -169,7 +161,6 @@ export interface GridSourceTypeEnergyPreference {
   stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
 
-  cost_adjustment_day: number;
   name?: string;
 }
 
@@ -198,6 +189,7 @@ export interface BatteryTotalsSourceTypeEnergyPreference {
   power_config?: PowerConfig;
   stat_soc?: string;
   capacity?: number; // usable capacity in kWh, used to weight the combined SOC
+  entity_capacity?: string; // sensor reporting usable capacity in an energy unit
   name?: string;
 }
 
@@ -224,6 +216,7 @@ export interface BatteryDirectionsSourceTypeEnergyPreference {
   power_config?: BatteryDirectionsPowerConfig;
   stat_soc?: string;
   capacity?: number;
+  entity_capacity?: string;
   name?: string;
 }
 

@@ -227,7 +227,7 @@ class MoreInfoWeather extends LitElement {
                 .datetime=${this.stateObj.last_changed}
                 capitalize
               ></ha-relative-time>
-              <ha-tooltip for="relative-time">
+              <ha-tooltip trigger="hover focus click" for="relative-time">
                 <div class="row">
                   <span class="column-name">
                     ${this._i18n.localize(

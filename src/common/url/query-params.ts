@@ -82,7 +82,11 @@ export function decodeQueryParams(
   for (const key of config.date ?? []) {
     const value = getSearchParam(searchParams, key);
     if (value) {
-      params[key] = new Date(value);
+      const date = new Date(value);
+      // Leave out dates that can't be parsed, like a missing value.
+      if (!Number.isNaN(date.getTime())) {
+        params[key] = date;
+      }
     }
   }
   for (const { key, trueValue } of config.boolean ?? []) {

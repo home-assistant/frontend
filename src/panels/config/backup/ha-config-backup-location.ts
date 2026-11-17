@@ -333,6 +333,7 @@ class HaConfigBackupDetails extends LitElement {
       margin: 0 auto;
       gap: var(--ha-space-6);
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
       margin-bottom: 24px;
     }
     .card-content {
