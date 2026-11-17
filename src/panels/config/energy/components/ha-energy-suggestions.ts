@@ -1,5 +1,6 @@
 import { mdiFire, mdiFlash, mdiLightbulbOnOutline, mdiWater } from "@mdi/js";
 import type { ContextType } from "@lit/context";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -37,8 +38,8 @@ import {
   updateDismissedSuggestions,
 } from "../../../../data/energy_suggestions";
 import {
-  fetchFrontendUserData,
   saveFrontendUserData,
+  subscribeFrontendUserData,
 } from "../../../../data/frontend";
 import type { StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
@@ -126,24 +127,44 @@ export class EnergySuggestions extends LitElement {
       }).filter((suggestion) => suggestion.tab === tab)
   );
 
+  // Kept live so a dismiss in another tab isn't overwritten by this one.
+  private _unsubDismissed?: Promise<UnsubscribeFunc>;
+
   connectedCallback() {
     super.connectedCallback();
-    if (!this._statistics) {
-      this._load();
-    }
+    this._load();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribe();
+  }
+
+  private _unsubscribe() {
+    this._unsubDismissed?.then((unsub) => unsub()).catch(() => undefined);
+    this._unsubDismissed = undefined;
   }
 
   private async _load() {
     this._loadFailed = false;
+    this._unsubDismissed ??= subscribeFrontendUserData(
+      this._connection.connection,
+      "energy",
+      ({ value }) => {
+        this._dismissed = value?.dismissed_suggestions ?? [];
+      }
+    );
     try {
-      const [statistics, userData] = await Promise.all([
-        getStatisticIds(this._api, "sum"),
-        fetchFrontendUserData(this._connection.connection, "energy"),
+      const [statistics] = await Promise.all([
+        this._statistics ?? getStatisticIds(this._api, "sum"),
+        this._unsubDismissed,
       ]);
-      this._statistics = statistics;
-      this._statisticIds = statistics.map((meta) => meta.statistic_id);
-      this._dismissed = userData?.dismissed_suggestions ?? [];
+      if (!this._statistics) {
+        this._statistics = statistics;
+        this._statisticIds = statistics.map((meta) => meta.statistic_id);
+      }
     } catch (_err) {
+      this._unsubscribe();
       this._loadFailed = true;
     }
   }

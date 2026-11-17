@@ -143,10 +143,12 @@ const fillGridSide = (
   side: "stat_energy_from" | "stat_energy_to",
   statisticId: string
 ) => {
-  const open = sources.find(
-    (source): source is GridSourceTypeEnergyPreference =>
-      source.type === "grid" && !source[side]
-  );
+  const open = [...sources]
+    .reverse()
+    .find(
+      (source): source is GridSourceTypeEnergyPreference =>
+        source.type === "grid" && !source[side]
+    );
   if (open) {
     return sources.map((source) =>
       source === open ? { ...open, [side]: statisticId } : source
@@ -160,8 +162,8 @@ const fillGridSide = (
 
 /**
  * Preferences with the meter added to the slot. Grid meters fill the open
- * side of an existing grid connection first, so an import and an export added
- * one after the other end up as one connection.
+ * side of the newest grid connection that has one, so an import and an export
+ * added one after the other end up as one connection.
  */
 export const addEnergySuggestion = (
   preferences: EnergyPreferences,

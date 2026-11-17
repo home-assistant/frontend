@@ -190,6 +190,39 @@ describe("addEnergySuggestion", () => {
     ]);
   });
 
+  it("adds an export to the newest connection without one", () => {
+    const existing: EnergyPreferences = {
+      ...EMPTY_PREFERENCES,
+      energy_sources: [
+        {
+          ...emptyGridSourceEnergyPreference(),
+          stat_energy_from: "sensor.import_a",
+        },
+      ],
+    };
+    const imported = addEnergySuggestion(
+      existing,
+      "sensor.import_b",
+      "grid_import"
+    );
+    const both = addEnergySuggestion(
+      imported,
+      "sensor.export_b",
+      "grid_export"
+    );
+    expect(both.energy_sources).toEqual([
+      {
+        ...emptyGridSourceEnergyPreference(),
+        stat_energy_from: "sensor.import_a",
+      },
+      {
+        ...emptyGridSourceEnergyPreference(),
+        stat_energy_from: "sensor.import_b",
+        stat_energy_to: "sensor.export_b",
+      },
+    ]);
+  });
+
   it.each([
     ["device", "device_consumption"],
     ["device_gas", "device_consumption_gas"],
