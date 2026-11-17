@@ -1,6 +1,19 @@
 import { dump, load } from "js-yaml";
 import type { AITaskStructure } from "../../../../data/ai_task";
+import { ensureArray } from "../../../../common/array/ensure-array";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { generateDataAITask } from "../../../../data/ai_task";
+import type {
+  ConditionDescription,
+  ConditionDescriptions,
+} from "../../../../data/condition";
+import { subscribeConditions } from "../../../../data/condition";
+import type {
+  TriggerDescription,
+  TriggerDescriptions,
+} from "../../../../data/trigger";
+import { subscribeTriggers } from "../../../../data/trigger";
 import type { AutomationConfig } from "../../../../data/automation";
 import { normalizeAutomationConfig } from "../../../../data/automation";
 import type { ChatLog } from "../../../../data/chat_log";
@@ -121,7 +134,131 @@ const configYaml = (config: AutomationConfig): string => {
   return dump(rest);
 };
 
-const buildInstructions = (request: AutomationAiRequest): string => {
+const MAX_DEVICES = 500;
+
+// Keeps the list of a field's choices short
+const MAX_FIELD_OPTIONS = 12;
+
+const describeDevices = (hass: HomeAssistant): string =>
+  Object.values(hass.devices)
+    .slice(0, MAX_DEVICES)
+    .map((device) => {
+      const area = device.area_id
+        ? hass.areas[device.area_id]?.name
+        : undefined;
+      return [
+        device.id,
+        computeDeviceName(device) ?? device.id,
+        area ? `area: ${area}` : undefined,
+      ]
+        .filter(Boolean)
+        .join(" | ");
+    })
+    .join("\n");
+
+type PlatformDescriptions = Record<
+  string,
+  TriggerDescription | ConditionDescription
+>;
+
+const describeTarget = (target: TriggerDescription["target"]): string => {
+  const domains = ensureArray(target?.entity ?? [])
+    .flatMap((filter) => ensureArray(filter.domain ?? []))
+    .filter((domain, index, all) => all.indexOf(domain) === index);
+  return domains.length ? `target (${domains.join(", ")})` : "target";
+};
+
+const describeField = (
+  name: string,
+  field: TriggerDescription["fields"][string]
+): string => {
+  const selector = field.selector ?? {};
+  const type = Object.keys(selector)[0];
+  const select = "select" in selector ? selector.select : undefined;
+  const choices = select?.options
+    ?.slice(0, MAX_FIELD_OPTIONS)
+    .map((option) => (typeof option === "string" ? option : option.value));
+  const details = [
+    choices?.length ? choices.join("|") : type,
+    field.default !== undefined
+      ? `default: ${JSON.stringify(field.default)}`
+      : undefined,
+  ].filter(Boolean);
+  return `${name}${field.required ? "*" : ""}${
+    details.length ? ` (${details.join(", ")})` : ""
+  }`;
+};
+
+/**
+ * The trigger or condition platforms, for the domains of the home and the
+ * ones without a domain, like `state`.
+ */
+const describePlatforms = (
+  hass: HomeAssistant,
+  descriptions: PlatformDescriptions
+): string => {
+  const domains = new Set(Object.keys(hass.states).map(computeDomain));
+  return Object.entries(descriptions)
+    .filter(([key]) => !key.includes(".") || domains.has(computeDomain(key)))
+    .map(([key, description]) => {
+      const fields = Object.entries(description.fields ?? {}).map(
+        ([name, field]) => describeField(name, field)
+      );
+      return [
+        `- ${key}`,
+        description.target ? describeTarget(description.target) : undefined,
+        fields.length ? `options: ${fields.join(", ")}` : undefined,
+      ]
+        .filter(Boolean)
+        .join("; ");
+    })
+    .join("\n");
+};
+
+// Reads the first message of a subscription, or nothing if the backend
+// doesn't support it
+const firstMessage = async <T>(
+  subscribe: (callback: (value: T) => void) => Promise<() => void>
+): Promise<T | undefined> => {
+  let resolveValue!: (value: T | undefined) => void;
+  const value = new Promise<T | undefined>((resolve) => {
+    resolveValue = resolve;
+  });
+  try {
+    const unsubscribe = await subscribe(resolveValue);
+    try {
+      return await value;
+    } finally {
+      unsubscribe();
+    }
+  } catch {
+    return undefined;
+  }
+};
+
+interface AutomationAiContext {
+  triggers?: TriggerDescriptions;
+  conditions?: ConditionDescriptions;
+}
+
+const fetchContext = async (
+  hass: HomeAssistant
+): Promise<AutomationAiContext> => {
+  const [triggers, conditions] = await Promise.all([
+    firstMessage<TriggerDescriptions>((callback) =>
+      subscribeTriggers(hass.connection, callback)
+    ),
+    firstMessage<ConditionDescriptions>((callback) =>
+      subscribeConditions(hass.connection, callback)
+    ),
+  ]);
+  return { triggers, conditions };
+};
+
+const buildInstructions = (
+  request: AutomationAiRequest,
+  context: AutomationAiContext
+): string => {
   const { hass, config, prompt, history, mentions } = request;
   return [
     "You edit a Home Assistant automation in the automation editor for the user. Apply the user's request to the current automation and return the complete updated automation.",
@@ -129,7 +266,9 @@ const buildInstructions = (request: AutomationAiRequest): string => {
     "Rules:",
     "- Return the whole automation as YAML, including the parts you didn't change. Keep unchanged parts exactly as they are, in the same order, so the user only reviews what you changed.",
     "- Use the current syntax: `triggers` with a `trigger` key per trigger, `conditions` with a `condition` key per condition, and `actions` with `action: domain.action_name` for actions.",
-    "- Only use entities, areas and actions from the lists below.",
+    "- Only use entities, devices, areas and actions from the lists below.",
+    "- Prefer the purpose-specific triggers and conditions listed below, like `event.received` or `light.turned_on`, over generic `state`, `numeric_state`, `template` or `device` ones whenever one fits. They take a `target` with `entity_id`, `device_id`, `area_id`, `floor_id` or `label_id`, and their fields go under `options`. Fields marked with * are required, use their default unless the request needs another value.",
+    "- When the user refers to a device, area, floor or label, put it in the `target` instead of listing its entities.",
     "- Keep the existing alias and description unless the request changes what the automation does. Give a new automation a short alias and description.",
     "- Don't include an `id`.",
     `- Write the summary in the language with the code "${hass.language}".`,
@@ -142,16 +281,16 @@ const buildInstructions = (request: AutomationAiRequest): string => {
       mode: "restart",
       triggers: [
         {
-          trigger: "state",
-          entity_id: "binary_sensor.hallway_motion",
-          to: "on",
+          trigger: "event.received",
+          target: { device_id: "8d3f0c2a9b7e4c1d" },
+          options: { event_type: ["press"] },
         },
       ],
       conditions: [{ condition: "sun", after: "sunset" }],
       actions: [
         {
           action: "light.turn_on",
-          target: { entity_id: "light.hallway" },
+          target: { area_id: "hallway" },
           data: { brightness_pct: 60 },
         },
       ],
@@ -180,9 +319,26 @@ const buildInstructions = (request: AutomationAiRequest): string => {
     "Areas (area_id | name):",
     describeAreas(hass),
     "",
+    "Devices (device_id | name | area):",
+    describeDevices(hass),
+    "",
     "Entities (entity_id | name | area):",
     describeEntities(hass),
     "",
+    ...(context.triggers
+      ? [
+          "Purpose-specific triggers:",
+          describePlatforms(hass, context.triggers),
+          "",
+        ]
+      : []),
+    ...(context.conditions
+      ? [
+          "Purpose-specific conditions:",
+          describePlatforms(hass, context.conditions),
+          "",
+        ]
+      : []),
     "Actions by domain:",
     describeActions(hass),
     "",
@@ -346,7 +502,7 @@ export const runAutomationAi = async (
   };
 
   setStep({ type: "context", status: "running" });
-  const instructions = buildInstructions(request);
+  const instructions = buildInstructions(request, await fetchContext(hass));
   setStep({ type: "context", status: "done" });
 
   setStep({ type: "generate", status: "running" });
