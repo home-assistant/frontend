@@ -5923,6 +5923,13 @@
               "follow_up_placeholder": "Ask for more changes",
               "send": "Send",
               "add_target": "Add entity, device, area, or label",
+              "commands": {
+                "target": "Pick an entity, device, area, or label",
+                "entity": "Pick an entity",
+                "device": "Pick a device",
+                "area": "Pick an area",
+                "label": "Pick a label"
+              },
               "accept": "Accept changes",
               "decline": "Decline changes",
               "collapse": "Show automation",

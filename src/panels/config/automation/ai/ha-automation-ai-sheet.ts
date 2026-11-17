@@ -13,10 +13,9 @@ import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { live } from "lit/directives/live";
 import { consume } from "../../../../common/decorators/consume";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-expansion-panel";
@@ -29,8 +28,6 @@ import type {
 } from "../../../../components/ha-snap-bottom-sheet";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-textarea";
-import type { HaTextArea } from "../../../../components/ha-textarea";
 import type { AutomationConfig } from "../../../../data/automation";
 import { labelsContext, narrowViewportContext } from "../../../../data/context";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
@@ -46,6 +43,13 @@ import type {
   AutomationAiTurn,
 } from "./automation-ai-agent";
 import { runAutomationAi } from "./automation-ai-agent";
+import {
+  promptMentions,
+  promptParts,
+  promptText,
+} from "./automation-ai-mentions";
+import "./ha-automation-ai-prompt";
+import type { HaAutomationAiPrompt } from "./ha-automation-ai-prompt";
 
 // The strip the collapsed sheet keeps visible until the header is measured
 const COLLAPSED_HEIGHT = 85;
@@ -113,7 +117,8 @@ export class HaAutomationAiSheet extends LitElement {
 
   @query(".content") private _content?: HTMLElement;
 
-  @query("ha-textarea") private _textarea?: HaTextArea;
+  @query("ha-automation-ai-prompt")
+  private _promptEditor?: HaAutomationAiPrompt;
 
   @query("ha-target-picker") private _targetPicker?: HaTargetPicker;
 
@@ -256,9 +261,17 @@ export class HaAutomationAiSheet extends LitElement {
     `;
   }
 
+  private _renderPromptText(prompt: string) {
+    return promptParts(prompt).map((part) =>
+      typeof part === "string"
+        ? part
+        : html`<span class="mention">${part.label}</span>`
+    );
+  }
+
   private _renderTurn(turn: AutomationAiTurn) {
     return html`
-      <div class="message user">${turn.prompt}</div>
+      <div class="message user">${this._renderPromptText(turn.prompt)}</div>
       <ha-markdown
         class="message assistant"
         breaks
@@ -278,7 +291,7 @@ export class HaAutomationAiSheet extends LitElement {
 
   private _renderRunning(turn: RunningTurn) {
     return html`
-      <div class="message user">${turn.prompt}</div>
+      <div class="message user">${this._renderPromptText(turn.prompt)}</div>
       <ul class="steps" aria-live="polite">
         ${turn.steps.map((step) => this._renderStep(step))}
       </ul>
@@ -412,22 +425,16 @@ export class HaAutomationAiSheet extends LitElement {
             @click=${this._openTargetPicker}
           ></ha-icon-button>
         </ha-target-picker>
-        <ha-textarea
-          .autofocus=${this._autofocusPrompt}
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.ai.prompt_label"
-          )}
+        <ha-automation-ai-prompt
+          .focusOnOpen=${this._autofocusPrompt}
           .placeholder=${this.hass.localize(
             `ui.panel.config.automation.editor.ai.${followUp ? "follow_up_placeholder" : "prompt_placeholder"}`
           )}
-          .value=${live(this._prompt)}
-          resize="auto"
-          rows="1"
-          @input=${this._promptChanged}
-          @keydown=${this._promptKeyDown}
-          @keyup=${this._storeCaret}
-          @click=${this._storeCaret}
-        ></ha-textarea>
+          .value=${this._prompt}
+          @value-changed=${this._promptChanged}
+          @prompt-submit=${this._submit}
+          @pick-target=${this._pickTarget}
+        ></ha-automation-ai-prompt>
         <ha-icon-button
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.ai.send"
@@ -440,28 +447,18 @@ export class HaAutomationAiSheet extends LitElement {
     `;
   }
 
-  private _promptChanged(ev: HASSDomCurrentTargetEvent<HaTextArea>) {
-    this._prompt = ev.currentTarget.value ?? "";
-    this._storeCaret(ev);
+  private _promptChanged(ev: ValueChangedEvent<string>) {
+    this._prompt = ev.detail.value;
   }
-
-  // Where a picked target goes, the picker takes the focus from the prompt
-  private _caret?: number;
-
-  private _storeCaret(ev: Event) {
-    const textarea = ev.composedPath()[0];
-    if (textarea instanceof HTMLTextAreaElement) {
-      this._caret = textarea.selectionStart;
-    }
-  }
-
-  // Targets put into the prompt, by their label
-  private _mentions = new Map<string, AutomationAiMention>();
 
   private _openTargetPicker(ev: Event) {
     // The click would close the picker again as a click outside of it
     ev.stopPropagation();
     this._targetPicker?.open();
+  }
+
+  private _pickTarget(ev: HASSDomEvent<HASSDomEvents["pick-target"]>) {
+    this._targetPicker?.open(ev.detail.section);
   }
 
   private async _targetPicked(ev: ValueChangedEvent<HassServiceTarget>) {
@@ -470,19 +467,7 @@ export class HaAutomationAiSheet extends LitElement {
     if (!mention) {
       return;
     }
-    this._mentions.set(mention.label, mention);
-    const caret = Math.min(
-      this._caret ?? this._prompt.length,
-      this._prompt.length
-    );
-    const before = this._prompt.slice(0, caret);
-    const after = this._prompt.slice(caret);
-    const text = `${before && !before.endsWith(" ") ? " " : ""}@${mention.label}${after.startsWith(" ") ? "" : " "}`;
-    this._prompt = before + text + after;
-    this._caret = caret + text.length;
-    await this.updateComplete;
-    this._textarea?.focus();
-    this._textarea?.setSelectionRange(this._caret, this._caret);
+    this._promptEditor?.insertMention(mention);
   }
 
   private _mentionFor(
@@ -508,15 +493,8 @@ export class HaAutomationAiSheet extends LitElement {
     return { label: label?.trim() || id, key, id };
   }
 
-  private _promptKeyDown(ev: KeyboardEvent) {
-    if (ev.key === "Enter" && !ev.shiftKey && !ev.isComposing) {
-      ev.preventDefault();
-      this._submit(ev);
-    }
-  }
-
-  private async _submit(ev: Event) {
-    ev.preventDefault();
+  private async _submit(ev?: Event) {
+    ev?.preventDefault();
     const prompt = this._prompt.trim();
     if (!prompt || this._running) {
       return;
@@ -536,11 +514,12 @@ export class HaAutomationAiSheet extends LitElement {
       const result = await runAutomationAi({
         hass: this.hass,
         config: this.config,
-        prompt,
-        history: this._turns,
-        mentions: [...this._mentions.values()].filter((mention) =>
-          prompt.includes(`@${mention.label}`)
-        ),
+        prompt: promptText(prompt),
+        mentions: promptMentions(prompt),
+        history: this._turns.map((turn) => ({
+          ...turn,
+          prompt: promptText(turn.prompt),
+        })),
         onStep: (steps) => {
           this._steps = [...baseSteps, ...steps];
           this._running = { prompt, steps };
@@ -597,7 +576,7 @@ export class HaAutomationAiSheet extends LitElement {
     this._turns = this._turns.map((turn) => ({ ...turn, declined: true }));
     this._problems = [];
     this._sheet?.snapTo("half");
-    this._textarea?.focus();
+    this._promptEditor?.focus();
   }
 
   private _close() {
@@ -722,6 +701,12 @@ export class HaAutomationAiSheet extends LitElement {
       color: var(--primary-text-color);
       white-space: normal;
     }
+    .message .mention {
+      padding: 0 var(--ha-space-2);
+      border-radius: var(--ha-border-radius-pill);
+      background-color: rgba(255, 255, 255, 0.25);
+      font-weight: var(--ha-font-weight-medium);
+    }
     .declined {
       align-self: flex-start;
       margin-top: calc(var(--ha-space-2) * -1);
@@ -788,9 +773,8 @@ export class HaAutomationAiSheet extends LitElement {
       flex-shrink: 0;
       --ha-generic-picker-width: 360px;
     }
-    .prompt ha-textarea {
+    .prompt ha-automation-ai-prompt {
       flex: 1;
-      --ha-textarea-max-height: 120px;
     }
   `;
 }
