@@ -50,3 +50,62 @@ export const subscribeThemes = (
     conn,
     onChange
   );
+
+/**
+ * Which light/dark modes a theme can be shown in.
+ * - `both`: the user can pick light, dark or auto.
+ * - `light` / `dark`: the theme only defines that mode and always uses it.
+ * - `none`: the theme has no modes and fixed colors. It is applied on the light base.
+ */
+export type ThemeModeSupport = "both" | "light" | "dark" | "none";
+
+export const getThemeModeSupport = (theme: Theme): ThemeModeSupport => {
+  const modes = theme.modes;
+  const hasLight = !!modes && "light" in modes;
+  const hasDark = !!modes && "dark" in modes;
+  if (hasLight && hasDark) {
+    return "both";
+  }
+  if (hasDark) {
+    return "dark";
+  }
+  if (hasLight) {
+    return "light";
+  }
+  return "none";
+};
+
+/**
+ * The variables a theme sets for the given mode, with the mode specific
+ * variables taking precedence over the base ones.
+ */
+export const getThemeVariables = (
+  theme: Theme,
+  darkMode: boolean
+): Partial<ThemeVars> => {
+  const { modes, ...baseVariables } = theme;
+  return {
+    ...baseVariables,
+    ...(darkMode ? modes?.dark : modes?.light),
+  };
+};
+
+/**
+ * Whether the theme sets a color itself, so a color picked by the user must
+ * not override it. A theme that sets any key of the generated primary palette
+ * also counts as setting the primary color.
+ */
+export const themeDefinesColor = (
+  themeVariables: Partial<ThemeVars>,
+  color: "primary" | "accent"
+): boolean => {
+  if (color === "accent") {
+    return "accent-color" in themeVariables;
+  }
+  return (
+    "primary-color" in themeVariables ||
+    Object.keys(themeVariables).some((key) =>
+      key.startsWith("ha-color-primary-")
+    )
+  );
+};

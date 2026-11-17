@@ -1,4 +1,5 @@
 import type { ThemeVars } from "../../data/ws-themes";
+import { getThemeVariables, themeDefinesColor } from "../../data/ws-themes";
 import { darkColorVariables } from "../../resources/theme/color";
 import { darkSemanticVariables } from "../../resources/theme/semantic.globals";
 import { derivedStyles } from "../../resources/theme/theme";
@@ -56,78 +57,46 @@ export const applyThemesOnElement = (
     themeRules = { ...darkSemanticVariables, ...darkColorVariables };
   }
 
-  if (themeToApply === "default") {
-    // Determine the primary and accent colors from the current settings.
-    // Fallbacks are implicitly the HA default blue and orange or the
-    // derived "darkStyles" values, depending on the light vs dark mode.
-    const primaryColor = themeSettings?.primaryColor;
-    const accentColor = themeSettings?.accentColor;
+  const isDefaultTheme = themeToApply === "default";
+  const customTheme =
+    themeToApply && !isDefaultTheme ? themes.themes[themeToApply] : undefined;
+  const customThemeRules = customTheme
+    ? getThemeVariables(customTheme, darkMode)
+    : undefined;
 
-    if (darkMode && primaryColor) {
-      themeRules["app-header-background-color"] = hexBlend(
-        primaryColor,
-        "#121212",
-        8
-      );
-    }
+  // Colors picked by the user apply to the default theme, and to custom
+  // themes that don't set that color themselves.
+  const primaryColor =
+    isDefaultTheme ||
+    (customThemeRules && !themeDefinesColor(customThemeRules, "primary"))
+      ? themeSettings?.primaryColor
+      : undefined;
+  const accentColor =
+    isDefaultTheme ||
+    (customThemeRules && !themeDefinesColor(customThemeRules, "accent"))
+      ? themeSettings?.accentColor
+      : undefined;
 
-    if (primaryColor) {
-      cacheKey = `${cacheKey}__primary_${primaryColor}`;
-      const rgbPrimaryColor = hex2rgb(primaryColor);
-      const labPrimaryColor = rgb2lab(rgbPrimaryColor);
-      themeRules["primary-color"] = primaryColor;
-      const rgbLightPrimaryColor = lab2rgb(labBrighten(labPrimaryColor));
+  if (primaryColor) {
+    cacheKey = `${cacheKey}__primary_${primaryColor}`;
+  }
+  if (accentColor) {
+    cacheKey = `${cacheKey}__accent_${accentColor}`;
+  }
+  themeRules = {
+    ...themeRules,
+    ...getUserColorRules(primaryColor, accentColor, darkMode),
+  };
 
-      generateColorPalette(primaryColor, "primary").forEach(([key, color]) => {
-        themeRules[key] = color;
-      });
-
-      themeRules["light-primary-color"] = rgb2hex(rgbLightPrimaryColor);
-      themeRules["dark-primary-color"] = lab2hex(labDarken(labPrimaryColor));
-      themeRules["darker-primary-color"] = lab2hex(
-        labDarken(labPrimaryColor, 2)
-      );
-      themeRules["text-primary-color"] =
-        rgbContrast(rgbPrimaryColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
-      themeRules["text-light-primary-color"] =
-        rgbContrast(rgbLightPrimaryColor, [33, 33, 33]) < 6
-          ? "#fff"
-          : "#212121";
-      themeRules["state-icon-color"] = themeRules["dark-primary-color"];
-    }
-    if (accentColor) {
-      cacheKey = `${cacheKey}__accent_${accentColor}`;
-      themeRules["accent-color"] = accentColor;
-      const rgbAccentColor = hex2rgb(accentColor);
-      themeRules["text-accent-color"] =
-        rgbContrast(rgbAccentColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
-    }
-
-    // Nothing was changed
-    if (element.__themes?.cacheKey === cacheKey) {
-      return;
-    }
+  // Nothing was changed
+  if (isDefaultTheme && element.__themes?.cacheKey === cacheKey) {
+    return;
   }
 
-  // Custom theme logic (not relevant for default theme, since it would override
-  // the derived calculations from above)
-  if (
-    themeToApply &&
-    themeToApply !== "default" &&
-    themes.themes[themeToApply]
-  ) {
-    // Apply theme vars that are relevant for all modes (but extract the "modes" section first)
-    const { modes, ...baseThemeRules } = themes.themes[themeToApply];
-    themeRules = { ...themeRules, ...baseThemeRules };
-
-    // Apply theme vars for the specific mode if available
-    if (modes) {
-      if (darkMode) {
-        themeRules = { ...themeRules, ...modes.dark };
-      } else {
-        themeRules = { ...themeRules, ...modes.light };
-      }
-    }
+  // Custom theme variables go last, so they win over the defaults and over
+  // anything derived from the colors picked by the user.
+  if (customThemeRules) {
+    themeRules = { ...themeRules, ...customThemeRules };
   }
 
   if (!element.__themes?.keys && !Object.keys(themeRules).length) {
@@ -152,6 +121,55 @@ export const applyThemesOnElement = (
       element.style.setProperty(s, styles[s]);
     }
   }
+};
+
+/**
+ * Derive the theme variables for the primary and accent colors picked by the
+ * user, including the generated primary palette.
+ */
+const getUserColorRules = (
+  primaryColor: string | undefined,
+  accentColor: string | undefined,
+  darkMode: boolean
+): Partial<ThemeVars> => {
+  const rules: Partial<ThemeVars> = {};
+
+  if (primaryColor) {
+    if (darkMode) {
+      rules["app-header-background-color"] = hexBlend(
+        primaryColor,
+        "#121212",
+        8
+      );
+    }
+
+    const rgbPrimaryColor = hex2rgb(primaryColor);
+    const labPrimaryColor = rgb2lab(rgbPrimaryColor);
+    rules["primary-color"] = primaryColor;
+    const rgbLightPrimaryColor = lab2rgb(labBrighten(labPrimaryColor));
+
+    generateColorPalette(primaryColor, "primary").forEach(([key, color]) => {
+      rules[key] = color;
+    });
+
+    rules["light-primary-color"] = rgb2hex(rgbLightPrimaryColor);
+    rules["dark-primary-color"] = lab2hex(labDarken(labPrimaryColor));
+    rules["darker-primary-color"] = lab2hex(labDarken(labPrimaryColor, 2));
+    rules["text-primary-color"] =
+      rgbContrast(rgbPrimaryColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
+    rules["text-light-primary-color"] =
+      rgbContrast(rgbLightPrimaryColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
+    rules["state-icon-color"] = rules["dark-primary-color"];
+  }
+
+  if (accentColor) {
+    rules["accent-color"] = accentColor;
+    const rgbAccentColor = hex2rgb(accentColor);
+    rules["text-accent-color"] =
+      rgbContrast(rgbAccentColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
+  }
+
+  return rules;
 };
 
 const processTheme = (
