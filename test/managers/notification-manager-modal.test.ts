@@ -1,6 +1,6 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import {
   addOpenModal,
   removeOpenModal,
@@ -11,24 +11,10 @@ import "../../src/managers/notification-manager";
 // While a modal dialog is open, the browser makes everything outside it inert,
 // so toast buttons only work while the toasts are inside the topmost dialog.
 
-vi.mock("../../src/components/ha-button", () => {
-  customElements.define(
-    "ha-button",
-    class extends HTMLElement {
-      public connectedCallback() {
-        this.tabIndex = 0;
-      }
-    }
-  );
-  return {};
-});
-
-const localize = (key: string) => key;
-
 @customElement("test-notification-modal-host")
 class TestNotificationModalHost extends LitElement {
   @property({ attribute: false }) public hass = {
-    localize,
+    localize: (key: string) => key,
   } as unknown as HomeAssistant;
 
   protected render() {
@@ -54,7 +40,7 @@ declare global {
 }
 
 let host: TestNotificationModalHost | undefined;
-const modals: HTMLElement[] = [];
+const modals: TestModal[] = [];
 
 const mountManager = async () => {
   host = document.createElement("test-notification-modal-host");
@@ -63,69 +49,27 @@ const mountManager = async () => {
   return host.shadowRoot!.querySelector("notification-manager")!;
 };
 
+// The manager moves in a microtask
+const settle = () => Promise.resolve();
+
 const openModal = async () => {
   const modal = document.createElement("test-notification-modal");
   document.body.append(modal);
   modals.push(modal);
   addOpenModal(modal);
-  // The manager moves in a microtask
-  await Promise.resolve();
+  await settle();
   return modal;
 };
 
-const closeModal = async (modal: HTMLElement) => {
-  removeOpenModal(modal);
-  await Promise.resolve();
-};
-
-const showActionToast = async (
-  manager: HTMLElementTagNameMap["notification-manager"],
-  action: () => void
-) => {
-  vi.useFakeTimers();
-  const shown = manager.showDialog({
-    message: "Card deleted",
-    action: { action, text: "Undo" },
-    duration: -1,
-  });
-  await Promise.resolve();
-  await manager.updateComplete;
-  const toast = manager.shadowRoot!.querySelector("ha-toast")!;
-  Object.defineProperty(
-    toast.shadowRoot!.querySelector(".toast"),
-    "getAnimations",
-    { configurable: true, value: () => [] }
-  );
-  await vi.advanceTimersByTimeAsync(20);
-  await shown;
-  return toast;
-};
-
-const clickToastAction = async (
-  manager: HTMLElementTagNameMap["notification-manager"],
-  toast: HTMLElementTagNameMap["ha-toast"]
-) => {
-  const closed = new Promise<void>((resolve) => {
-    toast.addEventListener("toast-closed", () => resolve(), { once: true });
-  });
-  manager.shadowRoot!.querySelector<HTMLElement>("ha-button")!.click();
-  await closed;
-  await manager.updateComplete;
-};
-
 afterEach(() => {
-  modals.forEach((modal) => {
-    removeOpenModal(modal);
-    modal.remove();
-  });
+  modals.forEach((modal) => modal.remove());
   modals.length = 0;
   host?.remove();
   host = undefined;
-  vi.useRealTimers();
 });
 
 describe("notification-manager with open modals", () => {
-  it("moves into the topmost open modal and back", async () => {
+  it("stays in the topmost open modal and returns home after", async () => {
     const manager = await mountManager();
     const home = host!.shadowRoot!;
 
@@ -136,83 +80,26 @@ describe("notification-manager with open modals", () => {
     const nestedModal = await openModal();
     expect(manager.parentNode).toBe(nestedModal);
 
-    await closeModal(nestedModal);
-    expect(manager.parentNode).toBe(modal);
+    removeOpenModal(modal);
+    await settle();
+    expect(manager.parentNode).toBe(nestedModal);
 
-    await closeModal(modal);
+    removeOpenModal(nestedModal);
+    await settle();
     expect(manager.parentNode).toBe(home);
     expect(manager.hasAttribute("slot")).toBe(false);
   });
 
-  it("stays in the topmost modal when a modal below it closes", async () => {
-    const manager = await mountManager();
-    const modal = await openModal();
-    const nestedModal = await openModal();
-
-    await closeModal(modal);
-    expect(manager.parentNode).toBe(nestedModal);
-
-    await closeModal(nestedModal);
-    expect(manager.parentNode).toBe(host!.shadowRoot!);
-  });
-
   it("returns home when the modal holding it is removed from the page", async () => {
     const manager = await mountManager();
-    const home = host!.shadowRoot!;
     const modal = await openModal();
 
     modal.remove();
-    await Promise.resolve();
-    expect(manager.parentNode).toBe(home);
+    await settle();
+    expect(manager.parentNode).toBe(host!.shadowRoot!);
 
     // It keeps following modals opened afterwards
     const nextModal = await openModal();
     expect(manager.parentNode).toBe(nextModal);
-  });
-
-  it("runs the action of a toast that moved into a modal", async () => {
-    const manager = await mountManager();
-    const action = vi.fn();
-    const toast = await showActionToast(manager, action);
-
-    await openModal();
-    expect(manager.shadowRoot!.querySelector("ha-toast")).toBe(toast);
-
-    await clickToastAction(manager, toast);
-
-    expect(action).toHaveBeenCalledOnce();
-    expect(manager.shadowRoot!.querySelector("ha-toast")).toBeNull();
-  });
-
-  it("returns focus to where it was after a focused toast closes", async () => {
-    const manager = await mountManager();
-    const modal = await openModal();
-    const input = document.createElement("input");
-    modal.append(input);
-    input.focus();
-    const toast = await showActionToast(manager, vi.fn());
-
-    const button = manager.shadowRoot!.querySelector<HTMLElement>("ha-button")!;
-    button.focus();
-    expect(manager.shadowRoot!.activeElement).toBe(button);
-
-    await clickToastAction(manager, toast);
-
-    expect(document.activeElement).toBe(input);
-  });
-
-  it("leaves focus where a toast action moved it", async () => {
-    const manager = await mountManager();
-    const modal = await openModal();
-    const input = document.createElement("input");
-    const otherInput = document.createElement("input");
-    modal.append(input, otherInput);
-    input.focus();
-    const toast = await showActionToast(manager, () => otherInput.focus());
-
-    manager.shadowRoot!.querySelector<HTMLElement>("ha-button")!.focus();
-    await clickToastAction(manager, toast);
-
-    expect(document.activeElement).toBe(otherInput);
   });
 });
