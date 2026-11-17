@@ -540,8 +540,10 @@ export class HaTargetPicker extends LitElement {
     return html` ${this._renderValueGroups()} `;
   }
 
-  /** Opens the list to pick a target from. */
-  public open() {
+  /** Opens the list to pick a target from, filtered to `section` if given. */
+  public async open(section?: TargetTypeFloorless) {
+    this._selectedSection = section;
+    await this.updateComplete;
     this._picker?.open();
   }
 
