@@ -15,6 +15,7 @@ import {
   mdiRedo,
   mdiRenameBox,
   mdiRobotConfused,
+  mdiStarFourPoints,
   mdiStopCircleOutline,
   mdiTag,
   mdiTransitConnection,
@@ -35,6 +36,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { isNavigationClick } from "../../../common/dom/is-navigation-click";
 import { goBack, navigate } from "../../../common/navigate";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
+import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
@@ -641,15 +643,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                               .config=${this._aiDiff?.config ?? this.config}
                               .disabled=${this.readOnly || this._aiActive}
                               .hideSave=${this._aiActive}
-                              .aiAction=${
-                                this._aiAvailable &&
-                                !this.readOnly &&
-                                !this._aiSheetOpen
-                                  ? this._isEmptyAutomation(this.config)
-                                    ? "create"
-                                    : "edit"
-                                  : undefined
-                              }
+                              .aiAction=${this._aiAction()}
                               @ai-edit-requested=${this._openAiSheet}
                               style=${styleMap({
                                 "padding-bottom":
@@ -785,6 +779,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                           `
                         : nothing
                     }
+                    ${this._renderYamlAiButton()}
                     ${
                       this._aiActive
                         ? html`<ha-yaml-editor
@@ -843,6 +838,40 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         }
       </hass-subpage>
     `;
+  }
+
+  /** What the AI button offers, if it shows. */
+  private _aiAction(): "create" | "edit" | undefined {
+    // Invalid YAML isn't the config the AI would get
+    if (
+      !this._aiAvailable ||
+      this.readOnly ||
+      this._aiSheetOpen ||
+      this.yamlErrors ||
+      !this.config
+    ) {
+      return undefined;
+    }
+    return this._isEmptyAutomation(this.config) ? "create" : "edit";
+  }
+
+  // In YAML mode the button sits above the editor, where the visual editor
+  // has it at the top of its content
+  private _renderYamlAiButton() {
+    const action = this._aiAction();
+    if (!action) {
+      return nothing;
+    }
+    return html`<div class="yaml-ai">
+      <ha-assist-chip
+        .label=${this.hass.localize(
+          `ui.panel.config.automation.editor.ai.${action === "create" ? "create" : "menu"}`
+        )}
+        @click=${this._openAiSheet}
+      >
+        <ha-svg-icon slot="icon" .path=${mdiStarFourPoints}></ha-svg-icon>
+      </ha-assist-chip>
+    </div>`;
   }
 
   private _isEmptyAutomation(config: AutomationConfig) {
@@ -1629,6 +1658,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         }
         h1 {
           margin: 0;
+        }
+        .yaml-ai {
+          display: flex;
+          justify-content: flex-end;
+          padding: var(--ha-space-2) var(--ha-space-3);
+          flex-shrink: 0;
         }
         .ai-alias {
           padding: 0 var(--ha-space-2);
