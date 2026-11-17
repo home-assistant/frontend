@@ -280,6 +280,13 @@ export class HaAutomationRow extends LitElement {
     :host([diff]:dir(rtl)) .row {
       box-shadow: inset -4px 0 0 var(--diff-border-color);
     }
+    /* The selection outline covers part of the mark, so it gets wider */
+    :host([diff][selected]) .row {
+      box-shadow: inset 6px 0 0 var(--diff-border-color);
+    }
+    :host([diff][selected]:dir(rtl)) .row {
+      box-shadow: inset -6px 0 0 var(--diff-border-color);
+    }
     :host([diff="added"]) {
       --diff-border-color: var(--ha-color-border-success-loud);
       --diff-background-color: var(--ha-color-fill-success-quiet-resting);
