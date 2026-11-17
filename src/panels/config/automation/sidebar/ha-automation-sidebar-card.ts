@@ -1,11 +1,20 @@
-import { mdiClose, mdiDotsVertical } from "@mdi/js";
+import {
+  mdiClose,
+  mdiCodeBraces,
+  mdiDotsVertical,
+  mdiFlask,
+  mdiFormTextbox,
+  mdiPlay,
+} from "@mdi/js";
 import { ContextProvider } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { consume } from "../../../../common/decorators/consume";
+import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-card";
@@ -18,6 +27,7 @@ import type { HomeAssistant } from "../../../../types";
 import {
   automationDiffContext,
   automationRowChangeContext,
+  diffMarkAt,
   diffRowChangeAt,
   type AutomationDiff,
 } from "../ai/automation-ai-diff";
@@ -102,7 +112,12 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
           ></ha-icon-button>
           <slot slot="title" name="title"></slot>
           <slot slot="subtitle" name="subtitle"></slot>
-          <slot name="overflow-menu" slot="actionItems">
+          ${this._aiDiff ? this._renderReviewActions() : nothing}
+          <slot
+            name="overflow-menu"
+            slot="actionItems"
+            ?hidden=${!!this._aiDiff}
+          >
             <ha-dropdown
               @click=${preventDefaultStopPropagation}
               @keydown=${stopPropagation}
@@ -137,6 +152,74 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
     `;
   }
 
+  // While the user reviews changes of the AI the menu would only have
+  // these, the rest changes the automation
+  private _renderReviewActions() {
+    const path = this._rowRegistry?.selectedPath();
+    const removed = !!path && diffMarkAt(this._aiDiff, path) === "removed";
+    const item = (value: string) =>
+      this.querySelector<HaDropdownItem>(
+        `:scope > ha-dropdown-item[slot="menu-items"][value="${value}"]`
+      );
+    const run = removed ? null : item("run");
+    const test = removed ? null : item("test");
+    const yaml = item("toggle_yaml_mode");
+    return html`<div slot="actionItems" class="review-actions">
+      ${
+        run
+          ? html`<ha-icon-button
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.run"
+              )}
+              .path=${mdiPlay}
+              data-value=${run.value}
+              @click=${this._selectItem}
+            ></ha-icon-button>`
+          : nothing
+      }
+      ${
+        test
+          ? html`<ha-icon-button
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.test"
+              )}
+              .path=${mdiFlask}
+              data-value=${test.value}
+              @click=${this._selectItem}
+            ></ha-icon-button>`
+          : nothing
+      }
+      ${
+        yaml && !yaml.disabled
+          ? html`<ha-icon-button
+              .label=${this.hass.localize(
+                `ui.panel.config.automation.editor.edit_${this.yamlMode ? "ui" : "yaml"}`
+              )}
+              .path=${this.yamlMode ? mdiFormTextbox : mdiCodeBraces}
+              data-value=${yaml.value}
+              @click=${this._selectItem}
+            ></ha-icon-button>`
+          : nothing
+      }
+    </div>`;
+  }
+
+  // Runs the menu item like the menu does, the sidebar handles its select
+  private _selectItem(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
+    const item = this.querySelector<HaDropdownItem>(
+      `:scope > ha-dropdown-item[slot="menu-items"][value="${ev.currentTarget.dataset.value}"]`
+    );
+    if (item) {
+      this.dispatchEvent(
+        new CustomEvent("wa-select", {
+          detail: { item },
+          bubbles: true,
+          composed: true,
+        })
+      );
+    }
+  }
+
   private _closeSidebar() {
     fireEvent(this, "close-sidebar");
   }
@@ -146,6 +229,9 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
       ...super.styles,
       haStyleScrollbar,
       css`
+        .review-actions {
+          display: flex;
+        }
         ha-card {
           position: relative;
           height: 100%;

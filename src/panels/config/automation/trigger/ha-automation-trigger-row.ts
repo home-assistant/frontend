@@ -403,6 +403,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       <slot name="icons" slot="icons"></slot>
 
       <ha-dropdown
+        ?hidden=${this.pathController.reviewing}
         slot="icons"
         @click=${preventDefaultStopPropagation}
         @keydown=${stopPropagation}

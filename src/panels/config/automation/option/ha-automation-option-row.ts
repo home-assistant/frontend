@@ -278,6 +278,7 @@ export default class HaAutomationOptionRow extends LitElement {
         this.option
           ? html`
               <ha-dropdown
+                ?hidden=${this.pathController.reviewing}
                 slot="icons"
                 @click=${preventDefaultStopPropagation}
                 @keydown=${stopPropagation}

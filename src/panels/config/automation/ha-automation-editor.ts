@@ -425,19 +425,17 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           ${
             this.mode === "gui" && this.narrow
               ? html`<ha-dropdown-item
+                    ?hidden=${this._aiActive}
                     value="undo"
-                    .disabled=${
-                      !this._undoRedoController.canUndo || this._aiActive
-                    }
+                    .disabled=${!this._undoRedoController.canUndo}
                   >
                     ${this.hass.localize("ui.common.undo")}
                     <ha-svg-icon slot="icon" .path=${mdiUndo}></ha-svg-icon>
                   </ha-dropdown-item>
                   <ha-dropdown-item
+                    ?hidden=${this._aiActive}
                     value="redo"
-                    .disabled=${
-                      !this._undoRedoController.canRedo || this._aiActive
-                    }
+                    .disabled=${!this._undoRedoController.canRedo}
                   >
                     ${this.hass.localize("ui.common.redo")}
                     <ha-svg-icon slot="icon" .path=${mdiRedo}></ha-svg-icon>
@@ -478,14 +476,22 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
             <ha-svg-icon slot="icon" .path=${mdiCog}></ha-svg-icon>
           </ha-dropdown-item>
 
-          <ha-dropdown-item .disabled=${!stateObj} value="category">
+          <ha-dropdown-item
+            ?hidden=${this._aiActive}
+            .disabled=${!stateObj}
+            value="category"
+          >
             ${this.hass.localize(
               `ui.panel.config.scene.picker.${this.registryEntry?.categories?.automation ? "edit_category" : "assign_category"}`
             )}
             <ha-svg-icon slot="icon" .path=${mdiTag}></ha-svg-icon>
           </ha-dropdown-item>
 
-          <ha-dropdown-item .disabled=${!stateObj} value="run">
+          <ha-dropdown-item
+            ?hidden=${this._aiActive}
+            .disabled=${!stateObj}
+            value="run"
+          >
             ${this.hass.localize("ui.panel.config.automation.editor.run")}
             <ha-svg-icon slot="icon" .path=${mdiPlay}></ha-svg-icon>
           </ha-dropdown-item>
@@ -505,12 +511,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           }
 
           <ha-dropdown-item
+            ?hidden=${this._aiActive}
             value="rename"
             .disabled=${
-              this.readOnly ||
-              !this.automationId ||
-              this.mode === "yaml" ||
-              this._aiActive
+              this.readOnly || !this.automationId || this.mode === "yaml"
             }
           >
             ${this.hass.localize("ui.panel.config.automation.editor.rename")}
@@ -542,6 +546,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
             .disabled=${
               !!this.blueprintConfig || (!this.readOnly && !this.automationId)
             }
+            ?hidden=${this._aiActive}
             value="duplicate"
           >
             ${this.hass.localize(
@@ -559,6 +564,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
             useBlueprint
               ? html`
                   <ha-dropdown-item
+                    ?hidden=${this._aiActive}
                     value="take_control"
                     .disabled=${this.readOnly}
                   >
@@ -578,9 +584,13 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
             <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
           </ha-dropdown-item>
 
-          <wa-divider></wa-divider>
+          <wa-divider ?hidden=${this._aiActive}></wa-divider>
 
-          <ha-dropdown-item .disabled=${!stateObj} value="disable">
+          <ha-dropdown-item
+            ?hidden=${this._aiActive}
+            .disabled=${!stateObj}
+            value="disable"
+          >
             ${
               stateObj?.state === "off"
                 ? this.hass.localize("ui.panel.config.automation.editor.enable")
@@ -601,6 +611,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           <ha-dropdown-item
             .disabled=${!this.automationId}
             .variant=${this.automationId ? "danger" : "default"}
+            ?hidden=${this._aiActive}
             value="delete"
           >
             ${this.hass.localize("ui.panel.config.automation.picker.delete")}
@@ -1659,6 +1670,11 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         }
         h1 {
           margin: 0;
+        }
+        /* Left out while the user reviews changes of the AI */
+        ha-dropdown-item[hidden],
+        wa-divider[hidden] {
+          display: none;
         }
         .ai-alias {
           padding: 0 var(--ha-space-2);

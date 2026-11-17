@@ -103,6 +103,9 @@ export class AutomationPathController extends ContextController {
 
   public diffMark?: DiffMark;
 
+  /** Whether the editor shows changes of the AI the user reviews. */
+  public reviewing = false;
+
   @consumeContext({ context: automationDiffContext, subscribe: true })
   private _diff?: AutomationDiff;
 
@@ -152,8 +155,10 @@ export class AutomationPathController extends ContextController {
     }
     this._syncRegistration();
     const diffMark = diffMarkAt(this._diff, this.path);
-    if (diffMark !== this.diffMark) {
+    const reviewing = !!this._diff;
+    if (diffMark !== this.diffMark || reviewing !== this.reviewing) {
       this.diffMark = diffMark;
+      this.reviewing = reviewing;
       this.host.requestUpdate();
     }
   }

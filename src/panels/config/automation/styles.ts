@@ -23,6 +23,10 @@ export const rowSummaryStyles = css`
 `;
 
 export const rowStyles = css`
+  /* Hidden while the user reviews changes of the AI */
+  ha-dropdown[hidden] {
+    display: none;
+  }
   ha-icon-button {
     --mdc-theme-text-primary-on-background: var(--primary-text-color);
   }
