@@ -101,6 +101,18 @@ const showActionToast = async (
   return toast;
 };
 
+const clickToastAction = async (
+  manager: HTMLElementTagNameMap["notification-manager"],
+  toast: HTMLElementTagNameMap["ha-toast"]
+) => {
+  const closed = new Promise<void>((resolve) => {
+    toast.addEventListener("toast-closed", () => resolve(), { once: true });
+  });
+  manager.shadowRoot!.querySelector<HTMLElement>("ha-button")!.click();
+  await closed;
+  await manager.updateComplete;
+};
+
 afterEach(() => {
   modals.forEach((modal) => {
     removeOpenModal(modal);
@@ -166,12 +178,7 @@ describe("notification-manager with open modals", () => {
     await openModal();
     expect(manager.shadowRoot!.querySelector("ha-toast")).toBe(toast);
 
-    const closed = new Promise<void>((resolve) => {
-      toast.addEventListener("toast-closed", () => resolve(), { once: true });
-    });
-    manager.shadowRoot!.querySelector<HTMLElement>("ha-button")!.click();
-    await closed;
-    await manager.updateComplete;
+    await clickToastAction(manager, toast);
 
     expect(action).toHaveBeenCalledOnce();
     expect(manager.shadowRoot!.querySelector("ha-toast")).toBeNull();
@@ -189,12 +196,7 @@ describe("notification-manager with open modals", () => {
     button.focus();
     expect(manager.shadowRoot!.activeElement).toBe(button);
 
-    const closed = new Promise<void>((resolve) => {
-      toast.addEventListener("toast-closed", () => resolve(), { once: true });
-    });
-    button.click();
-    await closed;
-    await manager.updateComplete;
+    await clickToastAction(manager, toast);
 
     expect(document.activeElement).toBe(input);
   });
@@ -209,12 +211,7 @@ describe("notification-manager with open modals", () => {
     const toast = await showActionToast(manager, () => otherInput.focus());
 
     manager.shadowRoot!.querySelector<HTMLElement>("ha-button")!.focus();
-    const closed = new Promise<void>((resolve) => {
-      toast.addEventListener("toast-closed", () => resolve(), { once: true });
-    });
-    manager.shadowRoot!.querySelector<HTMLElement>("ha-button")!.click();
-    await closed;
-    await manager.updateComplete;
+    await clickToastAction(manager, toast);
 
     expect(document.activeElement).toBe(otherInput);
   });
