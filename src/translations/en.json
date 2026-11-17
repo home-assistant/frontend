@@ -5935,6 +5935,13 @@
               "collapse": "Show automation",
               "expand": "Show AI edit",
               "close": "Close",
+              "stop": {
+                "label": "Stop",
+                "title": "Stop the AI?",
+                "info": "The AI keeps working on the request in the background, but its changes are dropped.",
+                "confirm": "Stop",
+                "dismiss": "Keep working"
+              },
               "no_changes": "The AI didn't change anything.",
               "problems": "The automation still has problems. Check them before you accept it:",
               "show_conversation": "Show conversation",

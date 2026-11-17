@@ -7,14 +7,17 @@ import {
   mdiChevronUp,
   mdiClose,
   mdiSend,
+  mdiStarFourPoints,
 } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { consume } from "../../../../common/decorators/consume";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-header";
@@ -29,7 +32,7 @@ import type {
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-svg-icon";
 import type { AutomationConfig } from "../../../../data/automation";
-import { labelsContext, narrowViewportContext } from "../../../../data/context";
+import { labelsContext } from "../../../../data/context";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
@@ -88,16 +91,20 @@ export class HaAutomationAiSheet extends LitElement {
   /** Hides the sheet without losing its state, e.g. for another sheet. */
   @property({ type: Boolean }) public suspended = false;
 
-  @state()
-  @consume({ context: narrowViewportContext, subscribe: true })
-  private _narrow = false;
-
   // The collapsed sheet keeps the whole header visible
   @state() private _headerHeight?: number;
 
   @query(".header") private _header?: HTMLElement;
 
   @state() private _prompt = "";
+
+  // Counts the requests, so a stopped one leaves no trace when it finishes
+  private _request = 0;
+
+  // The conversation before the running request, to go back to on stop
+  private _baseSteps: AutomationAiStep[] = [];
+
+  private _baseMessages: AutomationAiMessage[] = [];
 
   @state() private _turns: AutomationAiTurn[] = [];
 
@@ -199,20 +206,7 @@ export class HaAutomationAiSheet extends LitElement {
     return html`
       <div class="header">
         <ha-dialog-header>
-          ${
-            // Like other dialogs, there is nothing to close while the AI
-            // works or the user reviews its changes
-            !this.reviewing && !this._running
-              ? html`<ha-icon-button
-                  slot="navigationIcon"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.automation.editor.ai.close"
-                  )}
-                  .path=${mdiClose}
-                  @click=${this._close}
-                ></ha-icon-button>`
-              : nothing
-          }
+          ${this._renderNavigation()}
           <span slot="title"
             >${this.hass.localize(
               "ui.panel.config.automation.editor.ai.title"
@@ -245,20 +239,10 @@ export class HaAutomationAiSheet extends LitElement {
                       @click=${this._accept}
                     ></ha-icon-button>
                   `
-                : nothing
-            }
-            ${
-              // On narrow screens people drag bottom sheets
-              this._narrow
-                ? nothing
-                : html`<ha-icon-button
-                    class="toggle"
-                    .label=${this.hass.localize(
-                      `ui.panel.config.automation.editor.ai.${this._collapsed ? "expand" : "collapse"}`
-                    )}
-                    .path=${this._collapsed ? mdiChevronUp : mdiChevronDown}
-                    @click=${this._toggleCollapsed}
-                  ></ha-icon-button>`
+                : html`<ha-svg-icon
+                    class=${classMap({ "ai-icon": true, working: !!this._running })}
+                    .path=${mdiStarFourPoints}
+                  ></ha-svg-icon>`
             }
           </div>
         </ha-dialog-header>
@@ -272,6 +256,66 @@ export class HaAutomationAiSheet extends LitElement {
         ? part
         : html`<span class="mention">${part.label}</span>`
     );
+  }
+
+  // Close while writing, stop while the AI works, and expand or collapse
+  // while the user reviews, as the sheet collapses for the review
+  private _renderNavigation() {
+    if (this._running) {
+      return html`<ha-icon-button
+        slot="navigationIcon"
+        .label=${this.hass.localize(
+          "ui.panel.config.automation.editor.ai.stop.label"
+        )}
+        .path=${mdiClose}
+        @click=${this._stop}
+      ></ha-icon-button>`;
+    }
+    if (this.reviewing) {
+      return html`<ha-icon-button
+        slot="navigationIcon"
+        class="toggle"
+        .label=${this.hass.localize(
+          `ui.panel.config.automation.editor.ai.${this._collapsed ? "expand" : "collapse"}`
+        )}
+        .path=${this._collapsed ? mdiChevronUp : mdiChevronDown}
+        @click=${this._toggleCollapsed}
+      ></ha-icon-button>`;
+    }
+    return html`<ha-icon-button
+      slot="navigationIcon"
+      .label=${this.hass.localize("ui.panel.config.automation.editor.ai.close")}
+      .path=${mdiClose}
+      @click=${this._close}
+    ></ha-icon-button>`;
+  }
+
+  private async _stop() {
+    const stop = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.automation.editor.ai.stop.title"
+      ),
+      text: html`<ha-alert alert-type="info">
+        ${this.hass.localize("ui.panel.config.automation.editor.ai.stop.info")}
+      </ha-alert>`,
+      confirmText: this.hass.localize(
+        "ui.panel.config.automation.editor.ai.stop.confirm"
+      ),
+      dismissText: this.hass.localize(
+        "ui.panel.config.automation.editor.ai.stop.dismiss"
+      ),
+    });
+    const running = this._running;
+    if (!stop || !running) {
+      return;
+    }
+    // The backend finishes the request, its result is dropped
+    this._request++;
+    this._steps = this._baseSteps;
+    this._messages = this._baseMessages;
+    this._running = undefined;
+    this._prompt = running.prompt;
+    fireEvent(this, "ai-request-finished", {});
   }
 
   private _renderTurn(turn: AutomationAiTurn) {
@@ -511,6 +555,10 @@ export class HaAutomationAiSheet extends LitElement {
     // Steps and messages of earlier requests stay in the conversation
     const baseSteps = this._steps;
     const baseMessages = this._messages;
+    this._baseSteps = baseSteps;
+    this._baseMessages = baseMessages;
+    const request = ++this._request;
+    const current = () => request === this._request;
     this._expand();
     fireEvent(this, "ai-request-started");
 
@@ -526,28 +574,39 @@ export class HaAutomationAiSheet extends LitElement {
           prompt: promptText(turn.prompt),
         })),
         onStep: (steps) => {
+          if (!current()) {
+            return;
+          }
           this._steps = [...baseSteps, ...steps];
           this._running = { prompt, steps };
           this._scrollToEnd();
         },
         onMessages: (messages) => {
+          if (!current()) {
+            return;
+          }
           this._messages = [...baseMessages, ...messages];
         },
       });
+      if (!current()) {
+        return;
+      }
       config = result.config;
       this._collapseForReview = true;
       this._problems = result.problems;
       this._turns = [...this._turns, { prompt, summary: result.summary }];
     } catch (err) {
+      if (!current()) {
+        return;
+      }
       this._error =
         (err as { message?: string } | undefined)?.message ?? String(err);
       // Let the user send the request again
       this._prompt = prompt;
-    } finally {
-      this._running = undefined;
-      fireEvent(this, "ai-request-finished", { config });
-      this._scrollToEnd();
     }
+    this._running = undefined;
+    fireEvent(this, "ai-request-finished", { config });
+    this._scrollToEnd();
   }
 
   private async _scrollToEnd() {
@@ -647,6 +706,32 @@ export class HaAutomationAiSheet extends LitElement {
     }
     .toggle {
       color: var(--secondary-text-color);
+    }
+    .ai-icon {
+      --mdc-icon-size: 24px;
+      padding: var(--ha-space-3);
+      color: var(--primary-color);
+    }
+    /* Shines while the AI works on the request */
+    .ai-icon.working {
+      animation: ai-shine 1.5s ease-in-out infinite;
+    }
+    @keyframes ai-shine {
+      0%,
+      100% {
+        filter: drop-shadow(0 0 0 rgba(var(--rgb-primary-color), 0));
+        transform: scale(1);
+      }
+      50% {
+        filter: drop-shadow(0 0 6px rgba(var(--rgb-primary-color), 0.9));
+        transform: scale(1.15);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ai-icon.working {
+        animation: none;
+        filter: drop-shadow(0 0 6px rgba(var(--rgb-primary-color), 0.9));
+      }
     }
     .content {
       flex: 1;
