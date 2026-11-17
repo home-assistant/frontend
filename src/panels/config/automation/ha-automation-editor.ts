@@ -309,9 +309,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     const shortcutIcon = renderCtrlOrCmd(this.hass.localize);
     const aiSettings = this._aiDiff?.settings ?? {};
     const aiSheetHidden = this.narrow && this._sidebarOpen;
-    // The name and description show their changes on the page, the mode only
-    // in its dialog
-    const aiModeChanged = !!(aiSettings.mode || aiSettings.max);
 
     return html`
       <hass-subpage
@@ -391,7 +388,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
             : nothing
         }
         ${
-          this.config?.id && !this.narrow
+          this.config?.id && !this.narrow && !this._aiActive
             ? html`
                 <ha-button
                   appearance="plain"
@@ -415,9 +412,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         >
           <ha-icon-button
             slot="trigger"
-            class=${classMap({
-              "ai-changes": aiModeChanged,
-            })}
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
@@ -461,7 +455,11 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
               : nothing
           }
 
-          <ha-dropdown-item .disabled=${!stateObj} value="info">
+          <ha-dropdown-item
+            ?hidden=${this._aiActive}
+            .disabled=${!stateObj}
+            value="info"
+          >
             ${this.hass.localize("ui.panel.config.automation.editor.show_info")}
             <ha-svg-icon
               slot="icon"
@@ -497,7 +495,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           </ha-dropdown-item>
 
           ${
-            stateObj && this.narrow
+            stateObj && this.narrow && !this._aiActive
               ? html`<ha-dropdown-item value="trace">
                   ${this.hass.localize(
                     "ui.panel.config.automation.editor.show_trace"
@@ -524,15 +522,13 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
             !useBlueprint
               ? html`
                   <ha-dropdown-item
+                    ?hidden=${this._aiActive}
                     @click=${this._promptAutomationMode}
-                    .disabled=${
-                      this.readOnly || this.mode === "yaml" || this._aiBusy
-                    }
+                    .disabled=${this.readOnly || this.mode === "yaml"}
                   >
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.change_mode"
                     )}
-                    ${aiModeChanged ? this._renderAiDot() : nothing}
                     <ha-svg-icon
                       slot="icon"
                       .path=${mdiDebugStepOver}
@@ -887,16 +883,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     return (["triggers", "conditions", "actions"] as const).every(
       (key) => !ensureArray(config[key] ?? []).length
     );
-  }
-
-  private _renderAiDot() {
-    return html`<span
-      class="ai-dot"
-      role="img"
-      aria-label=${this.hass.localize(
-        "ui.panel.config.automation.editor.ai.pending_changes"
-      )}
-    ></span>`;
   }
 
   private async _openAiSheet() {
@@ -1365,16 +1351,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   }
 
   private async _promptAutomationMode(): Promise<void> {
-    // Shows the suggested mode and how it changed, without changing it
-    if (this._aiConfig) {
-      showAutomationModeDialog(this, {
-        config: this._aiConfig,
-        previousConfig: this._aiBaseConfig,
-        updateConfig: () => undefined,
-        onClose: () => undefined,
-      });
-      return undefined;
-    }
     return new Promise((resolve) => {
       showAutomationModeDialog(this, {
         config: this.config!,
@@ -1692,28 +1668,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           background-color: var(--ha-color-fill-danger-normal-resting);
           color: var(--ha-color-on-danger-normal);
           text-decoration: line-through;
-        }
-        ha-icon-button.ai-changes {
-          position: relative;
-        }
-        ha-icon-button.ai-changes::after,
-        .ai-dot {
-          content: "";
-          display: inline-block;
-          width: 8px;
-          height: 8px;
-          border-radius: var(--ha-border-radius-circle);
-          background-color: var(--ha-color-fill-warning-loud-resting);
-        }
-        ha-icon-button.ai-changes::after {
-          position: absolute;
-          top: 8px;
-          inset-inline-end: 8px;
-          pointer-events: none;
-        }
-        .ai-dot {
-          margin-inline-start: var(--ha-space-2);
-          vertical-align: middle;
         }
         .header-name {
           display: flex;

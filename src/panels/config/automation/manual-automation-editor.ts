@@ -31,11 +31,19 @@ import type {
   Trigger,
 } from "../../../data/automation";
 import {
+  AUTOMATION_DEFAULT_MAX,
+  AUTOMATION_DEFAULT_MODE,
   isCondition,
   isTrigger,
   normalizeAutomationConfig,
 } from "../../../data/automation";
-import { getActionType, type Action } from "../../../data/script";
+import {
+  getActionType,
+  isMaxMode,
+  type Action,
+  type MODES,
+  type MODES_MAX,
+} from "../../../data/script";
 import {
   automationDiffContext,
   type AutomationDiff,
@@ -108,6 +116,7 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
           ? html`<div class="top">${description}${this._renderAiButton()}</div>`
           : nothing
       }
+      ${this._renderModeChange()}
       <div class="header">
         <h2 id="triggers-heading" class="name">
           ${this.hass.localize(
@@ -237,6 +246,62 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
 
   private _requestAiEdit() {
     fireEvent(this, "ai-edit-requested");
+  }
+
+  // The mode is only in a dialog, so a change of the AI shows here
+  private _renderModeChange() {
+    const before = this._diff?.before;
+    if (!before || "use_blueprint" in this.config) {
+      return nothing;
+    }
+    const oldMode = before.mode || AUTOMATION_DEFAULT_MODE;
+    const newMode = this.config.mode || AUTOMATION_DEFAULT_MODE;
+    const oldMax = isMaxMode(oldMode)
+      ? before.max || AUTOMATION_DEFAULT_MAX
+      : undefined;
+    const newMax = isMaxMode(newMode)
+      ? this.config.max || AUTOMATION_DEFAULT_MAX
+      : undefined;
+    const modeName = (mode: string) =>
+      this.hass.localize(
+        `ui.panel.config.automation.editor.modes.${mode as (typeof MODES)[number]}`
+      );
+    const changes = [
+      ...(oldMode !== newMode
+        ? [
+            this.hass.localize(
+              "ui.panel.config.automation.editor.ai.changes.value_changed",
+              {
+                name: this.hass.localize(
+                  "ui.panel.config.automation.editor.modes.label"
+                ),
+                old: modeName(oldMode),
+                new: modeName(newMode),
+              }
+            ),
+          ]
+        : []),
+      ...(newMax !== undefined && oldMax !== newMax
+        ? [
+            this.hass.localize(
+              "ui.panel.config.automation.editor.ai.changes.value_changed",
+              {
+                name: this.hass.localize(
+                  `ui.panel.config.automation.editor.max.${newMode as (typeof MODES_MAX)[number]}`
+                ),
+                old: oldMax ?? "—",
+                new: newMax,
+              }
+            ),
+          ]
+        : []),
+    ];
+    if (!changes.length) {
+      return nothing;
+    }
+    return html`<div class="mode-change">
+      ${changes.map((change) => html`<div>${change}</div>`)}
+    </div>`;
   }
 
   private _renderDescription() {
@@ -550,6 +615,13 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
 
         .description {
           margin-top: 16px;
+        }
+        .mode-change {
+          margin-top: 16px;
+          padding: var(--ha-space-1) var(--ha-space-3);
+          border-radius: var(--ha-border-radius-md);
+          border-inline-start: 4px solid var(--ha-color-border-warning-loud);
+          background-color: var(--ha-color-fill-warning-quiet-resting);
         }
         .top {
           display: flex;

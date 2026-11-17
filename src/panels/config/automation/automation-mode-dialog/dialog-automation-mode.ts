@@ -1,16 +1,14 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { mdiHelpCircleOutline, mdiStarFourPoints } from "@mdi/js";
+import { mdiHelpCircleOutline } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-select-box";
-import "../../../../components/ha-svg-icon";
 import "../../../../components/input/ha-input";
 
 import type { HaInput } from "../../../../components/input/ha-input";
@@ -80,7 +78,6 @@ class DialogAutomationMode
     const title = this.hass.localize(
       "ui.panel.config.automation.editor.change_mode"
     );
-    const previous = this._params.previousConfig;
 
     return html`
       <ha-dialog
@@ -99,9 +96,7 @@ class DialogAutomationMode
           target="_blank"
           rel="noopener noreferrer"
         ></ha-icon-button>
-        ${previous ? this._renderChanges(previous) : nothing}
         <ha-select-box
-          .disabled=${!!previous}
           .options=${MODES.map((mode) => ({
             label: this.hass.localize(
               `ui.panel.config.automation.editor.modes.${mode}`
@@ -128,7 +123,6 @@ class DialogAutomationMode
                     type="number"
                     name="max"
                     .value=${this._newMax?.toString() ?? ""}
-                    .disabled=${!!previous}
                     @input=${this._valueChanged}
                   >
                   </ha-input>
@@ -138,86 +132,25 @@ class DialogAutomationMode
         }
 
         <ha-dialog-footer slot="footer">
-          ${
-            previous
-              ? html`<ha-button slot="primaryAction" @click=${this.closeDialog}>
-                  ${this.hass.localize("ui.common.close")}
-                </ha-button>`
-              : html`<ha-button
-                    slot="secondaryAction"
-                    appearance="plain"
-                    @click=${this.closeDialog}
-                  >
-                    ${this.hass.localize("ui.common.cancel")}
-                  </ha-button>
-                  <ha-button
-                    slot="primaryAction"
-                    @click=${this._save}
-                    .disabled=${!this.isDirtyState}
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.change_mode"
-                    )}
-                  </ha-button>`
-          }
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            .disabled=${!this.isDirtyState}
+          >
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.change_mode"
+            )}
+          </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
     `;
-  }
-
-  private _renderChanges(
-    previous: NonNullable<AutomationModeDialog["previousConfig"]>
-  ) {
-    const oldMode = previous.mode || AUTOMATION_DEFAULT_MODE;
-    const oldMax = isMaxMode(oldMode)
-      ? previous.max || AUTOMATION_DEFAULT_MAX
-      : undefined;
-    const modeLabel = (mode: (typeof MODES)[number]) =>
-      this.hass.localize(`ui.panel.config.automation.editor.modes.${mode}`);
-    const changes = [
-      ...(oldMode !== this._newMode
-        ? [
-            this.hass.localize(
-              "ui.panel.config.automation.editor.ai.changes.value_changed",
-              {
-                name: this.hass.localize(
-                  "ui.panel.config.automation.editor.modes.label"
-                ),
-                old: modeLabel(oldMode),
-                new: modeLabel(this._newMode),
-              }
-            ),
-          ]
-        : []),
-      ...(isMaxMode(this._newMode) && oldMax !== this._newMax
-        ? [
-            this.hass.localize(
-              "ui.panel.config.automation.editor.ai.changes.value_changed",
-              {
-                name: this.hass.localize(
-                  `ui.panel.config.automation.editor.max.${this._newMode}`
-                ),
-                old: oldMax ?? "—",
-                new: this._newMax ?? "—",
-              }
-            ),
-          ]
-        : []),
-    ];
-    if (!changes.length) {
-      return nothing;
-    }
-    return html`<ha-alert
-      alert-type="warning"
-      .title=${this.hass.localize(
-        "ui.panel.config.automation.editor.ai.changes.title"
-      )}
-    >
-      <ha-svg-icon slot="icon" .path=${mdiStarFourPoints}></ha-svg-icon>
-      <ul>
-        ${changes.map((change) => html`<li>${change}</li>`)}
-      </ul>
-    </ha-alert>`;
   }
 
   private _modeChanged(ev) {
@@ -259,14 +192,6 @@ class DialogAutomationMode
       css`
         .max-value {
           margin-top: var(--ha-space-3);
-        }
-        ha-alert {
-          display: block;
-          margin-bottom: var(--ha-space-4);
-        }
-        ha-alert ul {
-          margin: 0;
-          padding-inline-start: var(--ha-space-5);
         }
         ha-wa-dialog ha-icon-button[slot="headerActionItems"] {
           color: var(--secondary-text-color);
