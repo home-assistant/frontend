@@ -143,6 +143,7 @@ export class HaThemeSettings extends LitElement {
           showThemeOptions
             ? html`
                 <ha-list-item-base
+                  class="set-by-theme"
                   wrap-supporting-text
                   .supportingText=${
                     modeSupport !== "both"
@@ -182,6 +183,7 @@ export class HaThemeSettings extends LitElement {
           showThemeOptions
             ? html`
                 <ha-list-item-base
+                  class="set-by-theme"
                   wrap-supporting-text
                   .supportingText=${
                     primaryColorLocked || accentColorLocked
@@ -364,6 +366,9 @@ export class HaThemeSettings extends LitElement {
     }
     ha-theme-picker {
       min-width: 150px;
+    }
+    .set-by-theme::part(supporting-text) {
+      color: var(--ha-color-on-warning-normal);
     }
     .color-pickers {
       display: flex;
