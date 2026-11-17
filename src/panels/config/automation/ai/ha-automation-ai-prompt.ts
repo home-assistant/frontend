@@ -76,7 +76,9 @@ const promptTheme = EditorView.theme({
     fontFamily: "inherit",
     lineHeight: "24px",
   },
+  // Lets a long placeholder shrink to the editor instead of widening it
   ".cm-content": {
+    minWidth: "0",
     padding: "0",
     caretColor: "var(--primary-text-color)",
   },
@@ -84,7 +86,16 @@ const promptTheme = EditorView.theme({
     borderLeftColor: "var(--primary-text-color)",
   },
   ".cm-line": { padding: "0" },
-  ".cm-placeholder": { color: "var(--secondary-text-color)" },
+  // One line, cut off with an ellipsis when it doesn't fit
+  ".cm-placeholder": {
+    color: "var(--secondary-text-color)",
+    display: "inline-block",
+    maxWidth: "100%",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    verticalAlign: "top",
+  },
   ".cm-tooltip.cm-tooltip-autocomplete": {
     border: "none",
     borderRadius: "var(--ha-border-radius-md)",
