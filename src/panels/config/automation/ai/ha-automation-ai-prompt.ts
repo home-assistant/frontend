@@ -181,9 +181,6 @@ export class HaAutomationAiPrompt extends LitElement {
 
   @property() public placeholder = "";
 
-  /** Glows like the other AI buttons while the AI works on the request. */
-  @property({ type: Boolean, reflect: true }) public working = false;
-
   @property({ type: Boolean, attribute: "focus-on-open" })
   public focusOnOpen = false;
 
@@ -340,27 +337,13 @@ export class HaAutomationAiPrompt extends LitElement {
         var(--secondary-background-color)
       );
       padding: var(--ha-space-2) var(--ha-space-3);
+      transition: box-shadow var(--ha-animation-duration-fast, 150ms) ease;
     }
-    /* Like the suggest with AI button while it works */
-    :host([working]) .editor {
-      animation: pulse-glow 1.5s ease-in-out infinite;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      :host([working]) .editor {
-        animation: none;
-        box-shadow: 0 0 8px 2px rgba(var(--rgb-primary-color), 0.6);
-      }
-    }
-    @keyframes pulse-glow {
-      0% {
-        box-shadow: 0 0 0 0 rgba(var(--rgb-primary-color), 0);
-      }
-      50% {
-        box-shadow: 0 0 8px 2px rgba(var(--rgb-primary-color), 0.6);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(var(--rgb-primary-color), 0);
-      }
+    /* A soft glow in the AI color while the user writes */
+    .editor:focus-within {
+      box-shadow:
+        inset 0 0 0 2px var(--primary-color),
+        0 0 12px 2px rgba(var(--rgb-primary-color), 0.3);
     }
     /* Like the targets in the automation rows */
     .mention {

@@ -309,7 +309,7 @@ export class HaAutomationAiSheet extends LitElement {
       <li class=${step.status}>
         ${
           step.status === "running"
-            ? html`<ha-spinner size="tiny"></ha-spinner>`
+            ? html`<ha-spinner></ha-spinner>`
             : html`<ha-svg-icon
                 .path=${
                   step.status === "error"
@@ -431,7 +431,6 @@ export class HaAutomationAiSheet extends LitElement {
             `ui.panel.config.automation.editor.ai.${followUp ? "follow_up_placeholder" : "prompt_placeholder"}`
           )}
           .value=${this._prompt}
-          .working=${!!this._running}
           @value-changed=${this._promptChanged}
           @prompt-submit=${this._submit}
           @pick-target=${this._pickTarget}
@@ -728,10 +727,13 @@ export class HaAutomationAiSheet extends LitElement {
       align-items: center;
       gap: var(--ha-space-2);
     }
-    .steps li ha-svg-icon,
-    .steps li ha-spinner {
+    .steps li ha-svg-icon {
       --mdc-icon-size: 20px;
-      width: 20px;
+      flex-shrink: 0;
+    }
+    /* As big as the icons, a narrower box made it wobble while it spins */
+    .steps li ha-spinner {
+      --ha-spinner-size: 20px;
       flex-shrink: 0;
     }
     .steps li.done ha-svg-icon {
