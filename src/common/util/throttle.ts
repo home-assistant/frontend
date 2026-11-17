@@ -5,6 +5,7 @@
 // as much as it can, without ever going more than once per `wait` duration;
 // but if you'd like to disable the execution on the leading edge, pass
 // `false for leading`. To disable execution on the trailing edge, ditto.
+// The trailing call uses the arguments of the latest call.
 export const throttle = <T extends any[]>(
   func: (...args: T) => void,
   wait: number,
@@ -13,12 +14,17 @@ export const throttle = <T extends any[]>(
 ) => {
   let timeout: number | undefined;
   let previous = 0;
-  const throttledFunc = (...args: T): void => {
-    const later = () => {
-      previous = leading === false ? 0 : Date.now();
-      timeout = undefined;
+  let pendingArgs: T | undefined;
+  const later = () => {
+    previous = leading === false ? 0 : Date.now();
+    timeout = undefined;
+    const args = pendingArgs;
+    pendingArgs = undefined;
+    if (args) {
       func(...args);
-    };
+    }
+  };
+  const throttledFunc = (...args: T): void => {
     const now = Date.now();
     if (!previous && leading === false) {
       previous = now;
@@ -30,15 +36,20 @@ export const throttle = <T extends any[]>(
         timeout = undefined;
       }
       previous = now;
+      pendingArgs = undefined;
       func(...args);
-    } else if (!timeout && trailing !== false) {
-      timeout = window.setTimeout(later, remaining);
+    } else if (trailing !== false) {
+      pendingArgs = args;
+      if (!timeout) {
+        timeout = window.setTimeout(later, remaining);
+      }
     }
   };
   throttledFunc.cancel = () => {
     clearTimeout(timeout);
     timeout = undefined;
     previous = 0;
+    pendingArgs = undefined;
   };
   return throttledFunc;
 };
