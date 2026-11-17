@@ -12,6 +12,7 @@ import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
+import "../../components/ha-domain-icon";
 import "../../components/ha-spinner";
 import "../../components/ha-svg-icon";
 import "../../components/item/ha-list-item-base";
@@ -27,16 +28,13 @@ import {
 } from "../../data/bootstrap_integrations";
 import {
   apiContext,
-  brandsAccessTokenContext,
   configContext,
   connectionContext,
   internationalizationContext,
-  uiContext,
 } from "../../data/context";
 import type { IntegrationSetup } from "../../data/integration";
 import { domainToName, fetchIntegrationSetups } from "../../data/integration";
 import { haStyleDialog } from "../../resources/styles";
-import { brandsUrl } from "../../util/brands-url";
 import { DialogMixin } from "../dialog-mixin";
 
 const MAX_SLOWEST = 10;
@@ -56,15 +54,6 @@ class DialogStartupProgress extends DialogMixin(LitElement) {
   @state()
   @consume({ context: configContext, subscribe: true })
   private _config!: ContextType<typeof configContext>;
-
-  @state()
-  @consume({ context: uiContext, subscribe: true })
-  private _ui!: ContextType<typeof uiContext>;
-
-  // Brand images only load once core has handed out a token.
-  @state()
-  @consume({ context: brandsAccessTokenContext, subscribe: true })
-  private _brandsAccessToken?: string;
 
   @state() private _progress?: BootstrapProgress;
 
@@ -231,7 +220,11 @@ class DialogStartupProgress extends DialogMixin(LitElement) {
         ${domains.map(
           (domain) => html`
             <ha-list-item-base>
-              ${this._icon(domain)}
+              <ha-domain-icon
+                slot="start"
+                .domain=${domain}
+                brand-fallback
+              ></ha-domain-icon>
               <span slot="headline">
                 ${domainToName(this._i18n.localize, domain)}
               </span>
@@ -243,27 +236,14 @@ class DialogStartupProgress extends DialogMixin(LitElement) {
     `;
   }
 
-  private _icon(domain: string) {
-    if (!this._brandsAccessToken) {
-      return nothing;
-    }
-    return html`<img
-      slot="start"
-      alt=""
-      loading="lazy"
-      src=${brandsUrl(
-        { domain, type: "icon", darkOptimized: this._ui?.themes.darkMode },
-        this._connection.hassUrl()
-      )}
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />`;
-  }
-
   private _row(domain: string, seconds: number) {
     return html`
       <ha-list-item-base>
-        ${this._icon(domain)}
+        <ha-domain-icon
+          slot="start"
+          .domain=${domain}
+          brand-fallback
+        ></ha-domain-icon>
         <span slot="headline">
           ${domainToName(this._i18n.localize, domain)}
         </span>
@@ -311,12 +291,6 @@ class DialogStartupProgress extends DialogMixin(LitElement) {
       ha-svg-icon {
         flex-shrink: 0;
         color: var(--error-color);
-      }
-      img {
-        width: 24px;
-        height: 24px;
-        flex-shrink: 0;
-        border-radius: var(--ha-border-radius-square);
       }
     `,
   ];
