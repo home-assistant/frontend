@@ -692,10 +692,12 @@ export class HaScheduleTimeline extends LitElement {
       --schedule-menu-width: 0px;
     }
 
-    /* Given more height, like a stretched host, the days spread out. */
+    /* Given more height, like a stretched host, the days spread out and the
+       last one ends at the bottom. */
     .timeline {
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
       height: 100%;
       gap: var(--ha-space-3);
       user-select: none;
@@ -723,10 +725,12 @@ export class HaScheduleTimeline extends LitElement {
       white-space: nowrap;
     }
 
+    /* As tall as the track, so the week ends with the last track; the day
+       menu button may stick out a little. */
     .row {
-      flex: 1;
       display: flex;
       align-items: center;
+      height: var(--schedule-track-height);
     }
 
     .day {

@@ -73,6 +73,8 @@ const panelKind = (panel?: SchedulePanel) => {
 
 const NEW_BLOCK: ScheduleBlock = { from: "08:00", to: "17:00" };
 
+const NEW_BLOCK_PANEL: SchedulePanel = { type: "block" };
+
 const DRAFT_DIRTY_KEY = "schedule-block-draft";
 
 /**
@@ -363,11 +365,12 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
           panel
             ? this._renderPanel(panel)
             : html`<ha-button class="new-block" @click=${this._newBlock}>
-                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-                ${this._i18n.localize(
-                  "ui.dialogs.helper_settings.schedule.new_block"
-                )}
-              </ha-button>`
+                  <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                  ${this._i18n.localize(
+                    "ui.dialogs.helper_settings.schedule.new_block"
+                  )}
+                </ha-button>
+                ${this._renderPanelPlaceholder()}`
         }
       </div>
     `;
@@ -378,7 +381,28 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
       // A new panel element for each kind of panel replays the fade-in,
       // while switching between blocks keeps it.
       panelKind(panel),
-      html`<div class="panel">
+      html`<div
+        class="panel"
+        @schedule-block-draft-changed=${this._draftChanged}
+      >
+        ${this._renderPanelContent(panel)}
+      </div>`
+    );
+  }
+
+  /**
+   * An invisible new time block panel that keeps its room on wide screens,
+   * so opening the panel does not resize the form.
+   */
+  private _renderPanelPlaceholder() {
+    return html`<div class="panel-placeholder" inert>
+      ${this._renderPanelContent(NEW_BLOCK_PANEL)}
+    </div>`;
+  }
+
+  /** The panel's content, followed by its actions. */
+  private _renderPanelContent(panel: SchedulePanel) {
+    return html`<div class="panel-content">
         <h3 class="heading" tabindex="-1">${this._panelTitle(panel)}</h3>
         ${
           panel.type === "block"
@@ -390,13 +414,11 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
                     : NEW_BLOCK
                 }
                 .source=${panel.source}
-                @schedule-block-draft-changed=${this._draftChanged}
               ></ha-schedule-block-editor>`
             : this._renderCopyPanel(panel)
         }
-        ${this._renderActions(panel)}
-      </div>`
-    );
+      </div>
+      ${this._renderActions(panel)}`;
   }
 
   private _panelTitle(panel: SchedulePanel) {
@@ -530,7 +552,7 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
   }
 
   private _newBlock() {
-    this._panel = { type: "block" };
+    this._panel = NEW_BLOCK_PANEL;
   }
 
   private async _copyDay(ev: HASSDomEvent<HASSDomEvents["schedule-day-copy"]>) {
@@ -683,20 +705,35 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
           gap: var(--ha-space-3);
         }
 
+        .panel,
+        .panel-content {
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-4);
+        }
+
+        .panel-placeholder {
+          display: none;
+        }
+
+        .panel {
+          animation: panel-in var(--ha-animation-duration-normal, 250ms)
+            ease-out;
+        }
+
         /* With enough room, the identity and the panel sit beside the
-           schedule, so both stay in view while editing. The form is about as
-           tall as the identity with the new time block panel open, so
-           opening it does not resize the dialog, and the schedule fills that
-           height. */
+           schedule, so both stay in view while editing. The schedule fills
+           the height of the panel's content, and the panel's actions get a
+           row below it. */
         @container (min-width: 840px) {
           .layout {
-            min-height: min(640px, 70vh);
             display: grid;
             grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-            grid-template-rows: auto 1fr;
+            grid-template-rows: auto 1fr auto;
             grid-template-areas:
               "identity main"
-              "panel main";
+              "panel main"
+              "panel .";
             column-gap: var(--ha-space-6);
             row-gap: var(--ha-space-4);
             align-items: start;
@@ -716,8 +753,20 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
           }
 
           .panel,
+          .panel-placeholder,
           .new-block {
             grid-area: panel;
+          }
+
+          .panel,
+          .panel-placeholder {
+            display: grid;
+            grid-template-rows: subgrid;
+            align-self: stretch;
+          }
+
+          .panel-placeholder {
+            visibility: hidden;
           }
         }
 
@@ -733,14 +782,6 @@ class HaScheduleForm extends LitElement implements HelperFormElement {
 
         .form > ha-spinner {
           align-self: center;
-        }
-
-        .panel {
-          display: flex;
-          flex-direction: column;
-          gap: var(--ha-space-4);
-          animation: panel-in var(--ha-animation-duration-normal, 250ms)
-            ease-out;
         }
 
         @keyframes panel-in {
