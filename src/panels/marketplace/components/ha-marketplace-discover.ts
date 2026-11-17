@@ -185,9 +185,9 @@ export class HaMarketplaceDiscover extends LitElement {
           display: flex;
           flex-direction: column;
           gap: var(--ha-space-8);
-          max-width: 1000px;
+          max-width: var(--ha-content-width-wide);
           margin: auto;
-          padding: var(--ha-space-8) var(--ha-space-4);
+          padding: var(--ha-space-8) var(--ha-content-gutter);
         }
 
         .intro h2 {

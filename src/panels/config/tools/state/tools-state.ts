@@ -15,7 +15,6 @@ import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_da
 import { storage } from "../../../../common/decorators/storage";
 import type { HASSDomTargetEvent } from "../../../../common/dom/fire_event";
 import { escapeRegExp } from "../../../../common/string/escape_regexp";
-import { computeEntitySearchLabels } from "../../../../common/entity/compute_entity_name_display";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
@@ -132,6 +131,7 @@ class HaPanelDevState extends LitElement {
       attributeFilter: string,
       deviceFilter: string,
       areaFilter: string,
+      deviceColumnShown: boolean,
       states: HassEntities,
       entities: HomeAssistantRegistries["entities"],
       devices: HomeAssistantRegistries["devices"],
@@ -143,6 +143,7 @@ class HaPanelDevState extends LitElement {
         attributeFilter,
         deviceFilter,
         areaFilter,
+        deviceColumnShown,
         states,
         entities,
         devices,
@@ -157,6 +158,7 @@ class HaPanelDevState extends LitElement {
       this._attributeFilter,
       this._deviceFilter,
       this._areaFilter,
+      !this.narrow && this._showDevice,
       this._states,
       this._registries.entities,
       this._registries.devices,
@@ -493,6 +495,7 @@ class HaPanelDevState extends LitElement {
     attributeFilter: string,
     deviceFilter: string,
     areaFilter: string,
+    deviceColumnShown: boolean,
     states: HassEntities,
     entities: HomeAssistantRegistries["entities"],
     devices: HomeAssistantRegistries["devices"],
@@ -540,13 +543,16 @@ class HaPanelDevState extends LitElement {
 
     return Object.values(states)
       .filter((value) => {
+        // Match the entity column's name; without the device column, match
+        // the full name.
         if (
           entityFilterRegExp &&
           !entityFilterRegExp.test(value.entity_id) &&
-          !entityFilterRegExp.test(this.hass.formatEntityName(value)) &&
           !entityFilterRegExp.test(
-            computeEntitySearchLabels(value, this._registries).friendlyName ??
-              ""
+            this.hass.formatEntityName(
+              value,
+              deviceColumnShown ? { type: "entity" } : undefined
+            )
           )
         ) {
           return false;

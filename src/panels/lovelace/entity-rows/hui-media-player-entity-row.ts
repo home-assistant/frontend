@@ -436,16 +436,23 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     :host {
       display: block;
     }
+    /* When the volume and playback buttons don't fit next to each other, the
+       playback buttons wrap to their own line at the end of the row instead
+       of overflowing it (and getting clipped by the card). */
     .flex {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-end;
     }
     .volume {
       display: flex;
       align-items: center;
       flex-grow: 2;
       flex-shrink: 2;
+      /* Only what can't shrink (the buttons and the slider's minimum width)
+         counts towards wrapping, the slider takes the remaining space. */
+      flex-basis: 0;
     }
     .controls {
       white-space: nowrap;
@@ -455,6 +462,9 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       flex-grow: 2;
       flex-shrink: 2;
       width: 100%;
+      /* Narrower than ha-slider's default 100px, so on phones the slider
+         gives up some width before the playback buttons have to wrap. */
+      min-width: 80px;
       /* Horizontal margin leaves room for the thumb at 0% and 100% so it
          isn't clipped by the card's overflow-x: hidden. */
       margin: 1px var(--ha-space-2);

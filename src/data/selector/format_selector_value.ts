@@ -1,12 +1,16 @@
 import type { HassEntities } from "home-assistant-js-websocket";
 import { ensureArray } from "../../common/array/ensure-array";
+import { THEME_COLORS } from "../../common/color/compute-color";
 import { createDurationData } from "../../common/datetime/create_duration_data";
 import { formatDurationLong } from "../../common/datetime/format_duration";
 import { normalizeDuration } from "../../common/datetime/normalize_duration";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { DEFAULT_ENTITY_NAME } from "../../common/entity/compute_entity_name_display";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
-import type { LocalizeFunc } from "../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../common/translations/localize";
 import type { HomeAssistantFormatters } from "../../types";
 import type { AreaRegistryEntry } from "../area/area_registry";
 import type { DeviceRegistryEntry } from "../device/device_registry";
@@ -148,6 +152,25 @@ export const formatSelectorValue = (
         return JSON.stringify(item);
       })
       .join(", ");
+  }
+
+  if ("ui_color" in selector) {
+    const color = String(value);
+    const extraOption = selector.ui_color?.extra_options?.find(
+      (option) => option.value === color
+    );
+    if (extraOption) {
+      return extraOption.label;
+    }
+    if (color === "none" || color === "state") {
+      return options.localize(`ui.components.color-picker.${color}`);
+    }
+    if (THEME_COLORS.has(color)) {
+      return options.localize(
+        `ui.components.color-picker.colors.${color}` as LocalizeKeys
+      );
+    }
+    return color;
   }
 
   if ("duration" in selector) {

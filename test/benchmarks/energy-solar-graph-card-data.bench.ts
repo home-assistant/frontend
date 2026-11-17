@@ -33,6 +33,7 @@ const solarPrefs = (sources: number, forecast: boolean): EnergyPreferences => {
     energy_sources: energySources,
     device_consumption: [],
     device_consumption_water: [],
+    device_consumption_gas: [],
   };
 };
 

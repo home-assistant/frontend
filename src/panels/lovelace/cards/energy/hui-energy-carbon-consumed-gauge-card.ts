@@ -159,7 +159,11 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
                   id="info"
                   .path=${mdiInformationOutline}
                 ></ha-svg-icon>
-                <ha-tooltip for="info" placement="left">
+                <ha-tooltip
+                  trigger="hover focus click"
+                  for="info"
+                  placement="left"
+                >
                   ${this._i18n.localize(
                     "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.card_indicates_energy_used"
                   )}

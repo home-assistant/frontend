@@ -58,6 +58,10 @@ export class HaAnsiToHtml extends LitElement {
   // The hidden lines each expand row shows when clicked.
   private _expandGaps = new WeakMap<HTMLElement, HTMLDivElement[]>();
 
+  public get hasLines(): boolean {
+    return !!this._pre?.childElementCount;
+  }
+
   protected render(): TemplateResult {
     return html`<pre class=${classMap({ wrap: !this.wrapDisabled })}></pre>`;
   }

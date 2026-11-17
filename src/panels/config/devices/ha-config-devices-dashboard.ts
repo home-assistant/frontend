@@ -18,6 +18,7 @@ import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -28,13 +29,13 @@ import {
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { deepEqual } from "../../../common/util/deep-equal";
 import {
   devicesFilterQueryParamConfig,
   devicesFilterQueryParams,
   devicesFilterQueryString,
   devicesLinkFromUrl,
 } from "../../../common/url/devices-query-params";
+import { deepEqual } from "../../../common/util/deep-equal";
 import {
   hasRejectedItems,
   rejectedItems,
@@ -47,8 +48,6 @@ import type {
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
-import "../../../components/skeleton/ha-skeleton-icon";
-import "../../../components/skeleton/ha-skeleton-text";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -58,6 +57,8 @@ import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon-button";
+import "../../../components/skeleton/ha-skeleton-icon";
+import "../../../components/skeleton/ha-skeleton-text";
 import { createAreaRegistryEntry } from "../../../data/area/area_registry";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getSubEntries, sortConfigEntries } from "../../../data/config_entries";
@@ -67,7 +68,6 @@ import {
   deserializeFilters,
   serializeFilters,
 } from "../../../data/data_table_filters";
-import { computeDeviceAreaLabel } from "../../../data/device/device_picker";
 import type {
   DeviceEntityLookup,
   DeviceRegistryEntry,
@@ -451,31 +451,19 @@ export class HaConfigDeviceDashboard extends LitElement {
         const parentDevice = device.parent_device_id
           ? this.hass.devices[device.parent_device_id]
           : undefined;
+        const viaDevice = device.via_device_id
+          ? this.hass.devices[device.via_device_id]
+          : undefined;
         // The device that identifies this device's family: its parent for a
         // child device, itself for a device that has children.
         const familyParentDevice =
           parentDevice ??
           (deviceIdsWithChildren.has(device.id) ? device : undefined);
 
-        const { areaName } = computeDeviceAreaLabel(
-          device,
-          this.hass.areas,
-          this.hass.devices,
-          this.hass.localize,
-          this.hass.language,
-          this.hass.translationMetadata
-        );
+        const area = getDeviceArea(device, areas, this.hass.devices);
+        const areaName = area ? computeAreaName(area) : undefined;
 
-        const floorArea =
-          getDeviceArea(device, areas, this.hass.devices) ??
-          (device.via_device_id && this.hass.devices[device.via_device_id]
-            ? getDeviceArea(
-                this.hass.devices[device.via_device_id],
-                areas,
-                this.hass.devices
-              )
-            : undefined);
-        const floorId = floorArea?.floor_id;
+        const floorId = area?.floor_id;
         const floorName =
           floorId && this.hass.floors?.[floorId]
             ? computeFloorName(this.hass.floors[floorId])
@@ -486,6 +474,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           name: computeDeviceNameDisplay(device, this.hass.localize),
           model:
             device.model ||
+            device.model_id ||
             `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
           manufacturer:
             device.manufacturer ||
@@ -511,6 +500,9 @@ export class HaConfigDeviceDashboard extends LitElement {
           parent_device_name: parentDevice
             ? computeDeviceNameDisplay(parentDevice, this.hass.localize)
             : "",
+          via_device_name: viaDevice
+            ? computeDeviceNameDisplay(viaDevice, this.hass.localize)
+            : undefined,
           // Grouping key that keeps a device with its family: children group
           // under their parent's name, a parent groups under its own name, and
           // standalone devices stay ungrouped. The name is always computed from
@@ -633,6 +625,15 @@ export class HaConfigDeviceDashboard extends LitElement {
         defaultHidden: true,
         minWidth: "120px",
         template: (device) => device.parent_device_name || "",
+      },
+      via_device_name: {
+        title: localize("ui.panel.config.devices.data_table.connected_via"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
+        urlName: "via",
+        defaultHidden: true,
+        minWidth: "120px",
       },
       manufacturer: {
         title: localize("ui.panel.config.devices.data_table.manufacturer"),
@@ -1167,7 +1168,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     const promises: Promise<DeviceRegistryEntry>[] = [];
     this._selected.forEach((deviceId) => {
       promises.push(
-        updateDeviceRegistryEntry(this.hass, deviceId, {
+        updateDeviceRegistryEntry(this.hass.callWS, deviceId, {
           area_id: area,
         })
       );
@@ -1219,7 +1220,7 @@ ${rejected
     const promises: Promise<DeviceRegistryEntry>[] = [];
     this._selected.forEach((deviceId) => {
       promises.push(
-        updateDeviceRegistryEntry(this.hass, deviceId, {
+        updateDeviceRegistryEntry(this.hass.callWS, deviceId, {
           labels:
             action === "add"
               ? this.hass.devices[deviceId].labels.concat(label)

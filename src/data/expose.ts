@@ -10,7 +10,7 @@ export const voiceAssistants = {
   },
   "cloud.google_assistant": {
     domain: "google_assistant",
-    name: "Google Assistant",
+    name: "Google Home",
   },
 } as const;
 

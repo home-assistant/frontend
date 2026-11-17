@@ -4,6 +4,10 @@ import {
   mdiArrowDown,
   mdiArrowExpandHorizontal,
   mdiArrowUp,
+  mdiDoorClosed,
+  mdiDoorOpen,
+  mdiGate,
+  mdiGateOpen,
 } from "@mdi/js";
 import { describe, it, expect } from "vitest";
 import {
@@ -11,44 +15,35 @@ import {
   computeCloseIcon,
 } from "../../../src/common/entity/cover_icon";
 
+const withDeviceClass = (deviceClass: string) =>
+  ({ attributes: { device_class: deviceClass } }) as unknown as HassEntity;
+
 describe("computeOpenIcon", () => {
-  it("returns mdiArrowExpandHorizontal for awning, door, gate, and curtain", () => {
-    const stateObj = { attributes: { device_class: "awning" } } as HassEntity;
-    expect(computeOpenIcon(stateObj)).toBe(mdiArrowExpandHorizontal);
-
-    stateObj.attributes.device_class = "door";
-    expect(computeOpenIcon(stateObj)).toBe(mdiArrowExpandHorizontal);
-
-    stateObj.attributes.device_class = "gate";
-    expect(computeOpenIcon(stateObj)).toBe(mdiArrowExpandHorizontal);
-
-    stateObj.attributes.device_class = "curtain";
-    expect(computeOpenIcon(stateObj)).toBe(mdiArrowExpandHorizontal);
+  it("returns the device class icon for door, gate, curtain and awning", () => {
+    expect(computeOpenIcon(withDeviceClass("door"))).toBe(mdiDoorOpen);
+    expect(computeOpenIcon(withDeviceClass("gate"))).toBe(mdiGateOpen);
+    expect(computeOpenIcon(withDeviceClass("curtain"))).toBe(
+      mdiArrowExpandHorizontal
+    );
+    expect(computeOpenIcon(withDeviceClass("awning"))).toBe(mdiArrowDown);
   });
 
   it("returns mdiArrowUp for other device classes", () => {
-    const stateObj = { attributes: { device_class: "window" } } as HassEntity;
-    expect(computeOpenIcon(stateObj)).toBe(mdiArrowUp);
+    expect(computeOpenIcon(withDeviceClass("window"))).toBe(mdiArrowUp);
   });
 });
 
 describe("computeCloseIcon", () => {
-  it("returns mdiArrowCollapseHorizontal for awning, door, gate, and curtain", () => {
-    const stateObj = { attributes: { device_class: "awning" } } as HassEntity;
-    expect(computeCloseIcon(stateObj)).toBe(mdiArrowCollapseHorizontal);
-
-    stateObj.attributes.device_class = "door";
-    expect(computeCloseIcon(stateObj)).toBe(mdiArrowCollapseHorizontal);
-
-    stateObj.attributes.device_class = "gate";
-    expect(computeCloseIcon(stateObj)).toBe(mdiArrowCollapseHorizontal);
-
-    stateObj.attributes.device_class = "curtain";
-    expect(computeCloseIcon(stateObj)).toBe(mdiArrowCollapseHorizontal);
+  it("returns the device class icon for door, gate, curtain and awning", () => {
+    expect(computeCloseIcon(withDeviceClass("door"))).toBe(mdiDoorClosed);
+    expect(computeCloseIcon(withDeviceClass("gate"))).toBe(mdiGate);
+    expect(computeCloseIcon(withDeviceClass("curtain"))).toBe(
+      mdiArrowCollapseHorizontal
+    );
+    expect(computeCloseIcon(withDeviceClass("awning"))).toBe(mdiArrowUp);
   });
 
   it("returns mdiArrowDown for other device classes", () => {
-    const stateObj = { attributes: { device_class: "window" } } as HassEntity;
-    expect(computeCloseIcon(stateObj)).toBe(mdiArrowDown);
+    expect(computeCloseIcon(withDeviceClass("window"))).toBe(mdiArrowDown);
   });
 });

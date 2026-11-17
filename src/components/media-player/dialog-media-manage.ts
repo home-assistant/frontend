@@ -30,15 +30,14 @@ import {
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import type { HomeAssistantConfig } from "../../types";
 import "../ha-button";
-import "../ha-check-list-item";
 import "../ha-dialog";
-import "../ha-dialog-footer";
 import "../ha-dialog-header";
 import "../ha-icon-button";
-import "../ha-list";
 import "../ha-spinner";
 import "../ha-svg-icon";
 import "../ha-tip";
+import "../item/ha-list-item-option";
+import "../list/ha-list-selectable";
 import "./ha-media-upload-button";
 import type { MediaManageDialogParams } from "./show-media-manage-dialog";
 
@@ -101,12 +100,6 @@ class DialogMediaManage extends LitElement {
     }
     this._filteredChildren =
       this._currentItem?.children?.filter((child) => !child.can_expand) || [];
-    if (this._filteredChildren.length === 0 && this._selected.size !== 0) {
-      // When running delete all, sometimes the list can throw off a spurious
-      // select event that makes it think that 1 item is still selected. Clear selected
-      // if nothing can be selected.
-      this._selected = new Set();
-    }
   }
 
   protected render() {
@@ -218,14 +211,21 @@ class DialogMediaManage extends LitElement {
                       )}
                     </ha-button>
                   </div>
-                  <ha-list multi @selected=${this._handleSelected}>
+                  <ha-list-selectable
+                    multi
+                    aria-label=${this._localize(
+                      "ui.components.media-browser.file_management.title"
+                    )}
+                    @ha-list-item-selected=${this._handleItemSelected}
+                    @ha-list-item-deselected=${this._handleItemDeselected}
+                  >
                     ${repeat(
                       this._filteredChildren,
                       (item) => item.media_content_id,
                       (item) => {
                         const icon = html`
                           <ha-svg-icon
-                            slot="graphic"
+                            slot="start"
                             .path=${
                               MediaClassBrowserSettings[
                                 item.media_class === "directory"
@@ -237,22 +237,23 @@ class DialogMediaManage extends LitElement {
                           ></ha-svg-icon>
                         `;
                         return html`
-                          <ha-check-list-item
+                          <ha-list-item-option
                             ${animate({
                               id: item.media_content_id,
                               skipInitial: true,
                             })}
-                            graphic="icon"
+                            appearance="checkbox"
+                            selection-position="end"
                             .disabled=${this._uploading || this._deleting}
                             .selected=${this._selected.has(fileIndex++)}
-                            .item=${item}
                           >
-                            ${icon} ${item.title}
-                          </ha-check-list-item>
+                            ${icon}
+                            <span slot="headline">${item.title}</span>
+                          </ha-list-item-option>
                         `;
                       }
                     )}
-                  </ha-list>
+                  </ha-list-selectable>
                 `
         }
         ${
@@ -278,8 +279,14 @@ class DialogMediaManage extends LitElement {
     `;
   }
 
-  private _handleSelected(ev) {
-    this._selected = ev.detail.index;
+  private _handleItemSelected(ev: CustomEvent<number>) {
+    this._selected = new Set(this._selected).add(ev.detail);
+  }
+
+  private _handleItemDeselected(ev: CustomEvent<number>) {
+    const selected = new Set(this._selected);
+    selected.delete(ev.detail);
+    this._selected = selected;
   }
 
   private _startUploading() {

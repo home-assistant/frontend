@@ -1,6 +1,6 @@
 import type { Connection } from "home-assistant-js-websocket";
 import type { LocalizeFunc } from "../common/translations/localize";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
 import type {
   DataEntryFlowProgress,
   DataEntryFlowStep,
@@ -30,11 +30,11 @@ const HEADERS = {
 };
 
 export const createConfigFlow = (
-  hass: HomeAssistant,
+  callApi: HomeAssistant["callApi"],
   handler: string,
   entry_id?: string
 ) =>
-  hass.callApi<DataEntryFlowStep>(
+  callApi<DataEntryFlowStep>(
     "POST",
     "config/config_entries/flow",
     {
@@ -53,11 +53,11 @@ export const fetchConfigFlow = (hass: HomeAssistant, flowId: string) =>
   );
 
 export const handleConfigFlowStep = (
-  hass: HomeAssistant,
+  callApi: HomeAssistant["callApi"],
   flowId: string,
   data: Record<string, any>
 ) =>
-  hass.callApi<DataEntryFlowStep>(
+  callApi<DataEntryFlowStep>(
     "POST",
     `config/config_entries/flow/${flowId}`,
     data,
@@ -78,10 +78,10 @@ export const deleteConfigFlow = (
 
 // The backend indexes a single key, and only these two exist.
 export const getConfigFlowHandlers = (
-  hass: HomeAssistant,
+  callApi: HomeAssistantApi["callApi"],
   type?: "helper" | "integration"
 ) =>
-  hass.callApi<string[]>(
+  callApi<string[]>(
     "GET",
     `config/config_entries/flow_handlers${type ? `?type=${type}` : ""}`
   );

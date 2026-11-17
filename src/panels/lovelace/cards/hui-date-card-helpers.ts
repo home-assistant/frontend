@@ -62,14 +62,14 @@ export const computeDateText = (
   config: HassConfig,
   cardConfig: DateCardConfig
 ): string => {
-  const { parts } = getClockCardDateConfig(cardConfig);
+  const dateConfig = getClockCardDateConfig(cardConfig);
   const timeZone = computeResolvedTimeZone(locale, config, cardConfig);
 
-  if (!parts.length) {
+  if (!dateConfig.preset && !dateConfig.parts.length) {
     return formatDefaultDate(dateObj, locale.language, timeZone);
   }
 
-  return formatClockCardDate(dateObj, { parts }, locale.language, timeZone);
+  return formatClockCardDate(dateObj, dateConfig, locale.language, timeZone);
 };
 
 /**

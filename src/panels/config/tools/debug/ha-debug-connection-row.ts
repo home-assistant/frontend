@@ -14,7 +14,7 @@ class HaDebugConnectionRow extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-list-item-base>
+      <ha-list-item-base wrap-headline wrap-supporting-text>
         <span slot="headline"
           >${this.hass.localize(
             "ui.panel.config.tools.tabs.debug.debug_connection.title"

@@ -6,8 +6,9 @@ import { repeat } from "lit/directives/repeat";
 import { until } from "lit/directives/until";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
-import "../../../../components/ha-list";
-import "../../../../components/ha-list-item";
+import "../../../../components/item/ha-list-item-button";
+import "../../../../components/list/ha-list-base";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name_display";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import { entryIcon } from "../../../../data/icons";
@@ -70,15 +71,15 @@ export class HaDeviceEntitiesCard extends LitElement {
           enabledEntities.length
             ? html`
                 <div id="entities" class="move-up">
-                  <ha-list>
+                  <ha-list-base .ariaLabel=${this.header}>
                     ${this._renderEntities(mainEntities)}
                     ${
                       mainEntities.length && additionalEntities.length
-                        ? html`<div class="divider" role="separator"></div>`
+                        ? html`<div class="divider" aria-hidden="true"></div>`
                         : nothing
                     }
                     ${this._renderEntities(additionalEntities)}
-                  </ha-list>
+                  </ha-list-base>
                 </div>
               `
             : nothing
@@ -102,11 +103,15 @@ export class HaDeviceEntitiesCard extends LitElement {
                         </button>
                       `
                     : html`
-                        <ha-list>
+                        <ha-list-base
+                          .ariaLabel=${this.hass.localize(
+                            "ui.panel.config.devices.entities.disabled_entities_list"
+                          )}
+                        >
                           ${disabledEntities.map((entry) =>
                             this._renderUnavailableEntity(entry)
                           )}
-                        </ha-list>
+                        </ha-list-base>
                         <button
                           class="show-more"
                           @click=${this._toggleShowHidden}
@@ -146,7 +151,7 @@ export class HaDeviceEntitiesCard extends LitElement {
         "ui.panel.config.devices.entities.hidden"
       )})`;
     }
-    return html`<div>
+    return html`<div role="listitem" @keydown=${stopPropagation}>
       ${entityRowElement(entry.entity_id, name, this.hass)}
     </div>`;
   }
@@ -159,15 +164,14 @@ export class HaDeviceEntitiesCard extends LitElement {
     const icon = until(entryIcon(this.hass, entry));
 
     return html`
-      <ha-list-item
-        graphic="icon"
+      <ha-list-item-button
         class="disabled-entry"
         .entry=${entry}
         @click=${this._openEditEntry}
       >
-        <ha-icon slot="graphic" .icon=${icon}></ha-icon>
-        <div class="name">${name}</div>
-      </ha-list-item>
+        <ha-icon slot="start" .icon=${icon}></ha-icon>
+        <span slot="headline" class="name">${name}</span>
+      </ha-list-item-button>
     `;
   }
 
@@ -179,9 +183,6 @@ export class HaDeviceEntitiesCard extends LitElement {
   static styles = css`
     :host {
       display: block;
-    }
-    ha-icon {
-      margin-left: -8px;
     }
     .entity-id {
       color: var(--secondary-text-color);
@@ -201,21 +202,25 @@ export class HaDeviceEntitiesCard extends LitElement {
     .move-up {
       margin-top: -13px;
     }
-    .move-up:has(> ha-list) {
+    .move-up:has(> ha-list-base) {
       margin-top: -24px;
     }
-    :not(.move-up) > ha-list {
+    :not(.move-up) > ha-list-base {
       margin-top: -24px;
     }
-    ha-list + button.show-more,
-    .move-up + :not(:has(ha-list)) > button.show-more {
+    ha-list-base + button.show-more,
+    .move-up + :not(:has(ha-list-base)) > button.show-more {
       margin-top: -12px;
     }
-    #entities > ha-list {
+    ha-list-base {
+      --ha-list-padding: var(--ha-space-4) 0;
+      --ha-list-gap: var(--ha-space-2);
+    }
+    #entities > ha-list-base {
       margin: 0 16px 0 8px;
     }
-    #entities > ha-list > ha-list-item {
-      padding: 0 16px 0 12px;
+    #entities ha-list-item-button {
+      --ha-row-item-padding-inline: var(--ha-space-2) var(--ha-space-4);
     }
     .name {
       font-size: var(--ha-font-size-m);
@@ -242,12 +247,10 @@ export class HaDeviceEntitiesCard extends LitElement {
       outline: none;
       text-decoration: underline;
     }
-    ha-list > * {
-      margin: 8px 0px;
-    }
-    ha-list-item {
-      height: 40px;
-      --mdc-ripple-color: transparent;
+    ha-list-item-button {
+      --ha-row-item-min-height: 40px;
+      --ha-row-item-padding-block: 0;
+      --ha-row-item-gap: var(--ha-space-6);
     }
   `;
 }

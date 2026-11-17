@@ -140,11 +140,15 @@ window.hassConnection.then(({ conn }) => {
   const preloadWindow = window as WindowWithPreloads;
   preloadWindow.recorderInfoProm = getRecorderInfo(conn);
 
-  if (location.pathname === "/" || location.pathname.startsWith("/lovelace/")) {
-    preloadWindow.llConfProm = fetchConfig(conn, null, false);
+  // "/" opens the default panel, which is not known yet, so only preload the
+  // config when the "lovelace" dashboard is opened directly.
+  if (location.pathname.startsWith("/lovelace/")) {
+    preloadWindow.llConfProm = fetchConfig(conn, "lovelace", false);
     preloadWindow.llConfProm.catch(() => {
       // Ignore it, it is handled by Lovelace panel.
     });
+  }
+  if (location.pathname === "/" || location.pathname.startsWith("/lovelace/")) {
     preloadWindow.llResProm = fetchResources(conn);
   }
 });

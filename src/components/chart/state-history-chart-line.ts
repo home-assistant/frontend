@@ -24,6 +24,7 @@ import type {
   HomeAssistantInternationalization,
 } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
+import type { ZoomSliderMode } from "./ha-chart-base";
 import { sideTooltipPosition } from "./chart-tooltip-position";
 import "./ha-chart-tooltip-marker";
 import {
@@ -105,8 +106,8 @@ export class StateHistoryChartLine extends LitElement {
   @property({ attribute: "expand-legend", type: Boolean })
   public expandLegend?: boolean;
 
-  @property({ attribute: "hide-zoom-controls", type: Boolean })
-  public hideZoomControls = false;
+  @property({ attribute: "zoom-slider" })
+  public zoomSlider: ZoomSliderMode = "auto";
 
   @state() private _chartData: LineSeriesOption[] = [];
 
@@ -159,7 +160,7 @@ export class StateHistoryChartLine extends LitElement {
         @dataset-unhidden=${this._datasetUnhidden}
         @chart-zoom=${this._handleDataZoom}
         .expandLegend=${this.expandLegend}
-        .hideZoomControls=${this.hideZoomControls}
+        .zoomSlider=${this.zoomSlider}
         .clickLabelForMoreInfo=${this.clickForMoreInfo}
         @legend-label-click=${this._handleLegendLabelClick}
       ></ha-chart-base>

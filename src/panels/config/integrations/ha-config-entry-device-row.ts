@@ -75,8 +75,19 @@ class HaConfigEntryDeviceRow extends LitElement {
     );
 
     const supportingText = [
-      device.model || device.sw_version || device.manufacturer,
-      area ? area.name : undefined,
+      area ? html`<span class="area">${area.name}</span>` : undefined,
+      device.model ||
+        device.model_id ||
+        device.sw_version ||
+        device.manufacturer,
+      entities.length
+        ? bidiIsolate(
+            this.hass.localize(
+              "ui.panel.config.integrations.config_entry.entities",
+              { count: entities.length }
+            )
+          )
+        : undefined,
     ].filter(Boolean);
 
     return html`<ha-list-item-button
@@ -114,21 +125,12 @@ class HaConfigEntryDeviceRow extends LitElement {
         ${computeDeviceNameDisplay(device, this.hass.localize)}
       </div>
       <span slot="supporting-text"
-        >${supportingText.join(" • ")}
-        ${supportingText.length && entities.length ? " • " : nothing}
-        ${
-          entities.length
-            ? bidiIsolate(
-                this.hass.localize(
-                  "ui.panel.config.integrations.config_entry.entities",
-                  { count: entities.length }
-                )
-              )
-            : nothing
-        }</span
+        >${supportingText.map(
+          (part, index) => html`${index ? " • " : nothing}${part}`
+        )}</span
       >
       ${!this.narrow ? html`<ha-icon-next slot="end"></ha-icon-next>` : nothing}
-      <div class="vertical-divider" slot="end" @click=${stopPropagation}></div>
+      <div class="vertical-divider" slot="end"></div>
       ${
         !this.narrow
           ? html`<ha-icon-button
@@ -256,7 +258,11 @@ class HaConfigEntryDeviceRow extends LitElement {
     showDeviceRegistryDetailDialog(this, {
       device: this.device,
       updateEntry: async (updates) => {
-        await updateDeviceRegistryEntry(this.hass, this.device.id, updates);
+        await updateDeviceRegistryEntry(
+          this.hass.callWS,
+          this.device.id,
+          updates
+        );
       },
     });
   };
@@ -340,15 +346,16 @@ class HaConfigEntryDeviceRow extends LitElement {
       }
     }
 
-    await updateDeviceRegistryEntry(this.hass, this.device.id, {
+    await updateDeviceRegistryEntry(this.hass.callWS, this.device.id, {
       disabled_by: disable ? "user" : null,
     });
   };
 
   private _handleDeleteDevice = async () => {
     const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize("ui.panel.config.devices.confirm_delete_title"),
       text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
-      confirmText: this.hass.localize("ui.common.delete"),
+      confirmText: this.hass.localize("ui.common.remove"),
       dismissText: this.hass.localize("ui.common.cancel"),
       destructive: true,
     });
@@ -388,6 +395,9 @@ class HaConfigEntryDeviceRow extends LitElement {
       }
       .disabled {
         opacity: 0.5;
+      }
+      .area {
+        color: var(--primary-text-color);
       }
       :host([narrow]) ha-list-item-button {
         --ha-row-item-padding-inline: 16px;

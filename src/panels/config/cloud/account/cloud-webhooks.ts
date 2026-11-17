@@ -199,7 +199,7 @@ export class CloudWebhooks extends LitElement {
 
   private _renderHookRow(entry: Webhook) {
     return html`
-      <ha-row-item>
+      <ha-row-item wrap-headline wrap-supporting-text>
         <span slot="headline"
           >${entry.name}
           ${
@@ -374,7 +374,6 @@ export class CloudWebhooks extends LitElement {
         }
         ha-row-item::part(headline),
         ha-row-item::part(supporting-text) {
-          white-space: wrap;
           word-break: break-all;
         }
       `,

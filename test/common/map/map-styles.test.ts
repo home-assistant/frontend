@@ -3,7 +3,14 @@ import {
   HA_MAP_COLORS,
   HA_MAP_COLORS_DARK,
 } from "../../../src/common/map/ha-map-palette";
-import { resolveMapStyle } from "../../../src/common/map/map-styles";
+import {
+  isDarkMapStyle,
+  resolveMapStyle,
+} from "../../../src/common/map/map-styles";
+import {
+  NEON_MAP_COLORS_DARK,
+  NEON_MAP_OPTIONS,
+} from "../../../src/common/map/neon-map-palette";
 
 const colorsOf = (
   style: Parameters<typeof resolveMapStyle>[0],
@@ -19,13 +26,13 @@ describe("resolveMapStyle", () => {
     expect(resolveMapStyle(undefined, false)).toEqual({
       palette: "colorful",
       options: { colors: HA_MAP_COLORS },
-      baseColors: HA_MAP_COLORS,
+      styleOptions: { colors: HA_MAP_COLORS },
       shipped: "light",
     });
     expect(resolveMapStyle(undefined, true)).toEqual({
       palette: "colorful-dark",
       options: { colors: HA_MAP_COLORS_DARK },
-      baseColors: HA_MAP_COLORS_DARK,
+      styleOptions: { colors: HA_MAP_COLORS_DARK },
       shipped: "dark",
     });
     expect(resolveMapStyle("default", true)).toEqual(
@@ -38,6 +45,46 @@ describe("resolveMapStyle", () => {
   it("picks the palette from the theme mode", () => {
     expect(resolveMapStyle("toner", false)).toEqual({ palette: "toner" });
     expect(resolveMapStyle("toner", true)).toEqual({ palette: "toner-dark" });
+  });
+
+  // A night map, with a dark color set and no light one: the dark half in
+  // both theme modes, with its own adjustments. Only the default was written
+  // out at build time: marked as shipped, neon would be fetched as the
+  // default's colors.
+  it("draws the neon style dark in both theme modes and builds it", () => {
+    const neon = {
+      palette: "colorful-dark",
+      options: { ...NEON_MAP_OPTIONS, colors: NEON_MAP_COLORS_DARK },
+      styleOptions: { ...NEON_MAP_OPTIONS, colors: NEON_MAP_COLORS_DARK },
+    };
+    expect(resolveMapStyle("neon", false)).toEqual(neon);
+    expect(resolveMapStyle("neon", true)).toEqual(neon);
+    expect(isDarkMapStyle("neon", false)).toBe(true);
+    expect(isDarkMapStyle({ base: "neon" }, false)).toBe(true);
+    expect(isDarkMapStyle("colorful", false)).toBe(false);
+  });
+
+  // The card's dark colors go with the dark map it gets, whatever the theme
+  // mode says.
+  it("takes a card's colors_dark on a dark-only style in light mode", () => {
+    const style = {
+      base: "neon" as const,
+      colors: { water: "#b3ddf6" },
+      colors_dark: { water: "#10293b" },
+    };
+
+    expect(colorsOf(style, false)!.water).toBe("#10293b");
+  });
+
+  // Naming one value should not cost the style the rest of its adjustments.
+  it("merges a card's adjustments into the style's own, per group", () => {
+    const resolved = resolveMapStyle(
+      { base: "neon", recolor: { saturate: -1 } },
+      false
+    );
+
+    expect(resolved.options!.recolor).toEqual({ saturate: -1, contrast: 1.15 });
+    expect(resolved.options!.text).toEqual(NEON_MAP_OPTIONS.text);
   });
 
   // Naming a VersaTiles palette asks for that cartography as it comes; the
@@ -120,7 +167,7 @@ describe("resolveMapStyle", () => {
   it("carries the style's own colors alongside the adjustments", () => {
     const style = resolveMapStyle({ colors: { water: "#b3ddf6" } }, false);
 
-    expect(style.baseColors).toEqual(HA_MAP_COLORS);
+    expect(style.styleOptions).toEqual({ colors: HA_MAP_COLORS });
     expect(style.options!.colors).toMatchObject({ water: "#b3ddf6" });
   });
 

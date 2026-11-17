@@ -120,6 +120,18 @@ describe("formatNumber", () => {
     );
   });
 
+  it("Formats a numeric string with more than 100 decimal places", () => {
+    const num = `1.${"0".repeat(120)}`;
+    assert.strictEqual(formatNumber(num), `1.${"0".repeat(100)}`);
+  });
+
+  it("Limits fraction digits to 100 for a string numeric value with more decimal places", () => {
+    assert.deepEqual(getDefaultFormatOptions(`1.${"0".repeat(101)}`), {
+      minimumFractionDigits: 100,
+      maximumFractionDigits: 100,
+    });
+  });
+
   it("Sets only the maximumFractionDigits format option when none are provided for a number value", () => {
     assert.deepEqual(getDefaultFormatOptions(1234.5), {
       maximumFractionDigits: 2,

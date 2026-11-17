@@ -17,10 +17,12 @@ import { fetchDevices } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { zhaDevicePageCardStyles } from "./device-page/zha-device-page-card-styles";
+import { getZHADeviceAreaName } from "./functions";
 
 export interface DeviceRowData extends DataTableRowData {
   id: string;
   name: string;
+  area: string | undefined;
   lqi: number;
   depth: number;
   relationship: string;
@@ -56,7 +58,9 @@ class ZHADeviceNeighbors extends LitElement {
   private _deviceNeighbors = memoizeOne(
     (
       device: ZHADevice | undefined,
-      devices: Map<string, ZHADevice> | undefined
+      devices: Map<string, ZHADevice> | undefined,
+      areas: HomeAssistant["areas"],
+      haDevices: HomeAssistant["devices"]
     ) => {
       const outputDevices: DeviceRowData[] = [];
       if (device && devices) {
@@ -65,6 +69,9 @@ class ZHADeviceNeighbors extends LitElement {
           outputDevices.push({
             name:
               zhaDevice?.user_given_name || zhaDevice?.name || neighbor.ieee,
+            area: zhaDevice
+              ? getZHADeviceAreaName(zhaDevice, areas, haDevices)
+              : undefined,
             id: zhaDevice?.device_reg_id || neighbor.ieee,
             lqi: Number(neighbor.lqi),
             depth: Number(neighbor.depth),
@@ -86,6 +93,11 @@ class ZHADeviceNeighbors extends LitElement {
             direction: "asc",
             flex: 2,
           },
+          area: {
+            title: this.hass.localize("ui.panel.config.generic.headers.area"),
+            sortable: true,
+            filterable: true,
+          },
           lqi: {
             title: this.hass.localize("ui.panel.config.zha.neighbors.lqi"),
             sortable: true,
@@ -100,6 +112,11 @@ class ZHADeviceNeighbors extends LitElement {
             filterable: true,
             direction: "asc",
             flex: 2,
+          },
+          area: {
+            title: this.hass.localize("ui.panel.config.generic.headers.area"),
+            sortable: true,
+            filterable: true,
           },
           lqi: {
             title: this.hass.localize("ui.panel.config.zha.neighbors.lqi"),
@@ -140,7 +157,12 @@ class ZHADeviceNeighbors extends LitElement {
       return html`<ha-card class="empty-card">${this._error}</ha-card>`;
     }
 
-    const neighbors = this._deviceNeighbors(this.device, this._devices);
+    const neighbors = this._deviceNeighbors(
+      this.device,
+      this._devices,
+      this.hass.areas,
+      this.hass.devices
+    );
 
     if (!neighbors.length) {
       return html`

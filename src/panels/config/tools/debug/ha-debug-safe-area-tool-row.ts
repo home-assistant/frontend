@@ -19,7 +19,7 @@ class HaDebugSafeAreaToolRow extends LitElement {
 
   protected render() {
     return html`
-      <ha-list-item-base>
+      <ha-list-item-base wrap-headline wrap-supporting-text>
         <span slot="headline"
           >${this._localize(
             "ui.panel.config.tools.tabs.debug.safe_area_tool.title"

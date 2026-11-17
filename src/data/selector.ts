@@ -185,6 +185,11 @@ export interface ColorRGBSelector {
 export interface ColorTempSelector {
   color_temp: {
     unit?: "kelvin" | "mired";
+    /**
+     * Slider bounds. For `unit: "kelvin"` these apply only when no entity in
+     * the selector context `filter_entity` reports `min_color_temp_kelvin`
+     * and `max_color_temp_kelvin`.
+     */
     min?: number;
     max?: number;
     min_mireds?: number;
@@ -469,6 +474,7 @@ export interface ObjectSelector {
     translation_key?: string;
     fields?: Record<string, ObjectSelectorField>;
     multiple?: boolean;
+    reorder?: boolean;
   } | null;
 }
 
@@ -526,10 +532,16 @@ export interface SelectSelector {
   } | null;
 }
 
+// Maps a context key to the name of another field or blueprint input
+export interface DeviceClassSelectorContext {
+  filter_unit_of_measurement?: string;
+}
+
 export interface DeviceClassSelector {
   device_class: {
     domain: string;
     multiple?: boolean;
+    context?: DeviceClassSelectorContext;
   } | null;
 }
 

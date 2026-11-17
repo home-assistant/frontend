@@ -3,6 +3,14 @@ import type { HomeAssistant } from "../types";
 export type SystemLogLevel =
   "critical" | "error" | "warning" | "info" | "debug";
 
+// The levels Core's system log keeps, most severe first. It drops anything
+// below warning.
+export const SYSTEM_LOG_LEVELS = [
+  "critical",
+  "error",
+  "warning",
+] as const satisfies readonly SystemLogLevel[];
+
 export interface LoggedError {
   name: string;
   message: [string, ...string[]];
@@ -15,8 +23,8 @@ export interface LoggedError {
   first_occurred: number;
 }
 
-export const fetchSystemLog = async (hass: HomeAssistant) => {
-  const log = await hass.callWS<LoggedError[]>({ type: "system_log/list" });
+export const fetchSystemLog = async (callWS: HomeAssistant["callWS"]) => {
+  const log = await callWS<LoggedError[]>({ type: "system_log/list" });
   for (const error of log) {
     error.level = error.level.toLowerCase() as LoggedError["level"];
   }

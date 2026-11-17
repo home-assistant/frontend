@@ -7,11 +7,12 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-markdown";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-dialog";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-base";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import {
   fetchZwaveNodeMetadata,
@@ -148,24 +149,24 @@ class DialogZWaveJSRemoveNode extends LitElement {
             "ui.panel.config.zwave_js.remove_node.introduction"
           )}
         </p>
-        <div class="menu-options">
-          <ha-list-item hasMeta @click=${this._startExclusion}>
-            <span
-              >${this.hass.localize(
-                "ui.panel.config.zwave_js.remove_node.menu_exclude_device"
-              )}</span
-            >
-            <ha-icon-next slot="meta"></ha-icon-next>
-          </ha-list-item>
-          <ha-list-item hasMeta @click=${this._startRemoval}>
-            <span
-              >${this.hass.localize(
-                "ui.panel.config.zwave_js.remove_node.menu_remove_device"
-              )}</span
-            >
-            <ha-icon-next slot="meta"></ha-icon-next>
-          </ha-list-item>
-        </div>
+        <ha-list-base class="menu-options">
+          <ha-list-item-button
+            .headline=${this.hass.localize(
+              "ui.panel.config.zwave_js.remove_node.menu_exclude_device"
+            )}
+            @click=${this._startExclusion}
+          >
+            <ha-icon-next slot="end"></ha-icon-next>
+          </ha-list-item-button>
+          <ha-list-item-button
+            .headline=${this.hass.localize(
+              "ui.panel.config.zwave_js.remove_node.menu_remove_device"
+            )}
+            @click=${this._startRemoval}
+          >
+            <ha-icon-next slot="end"></ha-icon-next>
+          </ha-list-item-button>
+        </ha-list-base>
       `;
     }
 
@@ -434,8 +435,8 @@ class DialogZWaveJSRemoveNode extends LitElement {
           align-self: stretch;
         }
 
-        ha-list-item {
-          --mdc-list-side-padding: var(--ha-space-2);
+        ha-list-item-button {
+          --ha-row-item-padding-inline: var(--ha-space-2);
         }
       `,
     ];

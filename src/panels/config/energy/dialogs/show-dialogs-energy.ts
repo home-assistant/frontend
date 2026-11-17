@@ -1,159 +1,17 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type {
-  BatterySourceTypeEnergyPreference,
-  DeviceConsumptionEnergyPreference,
-  EnergyGasUnitClass,
-  EnergyInfo,
-  GasSourceTypeEnergyPreference,
-  GridSourceTypeEnergyPreference,
-  SolarSourceTypeEnergyPreference,
-  WaterSourceTypeEnergyPreference,
-  HomeSourceTypeEnergyPreference,
-} from "../../../../data/energy";
-import type { StatisticsMetaData } from "../../../../data/recorder";
-import type { HomeAssistant } from "../../../../types";
+import type { EnergyEditorConfig } from "../editors/energy-editor";
 
-export interface EnergySettingsGridDialogParams {
-  source?: GridSourceTypeEnergyPreference;
-  grid_sources: GridSourceTypeEnergyPreference[];
-  statsMetadata?: Record<string, StatisticsMetaData>;
-  saveCallback: (source: GridSourceTypeEnergyPreference) => Promise<void>;
+export interface EnergySettingsDialogParams {
+  editor: EnergyEditorConfig;
 }
 
-export interface EnergySettingsSolarDialogParams {
-  info: EnergyInfo;
-  source?: SolarSourceTypeEnergyPreference;
-  solar_sources: SolarSourceTypeEnergyPreference[];
-  statsMetadata?: Record<string, StatisticsMetaData>;
-  saveCallback: (source: SolarSourceTypeEnergyPreference) => Promise<void>;
-}
-
-export interface EnergySettingsHomeDialogParams {
-  hass: HomeAssistant;
-  source?: HomeSourceTypeEnergyPreference;
-  saveCallback: (source: HomeSourceTypeEnergyPreference) => Promise<void>;
-}
-
-export interface EnergySettingsBatteryDialogParams {
-  source?: BatterySourceTypeEnergyPreference;
-  battery_sources: BatterySourceTypeEnergyPreference[];
-  statsMetadata?: Record<string, StatisticsMetaData>;
-  saveCallback: (source: BatterySourceTypeEnergyPreference) => Promise<void>;
-}
-
-export interface EnergySettingsGasDialogParams {
-  source?: GasSourceTypeEnergyPreference;
-  allowedGasUnitClass?: EnergyGasUnitClass;
-  gas_sources: GasSourceTypeEnergyPreference[];
-  statsMetadata?: Record<string, StatisticsMetaData>;
-  saveCallback: (source: GasSourceTypeEnergyPreference) => Promise<void>;
-}
-
-export interface EnergySettingsWaterDialogParams {
-  source?: WaterSourceTypeEnergyPreference;
-  water_sources: WaterSourceTypeEnergyPreference[];
-  statsMetadata?: Record<string, StatisticsMetaData>;
-  saveCallback: (source: WaterSourceTypeEnergyPreference) => Promise<void>;
-}
-
-export interface EnergySettingsDeviceDialogParams {
-  device?: DeviceConsumptionEnergyPreference;
-  device_consumptions: DeviceConsumptionEnergyPreference[];
-  statsMetadata?: Record<string, StatisticsMetaData>;
-  saveCallback: (device: DeviceConsumptionEnergyPreference) => Promise<void>;
-}
-
-export interface EnergySettingsDeviceWaterDialogParams {
-  device?: DeviceConsumptionEnergyPreference;
-  device_consumptions: DeviceConsumptionEnergyPreference[];
-  statsMetadata?: Record<string, StatisticsMetaData>;
-  saveCallback: (device: DeviceConsumptionEnergyPreference) => Promise<void>;
-}
-
-export const showEnergySettingsDeviceDialog = (
+export const showEnergySettingsDialog = (
   element: HTMLElement,
-  dialogParams: EnergySettingsDeviceDialogParams
+  dialogParams: EnergySettingsDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-energy-device-settings",
-    dialogImport: () => import("./dialog-energy-device-settings"),
-    dialogParams: dialogParams,
-  });
-};
-
-export const showEnergySettingsBatteryDialog = (
-  element: HTMLElement,
-  dialogParams: EnergySettingsBatteryDialogParams
-): void => {
-  fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-energy-battery-settings",
-    dialogImport: () => import("./dialog-energy-battery-settings"),
-    dialogParams: dialogParams,
-  });
-};
-
-export const showEnergySettingsSolarDialog = (
-  element: HTMLElement,
-  dialogParams: EnergySettingsSolarDialogParams
-): void => {
-  fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-energy-solar-settings",
-    dialogImport: () => import("./dialog-energy-solar-settings"),
-    dialogParams: dialogParams,
-  });
-};
-
-export const showEnergySettingsHomeDialog = (
-  element: HTMLElement,
-  dialogParams: EnergySettingsHomeDialogParams
-): void => {
-  fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-energy-home-settings",
-    dialogImport: () => import("./dialog-energy-home-settings"),
-    dialogParams: dialogParams,
-  });
-};
-
-export const showEnergySettingsGasDialog = (
-  element: HTMLElement,
-  dialogParams: EnergySettingsGasDialogParams
-): void => {
-  fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-energy-gas-settings",
-    dialogImport: () => import("./dialog-energy-gas-settings"),
-    dialogParams: dialogParams,
-  });
-};
-
-export const showEnergySettingsWaterDialog = (
-  element: HTMLElement,
-  dialogParams: EnergySettingsWaterDialogParams
-): void => {
-  fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-energy-water-settings",
-    dialogImport: () => import("./dialog-energy-water-settings"),
-    dialogParams: dialogParams,
-  });
-};
-
-export const showEnergySettingsDeviceWaterDialog = (
-  element: HTMLElement,
-  dialogParams: EnergySettingsDeviceWaterDialogParams
-): void => {
-  fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-energy-device-settings-water",
-    dialogImport: () => import("./dialog-energy-device-settings-water"),
-    dialogParams: dialogParams,
-  });
-};
-
-export const showEnergySettingsGridDialog = (
-  element: HTMLElement,
-  dialogParams: EnergySettingsGridDialogParams
-): void => {
-  fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-energy-grid-settings",
-    dialogImport: () => import("./dialog-energy-grid-settings"),
+    dialogTag: "dialog-energy-settings",
+    dialogImport: () => import("./dialog-energy-settings"),
     dialogParams: dialogParams,
   });
 };
