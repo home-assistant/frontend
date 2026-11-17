@@ -52,6 +52,21 @@ export class HaToast extends LitElement {
 
   private _transitionId = 0;
 
+  // A hide that started and hasn't finished yet
+  private _hiding = false;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    // Moving the toast, for example into an open dialog, disconnects it. That
+    // stopped its timer and transition and closed its popover, so pick up
+    // where it was.
+    if (this._hiding) {
+      this.hide(this._closeReason);
+    } else if (this._active) {
+      this.show();
+    }
+  }
+
   public disconnectedCallback(): void {
     clearTimeout(this._dismissTimer);
     this._transitionId += 1;
@@ -60,8 +75,10 @@ export class HaToast extends LitElement {
 
   public async show(): Promise<void> {
     clearTimeout(this._dismissTimer);
+    this._hiding = false;
 
     if (this._active && this._visible) {
+      this._showToastPopover();
       this._setDismissTimer();
       return;
     }
@@ -101,6 +118,7 @@ export class HaToast extends LitElement {
       return;
     }
 
+    this._hiding = true;
     const transitionId = ++this._transitionId;
     const wasVisible = this._visible;
 
@@ -115,6 +133,7 @@ export class HaToast extends LitElement {
       return;
     }
 
+    this._hiding = false;
     this._hideToastPopover();
     this._active = false;
     await this.updateComplete;
