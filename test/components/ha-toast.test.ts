@@ -82,6 +82,51 @@ describe("ha-toast", () => {
     expect(listener).not.toHaveBeenCalled();
   });
 
+  // The notification manager moves toasts into an open dialog, which
+  // disconnects them. A toast that stopped there would stay on screen forever.
+  it("still closes on its timeout after being moved", async () => {
+    const element = await mountToast({ timeoutMs: 1000 });
+    const listener = vi.fn();
+    element.addEventListener("toast-closed", listener);
+    await showToast(element);
+
+    const newParent = document.createElement("div");
+    document.body.append(newParent);
+    newParent.append(element);
+    await vi.advanceTimersByTimeAsync(1000);
+
+    expect(listener.mock.calls[0][0].detail).toEqual({ reason: "timeout" });
+    newParent.remove();
+  });
+
+  it("finishes closing when moved while closing", async () => {
+    const element = await mountToast({ timeoutMs: -1 });
+    const listener = vi.fn();
+    element.addEventListener("toast-closed", listener);
+    await showToast(element);
+    // Keep the hide transition running until the move
+    const runningTransition = { finished: new Promise<void>(vi.fn()) };
+    Object.defineProperty(
+      element.shadowRoot!.querySelector(".toast"),
+      "getAnimations",
+      {
+        configurable: true,
+        value: () => [runningTransition],
+      }
+    );
+
+    element.hide("action");
+    await element.updateComplete;
+    const newParent = document.createElement("div");
+    document.body.append(newParent);
+    newParent.append(element);
+    await vi.advanceTimersByTimeAsync(20);
+
+    expect(listener).toHaveBeenCalledOnce();
+    expect(listener.mock.calls[0][0].detail).toEqual({ reason: "action" });
+    newParent.remove();
+  });
+
   it("does not emit a close event when already hidden", async () => {
     const element = await mountToast();
     const listener = vi.fn();
