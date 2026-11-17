@@ -12,6 +12,7 @@ import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
+import "../../components/ha-domain-icon";
 import "../../components/ha-spinner";
 import "../../components/ha-svg-icon";
 import "../../components/item/ha-list-item-base";
@@ -219,10 +220,15 @@ class DialogStartupProgress extends DialogMixin(LitElement) {
         ${domains.map(
           (domain) => html`
             <ha-list-item-base>
-              <ha-svg-icon slot="start" .path=${mdiAlertCircle}></ha-svg-icon>
+              <ha-domain-icon
+                slot="start"
+                .domain=${domain}
+                brand-fallback
+              ></ha-domain-icon>
               <span slot="headline">
                 ${domainToName(this._i18n.localize, domain)}
               </span>
+              <ha-svg-icon slot="end" .path=${mdiAlertCircle}></ha-svg-icon>
             </ha-list-item-base>
           `
         )}
@@ -233,6 +239,11 @@ class DialogStartupProgress extends DialogMixin(LitElement) {
   private _row(domain: string, seconds: number) {
     return html`
       <ha-list-item-base>
+        <ha-domain-icon
+          slot="start"
+          .domain=${domain}
+          brand-fallback
+        ></ha-domain-icon>
         <span slot="headline">
           ${domainToName(this._i18n.localize, domain)}
         </span>
