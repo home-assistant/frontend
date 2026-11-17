@@ -16,28 +16,38 @@ export class HaStartupProgress extends LitElement {
   @consumeLocalize()
   private _localize!: LocalizeFunc;
 
+  // Fallbacks cover the first render, before the core translations have loaded.
   protected render() {
     const localize = this._localize;
-    const title = localize("ui.startup_progress.starting");
     return html`
       <div class="card">
         <div class="text" role="status">
-          <span class="title">${title}</span>
+          <span class="title">
+            ${
+              localize("ui.startup_progress.starting") ||
+              "Home Assistant is starting"
+            }
+          </span>
           <span class="secondary">
-            ${localize("ui.startup_progress.starting_secondary")}
+            ${
+              localize("ui.startup_progress.starting_secondary") ||
+              "Some features may not be available yet"
+            }
           </span>
         </div>
         ${
           this.detailsAvailable
             ? html`<ha-icon-button
-                .label=${localize("ui.startup_progress.details")}
+                .label=${
+                  localize("ui.startup_progress.details") || "Startup details"
+                }
                 .path=${mdiInformationOutline}
                 @click=${this._showDetails}
               ></ha-icon-button>`
             : nothing
         }
         <ha-icon-button
-          .label=${localize("ui.notification_toast.dismiss")}
+          .label=${localize("ui.notification_toast.dismiss") || "Dismiss"}
           .path=${mdiClose}
           @click=${this._dismiss}
         ></ha-icon-button>
