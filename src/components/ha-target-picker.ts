@@ -156,7 +156,7 @@ export class HaTargetPicker extends LitElement {
    * Shows the element in the `field` slot instead of the add button, e.g. an
    * icon button that calls `open()`.
    */
-  @property({ type: Boolean, attribute: "custom-field" })
+  @property({ type: Boolean, reflect: true, attribute: "custom-field" })
   public customField = false;
 
   @state() private _selectedSection?: TargetTypeFloorless;
@@ -1516,6 +1516,11 @@ export class HaTargetPicker extends LitElement {
       display: flex;
       justify-content: flex-start;
       margin-top: var(--ha-space-3);
+    }
+
+    /* The custom field sits where the caller puts it */
+    :host([custom-field]) .add-target-wrapper {
+      margin-top: 0;
     }
 
     ha-generic-picker {

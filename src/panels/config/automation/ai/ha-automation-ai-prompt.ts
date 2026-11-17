@@ -64,6 +64,8 @@ const COMMANDS: {
 // CodeMirror scopes its own styles, so these go through its theme
 const promptTheme = EditorView.theme({
   "&": {
+    flex: "1",
+    minWidth: "0",
     color: "var(--primary-text-color)",
     fontSize: "var(--ha-font-size-m)",
   },
@@ -72,7 +74,7 @@ const promptTheme = EditorView.theme({
     maxHeight: "120px",
     overflowY: "auto",
     fontFamily: "inherit",
-    lineHeight: "var(--ha-line-height-normal)",
+    lineHeight: "24px",
   },
   ".cm-content": {
     padding: "0",
@@ -321,7 +323,12 @@ export class HaAutomationAiPrompt extends LitElement {
       display: block;
       min-width: 0;
     }
+    /* As high as the buttons next to it, until the text needs more lines */
     .editor {
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      min-height: 48px;
       border-radius: var(--ha-border-radius-lg);
       background-color: var(
         --ha-color-fill-neutral-quiet-resting,
@@ -340,8 +347,11 @@ export class HaAutomationAiPrompt extends LitElement {
       background-color: var(--ha-color-fill-neutral-normal-resting);
       color: var(--ha-color-on-neutral-normal);
       box-shadow: inset 0 0 0 1px var(--ha-color-border-neutral-quiet);
-      line-height: 1.5;
-      vertical-align: baseline;
+      box-sizing: border-box;
+      height: 22px;
+      line-height: 22px;
+      /* Centered on the text around it, the icon has no baseline */
+      vertical-align: middle;
     }
     .mention ha-svg-icon {
       --mdc-icon-size: 16px;
