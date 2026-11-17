@@ -13,7 +13,14 @@ import {
 import type { StatisticsMetaData } from "./recorder";
 
 export type EnergySuggestionSlot =
-  "grid_import" | "grid_export" | "solar" | "gas" | "water" | "device";
+  | "grid_import"
+  | "grid_export"
+  | "solar"
+  | "gas"
+  | "water"
+  | "device"
+  | "device_gas"
+  | "device_water";
 
 export type EnergySuggestionTab = "electricity" | "gas" | "water";
 
@@ -37,6 +44,10 @@ const ELECTRICITY_SLOTS: EnergySuggestionSlot[] = [
   "solar",
   "device",
 ];
+
+const GAS_SLOTS: EnergySuggestionSlot[] = ["gas", "device_gas"];
+
+const WATER_SLOTS: EnergySuggestionSlot[] = ["water", "device_water"];
 
 const collectStatisticIds = (value: unknown, ids: Set<string>) => {
   if (Array.isArray(value)) {
@@ -103,9 +114,9 @@ export const computeEnergySuggestions = (
       (meta.unit_class === "energy" || meta.unit_class === "volume") &&
       (!gasUnitClass || gasUnitClass === meta.unit_class)
     ) {
-      suggestions.push({ statisticId, tab: "gas", slots: ["gas"] });
+      suggestions.push({ statisticId, tab: "gas", slots: GAS_SLOTS });
     } else if (deviceClass === "water" && meta.unit_class === "volume") {
-      suggestions.push({ statisticId, tab: "water", slots: ["water"] });
+      suggestions.push({ statisticId, tab: "water", slots: WATER_SLOTS });
     }
   }
   return suggestions;
@@ -191,6 +202,22 @@ export const addEnergySuggestion = (
         energy_sources: [
           ...sources,
           { ...emptyWaterEnergyPreference(), stat_energy_from: statisticId },
+        ],
+      };
+    case "device_gas":
+      return {
+        ...preferences,
+        device_consumption_gas: [
+          ...preferences.device_consumption_gas,
+          { stat_consumption: statisticId },
+        ],
+      };
+    case "device_water":
+      return {
+        ...preferences,
+        device_consumption_water: [
+          ...preferences.device_consumption_water,
+          { stat_consumption: statisticId },
         ],
       };
     default:

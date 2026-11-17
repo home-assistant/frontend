@@ -4645,7 +4645,9 @@
               "solar": "Solar production",
               "gas": "Gas consumption",
               "water": "Water consumption",
-              "device": "Individual device"
+              "device": "Individual device",
+              "device_gas": "[%key:ui::panel::config::energy::suggestions::slots::device%]",
+              "device_water": "[%key:ui::panel::config::energy::suggestions::slots::device%]"
             }
           },
           "delete_source": "Are you sure you want to remove this source?",

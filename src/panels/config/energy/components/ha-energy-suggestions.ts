@@ -221,7 +221,7 @@ export class EnergySuggestions extends LitElement {
     const area = areaId ? this._areas[areaId] : undefined;
 
     return html`
-      <div class="suggestion">
+      <div class="suggestion" role="group" aria-label=${label}>
         <ha-svg-icon .path=${TAB_ICONS[suggestion.tab]}></ha-svg-icon>
         <div class="content">
           <span class="label">${label}</span>

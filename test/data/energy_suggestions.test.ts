@@ -113,12 +113,34 @@ describe("computeEnergySuggestions", () => {
         tab: "electricity",
         slots: ["grid_import", "grid_export", "solar", "device"],
       },
-      { statisticId: "sensor.meter_gas", tab: "gas", slots: ["gas"] },
-      { statisticId: "sensor.meter_water", tab: "water", slots: ["water"] },
+      {
+        statisticId: "sensor.meter_gas",
+        tab: "gas",
+        slots: ["gas", "device_gas"],
+      },
+      {
+        statisticId: "sensor.meter_water",
+        tab: "water",
+        slots: ["water", "device_water"],
+      },
     ]);
   });
 
-  it("doesn't mix gas units with the configured gas meter", () => {
+  it.each([
+    {
+      ...EMPTY_PREFERENCES,
+      energy_sources: [
+        {
+          ...emptyGasEnergyPreference(),
+          stat_energy_from: "sensor.gas_volume",
+        },
+      ],
+    },
+    {
+      ...EMPTY_PREFERENCES,
+      device_consumption_gas: [{ stat_consumption: "sensor.gas_volume" }],
+    },
+  ])("doesn't mix gas units with the configured gas meter", (preferences) => {
     const input = buildInput(
       [
         {
@@ -129,15 +151,7 @@ describe("computeEnergySuggestions", () => {
         { entityId: "sensor.gas_energy", deviceClass: "gas" },
         { entityId: "sensor.gas_new", deviceClass: "gas", unitClass: "volume" },
       ],
-      {
-        ...EMPTY_PREFERENCES,
-        energy_sources: [
-          {
-            ...emptyGasEnergyPreference(),
-            stat_energy_from: "sensor.gas_volume",
-          },
-        ],
-      }
+      preferences
     );
     expect(tabs(input)).toEqual({ "sensor.gas_new": "gas" });
   });
@@ -176,12 +190,16 @@ describe("addEnergySuggestion", () => {
     ]);
   });
 
-  it("adds an individual device", () => {
-    const prefs = addEnergySuggestion(EMPTY_PREFERENCES, "sensor.x", "device");
-    expect(prefs.energy_sources).toEqual([]);
-    expect(prefs.device_consumption).toEqual([
-      { stat_consumption: "sensor.x" },
-    ]);
+  it.each([
+    ["device", "device_consumption"],
+    ["device_gas", "device_consumption_gas"],
+    ["device_water", "device_consumption_water"],
+  ] as const)("adds a %s to %s", (slot, key) => {
+    const prefs = addEnergySuggestion(EMPTY_PREFERENCES, "sensor.x", slot);
+    expect(prefs).toEqual({
+      ...EMPTY_PREFERENCES,
+      [key]: [{ stat_consumption: "sensor.x" }],
+    });
   });
 
   it.each(["solar", "gas", "water"] as const)("adds a %s source", (slot) => {
