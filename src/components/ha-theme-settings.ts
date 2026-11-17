@@ -142,20 +142,20 @@ export class HaThemeSettings extends LitElement {
         ${
           showThemeOptions
             ? html`
-                <ha-list-item-base>
+                <ha-list-item-base
+                  wrap-supporting-text
+                  .supportingText=${
+                    modeSupport !== "both"
+                      ? this._i18n.localize(
+                          `ui.panel.profile.themes.mode_set_by_theme.${modeSupport}`,
+                          { theme: curTheme }
+                        )
+                      : undefined
+                  }
+                >
                   <span slot="headline"
                     >${this.labels?.mode ?? "Theme mode"}</span
                   >
-                  ${
-                    modeSupport !== "both"
-                      ? html`<span slot="supporting-text"
-                          >${this._i18n.localize(
-                            `ui.panel.profile.themes.mode_set_by_theme.${modeSupport}`,
-                            { theme: curTheme }
-                          )}</span
-                        >`
-                      : nothing
-                  }
                   <ha-radio-group
                     slot="end"
                     @change=${this._handleDarkMode}
@@ -181,26 +181,26 @@ export class HaThemeSettings extends LitElement {
         ${
           showThemeOptions
             ? html`
-                <ha-list-item-base>
+                <ha-list-item-base
+                  wrap-supporting-text
+                  .supportingText=${
+                    primaryColorLocked || accentColorLocked
+                      ? this._i18n.localize(
+                          `ui.panel.profile.themes.colors_set_by_theme.${
+                            primaryColorLocked && accentColorLocked
+                              ? "both"
+                              : primaryColorLocked
+                                ? "primary"
+                                : "accent"
+                          }`,
+                          { theme: curTheme }
+                        )
+                      : undefined
+                  }
+                >
                   <span slot="headline"
                     >${this.labels?.colors ?? "Custom colors"}</span
                   >
-                  ${
-                    primaryColorLocked || accentColorLocked
-                      ? html`<span slot="supporting-text"
-                          >${this._i18n.localize(
-                            `ui.panel.profile.themes.colors_set_by_theme.${
-                              primaryColorLocked && accentColorLocked
-                                ? "both"
-                                : primaryColorLocked
-                                  ? "primary"
-                                  : "accent"
-                            }`,
-                            { theme: curTheme }
-                          )}</span
-                        >`
-                      : nothing
-                  }
                   <div slot="end" class="color-pickers">
                     <ha-input
                       .value=${
@@ -301,7 +301,11 @@ export class HaThemeSettings extends LitElement {
         (value && formatHex(value)) || fallback;
       return {
         primary: themeDefinesColor(variables, "primary")
-          ? toHex(variables["primary-color"], DefaultPrimaryColor)
+          ? toHex(
+              // A theme that only sets the palette uses its base step as primary
+              variables["primary-color"] ?? variables["ha-color-primary-40"],
+              DefaultPrimaryColor
+            )
           : undefined,
         accent: themeDefinesColor(variables, "accent")
           ? toHex(variables["accent-color"], DefaultAccentColor)
