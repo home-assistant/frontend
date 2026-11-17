@@ -152,6 +152,13 @@ export class HaTargetPicker extends LitElement {
   @property({ type: Boolean, attribute: "allow-exclude" })
   public allowExclude = false;
 
+  /**
+   * Shows the element in the `field` slot instead of the add button, e.g. an
+   * icon button that calls `open()`.
+   */
+  @property({ type: Boolean, attribute: "custom-field" })
+  public customField = false;
+
   @state() private _selectedSection?: TargetTypeFloorless;
 
   @state() private _excludeSection?: TargetTypeFloorless;
@@ -533,6 +540,11 @@ export class HaTargetPicker extends LitElement {
     return html` ${this._renderValueGroups()} `;
   }
 
+  /** Opens the list to pick a target from. */
+  public open() {
+    this._picker?.open();
+  }
+
   private _renderPicker() {
     const sections = this._sections();
     const showExclude = this.allowExclude && hasIncludedTargets(this.value);
@@ -562,6 +574,11 @@ export class HaTargetPicker extends LitElement {
           )}
           .getAdditionalItems=${this._getAdditionalItems}
         >
+          ${
+            this.customField
+              ? html`<slot name="field" slot="field"></slot>`
+              : nothing
+          }
         </ha-generic-picker>
         ${
           showExclude
