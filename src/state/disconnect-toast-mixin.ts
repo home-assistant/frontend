@@ -126,9 +126,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           this._startupProgress = message;
           if (this._startupFinishPending && message.phase === "running") {
             this._finishStartupProgress();
-            return;
           }
-          this._updateStartupProgress();
         }
       );
       this._updateStartupProgress();
@@ -164,10 +162,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
       this._startupProgressEl.detailsAvailable =
         !!this.renderRoot.querySelector("home-assistant-main");
-      this._startupProgressEl.progress = computeStartupProgress(
-        this._startupProgress,
-        this.hass!.config.state
-      );
     }
 
     // Keeps the subscription, so the completion toast still reflects late failures.

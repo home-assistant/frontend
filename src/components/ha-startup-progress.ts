@@ -4,15 +4,11 @@ import { customElement, property, state } from "lit/decorators";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
-import type { StartupProgressView } from "../data/bootstrap_integrations";
 import { showStartupProgressDialog } from "../dialogs/startup-progress/show-dialog-startup-progress";
 import "./ha-icon-button";
-import "./progress/ha-progress-bar";
 
 @customElement("ha-startup-progress")
 export class HaStartupProgress extends LitElement {
-  @property({ attribute: false }) public progress!: StartupProgressView;
-
   // The launch screen render swap would remove a dialog opened before it.
   @property({ attribute: false }) public detailsAvailable = false;
 
@@ -22,51 +18,29 @@ export class HaStartupProgress extends LitElement {
 
   protected render() {
     const localize = this._localize;
-    const progress = this.progress;
-    const issues = progress.failed.length;
-    const phase = localize(`ui.startup_progress.phase.${progress.phase}`);
-    const count =
-      progress.total === null
-        ? localize("ui.startup_progress.integrations_unknown")
-        : localize("ui.startup_progress.integrations", {
-            done: progress.done,
-            total: progress.total,
-          });
-    const issuesText = issues
-      ? localize("ui.startup_progress.issues", { count: issues })
-      : undefined;
+    const title = localize("ui.startup_progress.starting");
     return html`
       <div class="card">
-        <span class="visually-hidden" role="status">
-          ${[phase, issuesText].filter(Boolean).join(". ")}
-        </span>
-        <div class="header">
-          <div class="text">
-            <span class="phase">${phase}</span>
-            <span class="secondary">
-              ${count}${issuesText ? ` · ${issuesText}` : nothing}
-            </span>
-          </div>
-          ${
-            this.detailsAvailable
-              ? html`<ha-icon-button
-                  .label=${localize("ui.startup_progress.details")}
-                  .path=${mdiInformationOutline}
-                  @click=${this._showDetails}
-                ></ha-icon-button>`
-              : nothing
-          }
-          <ha-icon-button
-            .label=${localize("ui.notification_toast.dismiss")}
-            .path=${mdiClose}
-            @click=${this._dismiss}
-          ></ha-icon-button>
+        <div class="text" role="status">
+          <span class="title">${title}</span>
+          <span class="secondary">
+            ${localize("ui.startup_progress.starting_secondary")}
+          </span>
         </div>
-        <ha-progress-bar
-          .value=${progress.percent ?? 0}
-          .indeterminate=${progress.percent === undefined}
-          .label=${phase}
-        ></ha-progress-bar>
+        ${
+          this.detailsAvailable
+            ? html`<ha-icon-button
+                .label=${localize("ui.startup_progress.details")}
+                .path=${mdiInformationOutline}
+                @click=${this._showDetails}
+              ></ha-icon-button>`
+            : nothing
+        }
+        <ha-icon-button
+          .label=${localize("ui.notification_toast.dismiss")}
+          .path=${mdiClose}
+          @click=${this._dismiss}
+        ></ha-icon-button>
       </div>
     `;
   }
@@ -93,17 +67,14 @@ export class HaStartupProgress extends LitElement {
     }
     .card {
       display: flex;
-      flex-direction: column;
+      align-items: center;
       gap: var(--ha-space-2);
-      padding: var(--ha-space-3) var(--ha-space-4);
+      padding: var(--ha-space-3) var(--ha-space-2) var(--ha-space-3)
+        var(--ha-space-4);
       color: var(--ha-color-on-neutral-loud);
       background-color: var(--ha-color-neutral-10);
       border-radius: var(--ha-border-radius-sm);
       box-shadow: var(--wa-shadow-l);
-    }
-    .header {
-      display: flex;
-      align-items: center;
     }
     .text {
       display: flex;
@@ -111,15 +82,7 @@ export class HaStartupProgress extends LitElement {
       flex: 1;
       min-width: 0;
     }
-    .visually-hidden {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip: rect(0 0 0 0);
-      white-space: nowrap;
-    }
-    .phase {
+    .title {
       font-weight: var(--ha-font-weight-medium);
     }
     .secondary {
@@ -130,9 +93,6 @@ export class HaStartupProgress extends LitElement {
     ha-icon-button {
       --mdc-icon-button-size: 36px;
       color: var(--ha-color-on-neutral-loud);
-    }
-    ha-progress-bar {
-      --ha-progress-bar-track-height: 6px;
     }
   `;
 }
