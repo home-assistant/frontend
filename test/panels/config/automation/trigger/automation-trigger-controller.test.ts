@@ -212,7 +212,8 @@ describe("AutomationTriggerController.checkShowIndices", () => {
     return value!.showIndices;
   };
 
-  const sidebar = (config: unknown) => ({ config }) as unknown as SidebarConfig;
+  const sidebar = (type: SidebarConfig["type"], config: unknown) =>
+    ({ type, config }) as unknown as SidebarConfig;
 
   beforeEach(() => {
     host = document.createElement("test-automation-trigger-host");
@@ -229,27 +230,35 @@ describe("AutomationTriggerController.checkShowIndices", () => {
   });
 
   it.each([
-    ["a trigger condition", { condition: "trigger", id: "a" }],
+    ["a trigger condition", sidebar("condition", { condition: "trigger" })],
     [
       "a trigger condition used as action",
-      { action: { condition: "trigger", id: "a" } },
+      sidebar("action", { action: { condition: "trigger", id: "a" } }),
     ],
-  ])("shows the indices for %s", (_name, config) => {
-    controller.checkShowIndices(sidebar(config));
+  ])("shows the indices for %s", (_name, sidebarConfig) => {
+    controller.checkShowIndices(sidebarConfig);
     expect(showIndices()).toBe(true);
   });
 
   it.each([
     ["no sidebar", undefined],
-    ["another condition", sidebar({ condition: "state" })],
-    ["a service action", sidebar({ action: { action: "number.set_value" } })],
+    ["another condition", sidebar("condition", { condition: "state" })],
+    [
+      "a service action",
+      sidebar("action", { action: { action: "number.set_value" } }),
+    ],
     // What a condition row holds after an action was entered as YAML.
     [
       "a service action in a condition row",
-      sidebar({ action: "number.set_value", data: { value: 20 } }),
+      sidebar("condition", { action: "number.set_value", data: { value: 20 } }),
+    ],
+    // What a trigger row holds after a condition was entered as YAML.
+    [
+      "a trigger condition in a trigger row",
+      sidebar("trigger", { condition: "trigger" }),
     ],
   ])("hides the indices for %s", (_name, sidebarConfig) => {
-    controller.checkShowIndices(sidebar({ condition: "trigger" }));
+    controller.checkShowIndices(sidebar("condition", { condition: "trigger" }));
     controller.checkShowIndices(sidebarConfig);
     expect(showIndices()).toBe(false);
   });
