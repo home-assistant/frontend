@@ -7,7 +7,6 @@ import {
   mdiChevronUp,
   mdiClose,
   mdiSend,
-  mdiStarFourPoints,
 } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -18,6 +17,7 @@ import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-markdown";
@@ -195,68 +195,73 @@ export class HaAutomationAiSheet extends LitElement {
         : this.reviewing
           ? "review"
           : "idle";
+    // Like the header of other dialogs, with room for the handle above it
     return html`
-      <div class="header ${this._narrow ? "" : "has-toggle"}">
-        ${
-          // On narrow screens people drag bottom sheets
-          this._narrow
-            ? nothing
-            : html`<ha-icon-button
-                class="toggle"
-                .label=${this.hass.localize(
-                  `ui.panel.config.automation.editor.ai.${this._collapsed ? "expand" : "collapse"}`
-                )}
-                .path=${this._collapsed ? mdiChevronUp : mdiChevronDown}
-                @click=${this._toggleCollapsed}
-              ></ha-icon-button>`
-        }
-        <ha-svg-icon class="ai-icon" .path=${mdiStarFourPoints}></ha-svg-icon>
-        <div class="title">
-          <span class="name"
+      <div class="header">
+        <ha-dialog-header>
+          ${
+            // Like other dialogs, there is nothing to close while the AI
+            // works or the user reviews its changes
+            !this.reviewing && !this._running
+              ? html`<ha-icon-button
+                  slot="navigationIcon"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.automation.editor.ai.close"
+                  )}
+                  .path=${mdiClose}
+                  @click=${this._close}
+                ></ha-icon-button>`
+              : nothing
+          }
+          <span slot="title"
             >${this.hass.localize(
               "ui.panel.config.automation.editor.ai.title"
             )}</span
           >
-          <span class="status"
+          <span slot="subtitle"
             >${this.hass.localize(
               `ui.panel.config.automation.editor.ai.status_${status}`
             )}</span
           >
-        </div>
-        ${
-          this.reviewing && !this._running
-            ? html`
-                <ha-icon-button
-                  class="decline"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.automation.editor.ai.decline"
-                  )}
-                  .path=${mdiClose}
-                  @click=${this._decline}
-                ></ha-icon-button>
-                <ha-icon-button
-                  class="accept"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.automation.editor.ai.accept"
-                  )}
-                  .path=${mdiCheck}
-                  .disabled=${!this.hasChanges}
-                  @click=${this._accept}
-                ></ha-icon-button>
-              `
-            : nothing
-        }
-        ${
-          !this.reviewing && !this._running
-            ? html`<ha-icon-button
-                .label=${this.hass.localize(
-                  "ui.panel.config.automation.editor.ai.close"
-                )}
-                .path=${mdiClose}
-                @click=${this._close}
-              ></ha-icon-button>`
-            : nothing
-        }
+          <div slot="actionItems" class="actions">
+            ${
+              this.reviewing && !this._running
+                ? html`
+                    <ha-icon-button
+                      class="decline"
+                      .label=${this.hass.localize(
+                        "ui.panel.config.automation.editor.ai.decline"
+                      )}
+                      .path=${mdiClose}
+                      @click=${this._decline}
+                    ></ha-icon-button>
+                    <ha-icon-button
+                      class="accept"
+                      .label=${this.hass.localize(
+                        "ui.panel.config.automation.editor.ai.accept"
+                      )}
+                      .path=${mdiCheck}
+                      .disabled=${!this.hasChanges}
+                      @click=${this._accept}
+                    ></ha-icon-button>
+                  `
+                : nothing
+            }
+            ${
+              // On narrow screens people drag bottom sheets
+              this._narrow
+                ? nothing
+                : html`<ha-icon-button
+                    class="toggle"
+                    .label=${this.hass.localize(
+                      `ui.panel.config.automation.editor.ai.${this._collapsed ? "expand" : "collapse"}`
+                    )}
+                    .path=${this._collapsed ? mdiChevronUp : mdiChevronDown}
+                    @click=${this._toggleCollapsed}
+                  ></ha-icon-button>`
+            }
+          </div>
+        </ha-dialog-header>
       </div>
     `;
   }
@@ -607,13 +612,14 @@ export class HaAutomationAiSheet extends LitElement {
       min-height: 0;
     }
     .header {
+      padding-top: var(--ha-space-3);
+      border-bottom: 1px solid var(--divider-color);
+      flex-shrink: 0;
+    }
+    .actions {
       display: flex;
       align-items: center;
       gap: var(--ha-space-2);
-      padding: var(--ha-space-5) var(--ha-space-2) var(--ha-space-4)
-        var(--ha-space-4);
-      border-bottom: 1px solid var(--divider-color);
-      flex-shrink: 0;
     }
     .accept,
     .decline {
@@ -639,32 +645,8 @@ export class HaAutomationAiSheet extends LitElement {
       color: var(--ha-color-on-disabled-normal);
       background-color: var(--ha-color-fill-disabled-normal-resting);
     }
-    /* The toggle's own padding is enough space to the edge */
-    .header.has-toggle {
-      padding-inline-start: var(--ha-space-1);
-    }
     .toggle {
       color: var(--secondary-text-color);
-    }
-    .ai-icon {
-      color: var(--primary-color);
-      flex-shrink: 0;
-    }
-    .title {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      min-width: 0;
-    }
-    .name {
-      font-weight: var(--ha-font-weight-medium);
-    }
-    .status {
-      color: var(--secondary-text-color);
-      font-size: var(--ha-font-size-s);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
     .content {
       flex: 1;
