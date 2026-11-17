@@ -291,7 +291,9 @@ export class HaAutomationAiPrompt extends LitElement {
   }
 
   private _submit = (view: EditorView) => {
-    if (completionStatus(view.state)) {
+    // Enter picks a command from the list, but a query still pending right
+    // after typing doesn't show one yet
+    if (completionStatus(view.state) === "active") {
       return false;
     }
     fireEvent(this, "prompt-submit");
