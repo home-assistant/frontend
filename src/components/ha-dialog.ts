@@ -15,6 +15,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { consume } from "../common/decorators/consume";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
+import { addOpenModal, removeOpenModal } from "../common/dom/modal-stack";
 import { withViewTransition } from "../common/util/view-transition";
 import { configContext, internationalizationContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
@@ -47,6 +48,7 @@ type DialogHideEvent = CustomEvent<{ source?: Element }>;
  * @slot headerActionItems - Trailing header actions (e.g. buttons, menus).
  * @slot - Dialog content body.
  * @slot footer - Dialog footer content.
+ * @slot toast-host - Toasts moved in by the notification manager, so they stay usable while the dialog is open.
  *
  * @csspart dialog - The dialog surface.
  * @csspart header - The header container.
@@ -227,6 +229,7 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
           ${this.renderScrollableFades()}
         </div>
         <slot name="footer" slot="footer"></slot>
+        <slot name="toast-host" slot="footer"></slot>
       </wa-dialog>
     `;
   }
@@ -267,11 +270,17 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
     if (ev.eventPhase !== Event.AT_TARGET) {
       return;
     }
+    // Only after the dialog moved focus into itself, so a toast moving in
+    // can't take the initial focus.
+    addOpenModal(this);
     fireEvent(this, "after-show");
   };
 
   private _handleAfterHide = (ev: DialogHideEvent) => {
     if (ev.eventPhase === Event.AT_TARGET) {
+      // Fired right after the native dialog closed, before it repaints, so
+      // toasts move out without disappearing.
+      removeOpenModal(this);
       this._open = false;
       this._setFullscreen(false);
       fireEvent(this, "closed");
@@ -284,6 +293,7 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
       this._handleFullscreenChanged as EventListener
     );
     this._setFullscreen(false);
+    removeOpenModal(this);
     super.disconnectedCallback();
     this._open = false;
   }

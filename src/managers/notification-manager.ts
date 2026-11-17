@@ -14,6 +14,10 @@ import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
 } from "../common/dom/fire_event";
+import {
+  getTopOpenModal,
+  subscribeOpenModals,
+} from "../common/dom/modal-stack";
 import { popoverSupported } from "../common/feature-detect/support-popover";
 import type { LocalizeKeys } from "../common/translations/localize";
 import "../components/ha-button";
@@ -65,6 +69,101 @@ class NotificationManager extends LitElement {
 
   private _anonymousId = 0;
 
+  // Where the dialog manager put this element, to return to when no modal is
+  // open
+  private _homeParent?: ParentNode;
+
+  private _moving = false;
+
+  private _followScheduled = false;
+
+  private _unsubscribeOpenModals?: () => void;
+
+  // The element that had focus before it moved into a toast, to return focus
+  // to when that toast closes
+  private _focusReturnTarget?: HTMLElement;
+
+  private _focusRoot?: Node;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    // A focus event isn't delivered where the element losing focus and the
+    // one gaining it retarget to the same element, so it never reaches the
+    // window when focus moves into a toast. On this element's root node, both
+    // are still apart: everything in the page or modal this element is in
+    // passes through it.
+    this._focusRoot = this.getRootNode();
+    this._focusRoot.addEventListener("focusout", this._trackFocusOut, true);
+    this._unsubscribeOpenModals?.();
+    this._unsubscribeOpenModals = subscribeOpenModals(this._scheduleFollow);
+    if (this._moving) {
+      // Moving closed the stack popover. Reopen it so it's on top of the
+      // modal it moved into.
+      if (this._notifications.length) {
+        this._showStack();
+      }
+      return;
+    }
+    this._homeParent = this.parentNode ?? undefined;
+    this._scheduleFollow();
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._focusRoot?.removeEventListener("focusout", this._trackFocusOut, true);
+    this._focusRoot = undefined;
+    this._unsubscribeOpenModals?.();
+    this._unsubscribeOpenModals = undefined;
+  }
+
+  // A modal can close while it's being removed from the page, with this
+  // element inside. Move once all connect and disconnect callbacks of that
+  // removal ran, still before the next paint.
+  private _scheduleFollow = () => {
+    if (this._followScheduled) {
+      return;
+    }
+    this._followScheduled = true;
+    queueMicrotask(() => {
+      this._followScheduled = false;
+      this._followTopModal();
+    });
+  };
+
+  // While a modal is open, the browser makes everything outside it inert, so
+  // toast buttons only work from inside the topmost modal.
+  private _followTopModal() {
+    const topModal = getTopOpenModal();
+    const target = topModal ?? this._homeParent;
+    if (!target || this.parentNode === target) {
+      return;
+    }
+    this._moving = true;
+    try {
+      if (topModal) {
+        this.slot = "toast-host";
+      } else {
+        this.removeAttribute("slot");
+      }
+      target.appendChild(this);
+    } finally {
+      this._moving = false;
+    }
+  }
+
+  private _trackFocusOut = (ev: Event) => {
+    const path = ev.composedPath();
+    if (path.includes(this)) {
+      return;
+    }
+    // Without a related target, focus went nowhere, so there is nothing to
+    // return to
+    this._focusReturnTarget =
+      (ev as FocusEvent).relatedTarget && path[0] instanceof HTMLElement
+        ? path[0]
+        : undefined;
+  };
+
   public async showDialog(parameters: ShowToastParams) {
     if (parameters.duration === 0) {
       if (parameters.id) {
@@ -115,11 +214,25 @@ class NotificationManager extends LitElement {
     ev: HASSDomEvent<ToastClosedEventDetail> &
       HASSDomCurrentTargetEvent<HTMLElementTagNameMap["ha-toast"]>
   ) {
-    const key = ev.currentTarget.dataset.notificationKey!;
+    const toast = ev.currentTarget;
+    const key = toast.dataset.notificationKey!;
     if (ev.detail.reason === "dismiss") {
       this._getNotification(key)?.parameters.dismiss?.();
     }
+    const activeElement = this.shadowRoot!.activeElement;
+    const hadFocus = activeElement !== null && toast.contains(activeElement);
     this._removeNotification(key);
+    if (hadFocus) {
+      this._returnFocus();
+    }
+  }
+
+  private async _returnFocus() {
+    const target = this._focusReturnTarget;
+    await this.updateComplete;
+    if (target?.isConnected) {
+      target.focus();
+    }
   }
 
   protected render() {
@@ -286,6 +399,10 @@ class NotificationManager extends LitElement {
   }
 
   static override styles = css`
+    :host {
+      display: contents;
+    }
+
     .stack {
       position: fixed;
       inset-block-start: auto;
