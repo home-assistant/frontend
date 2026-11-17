@@ -89,19 +89,31 @@ class HaConfigSectionStorage extends LitElement {
 
   @state() private _databaseError?: string;
 
+  private _databaseRequested = false;
+
   protected async firstUpdated(
     changedProps: PropertyValues<this>
   ): Promise<void> {
     super.firstUpdated(changedProps);
-    if (isComponentLoaded(this.hass.config, "recorder")) {
-      this._loadDatabaseUsage();
-    }
     if (isComponentLoaded(this.hass.config, "hassio")) {
       await this._load();
     } else {
       this._mountsInfo = null;
     }
     await panelIsReady(this);
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>): void {
+    super.willUpdate(changedProps);
+    // Recorder can finish loading after the page mounted during startup
+    if (
+      changedProps.has("hass") &&
+      !this._databaseRequested &&
+      isComponentLoaded(this.hass.config, "recorder")
+    ) {
+      this._databaseRequested = true;
+      this._loadDatabaseUsage();
+    }
   }
 
   protected render(): TemplateResult | typeof nothing {
