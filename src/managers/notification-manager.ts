@@ -219,6 +219,8 @@ class NotificationManager extends LitElement {
     if (ev.detail.reason === "dismiss") {
       this._getNotification(key)?.parameters.dismiss?.();
     }
+    // Only return focus the toast still holds. An action that moved focus
+    // elsewhere keeps it there.
     const activeElement = this.shadowRoot!.activeElement;
     const hadFocus = activeElement !== null && toast.contains(activeElement);
     this._removeNotification(key);
