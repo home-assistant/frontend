@@ -38,6 +38,7 @@ import type { ExposeEntitySettings } from "../../../data/expose";
 import { exposeEntities, voiceAssistants } from "../../../data/expose";
 import type { GoogleEntity } from "../../../data/google_assistant";
 import { fetchCloudGoogleEntity } from "../../../data/google_assistant";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -429,12 +430,20 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
   }
 
   private async _toggleAssistant(ev) {
-    exposeEntities(
-      this.hass,
-      [ev.target.assistant],
-      [this.entityId],
-      ev.target.checked
-    );
+    try {
+      await exposeEntities(
+        this.hass,
+        [ev.target.assistant],
+        [this.entityId],
+        ev.target.checked
+      );
+    } catch (err: any) {
+      ev.target.checked = !ev.target.checked;
+      showAlertDialog(this, {
+        text: err.message || err.code || String(err),
+      });
+      return;
+    }
     if (this.entry) {
       const entry = await getExtendedEntityRegistryEntry(
         this.hass,
@@ -452,7 +461,15 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       ? ev.target.assistants.filter((key) => !this._unsupported[key])
       : ev.target.assistants;
 
-    exposeEntities(this.hass, assistants, [this.entityId], ev.target.checked);
+    try {
+      await exposeEntities(this.hass, assistants, [this.entityId], expose);
+    } catch (err: any) {
+      ev.target.checked = !expose;
+      showAlertDialog(this, {
+        text: err.message || err.code || String(err),
+      });
+      return;
+    }
     if (this.entry) {
       const entry = await getExtendedEntityRegistryEntry(
         this.hass,
