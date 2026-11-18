@@ -65,7 +65,10 @@ export const automationScriptEditorStyles: CSSResult = css`
     --ha-button-box-shadow: var(--ha-box-shadow-l);
   }
   ha-button[slot="fab"].dirty {
-    bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
+    /* Above the AI sheet on mobile */
+    bottom: calc(
+      16px + var(--ai-sheet-space, 0px) + var(--safe-area-inset-bottom, 0px)
+    );
   }
   ha-tooltip ha-svg-icon {
     width: 12px;

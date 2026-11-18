@@ -200,7 +200,11 @@ export const manualEditorStyles = css`
   .has-sidebar {
     --sidebar-width: min(
       max(var(--sidebar-dynamic-width), ${SIDEBAR_MIN_WIDTH}px),
-      100vw - ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px),
+      100vw -
+        ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px) - var(
+          --ai-sidebar-space,
+          0px
+        ),
       var(--ha-automation-editor-max-width) -
         ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px)
     );
@@ -220,7 +224,10 @@ export const manualEditorStyles = css`
     transition: bottom 0.3s;
   }
   .fab-positioner ha-button[slot="fab"].dirty {
-    bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
+    /* Above the AI sheet on mobile */
+    bottom: calc(
+      16px + var(--ai-sheet-space, 0px) + var(--safe-area-inset-bottom, 0px)
+    );
   }
 
   .content-wrapper {

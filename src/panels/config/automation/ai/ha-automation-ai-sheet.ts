@@ -1,11 +1,10 @@
 import {
   mdiAlertCircleOutline,
-  mdiCheck,
   mdiPlus,
   mdiCheckCircleOutline,
-  mdiChevronDown,
-  mdiChevronUp,
   mdiClose,
+  mdiEye,
+  mdiEyeOff,
   mdiSend,
   mdiStarFourPoints,
 } from "@mdi/js";
@@ -64,12 +63,12 @@ interface RunningTurn {
 
 /**
  * @summary Lets the user ask the AI to change the automation and follow
- * what it does. The editor shows the changes and applies them on accept.
+ * what it does. The editor applies the changes and can show them. On narrow
+ * screens it is a bottom sheet, otherwise a sidebar.
  *
  * @fires ai-request-started - The AI started to work on a request
  * @fires ai-request-finished - The AI is done, with the new config if any
- * @fires ai-accept - The user accepted the changes
- * @fires ai-decline - The user declined the changes
+ * @fires ai-toggle-changes - Show or hide the last changes of the AI
  * @fires ai-sheet-closed - The sheet closed
  */
 @customElement("ha-automation-ai-sheet")
@@ -81,12 +80,15 @@ export class HaAutomationAiSheet extends LitElement {
   /** The config the next request changes. */
   @property({ attribute: false }) public config!: AutomationConfig;
 
-  /** Whether the editor shows changes of the AI the user hasn't decided on. */
-  @property({ type: Boolean }) public reviewing = false;
+  /** A sidebar on the side of the editor instead of a bottom sheet. */
+  @property({ type: Boolean, reflect: true }) public docked = false;
 
-  /** Whether the AI changed anything in the config it shows. */
-  @property({ type: Boolean, attribute: "has-changes" }) public hasChanges =
-    false;
+  /** Whether the last request of the AI changed the automation. */
+  @property({ type: Boolean }) public changes = false;
+
+  /** Whether the editor shows the last changes of the AI. */
+  @property({ type: Boolean, attribute: "showing-changes" })
+  public showingChanges = false;
 
   /** Hides the sheet without losing its state, e.g. for another sheet. */
   @property({ type: Boolean }) public suspended = false;
@@ -118,8 +120,6 @@ export class HaAutomationAiSheet extends LitElement {
 
   @state() private _error?: string;
 
-  @state() private _collapsed = false;
-
   @query("ha-snap-bottom-sheet") private _sheet?: HaSnapBottomSheet;
 
   @query(".content") private _content?: HTMLElement;
@@ -136,8 +136,8 @@ export class HaAutomationAiSheet extends LitElement {
   // Where the sheet rests, so it comes back there after it was suspended
   private _position: BottomSheetPosition = "half";
 
-  // Set when a request returned changes, until the editor shows them
-  private _collapseForReview = false;
+  // Set when a request returned changes, until the editor has them
+  private _collapseForChanges = false;
 
   // Only when the sheet opens, not when it comes back after being suspended
   private _autofocusPrompt = true;
@@ -160,10 +160,10 @@ export class HaAutomationAiSheet extends LitElement {
     ) {
       this._sheet?.snapTo(this._position);
     }
-    // Out of the way, so the user can review the changes
-    if (this._collapseForReview && this.reviewing) {
-      this._collapseForReview = false;
-      if (this.hasChanges) {
+    // Out of the way, so the user sees the changed automation
+    if (this._collapseForChanges && changedProps.has("changes")) {
+      this._collapseForChanges = false;
+      if (this.changes) {
         this._sheet?.snapTo("collapsed");
       }
     }
@@ -174,6 +174,27 @@ export class HaAutomationAiSheet extends LitElement {
     if (this.suspended) {
       return nothing;
     }
+    const content = html`<div class="sheet">
+      ${this._renderHeader()}
+      <div class="content">
+        ${this._turns.map((turn, index) =>
+          this._renderTurn(turn, index === this._turns.length - 1)
+        )}
+        ${this._running ? this._renderRunning(this._running) : nothing}
+        ${this._renderResult()} ${this._renderConversation()}
+      </div>
+      ${this._renderPrompt()}
+    </div>`;
+    if (this.docked) {
+      return html`<section
+        class="sidebar"
+        aria-label=${this.hass.localize(
+          "ui.panel.config.automation.editor.ai.title"
+        )}
+      >
+        ${content}
+      </section>`;
+    }
     return html`
       <ha-snap-bottom-sheet
         .minHeight=${this._headerHeight ?? COLLAPSED_HEIGHT}
@@ -181,15 +202,7 @@ export class HaAutomationAiSheet extends LitElement {
         @bottom-sheet-resized=${this._sheetResized}
         @bottom-sheet-closed=${this._sheetClosed}
       >
-        <div class="sheet">
-          ${this._renderHeader()}
-          <div class="content">
-            ${this._turns.map((turn) => this._renderTurn(turn))}
-            ${this._running ? this._renderRunning(this._running) : nothing}
-            ${this._renderResult()} ${this._renderConversation()}
-          </div>
-          ${this._renderPrompt()}
-        </div>
+        ${content}
       </ha-snap-bottom-sheet>
     `;
   }
@@ -197,10 +210,10 @@ export class HaAutomationAiSheet extends LitElement {
   private _renderHeader() {
     const status = this._running
       ? "running"
-      : this._error && !this.reviewing
+      : this._error
         ? "error"
-        : this.reviewing
-          ? "review"
+        : this._turns.length && this.changes
+          ? "done"
           : "idle";
     // Like the header of other dialogs, with room for the handle above it
     return html`
@@ -218,32 +231,10 @@ export class HaAutomationAiSheet extends LitElement {
             )}</span
           >
           <div slot="actionItems" class="actions">
-            ${
-              this.reviewing && !this._running
-                ? html`
-                    <ha-icon-button
-                      class="decline"
-                      .label=${this.hass.localize(
-                        "ui.panel.config.automation.editor.ai.decline"
-                      )}
-                      .path=${mdiClose}
-                      @click=${this._decline}
-                    ></ha-icon-button>
-                    <ha-icon-button
-                      class="accept"
-                      .label=${this.hass.localize(
-                        "ui.panel.config.automation.editor.ai.accept"
-                      )}
-                      .path=${mdiCheck}
-                      .disabled=${!this.hasChanges}
-                      @click=${this._accept}
-                    ></ha-icon-button>
-                  `
-                : html`<ha-svg-icon
-                    class=${classMap({ "ai-icon": true, working: !!this._running })}
-                    .path=${mdiStarFourPoints}
-                  ></ha-svg-icon>`
-            }
+            <ha-svg-icon
+              class=${classMap({ "ai-icon": true, working: !!this._running })}
+              .path=${mdiStarFourPoints}
+            ></ha-svg-icon>
           </div>
         </ha-dialog-header>
       </div>
@@ -258,8 +249,7 @@ export class HaAutomationAiSheet extends LitElement {
     );
   }
 
-  // Close while writing, stop while the AI works, and expand or collapse
-  // while the user reviews, as the sheet collapses for the review
+  // Close while writing, stop while the AI works
   private _renderNavigation() {
     if (this._running) {
       return html`<ha-icon-button
@@ -269,17 +259,6 @@ export class HaAutomationAiSheet extends LitElement {
         )}
         .path=${mdiClose}
         @click=${this._stop}
-      ></ha-icon-button>`;
-    }
-    if (this.reviewing) {
-      return html`<ha-icon-button
-        slot="navigationIcon"
-        class="toggle"
-        .label=${this.hass.localize(
-          `ui.panel.config.automation.editor.ai.${this._collapsed ? "expand" : "collapse"}`
-        )}
-        .path=${this._collapsed ? mdiChevronUp : mdiChevronDown}
-        @click=${this._toggleCollapsed}
       ></ha-icon-button>`;
     }
     return html`<ha-icon-button
@@ -318,7 +297,7 @@ export class HaAutomationAiSheet extends LitElement {
     fireEvent(this, "ai-request-finished", {});
   }
 
-  private _renderTurn(turn: AutomationAiTurn) {
+  private _renderTurn(turn: AutomationAiTurn, last: boolean) {
     return html`
       <div class="message user">${this._renderPromptText(turn.prompt)}</div>
       <ha-markdown
@@ -327,12 +306,21 @@ export class HaAutomationAiSheet extends LitElement {
         .content=${turn.summary}
       ></ha-markdown>
       ${
-        turn.declined
-          ? html`<div class="declined">
+        last && this.changes && !this._running
+          ? html`<ha-button
+              class="show-changes"
+              appearance="plain"
+              size="s"
+              @click=${this._toggleChanges}
+            >
+              <ha-svg-icon
+                slot="start"
+                .path=${this.showingChanges ? mdiEyeOff : mdiEye}
+              ></ha-svg-icon>
               ${this.hass.localize(
-                "ui.panel.config.automation.editor.ai.declined"
+                `ui.panel.config.automation.editor.ai.${this.showingChanges ? "hide_changes" : "show_changes"}`
               )}
-            </div>`
+            </ha-button>`
           : nothing
       }
     `;
@@ -395,7 +383,7 @@ export class HaAutomationAiSheet extends LitElement {
           : nothing
       }
       ${
-        this.reviewing && !this.hasChanges
+        this._turns.length && !this.changes
           ? html`<ha-alert alert-type="info">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.ai.no_changes"
@@ -404,7 +392,7 @@ export class HaAutomationAiSheet extends LitElement {
           : nothing
       }
       ${
-        this.reviewing && this._problems.length
+        this._problems.length
           ? html`<ha-alert alert-type="warning">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.ai.problems"
@@ -592,7 +580,7 @@ export class HaAutomationAiSheet extends LitElement {
         return;
       }
       config = result.config;
-      this._collapseForReview = true;
+      this._collapseForChanges = true;
       this._problems = result.problems;
       this._turns = [...this._turns, { prompt, summary: result.summary }];
     } catch (err) {
@@ -616,7 +604,6 @@ export class HaAutomationAiSheet extends LitElement {
 
   private _sheetResized() {
     this._position = this._sheet?.position ?? this._position;
-    this._collapsed = this._position === "collapsed";
   }
 
   private _expand() {
@@ -625,22 +612,8 @@ export class HaAutomationAiSheet extends LitElement {
     }
   }
 
-  private _toggleCollapsed() {
-    this._sheet?.snapTo(this._collapsed ? "half" : "collapsed");
-  }
-
-  private _accept() {
-    fireEvent(this, "ai-accept");
-    this._sheet?.closeSheet();
-  }
-
-  // Keeps the sheet open, so the user can ask for something else
-  private _decline() {
-    fireEvent(this, "ai-decline");
-    this._turns = this._turns.map((turn) => ({ ...turn, declined: true }));
-    this._problems = [];
-    this._sheet?.snapTo("half");
-    this._promptEditor?.focus();
+  private _toggleChanges() {
+    fireEvent(this, "ai-toggle-changes");
   }
 
   private _close() {
@@ -669,6 +642,19 @@ export class HaAutomationAiSheet extends LitElement {
       flex-direction: column;
       height: 100%;
       min-height: 0;
+    }
+    /* Like the item sidebar of the editor */
+    .sidebar {
+      height: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+      border: 1px solid var(--divider-color);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      background-color: var(--ha-card-background, var(--card-background-color));
+    }
+    :host([docked]) .header {
+      padding-top: 0;
+      border-radius: 0;
     }
     .header {
       position: relative;
@@ -718,33 +704,6 @@ export class HaAutomationAiSheet extends LitElement {
       display: flex;
       align-items: center;
       gap: var(--ha-space-2);
-    }
-    .accept,
-    .decline {
-      border-radius: var(--ha-border-radius-circle);
-    }
-    .accept {
-      color: var(--ha-color-on-success-normal);
-      background-color: var(--ha-color-fill-success-normal-resting);
-    }
-    .decline {
-      color: var(--ha-color-on-danger-normal);
-      background-color: var(--ha-color-fill-danger-normal-resting);
-    }
-    @media (hover: hover) {
-      .accept:hover:not([disabled]) {
-        background-color: var(--ha-color-fill-success-normal-hover);
-      }
-      .decline:hover {
-        background-color: var(--ha-color-fill-danger-normal-hover);
-      }
-    }
-    .accept[disabled] {
-      color: var(--ha-color-on-disabled-normal);
-      background-color: var(--ha-color-fill-disabled-normal-resting);
-    }
-    .toggle {
-      color: var(--secondary-text-color);
     }
     .ai-icon {
       --mdc-icon-size: 24px;
@@ -818,11 +777,9 @@ export class HaAutomationAiSheet extends LitElement {
       background-color: rgba(255, 255, 255, 0.25);
       font-weight: var(--ha-font-weight-medium);
     }
-    .declined {
+    .show-changes {
       align-self: flex-start;
       margin-top: calc(var(--ha-space-2) * -1);
-      color: var(--secondary-text-color);
-      font-size: var(--ha-font-size-s);
     }
     .steps {
       list-style: none;
@@ -901,8 +858,7 @@ declare global {
   interface HASSDomEvents {
     "ai-request-started": undefined;
     "ai-request-finished": { config?: AutomationConfig };
-    "ai-accept": undefined;
-    "ai-decline": undefined;
+    "ai-toggle-changes": undefined;
     "ai-sheet-closed": undefined;
   }
 }

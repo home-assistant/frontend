@@ -5916,7 +5916,7 @@
               "title": "Edit with AI",
               "status_idle": "Describe what you want to change",
               "status_running": "Working on it…",
-              "status_review": "Review the changes",
+              "status_done": "Changed the automation",
               "status_error": "Something went wrong",
               "prompt_label": "What should change?",
               "prompt_placeholder": "Turn on the hallway light when motion is detected after sunset",
@@ -5930,11 +5930,9 @@
                 "area": "Pick an area",
                 "label": "Pick a label"
               },
-              "accept": "Accept changes",
-              "decline": "Decline changes",
-              "collapse": "Show automation",
-              "expand": "Show AI edit",
               "close": "Close",
+              "show_changes": "Show changes",
+              "hide_changes": "Hide changes",
               "stop": {
                 "label": "Stop",
                 "title": "Stop the AI?",
@@ -5968,7 +5966,6 @@
                 "whole_item": "Whole item",
                 "value_changed": "{name}: {old} → {new}"
               },
-              "declined": "Changes declined",
               "create": "Create with AI",
               "error": "The AI couldn't change the automation: {error}"
             },

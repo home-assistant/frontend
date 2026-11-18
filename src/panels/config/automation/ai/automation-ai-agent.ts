@@ -47,8 +47,6 @@ export interface AutomationAiMention {
 export interface AutomationAiTurn {
   prompt: string;
   summary: string;
-  /** The user declined the changes, so the automation doesn't include them. */
-  declined?: boolean;
 }
 
 export interface AutomationAiRequest {
@@ -299,14 +297,10 @@ const buildInstructions = (
     "",
     ...(history.length
       ? [
-          "Earlier requests in this session. The current automation includes the changes of the ones not marked as declined:",
+          "Earlier requests in this session, which the current automation already includes, unless the user changed it since:",
           ...history.map(
             (turn) =>
-              `- Request: ${turn.prompt}\n  Your answer: ${turn.summary}${
-                turn.declined
-                  ? "\n  The user declined these changes, so try something else if the request is similar."
-                  : ""
-              }`
+              `- Request: ${turn.prompt}\n  Your answer: ${turn.summary}`
           ),
           "",
         ]

@@ -134,6 +134,9 @@ declare global {
   }
 }
 
+// The content, the item sidebar and the AI sidebar fit next to each other
+const AI_SIDEBAR_BESIDE_WIDTH = 1200;
+
 const withoutId = (config?: AutomationConfig) => {
   if (!config) {
     return undefined;
@@ -197,11 +200,18 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   // On narrow screens the sidebar is a bottom sheet too, and hides this one
   @state() private _sidebarOpen = false;
 
-  /** The config the AI changes, while it works on it or the user reviews it. */
-  @state() private _aiBaseConfig?: AutomationConfig;
+  /** The config before and after the last change of the AI. */
+  @state() private _aiChange?: {
+    before: AutomationConfig;
+    after: AutomationConfig;
+  };
 
-  /** The config the AI suggests, until the user accepts or declines it. */
-  @state() private _aiConfig?: AutomationConfig;
+  /** Whether the editor shows the last change of the AI instead of the config. */
+  @state() private _aiShowChanges = false;
+
+  // Wide enough for the AI sidebar next to the item sidebar, otherwise the
+  // item sidebar covers it
+  @state() private _aiSidebarBeside = true;
 
   @provide({ context: automationDiffContext })
   @state()
@@ -212,9 +222,21 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       before && after ? diffAutomationConfigs(before, after) : undefined
   );
 
-  /** Whether editing is locked for the AI. */
+  /** Whether editing is locked, while the AI works or its changes show. */
   private get _aiActive(): boolean {
-    return this._aiBusy || !!this._aiConfig;
+    return this._aiBusy || this._aiShowChanges;
+  }
+
+  private _resizeObserver?: ResizeObserver;
+
+  @query("hass-subpage") private _subpage?: HTMLElement;
+
+  private _observedSubpage?: HTMLElement;
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._resizeObserver?.disconnect();
+    this._observedSubpage = undefined;
   }
 
   protected domainHooks: EditorDomainHooks<AutomationConfig> = {
@@ -235,14 +257,16 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   });
 
   public override get isDirtyState(): boolean {
-    // Leaving with changes of the AI the user hasn't decided on loses them
-    return super.isDirtyState || !!this.yamlErrors || this._aiActive;
+    return super.isDirtyState || !!this.yamlErrors;
   }
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
-    this._aiDiff = this._computeAiDiff(this._aiBaseConfig, this._aiConfig);
+    // The rows show their marks only while the user looks at the changes
+    this._aiDiff = this._aiShowChanges
+      ? this._computeAiDiff(this._aiChange?.before, this._aiChange?.after)
+      : undefined;
 
     if (
       !this._aiPreferencesRequested &&
@@ -311,6 +335,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     const shortcutIcon = renderCtrlOrCmd(this.hass.localize);
     const aiSettings = this._aiDiff?.settings ?? {};
     const aiSheetHidden = this.narrow && this._sidebarOpen;
+    // On wide screens the AI is a sidebar on the right, the editor makes room
+    const aiDocked = this._aiSheetOpen && !this.narrow;
+    const aiSheetSpace =
+      this._aiSheetOpen && !aiDocked && !aiSheetHidden
+        ? `${this._aiSheetHeight}px`
+        : undefined;
 
     return html`
       <hass-subpage
@@ -322,6 +352,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           this.config.alias ||
           this.hass.localize("ui.panel.config.automation.editor.default_name")
         }
+        style=${styleMap({ "--ai-sheet-space": aiSheetSpace })}
       >
         ${
           aiSettings.alias
@@ -608,12 +639,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           </ha-dropdown-item>
         </ha-dropdown>
         <div
-          class=${this.mode === "yaml" ? "yaml-mode" : ""}
+          class=${classMap({
+            "yaml-mode": this.mode === "yaml",
+            "ai-docked": aiDocked && this.mode === "yaml",
+          })}
           style=${styleMap({
-            "padding-bottom":
-              this.mode === "yaml" && this._aiSheetOpen && !aiSheetHidden
-                ? `${this._aiSheetHeight}px`
-                : undefined,
+            "padding-bottom": this.mode === "yaml" ? aiSheetSpace : undefined,
           })}
           @subscribe-automation-config=${this._subscribeAutomationConfig}
         >
@@ -658,11 +689,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                               .hideSave=${this._aiActive}
                               .aiAction=${this._aiAction()}
                               @ai-edit-requested=${this._openAiSheet}
+                              class=${aiDocked ? "ai-docked" : ""}
+                              .aiOverlay=${aiDocked && !this._aiSidebarBeside}
                               style=${styleMap({
-                                "padding-bottom":
-                                  this._aiSheetOpen && !aiSheetHidden
-                                    ? `${this._aiSheetHeight}px`
-                                    : undefined,
+                                "padding-bottom": aiSheetSpace,
                               })}
                               .saving=${this.saving}
                               @value-changed=${this._valueChanged}
@@ -796,11 +826,13 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                       this._aiActive
                         ? html`<ha-yaml-editor
                             .value=${this._aiYaml(
-                              this._aiConfig ?? this.config
+                              this._aiShowChanges
+                                ? this._aiChange?.after
+                                : this.config
                             )}
                             .original=${
-                              this._aiConfig
-                                ? this._aiOriginalYaml(this._aiBaseConfig)
+                              this._aiShowChanges
+                                ? this._aiOriginalYaml(this._aiChange?.before)
                                 : undefined
                             }
                             auto-update
@@ -835,14 +867,17 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           this._aiSheetOpen
             ? html`<ha-automation-ai-sheet
                 .hass=${this.hass}
-                .config=${this._aiConfig ?? this.config}
-                .reviewing=${!!this._aiConfig}
-                .hasChanges=${!!this._aiDiff?.hasChanges}
+                .config=${this.config}
+                .docked=${!this.narrow}
+                .changes=${!!this._computeAiDiff(
+                  this._aiChange?.before,
+                  this._aiChange?.after
+                )?.hasChanges}
+                .showingChanges=${this._aiShowChanges}
                 .suspended=${aiSheetHidden}
                 @ai-request-started=${this._aiRequestStarted}
                 @ai-request-finished=${this._aiRequestFinished}
-                @ai-accept=${this._aiAccept}
-                @ai-decline=${this._endAiSession}
+                @ai-toggle-changes=${this._aiToggleChanges}
                 @ai-sheet-closed=${this._aiSheetClosed}
                 @bottom-sheet-resized=${this._aiSheetResized}
               ></ha-automation-ai-sheet>`
@@ -880,7 +915,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   private _aiRequestStarted() {
     this._manualEditor?.triggerCloseSidebar();
-    this._aiBaseConfig ??= this.config;
+    this._aiShowChanges = false;
     this._aiBusy = true;
   }
 
@@ -888,27 +923,25 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     ev: HASSDomEvent<HASSDomEvents["ai-request-finished"]>
   ) {
     this._aiBusy = false;
-    if (ev.detail.config) {
-      this._aiConfig = ev.detail.config;
-    } else if (!this._aiConfig) {
-      this._aiBaseConfig = undefined;
+    const config = ev.detail.config;
+    if (!config || !this.config) {
+      return;
     }
+    this._aiChange = { before: this.config, after: config };
+    // One history entry, so one undo takes back all changes of the AI
+    this._updateConfig(config);
   }
 
-  private _aiAccept() {
-    const config = this._aiConfig;
-    this._endAiSession();
-    if (config) {
-      // One history entry, so one undo takes back all changes of the AI
-      this._updateConfig(config);
-    }
+  private _aiToggleChanges() {
+    this._manualEditor?.triggerCloseSidebar();
+    this._aiShowChanges = !this._aiShowChanges && !!this._aiChange;
   }
 
-  private _endAiSession() {
+  private _resetAi() {
     this._manualEditor?.triggerCloseSidebar();
     this._aiBusy = false;
-    this._aiConfig = undefined;
-    this._aiBaseConfig = undefined;
+    this._aiShowChanges = false;
+    this._aiChange = undefined;
   }
 
   private _aiSheetResized(
@@ -919,11 +952,24 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   private _aiSheetClosed() {
     this._aiSheetOpen = false;
-    this._endAiSession();
+    this._resetAi();
   }
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+
+    // The host is inline and has no size, so this measures the page in it
+    if (this._subpage !== this._observedSubpage) {
+      this._resizeObserver?.disconnect();
+      this._observedSubpage = this._subpage;
+      if (this._subpage && "ResizeObserver" in window) {
+        this._resizeObserver ??= new ResizeObserver(([entry]) => {
+          this._aiSidebarBeside =
+            entry.contentRect.width >= AI_SIDEBAR_BESIDE_WIDTH;
+        });
+        this._resizeObserver.observe(this._subpage);
+      }
+    }
 
     if (!this.hass) {
       return;
@@ -1185,19 +1231,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       return true;
     }
 
-    // Saving keeps what the editor shows, so it accepts the changes of the AI
-    const aiConfig = this._aiConfig;
-
     return new Promise<boolean>((resolve) => {
       showAutomationSaveDialog(this, {
         addHistory,
-        config: aiConfig ?? this.config!,
+        config: this.config!,
         domain: "automation",
         updateConfig: async (config, entityRegistryUpdate) => {
-          if (aiConfig) {
-            this._aiSheetOpen = false;
-            this._aiAccept();
-          }
           this.config = config;
           this.entityRegistryUpdate = entityRegistryUpdate;
           this._updateDirtyState({
@@ -1221,7 +1260,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         onClose: () => resolve(false),
         onDiscard: () => {
           this._aiSheetOpen = false;
-          this._endAiSession();
+          this._resetAi();
           this.yamlErrors = undefined;
           this._markDirtyStateClean();
           resolve(true);
@@ -1534,6 +1573,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   private _applyUndoRedo(config: AutomationConfig) {
     this._manualEditor?.triggerCloseSidebar();
+    // The last change of the AI no longer matches the automation
+    this._aiShowChanges = false;
+    this._aiChange = undefined;
     this.config = config;
     this._updateDirtyState({
       config: this.config,
@@ -1639,6 +1681,24 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
            AI, the rest of the menu would change the automation */
         ha-dropdown[hidden] {
           display: none;
+        }
+        :host {
+          --ai-sidebar-width: 380px;
+        }
+        /* Room for the AI sidebar on the right */
+        .ai-docked,
+        manual-automation-editor.ai-docked {
+          --ai-sidebar-space: calc(var(--ai-sidebar-width) + var(--ha-space-4));
+          margin-inline-end: var(--ai-sidebar-space);
+        }
+        ha-automation-ai-sheet[docked] {
+          position: fixed;
+          top: calc(var(--header-height) + 16px);
+          inset-inline-end: var(--ha-space-3);
+          width: var(--ai-sidebar-width);
+          height: calc(-81px + 100vh - var(--safe-area-inset-top, 0px));
+          height: calc(-81px + 100dvh - var(--safe-area-inset-top, 0px));
+          z-index: 1;
         }
         .ai-alias {
           padding: 0 var(--ha-space-2);

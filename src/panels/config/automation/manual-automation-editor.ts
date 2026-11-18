@@ -93,6 +93,13 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
 ) {
   @property({ attribute: false }) public stateObj?: HassEntity;
 
+  /**
+   * The AI sidebar is next to the editor but there is no room for the item
+   * sidebar next to it, so the item sidebar covers it.
+   */
+  @property({ type: Boolean, reflect: true, attribute: "ai-overlay" })
+  public aiOverlay = false;
+
   /** Shows a button to change the automation with AI, or to create it. */
   @property({ attribute: false }) public aiAction?: "create" | "edit";
 
@@ -623,6 +630,14 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
           margin-top: 16px;
         }
         /* Chips, so the mode doesn't look like the description */
+        :host([ai-overlay]) .content-wrapper {
+          padding-inline-end: 0;
+        }
+        :host([ai-overlay]) ha-automation-sidebar {
+          inset-inline-end: var(--ha-space-3);
+          width: var(--ai-sidebar-width);
+          z-index: 2;
+        }
         .mode-changes {
           display: flex;
           flex-wrap: wrap;
