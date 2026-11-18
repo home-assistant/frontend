@@ -531,7 +531,7 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
         ${!this.narrow ? this._renderInputSearch("search") : nothing}
         <ha-icon-button
           slot="button"
-          class=${this._treeLayout ? "active" : ""}
+          class="layout-toggle ${this._treeLayout ? "active" : ""}"
           .path=${this._treeLayout ? mdiHubOutline : mdiFileTree}
           .label=${this.hass.localize(
             "ui.panel.config.mqtt.visualization.toggle_tree_layout"
@@ -1131,6 +1131,10 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
         }
         ha-input-search {
           flex: 1;
+        }
+        /* Above the zoom reset button of the chart, which comes and goes */
+        .layout-toggle {
+          order: -1;
         }
         /* The chart only styles its direct buttons, so match the filter button */
         ha-dropdown ha-icon-button {
