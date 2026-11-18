@@ -34,4 +34,11 @@ describe("slugify", () => {
     assert.strictEqual(slugify("abc def", "-"), "abc-def");
     assert.strictEqual(slugify("abc-def", "-"), "abc-def");
   });
+
+  it("transliterates Cyrillic characters", () => {
+    assert.strictEqual(slugify("Хлеб"), "khleb");
+    assert.strictEqual(slugify("кухня"), "kukhnia");
+    assert.strictEqual(slugify("Жёлтая чашка"), "zheltaia_chashka");
+    assert.strictEqual(slugify("щи"), "shchi");
+  });
 });

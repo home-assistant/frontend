@@ -17,7 +17,6 @@ import {
   saveFrontendSystemData,
   subscribeFrontendSystemData,
   type HomeFrontendSystemData,
-  type MaintenanceFrontendSystemData,
   type SecurityFrontendSystemData,
 } from "../../data/frontend";
 import type { LovelaceDashboardStrategyConfig } from "../../data/lovelace/config/types";
@@ -55,8 +54,6 @@ class PanelHome extends SubscribeMixin(LitElement) {
 
   @state() private _securityConfig: SecurityFrontendSystemData = {};
 
-  @state() private _maintenanceConfig: MaintenanceFrontendSystemData = {};
-
   @state() private _extraActionItems?: ExtraActionItem[];
 
   @query(".banner") private _banner?: HTMLElement;
@@ -64,8 +61,6 @@ class PanelHome extends SubscribeMixin(LitElement) {
   private _loadConfigPromise?: Promise<void>;
 
   private _securityConfigRevision = 0;
-
-  private _maintenanceConfigRevision = 0;
 
   public hassSubscribe() {
     return [
@@ -79,21 +74,6 @@ class PanelHome extends SubscribeMixin(LitElement) {
             return;
           }
           this._securityConfig = config;
-          if (this.hasUpdated) {
-            this._setLovelace();
-          }
-        }
-      ),
-      subscribeFrontendSystemData(
-        this.hass.connection,
-        "maintenance",
-        ({ value }) => {
-          this._maintenanceConfigRevision++;
-          const config = value || {};
-          if (deepEqual(config, this._maintenanceConfig)) {
-            return;
-          }
-          this._maintenanceConfig = config;
           if (this.hasUpdated) {
             this._setLovelace();
           }
@@ -199,13 +179,11 @@ class PanelHome extends SubscribeMixin(LitElement) {
 
   private async _loadConfig() {
     const securityConfigRevision = this._securityConfigRevision;
-    const maintenanceConfigRevision = this._maintenanceConfigRevision;
-    const [translationsResult, homeResult, securityResult, maintenanceResult] =
+    const [translationsResult, homeResult, securityResult] =
       await Promise.allSettled([
         this.hass.loadFragmentTranslation("lovelace"),
         fetchFrontendSystemData(this.hass.connection, "home"),
         fetchFrontendSystemData(this.hass.connection, "security"),
-        fetchFrontendSystemData(this.hass.connection, "maintenance"),
       ]);
 
     if (translationsResult.status === "rejected") {
@@ -235,19 +213,6 @@ class PanelHome extends SubscribeMixin(LitElement) {
       }
     } else if (securityConfigRevision === this._securityConfigRevision) {
       this._securityConfig = securityResult.value || {};
-    }
-
-    if (maintenanceResult.status === "rejected") {
-      // eslint-disable-next-line no-console
-      console.error(
-        "Failed to load maintenance configuration:",
-        maintenanceResult.reason
-      );
-      if (maintenanceConfigRevision === this._maintenanceConfigRevision) {
-        this._maintenanceConfig = {};
-      }
-    } else if (maintenanceConfigRevision === this._maintenanceConfigRevision) {
-      this._maintenanceConfig = maintenanceResult.value || {};
     }
   }
 
@@ -435,7 +400,6 @@ class PanelHome extends SubscribeMixin(LitElement) {
       strategy: {
         type: "home",
         alert_entities: this._securityConfig.alert_entities,
-        maintenance_hidden_entities: this._maintenanceConfig.hidden_entities,
         favorite_entities: this._config?.favorite_entities,
         home_panel: true,
         hide_welcome_message: this._config?.hide_welcome_message,

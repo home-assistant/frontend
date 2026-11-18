@@ -163,21 +163,9 @@ export const findEntities = (
   return results;
 };
 
-export const excludeEntities = (
-  entityIds: string[],
-  excludedEntityIds?: string[]
-): string[] => {
-  if (!excludedEntityIds?.length) {
-    return entityIds;
-  }
-  const excluded = new Set(excludedEntityIds);
-  return entityIds.filter((entityId) => !excluded.has(entityId));
-};
-
 export const findFilteredEntities = (
   sources: EntityFilterSources,
-  filters: EntityFilter[],
-  excludedEntityIds?: string[]
+  filters: EntityFilter[]
 ): string[] => {
   const filterFuncs = filters.map((filter) =>
     generateEntityFilter(
@@ -189,8 +177,5 @@ export const findFilteredEntities = (
       filter
     )
   );
-  return excludeEntities(
-    findEntities(Object.keys(sources.states), filterFuncs),
-    excludedEntityIds
-  );
+  return findEntities(Object.keys(sources.states), filterFuncs);
 };
