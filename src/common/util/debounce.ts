@@ -37,6 +37,7 @@ export const debounce = <T extends any[]>(
 
   debouncedFunc.cancel = () => {
     clearTimeout(timeout);
+    timeout = undefined;
     trailingArgs = undefined;
   };
 

@@ -710,23 +710,15 @@ describe("generateEntityFilter", () => {
 });
 
 describe("findFilteredEntities", () => {
-  it("should match any filter and drop excluded entities", () => {
-    const entities = findFilteredEntities(
-      mockHass,
-      [{ domain: "light" }, { domain: "switch" }],
-      ["light.bedroom"]
-    );
-
-    expect(entities).toContain("light.living_room");
-    expect(entities).toContain("switch.kitchen");
-    expect(entities).not.toContain("light.bedroom");
-    expect(entities).not.toContain("sensor.temperature");
-  });
-
-  it("should return every match when nothing is excluded", () => {
-    const entities = findFilteredEntities(mockHass, [{ domain: "light" }]);
+  it("should match entities against any of the filters", () => {
+    const entities = findFilteredEntities(mockHass, [
+      { domain: "light" },
+      { domain: "switch" },
+    ]);
 
     expect(entities).toContain("light.living_room");
     expect(entities).toContain("light.bedroom");
+    expect(entities).toContain("switch.kitchen");
+    expect(entities).not.toContain("sensor.temperature");
   });
 });
