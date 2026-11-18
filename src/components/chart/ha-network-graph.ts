@@ -920,8 +920,13 @@ export class HaNetworkGraph extends LitElement {
     const moved = this._dragMoved;
     this._dragNode = undefined;
     this._dragMoved = false;
-    // A click also ends a drag, which releases a pinned node in ECharts
-    if (!id || (!moved && !this._pinnedNodes.includes(id))) {
+    // The positions of a fixed layout come from the data, not from the force
+    // layout. A click also ends a drag, which releases a pinned node in ECharts
+    if (
+      this.fixedLayout ||
+      !id ||
+      (!moved && !this._pinnedNodes.includes(id))
+    ) {
       return;
     }
     this._pinNodeInChart(id);
