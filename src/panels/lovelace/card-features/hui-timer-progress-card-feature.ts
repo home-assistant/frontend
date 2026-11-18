@@ -13,6 +13,7 @@ import type {
   LovelaceCardFeatureContext,
   TimerProgressCardFeatureConfig,
 } from "./types";
+import { TimerRemainingTimeController } from "../../../common/controllers/timer-remaining-time-controller";
 
 export const supportsTimerProgressCardFeature = (
   hass: HomeAssistant,
@@ -36,10 +37,9 @@ class HuiTimerProgressCardFeature
   private _stateObj?: HassEntity;
 
   @state() private _config?: TimerProgressCardFeatureConfig;
-
-  @state() private _ratio = 0;
-
-  private _raf?: number;
+  private _timeRemaining = new TimerRemainingTimeController(this);
+  private _prevRatio = 0;
+  private _animate = false;
 
   static getStubConfig(): TimerProgressCardFeatureConfig {
     return { type: "timer-progress" };
@@ -52,58 +52,29 @@ class HuiTimerProgressCardFeature
     this._config = config;
   }
 
-  public connectedCallback() {
-    super.connectedCallback();
-    this._stop();
-    this._tick();
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._stop();
-  }
-
-  protected updated(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues): void {
     if (changedProps.has("_stateObj")) {
-      this._stop();
-      this._tick();
+      this._timeRemaining.setStateObj(this._stateObj);
+    }
+    if (this._stateObj) {
+      const ratio = this._ratio(this._stateObj);
+      this._animate =
+        this._stateObj.state === "active" && ratio <= this._prevRatio;
+      this._prevRatio = ratio;
     }
   }
 
-  private _stop() {
-    if (this._raf !== undefined) {
-      cancelAnimationFrame(this._raf);
-      this._raf = undefined;
+  private _ratio(stateObj: HassEntity): number {
+    const { duration } = stateObj.attributes;
+    const total =
+      typeof duration === "string" ? durationToSeconds(duration) : 0;
+    if (!total || stateObj.state === "idle") {
+      return 0;
     }
+    const offset = stateObj.state === "active" ? 1 : 0;
+    const left = (this._timeRemaining.timeRemaining ?? 0) - offset;
+    return Math.min(Math.max(left / total, 0), 1);
   }
-
-  private _tick = () => {
-    const stateObj = this._stateObj;
-    if (!stateObj) {
-      return;
-    }
-    if (
-      typeof stateObj.attributes.duration !== "string" ||
-      (stateObj.state === "paused" &&
-        typeof stateObj.attributes.remaining !== "string")
-    ) {
-      this._ratio = 0;
-      return;
-    }
-    const duration = durationToSeconds(stateObj.attributes.duration);
-    let remaining = 0;
-    if (stateObj.state === "active") {
-      remaining =
-        (new Date(stateObj.attributes.finishes_at).getTime() - Date.now()) /
-        1000;
-    } else if (stateObj.state === "paused") {
-      remaining = durationToSeconds(stateObj.attributes.remaining);
-    }
-    this._ratio = duration ? Math.min(Math.max(remaining / duration, 0), 1) : 0;
-    if (stateObj.state === "active" && this.isConnected) {
-      this._raf = requestAnimationFrame(this._tick);
-    }
-  };
 
   protected render() {
     if (
@@ -114,19 +85,23 @@ class HuiTimerProgressCardFeature
     ) {
       return nothing;
     }
+    const stateObj = this._stateObj;
+    const ratio = this._ratio(stateObj);
     return html`
       <div
         class="track"
         role="progressbar"
-        aria-label=${this._stateObj.attributes.friendly_name ||
-        this._stateObj.entity_id}
+        aria-label=${stateObj.attributes.friendly_name || stateObj.entity_id}
         aria-valuemin="0"
         aria-valuemax="100"
-        aria-valuenow=${Math.round(this._ratio * 100)}
+        aria-valuenow=${Math.round(ratio * 100)}
       >
         <div
           class="bar"
-          style=${styleMap({ width: `${this._ratio * 100}%` })}
+          style=${styleMap({
+            transform: `scaleX(${ratio})`,
+            transition: this._animate ? "transform 1s linear" : "none",
+          })}
         ></div>
       </div>
     `;
@@ -135,6 +110,9 @@ class HuiTimerProgressCardFeature
   static styles = [
     cardFeatureStyles,
     css`
+      :host {
+        pointer-events: none !important;
+      }
       .track {
         height: var(--feature-height, 42px);
         border-radius: var(--feature-border-radius, 12px);
@@ -147,6 +125,8 @@ class HuiTimerProgressCardFeature
       }
       .bar {
         height: 100%;
+        width: 100%;
+        transform-origin: left;
         background: var(--tile-color, var(--primary-color));
       }
     `,
