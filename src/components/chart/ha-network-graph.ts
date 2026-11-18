@@ -239,6 +239,9 @@ export class HaNetworkGraph extends LitElement {
 
   private _selectAnimationFrame?: number;
 
+  // The animated view goes back to the whole graph instead of to a node
+  private _fittingView = false;
+
   private _selectAnimationLastFrame?: number;
 
   private _selectAnimationElapsed = 0;
@@ -471,10 +474,9 @@ export class HaNetworkGraph extends LitElement {
     }
     // Another layout moves every node, so the view starts over
     if (changedProperties.get("fixedLayout") !== undefined) {
-      this._baseChart?.updateComplete.then(() => {
-        this._resetRoam();
-        this._moveToSelectedNode();
-      });
+      this._baseChart?.updateComplete.then(() =>
+        this.selectedNode ? this._moveToSelectedNode() : this._fitView()
+      );
     } else if (changedProperties.has("selectedNode")) {
       this._moveToSelectedNode();
     }
@@ -484,11 +486,45 @@ export class HaNetworkGraph extends LitElement {
     this._followSelectedNode = !!this.selectedNode;
     this._stopSelectAnimation();
     if (this.selectedNode && !this._reducedMotion) {
-      this._selectAnimationFrame = requestAnimationFrame(
-        this._animateToSelectedNode
-      );
+      this._selectAnimationFrame = requestAnimationFrame(this._animateView);
     }
     this._updateFollowing();
+  }
+
+  private _fitView() {
+    this._stopSelectAnimation();
+    if (this._reducedMotion) {
+      this._resetRoam();
+      return;
+    }
+    this._fittingView = true;
+    this._selectAnimationFrame = requestAnimationFrame(this._animateView);
+  }
+
+  // The roam back to no roam, or undefined when there is none. Any point of
+  // the view ends up where it is without a roam, so the center is used.
+  private _fitRoam(chart: EChartsType): FollowRoam | undefined {
+    const roam: number[] | undefined =
+      this._getGraphSeries(chart)?.coordinateSystem?.getRoamTransform();
+    if (!roam) {
+      return undefined;
+    }
+    const [zoom, , , , x, y] = roam;
+    const centerX = chart.getWidth() / 2;
+    const centerY = chart.getHeight() / 2;
+    const dx = centerX - (zoom * centerX + x);
+    const dy = centerY - (zoom * centerY + y);
+    const zoomChanged = Math.abs(zoom - 1) >= 1e-3;
+    if (!zoomChanged && Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
+      return undefined;
+    }
+    return {
+      dx,
+      dy,
+      zoom: zoomChanged ? 1 / zoom : undefined,
+      originX: centerX,
+      originY: centerY,
+    };
   }
 
   // Without a roam ECharts fits the whole graph in the view
@@ -977,10 +1013,10 @@ export class HaNetworkGraph extends LitElement {
     this._updateFollowing();
   };
 
-  // Moves the view to a newly selected node in steps, so the user can follow
-  // the change. The remaining distance is measured each frame, as the node can
-  // still move.
-  private _animateToSelectedNode = (now: number) => {
+  // Moves the view to a newly selected node, or back to the whole graph, in
+  // steps, so the user can follow the change. The remaining distance is
+  // measured each frame, as the node can still move.
+  private _animateView = (now: number) => {
     if (this._selectAnimationLastFrame !== undefined) {
       this._selectAnimationElapsed += Math.min(
         now - this._selectAnimationLastFrame,
@@ -999,8 +1035,15 @@ export class HaNetworkGraph extends LitElement {
         : (eased - this._selectAnimationEased) /
           (1 - this._selectAnimationEased);
     this._selectAnimationEased = eased;
-    const chart = this._followedChart;
-    const roam = chart && this._selectedNodeRoam(chart);
+    const chart = this._fittingView
+      ? this._baseChart?.chart
+      : this._followedChart;
+    const roam =
+      chart &&
+      !chart.isDisposed() &&
+      (this._fittingView
+        ? this._fitRoam(chart)
+        : this._selectedNodeRoam(chart));
     if (chart && roam) {
       const zoom = roam.zoom === undefined ? undefined : roam.zoom ** fraction;
       // The zoom around the center that follows the pan scales the node's
@@ -1018,12 +1061,13 @@ export class HaNetworkGraph extends LitElement {
       });
     }
     if (progress < 1) {
-      this._selectAnimationFrame = requestAnimationFrame(
-        this._animateToSelectedNode
-      );
-    } else {
-      this._stopSelectAnimation();
+      this._selectAnimationFrame = requestAnimationFrame(this._animateView);
+      return;
     }
+    if (this._fittingView) {
+      this._resetRoam();
+    }
+    this._stopSelectAnimation();
   };
 
   private _stopSelectAnimation() {
@@ -1031,6 +1075,7 @@ export class HaNetworkGraph extends LitElement {
       cancelAnimationFrame(this._selectAnimationFrame);
     }
     this._selectAnimationFrame = undefined;
+    this._fittingView = false;
     this._selectAnimationLastFrame = undefined;
     this._selectAnimationElapsed = 0;
     this._selectAnimationEased = 0;
