@@ -1,81 +1,84 @@
 import type { HassEntities } from "home-assistant-js-websocket";
-import { computeDomain } from "../common/entity/compute_domain";
 import type { HomeAssistant } from "../types";
-import type { ConfigEntry } from "./config_entries";
+import type { RepairsIssue } from "./repairs";
 import { HOME_ASSISTANT_CORE_TITLE } from "./update";
-
-export interface UpdateReportReference {
-  entity_id: string;
-  id: string | null;
-  name: string | null;
-}
-
-export interface UpdateReportConfigEntry {
-  entry_id: string;
-  domain: string;
-  title: string;
-  // null when the config entry was removed
-  state: ConfigEntry["state"] | null;
-  translation_domain: string | null;
-  translation_key: string | null;
-  translation_placeholders: Record<string, string> | null;
-}
-
-export interface UpdateReportUnavailableEntity {
-  entity_id: string;
-  platform: string;
-  // null when the entity has no state anymore
-  state: "unavailable" | "unknown" | null;
-}
-
-export interface UpdateReportRemovedEntity {
-  entity_id: string;
-  platform: string;
-  automations: UpdateReportReference[];
-  scripts: UpdateReportReference[];
-}
-
-export interface UpdateReportRenamedEntity extends UpdateReportRemovedEntity {
-  old_entity_id: string;
-}
 
 export interface UpdateReportIssue {
   domain: string;
   issue_id: string;
+  severity: RepairsIssue["severity"];
 }
 
-export interface UpdateReportUpcomingIssue extends UpdateReportIssue {
-  issue_domain: string | null;
-  breaks_in_ha_version: string;
-  dismissed: boolean;
-}
+export type UpdateReportSeverity = "error" | "warning";
 
-export interface UpdateReport {
+export interface UpdateReportSummary {
+  id: string;
   from_version: string;
   to_version: string;
+  update_started: string;
   // null while pending
   created: string | null;
   // Startup has not settled yet, the report is a live diff
   pending: boolean;
-  config_entries: UpdateReportConfigEntry[];
-  entities_unavailable: UpdateReportUnavailableEntity[];
-  entities_renamed: UpdateReportRenamedEntity[];
-  entities_removed: UpdateReportRemovedEntity[];
+  // null when nothing needs attention
+  severity: UpdateReportSeverity | null;
+  automatic: boolean;
+  // Number of new repairs since the update
+  issues: number;
+}
+
+export interface UpdateReport extends Omit<UpdateReportSummary, "issues"> {
+  backup: boolean;
+  // null until Home Assistant started on the new version
+  started: string | null;
   issues: UpdateReportIssue[];
-  upcoming: UpdateReportUpcomingIssue[];
 }
 
 // The report is a live diff until startup has settled
 export const UPDATE_REPORT_PENDING_REFRESH_INTERVAL = 30000;
 
-export const fetchUpdateReport = (
+// Newest first
+export const fetchUpdateReports = (
   hass: Pick<HomeAssistant, "callWS">,
   entityId: string
+) =>
+  hass.callWS<UpdateReportSummary[]>({
+    type: "update/reports",
+    entity_id: entityId,
+  });
+
+export const fetchUpdateReport = (
+  hass: Pick<HomeAssistant, "callWS">,
+  entityId: string,
+  reportId: string
 ) =>
   hass.callWS<UpdateReport | null>({
     type: "update/report",
     entity_id: entityId,
+    report_id: reportId,
   });
+
+export const updateReportPath = (entityId: string, reportId: string) =>
+  `/config/updates/details/${entityId}/report/${encodeURIComponent(reportId)}`;
+
+// Release notes of an installed version are not available through the update entity
+export const updateReportReleaseUrl = (version: string) =>
+  `https://github.com/home-assistant/core/releases/tag/${encodeURIComponent(version)}`;
+
+// Whole seconds between the update and the start on the new version
+export const updateReportStartupSeconds = (
+  report: Pick<UpdateReport, "update_started" | "started">
+): number | undefined =>
+  report.started
+    ? Math.max(
+        0,
+        Math.round(
+          (new Date(report.started).getTime() -
+            new Date(report.update_started).getTime()) /
+            1000
+        )
+      )
+    : undefined;
 
 // Only the core update has a report for now
 export const findCoreUpdateEntityId = (
@@ -86,24 +89,3 @@ export const findCoreUpdateEntityId = (
       stateObj.entity_id.startsWith("update.") &&
       stateObj.attributes.title === HOME_ASSISTANT_CORE_TITLE
   )?.entity_id;
-
-// Upcoming breaking changes are not something that got worse
-export const updateReportWorseCount = (report: UpdateReport): number =>
-  report.config_entries.length +
-  report.entities_unavailable.length +
-  report.entities_renamed.length +
-  report.entities_removed.length +
-  report.issues.length;
-
-export const updateReportReferences = (
-  entity: UpdateReportRemovedEntity
-): UpdateReportReference[] => [...entity.automations, ...entity.scripts];
-
-export const updateReportReferencePath = (
-  reference: UpdateReportReference
-): string =>
-  reference.id
-    ? `/config/${computeDomain(reference.entity_id)}/edit/${encodeURIComponent(reference.id)}`
-    : `/config/${computeDomain(reference.entity_id)}/show/${encodeURIComponent(
-        reference.entity_id
-      )}`;

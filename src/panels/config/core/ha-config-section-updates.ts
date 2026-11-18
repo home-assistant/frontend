@@ -43,12 +43,12 @@ import {
   setSupervisorOption,
 } from "../../../data/hassio/supervisor";
 import { domainToName } from "../../../data/integration";
-import type { UpdateReport } from "../../../data/update_report";
+import type { UpdateReportSummary } from "../../../data/update_report";
 import {
-  fetchUpdateReport,
+  fetchUpdateReports,
   findCoreUpdateEntityId,
   UPDATE_REPORT_PENDING_REFRESH_INTERVAL,
-  updateReportWorseCount,
+  updateReportPath,
 } from "../../../data/update_report";
 import type { UpdateEntity } from "../../../data/update";
 import {
@@ -95,7 +95,11 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
 
   @state() private _loadedIntegrationTitles = new Set<string>();
 
-  @state() private _coreReport?: { entityId: string; report: UpdateReport };
+  // The newest report of the core update
+  @state() private _coreReport?: {
+    entityId: string;
+    report: UpdateReportSummary;
+  };
 
   private _reportRefreshTimeout?: number;
 
@@ -129,15 +133,13 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
     if (!entityId) {
       return;
     }
-    let report: UpdateReport | null;
     try {
-      report = await fetchUpdateReport(this.hass, entityId);
+      const [report] = await fetchUpdateReports(this.hass, entityId);
+      this._coreReport = report ? { entityId, report } : undefined;
     } catch (_err) {
-      // Non-fatal: keep the last known report
-      return;
+      // Non-fatal: keep the last known report and retry while it is pending
     }
-    this._coreReport = report ? { entityId, report } : undefined;
-    if (report?.pending && this.isConnected) {
+    if (this._coreReport?.report.pending && this.isConnected) {
       this._reportRefreshTimeout = window.setTimeout(
         () => this._loadCoreReport(),
         UPDATE_REPORT_PENDING_REFRESH_INTERVAL
@@ -478,14 +480,13 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
     }
     const { entityId, report } = this._coreReport;
     const stateObj = this.hass.states[entityId] as UpdateEntity | undefined;
-    const worseCount = updateReportWorseCount(report);
     return html`
       <ha-card
         outlined
         .header=${this.hass.localize("ui.panel.config.updates.installed.title")}
       >
         <ha-list-base>
-          <ha-list-item-button href=${`/config/updates/details/${entityId}`}>
+          <ha-list-item-button href=${updateReportPath(entityId, report.id)}>
             ${
               stateObj
                 ? html`<state-badge
@@ -500,16 +501,23 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
                 { version: report.to_version }
               )}
             </span>
-            <span slot="supporting-text">
+            <span
+              slot="supporting-text"
+              class=${report.severity ? `attention ${report.severity}` : ""}
+            >
               ${
-                worseCount
+                report.severity
                   ? this.hass.localize(
-                      "ui.panel.config.updates.installed.got_worse",
-                      { count: worseCount }
+                      "ui.panel.config.updates.attention.repairs",
+                      { count: report.issues }
                     )
-                  : this.hass.localize(
-                      "ui.panel.config.updates.installed.nothing_got_worse"
-                    )
+                  : report.pending
+                    ? this.hass.localize(
+                        "ui.panel.config.updates.attention.pending"
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.updates.attention.none"
+                      )
               }
             </span>
             <ha-icon-next slot="end"></ha-icon-next>
@@ -751,6 +759,12 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
 
     ha-card ha-icon-next {
       color: var(--secondary-text-color);
+    }
+    .attention.error {
+      color: var(--error-color);
+    }
+    .attention.warning {
+      color: var(--warning-color);
     }
     .no-updates {
       padding: 16px;

@@ -29,7 +29,15 @@ class HaConfigUpdatesRouter extends HassRouterPage {
     pageEl.hass = this.hass;
     pageEl.narrow = this.narrow;
     if (this._currentPage === "details") {
-      pageEl.entityId = decodeURIComponent(this.routeTail.path.slice(1));
+      // <entity_id> or <entity_id>/report/<report_id>
+      const [entityId, subpage, reportId] = this.routeTail.path
+        .slice(1)
+        .split("/");
+      pageEl.entityId = decodeURIComponent(entityId);
+      pageEl.reportId =
+        subpage === "report" && reportId
+          ? decodeURIComponent(reportId)
+          : undefined;
     }
   }
 }
