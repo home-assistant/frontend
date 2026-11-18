@@ -108,7 +108,7 @@ const FOLLOW_ROAM = "follow-selected-node";
 
 const SELECTED_NODE_ANIMATION_DURATION = 800;
 
-// The view moves after the nodes of another layout, or after this many ms
+// The nodes of another layout move for at most this many ms
 const LAYOUT_ANIMATION_TIMEOUT = 1000;
 
 // A frame that takes longer, such as the first one after new data, advances
@@ -247,9 +247,6 @@ export class HaNetworkGraph extends LitElement {
   private _selectAnimationFrame?: number;
 
   private _stopWaitingForLayout?: () => void;
-
-  // The animated view goes back to the whole graph instead of to a node
-  private _fittingView = false;
 
   // How the force layout first showed its nodes, from layout to pixels, which
   // the view goes back to after the fixed layout
@@ -495,23 +492,21 @@ export class HaNetworkGraph extends LitElement {
       this._applyHighlighting();
       this._updateMouseoverHandler();
     }
-    // Another layout moves every node, so the view starts over. A roam while
-    // ECharts moves the nodes draws the edges at their end at once, so the
-    // view waits for the nodes.
+    // Another layout moves every node, so the view moves along. A roam while
+    // ECharts moves the nodes draws the edges at their end at once, so
+    // following the selected node waits for the nodes.
     if (changedProperties.get("fixedLayout") !== undefined) {
       this._followSelectedNode = false;
       this._stopSelectAnimation();
       this._updateFollowing();
-      this._baseChart?.updateComplete.then(() =>
+      this._baseChart?.updateComplete.then(() => {
+        this._moveViewToLayout();
         this._afterLayoutAnimation(() => {
           this._settlingLayout = false;
-          if (this.selectedNode) {
-            this._moveToSelectedNode();
-          } else {
-            this._fitView();
-          }
-        })
-      );
+          this._followSelectedNode = !!this.selectedNode;
+          this._updateFollowing();
+        });
+      });
     } else if (changedProperties.has("selectedNode")) {
       this._moveToSelectedNode();
     }
@@ -546,23 +541,33 @@ export class HaNetworkGraph extends LitElement {
     };
   }
 
-  private _fitView() {
-    this._stopSelectAnimation();
-    if (this._reducedMotion) {
-      const chart = this._baseChart?.chart;
-      const roam = chart && !chart.isDisposed() && this._layoutRoam(chart);
-      if (roam) {
-        chart.dispatchAction({
-          type: "graphRoam",
-          from: FOLLOW_ROAM,
-          seriesId: "network",
-          ...roam,
-        });
-      }
+  // A new center and zoom of the series moves the view in the same animation
+  // as the nodes, as ECharts animates the transform of the group they are in
+  private _moveViewToLayout() {
+    const chart = this._baseChart?.chart;
+    const view = this._getGraphSeries(chart)?.coordinateSystem;
+    const roam =
+      chart &&
+      !chart.isDisposed() &&
+      view &&
+      (this.selectedNode
+        ? this._selectedNodeRoam(chart)
+        : this._layoutRoam(chart));
+    if (!roam) {
       return;
     }
-    this._fittingView = true;
-    this._selectAnimationFrame = requestAnimationFrame(this._animateView);
+    const zoom = roam.zoom ?? 1;
+    const viewRect = view.getViewRect();
+    const centerX = viewRect.x + viewRect.width / 2;
+    const centerY = viewRect.y + viewRect.height / 2;
+    // The point that the roam moves to the center
+    const center = view.pointToData([
+      (centerX - roam.originX) / zoom + roam.originX - roam.dx,
+      (centerY - roam.originY) / zoom + roam.originY - roam.dy,
+    ]);
+    chart.setOption({
+      series: [{ id: "network", center, zoom: view.zoom * zoom }],
+    });
   }
 
   private _viewTransform(chart: EChartsType) {
@@ -591,10 +596,22 @@ export class HaNetworkGraph extends LitElement {
   };
 
   // The roam to the view of the layout switched to: the whole fixed layout, or
-  // the force layout as it first showed, as its nodes keep their positions
+  // the force layout as it first showed, as its nodes keep their positions.
+  // Nodes shown since, e.g. of another legend category, may not fit in that.
   private _layoutRoam(chart: EChartsType): FollowRoam | undefined {
     const initial = this._initialForceView;
-    if (this.fixedLayout || !initial) {
+    const bounds = this._layoutBounds(chart);
+    if (
+      this.fixedLayout ||
+      !initial ||
+      !bounds ||
+      initial.scale * bounds.left + initial.x < SELECTED_NODE_FIT_MARGIN ||
+      initial.scale * bounds.top + initial.y < SELECTED_NODE_FIT_MARGIN ||
+      initial.scale * bounds.right + initial.x >
+        chart.getWidth() - SELECTED_NODE_FIT_MARGIN ||
+      initial.scale * bounds.bottom + initial.y >
+        chart.getHeight() - SELECTED_NODE_FIT_MARGIN
+    ) {
       return this._fitRoam(chart);
     }
     const current = this._viewTransform(chart);
@@ -614,34 +631,46 @@ export class HaNetworkGraph extends LitElement {
     };
   }
 
+  // The layout bounds of the drawn nodes
+  private _layoutBounds(chart: EChartsType) {
+    const bounds = {
+      left: Infinity,
+      top: Infinity,
+      right: -Infinity,
+      bottom: -Infinity,
+    };
+    this._getGraphSeries(chart)
+      ?.getGraph()
+      .eachNode((node: any) => {
+        const layout: number[] | undefined = node.getLayout();
+        if (layout) {
+          bounds.left = Math.min(bounds.left, layout[0]);
+          bounds.right = Math.max(bounds.right, layout[0]);
+          bounds.top = Math.min(bounds.top, layout[1]);
+          bounds.bottom = Math.max(bounds.bottom, layout[1]);
+        }
+      });
+    return bounds.left > bounds.right ? undefined : bounds;
+  }
+
   // The roam that fits the nodes in the view, clear of the controls, or
   // undefined when they fit already. Without a roam ECharts fits a force
   // layout to where its nodes start, not to where they end up.
   private _fitRoam(chart: EChartsType): FollowRoam | undefined {
-    const series = this._getGraphSeries(chart);
     const roam: number[] | undefined =
-      series?.coordinateSystem?.getRoamTransform();
-    if (!roam) {
+      this._getGraphSeries(chart)?.coordinateSystem?.getRoamTransform();
+    const bounds = this._layoutBounds(chart);
+    if (!roam || !bounds) {
       return undefined;
     }
-    let left = Infinity;
-    let top = Infinity;
-    let right = -Infinity;
-    let bottom = -Infinity;
-    series.getGraph().eachNode((node: any) => {
-      const layout: number[] | undefined = node.getLayout();
-      if (!layout) {
-        return;
-      }
-      const [x, y] = chart.convertToPixel({ seriesId: "network" }, layout);
-      left = Math.min(left, x);
-      right = Math.max(right, x);
-      top = Math.min(top, y);
-      bottom = Math.max(bottom, y);
-    });
-    if (left > right) {
-      return undefined;
-    }
+    const [left, top] = chart.convertToPixel({ seriesId: "network" }, [
+      bounds.left,
+      bounds.top,
+    ]);
+    const [right, bottom] = chart.convertToPixel({ seriesId: "network" }, [
+      bounds.right,
+      bounds.bottom,
+    ]);
     const width = chart.getWidth();
     const height = chart.getHeight();
     // A fixed layout grows to the right, so its labels need room there
@@ -1141,9 +1170,9 @@ export class HaNetworkGraph extends LitElement {
     this._updateFollowing();
   };
 
-  // Moves the view to a newly selected node, or back to the whole graph, in
-  // steps, so the user can follow the change. The remaining distance is
-  // measured each frame, as the node can still move.
+  // Moves the view to a newly selected node in steps, so the user can follow
+  // the change. The remaining distance is measured each frame, as the node can
+  // still move.
   private _animateView = (now: number) => {
     if (this._selectAnimationLastFrame !== undefined) {
       this._selectAnimationElapsed += Math.min(
@@ -1163,15 +1192,8 @@ export class HaNetworkGraph extends LitElement {
         : (eased - this._selectAnimationEased) /
           (1 - this._selectAnimationEased);
     this._selectAnimationEased = eased;
-    const chart = this._fittingView
-      ? this._baseChart?.chart
-      : this._followedChart;
-    const roam =
-      chart &&
-      !chart.isDisposed() &&
-      (this._fittingView
-        ? this._layoutRoam(chart)
-        : this._selectedNodeRoam(chart));
+    const chart = this._followedChart;
+    const roam = chart && this._selectedNodeRoam(chart);
     if (chart && roam) {
       const zoom = roam.zoom === undefined ? undefined : roam.zoom ** fraction;
       // The zoom around the center that follows the pan scales the node's
@@ -1200,7 +1222,6 @@ export class HaNetworkGraph extends LitElement {
       cancelAnimationFrame(this._selectAnimationFrame);
     }
     this._selectAnimationFrame = undefined;
-    this._fittingView = false;
     this._selectAnimationLastFrame = undefined;
     this._selectAnimationElapsed = 0;
     this._selectAnimationEased = 0;
