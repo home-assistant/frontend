@@ -64,14 +64,13 @@ class HuiTimerProgressCardFeature
     }
   }
 
-  private _ratio(stateObj: HassEntity): number {
+  private _ratio(stateObj: HassEntity, offset = 0): number {
     const { duration } = stateObj.attributes;
     const total =
       typeof duration === "string" ? durationToSeconds(duration) : 0;
     if (!total || stateObj.state === "idle") {
       return 0;
     }
-    const offset = stateObj.state === "active" ? 1 : 0;
     const left = (this._timeRemaining.timeRemaining ?? 0) - offset;
     return Math.min(Math.max(left / total, 0), 1);
   }
@@ -87,6 +86,7 @@ class HuiTimerProgressCardFeature
     }
     const stateObj = this._stateObj;
     const ratio = this._ratio(stateObj);
+    const target = this._animate ? this._ratio(stateObj, 1) : ratio;
     return html`
       <div
         class="track"
@@ -99,7 +99,7 @@ class HuiTimerProgressCardFeature
         <div
           class="bar"
           style=${styleMap({
-            transform: `scaleX(${ratio})`,
+            transform: `scaleX(${target})`,
             transition: this._animate ? "transform 1s linear" : "none",
           })}
         ></div>
@@ -112,6 +112,11 @@ class HuiTimerProgressCardFeature
     css`
       :host {
         pointer-events: none !important;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .bar {
+          transition: none !important;
+        }
       }
       .track {
         height: var(--feature-height, 42px);
@@ -126,7 +131,7 @@ class HuiTimerProgressCardFeature
       .bar {
         height: 100%;
         width: 100%;
-        transform-origin: left;
+        transform-origin: var(--float-start, left);
         background: var(--tile-color, var(--primary-color));
       }
     `,
