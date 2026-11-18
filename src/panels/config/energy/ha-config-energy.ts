@@ -21,7 +21,6 @@ import {
   getEnergyInfo,
   getEnergyPreferences,
   getReferencedStatisticIds,
-  saveEnergyPreferences,
 } from "../../../data/energy";
 import type { StatisticsMetaData } from "../../../data/recorder";
 import { getStatisticMetadata } from "../../../data/recorder";
@@ -183,9 +182,8 @@ class HaConfigEnergy extends LitElement {
         <div class="content">
           <ha-energy-suggestions
             .preferences=${this._preferences!}
-            .save=${this._savePreferences}
+            .listPath=${`${this.route.prefix}/${this._currTab}`}
             .tab=${this._currTab}
-            @value-changed=${this._prefsChanged}
           ></ha-energy-suggestions>
           ${cache(this._renderTabContent())}
         </div>
@@ -419,9 +417,6 @@ class HaConfigEnergy extends LitElement {
       this._error = err.message;
     }
   }
-
-  private _savePreferences = (preferences: EnergyPreferences) =>
-    saveEnergyPreferences(this.hass, preferences);
 
   private async _prefsChanged(ev: CustomEvent) {
     this._preferences = ev.detail.value;

@@ -8,9 +8,9 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../../common/decorators/consume";
 import { consumeEntityStates } from "../../../../common/decorators/consume-context-entry";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { getEntityAreaId } from "../../../../common/entity/context/get_entity_context";
+import { createQueryString } from "../../../../common/url/query-params";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
@@ -33,8 +33,8 @@ import type {
   EnergySuggestionTab,
 } from "../../../../data/energy_suggestions";
 import {
-  addEnergySuggestion,
   computeEnergySuggestions,
+  ENERGY_SUGGESTION_EDITORS,
   updateDismissedSuggestions,
 } from "../../../../data/energy_suggestions";
 import {
@@ -47,6 +47,7 @@ import { getStatisticIds } from "../../../../data/recorder_statistic_ids";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { ENERGY_EDITOR_QUERY_PARAMS } from "../editors/energy-editor";
 import { energyCardStyles } from "./styles";
 
 const TAB_ICONS: Record<EnergySuggestionTab, string> = {
@@ -60,10 +61,8 @@ export class EnergySuggestions extends LitElement {
   @property({ attribute: false })
   public preferences!: EnergyPreferences;
 
-  // Saving is left to the page, which also refreshes its energy data.
-  @property({ attribute: false }) public save!: (
-    preferences: EnergyPreferences
-  ) => Promise<EnergyPreferences>;
+  /** Path of the tab, the editor pages are under it */
+  @property({ attribute: false }) public listPath!: string;
 
   @property() public tab: EnergySuggestionTab = "electricity";
 
@@ -72,8 +71,6 @@ export class EnergySuggestions extends LitElement {
   @state() private _dismissed?: string[];
 
   @state() private _slots: Record<string, EnergySuggestionSlot> = {};
-
-  @state() private _busy = false;
 
   @state() private _loadFailed = false;
 
@@ -161,7 +158,12 @@ export class EnergySuggestions extends LitElement {
       ]);
       if (!this._statistics) {
         this._statistics = statistics;
-        this._statisticIds = statistics.map((meta) => meta.statistic_id);
+        this._statisticIds = statistics
+          .filter(
+            (meta) =>
+              meta.unit_class === "energy" || meta.unit_class === "volume"
+          )
+          .map((meta) => meta.statistic_id);
       }
     } catch (_err) {
       this._unsubscribe();
@@ -268,7 +270,6 @@ export class EnergySuggestions extends LitElement {
                       `ui.panel.config.energy.suggestions.slots.${value}`
                     ),
                   }))}
-                  .disabled=${this._busy}
                   .suggestion=${suggestion}
                   @selected=${this._slotSelected}
                 ></ha-select>`
@@ -276,9 +277,8 @@ export class EnergySuggestions extends LitElement {
           }
           <ha-button
             size="s"
-            .disabled=${this._busy || !slot}
-            .suggestion=${suggestion}
-            @click=${this._add}
+            .disabled=${!slot}
+            .href=${slot ? this._editorHref(suggestion, slot) : undefined}
             >${this._i18n.localize(
               "ui.panel.config.energy.suggestions.add"
             )}</ha-button
@@ -287,7 +287,6 @@ export class EnergySuggestions extends LitElement {
             size="s"
             appearance="plain"
             variant="neutral"
-            .disabled=${this._busy}
             .suggestion=${suggestion}
             @click=${this._dismiss}
             >${this._i18n.localize(
@@ -315,38 +314,21 @@ export class EnergySuggestions extends LitElement {
     this._slots = { ...this._slots, [suggestion.statisticId]: ev.detail.value };
   }
 
-  private async _add(ev: Event) {
-    const suggestion: EnergyMeterSuggestion = (ev.currentTarget as any)
-      .suggestion;
-    const slot = this._slotFor(suggestion);
-    if (!slot) {
-      return;
-    }
-    this._busy = true;
-    try {
-      const result = await this.save(
-        addEnergySuggestion(this.preferences, suggestion.statisticId, slot)
-      );
-      fireEvent(this, "value-changed", { value: result });
-    } catch (err: any) {
-      showAlertDialog(this, {
-        title: this._i18n.localize(
-          "ui.panel.config.energy.save_config_failed",
-          {
-            error: err.message,
-          }
-        ),
-      });
-    } finally {
-      this._busy = false;
-    }
+  private _editorHref(
+    suggestion: EnergyMeterSuggestion,
+    slot: EnergySuggestionSlot
+  ) {
+    const { kind, stat } = ENERGY_SUGGESTION_EDITORS[slot];
+    return `${this.listPath}/${kind}/new?${createQueryString(
+      { [stat]: suggestion.statisticId },
+      ENERGY_EDITOR_QUERY_PARAMS
+    )}`;
   }
 
   private async _dismiss(ev: Event) {
     const suggestion: EnergyMeterSuggestion = (ev.currentTarget as any)
       .suggestion;
     const previous = this._dismissed!;
-    this._busy = true;
     this._dismissed = updateDismissedSuggestions(
       previous,
       suggestion.statisticId,
@@ -364,8 +346,6 @@ export class EnergySuggestions extends LitElement {
         ),
         text: err.message,
       });
-    } finally {
-      this._busy = false;
     }
   }
 

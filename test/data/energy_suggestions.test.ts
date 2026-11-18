@@ -5,10 +5,10 @@ import {
   EMPTY_PREFERENCES,
   emptyGasEnergyPreference,
   emptyGridSourceEnergyPreference,
+  emptyHomeEnergyPreference,
 } from "../../src/data/energy";
 import type { EnergySuggestionInput } from "../../src/data/energy_suggestions";
 import {
-  addEnergySuggestion,
   computeEnergySuggestions,
   updateDismissedSuggestions,
 } from "../../src/data/energy_suggestions";
@@ -21,6 +21,8 @@ interface TestSensor {
   unitClass?: string;
   hasSum?: boolean;
   noState?: boolean;
+  // The statistic a helper like utility_meter is derived from
+  source?: string;
 }
 
 const statistic = (
@@ -49,7 +51,10 @@ const buildInput = (
     states[sensor.entityId] = {
       entity_id: sensor.entityId,
       state: "1",
-      attributes: { device_class: sensor.deviceClass ?? "energy" },
+      attributes: {
+        device_class: sensor.deviceClass ?? "energy",
+        source: sensor.source,
+      },
       last_changed: "",
       last_updated: "",
       context: { id: "", parent_id: null, user_id: null },
@@ -111,7 +116,15 @@ describe("computeEnergySuggestions", () => {
       {
         statisticId: "sensor.meter_energy",
         tab: "electricity",
-        slots: ["grid_import", "grid_export", "solar", "device"],
+        slots: [
+          "grid_import",
+          "grid_export",
+          "solar",
+          "battery_charge",
+          "battery_discharge",
+          "home",
+          "device",
+        ],
       },
       {
         statisticId: "sensor.meter_gas",
@@ -124,6 +137,56 @@ describe("computeEnergySuggestions", () => {
         slots: ["water", "device_water"],
       },
     ]);
+  });
+
+  it("offers no whole-home meter when one is configured", () => {
+    const input = buildInput([{ entityId: "sensor.meter_energy" }], {
+      ...EMPTY_PREFERENCES,
+      energy_sources: [
+        { ...emptyHomeEnergyPreference(), stat_energy_to: "sensor.home" },
+      ],
+    });
+    expect(computeEnergySuggestions(input)[0].slots).not.toContain("home");
+  });
+
+  it("skips meters derived from a configured statistic", () => {
+    const input = buildInput(
+      [
+        { entityId: "sensor.grid_import" },
+        { entityId: "sensor.grid_import_daily", source: "sensor.grid_import" },
+        { entityId: "sensor.plug_energy", source: "sensor.plug_power" },
+      ],
+      {
+        ...EMPTY_PREFERENCES,
+        energy_sources: [
+          {
+            ...emptyGridSourceEnergyPreference(),
+            stat_energy_from: "sensor.grid_import",
+          },
+        ],
+      }
+    );
+    expect(tabs(input)).toEqual({ "sensor.plug_energy": "electricity" });
+  });
+
+  it("skips the source of a configured meter", () => {
+    const input = buildInput(
+      [
+        { entityId: "sensor.grid_total" },
+        { entityId: "sensor.grid_peak", source: "sensor.grid_total" },
+        { entityId: "sensor.grid_offpeak", source: "sensor.grid_total" },
+      ],
+      {
+        ...EMPTY_PREFERENCES,
+        energy_sources: [
+          {
+            ...emptyGridSourceEnergyPreference(),
+            stat_energy_from: "sensor.grid_peak",
+          },
+        ],
+      }
+    );
+    expect(tabs(input)).toEqual({ "sensor.grid_offpeak": "electricity" });
   });
 
   it.each([
@@ -170,75 +233,5 @@ describe("updateDismissedSuggestions", () => {
         ]
       )
     ).toEqual(["sensor.kept", "sensor.new"]);
-  });
-});
-
-describe("addEnergySuggestion", () => {
-  it("adds grid import and export to one connection", () => {
-    const imported = addEnergySuggestion(
-      EMPTY_PREFERENCES,
-      "sensor.import",
-      "grid_import"
-    );
-    const both = addEnergySuggestion(imported, "sensor.export", "grid_export");
-    expect(both.energy_sources).toEqual([
-      {
-        ...emptyGridSourceEnergyPreference(),
-        stat_energy_from: "sensor.import",
-        stat_energy_to: "sensor.export",
-      },
-    ]);
-  });
-
-  it("adds an export to the newest connection without one", () => {
-    const existing: EnergyPreferences = {
-      ...EMPTY_PREFERENCES,
-      energy_sources: [
-        {
-          ...emptyGridSourceEnergyPreference(),
-          stat_energy_from: "sensor.import_a",
-        },
-      ],
-    };
-    const imported = addEnergySuggestion(
-      existing,
-      "sensor.import_b",
-      "grid_import"
-    );
-    const both = addEnergySuggestion(
-      imported,
-      "sensor.export_b",
-      "grid_export"
-    );
-    expect(both.energy_sources).toEqual([
-      {
-        ...emptyGridSourceEnergyPreference(),
-        stat_energy_from: "sensor.import_a",
-      },
-      {
-        ...emptyGridSourceEnergyPreference(),
-        stat_energy_from: "sensor.import_b",
-        stat_energy_to: "sensor.export_b",
-      },
-    ]);
-  });
-
-  it.each([
-    ["device", "device_consumption"],
-    ["device_gas", "device_consumption_gas"],
-    ["device_water", "device_consumption_water"],
-  ] as const)("adds a %s to %s", (slot, key) => {
-    const prefs = addEnergySuggestion(EMPTY_PREFERENCES, "sensor.x", slot);
-    expect(prefs).toEqual({
-      ...EMPTY_PREFERENCES,
-      [key]: [{ stat_consumption: "sensor.x" }],
-    });
-  });
-
-  it.each(["solar", "gas", "water"] as const)("adds a %s source", (slot) => {
-    const prefs = addEnergySuggestion(EMPTY_PREFERENCES, "sensor.x", slot);
-    expect(prefs.energy_sources).toMatchObject([
-      { type: slot, stat_energy_from: "sensor.x" },
-    ]);
   });
 });

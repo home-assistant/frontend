@@ -1,25 +1,19 @@
 import type { HassEntities } from "home-assistant-js-websocket";
-import type {
-  EnergyPreferences,
-  GridSourceTypeEnergyPreference,
-} from "./energy";
-import {
-  getEnergyGasUnitClass,
-  emptyGasEnergyPreference,
-  emptyGridSourceEnergyPreference,
-  emptySolarEnergyPreference,
-  emptyWaterEnergyPreference,
-} from "./energy";
+import type { EnergyPreferences } from "./energy";
+import { getEnergyGasUnitClass } from "./energy";
 import type { StatisticsMetaData } from "./recorder";
 
 export type EnergySuggestionSlot =
   | "grid_import"
   | "grid_export"
   | "solar"
-  | "gas"
-  | "water"
+  | "battery_charge"
+  | "battery_discharge"
+  | "home"
   | "device"
+  | "gas"
   | "device_gas"
+  | "water"
   | "device_water";
 
 export type EnergySuggestionTab = "electricity" | "gas" | "water";
@@ -38,10 +32,38 @@ export interface EnergySuggestionInput {
   dismissed?: string[];
 }
 
-const ELECTRICITY_SLOTS: EnergySuggestionSlot[] = [
+export interface EnergySuggestionEditor {
+  /** The editor page under the tab that adds the meter */
+  kind: "grid" | "solar" | "battery" | "home" | "device" | "gas" | "water";
+  /** The field of the new item the meter is preselected in */
+  stat: "stat_energy_from" | "stat_energy_to" | "stat_consumption";
+}
+
+export const ENERGY_SUGGESTION_EDITORS: Record<
+  EnergySuggestionSlot,
+  EnergySuggestionEditor
+> = {
+  grid_import: { kind: "grid", stat: "stat_energy_from" },
+  grid_export: { kind: "grid", stat: "stat_energy_to" },
+  solar: { kind: "solar", stat: "stat_energy_from" },
+  battery_charge: { kind: "battery", stat: "stat_energy_to" },
+  battery_discharge: { kind: "battery", stat: "stat_energy_from" },
+  home: { kind: "home", stat: "stat_energy_to" },
+  device: { kind: "device", stat: "stat_consumption" },
+  gas: { kind: "gas", stat: "stat_energy_from" },
+  device_gas: { kind: "device", stat: "stat_consumption" },
+  water: { kind: "water", stat: "stat_energy_from" },
+  device_water: { kind: "device", stat: "stat_consumption" },
+};
+
+// The dashboard has one whole-home meter at most.
+const electricitySlots = (hasHome: boolean): EnergySuggestionSlot[] => [
   "grid_import",
   "grid_export",
   "solar",
+  "battery_charge",
+  "battery_discharge",
+  ...(hasHome ? [] : (["home"] as const)),
   "device",
 ];
 
@@ -83,6 +105,8 @@ export const computeEnergySuggestions = (
 ): EnergyMeterSuggestion[] => {
   const configured = configuredStatisticIds(input.preferences);
   const dismissed = new Set(input.dismissed);
+  const sourceOf = (id: string) => input.states[id]?.attributes.source;
+  const configuredSources = new Set([...configured].map(sourceOf));
   // All gas meters of the dashboard share one unit class.
   const gasUnitClass = getEnergyGasUnitClass(
     input.preferences,
@@ -92,12 +116,18 @@ export const computeEnergySuggestions = (
     )
   );
 
+  const electricity = electricitySlots(
+    input.preferences.energy_sources.some((source) => source.type === "home")
+  );
+
   const suggestions: EnergyMeterSuggestion[] = [];
   for (const meta of input.statistics) {
     const statisticId = meta.statistic_id;
     if (
       !meta.has_sum ||
       configured.has(statisticId) ||
+      configured.has(sourceOf(statisticId)) ||
+      configuredSources.has(statisticId) ||
       dismissed.has(statisticId)
     ) {
       continue;
@@ -107,7 +137,7 @@ export const computeEnergySuggestions = (
       suggestions.push({
         statisticId,
         tab: "electricity",
-        slots: ELECTRICITY_SLOTS,
+        slots: electricity,
       });
     } else if (
       deviceClass === "gas" &&
@@ -136,99 +166,4 @@ export const updateDismissedSuggestions = (
     ...dismissed.filter((id) => id !== statisticId && existing.has(id)),
     statisticId,
   ];
-};
-
-const fillGridSide = (
-  sources: EnergyPreferences["energy_sources"],
-  side: "stat_energy_from" | "stat_energy_to",
-  statisticId: string
-) => {
-  const open = [...sources]
-    .reverse()
-    .find(
-      (source): source is GridSourceTypeEnergyPreference =>
-        source.type === "grid" && !source[side]
-    );
-  if (open) {
-    return sources.map((source) =>
-      source === open ? { ...open, [side]: statisticId } : source
-    );
-  }
-  return [
-    ...sources,
-    { ...emptyGridSourceEnergyPreference(), [side]: statisticId },
-  ];
-};
-
-/**
- * Preferences with the meter added to the slot. Grid meters fill the open
- * side of the newest grid connection that has one, so an import and an export
- * added one after the other end up as one connection.
- */
-export const addEnergySuggestion = (
-  preferences: EnergyPreferences,
-  statisticId: string,
-  slot: EnergySuggestionSlot
-): EnergyPreferences => {
-  const sources = preferences.energy_sources;
-  switch (slot) {
-    case "grid_import":
-      return {
-        ...preferences,
-        energy_sources: fillGridSide(sources, "stat_energy_from", statisticId),
-      };
-    case "grid_export":
-      return {
-        ...preferences,
-        energy_sources: fillGridSide(sources, "stat_energy_to", statisticId),
-      };
-    case "solar":
-      return {
-        ...preferences,
-        energy_sources: [
-          ...sources,
-          { ...emptySolarEnergyPreference(), stat_energy_from: statisticId },
-        ],
-      };
-    case "gas":
-      return {
-        ...preferences,
-        energy_sources: [
-          ...sources,
-          { ...emptyGasEnergyPreference(), stat_energy_from: statisticId },
-        ],
-      };
-    case "water":
-      return {
-        ...preferences,
-        energy_sources: [
-          ...sources,
-          { ...emptyWaterEnergyPreference(), stat_energy_from: statisticId },
-        ],
-      };
-    case "device_gas":
-      return {
-        ...preferences,
-        device_consumption_gas: [
-          ...preferences.device_consumption_gas,
-          { stat_consumption: statisticId },
-        ],
-      };
-    case "device_water":
-      return {
-        ...preferences,
-        device_consumption_water: [
-          ...preferences.device_consumption_water,
-          { stat_consumption: statisticId },
-        ],
-      };
-    default:
-      return {
-        ...preferences,
-        device_consumption: [
-          ...preferences.device_consumption,
-          { stat_consumption: statisticId },
-        ],
-      };
-  }
 };

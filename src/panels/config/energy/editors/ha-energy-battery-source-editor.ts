@@ -83,7 +83,11 @@ import type {
   EnergyBatterySourceEditorParams,
   EnergyEditorStatus,
 } from "./energy-editor";
-import { EnergyEditorMixin, energyEditorStyles } from "./energy-editor";
+import {
+  EnergyEditorMixin,
+  energyEditorStyles,
+  preselectedStatistics,
+} from "./energy-editor";
 
 type DirectionEnergyKey = BatteryDirection["energy"];
 
@@ -367,6 +371,14 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
       : undefined;
 
     this._initDirtyTracking({ type: "deep" }, this._formState());
+    const preselected = saved
+      ? {}
+      : preselectedStatistics(["stat_energy_from", "stat_energy_to"]);
+    if (Object.keys(preselected).length) {
+      this._mode = "total";
+      this._source = { ...this._source, ...preselected };
+      this._updateFormDirtyState();
+    }
     this._loadUnits();
   }
 
