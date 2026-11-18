@@ -1,37 +1,37 @@
 import { describe, expect, it } from "vitest";
-import { computeLocationFormValue } from "../../../src/components/ha-selector/ha-selector-location";
+import { computeLocationSelectorValue } from "../../../src/components/ha-selector/compute-location-selector-value";
 
-describe("computeLocationFormValue", () => {
+describe("computeLocationSelectorValue", () => {
   it("rounds an edited radius", () => {
     expect(
-      computeLocationFormValue(
+      computeLocationSelectorValue(
         { location: { radius: true } },
         { latitude: 1, longitude: 2, radius: 600.4 }
       )
     ).toEqual({ latitude: 1, longitude: 2, radius: 600 });
   });
 
-  it("leaves out a radius the value does not have", () => {
+  it("falls back to the default radius the map shows", () => {
     expect(
-      computeLocationFormValue(
+      computeLocationSelectorValue(
         { location: { radius: true } },
         { latitude: 3, longitude: 2 }
       )
-    ).toEqual({ latitude: 3, longitude: 2 });
+    ).toEqual({ latitude: 3, longitude: 2, radius: 1000 });
   });
 
-  it("keeps a read-only radius", () => {
+  it("keeps a read-only radius unrounded", () => {
     expect(
-      computeLocationFormValue(
+      computeLocationSelectorValue(
         { location: { radius: true, radius_readonly: true } },
-        { latitude: 3, longitude: 2, radius: 500 }
+        { latitude: 3, longitude: 2, radius: 65.5 }
       )
-    ).toEqual({ latitude: 3, longitude: 2, radius: 500 });
+    ).toEqual({ latitude: 3, longitude: 2, radius: 65.5 });
   });
 
   it("leaves out the radius when the selector has none", () => {
     expect(
-      computeLocationFormValue(
+      computeLocationSelectorValue(
         { location: {} },
         { latitude: 3, longitude: 2, radius: 500 }
       )

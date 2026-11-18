@@ -12,21 +12,7 @@ import type { MarkerLocation } from "../map/ha-locations-editor";
 import "../map/ha-locations-editor";
 import "../ha-form/ha-form";
 import type { LocalizeFunc } from "../../common/translations/localize";
-
-/**
- * The selector's value from its form's value: the coordinates, and the radius
- * rounded to whole meters when the selector has one and the value carries it.
- */
-export const computeLocationFormValue = (
-  selector: LocationSelector,
-  value: LocationSelectorValue
-): LocationSelectorValue => ({
-  latitude: value.latitude,
-  longitude: value.longitude,
-  ...(selector.location?.radius && value.radius != null
-    ? { radius: Math.round(value.radius) }
-    : {}),
-});
+import { computeLocationSelectorValue } from "./compute-location-selector-value";
 
 @customElement("ha-selector-location")
 export class HaLocationSelector extends LitElement {
@@ -171,7 +157,7 @@ export class HaLocationSelector extends LitElement {
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
-      value: computeLocationFormValue(this.selector, ev.detail.value),
+      value: computeLocationSelectorValue(this.selector, ev.detail.value),
     });
   }
 
