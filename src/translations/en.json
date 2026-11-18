@@ -12234,6 +12234,9 @@
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]"
                 }
               },
+              "timer-progress": {
+                "label": "Timer progress"
+              },
               "fan-preset-modes": {
                 "label": "Fan preset modes",
                 "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
