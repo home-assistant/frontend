@@ -152,7 +152,7 @@ class HaConfigBackupDetails extends LitElement {
                         ${
                           CLOUD_AGENT === this.agentId
                             ? html`
-                                <ha-row-item>
+                                <ha-row-item wrap-supporting-text>
                                   <span slot="headline">
                                     ${this.hass.localize(
                                       "ui.panel.config.backup.location.encryption.location_encrypted"
@@ -179,7 +179,7 @@ class HaConfigBackupDetails extends LitElement {
                               `
                             : encrypted
                               ? html`
-                                  <ha-row-item>
+                                  <ha-row-item wrap-supporting-text>
                                     <span slot="headline">
                                       ${this.hass.localize(
                                         "ui.panel.config.backup.location.encryption.location_encrypted"
@@ -213,7 +213,7 @@ class HaConfigBackupDetails extends LitElement {
                                       "ui.panel.config.backup.location.encryption.warning_encryption_turn_off_description"
                                     )}
                                   </ha-alert>
-                                  <ha-row-item>
+                                  <ha-row-item wrap-supporting-text>
                                     <span slot="headline">
                                       ${this.hass.localize(
                                         "ui.panel.config.backup.location.encryption.location_unencrypted"
@@ -333,6 +333,7 @@ class HaConfigBackupDetails extends LitElement {
       margin: 0 auto;
       gap: var(--ha-space-6);
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
       margin-bottom: 24px;
     }
     .card-content {
@@ -363,9 +364,6 @@ class HaConfigBackupDetails extends LitElement {
     }
     ha-backup-data-picker {
       display: block;
-    }
-    ha-row-item::part(supporting-text) {
-      white-space: wrap;
     }
     .dot {
       display: block;

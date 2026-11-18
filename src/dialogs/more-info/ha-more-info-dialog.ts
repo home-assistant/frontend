@@ -217,7 +217,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     }
     try {
       this._entry = await getExtendedEntityRegistryEntry(
-        this.hass,
+        this.hass.callWS,
         this._entityId
       );
     } catch (_e) {
@@ -531,7 +531,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     }
 
     const result = await updateEntityRegistryEntry(
-      this.hass,
+      this.hass.callWS,
       favoritesContext.entry.entity_id,
       {
         options_domain: favoritesHandler.domain,

@@ -718,6 +718,15 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
                 </div>
                 <ha-automation-add-items
                   .items=${this._getItemSections(sources, systemDomains)}
+                  .loadingLabel=${
+                    this._tab === "targets" &&
+                    this._selectedTarget &&
+                    !this._selectedGroup &&
+                    !this._targetElementKeys &&
+                    !this._loadItemsError
+                      ? localize("ui.common.loading")
+                      : undefined
+                  }
                   .replacingItemKey=${params.replacingItemKey}
                   .scrollable=${!this._narrow || this._tab === "blocks"}
                   .error=${

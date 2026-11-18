@@ -78,7 +78,7 @@ class ZWaveJSControllerStatistics extends SubscribeMixin(LitElement) {
 
   private _renderStat(key: string) {
     return html`
-      <ha-list-item-base>
+      <ha-list-item-base wrap-headline wrap-supporting-text>
         <span slot="headline">
           ${this.hass.localize(
             `ui.panel.config.zwave_js.dashboard.statistics.${key}.label`

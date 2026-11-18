@@ -1,7 +1,9 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/input/ha-input";
 import "../../../../components/radio/ha-radio-group";
@@ -9,11 +11,12 @@ import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
 import "../../../../components/radio/ha-radio-option";
 import type { InputDateTime } from "../../../../data/input_datetime";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-input_datetime-form")
 class HaInputDateTimeForm extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ type: Boolean }) public new = false;
 
@@ -54,7 +57,7 @@ class HaInputDateTimeForm extends LitElement {
   }
 
   protected render() {
-    if (!this.hass) {
+    if (!this._localize) {
       return nothing;
     }
 
@@ -64,12 +67,10 @@ class HaInputDateTimeForm extends LitElement {
           .value=${this._name}
           .configValue=${"name"}
           @input=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.name"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.generic.name")}
           auto-validate
           required
-          .validationMessage=${this.hass!.localize(
+          .validationMessage=${this._localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           dialogInitialFocus
@@ -79,13 +80,11 @@ class HaInputDateTimeForm extends LitElement {
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.icon"
-          )}
+          .label=${this._localize("ui.dialogs.helper_settings.generic.icon")}
           .disabled=${this.disabled}
         ></ha-icon-picker>
         <ha-radio-group
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.dialogs.helper_settings.input_datetime.mode"
           )}
           .value=${this._mode}
@@ -94,17 +93,13 @@ class HaInputDateTimeForm extends LitElement {
           @change=${this._modeChanged}
         >
           <ha-radio-option value="date">
-            ${this.hass.localize(
-              "ui.dialogs.helper_settings.input_datetime.date"
-            )}
+            ${this._localize("ui.dialogs.helper_settings.input_datetime.date")}
           </ha-radio-option>
           <ha-radio-option value="time">
-            ${this.hass.localize(
-              "ui.dialogs.helper_settings.input_datetime.time"
-            )}
+            ${this._localize("ui.dialogs.helper_settings.input_datetime.time")}
           </ha-radio-option>
           <ha-radio-option value="datetime">
-            ${this.hass.localize(
+            ${this._localize(
               "ui.dialogs.helper_settings.input_datetime.datetime"
             )}
           </ha-radio-option>

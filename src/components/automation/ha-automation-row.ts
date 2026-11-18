@@ -30,10 +30,40 @@ export class HaAutomationRow extends LitElement {
   @property({ type: Boolean, reflect: true })
   public dim = false;
 
+  /** Makes the row a link, with the icons slot outside of it */
+  @property() public href?: string;
+
   @query(".row")
   private _rowElement?: HTMLDivElement;
 
+  @query(".link")
+  private _linkElement?: HTMLAnchorElement;
+
   protected render(): TemplateResult {
+    const content = html`
+      <div class="leading-icon-wrapper">
+        <slot name="leading-icon"></slot>
+      </div>
+      <div class="header">
+        <slot name="header"></slot>
+        <slot name="event"></slot>
+      </div>
+    `;
+    const icons = html`
+      <div class="icons">
+        <slot name="icons"></slot>
+      </div>
+    `;
+
+    if (this.href) {
+      return html`
+        <div class="row has-link">
+          <a class="link" href=${this.href}>${content}</a>
+          ${icons}
+        </div>
+      `;
+    }
+
     return html`
       <div
         class="row"
@@ -53,17 +83,7 @@ export class HaAutomationRow extends LitElement {
               `
             : nothing
         }
-        <div class="leading-icon-wrapper">
-          <slot name="leading-icon"></slot>
-        </div>
-        <div class="header">
-          <slot name="header"></slot>
-          <slot name="event"></slot>
-        </div>
-
-        <div class="icons">
-          <slot name="icons"></slot>
-        </div>
+        ${content} ${icons}
       </div>
     `;
   }
@@ -119,7 +139,7 @@ export class HaAutomationRow extends LitElement {
 
   public focus() {
     requestAnimationFrame(() => {
-      this._rowElement?.focus();
+      (this._linkElement ?? this._rowElement)?.focus();
     });
   }
 
@@ -141,6 +161,30 @@ export class HaAutomationRow extends LitElement {
       border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
     .row:focus {
+      outline: var(--wa-focus-ring);
+      outline-offset: -2px;
+    }
+    .row.has-link {
+      padding-left: 0;
+      padding-inline-start: 0;
+      cursor: default;
+    }
+    .link {
+      display: flex;
+      align-items: flex-start;
+      align-self: stretch;
+      flex: 1;
+      min-width: 0;
+      padding-left: var(--ha-space-3);
+      padding-inline-start: var(--ha-space-3);
+      padding-inline-end: initial;
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      outline: none;
+      border-radius: inherit;
+    }
+    .link:focus-visible {
       outline: var(--wa-focus-ring);
       outline-offset: -2px;
     }

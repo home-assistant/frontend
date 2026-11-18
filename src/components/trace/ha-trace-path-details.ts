@@ -112,7 +112,7 @@ export class HaTracePathDetails extends LitElement {
     initialValue: {
       options: [],
       showIndices: false,
-      select: () => undefined,
+      select: () => true,
       fixDuplicateIds: async () => undefined,
       updateTriggerId: () => false,
     },

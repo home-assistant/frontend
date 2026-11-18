@@ -44,6 +44,7 @@ import {
   formatDateMonth,
   formatDateMonthShort,
   formatDateVeryShort,
+  formatDateWeekdayVeryShortDate,
   formatDateYear,
 } from "../../../common/datetime/format_date";
 import { consume } from "../../../common/decorators/consume";
@@ -367,7 +368,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
                                   this._hassConfig
                                 )}`
                               : simpleRange === "day"
-                                ? html`${formatDateVeryShort(
+                                ? html`${formatDateWeekdayVeryShortDate(
                                     this._startDate,
                                     this._i18n.locale,
                                     this._hassConfig

@@ -36,7 +36,10 @@ import type {
   TileCardConfig,
   UpdatesCardConfig,
 } from "../../cards/types";
-import { computeFavoriteCardConfig } from "../helpers/favorite-cards";
+import {
+  computeFavoriteCardConfig,
+  computeFavoriteCardsSize,
+} from "../helpers/favorite-cards";
 import { findMaintenanceEntities } from "../../../maintenance/strategies/maintenance-view-strategy";
 import {
   computeDefaultSecurityAlertVisibility,
@@ -289,7 +292,10 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     const favoriteEntities = (config.favorite_entities || []).filter(
       (entityId) => hass.states[entityId] !== undefined
     );
-    const maxCommonControls = Math.max(8, favoriteEntities.length);
+    const maxCommonControls = Math.max(
+      8,
+      computeFavoriteCardsSize(favoriteEntities)
+    );
 
     const favoritesHeadingCard: HeadingCardConfig = {
       type: "heading",

@@ -521,10 +521,40 @@ test.describe("Lovelace dashboard", () => {
       page.locator("[data-testid='edit-mode-button'], ha-menu-button")
     ).toBeAttached({ timeout: QUICK_TIMEOUT });
   });
+
+  test("going back after leaving edit mode does not enter it again", async ({
+    page,
+  }) => {
+    // A demo dashboard with more than one view
+    await goToPanel(page, "/?demo=teachingbirds&edit=1#/lovelace/home");
+    const root = page.locator("hui-root").first();
+    const isEditing = () =>
+      root.evaluate(
+        (el) =>
+          (el as HTMLElement & { lovelace?: { editMode: boolean } }).lovelace
+            ?.editMode
+      );
+    await expect.poll(isEditing, { timeout: PANEL_TIMEOUT }).toBe(true);
+
+    // Leaves /lovelace/home behind with ?edit=1 in its URL
+    await root.locator("ha-tab-group-tab[panel='1']").click();
+    await expect(page).toHaveURL(/#\/lovelace\/home_info$/, {
+      timeout: QUICK_TIMEOUT,
+    });
+    await root.locator("ha-button.exit-edit-mode").click();
+    await expect.poll(isEditing, { timeout: QUICK_TIMEOUT }).toBe(false);
+
+    await page.goBack();
+
+    await expect(page).toHaveURL(/\/\?demo=teachingbirds#\/lovelace\/home$/, {
+      timeout: QUICK_TIMEOUT,
+    });
+    expect(await isEditing()).toBe(false);
+  });
 });
 
 test.describe("Energy dashboard", () => {
-  test("returns to Energy after repeatedly opening the device dialog", async ({
+  test("returns to Energy after repeatedly opening the device editor", async ({
     page,
   }) => {
     const errors = trackPageErrors(page);
@@ -567,17 +597,17 @@ test.describe("Energy dashboard", () => {
       .locator("ha-energy-device-settings")
       .locator("ha-button")
       .first();
-    const openAndCancelDeviceDialog = async () => {
+    const editorPage = page.locator("ha-energy-editor-page");
+    const openAndCloseDeviceEditor = async () => {
       await addDevice.click();
-      const dialog = page.locator("dialog-energy-device-settings");
-      const cancel = dialog.locator("ha-dialog-footer ha-button").first();
-      await expect(cancel).toBeVisible({ timeout: QUICK_TIMEOUT });
-      await cancel.click();
-      await expect(cancel).toBeHidden({ timeout: QUICK_TIMEOUT });
+      const back = editorPage.getByRole("link", { name: "Back" });
+      await expect(back).toBeVisible({ timeout: QUICK_TIMEOUT });
+      await back.click();
+      await expect(editorPage).toHaveCount(0, { timeout: QUICK_TIMEOUT });
     };
-    await openAndCancelDeviceDialog();
-    await openAndCancelDeviceDialog();
-    await openAndCancelDeviceDialog();
+    await openAndCloseDeviceEditor();
+    await openAndCloseDeviceEditor();
+    await openAndCloseDeviceEditor();
 
     await backLink.click();
 

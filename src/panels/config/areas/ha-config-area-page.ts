@@ -857,6 +857,8 @@ class HaConfigAreaPage extends LitElement {
         },
         this.hass.auth.data.hassUrl
       )}
+      width="24"
+      height="24"
       @error=${this._onImageError}
       @load=${this._onImageLoad}
     />`;
@@ -1061,7 +1063,7 @@ class HaConfigAreaPage extends LitElement {
           justify-content: space-around;
         }
 
-        img {
+        .img-container img {
           border-radius: var(
             --ha-card-border-radius,
             var(--ha-border-radius-lg)
@@ -1114,11 +1116,6 @@ class HaConfigAreaPage extends LitElement {
         }
         ha-list-item-button ha-icon-next {
           color: var(--secondary-text-color);
-        }
-        img[slot="start"] {
-          width: 24px;
-          height: 24px;
-          object-fit: contain;
         }
         ha-card > *:first-child {
           margin-top: -16px;

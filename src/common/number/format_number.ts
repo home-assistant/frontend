@@ -161,6 +161,9 @@ export const getNumberFormatOptions = (
   return undefined;
 };
 
+// Intl.NumberFormat throws a RangeError for more fraction digits than this.
+const MAX_FRACTION_DIGITS = 100;
+
 /**
  * Generates default options for Intl.NumberFormat
  * @param num The number to be formatted
@@ -185,7 +188,10 @@ export const getDefaultFormatOptions = (
     (options.minimumFractionDigits === undefined &&
       options.maximumFractionDigits === undefined)
   ) {
-    const digits = num.indexOf(".") > -1 ? num.split(".")[1].length : 0;
+    const digits = Math.min(
+      num.indexOf(".") > -1 ? num.split(".")[1].length : 0,
+      MAX_FRACTION_DIGITS
+    );
     defaultOptions.minimumFractionDigits = digits;
     defaultOptions.maximumFractionDigits = digits;
   }

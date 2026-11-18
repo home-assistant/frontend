@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { ConfigPath } from "../../../common/util/config-path";
 import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -47,7 +48,6 @@ import {
   type DeleteCardParams,
   performDeleteCard,
 } from "../editor/delete-card";
-import type { LovelacePath } from "../editor/lovelace-path";
 import {
   appendAtPath,
   getAtPath,
@@ -72,18 +72,18 @@ import { getViewType } from "./get-view-type";
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "ll-create-card": { path: LovelacePath; suggested?: string[] };
-    "ll-edit-card": { path: LovelacePath };
+    "ll-create-card": { path: ConfigPath; suggested?: string[] };
+    "ll-edit-card": { path: ConfigPath };
     "ll-delete-card": DeleteCardParams;
-    "ll-duplicate-card": { path: LovelacePath };
-    "ll-copy-card": { path: LovelacePath };
-    "ll-cut-card": { path: LovelacePath };
-    "ll-paste-card": { path: LovelacePath };
-    "ll-create-badge": { path: LovelacePath };
-    "ll-edit-badge": { path: LovelacePath };
+    "ll-duplicate-card": { path: ConfigPath };
+    "ll-copy-card": { path: ConfigPath };
+    "ll-cut-card": { path: ConfigPath };
+    "ll-paste-card": { path: ConfigPath };
+    "ll-create-badge": { path: ConfigPath };
+    "ll-edit-badge": { path: ConfigPath };
     "ll-delete-badge": DeleteBadgeParams;
-    "ll-copy-badge": { path: LovelacePath };
-    "ll-cut-badge": { path: LovelacePath };
+    "ll-copy-badge": { path: ConfigPath };
+    "ll-cut-badge": { path: ConfigPath };
   }
   interface HTMLElementEventMap {
     "ll-create-card": HASSDomEvent<HASSDomEvents["ll-create-card"]>;
@@ -132,7 +132,7 @@ export class HUIView extends ReactiveElement {
   @consume({ context: childPanelReadyContext })
   private _registerChildPanelReady?: RegisterChildPanelReady;
 
-  private _path = memoizeOne((index: number): LovelacePath => ["views", index]);
+  private _path = memoizeOne((index: number): ConfigPath => ["views", index]);
 
   @storage({
     key: "dashboardCardClipboard",
@@ -336,7 +336,7 @@ export class HUIView extends ReactiveElement {
   }
 
   private _getCardClipboardParams(
-    path: LovelacePath
+    path: ConfigPath
   ): ClipboardActionParams<"card"> | undefined {
     if (!this.lovelace) return undefined;
     const cardPath = normalizeCardPath(path);
@@ -353,7 +353,7 @@ export class HUIView extends ReactiveElement {
   }
 
   private _getBadgeClipboardParams(
-    path: LovelacePath
+    path: ConfigPath
   ): ClipboardActionParams<"badge"> | undefined {
     if (!this.lovelace) return undefined;
     const config = getAtPath<LovelaceBadgeConfig>(this.lovelace.config, path);
@@ -368,7 +368,7 @@ export class HUIView extends ReactiveElement {
     };
   }
 
-  private _getCardConfig(path: LovelacePath): LovelaceCardConfig | undefined {
+  private _getCardConfig(path: ConfigPath): LovelaceCardConfig | undefined {
     if (isStrategyView(this.lovelace.config.views[this.index])) {
       return undefined;
     }

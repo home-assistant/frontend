@@ -5,6 +5,7 @@ import {
   findIntegral,
   integralTotalUnit,
   integralUnits,
+  pendingIntegrals,
   pendingPowerIntegrals,
 } from "../../../../src/panels/config/energy/dialogs/energy-integral";
 import type { HomeAssistant } from "../../../../src/types";
@@ -149,5 +150,42 @@ describe("pendingPowerIntegrals", () => {
         ENERGY_UNITS
       )
     ).toEqual([]);
+  });
+});
+
+describe("pendingIntegrals", () => {
+  const states = {
+    "sensor.grid_charge_power": { attributes: { unit_of_measurement: "W" } },
+    "sensor.home_discharge_power": {
+      attributes: { unit_of_measurement: "kW" },
+    },
+    "sensor.solar_charge_current": { attributes: { unit_of_measurement: "A" } },
+  } as unknown as HomeAssistant["states"];
+
+  it("offers one helper per power sensor without energy", () => {
+    expect(
+      pendingIntegrals(
+        states,
+        { stat_energy_to_grid: "sensor.grid_discharge_energy" },
+        [
+          ["stat_energy_from_grid", "sensor.grid_charge_power"],
+          ["stat_energy_from_solar", "sensor.solar_charge_current"],
+          ["stat_energy_to_home", "sensor.home_discharge_power"],
+          ["stat_energy_to_grid", "sensor.grid_discharge_power"],
+        ],
+        ENERGY_UNITS
+      )
+    ).toEqual([
+      {
+        energy: "stat_energy_from_grid",
+        rate: "sensor.grid_charge_power",
+        units: { unit_time: "h", unit_prefix: "k" },
+      },
+      {
+        energy: "stat_energy_to_home",
+        rate: "sensor.home_discharge_power",
+        units: { unit_time: "h" },
+      },
+    ]);
   });
 });

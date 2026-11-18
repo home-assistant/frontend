@@ -158,8 +158,11 @@ export class HuiActionEditor extends LitElement {
     ) {
       const stateObj = this.hass.states[this.context.entity_id];
       const canToggle = stateObj
-        ? canToggleState(this.hass, stateObj)
-        : canToggleDomain(this.hass, computeDomain(this.context.entity_id));
+        ? canToggleState(this.hass.states, this.hass.services, stateObj)
+        : canToggleDomain(
+            this.hass.services,
+            computeDomain(this.context.entity_id)
+          );
       if (!canToggle) {
         actions = this._filterToggleAction(actions);
       }

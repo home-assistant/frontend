@@ -1342,7 +1342,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
         }
 
         if (entityId) {
-          await updateEntityRegistryEntry(this.hass, entityId, {
+          await updateEntityRegistryEntry(this.hass.callWS, entityId, {
             area_id: this._entityRegistryUpdate.area || null,
             labels: this._entityRegistryUpdate.labels || [],
             categories: {

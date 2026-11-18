@@ -85,7 +85,17 @@ export default class HaAutomationSidebarScriptField extends LitElement {
           ${this.hass.localize(
             `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
           )}
-          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+          ${
+            !this.narrow
+              ? html`<span class="shortcut">
+                  <span>${renderCtrlOrCmd(this.hass.localize)}</span>
+                  <span>+</span>
+                  <span>Shift</span>
+                  <span>+</span>
+                  <span>Y</span>
+                </span>`
+              : nothing
+          }
         </div>
       </ha-dropdown-item>
       <ha-dropdown-item

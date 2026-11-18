@@ -150,9 +150,11 @@ class DialogRestart extends LitElement {
                           "ui.dialogs.restart.reload.description"
                         )}
                       </div>
-                      <div slot="start" class="icon-background reload">
-                        <ha-svg-icon .path=${mdiAutoFix}></ha-svg-icon>
-                      </div>
+                      <ha-svg-icon
+                        slot="start"
+                        class="icon-background reload"
+                        .path=${mdiAutoFix}
+                      ></ha-svg-icon>
                       <ha-icon-next slot="end"></ha-icon-next>
                     </ha-list-item-button>
                     <ha-list-item-button
@@ -160,9 +162,11 @@ class DialogRestart extends LitElement {
                       @click=${this._handleAction}
                       .disabled=${this._loadingBackupInfo}
                     >
-                      <div slot="start" class="icon-background restart">
-                        <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
-                      </div>
+                      <ha-svg-icon
+                        slot="start"
+                        class="icon-background restart"
+                        .path=${mdiRefresh}
+                      ></ha-svg-icon>
                       <div slot="headline">
                         ${this.hass.localize("ui.dialogs.restart.restart.title")}
                       </div>
@@ -188,14 +192,11 @@ class DialogRestart extends LitElement {
                                 @click=${this._handleAction}
                                 .disabled=${this._loadingBackupInfo}
                               >
-                                <div
+                                <ha-svg-icon
                                   slot="start"
                                   class="icon-background reboot"
-                                >
-                                  <ha-svg-icon
-                                    .path=${mdiPowerCycle}
-                                  ></ha-svg-icon>
-                                </div>
+                                  .path=${mdiPowerCycle}
+                                ></ha-svg-icon>
                                 <div slot="headline">
                                   ${this.hass.localize(
                                     "ui.dialogs.restart.reboot.title"
@@ -213,12 +214,11 @@ class DialogRestart extends LitElement {
                                 @click=${this._handleAction}
                                 .disabled=${this._loadingBackupInfo}
                               >
-                                <div
+                                <ha-svg-icon
                                   slot="start"
                                   class="icon-background shutdown"
-                                >
-                                  <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
-                                </div>
+                                  .path=${mdiPower}
+                                ></ha-svg-icon>
                                 <div slot="headline">
                                   ${this.hass.localize(
                                     "ui.dialogs.restart.shutdown.title"
@@ -239,12 +239,11 @@ class DialogRestart extends LitElement {
                         @click=${this._handleAction}
                         .disabled=${this._loadingBackupInfo}
                       >
-                        <div
+                        <ha-svg-icon
                           slot="start"
                           class="icon-background restart-safe-mode"
-                        >
-                          <ha-svg-icon .path=${mdiLifebuoy}></ha-svg-icon>
-                        </div>
+                          .path=${mdiLifebuoy}
+                        ></ha-svg-icon>
                         <div slot="headline">
                           ${this.hass.localize(
                             "ui.dialogs.restart.restart-safe-mode.title"
@@ -429,20 +428,15 @@ class DialogRestart extends LitElement {
           margin-bottom: 10px;
           box-shadow: none;
           --expansion-panel-content-padding: 0;
-          --expansion-panel-summary-padding: 0
-            var(--mdc-list-side-padding, 20px);
+          --expansion-panel-summary-padding: 0 var(--ha-space-5);
           --ha-card-border-radius: var(--ha-border-radius-square);
         }
 
         .icon-background {
           border-radius: var(--ha-border-radius-circle);
           color: #fff;
-          display: flex;
-          width: 40px;
-          height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          /* 24px icon + padding = 40px circle */
+          padding: var(--ha-space-2);
         }
         .reload {
           background-color: #5f8a49;
@@ -472,10 +466,7 @@ class DialogRestart extends LitElement {
           font-weight: var(--ha-font-weight-medium);
           line-height: var(--ha-line-height-condensed);
           margin: 8px 0 4px 0;
-          padding-left: var(--mdc-list-side-padding, 20px);
-          padding-right: var(--mdc-list-side-padding, 20px);
-          padding-inline-start: var(--mdc-list-side-padding, 20px);
-          padding-inline-end: var(--mdc-list-side-padding, 20px);
+          padding-inline: var(--ha-space-5);
         }
         .loader {
           display: flex;

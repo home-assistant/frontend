@@ -1,14 +1,13 @@
 import { mdiHelpNetworkOutline, mdiLeaf, mdiZigbee } from "@mdi/js";
-import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import type {
   NetworkData,
   NetworkLink,
   NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
-import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZHADevice } from "../../../../../data/zha";
 import { ZHADeviceType } from "../../../../../data/zha";
 import type { HomeAssistant } from "../../../../../types";
+import { getZHADeviceAreaName } from "./functions";
 
 function getLQIWidth(lqi: number): number {
   return lqi > 200 ? 3 : lqi > 100 ? 2 : 1;
@@ -120,16 +119,11 @@ export function createZHANetworkChartData(
       category = 2; // End Device
     }
 
-    const haDevice = hass.devices[device.device_reg_id] as
-      DeviceRegistryEntry | undefined;
-    const area = haDevice
-      ? getDeviceArea(haDevice, hass.areas, hass.devices)
-      : undefined;
     // Create node
     nodes.push({
       id: device.ieee,
       name: device.user_given_name || device.name || device.ieee,
-      context: area?.name,
+      context: getZHADeviceAreaName(device, hass.areas, hass.devices),
       category,
       value: isCoordinator
         ? 3

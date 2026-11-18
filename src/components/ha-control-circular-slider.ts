@@ -387,7 +387,7 @@ export class HaControlCircularSlider extends LitElement {
   }
 
   private _handleKeyDown(e: KeyboardEvent) {
-    if (!A11Y_KEY_CODES.has(e.code)) return;
+    if (this.disabled || !A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
     if (this._lastSlider) {
       this.shadowRoot?.getElementById(this._lastSlider)?.focus();
@@ -439,7 +439,7 @@ export class HaControlCircularSlider extends LitElement {
   }
 
   private _handleKeyUp(e: KeyboardEvent) {
-    if (!A11Y_KEY_CODES.has(e.code)) return;
+    if (this.disabled || !A11Y_KEY_CODES.has(e.code)) return;
     this._activeSlider = (e.currentTarget as any).id as ActiveSlider;
     e.preventDefault();
     fireEvent(this, `${this._activeSlider}-changing`, {

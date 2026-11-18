@@ -146,6 +146,15 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       this._manualEditor?.resetPastedConfig();
       this._updateConfig(config);
     },
+    fetchBlueprintTriggers: async ({ path, input }) => {
+      const result = await substituteBlueprint(
+        this.hass,
+        "automation",
+        path,
+        input || {}
+      );
+      return normalizeAutomationConfig(result.substituted_config).triggers;
+    },
   });
 
   private _newAutomationId?: string;
@@ -1162,7 +1171,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         }
 
         if (entityId) {
-          await updateEntityRegistryEntry(this.hass, entityId, {
+          await updateEntityRegistryEntry(this.hass.callWS, entityId, {
             categories: {
               automation: this.entityRegistryUpdate.category || null,
             },

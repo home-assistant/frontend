@@ -3,6 +3,7 @@
   <head>
     <title>Home Assistant Cast - FAQ</title>
     <link rel="icon" href="/images/ha-cast-icon.png" type="image/png" />
+    <%= renderTemplate("../../../src/html/_meta_viewport.html.template") %>
     <%= renderTemplate("../../../src/html/_style_base.html.template") %>
     <style>
       body {

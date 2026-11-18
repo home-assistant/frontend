@@ -149,5 +149,20 @@ describe("debounce", () => {
       vi.advanceTimersByTime(500);
       expect(fn).toHaveBeenCalledTimes(1);
     });
+
+    it("calls immediately on the first call after cancel with immediate", () => {
+      const fn = vi.fn();
+      const debounced = debounce(fn, 500, true);
+
+      debounced("a");
+      debounced.cancel();
+
+      debounced("b");
+      expect(fn).toHaveBeenCalledTimes(2);
+      expect(fn).toHaveBeenLastCalledWith("b");
+
+      vi.advanceTimersByTime(500);
+      expect(fn).toHaveBeenCalledTimes(2);
+    });
   });
 });
