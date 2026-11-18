@@ -251,6 +251,10 @@ export class HaNetworkGraph extends LitElement {
   // The animated view goes back to the whole graph instead of to a node
   private _fittingView = false;
 
+  // How the force layout first showed its nodes, from layout to pixels, which
+  // the view goes back to after the fixed layout
+  private _initialForceView?: { scale: number; x: number; y: number };
+
   private _selectAnimationLastFrame?: number;
 
   private _selectAnimationElapsed = 0;
@@ -545,26 +549,58 @@ export class HaNetworkGraph extends LitElement {
   private _fitView() {
     this._stopSelectAnimation();
     if (this._reducedMotion) {
-      this._resetRoam();
+      const chart = this._baseChart?.chart;
+      const roam = chart && !chart.isDisposed() && this._layoutRoam(chart);
+      if (roam) {
+        chart.dispatchAction({
+          type: "graphRoam",
+          from: FOLLOW_ROAM,
+          seriesId: "network",
+          ...roam,
+        });
+      }
       return;
     }
     this._fittingView = true;
     this._selectAnimationFrame = requestAnimationFrame(this._animateView);
   }
 
-  // The roam back to no roam, or undefined when there is none. Any point of
-  // the view ends up where it is without a roam, so the center is used.
-  private _fitRoam(chart: EChartsType): FollowRoam | undefined {
-    const roam: number[] | undefined =
-      this._getGraphSeries(chart)?.coordinateSystem?.getRoamTransform();
-    if (!roam) {
-      return undefined;
+  private _viewTransform(chart: EChartsType) {
+    const [x, y] = chart.convertToPixel({ seriesId: "network" }, [0, 0]);
+    const [x1] = chart.convertToPixel({ seriesId: "network" }, [1, 0]);
+    return { scale: x1 - x, x, y };
+  }
+
+  private _captureInitialForceView = () => {
+    const chart = this._baseChart?.chart;
+    // Not while the view moves after a switch from the fixed layout
+    if (
+      this._initialForceView ||
+      this.fixedLayout ||
+      this._settlingLayout ||
+      this._stopWaitingForLayout ||
+      this._selectAnimationFrame !== undefined ||
+      !chart ||
+      chart.isDisposed() ||
+      !this._getGraphSeries(chart)?.forceLayout
+    ) {
+      return;
     }
-    const [zoom, , , , x, y] = roam;
-    const centerX = chart.getWidth() / 2;
-    const centerY = chart.getHeight() / 2;
-    const dx = centerX - (zoom * centerX + x);
-    const dy = centerY - (zoom * centerY + y);
+    this._initialForceView = this._viewTransform(chart);
+    chart.off("finished", this._captureInitialForceView);
+  };
+
+  // The roam to the view of the layout switched to: the whole fixed layout, or
+  // the force layout as it first showed, as its nodes keep their positions
+  private _layoutRoam(chart: EChartsType): FollowRoam | undefined {
+    const initial = this._initialForceView;
+    if (this.fixedLayout || !initial) {
+      return this._fitRoam(chart);
+    }
+    const current = this._viewTransform(chart);
+    const zoom = initial.scale / current.scale;
+    const dx = initial.x - current.x;
+    const dy = initial.y - current.y;
     const zoomChanged = Math.abs(zoom - 1) >= 1e-3;
     if (!zoomChanged && Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
       return undefined;
@@ -572,34 +608,74 @@ export class HaNetworkGraph extends LitElement {
     return {
       dx,
       dy,
-      zoom: zoomChanged ? 1 / zoom : undefined,
-      originX: centerX,
-      originY: centerY,
+      zoom: zoomChanged ? zoom : undefined,
+      originX: initial.x,
+      originY: initial.y,
     };
   }
 
-  // Without a roam ECharts fits the whole graph in the view
-  private _resetRoam() {
-    const chart = this._baseChart?.chart;
+  // The roam that fits the nodes in the view, clear of the controls, or
+  // undefined when they fit already. Without a roam ECharts fits a force
+  // layout to where its nodes start, not to where they end up.
+  private _fitRoam(chart: EChartsType): FollowRoam | undefined {
     const series = this._getGraphSeries(chart);
     const roam: number[] | undefined =
       series?.coordinateSystem?.getRoamTransform();
-    if (!chart || !roam) {
-      return;
+    if (!roam) {
+      return undefined;
     }
-    chart.dispatchAction({
-      type: "graphRoam",
-      from: FOLLOW_ROAM,
-      seriesId: "network",
-      dx: -roam[4],
-      dy: -roam[5],
-      zoom: 1 / roam[0],
-      originX: 0,
-      originY: 0,
+    let left = Infinity;
+    let top = Infinity;
+    let right = -Infinity;
+    let bottom = -Infinity;
+    series.getGraph().eachNode((node: any) => {
+      const layout: number[] | undefined = node.getLayout();
+      if (!layout) {
+        return;
+      }
+      const [x, y] = chart.convertToPixel({ seriesId: "network" }, layout);
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+      top = Math.min(top, y);
+      bottom = Math.max(bottom, y);
     });
-    // The action stores an absolute center, which a later re-fit would keep
-    series.option.center = null;
-    series.option.zoom = 1;
+    if (left > right) {
+      return undefined;
+    }
+    const width = chart.getWidth();
+    const height = chart.getHeight();
+    // A fixed layout grows to the right, so its labels need room there
+    const rightRoom = this.fixedLayout
+      ? FIXED_LAYOUT_LABEL_ROOM
+      : SELECTED_NODE_FIT_MARGIN;
+    const fitWidth = Math.max(
+      width - SELECTED_NODE_FIT_MARGIN - rightRoom,
+      width / 2
+    );
+    const fitHeight = Math.max(
+      height - 2 * SELECTED_NODE_FIT_MARGIN,
+      height / 2
+    );
+    const zoom = Math.min(
+      fitWidth / (right - left),
+      fitHeight / (bottom - top),
+      SELECTED_NODE_MAX_ZOOM / roam[0]
+    );
+    const centerX = (SELECTED_NODE_FIT_MARGIN + width - rightRoom) / 2;
+    const centerY = height / 2;
+    const dx = centerX - (left + right) / 2;
+    const dy = centerY - (top + bottom) / 2;
+    const zoomChanged = Math.abs(zoom - 1) >= 1e-3;
+    if (!zoomChanged && Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
+      return undefined;
+    }
+    return {
+      dx,
+      dy,
+      zoom: zoomChanged ? zoom : undefined,
+      originX: centerX,
+      originY: centerY,
+    };
   }
 
   private _nodeMatchesFilter(node: NetworkNode, lowerFilter: string): boolean {
@@ -905,6 +981,7 @@ export class HaNetworkGraph extends LitElement {
     chart?.on("mousedown", this._handleNodeMouseDown);
     chart?.getZr().on("drag", this._handleDrag);
     chart?.getZr().on("dragend", this._handleDragEnd);
+    chart?.on("finished", this._captureInitialForceView);
     for (const event of LEGEND_SELECT_EVENTS) {
       chart?.on(event, this._handleLegendChange);
     }
@@ -1093,7 +1170,7 @@ export class HaNetworkGraph extends LitElement {
       chart &&
       !chart.isDisposed() &&
       (this._fittingView
-        ? this._fitRoam(chart)
+        ? this._layoutRoam(chart)
         : this._selectedNodeRoam(chart));
     if (chart && roam) {
       const zoom = roam.zoom === undefined ? undefined : roam.zoom ** fraction;
@@ -1114,9 +1191,6 @@ export class HaNetworkGraph extends LitElement {
     if (progress < 1) {
       this._selectAnimationFrame = requestAnimationFrame(this._animateView);
       return;
-    }
-    if (this._fittingView) {
-      this._resetRoam();
     }
     this._stopSelectAnimation();
   };
