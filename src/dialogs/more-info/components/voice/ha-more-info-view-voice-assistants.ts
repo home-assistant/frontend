@@ -27,11 +27,13 @@ export class MoreInfoViewVoiceAssistants extends LitElement {
   private _fetchGeneration = 0;
 
   protected willUpdate(changedProps: PropertyValues<this>) {
-    if (changedProps.has("entry") && this.entry) {
-      if (changedProps.get("entry")?.entity_id !== this.entry.entity_id) {
-        this._exposed = undefined;
-        this._locked = undefined;
-      }
+    if (
+      changedProps.has("entry") &&
+      this.entry &&
+      changedProps.get("entry")?.entity_id !== this.entry.entity_id
+    ) {
+      this._exposed = undefined;
+      this._locked = undefined;
       this._fetchExposed();
     }
   }
@@ -81,6 +83,7 @@ export class MoreInfoViewVoiceAssistants extends LitElement {
       .entry=${this.entry}
       .exposed=${this._exposed}
       .locked=${this._locked}
+      @exposed-entities-changed=${this._fetchExposed}
     ></entity-voice-settings>`;
   }
 
