@@ -644,6 +644,10 @@ export class HaNetworkGraph extends LitElement {
     const data = series.getData();
     const el = data.getItemGraphicEl(node.dataIndex);
     data.setItemLayout(node.dataIndex, [el.x, el.y]);
+    // A new layout run starts from here, e.g. after a legend change
+    if (series.preservedPoints) {
+      series.preservedPoints[node.id] = [el.x, el.y];
+    }
     series.forceLayout.setFixed(node.dataIndex);
     for (const edge of node.edges) {
       const source: number[] | undefined = edge.node1.getLayout();
