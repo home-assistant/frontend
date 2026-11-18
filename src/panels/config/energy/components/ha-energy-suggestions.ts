@@ -70,6 +70,9 @@ export class EnergySuggestions extends LitElement {
 
   @state() private _dismissed?: string[];
 
+  // Dismissals not yet echoed by the subscription, so an older echo can't drop them
+  @state() private _pendingDismissed: string[] = [];
+
   @state() private _slots: Record<string, EnergySuggestionSlot> = {};
 
   @state() private _loadFailed = false;
@@ -124,6 +127,12 @@ export class EnergySuggestions extends LitElement {
       }).filter((suggestion) => suggestion.tab === tab)
   );
 
+  private _allDismissed = memoizeOne((stored: string[], pending: string[]) =>
+    pending.length
+      ? [...stored, ...pending.filter((id) => !stored.includes(id))]
+      : stored
+  );
+
   // Kept live so a dismiss in another tab isn't overwritten by this one.
   private _unsubDismissed?: Promise<UnsubscribeFunc>;
 
@@ -148,7 +157,11 @@ export class EnergySuggestions extends LitElement {
       this._connection.connection,
       "energy",
       ({ value }) => {
-        this._dismissed = value?.dismissed_suggestions ?? [];
+        const dismissed = value?.dismissed_suggestions ?? [];
+        this._dismissed = dismissed;
+        this._pendingDismissed = this._pendingDismissed.filter(
+          (id) => !dismissed.includes(id)
+        );
       }
     );
     try {
@@ -194,7 +207,7 @@ export class EnergySuggestions extends LitElement {
     const suggestions = this._computeSuggestions(
       this._statistics,
       this.preferences,
-      this._dismissed,
+      this._allDismissed(this._dismissed, this._pendingDismissed),
       this._states,
       this.tab
     );
@@ -328,18 +341,20 @@ export class EnergySuggestions extends LitElement {
   private async _dismiss(ev: Event) {
     const suggestion: EnergyMeterSuggestion = (ev.currentTarget as any)
       .suggestion;
-    const previous = this._dismissed!;
-    this._dismissed = updateDismissedSuggestions(
-      previous,
-      suggestion.statisticId,
-      this._statistics!
-    );
+    const statisticId = suggestion.statisticId;
+    this._pendingDismissed = [...this._pendingDismissed, statisticId];
     try {
       await saveFrontendUserData(this._connection.connection, "energy", {
-        dismissed_suggestions: this._dismissed,
+        dismissed_suggestions: updateDismissedSuggestions(
+          this._allDismissed(this._dismissed!, this._pendingDismissed),
+          statisticId,
+          this._statistics!
+        ),
       });
     } catch (err: any) {
-      this._dismissed = previous;
+      this._pendingDismissed = this._pendingDismissed.filter(
+        (id) => id !== statisticId
+      );
       showAlertDialog(this, {
         title: this._i18n.localize(
           "ui.panel.config.energy.suggestions.dismiss_failed"
