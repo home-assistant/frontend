@@ -469,16 +469,50 @@ export class HaNetworkGraph extends LitElement {
       this._applyHighlighting();
       this._updateMouseoverHandler();
     }
-    if (changedProperties.has("selectedNode")) {
-      this._followSelectedNode = !!this.selectedNode;
-      this._stopSelectAnimation();
-      if (this.selectedNode && !this._reducedMotion) {
-        this._selectAnimationFrame = requestAnimationFrame(
-          this._animateToSelectedNode
-        );
-      }
-      this._updateFollowing();
+    // Another layout moves every node, so the view starts over
+    if (changedProperties.get("fixedLayout") !== undefined) {
+      this._baseChart?.updateComplete.then(() => {
+        this._resetRoam();
+        this._moveToSelectedNode();
+      });
+    } else if (changedProperties.has("selectedNode")) {
+      this._moveToSelectedNode();
     }
+  }
+
+  private _moveToSelectedNode() {
+    this._followSelectedNode = !!this.selectedNode;
+    this._stopSelectAnimation();
+    if (this.selectedNode && !this._reducedMotion) {
+      this._selectAnimationFrame = requestAnimationFrame(
+        this._animateToSelectedNode
+      );
+    }
+    this._updateFollowing();
+  }
+
+  // Without a roam ECharts fits the whole graph in the view
+  private _resetRoam() {
+    const chart = this._baseChart?.chart;
+    const series = this._getGraphSeries(chart);
+    const roam: number[] | undefined =
+      series?.coordinateSystem?.getRoamTransform();
+    if (!chart || !roam) {
+      return;
+    }
+    chart.dispatchAction({
+      type: "graphRoam",
+      from: FOLLOW_ROAM,
+      seriesId: "network",
+      dx: -roam[4],
+      dy: -roam[5],
+      zoom: 1 / roam[0],
+      originX: 0,
+      originY: 0,
+    });
+    // The action stores an absolute center, which a later re-fit would keep
+    series.option.center = null;
+    series.option.zoom = 1;
   }
 
   private _nodeMatchesFilter(node: NetworkNode, lowerFilter: string): boolean {
