@@ -832,7 +832,17 @@ export class MapLibreMapEngine implements MapEngine {
   }
 
   public containsLocation(location: MapLatLng): boolean {
-    return this._map?.getBounds().contains([location[1], location[0]]) ?? false;
+    const map = this._map;
+    if (!map) {
+      return false;
+    }
+    // MapLibre compares longitudes literally, and a view across ±180° has
+    // bounds beyond it; the copy nearest their center is the one in view.
+    // Bounds of a globe with a pole on screen span -180 to 180 whatever the
+    // map center, so it is their own center that counts
+    const bounds = map.getBounds();
+    const lng = nearestWorldCopy(location[1], bounds.getCenter().lng);
+    return bounds.contains([lng, location[0]]);
   }
 
   public addMarker(

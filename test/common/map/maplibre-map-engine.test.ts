@@ -352,7 +352,14 @@ const fakes = vi.hoisted(() => {
     }
 
     getBounds() {
-      return { contains: () => true };
+      return {
+        contains: (_lngLat: [number, number]) => true,
+        getCenter: () => ({ lng: 4, lat: 52 }),
+      };
+    }
+
+    getCenter() {
+      return { lng: 4, lat: 52 };
     }
 
     queryRenderedFeatures() {
@@ -730,6 +737,46 @@ describe("MapLibreMapEngine", () => {
       map.fire("load");
       map.fire("load");
       expect(drawn).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe("containsLocation", () => {
+    // MapLibre's LngLatBounds compares longitudes literally
+    const literalBounds = (
+      west: number,
+      east: number,
+      south: number,
+      north: number
+    ) => ({
+      contains: ([lng, lat]: [number, number]) =>
+        lng >= west && lng <= east && lat >= south && lat <= north,
+      getCenter: () => ({ lng: (west + east) / 2, lat: (south + north) / 2 }),
+    });
+
+    it("finds a location across the antimeridian on the world copy in view", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // A view fitted across ±180°: MapLibre reports its bounds unwrapped and
+      // compares longitudes literally
+      map.getCenter = () => ({ lng: 176.6, lat: 60 });
+      map.getBounds = () => literalBounds(150, 203, 45, 75);
+
+      expect(engine.containsLocation([64.5, -165.4])).toBe(true);
+      expect(engine.containsLocation([53, 158.65])).toBe(true);
+      expect(engine.containsLocation([64.5, 0])).toBe(false);
+    });
+
+    it("finds a location in a globe view whose bounds span the whole world", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // With a pole on screen, the globe reports -180 to 180 whatever its center
+      map.getCenter = () => ({ lng: 176.6, lat: 60 });
+      map.getBounds = () => literalBounds(-180, 180, 30, 90);
+
+      expect(engine.containsLocation([64.5, -165.4])).toBe(true);
+      expect(engine.containsLocation([53, 158.65])).toBe(true);
     });
   });
 
