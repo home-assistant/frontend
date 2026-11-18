@@ -108,6 +108,9 @@ const FOLLOW_ROAM = "follow-selected-node";
 
 const SELECTED_NODE_ANIMATION_DURATION = 800;
 
+// The view moves after the nodes of another layout, or after this many ms
+const LAYOUT_ANIMATION_TIMEOUT = 1000;
+
 // A frame that takes longer, such as the first one after new data, advances
 // the animation by at most this, so the acceleration is not skipped
 const MAX_ANIMATION_FRAME_TIME = 1000 / 30;
@@ -217,6 +220,10 @@ export class HaNetworkGraph extends LitElement {
 
   @state() private _showLabels = true;
 
+  // Without the force layout until the nodes moved back to their positions in
+  // it, as the first step of the force layout stops their animation
+  @state() private _settlingLayout = false;
+
   // Not reactive: a new series option starts the layout again, so a drop only
   // reaches the option with the next render
   private _nodePositions: Record<string, { x: number; y: number }> = {};
@@ -238,6 +245,8 @@ export class HaNetworkGraph extends LitElement {
   private _followedChart?: EChartsType;
 
   private _selectAnimationFrame?: number;
+
+  private _stopWaitingForLayout?: () => void;
 
   // The animated view goes back to the whole graph instead of to a node
   private _fittingView = false;
@@ -349,6 +358,14 @@ export class HaNetworkGraph extends LitElement {
     if (changedProperties.has("hiddenCategories") && this.hiddenCategories) {
       this._hiddenCategories = this.hiddenCategories;
     }
+    if (changedProperties.get("fixedLayout") !== undefined) {
+      if (this.fixedLayout) {
+        // The force layout comes back from here
+        this._saveNodePositions();
+      } else if (!this._reducedMotion) {
+        this._settlingLayout = true;
+      }
+    }
   }
 
   protected render() {
@@ -366,7 +383,9 @@ export class HaNetworkGraph extends LitElement {
     return html`<ha-chart-base
       .data=${this._getSeries(
         this.data,
-        !this.fixedLayout && (this._physicsEnabled ?? false),
+        !this.fixedLayout &&
+          !this._settlingLayout &&
+          (this._physicsEnabled ?? false),
         this._reducedMotion,
         this._showLabels,
         isMobile,
@@ -472,10 +491,22 @@ export class HaNetworkGraph extends LitElement {
       this._applyHighlighting();
       this._updateMouseoverHandler();
     }
-    // Another layout moves every node, so the view starts over
+    // Another layout moves every node, so the view starts over. A roam while
+    // ECharts moves the nodes draws the edges at their end at once, so the
+    // view waits for the nodes.
     if (changedProperties.get("fixedLayout") !== undefined) {
+      this._followSelectedNode = false;
+      this._stopSelectAnimation();
+      this._updateFollowing();
       this._baseChart?.updateComplete.then(() =>
-        this.selectedNode ? this._moveToSelectedNode() : this._fitView()
+        this._afterLayoutAnimation(() => {
+          this._settlingLayout = false;
+          if (this.selectedNode) {
+            this._moveToSelectedNode();
+          } else {
+            this._fitView();
+          }
+        })
       );
     } else if (changedProperties.has("selectedNode")) {
       this._moveToSelectedNode();
@@ -489,6 +520,26 @@ export class HaNetworkGraph extends LitElement {
       this._selectAnimationFrame = requestAnimationFrame(this._animateView);
     }
     this._updateFollowing();
+  }
+
+  private _afterLayoutAnimation(callback: () => void) {
+    this._stopWaitingForLayout?.();
+    const chart = this._baseChart?.chart;
+    if (!chart || chart.isDisposed() || this._reducedMotion) {
+      callback();
+      return;
+    }
+    const done = () => {
+      this._stopWaitingForLayout?.();
+      callback();
+    };
+    const timeout = window.setTimeout(done, LAYOUT_ANIMATION_TIMEOUT);
+    chart.on("finished", done);
+    this._stopWaitingForLayout = () => {
+      clearTimeout(timeout);
+      chart.off("finished", done);
+      this._stopWaitingForLayout = undefined;
+    };
   }
 
   private _fitView() {
@@ -1281,6 +1332,7 @@ export class HaNetworkGraph extends LitElement {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._stopSelectAnimation();
+    this._stopWaitingForLayout?.();
     if (this._zoomFrame !== undefined) {
       cancelAnimationFrame(this._zoomFrame);
       this._zoomFrame = undefined;
