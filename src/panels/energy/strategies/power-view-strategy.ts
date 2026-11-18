@@ -86,6 +86,19 @@ export class PowerViewStrategy extends ReactiveElement {
       });
     }
 
+    if (isEnergyCardVisible("now", "power-devices-graph", prefs, hidden)) {
+      chartsSection.cards!.push({
+        title: hass.localize(
+          "ui.panel.energy.cards.energy_devices_graph_title"
+        ),
+        type: "power-devices-graph",
+        collection_key: collectionKey,
+        grid_options: {
+          columns: 36,
+        },
+      });
+    }
+
     if (hasGasSrc) {
       badges.push({
         type: "gas-total",
