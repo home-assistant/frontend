@@ -52,12 +52,18 @@ class HuiTimerProgressCardFeature
     this._config = config;
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    this._stop();
+    this._tick();
+  }
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._stop();
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues): void {
     if (changedProps.has("_stateObj")) {
       this._stop();
       this._tick();
@@ -74,6 +80,14 @@ class HuiTimerProgressCardFeature
   private _tick = () => {
     const stateObj = this._stateObj;
     if (!stateObj) {
+      return;
+    }
+    if (
+      typeof stateObj.attributes.duration !== "string" ||
+      (stateObj.state === "paused" &&
+        typeof stateObj.attributes.remaining !== "string")
+    ) {
+      this._ratio = 0;
       return;
     }
     const duration = durationToSeconds(stateObj.attributes.duration);
@@ -101,7 +115,15 @@ class HuiTimerProgressCardFeature
       return nothing;
     }
     return html`
-      <div class="track">
+      <div
+        class="track"
+        role="progressbar"
+        aria-label=${this._stateObj.attributes.friendly_name ||
+        this._stateObj.entity_id}
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow=${Math.round(this._ratio * 100)}
+      >
         <div
           class="bar"
           style=${styleMap({ width: `${this._ratio * 100}%` })}
