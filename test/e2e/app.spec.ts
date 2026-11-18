@@ -127,6 +127,7 @@ for (const failFirstSearch of [false, true]) {
       selector.getByRole("spinbutton", { name: "Longitude*", exact: true })
     ).toHaveValue("2.3522");
     await expect(result).not.toBeAttached();
+    await expect(input).toBeFocused();
     await expect(selector).not.toHaveAttribute("data-enter-bubbled");
   });
 }

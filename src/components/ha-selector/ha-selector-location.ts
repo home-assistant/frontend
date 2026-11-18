@@ -2,6 +2,7 @@ import { mdiMagnify, mdiMapSearchOutline } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type {
@@ -15,6 +16,7 @@ import {
 } from "../../data/openstreetmap";
 import type { HomeAssistant } from "../../types";
 import type { SchemaUnion } from "../ha-form/types";
+import type { HaListItemButton } from "../item/ha-list-item-button";
 import type {
   HaLocationsEditor,
   MarkerLocation,
@@ -395,15 +397,16 @@ export class HaLocationSelector extends LitElement {
     `;
   };
 
-  private async _placeSelected(ev: Event) {
+  private async _placeSelected(
+    ev: HASSDomCurrentTargetEvent<HaListItemButton & { placeId: number }>
+  ) {
     if (this.disabled) {
       return;
     }
 
-    const placeId = (ev.currentTarget as HTMLElement & { placeId: number })
-      .placeId;
-
-    const place = this._places?.find((item) => item.place_id === placeId);
+    const place = this._places?.find(
+      (item) => item.place_id === ev.currentTarget.placeId
+    );
 
     if (!place) {
       return;
@@ -417,6 +420,9 @@ export class HaLocationSelector extends LitElement {
       },
     });
 
+    if (ev.currentTarget.matches(":focus-within")) {
+      this._input?.focus({ preventScroll: true });
+    }
     this._places = undefined;
     await this.updateComplete;
     await this._map.fitMarker("location");
