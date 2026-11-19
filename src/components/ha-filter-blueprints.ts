@@ -271,8 +271,10 @@ export class HaFilterBlueprints extends LitElement {
   private async _itemsWithoutBlueprint(
     type: "automation" | "script"
   ): Promise<string[]> {
-    const blueprints =
-      this._blueprints ?? (await fetchBlueprints(this._api.callWS, type));
+    // A blueprint can be added while the page stays open, so get the current
+    // ones, which also updates the list
+    const blueprints = await fetchBlueprints(this._api.callWS, type);
+    this._blueprints = blueprints;
     const fromBlueprint = await this._findForBlueprints(
       type,
       Object.keys(blueprints)
