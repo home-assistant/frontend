@@ -105,6 +105,7 @@ const run = ({
       tag === "dialog"
         ? { showModal: dialog ? () => undefined : undefined }
         : fakeElement(tag),
+    createTextNode: (text) => ({ tag: "#text", textContent: text }),
     getElementById: (id) => (id === "ha-launch-screen-info-box" ? box : null),
   };
   // eslint-disable-next-line no-new-func
@@ -124,13 +125,15 @@ const run = ({
     { now: () => now },
     (src) => started.push(src)
   );
-  const buttons = Object.fromEntries(
-    (box.children.find((child) => child.tag === "div")?.children ?? []).map(
-      (button) => [button.textContent, button.listeners.click]
-    )
-  );
+  const actions =
+    box.children.find((child) => child.tag === "div")?.children ?? [];
+  const continueAnyway = actions.find((child) => child.tag === "button")
+    ?.listeners.click;
+  const checkbox = actions
+    .find((child) => child.tag === "label")
+    ?.children.find((child) => child.tag === "input");
   const shown = box.children.map((child) => child.tag);
-  return { started, box, store, buttons, shown };
+  return { started, box, store, continueAnyway, checkbox, shown };
 };
 
 describe("index.html legacy browser check", () => {
@@ -144,11 +147,11 @@ describe("index.html legacy browser check", () => {
     ["BigInt", { bigInt: false, dialog: true }],
     ["native dialog", { bigInt: true, dialog: false }],
   ])("offers to continue without %s", (_, browser) => {
-    const { started, box, store, buttons } = run(browser);
+    const { started, box, store, continueAnyway, checkbox } = run(browser);
     expect(started).toEqual([]);
-    expect(Object.keys(buttons)).toEqual(["Continue anyway"]);
+    expect(checkbox).toBeUndefined();
 
-    buttons["Continue anyway"]();
+    continueAnyway();
     expect(started).toEqual([ENTRY]);
     expect(store[ACCEPTED_KEY]).toBe(String(NOW));
     // The message stays up while the app loads.
@@ -165,17 +168,16 @@ describe("index.html legacy browser check", () => {
     const stored = String(NOW - 30 * DAY);
     const reminder = run({ stored });
     expect(reminder.started).toEqual([]);
-    expect(Object.keys(reminder.buttons)).toEqual([
-      "Continue anyway",
-      "Don't show again",
-    ]);
+    expect(reminder.checkbox.type).toBe("checkbox");
 
+    // Unchecked: starts the next month.
     const continued = run({ stored });
-    continued.buttons["Continue anyway"]();
+    continued.continueAnyway();
     expect(continued.started).toEqual([ENTRY]);
     expect(continued.store[ACCEPTED_KEY]).toBe(String(NOW));
 
-    reminder.buttons["Don't show again"]();
+    reminder.checkbox.checked = true;
+    reminder.continueAnyway();
     expect(reminder.started).toEqual([ENTRY]);
     expect(reminder.store[ACCEPTED_KEY]).toBe("always");
     expect(run({ stored: "always", now: NOW + 3650 * DAY }).started).toEqual([
@@ -185,15 +187,15 @@ describe("index.html legacy browser check", () => {
 
   // A tablet that lost its clock.
   it("asks again when the clock is behind the stored time", () => {
-    const { started, buttons } = run({ stored: String(NOW + DAY) });
+    const { started, continueAnyway } = run({ stored: String(NOW + DAY) });
     expect(started).toEqual([]);
-    expect(buttons["Continue anyway"]).toBeDefined();
+    expect(continueAnyway).toBeDefined();
   });
 
   it("still continues when storage is unavailable", () => {
-    const { started, buttons } = run({ storageThrows: true });
+    const { started, continueAnyway } = run({ storageThrows: true });
     expect(started).toEqual([]);
-    buttons["Continue anyway"]();
+    continueAnyway();
     expect(started).toEqual([ENTRY]);
   });
 });

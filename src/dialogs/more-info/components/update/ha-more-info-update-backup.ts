@@ -126,6 +126,7 @@ export class HaMoreInfoUpdateBackup extends LitElement {
               ></ha-fade-in>`
             : html`<ha-switch
                 slot="end"
+                .accessibleLabel=${createBackupTexts?.title ?? ""}
                 .checked=${this._createBackup}
                 @change=${this._createBackupChanged}
                 .disabled=${this.disabled || updateIsInstalling(this.stateObj)}

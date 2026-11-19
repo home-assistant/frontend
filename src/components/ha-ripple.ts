@@ -50,6 +50,7 @@ const wait = (ms: number) =>
  * @cssprop --ha-ripple-hover-color - Hover color.
  * @cssprop --ha-ripple-pressed-color - Pressed color.
  * @cssprop --ha-ripple-hover-opacity - Hover opacity. Defaults to 0.08.
+ * @cssprop --ha-ripple-hover-duration - Fade duration of the hover color. Defaults to 15ms.
  * @cssprop --ha-ripple-pressed-opacity - Pressed opacity. Defaults to 0.12.
  */
 @customElement("ha-ripple")
@@ -170,6 +171,16 @@ export class HaRipple extends LitElement {
       return;
     }
 
+    // A touch long press opens the context menu while the press continues,
+    // e.g. for a hold action. touchend or pointercancel ends it instead.
+    if (
+      ev.type === "contextmenu" &&
+      this._startEvent &&
+      isTouch(this._startEvent)
+    ) {
+      return;
+    }
+
     if (ev.type === "contextmenu" || ev.type === "touchend") {
       this._endPress();
 
@@ -192,13 +203,25 @@ export class HaRipple extends LitElement {
         break;
       case "pointerenter":
         this._hovered = true;
+
+        if (this._state === "waiting-for-click") {
+          if (ev.buttons === 1) {
+            // Back on the control with the press still held
+            this._pressed = true;
+          } else {
+            // The press was released off the control, so no click follows
+            this._endPress();
+          }
+        }
+
         break;
       case "pointerleave":
         this._hovered = false;
 
-        // Release a held mouse or pen press that moves off the control
-        if (this._state !== "inactive") {
-          this._endPress();
+        // A mouse or pen press that moves off the control still clicks if it
+        // is released back on it, so only hide the press until it returns
+        if (this._state === "waiting-for-click") {
+          this._pressed = false;
         }
 
         break;
@@ -396,8 +419,8 @@ export class HaRipple extends LitElement {
         var(--ha-ripple-color, var(--secondary-text-color))
       );
       transition:
-        opacity 15ms linear,
-        background-color 15ms linear;
+        opacity var(--ha-ripple-hover-duration, 15ms) linear,
+        background-color var(--ha-ripple-hover-duration, 15ms) linear;
     }
     .hovered .hover {
       opacity: var(--ha-ripple-hover-opacity, 0.08);

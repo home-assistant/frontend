@@ -292,7 +292,8 @@ class NotificationManager extends LitElement {
       inset-inline-end: auto;
       inset-block-end: calc(
         var(--safe-area-inset-bottom, 0px) + var(--ha-space-4) +
-          var(--notification-stack-bottom-offset, 0px)
+          var(--notification-stack-bottom-offset, 0px) +
+          var(--ha-startup-progress-offset, 0px)
       );
       inset-inline-start: 50%;
       margin: 0;

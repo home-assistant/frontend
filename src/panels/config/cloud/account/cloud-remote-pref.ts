@@ -1,5 +1,6 @@
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import type { HASSDomTargetEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
@@ -7,10 +8,12 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-tip";
 import "../../../../components/item/ha-list-item-base";
+import "../../../../components/item/ha-list-item-switch";
 import "../../../../components/list/ha-list-base";
 
 import { formatDate } from "../../../../common/datetime/format_date";
 import type { HaSwitch } from "../../../../components/ha-switch";
+import type { HaListItemSwitch } from "../../../../components/item/ha-list-item-switch";
 import "../../../../components/input/ha-input-copy";
 import type { CloudStatusLoggedIn } from "../../../../data/cloud";
 import {
@@ -95,6 +98,9 @@ export class CloudRemotePref extends LitElement {
                   >
                     <div class="header-actions">
                       <ha-switch
+                        .accessibleLabel=${this.hass.localize(
+                          "ui.panel.config.cloud.account.remote.card_title"
+                        )}
                         .checked=${remote_enabled}
                         @change=${this._toggleChanged}
                       ></ha-switch>
@@ -170,7 +176,11 @@ export class CloudRemotePref extends LitElement {
                   >
                     <div class="card-content">
                       <ha-list-base>
-                        <ha-list-item-base>
+                        <ha-list-item-switch
+                          wrap-supporting-text
+                          .checked=${remote_allow_remote_enable}
+                          @change=${this._toggleAllowRemoteEnabledChanged}
+                        >
                           <span slot="headline"
                             >${this.hass.localize(
                               "ui.panel.config.cloud.account.remote.external_activation"
@@ -181,13 +191,8 @@ export class CloudRemotePref extends LitElement {
                               "ui.panel.config.cloud.account.remote.external_activation_secondary"
                             )}</span
                           >
-                          <ha-switch
-                            slot="end"
-                            .checked=${remote_allow_remote_enable}
-                            @change=${this._toggleAllowRemoteEnabledChanged}
-                          ></ha-switch>
-                        </ha-list-item-base>
-                        <ha-list-item-base>
+                        </ha-list-item-switch>
+                        <ha-list-item-base wrap-supporting-text>
                           <span slot="headline"
                             >${this.hass.localize(
                               "ui.panel.config.cloud.account.remote.certificate_info"
@@ -268,8 +273,10 @@ export class CloudRemotePref extends LitElement {
     }
   }
 
-  private async _toggleAllowRemoteEnabledChanged(ev) {
-    const toggle = ev.target as HaSwitch;
+  private async _toggleAllowRemoteEnabledChanged(
+    ev: HASSDomTargetEvent<HaListItemSwitch>
+  ) {
+    const toggle = ev.target;
 
     try {
       await updateCloudPref(this.hass, {
@@ -310,9 +317,6 @@ export class CloudRemotePref extends LitElement {
       }
       ha-list-base {
         --ha-row-item-padding-inline: 0;
-      }
-      ha-list-item-base::part(supporting-text) {
-        white-space: normal;
       }
       ha-tip {
         max-width: 600px;

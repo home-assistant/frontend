@@ -5,6 +5,7 @@ import {
   mdiNas,
   mdiPencil,
   mdiPlayBox,
+  mdiRefresh,
   mdiReload,
 } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -32,6 +33,8 @@ import {
   fetchHassioHostInfo,
   fetchHostDisksUsage,
 } from "../../../data/hassio/host";
+import type { RecorderDatabaseUsage } from "../../../data/recorder";
+import { fetchRecorderDatabaseUsage } from "../../../data/recorder";
 import type {
   SupervisorMount,
   SupervisorMounts,
@@ -52,6 +55,7 @@ import { bytesToString } from "../../../util/bytes-to-string";
 import { showMoveDatadiskDialog } from "./show-dialog-move-datadisk";
 import { showMountViewDialog } from "./show-dialog-view-mount";
 import "./storage-breakdown-chart";
+import "./storage-database-card";
 
 @customElement("ha-config-section-storage")
 class HaConfigSectionStorage extends LitElement {
@@ -76,6 +80,17 @@ class HaConfigSectionStorage extends LitElement {
   // Guards against a slow response from a previous reload landing in a newer one.
   private _mountUsageGeneration = 0;
 
+  // Undefined until loaded, null when no recent report exists.
+  @state() private _databaseUsage?: RecorderDatabaseUsage | null;
+
+  @state() private _databaseLoading = false;
+
+  @state() private _databaseAnalyzing = false;
+
+  @state() private _databaseError?: string;
+
+  private _databaseRequested = false;
+
   protected async firstUpdated(
     changedProps: PropertyValues<this>
   ): Promise<void> {
@@ -86,6 +101,19 @@ class HaConfigSectionStorage extends LitElement {
       this._mountsInfo = null;
     }
     await panelIsReady(this);
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>): void {
+    super.willUpdate(changedProps);
+    // Recorder can finish loading after the page mounted during startup
+    if (
+      changedProps.has("hass") &&
+      !this._databaseRequested &&
+      isComponentLoaded(this.hass.config, "recorder")
+    ) {
+      this._databaseRequested = true;
+      this._loadDatabaseUsage();
+    }
   }
 
   protected render(): TemplateResult | typeof nothing {
@@ -100,6 +128,7 @@ class HaConfigSectionStorage extends LitElement {
       ].includes(mount.type)
     );
     const isHAOS = this._hostInfo?.features.includes("haos");
+    const hasRecorder = isComponentLoaded(this.hass.config, "recorder");
     return html`
       <hass-subpage
         back-path="/config/system"
@@ -107,6 +136,19 @@ class HaConfigSectionStorage extends LitElement {
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.storage.caption")}
       >
+        ${
+          hasRecorder
+            ? html`<ha-icon-button
+                slot="toolbar-icon"
+                .disabled=${this._databaseLoading || this._databaseAnalyzing}
+                .path=${mdiRefresh}
+                .label=${this.hass.localize(
+                  "ui.panel.config.storage.database.analyze"
+                )}
+                @click=${this._analyzeDatabase}
+              ></ha-icon-button>`
+            : nothing
+        }
         <div class="content">
           ${
             this._error
@@ -152,101 +194,123 @@ class HaConfigSectionStorage extends LitElement {
                 `
               : ""
           }
-
-          <ha-card
-            outlined
-            .header=${this.hass.localize(
-              "ui.panel.config.storage.network_mounts.title"
-            )}
-          >
-            ${
-              this._mountsInfo === null
-                ? html`<ha-alert
-                    class="mounts-not-supported"
-                    alert-type="warning"
-                    .title=${this.hass.localize(
-                      "ui.panel.config.storage.network_mounts.not_supported.title"
-                    )}
-                  >
-                    ${
-                      isHAOS
-                        ? html`${this.hass.localize(
-                              "ui.panel.config.storage.network_mounts.not_supported.os",
-                              { version: "10.2" }
-                            )}
-                            <ha-button
-                              appearance="plain"
-                              slot="action"
-                              @click=${this._navigateToUpdates}
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.storage.network_mounts.not_supported.navigate_to_updates"
-                              )}
-                            </ha-button>`
-                        : this.hass.localize(
-                            "ui.panel.config.storage.network_mounts.not_supported.supervised"
-                          )
-                    }
-                  </ha-alert>`
-                : validMounts?.length
-                  ? html`<ha-list-base
-                      aria-label=${this.hass.localize(
-                        "ui.panel.config.storage.network_mounts.title"
-                      )}
-                    >
-                      ${validMounts.map((mount) =>
-                        mount.state === SupervisorMountState.ACTIVE
-                          ? html`<ha-list-item-button
-                              .mount=${mount}
-                              @click=${this._changeMount}
-                            >
-                              ${this._renderMountContent(mount)}
-                              <ha-icon-next slot="end"></ha-icon-next>
-                            </ha-list-item-button>`
-                          : html`<ha-list-item-base>
-                              ${this._renderMountContent(mount)}
-                              <div slot="end" class="mount-actions">
-                                <ha-icon-button
-                                  .mount=${mount}
-                                  .label=${this.hass.localize(
-                                    "ui.panel.config.storage.network_mounts.reload"
-                                  )}
-                                  @click=${this._reloadMount}
-                                  .path=${mdiReload}
-                                ></ha-icon-button>
-                                <ha-icon-button
-                                  .mount=${mount}
-                                  .label=${this.hass.localize("ui.common.edit")}
-                                  @click=${this._changeMount}
-                                  .path=${mdiPencil}
-                                ></ha-icon-button>
-                              </div>
-                            </ha-list-item-base>`
-                      )}
-                    </ha-list-base>`
-                  : html`<div class="no-mounts">
-                      <ha-svg-icon .path=${mdiNas}></ha-svg-icon>
-                      <p>
-                        ${this.hass.localize(
-                          "ui.panel.config.storage.network_mounts.no_mounts"
-                        )}
-                      </p>
-                    </div>`
-            }
-            ${
-              this._mountsInfo !== null
-                ? html`<div class="card-actions">
-                    <ha-button appearance="plain" @click=${this._addMount}>
-                      ${this.hass.localize(
-                        "ui.panel.config.storage.network_mounts.add_title"
-                      )}
-                    </ha-button>
-                  </div>`
-                : nothing
-            }
-          </ha-card>
+          ${
+            hasRecorder
+              ? html`<storage-database-card
+                  .narrow=${this.narrow}
+                  .usage=${this._databaseUsage}
+                  .analyzing=${this._databaseAnalyzing}
+                  .error=${this._databaseError}
+                ></storage-database-card>`
+              : nothing
+          }
+          ${
+            isComponentLoaded(this.hass.config, "hassio")
+              ? this._renderMounts(validMounts, isHAOS)
+              : nothing
+          }
         </div>
       </hass-subpage>
+    `;
+  }
+
+  private _renderMounts(
+    validMounts: SupervisorMount[] | undefined,
+    isHAOS: boolean | undefined
+  ) {
+    return html`
+      <ha-card
+        outlined
+        .header=${this.hass.localize(
+          "ui.panel.config.storage.network_mounts.title"
+        )}
+      >
+        ${
+          this._mountsInfo === null
+            ? html`<ha-alert
+                class="mounts-not-supported"
+                alert-type="warning"
+                .title=${this.hass.localize(
+                  "ui.panel.config.storage.network_mounts.not_supported.title"
+                )}
+              >
+                ${
+                  isHAOS
+                    ? html`${this.hass.localize(
+                          "ui.panel.config.storage.network_mounts.not_supported.os",
+                          { version: "10.2" }
+                        )}
+                        <ha-button
+                          appearance="plain"
+                          slot="action"
+                          @click=${this._navigateToUpdates}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.storage.network_mounts.not_supported.navigate_to_updates"
+                          )}
+                        </ha-button>`
+                    : this.hass.localize(
+                        "ui.panel.config.storage.network_mounts.not_supported.supervised"
+                      )
+                }
+              </ha-alert>`
+            : validMounts?.length
+              ? html`<ha-list-base
+                  aria-label=${this.hass.localize(
+                    "ui.panel.config.storage.network_mounts.title"
+                  )}
+                >
+                  ${validMounts.map((mount) =>
+                    mount.state === SupervisorMountState.ACTIVE
+                      ? html`<ha-list-item-button
+                          .mount=${mount}
+                          @click=${this._changeMount}
+                        >
+                          ${this._renderMountContent(mount)}
+                          <ha-icon-next slot="end"></ha-icon-next>
+                        </ha-list-item-button>`
+                      : html`<ha-list-item-base>
+                          ${this._renderMountContent(mount)}
+                          <div slot="end" class="mount-actions">
+                            <ha-icon-button
+                              .mount=${mount}
+                              .label=${this.hass.localize(
+                                "ui.panel.config.storage.network_mounts.reload"
+                              )}
+                              @click=${this._reloadMount}
+                              .path=${mdiReload}
+                            ></ha-icon-button>
+                            <ha-icon-button
+                              .mount=${mount}
+                              .label=${this.hass.localize("ui.common.edit")}
+                              @click=${this._changeMount}
+                              .path=${mdiPencil}
+                            ></ha-icon-button>
+                          </div>
+                        </ha-list-item-base>`
+                  )}
+                </ha-list-base>`
+              : html`<div class="no-mounts">
+                  <ha-svg-icon .path=${mdiNas}></ha-svg-icon>
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.storage.network_mounts.no_mounts"
+                    )}
+                  </p>
+                </div>`
+        }
+        ${
+          this._mountsInfo !== null
+            ? html`<div class="card-actions">
+                <ha-button appearance="plain" @click=${this._addMount}>
+                  ${this.hass.localize(
+                    "ui.panel.config.storage.network_mounts.add_title"
+                  )}
+                </ha-button>
+              </div>`
+            : nothing
+        }
+      </ha-card>
     `;
   }
 
@@ -283,6 +347,8 @@ class HaConfigSectionStorage extends LitElement {
         <ha-tooltip slot="extra">
           <ha-icon-button
             .path=${mdiInformationOutline}
+            .label=${this.hass.localize("ui.common.more_info")}
+            hide-title
             class="help-button"
           ></ha-icon-button>
           <p class="metric-description" slot="content">
@@ -373,6 +439,45 @@ class HaConfigSectionStorage extends LitElement {
     } catch (err: any) {
       this._error = err.message || err;
       this._storageInfo = null;
+    }
+  }
+
+  private async _loadDatabaseUsage(): Promise<void> {
+    this._databaseLoading = true;
+    this._databaseError = undefined;
+    try {
+      this._databaseUsage = await fetchRecorderDatabaseUsage(this.hass);
+    } catch (err: any) {
+      this._databaseError = this._databaseErrorMessage(err);
+    } finally {
+      this._databaseLoading = false;
+    }
+  }
+
+  private async _analyzeDatabase(): Promise<void> {
+    this._databaseAnalyzing = true;
+    this._databaseError = undefined;
+    try {
+      this._databaseUsage = await fetchRecorderDatabaseUsage(this.hass, true);
+    } catch (err: any) {
+      this._databaseError = this._databaseErrorMessage(err);
+    } finally {
+      this._databaseAnalyzing = false;
+    }
+  }
+
+  private _databaseErrorMessage(err: any): string {
+    switch (err.code) {
+      case "recorder_not_ready":
+        return this.hass.localize(
+          "ui.panel.config.storage.database.errors.recorder_not_ready"
+        );
+      case "migration_in_progress":
+        return this.hass.localize(
+          "ui.panel.config.storage.database.errors.migration_in_progress"
+        );
+      default:
+        return err.message || err.code || String(err);
     }
   }
 

@@ -597,7 +597,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "storage",
       iconPath: mdiDatabase,
       iconColor: "#518C43",
-      component: "hassio",
+      component: ["hassio", "recorder"],
       adminOnly: true,
     },
     {

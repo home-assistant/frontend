@@ -1,9 +1,9 @@
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../../components/item/ha-list-item-base";
-import "../../../../components/ha-switch";
-import type { HaSwitch } from "../../../../components/ha-switch";
+import type { HASSDomTargetEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/item/ha-list-item-switch";
+import type { HaListItemSwitch } from "../../../../components/item/ha-list-item-switch";
 import type { HomeAssistant } from "../../../../types";
 import { storeState } from "../../../../util/ha-pref-storage";
 import { setDebugConnection } from "../../../../util/websocket";
@@ -14,7 +14,12 @@ class HaDebugConnectionRow extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-list-item-base>
+      <ha-list-item-switch
+        wrap-headline
+        wrap-supporting-text
+        .checked=${this.hass.debugConnection}
+        @change=${this._checkedChanged}
+      >
         <span slot="headline"
           >${this.hass.localize(
             "ui.panel.config.tools.tabs.debug.debug_connection.title"
@@ -25,17 +30,12 @@ class HaDebugConnectionRow extends LitElement {
             "ui.panel.config.tools.tabs.debug.debug_connection.description"
           )}</span
         >
-        <ha-switch
-          slot="end"
-          .checked=${this.hass.debugConnection}
-          @change=${this._checkedChanged}
-        ></ha-switch>
-      </ha-list-item-base>
+      </ha-list-item-switch>
     `;
   }
 
-  private async _checkedChanged(ev: Event) {
-    const debugConnection = (ev.target as HaSwitch).checked;
+  private async _checkedChanged(ev: HASSDomTargetEvent<HaListItemSwitch>) {
+    const debugConnection = ev.target.checked;
     if (debugConnection === this.hass.debugConnection) {
       return;
     }
@@ -43,13 +43,6 @@ class HaDebugConnectionRow extends LitElement {
     setDebugConnection(debugConnection);
     storeState(this.hass);
   }
-
-  static styles = css`
-    ha-list-item-base::part(headline),
-    ha-list-item-base::part(supporting-text) {
-      white-space: normal;
-    }
-  `;
 }
 
 declare global {

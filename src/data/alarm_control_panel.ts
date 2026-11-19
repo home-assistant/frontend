@@ -123,7 +123,7 @@ export const setProtectedAlarmControlPanelMode = async (
     (mode === "disarmed" && stateObj.attributes.code_format)
   ) {
     const entry = await getExtendedEntityRegistryEntry(
-      hass,
+      hass.callWS,
       stateObj.entity_id
     ).catch(() => undefined);
     const defaultCode = entry?.options?.alarm_control_panel?.default_code;

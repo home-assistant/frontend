@@ -24,6 +24,14 @@ describe("parseAnimationDuration", () => {
     assert.equal(parseAnimationDuration("  3s  "), 3000);
   });
 
+  it("Parses units regardless of case", () => {
+    assert.equal(parseAnimationDuration("0.5S"), 500);
+    assert.equal(parseAnimationDuration("3S"), 3000);
+    assert.equal(parseAnimationDuration("300MS"), 300);
+    assert.equal(parseAnimationDuration("300Ms"), 300);
+    assert.equal(parseAnimationDuration("300mS"), 300);
+  });
+
   it("Handles number without unit as milliseconds", () => {
     assert.equal(parseAnimationDuration("300"), 300);
   });

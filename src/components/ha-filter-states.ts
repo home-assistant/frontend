@@ -1,7 +1,7 @@
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { createRef, ref } from "lit/directives/ref";
 import {
@@ -14,6 +14,8 @@ import type {
   HASSDomEvent,
 } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-icon-button";
@@ -24,6 +26,10 @@ import type { HaListSelectable } from "./list/ha-list-selectable";
 
 @customElement("ha-filter-states")
 export class HaFilterStates extends LitElement {
+  @state()
+  @consumeLocalize()
+  protected _localize!: LocalizeFunc;
+
   @property() public label?: string;
 
   @property({ attribute: false }) public value?: string[];
@@ -59,6 +65,9 @@ export class HaFilterStates extends LitElement {
               ? html`<div class="badge">${this.value?.length}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
+                    .label=${this._localize(
+                      "ui.components.subpage-data-table.clear_filter"
+                    )}
                     @click=${this._clearFilter}
                   ></ha-icon-button>`
               : nothing
@@ -109,17 +118,17 @@ export class HaFilterStates extends LitElement {
   private _handleItemToggled(
     ev: HASSDomEvent<number> & HASSDomCurrentTargetEvent<HaListSelectable>
   ) {
-    const state = (
+    const itemValue = (
       ev.currentTarget.items[ev.detail] as HaListItemOption | undefined
     )?.value;
-    if (!state) {
+    if (!itemValue) {
       return;
     }
 
     this.value =
       ev.type === "ha-list-item-selected"
-        ? arrayWith(this.value, state)
-        : arrayWithout(this.value, state);
+        ? arrayWith(this.value, itemValue)
+        : arrayWithout(this.value, itemValue);
 
     fireEvent(this, "data-table-filter-changed", {
       value: this.value,

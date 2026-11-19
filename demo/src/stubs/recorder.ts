@@ -351,6 +351,26 @@ const statisticsFunctions: Record<
 const derivedCosts: Record<string, { source: string; price: number }> = {
   "sensor.energy_water_cost": { source: "sensor.energy_water", price: 0.004 },
 };
+// Battery directions as a share of the meter the energy also passes, so they
+// never exceed it
+const derivedBatteryFlows: Record<string, { source: string; share: number }> = {
+  "sensor.powerwall_from_grid": {
+    source: "sensor.energy_consumption_tarif_1",
+    share: 0.4,
+  },
+  "sensor.powerwall_from_solar": {
+    source: "sensor.solar_production",
+    share: 0.3,
+  },
+  "sensor.powerwall_to_home": {
+    source: "sensor.energy_consumption_tarif_2",
+    share: 0.5,
+  },
+  "sensor.powerwall_to_grid": {
+    source: "sensor.energy_production_tarif_2",
+    share: 0.3,
+  },
+};
 
 export const mockRecorder = (mockHass: MockHomeAssistant) => {
   mockHass.mockWS(
@@ -375,15 +395,22 @@ export const mockRecorder = (mockHass: MockHomeAssistant) => {
         return cache[id];
       };
 
+      const scaleStats = (source: string, factor: number) => {
+        let sum = 0;
+        return getStats(source).map((statistic) => {
+          const change = statistic.change! * factor;
+          sum += change;
+          return { ...statistic, change, state: sum, sum };
+        });
+      };
+
       statistic_ids.forEach((id: string) => {
         if (id in derivedCosts) {
           const { source, price } = derivedCosts[id];
-          let cost = 0;
-          statistics[id] = getStats(source).map((statistic) => {
-            const change = statistic.change! * price;
-            cost += change;
-            return { ...statistic, change, state: cost, sum: cost };
-          });
+          statistics[id] = scaleStats(source, price);
+        } else if (id in derivedBatteryFlows) {
+          const { source, share } = derivedBatteryFlows[id];
+          statistics[id] = scaleStats(source, share);
         } else if (id in statisticsFunctions) {
           statistics[id] = getStats(id);
         } else {

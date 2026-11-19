@@ -185,6 +185,11 @@ export interface ColorRGBSelector {
 export interface ColorTempSelector {
   color_temp: {
     unit?: "kelvin" | "mired";
+    /**
+     * Slider bounds. For `unit: "kelvin"` these apply only when no entity in
+     * the selector context `filter_entity` reports `min_color_temp_kelvin`
+     * and `max_color_temp_kelvin`.
+     */
     min?: number;
     max?: number;
     min_mireds?: number;

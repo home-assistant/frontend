@@ -283,6 +283,10 @@ export class HaPlatformTrigger extends LitElement {
     const description = this.hass.localize(
       `component.${domain}.triggers.${triggerName}.fields.${fieldName}.description`
     );
+    const label =
+      this.hass.localize(
+        `component.${domain}.triggers.${triggerName}.fields.${fieldName}.name`
+      ) || fieldName;
 
     return html`<ha-settings-row narrow>
       ${
@@ -292,6 +296,7 @@ export class HaPlatformTrigger extends LitElement {
             : nothing
           : html`<ha-checkbox
               .key=${fieldName}
+              .accessibleLabel=${label}
               .checked=${
                 this._checkedKeys.has(fieldName) ||
                 (this.trigger?.options &&
@@ -306,11 +311,7 @@ export class HaPlatformTrigger extends LitElement {
         slot="heading"
         class=${showOptional ? "clickable" : ""}
         @click=${showOptional ? this._toggleCheckbox : undefined}
-        >${
-          this.hass.localize(
-            `component.${domain}.triggers.${triggerName}.fields.${fieldName}.name`
-          ) || fieldName
-        }</span
+        >${label}</span
       >
       ${
         description

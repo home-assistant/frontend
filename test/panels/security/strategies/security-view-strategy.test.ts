@@ -13,7 +13,16 @@ describe("security-view-strategy", () => {
     });
     hass.states[stateObj.entity_id] = stateObj;
 
-    expect(isSecurityPanelEntity(hass, stateObj)).toBe(true);
+    expect(
+      isSecurityPanelEntity(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        stateObj
+      )
+    ).toBe(true);
   });
 
   it("renders active alerts as individual cards in a visible section", async () => {

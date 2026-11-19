@@ -89,10 +89,19 @@ export class LegendFitController {
 
   private _fit() {
     const list = this._element;
-    const rowWidth = list?.getBoundingClientRect().width;
-    if (!list || !rowWidth) {
+    if (!list) {
       return;
     }
+    const style = getComputedStyle(list);
+    const rowWidth = parseFloat(style.width);
+    // Bounding rects include transforms, such as a dialog scaling in, which
+    // never resize the list, so measure in layout pixels
+    const scale = list.getBoundingClientRect().width / rowWidth;
+    if (!rowWidth || !scale) {
+      return;
+    }
+    const layoutWidth = (element: Element) =>
+      element.getBoundingClientRect().width / scale;
     const children = Array.from(list.children);
     const more = children.find((child) =>
       child.classList.contains("legend-more")
@@ -107,9 +116,7 @@ export class LegendFitController {
       }
       this._more = more;
     }
-    const widths = children
-      .filter((child) => child !== more)
-      .map((child) => child.getBoundingClientRect().width);
+    const widths = children.filter((child) => child !== more).map(layoutWidth);
     // Values resize the items on every state update. Fitting each item at its
     // widest since the last resize keeps the more button from flickering.
     if (rowWidth !== this._rowWidth || widths.length !== this._widths.length) {
@@ -122,9 +129,9 @@ export class LegendFitController {
     }
     const fit = fitInRows(
       this._widths,
-      more?.getBoundingClientRect().width ?? 0,
+      more ? layoutWidth(more) : 0,
       rowWidth,
-      parseFloat(getComputedStyle(list).columnGap) || 0,
+      parseFloat(style.columnGap) || 0,
       rowWidth < NARROW_WIDTH ? NARROW_MAX_ROWS : MAX_ROWS
     );
     if (fit !== this.fit) {
