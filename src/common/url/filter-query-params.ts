@@ -6,12 +6,14 @@ import type {
 import {
   hasFilterSelection,
   isExcludeFilter,
+  isMatchAllFilter,
   listFilterValue,
 } from "../../data/data_table_filters";
 
 // Params shared by the filters of the config tables: the items without an
-// area, device, label or category (`no_label=1`), and the filters that show
-// the items that don't match their selection (`exclude=area,label`).
+// area, device, label or category (`no_label=1`), the filters that show
+// the items that don't match their selection (`exclude=area,label`), and the
+// filters that match the items with every selected id (`match_all=label`).
 
 /**
  * A filter that can show the items that don't match its selection, by the
@@ -40,6 +42,24 @@ export const excludedFilters = (
   (Object.keys(filters) as ExcludableFilter[]).filter(
     (name) =>
       hasFilterSelection(filters[name]) && isExcludeFilter(filters[name])
+  );
+
+/**
+ * A filter that can match the items that have every selected id, by the name
+ * of its param.
+ */
+export type MatchAllFilter = "label" | "assistants" | "location" | "status";
+
+/**
+ * The names of the filters that match the items with every selected id. A
+ * filter without a selection filters nothing, so it is left out.
+ */
+export const matchAllFilters = (
+  filters: Partial<Record<MatchAllFilter, DataTableFiltersValue>>
+): MatchAllFilter[] =>
+  (Object.keys(filters) as MatchAllFilter[]).filter(
+    (name) =>
+      hasFilterSelection(filters[name]) && isMatchAllFilter(filters[name])
   );
 
 const floorAreasValue = (
@@ -88,10 +108,11 @@ export const floorAreasFilterFromParams = (
 export const listFilterFromParams = (
   ids: string[],
   none: boolean | undefined,
-  exclude: boolean
+  exclude: boolean,
+  all = false
 ): ListFilterValue | string[] | undefined => {
   // Only including some ids is a plain list, as the filters send it
-  if (!none && !exclude) {
+  if (!none && !exclude && !all) {
     return ids;
   }
   if (!ids.length && !none) {
@@ -101,5 +122,6 @@ export const listFilterFromParams = (
     ids,
     ...(none ? { none: true } : {}),
     ...(exclude ? { exclude: true } : {}),
+    ...(all ? { all: true } : {}),
   };
 };

@@ -78,6 +78,21 @@ describe("entities query params", () => {
     ).toMatchObject(filters);
   });
 
+  it("round trips the filters that match all", () => {
+    const filters = {
+      "ha-filter-states": { ids: ["enabled", "hidden"], all: true },
+      "ha-filter-labels": { ids: ["a", "b"], all: true, exclude: true },
+      "ha-filter-voice-assistants": { ids: ["conversation"], all: true },
+    };
+    const query = createQueryString(
+      entitiesFilterQueryParams(filters),
+      entitiesFilterQueryParamConfig
+    );
+
+    expect(query).toContain("match_all=status%2Clabel%2Cassistants");
+    expect(entitiesLinkFromUrl(query)?.filters).toMatchObject(filters);
+  });
+
   it("round trips the filters", () => {
     const filters = {
       "ha-filter-states": ["enabled", "hidden"],

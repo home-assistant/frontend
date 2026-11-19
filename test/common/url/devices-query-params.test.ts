@@ -129,6 +129,7 @@ describe("devices query params", () => {
       config_entry: undefined,
       sub_entry: undefined,
       exclude: [],
+      match_all: [],
     });
   });
 });

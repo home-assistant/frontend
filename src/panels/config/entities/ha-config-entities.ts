@@ -588,24 +588,9 @@ export class HaConfigEntities extends LitElement {
     ) => {
       const result: EntityRow[] = [];
 
-      const stateFilters = filters["ha-filter-states"] as string[];
-
-      const showEnabled =
-        !stateFilters?.length || stateFilters.includes("enabled");
-      const showDisabled =
-        !stateFilters?.length || stateFilters.includes("disabled");
-      const showVisible =
-        !stateFilters?.length || stateFilters.includes("visible");
-      const showHidden =
-        !stateFilters?.length || stateFilters.includes("hidden");
-      const showAvailable =
-        !stateFilters?.length || stateFilters.includes("available");
-      const showUnavailable =
-        !stateFilters?.length || stateFilters.includes("unavailable");
-      const showRestored =
-        !stateFilters?.length || stateFilters.includes("restored");
-      const showReadOnly =
-        !stateFilters?.length || stateFilters.includes("readonly");
+      const statusFilter = listFilterValue(filters["ha-filter-states"]);
+      const statuses = statusFilter?.ids ?? [];
+      const matchAllStatuses = !!statusFilter?.all;
 
       // take both entities with and without unique id into account
       let filteredEntities = entities.concat(entitiesWithoutUniqueId);
@@ -757,16 +742,23 @@ export class HaConfigEntities extends LitElement {
         // empty state, like that of a cleared text helper, is a valid one.
         const available = !!entity && entity.state !== UNAVAILABLE;
 
-        if (!(
-          (showAvailable && available) ||
-          (showUnavailable && !available) ||
-          (showRestored && restored) ||
-          (showVisible && !hidden) ||
-          (showHidden && hidden) ||
-          (showDisabled && disabled) ||
-          (showEnabled && !disabled) ||
-          (showReadOnly && readonly)
-        )) {
+        // The statuses this entity has. Without a picked status, all show.
+        const entityStatuses: Record<string, boolean> = {
+          available,
+          unavailable: !available,
+          restored,
+          visible: !hidden,
+          hidden,
+          disabled,
+          enabled: !disabled,
+          readonly: !!readonly,
+        };
+        if (
+          statuses.length &&
+          !(matchAllStatuses
+            ? statuses.every((status) => entityStatuses[status])
+            : statuses.some((status) => entityStatuses[status]))
+        ) {
           continue;
         }
 
@@ -1163,6 +1155,7 @@ export class HaConfigEntities extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-integrations>
         <ha-filter-states
+          matchable
           .label=${this.hass.localize(
             "ui.panel.config.entities.picker.headers.status"
           )}

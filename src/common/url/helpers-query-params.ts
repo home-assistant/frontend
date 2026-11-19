@@ -7,6 +7,7 @@ import {
   listFilterFromParams,
   listFilterIds,
   listFilterNone,
+  matchAllFilters,
 } from "./filter-query-params";
 import {
   createQueryString,
@@ -31,6 +32,8 @@ export const helpersFilterQueryParamConfig = {
     "voice_assistant",
     // The filters that show the items that don't match their selection
     "exclude",
+    // The filters that match the items with every selected id
+    "match_all",
   ],
   boolean: [
     { key: "no_area", trueValue: "1" },
@@ -63,6 +66,10 @@ export const helpersFilterQueryParams = (
     device: filters["ha-filter-devices"],
     label: filters["ha-filter-labels"],
     category: filters["ha-filter-categories"],
+  }),
+  match_all: matchAllFilters({
+    label: filters["ha-filter-labels"],
+    assistants: filters["ha-filter-voice-assistants"],
   }),
 });
 
@@ -112,6 +119,7 @@ export const helpersLinkFromUrl = (
   const floors = values("floor");
   const areas = values("area");
   const exclude = values("exclude");
+  const matchAll = values("match_all");
   const assistants = values("assistants");
 
   return {
@@ -131,7 +139,8 @@ export const helpersLinkFromUrl = (
       "ha-filter-labels": listFilterFromParams(
         values("label"),
         params.no_label,
-        exclude.includes("label")
+        exclude.includes("label"),
+        matchAll.includes("label")
       ),
       "ha-filter-categories": listFilterFromParams(
         values("category"),
@@ -141,7 +150,8 @@ export const helpersLinkFromUrl = (
       "ha-filter-voice-assistants": listFilterFromParams(
         assistants.length ? assistants : values("voice_assistant"),
         params.no_assistants,
-        exclude.includes("assistants")
+        exclude.includes("assistants"),
+        matchAll.includes("assistants")
       ),
     },
   };

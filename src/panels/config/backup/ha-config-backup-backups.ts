@@ -521,6 +521,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         ></ha-filter-states>
         <ha-filter-states
           excludable
+          matchable
           .label=${this.hass.localize("ui.panel.config.backup.locations")}
           .value=${this._filters[BACKUP_LOCATIONS_FILTER]}
           .states=${this._locations(

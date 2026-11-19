@@ -31,6 +31,20 @@ describe("backups query params", () => {
     ).toEqual([]);
   });
 
+  it("round trips locations that match all", () => {
+    const filters = {
+      [BACKUP_TYPE_FILTER]: [],
+      [BACKUP_LOCATIONS_FILTER]: {
+        ids: ["cloud.cloud", "hassio.local"],
+        all: true,
+      },
+    };
+    const query = backupsFilterQueryString(filters);
+
+    expect(query).toContain("match_all=location");
+    expect(backupsLinkFromUrl(query)?.filters).toMatchObject(filters);
+  });
+
   it("round trips the filters", () => {
     const filters = {
       [BACKUP_TYPE_FILTER]: ["automatic", "manual"],

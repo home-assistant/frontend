@@ -10,6 +10,7 @@ import {
   listFilterFromParams,
   listFilterIds,
   listFilterNone,
+  matchAllFilters,
 } from "./filter-query-params";
 import {
   createQueryString,
@@ -39,6 +40,8 @@ export const entitiesFilterQueryParamConfig = {
     "voice_assistant",
     // The filters that show the items that don't match their selection
     "exclude",
+    // The filters that match the items with every selected id
+    "match_all",
   ],
   boolean: [
     { key: "no_area", trueValue: "1" },
@@ -59,7 +62,7 @@ const list = (value: DataTableFiltersValue): string[] | undefined =>
 export const entitiesFilterQueryParams = (
   filters: DataTableFiltersValues
 ): EntitiesFilterQueryParams => ({
-  status: list(filters["ha-filter-states"]),
+  status: listFilterIds(filters["ha-filter-states"]),
   ...floorAreasFilterParams(filters["ha-filter-floor-areas"]),
   device: listFilterIds(filters["ha-filter-devices"]),
   no_device: listFilterNone(filters["ha-filter-devices"]),
@@ -81,6 +84,11 @@ export const entitiesFilterQueryParams = (
     area: filters["ha-filter-floor-areas"],
     device: filters["ha-filter-devices"],
     label: filters["ha-filter-labels"],
+  }),
+  match_all: matchAllFilters({
+    status: filters["ha-filter-states"],
+    label: filters["ha-filter-labels"],
+    assistants: filters["ha-filter-voice-assistants"],
   }),
 });
 
@@ -133,12 +141,21 @@ export const entitiesLinkFromUrl = (
   const floors = values("floor");
   const areas = values("area");
   const exclude = values("exclude");
+  const matchAll = values("match_all");
   const assistants = values("assistants");
 
   return {
     search: search ?? "",
     filters: {
-      "ha-filter-states": values("status"),
+      // A cleared status is kept as an empty list, so the default doesn't
+      // come back
+      "ha-filter-states":
+        listFilterFromParams(
+          values("status"),
+          false,
+          false,
+          matchAll.includes("status")
+        ) ?? [],
       "ha-filter-floor-areas": floorAreasFilterFromParams(
         floors,
         areas,
@@ -168,12 +185,14 @@ export const entitiesLinkFromUrl = (
       "ha-filter-labels": listFilterFromParams(
         values("label"),
         params.no_label,
-        exclude.includes("label")
+        exclude.includes("label"),
+        matchAll.includes("label")
       ),
       "ha-filter-voice-assistants": listFilterFromParams(
         assistants.length ? assistants : values("voice_assistant"),
         params.no_assistants,
-        exclude.includes("assistants")
+        exclude.includes("assistants"),
+        matchAll.includes("assistants")
       ),
       config_entry: values("config_entry"),
       sub_entry: values("sub_entry"),

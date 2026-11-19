@@ -10,6 +10,7 @@ import {
   listFilterFromParams,
   listFilterIds,
   listFilterNone,
+  matchAllFilters,
 } from "./filter-query-params";
 import {
   createQueryString,
@@ -33,6 +34,8 @@ export const devicesFilterQueryParamConfig = {
     "sub_entry",
     // The filters that show the items that don't match their selection
     "exclude",
+    // The filters that match the items with every selected id
+    "match_all",
   ],
   boolean: [
     { key: "no_area", trueValue: "1" },
@@ -60,6 +63,9 @@ export const devicesFilterQueryParams = (
   exclude: excludedFilters({
     domain: filters["ha-filter-integrations"]?.value,
     area: filters["ha-filter-floor-areas"]?.value,
+    label: filters["ha-filter-labels"]?.value,
+  }),
+  match_all: matchAllFilters({
     label: filters["ha-filter-labels"]?.value,
   }),
 });
@@ -113,6 +119,7 @@ export const devicesLinkFromUrl = (
   const floors = values("floor");
   const areas = values("area");
   const exclude = values("exclude");
+  const matchAll = values("match_all");
 
   return {
     search: search ?? "",
@@ -132,7 +139,8 @@ export const devicesLinkFromUrl = (
         listFilterFromParams(
           values("label"),
           params.no_label,
-          exclude.includes("label")
+          exclude.includes("label"),
+          matchAll.includes("label")
         )
       ),
       config_entry: filter(values("config_entry")),

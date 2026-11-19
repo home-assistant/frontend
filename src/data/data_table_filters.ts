@@ -25,7 +25,15 @@ export interface ListFilterValue {
   none?: boolean;
   /** Show the items that don't match the selection */
   exclude?: boolean;
+  /**
+   * Match the items that have every selected id, instead of one of them. Only
+   * filters whose items can have several ids, such as labels, offer this.
+   */
+  all?: boolean;
 }
+
+/** The keys of a filter value that pick how it matches, not what. */
+const FILTER_MODE_KEYS = new Set(["exclude", "all"]);
 
 /** Whether a floor of the floor and area filter is picked, partly or not. */
 export type FloorSelection = "all" | "some" | "none";
@@ -157,10 +165,14 @@ export const listFilterEventValue = (
   value: ListFilterValue
 ): DataTableFiltersValue => {
   if (!hasFilterSelection(value)) {
-    // The mode is kept, so it stays picked when the selection is cleared
-    return value.exclude ? { exclude: true } : undefined;
+    // The modes are kept, so they stay picked when the selection is cleared
+    const modes = {
+      ...(value.exclude ? { exclude: true } : {}),
+      ...(value.all ? { all: true } : {}),
+    };
+    return Object.keys(modes).length ? modes : undefined;
   }
-  if (!value.none && !value.exclude) {
+  if (!value.none && !value.exclude && !value.all) {
     return value.ids;
   }
   return value;
@@ -174,15 +186,66 @@ export const hasFilterSelection = (value: DataTableFiltersValue): boolean => {
   if (Array.isArray(value)) {
     return value.length > 0;
   }
-  // The mode only applies to a selection, on its own it filters nothing
+  // The modes only apply to a selection, on their own they filter nothing
   return Object.entries(value).some(([key, val]) =>
-    key === "exclude" ? false : Array.isArray(val) ? val.length > 0 : !!val
+    FILTER_MODE_KEYS.has(key)
+      ? false
+      : Array.isArray(val)
+        ? val.length > 0
+        : !!val
   );
 };
 
 /** Whether a filter value shows the items that don't match its selection. */
 export const isExcludeFilter = (value: DataTableFiltersValue): boolean =>
   !!value && !Array.isArray(value) && "exclude" in value && !!value.exclude;
+
+/**
+ * A list filter after options are ticked or unticked. An item can't have none
+ * and some at once, so while matching all, ticking the none option unticks
+ * the ids and ticking an id unticks the none option.
+ */
+export const toggleListFilterIds = (
+  value: ListFilterValue | undefined,
+  ids: readonly string[],
+  selected: boolean
+): ListFilterValue => ({
+  ...value,
+  ids: ids.reduce(
+    (result, id) =>
+      selected ? arrayWith(result, id) : arrayWithout(result, id),
+    value?.ids
+  ),
+  ...(selected && value?.all ? { none: false } : {}),
+});
+
+/** A list filter after its none option is ticked or unticked. */
+export const toggleListFilterNone = (
+  value: ListFilterValue | undefined,
+  selected: boolean
+): ListFilterValue => ({
+  ...value,
+  none: selected,
+  ...(selected && value?.all ? { ids: [] } : {}),
+});
+
+/**
+ * A list filter after picking whether it matches any or all of its ids.
+ * Matching all keeps the ids and unticks the none option, which can't go
+ * with them.
+ */
+export const setListFilterAll = (
+  value: ListFilterValue | undefined,
+  all: boolean
+): ListFilterValue => ({
+  ...value,
+  all,
+  ...(all && value?.ids?.length ? { none: false } : {}),
+});
+
+/** Whether a list filter matches the items that have every selected id. */
+export const isMatchAllFilter = (value: DataTableFiltersValue): boolean =>
+  !!listFilterValue(value)?.all;
 
 /** The number of filters that have anything selected. */
 export const countActiveFilters = (
@@ -191,7 +254,9 @@ export const countActiveFilters = (
 
 /**
  * Whether an item with the given ids (such as its labels) passes a list
- * filter. Without a selection every item passes.
+ * filter. Without a selection every item passes. Matching all needs every
+ * selected id, and the none option then only matches when it is the only
+ * thing selected, as an item can't have none and some at once.
  */
 export const matchesListFilter = (
   value: DataTableFiltersValue,
@@ -202,9 +267,11 @@ export const matchesListFilter = (
     return true;
   }
   const ids = itemIds?.filter((id): id is string => !!id) ?? [];
-  const matches =
-    (!!filter.none && !ids.length) ||
-    ids.some((id) => filter.ids?.includes(id));
+  const matches = filter.all
+    ? (!filter.none || !ids.length) &&
+      (filter.ids ?? []).every((id) => ids.includes(id))
+    : (!!filter.none && !ids.length) ||
+      ids.some((id) => filter.ids?.includes(id));
   return filter.exclude ? !matches : matches;
 };
 

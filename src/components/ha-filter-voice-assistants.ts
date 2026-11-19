@@ -10,7 +10,6 @@ import {
 } from "../common/controllers/filter-panel-controller";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
-import { arrayWith, arrayWithout } from "../common/array/array-with";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
@@ -20,6 +19,9 @@ import type { ListFilterValue } from "../data/data_table_filters";
 import {
   listFilterEventValue,
   listFilterValue,
+  setListFilterAll,
+  toggleListFilterIds,
+  toggleListFilterNone,
 } from "../data/data_table_filters";
 import "./ha-expansion-panel";
 import {
@@ -70,7 +72,8 @@ export class HaFilterVoiceAssistants extends LitElement {
               ? html`${renderFilterBadge(
                     this._localize,
                     this._count,
-                    this._listValue?.exclude
+                    this._listValue?.exclude,
+                    this._listValue?.all
                   )}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
@@ -87,8 +90,11 @@ export class HaFilterVoiceAssistants extends LitElement {
         this._panel.showContent
           ? html`<div class="content" ${ref(this._content)}>
               <ha-filter-mode
+                match-mode
                 .exclude=${this._listValue?.exclude ?? false}
+                .all=${this._listValue?.all ?? false}
                 @filter-mode-changed=${this._modeChanged}
+                @filter-match-changed=${this._matchChanged}
               ></ha-filter-mode>
               <ha-list-selectable
                 multi
@@ -163,6 +169,10 @@ export class HaFilterVoiceAssistants extends LitElement {
     this._setValue({ ...this._listValue, exclude: ev.detail.exclude });
   }
 
+  private _matchChanged(ev: CustomEvent<{ all: boolean }>) {
+    this._setValue(setListFilterAll(this._listValue, ev.detail.all));
+  }
+
   private _expandedChanged(ev) {
     this.expanded = ev.detail.expanded;
   }
@@ -177,22 +187,12 @@ export class HaFilterVoiceAssistants extends LitElement {
       return;
     }
 
-    if (voiceAssistantId === NO_VALUE_ID) {
-      this._setValue({
-        ...this._listValue,
-        none: ev.type === "ha-list-item-selected",
-      });
-      return;
-    }
-
-    const value = this._listValue ?? {};
-    this._setValue({
-      ...value,
-      ids:
-        ev.type === "ha-list-item-selected"
-          ? arrayWith(value.ids, voiceAssistantId)
-          : arrayWithout(value.ids, voiceAssistantId),
-    });
+    const selected = ev.type === "ha-list-item-selected";
+    this._setValue(
+      voiceAssistantId === NO_VALUE_ID
+        ? toggleListFilterNone(this._listValue, selected)
+        : toggleListFilterIds(this._listValue, [voiceAssistantId], selected)
+    );
   }
 
   private _clearFilter(ev) {

@@ -5,6 +5,7 @@ import type {
 import { dataTableQueryParamConfig } from "./data-table-query-params";
 import {
   excludedFilters,
+  matchAllFilters,
   listFilterFromParams,
   listFilterIds,
 } from "./filter-query-params";
@@ -29,6 +30,8 @@ export const backupsFilterQueryParamConfig = {
     "location",
     // The filters that show the items that don't match their selection
     "exclude",
+    // The filters that match the items with every selected id
+    "match_all",
   ],
 } as const satisfies QueryParamConfig;
 
@@ -45,6 +48,7 @@ export const backupsFilterQueryParams = (
   type: list(filters[BACKUP_TYPE_FILTER]),
   location: listFilterIds(filters[BACKUP_LOCATIONS_FILTER]),
   exclude: excludedFilters({ location: filters[BACKUP_LOCATIONS_FILTER] }),
+  match_all: matchAllFilters({ location: filters[BACKUP_LOCATIONS_FILTER] }),
 });
 
 const sorted = (values?: string[]): string[] | undefined =>
@@ -56,10 +60,11 @@ const sorted = (values?: string[]): string[] | undefined =>
 export const backupsFilterQueryString = (
   filters: DataTableFiltersValues
 ): string => {
-  const { type, location, exclude } = backupsFilterQueryParams(filters);
+  const { type, location, exclude, match_all } =
+    backupsFilterQueryParams(filters);
 
   return createQueryString(
-    { type: sorted(type), location: sorted(location), exclude },
+    { type: sorted(type), location: sorted(location), exclude, match_all },
     backupsFilterQueryParamConfig
   );
 };
@@ -95,7 +100,8 @@ export const backupsLinkFromUrl = (
       [BACKUP_LOCATIONS_FILTER]: listFilterFromParams(
         params.location?.filter(Boolean) ?? [],
         false,
-        !!params.exclude?.includes("location")
+        !!params.exclude?.includes("location"),
+        !!params.match_all?.includes("location")
       ),
     },
   };

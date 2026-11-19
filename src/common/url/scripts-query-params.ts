@@ -10,6 +10,7 @@ import {
   listFilterFromParams,
   listFilterIds,
   listFilterNone,
+  matchAllFilters,
 } from "./filter-query-params";
 import {
   createQueryString,
@@ -34,6 +35,8 @@ export const scriptsFilterQueryParamConfig = {
     "blueprint",
     // The filters that show the items that don't match their selection
     "exclude",
+    // The filters that match the items with every selected id
+    "match_all",
   ],
   boolean: [
     { key: "no_area", trueValue: "1" },
@@ -72,6 +75,10 @@ export const scriptsFilterQueryParams = (
     device: filters["ha-filter-devices"]?.value,
     label: filters["ha-filter-labels"]?.value,
     category: filters["ha-filter-categories"]?.value,
+  }),
+  match_all: matchAllFilters({
+    label: filters["ha-filter-labels"]?.value,
+    assistants: filters["ha-filter-voice-assistants"]?.value,
   }),
 });
 
@@ -124,6 +131,7 @@ export const scriptsLinkFromUrl = (
   const floors = values("floor");
   const areas = values("area");
   const exclude = values("exclude");
+  const matchAll = values("match_all");
 
   return {
     search: search ?? "",
@@ -149,7 +157,8 @@ export const scriptsLinkFromUrl = (
         listFilterFromParams(
           values("label"),
           params.no_label,
-          exclude.includes("label")
+          exclude.includes("label"),
+          matchAll.includes("label")
         )
       ),
       "ha-filter-categories": filter(
@@ -163,7 +172,8 @@ export const scriptsLinkFromUrl = (
         listFilterFromParams(
           values("assistants"),
           params.no_assistants,
-          exclude.includes("assistants")
+          exclude.includes("assistants"),
+          matchAll.includes("assistants")
         )
       ),
       "ha-filter-blueprints": filter(

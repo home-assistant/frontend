@@ -12,7 +12,6 @@ import {
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
-import { arrayWith, arrayWithout } from "../common/array/array-with";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
@@ -26,6 +25,9 @@ import type { ListFilterValue } from "../data/data_table_filters";
 import {
   listFilterEventValue,
   listFilterValue,
+  setListFilterAll,
+  toggleListFilterIds,
+  toggleListFilterNone,
 } from "../data/data_table_filters";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
 import "./ha-expansion-panel";
@@ -104,7 +106,12 @@ export class HaFilterLabels extends LitElement {
           ${this._localize("ui.panel.config.labels.caption")}
           ${
             count
-              ? html`${renderFilterBadge(this._localize, count, value?.exclude)}
+              ? html`${renderFilterBadge(
+                    this._localize,
+                    count,
+                    value?.exclude,
+                    value?.all
+                  )}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._localize(
@@ -120,8 +127,11 @@ export class HaFilterLabels extends LitElement {
         this._panel.showContent
           ? html`<div class="content" ${ref(this._content)}>
               <ha-filter-mode
+                match-mode
                 .exclude=${value?.exclude ?? false}
+                .all=${value?.all ?? false}
                 @filter-mode-changed=${this._modeChanged}
+                @filter-match-changed=${this._matchChanged}
               ></ha-filter-mode>
               <ha-input-search
                 appearance="outlined"
@@ -217,17 +227,12 @@ export class HaFilterLabels extends LitElement {
     }
 
     const selected = ev.type === "ha-list-item-selected";
-    const value = listFilterValue(this.value) ?? {};
+    const value = listFilterValue(this.value);
 
     this._setValue(
       labelId === HaFilterLabels._noneId
-        ? { ...value, none: selected }
-        : {
-            ...value,
-            ids: selected
-              ? arrayWith(value.ids, labelId)
-              : arrayWithout(value.ids, labelId),
-          }
+        ? toggleListFilterNone(value, selected)
+        : toggleListFilterIds(value, [labelId], selected)
     );
   }
 
@@ -236,6 +241,12 @@ export class HaFilterLabels extends LitElement {
       ...listFilterValue(this.value),
       exclude: ev.detail.exclude,
     });
+  }
+
+  private _matchChanged(ev: CustomEvent<{ all: boolean }>) {
+    this._setValue(
+      setListFilterAll(listFilterValue(this.value), ev.detail.all)
+    );
   }
 
   private _setValue(value: ListFilterValue) {
