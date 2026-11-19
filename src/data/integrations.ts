@@ -9,6 +9,7 @@ export interface Integration {
   config_flow?: boolean;
   iot_standards?: IotStandards[];
   iot_class?: string;
+  categories?: string[];
   supported_by?: string;
   is_built_in?: boolean;
   overwrites_built_in?: boolean;
