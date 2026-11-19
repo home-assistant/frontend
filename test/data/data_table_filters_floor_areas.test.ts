@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  floorAreaItemSets,
   floorAreaLookups,
   floorSelection,
   toggleFloorArea,
@@ -119,70 +118,42 @@ describe("toggleFloorArea", () => {
   });
 });
 
-// A ticked floor and its ticked areas must match the same, and an automation
-// that targets a floor acts on each of its areas.
+// A floor is looked up whole, so what targets the floor itself is only found
+// when the whole floor is picked, and a floor and all its areas match the same.
 describe("floorAreaLookups", () => {
-  it("looks up the areas of a picked floor", () => {
+  it("looks up a picked floor as the floor", () => {
     expect(
-      floorAreaLookups({ floors: ["ground"], areas: [] }, FLOOR_AREAS, false)
-    ).toEqual({ areas: ["kitchen", "living_room", "hall"], floors: [] });
+      floorAreaLookups({ floors: ["ground"], areas: ["garden"] }, FLOOR_AREAS)
+    ).toEqual({ areas: ["garden"], floors: ["ground"] });
   });
 
-  it("looks up a floor without areas itself", () => {
-    expect(floorAreaLookups({ floors: ["attic"] }, FLOOR_AREAS, false)).toEqual(
-      { areas: [], floors: ["attic"] }
-    );
-  });
-
-  it("also looks up the floors of the picks for floor references", () => {
-    expect(floorAreaLookups({ areas: ["kitchen"] }, FLOOR_AREAS, true)).toEqual(
-      {
-        areas: ["kitchen", "living_room", "hall"],
-        floors: ["ground"],
-      }
-    );
-  });
-});
-
-describe("floorAreaItemSets", () => {
-  // automation.floor targets the ground floor itself
-  const related = {
-    areas: {
-      kitchen: ["automation.kitchen", "automation.both"],
-      living_room: ["automation.both"],
-      hall: [],
-      bedroom: ["automation.bedroom"],
-    },
-    floors: {
-      ground: ["automation.kitchen", "automation.both", "automation.floor"],
-      attic: ["automation.attic"],
-    },
-  };
-
-  it("counts what targets a floor for each of its areas", () => {
+  it("looks up a floor whose areas are all picked as the floor", () => {
     expect(
-      floorAreaItemSets({ areas: ["kitchen", "bedroom"] }, FLOOR_AREAS, related)
-    ).toEqual([
-      ["automation.kitchen", "automation.both", "automation.floor"],
-      ["automation.bedroom"],
-    ]);
-  });
-
-  it("matches the same for a floor and all its areas", () => {
-    expect(
-      floorAreaItemSets({ floors: ["ground"] }, FLOOR_AREAS, related)
-    ).toEqual(
-      floorAreaItemSets(
-        { areas: ["kitchen", "living_room", "hall"] },
-        FLOOR_AREAS,
-        related
+      floorAreaLookups(
+        { areas: ["kitchen", "living_room", "hall", "garden"] },
+        FLOOR_AREAS
       )
+    ).toEqual(
+      floorAreaLookups({ floors: ["ground"], areas: ["garden"] }, FLOOR_AREAS)
     );
   });
 
-  it("uses what targets a floor without areas", () => {
+  it("looks up areas picked without their whole floor on their own", () => {
     expect(
-      floorAreaItemSets({ floors: ["attic"] }, FLOOR_AREAS, related)
-    ).toEqual([["automation.attic"]]);
+      floorAreaLookups({ areas: ["kitchen", "living_room"] }, FLOOR_AREAS)
+    ).toEqual({ areas: ["kitchen", "living_room"], floors: [] });
+  });
+
+  it("doesn't look up an area again that its picked floor covers", () => {
+    expect(
+      floorAreaLookups({ floors: ["ground"], areas: ["kitchen"] }, FLOOR_AREAS)
+    ).toEqual({ areas: [], floors: ["ground"] });
+  });
+
+  it("doesn't count a floor without areas as picked", () => {
+    expect(floorAreaLookups({ areas: [] }, FLOOR_AREAS)).toEqual({
+      areas: [],
+      floors: [],
+    });
   });
 });

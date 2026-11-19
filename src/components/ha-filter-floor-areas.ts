@@ -22,7 +22,6 @@ import type { LocalizeFunc } from "../common/translations/localize";
 import type { AreaRegistryEntry } from "../data/area/area_registry";
 import type { FloorAreasFilterValue } from "../data/data_table_filters";
 import {
-  floorAreaItemSets,
   floorAreaLookups,
   floorSelection,
   toggleFloorArea,
@@ -384,27 +383,23 @@ export class HaFilterFloorAreas extends LitElement {
 
     const type = this.type;
     const value = this.value;
-    const floorAreas = this._floorAreaIds(this._areasReg, this._floorsReg);
-    // Automations and scripts can target a floor directly, which a search for
-    // one of its areas doesn't find
     const lookups = floorAreaLookups(
       value,
-      floorAreas,
-      type === "automation" || type === "script"
+      this._floorAreaIds(this._areasReg, this._floorsReg)
     );
     const search = (itemType: "area" | "floor", ids: string[]) =>
       Promise.all(
-        ids.map(async (id): Promise<[string, string[]]> => [
-          id,
-          (
-            await findRelated(
-              this._api,
-              itemType,
-              id,
-              this.includeDisabledEntities
-            )
-          )[type!] ?? [],
-        ])
+        ids.map(
+          async (id) =>
+            (
+              await findRelated(
+                this._api,
+                itemType,
+                id,
+                this.includeDisabledEntities
+              )
+            )[type!] ?? []
+        )
       );
     const [areas, floors] = type
       ? await Promise.all([
@@ -420,10 +415,8 @@ export class HaFilterFloorAreas extends LitElement {
 
     const items = new Set<string>([
       ...(value.no_area ? this._itemsWithoutArea() : []),
-      ...floorAreaItemSets(value, floorAreas, {
-        areas: Object.fromEntries(areas),
-        floors: Object.fromEntries(floors),
-      }).flat(),
+      ...areas.flat(),
+      ...floors.flat(),
     ]);
 
     fireEvent(this, "data-table-filter-changed", {
