@@ -21,7 +21,12 @@ import { deepEqual } from "../common/util/deep-equal";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { AreaRegistryEntry } from "../data/area/area_registry";
 import type { FloorAreasFilterValue } from "../data/data_table_filters";
-import { floorSelection, toggleFloorArea } from "../data/data_table_filters";
+import {
+  floorAreaItemSets,
+  floorAreaLookups,
+  floorSelection,
+  toggleFloorArea,
+} from "../data/data_table_filters";
 import {
   apiContext,
   areasContext,
@@ -362,7 +367,6 @@ export class HaFilterFloorAreas extends LitElement {
 
   private async _findRelated() {
     const requestId = ++this._relatedRequestId;
-    const relatedPromises: Promise<RelatedResult>[] = [];
 
     if (
       !this.value ||
@@ -378,47 +382,49 @@ export class HaFilterFloorAreas extends LitElement {
       return;
     }
 
-    if (this.value.areas) {
-      for (const areaId of this.value.areas) {
-        if (this.type) {
-          relatedPromises.push(
-            findRelated(this._api, "area", areaId, this.includeDisabledEntities)
-          );
-        }
-      }
-    }
-
-    if (this.value.floors) {
-      for (const floorId of this.value.floors) {
-        if (this.type) {
-          relatedPromises.push(
-            findRelated(
+    const type = this.type;
+    const value = this.value;
+    const floorAreas = this._floorAreaIds(this._areasReg, this._floorsReg);
+    // Automations and scripts can target a floor directly, which a search for
+    // one of its areas doesn't find
+    const lookups = floorAreaLookups(
+      value,
+      floorAreas,
+      type === "automation" || type === "script"
+    );
+    const search = (itemType: "area" | "floor", ids: string[]) =>
+      Promise.all(
+        ids.map(async (id): Promise<[string, string[]]> => [
+          id,
+          (
+            await findRelated(
               this._api,
-              "floor",
-              floorId,
+              itemType,
+              id,
               this.includeDisabledEntities
             )
-          );
-        }
-      }
-    }
-
-    const results = await Promise.all(relatedPromises);
+          )[type!] ?? [],
+        ])
+      );
+    const [areas, floors] = type
+      ? await Promise.all([
+          search("area", lookups.areas),
+          search("floor", lookups.floors),
+        ])
+      : [[], []];
 
     // The value changed while this lookup ran
     if (requestId !== this._relatedRequestId) {
       return;
     }
 
-    const items = new Set<string>();
-    if (this.value.no_area) {
-      this._itemsWithoutArea().forEach((item) => items.add(item));
-    }
-    for (const result of results) {
-      if (result[this.type!]) {
-        result[this.type!]!.forEach((item) => items.add(item));
-      }
-    }
+    const items = new Set<string>([
+      ...(value.no_area ? this._itemsWithoutArea() : []),
+      ...floorAreaItemSets(value, floorAreas, {
+        areas: Object.fromEntries(areas),
+        floors: Object.fromEntries(floors),
+      }).flat(),
+    ]);
 
     fireEvent(this, "data-table-filter-changed", {
       value: this.value,
