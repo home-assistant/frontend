@@ -13088,6 +13088,7 @@
           "location_name_default": "Home",
           "address_label": "Search address",
           "search_results": "Search results",
+          "selected_location": "Selected {location}",
           "button_detect": "Detect",
           "finish": "Next"
         },
