@@ -68,3 +68,26 @@ export const isRelatedItemsFilterUsed = (
     (key === filterName || filterName.includes(key)) && filter.items;
   return isUsed;
 };
+
+/**
+ * Whether an item with nothing assigned (no area, device, label, category or
+ * assistant) passes the filters: only a "No area" selection keeps it, any
+ * selected id leaves it out.
+ */
+export const filtersMatchUnassignedItem = (
+  filters: DataTableFiltersValues
+): boolean =>
+  Object.values(filters).every((value) => {
+    if (!value) {
+      return true;
+    }
+    if (Array.isArray(value)) {
+      return !value.length;
+    }
+    if ((value as FloorAreasFilterValue).no_area) {
+      return true;
+    }
+    return Object.values(value).every(
+      (selected) => !Array.isArray(selected) || !selected.length
+    );
+  });
