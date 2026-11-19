@@ -149,6 +149,7 @@ export interface NumericStateTrigger extends BaseTrigger {
   below?: number;
   value_template?: string;
   for?: string | number | ForDict;
+  ignore_invalid_states?: boolean;
 }
 
 export interface ConversationTrigger extends BaseTrigger {

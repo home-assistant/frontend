@@ -179,6 +179,10 @@ const SCHEMA = [
       },
     },
   },
+  {
+    name: "ignore_invalid_states",
+    selector: { boolean: {} },
+  },
 ] as const;
 
 @customElement("ha-automation-trigger-numeric_state")
@@ -237,6 +241,7 @@ export class HaNumericStateTrigger extends LitElement {
         .localizeValue=${this.hass.localize}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
       ></ha-form>
     `;
   }
@@ -251,6 +256,9 @@ export class HaNumericStateTrigger extends LitElement {
 
     if (newTrigger.value_template === "") {
       delete newTrigger.value_template;
+    }
+    if (!newTrigger.ignore_invalid_states) {
+      delete newTrigger.ignore_invalid_states;
     }
 
     fireEvent(this, "value-changed", { value: newTrigger });
@@ -276,6 +284,15 @@ export class HaNumericStateTrigger extends LitElement {
         );
     }
   };
+
+  private _computeHelperCallback = (
+    schema: SchemaUnion<typeof SCHEMA>
+  ): string | undefined =>
+    schema.name === "ignore_invalid_states"
+      ? this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.type.numeric_state.ignore_invalid_states_description"
+        )
+      : undefined;
 
   static styles = css`
     :host {
