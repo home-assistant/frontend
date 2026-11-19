@@ -542,7 +542,8 @@
       "markdown": "Markdown",
       "none": "None",
       "first": "First",
-      "last": "Last"
+      "last": "Last",
+      "subpage_tabs": "Pages"
     },
     "components": {
       "safe_area_tool": {
