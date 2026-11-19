@@ -13,4 +13,6 @@ html`<ha-spinner
 ></ha-spinner>`;
 ```
 
+If the spinner only decorates text that already says what is in progress, hide it with `aria-hidden="true"`.
+
 For an action started from a button, use `ha-button` with `loading` instead of putting a spinner inside the button.
