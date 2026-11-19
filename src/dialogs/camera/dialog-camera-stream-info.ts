@@ -12,6 +12,8 @@ import "../../components/ha-adaptive-dialog";
 import "../../components/ha-alert";
 import "../../components/ha-expansion-panel";
 import "../../components/ha-svg-icon";
+import "../../components/item/ha-list-item-base";
+import "../../components/list/ha-list-base";
 import {
   MJPEG_STREAM,
   STREAM_TYPE_HLS,
@@ -78,10 +80,10 @@ class DialogCameraStreamInfo extends DialogMixin<CameraStreamInfoDialogParams>(
               </ha-alert>`
             : nothing
         }
-        <ul>
+        <ha-list-base>
           ${mjpegInUse ? this._renderType(mjpeg) : nothing}
           ${supported.map((item) => this._renderType(item))}
-        </ul>
+        </ha-list-base>
         ${
           unsupported.length
             ? html`
@@ -92,9 +94,9 @@ class DialogCameraStreamInfo extends DialogMixin<CameraStreamInfoDialogParams>(
                     { count: unsupported.length }
                   )}
                 >
-                  <ul class="unsupported">
+                  <ha-list-base>
                     ${unsupported.map((item) => this._renderType(item))}
-                  </ul>
+                  </ha-list-base>
                 </ha-expansion-panel>
               `
             : nothing
@@ -114,30 +116,28 @@ class DialogCameraStreamInfo extends DialogMixin<CameraStreamInfoDialogParams>(
     const current = !status.connecting && status.type === type;
     const upgrading = status.upgrading === type;
     return html`
-      <li>
-        <ha-svg-icon .path=${icon}></ha-svg-icon>
-        <div>
-          <div class="name">
-            ${CAMERA_STREAM_TYPE_NAMES[type]}
-            ${
-              current
-                ? html`<span class="tag current"
-                    >${this._localize("ui.dialogs.camera_stream_info.in_use")}</span
-                  >`
-                : upgrading
-                  ? html`<span class="tag"
-                      >${this._localize(
-                        "ui.dialogs.camera_stream_info.connecting"
-                      )}</span
-                    >`
-                  : nothing
-            }
-          </div>
-          <p>
-            ${this._localize(`ui.dialogs.camera_stream_info.description.${type}`)}
-          </p>
-        </div>
-      </li>
+      <ha-list-item-base
+        .headline=${CAMERA_STREAM_TYPE_NAMES[type]}
+        .supportingText=${this._localize(
+          `ui.dialogs.camera_stream_info.description.${type}`
+        )}
+        wrap-supporting-text
+      >
+        <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
+        ${
+          current
+            ? html`<span slot="end" class="tag current"
+                >${this._localize("ui.dialogs.camera_stream_info.in_use")}</span
+              >`
+            : upgrading
+              ? html`<span slot="end" class="tag"
+                  >${this._localize(
+                    "ui.dialogs.camera_stream_info.connecting"
+                  )}</span
+                >`
+              : nothing
+        }
+      </ha-list-item-base>
     `;
   }
 
@@ -156,19 +156,12 @@ class DialogCameraStreamInfo extends DialogMixin<CameraStreamInfoDialogParams>(
         margin-top: var(--ha-space-4);
       }
 
-      ul {
-        list-style: none;
-        margin: var(--ha-space-4) 0 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        gap: var(--ha-space-4);
+      ha-list-base {
+        margin-top: var(--ha-space-2);
       }
 
-      li {
-        display: flex;
-        align-items: flex-start;
-        gap: var(--ha-space-4);
+      ha-list-item-base {
+        --ha-row-item-padding-inline: 0;
       }
 
       ha-expansion-panel {
@@ -178,25 +171,12 @@ class DialogCameraStreamInfo extends DialogMixin<CameraStreamInfoDialogParams>(
         --expansion-panel-content-padding: 0 var(--ha-space-4);
       }
 
-      ul.unsupported {
-        margin: var(--ha-space-2) 0 var(--ha-space-4);
-      }
-
-      li ha-svg-icon {
+      ha-list-item-base ha-svg-icon {
         flex: none;
         padding: var(--ha-space-2);
         border-radius: var(--ha-border-radius-circle);
         background-color: var(--ha-color-fill-neutral-quiet-resting);
         color: var(--primary-text-color);
-      }
-
-      .name {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: var(--ha-space-2);
-        font-weight: var(--ha-font-weight-medium);
-        margin-bottom: var(--ha-space-1);
       }
 
       .tag {
