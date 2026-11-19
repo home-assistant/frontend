@@ -397,6 +397,20 @@ class MqttConfigView extends LitElement {
       font-family: var(--ha-font-family-code);
       font-size: var(--ha-font-size-s);
     }
+    /* Room for a finger, and no scroll area within the scrolling sheet */
+    @media (pointer: coarse) {
+      dl {
+        gap: var(--ha-space-3);
+      }
+      .copyable ha-icon-button,
+      .code ha-icon-button {
+        --ha-icon-button-size: 40px;
+        --mdc-icon-size: 20px;
+      }
+      pre {
+        max-height: none;
+      }
+    }
   `;
 }
 

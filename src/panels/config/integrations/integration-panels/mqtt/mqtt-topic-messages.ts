@@ -291,7 +291,7 @@ class MqttTopicMessages extends LitElement {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: var(--ha-space-2);
+      gap: var(--ha-space-3);
     }
     .topic {
       font-size: var(--ha-font-size-l);
@@ -370,6 +370,17 @@ class MqttTopicMessages extends LitElement {
     }
     .changed {
       color: var(--warning-color);
+    }
+    /* Rows a finger can hit, and no scroll area within the scrolling sheet */
+    @media (pointer: coarse) {
+      .messages {
+        max-height: 260px;
+        --ha-row-item-min-height: 48px;
+      }
+      pre,
+      .changes {
+        max-height: none;
+      }
     }
   `;
 }

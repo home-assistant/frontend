@@ -24,6 +24,7 @@ import { formatDateTimeWithSeconds } from "../../../../../common/datetime/format
 import { navigate } from "../../../../../common/navigate";
 import type { LocalizeKeys } from "../../../../../common/translations/localize";
 import "../../../../../components/chart/ha-network-graph";
+import "../../../../../components/ha-adaptive-dialog";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-dropdown";
 import "../../../../../components/ha-dropdown-item";
@@ -175,6 +176,9 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
 
   // The device or entity node that is centered, while the rest is faded
   @state() private _focusedNode?: string;
+
+  // The details dialog of a narrow screen is sliding away
+  @state() private _closingDetails = false;
 
   // The legend categories that are switched off, whose nodes are faded.
   // Until the legend is used, the entities, triggers and tags are off.
@@ -434,57 +438,88 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
     if (!this._structure) {
       return html`<div class="center"><ha-spinner></ha-spinner></div>`;
     }
+    const details = this._renderDetails(this._structure);
     return html`<div class="layout">
       <div class="graph">
         ${this._renderGraph(this._structure)} ${this._renderNodeActions()}
       </div>
       ${
-        this._selectedTopic
-          ? html`<aside>
-              <mqtt-topic-messages
-                .topic=${this._selectedTopic.topic}
-                .messages=${this._topicMessages(
-                  this._liveMessages,
-                  this._storedMessages
-                )}
-                .live=${this._topicLive}
-                .qos=${this._selectedTopic.qos}
-                @mqtt-topic-messages-closed=${this._closeTopic}
-              ></mqtt-topic-messages>
-            </aside>`
-          : this._showConfig && configItem(this._focusedNode)
-            ? html`<aside>
-                <mqtt-config-view
-                  .name=${this._nodeName(this._focusedNode!)}
-                  .kind=${this._nodeKind(this._focusedNode!)}
-                  .configs=${this._configs}
-                  .failed=${this._configFailed}
-                  .sources=${this._structure.sources}
-                  .platform=${
-                    this._focusedNode!.startsWith(ENTITY_PREFIX)
-                      ? this._focusedNode!.substring(
-                          ENTITY_PREFIX.length
-                        ).split(".")[0]
-                      : undefined
-                  }
-                  .device=${this._focusedNode!.startsWith(DEVICE_PREFIX)}
-                  .yamlEntity=${this._structure.entities.some(
-                    (entity) =>
-                      `${ENTITY_PREFIX}${entity.entity_id}` ===
-                        this._focusedNode && entity.source === "yaml"
-                  )}
-                  .openable=${
-                    this._focusedNode!.startsWith(ENTITY_PREFIX) ||
-                    this._focusedNode!.startsWith(DEVICE_PREFIX)
-                  }
-                  @mqtt-config-view-closed=${this._closeConfig}
-                  @mqtt-config-view-open=${this._openFocusedDetails}
-                  @mqtt-config-view-reconfigure=${this._reconfigureSubentry}
-                ></mqtt-config-view>
-              </aside>`
-            : nothing
+        details === nothing
+          ? nothing
+          : this.narrow
+            ? html`<ha-adaptive-dialog
+                .open=${!this._closingDetails}
+                without-header
+                @closed=${this._handleDetailsDialogClosed}
+                >${details}</ha-adaptive-dialog
+              >`
+            : html`<aside>${details}</aside>`
       }
     </div>`;
+  }
+
+  private _renderDetails(structure: MQTTExplorerStructure) {
+    if (this._selectedTopic) {
+      return html`<mqtt-topic-messages
+        .topic=${this._selectedTopic.topic}
+        .messages=${this._topicMessages(
+          this._liveMessages,
+          this._storedMessages
+        )}
+        .live=${this._topicLive}
+        .qos=${this._selectedTopic.qos}
+        @mqtt-topic-messages-closed=${this._closeDetails}
+      ></mqtt-topic-messages>`;
+    }
+    if (!this._showConfig || !configItem(this._focusedNode)) {
+      return nothing;
+    }
+    const focusedNode = this._focusedNode!;
+    return html`<mqtt-config-view
+      .name=${this._nodeName(focusedNode)}
+      .kind=${this._nodeKind(focusedNode)}
+      .configs=${this._configs}
+      .failed=${this._configFailed}
+      .sources=${structure.sources}
+      .platform=${
+        focusedNode.startsWith(ENTITY_PREFIX)
+          ? focusedNode.substring(ENTITY_PREFIX.length).split(".")[0]
+          : undefined
+      }
+      .device=${focusedNode.startsWith(DEVICE_PREFIX)}
+      .yamlEntity=${structure.entities.some(
+        (entity) =>
+          `${ENTITY_PREFIX}${entity.entity_id}` === focusedNode &&
+          entity.source === "yaml"
+      )}
+      .openable=${
+        focusedNode.startsWith(ENTITY_PREFIX) ||
+        focusedNode.startsWith(DEVICE_PREFIX)
+      }
+      @mqtt-config-view-closed=${this._closeDetails}
+      @mqtt-config-view-open=${this._openFocusedDetails}
+      @mqtt-config-view-reconfigure=${this._reconfigureSubentry}
+    ></mqtt-config-view>`;
+  }
+
+  // The dialog of a narrow screen slides away before its content goes
+  private _closeDetails(): void {
+    if (this.narrow) {
+      this._closingDetails = true;
+      return;
+    }
+    this._closeTopic();
+    this._closeConfig();
+  }
+
+  private _handleDetailsDialogClosed(ev: Event): void {
+    // Not a closed event of something in the dialog
+    if (ev.target !== ev.currentTarget) {
+      return;
+    }
+    this._closingDetails = false;
+    this._closeTopic();
+    this._closeConfig();
   }
 
   private _nodeName(id: string): string {
@@ -1128,14 +1163,10 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
           border-inline-start: 1px solid var(--divider-color);
           background: var(--card-background-color);
         }
-        :host([narrow]) .layout {
-          flex-direction: column;
-        }
-        :host([narrow]) aside {
-          width: auto;
-          max-height: 50%;
-          border-inline-start: none;
-          border-top: 1px solid var(--divider-color);
+        /* Clear of the handle of the sheet, as the details have their own header */
+        ha-adaptive-dialog {
+          --dialog-content-padding: var(--ha-space-5) var(--ha-space-6)
+            var(--ha-space-6);
         }
         [slot="header"] {
           display: flex;
