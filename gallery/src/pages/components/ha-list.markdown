@@ -199,19 +199,18 @@ Subclasses customize the row by overriding `_renderStart()`,
 
 Row with a switch at the end, for settings that turn something on or off. The
 whole row is the label of the switch: clicking anywhere on it toggles the
-switch, and the headline and supporting text name the switch for screen
-readers. Don't set `accessibleLabel` yourself.
+switch. For screen readers, the headline names the switch and the supporting
+text describes it, so don't set `accessibleLabel` yourself.
 
 The switch is its own tab stop, so the row doesn't join the roving tabindex of
 a parent list. The row can also be used on its own, outside a list; it then has
 no role.
 
-Everything in the row is part of the label, so there is no `end` slot. The
-`start` slot is hidden from screen readers, so use it only for decorative icons
-and avatars. The supporting text is part of the name of the switch. For a row
-with other controls next to the switch or inside its text, like an
-`ha-icon-button` or a link, use `ha-list-item-base` with an `ha-switch` in the
-`end` slot and set its `accessibleLabel`.
+Everything in the row is part of the label, so there is no `end` slot, and
+the `start` slot is for icons and avatars only. For a row with other controls
+next to the switch or inside its text, like an `ha-icon-button` or a link, use
+`ha-list-item-base` with an `ha-switch` in the `end` slot and set its
+`accessibleLabel`.
 
 The row inherits the slots and attributes of `ha-list-item-base`, except
 `interactive`, which it doesn't use.
@@ -236,7 +235,8 @@ The row inherits the slots and attributes of `ha-list-item-base`, except
 
 **CSS parts**
 
-- `switch` — the `ha-switch`.
+- `switch` — the `ha-switch`. It only shows the state; the row handles
+  input.
 - `base`, `start`, `content`, `headline`, `supporting-text` — as on
   `ha-row-item`. There is no `end` part.
 

@@ -1,11 +1,11 @@
-import { HasSlotController } from "@home-assistant/webawesome/dist/internal/slot";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { live } from "lit/directives/live";
+import { fireEvent } from "../../common/dom/fire_event";
 import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
+import { forwardHaptic } from "../../data/haptics";
 import "../ha-switch";
-import type { HaSwitch } from "../ha-switch";
 import { HaListItemBase } from "./ha-list-item-base";
 
 /**
@@ -14,22 +14,22 @@ import { HaListItemBase } from "./ha-list-item-base";
  *
  * @summary
  * List row with a switch at the end. The whole row is the label of the
- * switch, so clicking anywhere on it toggles the switch, and the headline and
- * supporting text name the switch for assistive technology.
+ * switch, so clicking anywhere on it toggles the switch. The headline names the
+ * switch for assistive technology and the supporting text describes it.
  *
  * The switch is its own tab stop, so the row does not join the roving tabindex
  * of a parent list. Outside a list, the row has no role.
  *
- * Everything in the row is part of the label, so it has no `end` slot. The
- * `start` slot is hidden from assistive technology, so it is for decorative
- * icons and avatars only. For a row with other controls next to the switch,
- * use `ha-list-item-base` with an `ha-switch` and its `accessibleLabel`.
+ * Everything in the row is part of the label, so it has no `end` slot and the
+ * `start` slot is for icons and avatars only. For a row with other controls
+ * next to the switch, use `ha-list-item-base` with an `ha-switch` and its
+ * `accessibleLabel`.
  *
- * @slot start - Decorative leading icon or avatar.
- * @slot headline - Primary text (overrides the `headline` attribute).
- * @slot supporting-text - Secondary text (overrides the `supporting-text` attribute).
+ * @slot start - Leading icon or avatar.
+ * @slot headline - Primary text (overrides the `headline` attribute). Names the switch.
+ * @slot supporting-text - Secondary text (overrides the `supporting-text` attribute). Describes the switch.
  *
- * @csspart switch - The `ha-switch`.
+ * @csspart switch - The `ha-switch`. It only shows the state; the row handles input.
  *
  * @attr {boolean} checked - Whether the switch is on.
  * @attr {boolean} haptic - Vibrates on toggle. Only use when the change is applied right away.
@@ -42,9 +42,7 @@ export class HaListItemSwitch extends HaListItemBase {
 
   @property({ type: Boolean }) public haptic = false;
 
-  @query("ha-switch") private _switch?: HaSwitch;
-
-  private readonly _startSlotController = new HasSlotController(this, "start");
+  @query("input") private _input?: HTMLInputElement;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -54,80 +52,89 @@ export class HaListItemSwitch extends HaListItemBase {
   }
 
   public override focus(options?: FocusOptions): void {
-    this._switch?.focus(options);
+    this._input?.focus(options);
   }
 
   public override activate(): void {
-    this._switch?.click();
+    this._input?.click();
   }
 
+  // The input lives in this shadow root, so it can point at the headline and
+  // supporting text. The switch inside ha-switch could not.
   protected override _renderBase(inner: TemplateResult): TemplateResult {
-    return html`<div part="base" class="base">
-      <ha-switch
-        part="switch"
+    return html`<label part="base" class="base">
+      <input
+        class="input"
+        type="checkbox"
+        role="switch"
+        aria-checked=${this.checked ? "true" : "false"}
         .checked=${live(this.checked)}
         .disabled=${this.disabled}
-        .haptic=${this.haptic}
-        @change=${this._switchChanged}
-        >${inner}</ha-switch
-      >
-    </div>`;
+        aria-labelledby="headline"
+        aria-describedby="supporting-text"
+        @change=${this._inputChanged}
+      />${inner}<ha-switch
+        part="switch"
+        inert
+        aria-hidden="true"
+        .checked=${this.checked}
+        .disabled=${this.disabled}
+      ></ha-switch>
+    </label>`;
   }
 
   protected override _renderInner(): TemplateResult {
     return html`${this._renderStart()}${this._renderContent()}`;
   }
 
-  // The label names the switch, so the start content stays out of the name
-  protected override _renderStart(): TemplateResult {
-    return html`<div
-      part="start"
-      class="start"
-      aria-hidden="true"
-      ?hidden=${!this._startSlotController.test("start")}
-    >
-      <slot name="start"></slot>
-    </div>`;
-  }
-
-  // Runs before listeners on the row, which read `checked` from it
-  private _switchChanged(ev: HASSDomCurrentTargetEvent<HaSwitch>): void {
+  private _inputChanged(ev: HASSDomCurrentTargetEvent<HTMLInputElement>): void {
     this.checked = ev.currentTarget.checked;
+    if (this.haptic) {
+      forwardHaptic(this, "light");
+    }
+    fireEvent(this, "change");
   }
 
   static styles: CSSResultGroup = [
     HaListItemBase.styles,
     css`
+      :host {
+        cursor: pointer;
+      }
+      :host([disabled]) {
+        cursor: default;
+      }
       .base {
-        padding: 0;
+        cursor: inherit;
       }
-      ha-switch {
-        flex: 1;
-        align-self: stretch;
-        min-width: 0;
+      .input {
+        position: absolute;
+        margin: 0;
+        opacity: 0;
+        pointer-events: none;
       }
-      /* The label of the switch fills the row, padding included */
-      ha-switch::part(base) {
-        flex: 1;
-        min-width: 0;
-        gap: var(--ha-row-item-gap, var(--ha-space-4));
-        padding-block: var(--ha-row-item-padding-block, var(--ha-space-3));
-        padding-inline: var(--ha-row-item-padding-inline, var(--ha-space-4));
-        min-height: var(--ha-row-item-min-height, 48px);
-        box-sizing: border-box;
-        color: inherit;
+      /* ha-switch is inert, so the row gives it hover and focus styles */
+      :host(:not([disabled])) .base:hover ha-switch::part(control) {
+        background-color: var(
+          --ha-switch-background-color-hover,
+          var(
+            --ha-switch-background-color,
+            var(--ha-color-fill-disabled-quiet-hover)
+          )
+        );
       }
-      ha-switch::part(control) {
-        order: 1;
+      :host([checked]:not([disabled])) .base:hover ha-switch::part(control) {
+        background-color: var(
+          --ha-switch-checked-background-color-hover,
+          var(
+            --ha-switch-checked-background-color,
+            var(--ha-color-fill-primary-normal-hover)
+          )
+        );
       }
-      ha-switch::part(label) {
-        display: flex;
-        align-items: center;
-        flex: 1;
-        min-width: 0;
-        gap: var(--ha-row-item-gap, var(--ha-space-4));
-        margin-inline-start: 0;
-        line-height: var(--ha-line-height-normal);
+      .input:focus-visible ~ ha-switch::part(control) {
+        outline: var(--wa-focus-ring);
+        outline-offset: var(--wa-focus-ring-offset);
       }
     `,
   ];
