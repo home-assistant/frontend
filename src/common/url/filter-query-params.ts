@@ -48,7 +48,8 @@ export const excludedFilters = (
  * A filter that can match the items that have every selected id, by the name
  * of its param.
  */
-export type MatchAllFilter = "label" | "assistants" | "location" | "status";
+export type MatchAllFilter =
+  "area" | "device" | "entity" | "label" | "assistants" | "location" | "status";
 
 /**
  * The names of the filters that match the items with every selected id. A
@@ -91,7 +92,8 @@ export const floorAreasFilterFromParams = (
   floors: string[],
   areas: string[],
   noArea: boolean | undefined,
-  exclude: readonly string[]
+  exclude: readonly string[],
+  matchAll: readonly string[] = []
 ): FloorAreasFilterValue | undefined => {
   if (!floors.length && !areas.length && !noArea) {
     return undefined;
@@ -101,6 +103,7 @@ export const floorAreasFilterFromParams = (
     areas,
     ...(noArea ? { no_area: true } : {}),
     ...(exclude.includes("area") ? { exclude: true } : {}),
+    ...(matchAll.includes("area") ? { all: true } : {}),
   };
 };
 

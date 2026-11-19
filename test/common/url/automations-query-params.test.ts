@@ -7,8 +7,9 @@ import {
   automationsLinkFromUrl,
 } from "../../../src/common/url/automations-query-params";
 import { createQueryString } from "../../../src/common/url/query-params";
+import type { DataTableFiltersValue } from "../../../src/data/data_table_filters";
 
-const filter = (value: string[] | Record<string, string[]> | undefined) => ({
+const filter = (value: DataTableFiltersValue) => ({
   value,
   items: undefined,
 });
@@ -52,6 +53,31 @@ describe("automations query params", () => {
         )
       )
     ).toEqual({ search: "", filters });
+  });
+
+  it("round trips areas, devices and entities that match all", () => {
+    const filters = {
+      "ha-filter-floor-areas": filter({
+        floors: ["ground"],
+        areas: ["hall"],
+        all: true,
+      }),
+      "ha-filter-devices": filter({
+        ids: ["a", "b"],
+        all: true,
+      }),
+      "ha-filter-entities": filter({
+        ids: ["light.hall", "light.kitchen"],
+        all: true,
+      }),
+    };
+    const query = createQueryString(
+      automationsFilterQueryParams(filters),
+      automationsFilterQueryParamConfig
+    );
+
+    expect(query).toContain("match_all=area%2Cdevice%2Centity");
+    expect(automationsLinkFromUrl(query)?.filters).toMatchObject(filters);
   });
 
   it("compares the same filters in another order as equal", () => {

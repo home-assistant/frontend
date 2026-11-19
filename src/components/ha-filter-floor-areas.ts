@@ -21,7 +21,13 @@ import { deepEqual } from "../common/util/deep-equal";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { AreaRegistryEntry } from "../data/area/area_registry";
 import type { FloorAreasFilterValue } from "../data/data_table_filters";
-import { floorSelection, toggleFloorArea } from "../data/data_table_filters";
+import {
+  combineItemSets,
+  floorSelection,
+  setFloorAreasAll,
+  toggleFloorArea,
+  toggleNoArea,
+} from "../data/data_table_filters";
 import {
   apiContext,
   areasContext,
@@ -92,6 +98,12 @@ export class HaFilterFloorAreas extends LitElement {
 
   @property() public type?: keyof RelatedResult;
 
+  /**
+   * Offer to match the items related to all picked floors and areas, for
+   * items that can relate to several, like automations
+   */
+  @property({ type: Boolean }) public matchable = false;
+
   @property({ type: Boolean, attribute: "include-disabled-entities" })
   public includeDisabledEntities = false;
 
@@ -142,7 +154,7 @@ export class HaFilterFloorAreas extends LitElement {
           ${this._localize("ui.panel.config.areas.caption")}
           ${
             count
-              ? html`${renderFilterBadge(this._localize, count, this.value?.exclude)}
+              ? html`${renderFilterBadge(this._localize, count, this.value?.exclude, this.value?.all)}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._localize(
@@ -160,8 +172,11 @@ export class HaFilterFloorAreas extends LitElement {
           ? html`
               <div class="content" ${ref(this._content)}>
                 <ha-filter-mode
+                  ?match-mode=${this.matchable}
                   .exclude=${this.value?.exclude ?? false}
+                  .all=${this.value?.all ?? false}
                   @filter-mode-changed=${this._modeChanged}
+                  @filter-match-changed=${this._matchChanged}
                 ></ha-filter-mode>
                 <ha-list-selectable
                   multi
@@ -263,7 +278,11 @@ export class HaFilterFloorAreas extends LitElement {
         .value=${area.area_id}
         .selected=${
           this.value?.areas?.includes(area.area_id) ||
-          (!!area.floor_id && !!this.value?.floors?.includes(area.floor_id))
+          // A picked floor stands for its areas, unless each is a pick of its
+          // own while matching all
+          (!this.value?.all &&
+            !!area.floor_id &&
+            !!this.value?.floors?.includes(area.floor_id))
         }
         .type=${"areas"}
         class=${classMap({
@@ -312,7 +331,7 @@ export class HaFilterFloorAreas extends LitElement {
     }
 
     if (item.type === "no_area") {
-      this.value = { ...this.value, no_area: selected };
+      this.value = toggleNoArea(this.value, selected);
       return;
     }
 
@@ -343,6 +362,10 @@ export class HaFilterFloorAreas extends LitElement {
     this.value = { ...this.value, exclude: ev.detail.exclude };
   }
 
+  private _matchChanged(ev: CustomEvent<{ all: boolean }>) {
+    this.value = setFloorAreasAll(this.value, ev.detail.all);
+  }
+
   private _expandedChanged(ev) {
     this.expanded = ev.detail.expanded;
   }
@@ -371,7 +394,6 @@ export class HaFilterFloorAreas extends LitElement {
 
   private async _findRelated() {
     const requestId = ++this._relatedRequestId;
-    const relatedPromises: Promise<RelatedResult>[] = [];
 
     if (
       !this.value ||
@@ -379,8 +401,11 @@ export class HaFilterFloorAreas extends LitElement {
         !this.value.floors?.length &&
         !this.value.no_area)
     ) {
-      // The mode is kept, so it stays picked when the selection is cleared
-      const value = this.value?.exclude ? { exclude: true } : {};
+      // The modes are kept, so they stay picked when the selection is cleared
+      const value = {
+        ...(this.value?.exclude ? { exclude: true } : {}),
+        ...(this.value?.all ? { all: true } : {}),
+      };
       this.value = value;
       fireEvent(this, "data-table-filter-changed", {
         value,
@@ -389,47 +414,37 @@ export class HaFilterFloorAreas extends LitElement {
       return;
     }
 
-    if (this.value.areas) {
-      for (const areaId of this.value.areas) {
-        if (this.type) {
-          relatedPromises.push(
+    const type = this.type;
+    const lookups = type
+      ? [
+          ...(this.value.areas ?? []).map((areaId) =>
             findRelated(this._api, "area", areaId, this.includeDisabledEntities)
-          );
-        }
-      }
-    }
-
-    if (this.value.floors) {
-      for (const floorId of this.value.floors) {
-        if (this.type) {
-          relatedPromises.push(
+          ),
+          ...(this.value.floors ?? []).map((floorId) =>
             findRelated(
               this._api,
               "floor",
               floorId,
               this.includeDisabledEntities
             )
-          );
-        }
-      }
-    }
+          ),
+        ]
+      : [];
 
-    const results = await Promise.all(relatedPromises);
+    const results = await Promise.all(lookups);
 
     // The value changed while this lookup ran
     if (requestId !== this._relatedRequestId) {
       return;
     }
 
-    const items = new Set<string>();
-    if (this.value.no_area) {
-      this._itemsWithoutArea().forEach((item) => items.add(item));
-    }
-    for (const result of results) {
-      if (result[this.type!]) {
-        result[this.type!]!.forEach((item) => items.add(item));
-      }
-    }
+    const items = combineItemSets(
+      [
+        ...(this.value.no_area ? [this._itemsWithoutArea()] : []),
+        ...results.map((result) => result[type!] ?? []),
+      ],
+      this.value.all
+    );
 
     fireEvent(this, "data-table-filter-changed", {
       value: this.value,

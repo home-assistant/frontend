@@ -570,6 +570,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           @click=${this._showHelp}
         ></ha-icon-button>
         <ha-filter-floor-areas
+          matchable
           .type=${"automation"}
           .value=${this._filters["ha-filter-floor-areas"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -579,6 +580,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-floor-areas>
         <ha-filter-devices
+          matchable
           .type=${"automation"}
           .value=${this._filters["ha-filter-devices"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -588,6 +590,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-devices>
         <ha-filter-entities
+          matchable
           .type=${"automation"}
           .value=${this._filters["ha-filter-entities"]?.value}
           @data-table-filter-changed=${this._filterChanged}

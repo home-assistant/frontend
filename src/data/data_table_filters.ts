@@ -13,6 +13,11 @@ export interface FloorAreasFilterValue {
   no_area?: boolean;
   /** Show the items that don't match the selection */
   exclude?: boolean;
+  /**
+   * Match the items related to every picked floor and area. A floor then
+   * stands for any of its areas, as one pick of its own.
+   */
+  all?: boolean;
 }
 
 /**
@@ -50,6 +55,10 @@ export const floorSelection = (
   if (value?.floors?.includes(floorId)) {
     return "all";
   }
+  // While matching all, a floor and its areas are picks of their own
+  if (value?.all) {
+    return "none";
+  }
   const picked = areaIds.filter((id) => value?.areas?.includes(id)).length;
   if (!picked) {
     return "none";
@@ -75,6 +84,18 @@ export const toggleFloorArea = (
 ): FloorAreasFilterValue => {
   let floors = value?.floors ?? [];
   let areas = value?.areas ?? [];
+
+  // While matching all, a floor and its areas are picks of their own, and an
+  // item can't have no area and some at once
+  if (value?.all) {
+    const ids = type === "floors" ? floors : areas;
+    const picked = selected ? arrayWith(ids, id) : arrayWithout(ids, id);
+    return {
+      ...value,
+      [type]: picked,
+      ...(selected ? { no_area: false } : {}),
+    };
+  }
 
   if (type === "floors") {
     const floorAreaIds = floorAreas[id] ?? [];
@@ -242,6 +263,52 @@ export const setListFilterAll = (
   all,
   ...(all && value?.ids?.length ? { none: false } : {}),
 });
+
+/**
+ * The floor and area filter after its No area option is ticked or unticked.
+ * While matching all, it unticks the floors and areas, as an item can't have
+ * no area and some at once.
+ */
+export const toggleNoArea = (
+  value: FloorAreasFilterValue | undefined,
+  selected: boolean
+): FloorAreasFilterValue => ({
+  ...value,
+  no_area: selected,
+  ...(selected && value?.all ? { floors: [], areas: [] } : {}),
+});
+
+/**
+ * The floor and area filter after picking whether it matches any or all of
+ * its floors and areas. Matching all keeps them and unticks No area.
+ */
+export const setFloorAreasAll = (
+  value: FloorAreasFilterValue | undefined,
+  all: boolean
+): FloorAreasFilterValue => ({
+  ...value,
+  all,
+  ...(all && (value?.floors?.length || value?.areas?.length)
+    ? { no_area: false }
+    : {}),
+});
+
+/**
+ * The items a filter of related items shows: those found for any of its
+ * picks, or with `all`, those found for every one of them.
+ */
+export const combineItemSets = (
+  sets: readonly Iterable<string>[],
+  all: boolean | undefined
+): Set<string> => {
+  if (!all || !sets.length) {
+    return new Set(sets.flatMap((set) => [...set]));
+  }
+  const [first, ...rest] = sets.map((set) => new Set(set));
+  return new Set(
+    [...first].filter((item) => rest.every((set) => set.has(item)))
+  );
+};
 
 /** Whether a list filter matches the items that have every selected id. */
 export const isMatchAllFilter = (value: DataTableFiltersValue): boolean =>

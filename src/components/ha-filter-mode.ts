@@ -1,4 +1,4 @@
-import { mdiNotEqualVariant, mdiSetCenter } from "@mdi/js";
+import { mdiNotEqualVariant } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -15,9 +15,9 @@ export const NO_VALUE_ID = "__none__";
 /**
  * The number of picked options in a filter's header. A filter that shows the
  * items that don't match its selection gets a "not equal" sign in front, and
- * one that matches the items with all of them the intersection sign, so this
- * is clear while the filter is collapsed. Style it, and a filter's "No …"
- * option (`class="no-value"`), with `filterBadgeStyles`.
+ * one that matches the items with all of them the word "All", so this is
+ * clear while the filter is collapsed. Style it, and a filter's "No …" option
+ * (`class="no-value"`), with `filterBadgeStyles`.
  */
 export const renderFilterBadge = (
   localize: LocalizeFunc,
@@ -25,39 +25,29 @@ export const renderFilterBadge = (
   exclude: boolean | undefined,
   all?: boolean
 ) => {
-  const modes = [
-    ...(exclude
-      ? [
-          {
-            label: localize("ui.components.subpage-data-table.filter_excludes"),
-            path: mdiNotEqualVariant,
-          },
-        ]
-      : []),
-    ...(all
-      ? [
-          {
-            label: localize(
-              "ui.components.subpage-data-table.filter_match_all"
-            ),
-            path: mdiSetCenter,
-          },
-        ]
-      : []),
-  ];
-  if (!modes.length) {
+  if (!exclude && !all) {
     return html`<div class="badge">${count}</div>`;
   }
-  const label = modes.map((mode) => mode.label).join(", ");
+  const allLabel = localize(
+    "ui.components.subpage-data-table.filter_match_all"
+  );
+  const label = [
+    ...(exclude
+      ? [localize("ui.components.subpage-data-table.filter_excludes")]
+      : []),
+    ...(all ? [allLabel] : []),
+  ].join(", ");
   return html`<div
-    class="badge with-mode"
+    class="badge mode"
     role="img"
     aria-label=${`${label}: ${count}`}
     title=${label}
   >
-    ${modes.map(
-      (mode) => html`<ha-svg-icon .path=${mode.path}></ha-svg-icon>`
-    )}${count}
+    ${
+      exclude
+        ? html`<ha-svg-icon .path=${mdiNotEqualVariant}></ha-svg-icon>`
+        : nothing
+    }${all ? html`<span class="all">${allLabel}</span>` : nothing}${count}
   </div>`;
 };
 
@@ -70,15 +60,18 @@ export const filterBadgeStyles = css`
   .no-value {
     font-style: italic;
   }
-  .badge.with-mode {
+  .badge.mode {
     display: inline-flex;
     align-items: center;
     gap: 1px;
-    padding-inline: 2px 4px;
+    padding-inline: 4px;
     border-radius: var(--ha-border-radius-pill);
   }
-  .badge.with-mode ha-svg-icon {
+  .badge.mode ha-svg-icon {
     --mdc-icon-size: 12px;
+  }
+  .badge.mode .all {
+    margin-inline-end: 3px;
   }
 `;
 

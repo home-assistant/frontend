@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  combineItemSets,
   floorSelection,
+  setFloorAreasAll,
   toggleFloorArea,
+  toggleNoArea,
 } from "../../src/data/data_table_filters";
 
 // A ticked floor stands for all its areas. These keep what the Areas filter
@@ -114,5 +117,74 @@ describe("toggleFloorArea", () => {
     expect(
       toggleFloorArea(ticked, FLOOR_AREAS, "areas", "garden", false)
     ).toEqual({ floors: [], areas: [] });
+  });
+});
+
+// While matching all, each floor and area is a pick of its own: ticking every
+// area of a floor must not turn into "anywhere on the floor".
+describe("floors and areas while matching all", () => {
+  it("keeps a floor and its areas apart", () => {
+    expect(
+      floorSelection(
+        { areas: ["kitchen", "living_room", "hall"], all: true },
+        "ground",
+        FLOOR_AREAS.ground
+      )
+    ).toBe("none");
+    expect(
+      toggleFloorArea(
+        { areas: ["kitchen", "living_room"], all: true },
+        FLOOR_AREAS,
+        "areas",
+        "hall",
+        true
+      )
+    ).toEqual({
+      areas: ["kitchen", "living_room", "hall"],
+      all: true,
+      no_area: false,
+    });
+    expect(
+      toggleFloorArea(
+        { floors: ["ground"], areas: ["kitchen"], all: true },
+        FLOOR_AREAS,
+        "floors",
+        "ground",
+        false
+      )
+    ).toEqual({ floors: [], areas: ["kitchen"], all: true });
+  });
+
+  it("unticks No area and the floors and areas against each other", () => {
+    expect(
+      toggleNoArea({ floors: ["first"], areas: ["hall"], all: true }, true)
+    ).toEqual({ floors: [], areas: [], no_area: true, all: true });
+    expect(
+      toggleFloorArea(
+        { no_area: true, all: true },
+        FLOOR_AREAS,
+        "areas",
+        "hall",
+        true
+      )
+    ).toEqual({ areas: ["hall"], no_area: false, all: true });
+    expect(setFloorAreasAll({ areas: ["hall"], no_area: true }, true)).toEqual({
+      areas: ["hall"],
+      no_area: false,
+      all: true,
+    });
+    expect(toggleNoArea({ areas: ["hall"] }, true)).toEqual({
+      areas: ["hall"],
+      no_area: true,
+    });
+  });
+});
+
+describe("combineItemSets", () => {
+  it("joins the items of every pick, or keeps those of all of them", () => {
+    const sets = [["a", "b"], new Set(["b", "c"])];
+    expect([...combineItemSets(sets, false)].sort()).toEqual(["a", "b", "c"]);
+    expect([...combineItemSets(sets, true)]).toEqual(["b"]);
+    expect([...combineItemSets([], true)]).toEqual([]);
   });
 });

@@ -77,6 +77,9 @@ export const scriptsFilterQueryParams = (
     category: filters["ha-filter-categories"]?.value,
   }),
   match_all: matchAllFilters({
+    area: filters["ha-filter-floor-areas"]?.value,
+    device: filters["ha-filter-devices"]?.value,
+    entity: filters["ha-filter-entities"]?.value,
     label: filters["ha-filter-labels"]?.value,
     assistants: filters["ha-filter-voice-assistants"]?.value,
   }),
@@ -137,20 +140,28 @@ export const scriptsLinkFromUrl = (
     search: search ?? "",
     filters: {
       "ha-filter-floor-areas": filter(
-        floorAreasFilterFromParams(floors, areas, params.no_area, exclude)
+        floorAreasFilterFromParams(
+          floors,
+          areas,
+          params.no_area,
+          exclude,
+          matchAll
+        )
       ),
       "ha-filter-devices": filter(
         listFilterFromParams(
           values("device"),
           params.no_device,
-          exclude.includes("device")
+          exclude.includes("device"),
+          matchAll.includes("device")
         )
       ),
       "ha-filter-entities": filter(
         listFilterFromParams(
           values("entity"),
           false,
-          exclude.includes("entity")
+          exclude.includes("entity"),
+          matchAll.includes("entity")
         )
       ),
       "ha-filter-labels": filter(

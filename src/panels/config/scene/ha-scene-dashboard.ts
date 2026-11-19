@@ -569,6 +569,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         ></ha-icon-button>
 
         <ha-filter-floor-areas
+          matchable
           .type=${"scene"}
           .value=${this._filters["ha-filter-floor-areas"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -578,6 +579,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-floor-areas>
         <ha-filter-devices
+          matchable
           .type=${"scene"}
           .value=${this._filters["ha-filter-devices"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -587,6 +589,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-devices>
         <ha-filter-entities
+          matchable
           .type=${"scene"}
           .value=${this._filters["ha-filter-entities"]?.value}
           @data-table-filter-changed=${this._filterChanged}

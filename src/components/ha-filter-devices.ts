@@ -27,9 +27,13 @@ import {
 } from "../data/context";
 import type { ListFilterValue } from "../data/data_table_filters";
 import {
+  combineItemSets,
   hasFilterSelection,
   listFilterEventValue,
   listFilterValue,
+  setListFilterAll,
+  toggleListFilterIds,
+  toggleListFilterNone,
 } from "../data/data_table_filters";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
@@ -83,6 +87,12 @@ export class HaFilterDevices extends LitElement {
   @property({ attribute: false }) public value?: ListFilterValue | string[];
 
   @property() public type?: keyof RelatedResult;
+
+  /**
+   * Offer to match the items related to all picked devices, for items that
+   * can relate to several, like automations
+   */
+  @property({ type: Boolean }) public matchable = false;
 
   @property({ type: Boolean, attribute: "include-disabled-entities" })
   public includeDisabledEntities = false;
@@ -144,7 +154,7 @@ export class HaFilterDevices extends LitElement {
           ${this._localize("ui.panel.config.devices.caption")}
           ${
             count
-              ? html`${renderFilterBadge(this._localize, count, value?.exclude)}
+              ? html`${renderFilterBadge(this._localize, count, value?.exclude, value?.all)}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._localize(
@@ -161,8 +171,11 @@ export class HaFilterDevices extends LitElement {
         this._panel.showContent
           ? html`<div class="content" ${ref(this._content)}>
               <ha-filter-mode
+                ?match-mode=${this.matchable}
                 .exclude=${value?.exclude ?? false}
+                .all=${value?.all ?? false}
                 @filter-mode-changed=${this._modeChanged}
+                @filter-match-changed=${this._matchChanged}
               ></ha-filter-mode>
               <ha-input-search
                 appearance="outlined"
@@ -235,17 +248,19 @@ export class HaFilterDevices extends LitElement {
     if (!id) {
       return;
     }
-    const value = listFilterValue(this.value) ?? {};
-    if (id === HaFilterDevices._noneId) {
-      this.value = { ...value, none: selected };
-      return;
-    }
-    const ids = (value.ids ?? []).filter((deviceId) => deviceId !== id);
-    this.value = { ...value, ids: selected ? [...ids, id] : ids };
+    const value = listFilterValue(this.value);
+    this.value =
+      id === HaFilterDevices._noneId
+        ? toggleListFilterNone(value, selected)
+        : toggleListFilterIds(value, [id], selected);
   }
 
   private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
     this.value = { ...listFilterValue(this.value), exclude: ev.detail.exclude };
+  }
+
+  private _matchChanged(ev: CustomEvent<{ all: boolean }>) {
+    this.value = setListFilterAll(listFilterValue(this.value), ev.detail.all);
   }
 
   private _expandedChanged(ev) {
@@ -328,10 +343,13 @@ export class HaFilterDevices extends LitElement {
       return;
     }
 
-    const items = new Set<string>(withoutDevice);
-    for (const result of results) {
-      result[type!]?.forEach((item) => items.add(item));
-    }
+    const items = combineItemSets(
+      [
+        ...(value.none ? [withoutDevice] : []),
+        ...results.map((result) => result[type!] ?? []),
+      ],
+      value.all
+    );
 
     fireEvent(this, "data-table-filter-changed", {
       value: listFilterEventValue(value),

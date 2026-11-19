@@ -106,12 +106,7 @@ export class HaFilterLabels extends LitElement {
           ${this._localize("ui.panel.config.labels.caption")}
           ${
             count
-              ? html`${renderFilterBadge(
-                    this._localize,
-                    count,
-                    value?.exclude,
-                    value?.all
-                  )}
+              ? html`${renderFilterBadge(this._localize, count, value?.exclude, value?.all)}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._localize(

@@ -12,13 +12,15 @@ import {
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
-import { arrayWith, arrayWithout } from "../common/array/array-with";
 import { fireEvent } from "../common/dom/fire_event";
 import type { ListFilterValue } from "../data/data_table_filters";
 import {
+  combineItemSets,
   hasFilterSelection,
   listFilterEventValue,
   listFilterValue,
+  setListFilterAll,
+  toggleListFilterIds,
 } from "../data/data_table_filters";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { stringCompare } from "../common/string/compare";
@@ -73,6 +75,12 @@ export class HaFilterEntities extends LitElement {
 
   @property() public type?: keyof RelatedResult;
 
+  /**
+   * Offer to match the items related to all picked entities, for items that
+   * can relate to several, like automations
+   */
+  @property({ type: Boolean }) public matchable = false;
+
   @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
@@ -122,7 +130,8 @@ export class HaFilterEntities extends LitElement {
               ? html`${renderFilterBadge(
                     this._localize,
                     this._count,
-                    listFilterValue(this.value)?.exclude
+                    listFilterValue(this.value)?.exclude,
+                    listFilterValue(this.value)?.all
                   )}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
@@ -140,8 +149,11 @@ export class HaFilterEntities extends LitElement {
           ? html`
               <div class="content" ${ref(this._content)}>
                 <ha-filter-mode
+                  ?match-mode=${this.matchable}
                   .exclude=${listFilterValue(this.value)?.exclude ?? false}
+                  .all=${listFilterValue(this.value)?.all ?? false}
                   @filter-mode-changed=${this._modeChanged}
+                  @filter-match-changed=${this._matchChanged}
                 ></ha-filter-mode>
                 <ha-input-search
                   appearance="outlined"
@@ -187,14 +199,11 @@ export class HaFilterEntities extends LitElement {
       return;
     }
 
-    const value = listFilterValue(this.value) ?? {};
-    this.value = {
-      ...value,
-      ids:
-        ev.type === "ha-list-item-selected"
-          ? arrayWith(value.ids, entityId)
-          : arrayWithout(value.ids, entityId),
-    };
+    this.value = toggleListFilterIds(
+      listFilterValue(this.value),
+      [entityId],
+      ev.type === "ha-list-item-selected"
+    );
   }
 
   private _currentEntities() {
@@ -214,6 +223,10 @@ export class HaFilterEntities extends LitElement {
 
   private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
     this.value = { ...listFilterValue(this.value), exclude: ev.detail.exclude };
+  }
+
+  private _matchChanged(ev: CustomEvent<{ all: boolean }>) {
+    this.value = setListFilterAll(listFilterValue(this.value), ev.detail.all);
   }
 
   private _expandedChanged(ev) {
@@ -276,12 +289,10 @@ export class HaFilterEntities extends LitElement {
       return;
     }
 
-    const items = new Set<string>();
-    for (const result of results) {
-      if (result[this.type!]) {
-        result[this.type!]!.forEach((item) => items.add(item));
-      }
-    }
+    const items = combineItemSets(
+      results.map((result) => result[this.type!] ?? []),
+      value.all
+    );
 
     fireEvent(this, "data-table-filter-changed", {
       value: listFilterEventValue(value),
