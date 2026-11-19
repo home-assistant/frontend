@@ -20,6 +20,7 @@ import { MockToggleEntity } from "./toggle-entity";
 import { MockVacuumEntity } from "./vacuum-entity";
 import { MockValveEntity } from "./valve-entity";
 import { MockWaterHeaterEntity } from "./water-heater-entity";
+import { MockWeatherEntity } from "./weather-entity";
 
 type EntityConstructor = new (input: EntityInput) => MockBaseEntity;
 
@@ -45,6 +46,7 @@ const TYPES: Record<string, EntityConstructor> = {
   vacuum: MockVacuumEntity,
   valve: MockValveEntity,
   water_heater: MockWaterHeaterEntity,
+  weather: MockWeatherEntity,
   zone: MockLocationEntity,
 };
 
