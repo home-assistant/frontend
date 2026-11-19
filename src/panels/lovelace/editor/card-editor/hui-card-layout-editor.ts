@@ -127,6 +127,9 @@ export class HuiCardLayoutEditor extends LitElement {
         <span slot="supporting-text">${this._sizeText(recommended)}</span>
         <ha-switch
           slot="end"
+          .accessibleLabel=${this.hass.localize(
+            "ui.panel.lovelace.editor.edit_card.layout.recommended_size"
+          )}
           @change=${this._recommendedSizeChanged}
           .checked=${!this._customSize}
           name="recommended-size"
@@ -164,6 +167,9 @@ export class HuiCardLayoutEditor extends LitElement {
                 >
                 <ha-switch
                   slot="end"
+                  .accessibleLabel=${this.hass.localize(
+                    "ui.panel.lovelace.editor.edit_card.layout.fit_content"
+                  )}
                   @change=${this._autoHeightChanged}
                   .checked=${options.rows === "auto"}
                   name="auto-height"
@@ -182,6 +188,9 @@ export class HuiCardLayoutEditor extends LitElement {
                 >
                 <ha-switch
                   slot="end"
+                  .accessibleLabel=${this.hass.localize(
+                    "ui.panel.lovelace.editor.edit_card.layout.full_width"
+                  )}
                   @change=${this._fullWidthChanged}
                   .checked=${options.columns === "full"}
                   name="full-width"

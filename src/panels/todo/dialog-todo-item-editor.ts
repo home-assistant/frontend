@@ -167,6 +167,9 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
 
           <div class="flex">
             <ha-checkbox
+              .accessibleLabel=${this.hass.localize(
+                "ui.components.todo.item.completed"
+              )}
               .checked=${this._checked}
               @change=${this._checkedChanged}
               .disabled=${isCreate || !canUpdate}

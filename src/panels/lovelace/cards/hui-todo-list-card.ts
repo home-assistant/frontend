@@ -762,7 +762,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                     TodoListEntityFeature.UPDATE_TODO_ITEM
                   )
                 }
-                aria-label=${item.summary}
+                .accessibleLabel=${item.summary}
                 @click=${stopPropagation}
                 @change=${this._completeCheckboxItem}
               ></ha-checkbox>
