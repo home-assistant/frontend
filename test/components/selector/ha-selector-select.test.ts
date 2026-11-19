@@ -1,24 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { keepOptionOrder } from "../../../src/components/ha-selector/ha-selector-select";
+import {
+  fromPickerId,
+  toPickerId,
+} from "../../../src/components/ha-selector/ha-selector-select";
 
-// Protects the order an integration gives its options (nearest first, most
-// used first): search results must keep it instead of the match score.
-describe("keepOptionOrder", () => {
-  const items = ["a", "b", "c", "d"].map((id) => ({ id, primary: id }));
-
-  it("puts the matches back in the order of the options", () => {
-    const matches = [items[3], items[0], items[2]];
-
-    expect(keepOptionOrder("x", matches, items).map((item) => item.id)).toEqual(
-      ["a", "c", "d"]
-    );
+describe("picker IDs", () => {
+  it("are never empty, so the picker can select every option", () => {
+    expect(toPickerId("")).not.toBe("");
+    expect(toPickerId(0)).toBe("0");
+    expect(toPickerId("a")).toBe("a");
   });
 
-  it("leaves the matches it was given unchanged", () => {
-    const matches = [items[1], items[0]];
-
-    keepOptionOrder("x", matches, items);
-
-    expect(matches.map((item) => item.id)).toEqual(["b", "a"]);
+  it("map back to the option value", () => {
+    expect(fromPickerId(toPickerId(""))).toBe("");
+    expect(fromPickerId(toPickerId("a"))).toBe("a");
+    expect(fromPickerId(undefined)).toBeUndefined();
   });
 });

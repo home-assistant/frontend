@@ -17,10 +17,6 @@ import "../ha-checkbox";
 import "../ha-dropdown-item";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
-import type {
-  PickerComboBoxItem,
-  PickerComboBoxSearchFn,
-} from "../ha-picker-combo-box";
 import "../ha-button";
 import "../ha-input-helper-text";
 import "../ha-select";
@@ -30,26 +26,16 @@ import "../ha-svg-icon";
 import "../radio/ha-radio-group";
 import "../radio/ha-radio-option";
 
-// A single-choice dropdown with more options than this gets a search field.
-// Shorter lists fit on screen without scrolling and keep the plain dropdown.
 const SEARCH_MIN_OPTIONS = 12;
 
-// Search what the user sees: the label, not the option's value.
 const SEARCH_KEYS = [{ name: "primary", weight: 1 }];
 
-// Without `sort`, the order of the options is the integration's own (nearest
-// first, most used first), so matches keep it instead of the match score.
-export const keepOptionOrder: PickerComboBoxSearchFn<PickerComboBoxItem> = (
-  _search,
-  filteredItems,
-  allItems
-) => {
-  const position = new Map(allItems.map((item, index) => [item.id, index]));
-  return [...filteredItems].sort(
-    (a, b) =>
-      (position.get(a.id) ?? Infinity) - (position.get(b.id) ?? Infinity)
-  );
-};
+const EMPTY_OPTION_ID = "___empty___";
+
+export const toPickerId = (value: string | number) =>
+  value === "" ? EMPTY_OPTION_ID : String(value);
+
+export const fromPickerId = (id?: string) => (id === EMPTY_OPTION_ID ? "" : id);
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
@@ -281,12 +267,7 @@ export class HaSelectSelector extends LitElement {
       `;
     }
 
-    // The picker has no way to select an empty value, so a list with an
-    // empty-string option keeps the plain dropdown.
-    if (
-      options.length > SEARCH_MIN_OPTIONS &&
-      !options.some((option) => option.value === "")
-    ) {
+    if (options.length > SEARCH_MIN_OPTIONS) {
       return html`
         <ha-generic-picker
           no-sort
@@ -295,14 +276,9 @@ export class HaSelectSelector extends LitElement {
           .disabled=${this.disabled}
           .required=${this.required}
           .getItems=${this._getItems(options)}
-          .value=${
-            ["string", "number"].includes(typeof this.value)
-              ? String(this.value)
-              : undefined
-          }
+          .value=${this._pickerValue(options)}
           .valueRenderer=${this._valueRenderer(options)}
           .searchKeys=${SEARCH_KEYS}
-          .searchFn=${this.selector.select?.sort ? undefined : keepOptionOrder}
           @value-changed=${this._comboBoxValueChanged}
         ></ha-generic-picker>
       `;
@@ -353,12 +329,9 @@ export class HaSelectSelector extends LitElement {
         !option.disabled && !multiple ? true : !value?.includes(option.value)
       );
 
-      // The picker works with text IDs and ignores a falsy one, such as 0.
-      // Numbers come from `ha-form-select` (a backend `vol.In` of integers),
-      // which turns the text back into the number, as it does for `ha-select`.
       return () =>
         filteredOptions.map((option) => ({
-          id: String(option.value),
+          id: toPickerId(option.value),
           primary: option.label,
           sorting_label: option.label,
           disabled: option.disabled,
@@ -366,11 +339,22 @@ export class HaSelectSelector extends LitElement {
     }
   );
 
+  private _pickerValue(options: SelectOption[]): string | undefined {
+    const value = this.value as string | number | undefined;
+    if (typeof value !== "string" && typeof value !== "number") {
+      return undefined;
+    }
+    if (value === "" && !options.some((option) => option.value === "")) {
+      return undefined;
+    }
+    return toPickerId(value);
+  }
+
   private _valueRenderer = memoizeOne(
     (options: SelectOption[]) => (value: string) =>
       html`<span slot="headline"
         >${
-          options.find((option) => String(option.value) === value)?.label ??
+          options.find((option) => toPickerId(option.value) === value)?.label ??
           value
         }</span
       >`
@@ -452,14 +436,14 @@ export class HaSelectSelector extends LitElement {
 
   private _comboBoxValueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const newValue = ev.detail.value;
 
-    if (this.disabled || newValue === "") {
+    if (this.disabled || ev.detail.value === "") {
       return;
     }
 
+    const newValue = fromPickerId(ev.detail.value);
+
     if (!this.selector.select?.multiple) {
-      // The picker gives back text, also for a numeric value
       if (this.value != null && newValue === String(this.value)) {
         return;
       }
