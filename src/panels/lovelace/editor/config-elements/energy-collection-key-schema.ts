@@ -29,11 +29,7 @@ export const collectionKeyFromFormData = <T extends CollectionKeyConfig>(
   if (typeof data.collection_key === "string") {
     return {
       ...data,
-      collection_key: data.collection_key.startsWith(
-        ENERGY_COLLECTION_KEY_PREFIX
-      )
-        ? data.collection_key
-        : ENERGY_COLLECTION_KEY_PREFIX + data.collection_key,
+      collection_key: ENERGY_COLLECTION_KEY_PREFIX + data.collection_key,
     };
   }
   if ("collection_key" in data) {
