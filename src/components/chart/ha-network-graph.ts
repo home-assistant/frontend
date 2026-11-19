@@ -104,6 +104,16 @@ const SELECTED_NODE_FIT_MARGIN = 72;
 const FIXED_LAYOUT_SELECTED_NODE_X = 0.25;
 const FIXED_LAYOUT_LABEL_ROOM = 240;
 
+// The place of a selected node in a fixed layout that moved left to make room
+// for its label
+const FIXED_LAYOUT_MIN_SELECTED_NODE_X = 32;
+
+// The room between the children of a selected node in a fixed layout and the
+// least distance for their labels, also when they then no longer fit, e.g.
+// many devices of a source on a phone
+const FIXED_LAYOUT_CHILD_SPACING = 8;
+const FIXED_LAYOUT_MIN_CHILD_GAP = 24;
+
 const FOLLOW_ROAM = "follow-selected-node";
 
 const SELECTED_NODE_ANIMATION_DURATION = 800;
@@ -759,6 +769,9 @@ export class HaNetworkGraph extends LitElement {
       id: "network",
       type: "graph",
       layout: physicsEnabled ? "force" : "none",
+      // Nodes of a fixed layout keep their size, like the labels, so a zoom
+      // spreads the rows instead of growing the nodes into each other
+      nodeScaleRatio: fixedLayout ? 0 : 0.6,
       draggable: true,
       roam: true,
       roamTrigger: "global",
@@ -1429,6 +1442,28 @@ export class HaNetworkGraph extends LitElement {
     }
   };
 
+  private _symbolSize(node: any): number {
+    const size = node.getVisual("symbolSize");
+    return Array.isArray(size) ? size[1] : (size ?? 0);
+  }
+
+  // How far the shown label of a node reaches to the right of its center in
+  // pixels, which does not change with a zoom
+  private _labelReach(series: any, node: any): number | undefined {
+    const symbolPath = series
+      .getData()
+      .getItemGraphicEl(node.dataIndex)
+      ?.getSymbolPath?.();
+    const label = symbolPath?.getTextContent?.();
+    const center = symbolPath?.getComputedTransform?.();
+    if (!label || label.ignore || !center) {
+      return undefined;
+    }
+    const rect = label.getBoundingRect().clone();
+    rect.applyTransform(label.getComputedTransform());
+    return rect.x + rect.width - center[4];
+  }
+
   // The roam that centers the selected node, zoomed so its neighbors stay in
   // view, or undefined when it is centered already
   private _selectedNodeRoam(chart: EChartsType): FollowRoam | undefined {
@@ -1443,9 +1478,41 @@ export class HaNetworkGraph extends LitElement {
     const [x, y] = toPixel(position);
     const zoom = series.coordinateSystem.getRoamTransform()[0];
     const width = chart.getWidth();
-    // A fixed layout grows to the right, like a tree from left to right
+    const neighbors: { x: number; y: number; size: number }[] = [];
+    for (const edge of node.edges) {
+      const neighborNode = edge.node1 === node ? edge.node2 : edge.node1;
+      const neighbor: number[] | undefined = neighborNode.getLayout();
+      if (neighbor) {
+        const [neighborX, neighborY] = toPixel(neighbor);
+        neighbors.push({
+          x: neighborX,
+          y: neighborY,
+          size: this._symbolSize(neighborNode),
+        });
+      }
+    }
+    const children = neighbors.filter((neighbor) => neighbor.x > x);
+    // In a fixed layout the label of the node gets room before its children,
+    // as its nodes keep their size
+    const labelReach =
+      this.fixedLayout && children.length
+        ? this._labelReach(series, node)
+        : undefined;
+    const labelRoom = labelReach
+      ? labelReach +
+        FIXED_LAYOUT_CHILD_SPACING +
+        Math.max(...children.map((child) => child.size)) / 2
+      : 0;
+    // A fixed layout grows to the right, like a tree from left to right. Its
+    // parents need not fit, so the node moves left to make room for its label.
     const anchorX = this.fixedLayout
-      ? width * FIXED_LAYOUT_SELECTED_NODE_X
+      ? Math.max(
+          FIXED_LAYOUT_MIN_SELECTED_NODE_X,
+          Math.min(
+            width * FIXED_LAYOUT_SELECTED_NODE_X,
+            width - FIXED_LAYOUT_LABEL_ROOM - labelRoom
+          )
+        )
       : width / 2;
     const centerY = chart.getHeight() / 2;
     // Zoom so the neighbors stay in view
@@ -1457,21 +1524,41 @@ export class HaNetworkGraph extends LitElement {
       rightRoom / 2
     );
     const fitY = Math.max(centerY - SELECTED_NODE_FIT_MARGIN, centerY / 2);
-    let targetZoom = SELECTED_NODE_MAX_ZOOM;
-    for (const edge of node.edges) {
-      const neighbor: number[] | undefined = (
-        edge.node1 === node ? edge.node2 : edge.node1
-      ).getLayout();
-      if (neighbor) {
-        const [neighborX, neighborY] = toPixel(neighbor);
-        // In a fixed layout only the children to the right have to fit
-        const fitX =
-          neighborX > x ? fitRight : this.fixedLayout ? Infinity : fitLeft;
-        targetZoom = Math.min(
-          targetZoom,
-          (zoom * fitX) / Math.abs(neighborX - x),
-          (zoom * fitY) / Math.abs(neighborY - y)
+    // The largest zoom that keeps the neighbors in view
+    let fitZoom = Infinity;
+    for (const neighbor of neighbors) {
+      // In a fixed layout only the children to the right have to fit
+      const fitX =
+        neighbor.x > x ? fitRight : this.fixedLayout ? Infinity : fitLeft;
+      fitZoom = Math.min(
+        fitZoom,
+        (zoom * fitX) / Math.abs(neighbor.x - x),
+        (zoom * fitY) / Math.abs(neighbor.y - y)
+      );
+    }
+    let targetZoom = Math.min(SELECTED_NODE_MAX_ZOOM, fitZoom);
+    if (labelRoom) {
+      const childDistance = Math.min(...children.map((child) => child.x - x));
+      targetZoom = Math.max(
+        targetZoom,
+        Math.min((zoom * labelRoom) / childDistance, fitZoom)
+      );
+    }
+    // Many children rather go out of view than too close to read. Their nodes
+    // keep their size, so only the gaps between them grow with the zoom.
+    if (this.fixedLayout) {
+      children.sort((a, b) => a.y - b.y);
+      for (let i = 1; i < children.length; i++) {
+        const gap = children[i].y - children[i - 1].y;
+        const needed = Math.max(
+          FIXED_LAYOUT_MIN_CHILD_GAP,
+          (children[i].size + children[i - 1].size) / 2 +
+            FIXED_LAYOUT_CHILD_SPACING
         );
+        // Hidden nodes fold onto their parent
+        if (gap >= 0.5) {
+          targetZoom = Math.max(targetZoom, (zoom * needed) / gap);
+        }
       }
     }
     const zoomChanged = Math.abs(zoom - targetZoom) >= 1e-3;
