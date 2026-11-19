@@ -87,6 +87,7 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
 
     const entities = this._filterEntities(
       this.params.exposedEntities,
+      this.params.lockedEntities,
       this._registries,
       this._filter
     );
@@ -146,6 +147,7 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
   private _handleItemToggled(ev: CustomEvent<number>) {
     const entityId = this._filterEntities(
       this.params!.exposedEntities,
+      this.params!.lockedEntities,
       this._registries,
       this._filter
     )[ev.detail]?.id;
@@ -167,6 +169,7 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
   private _filterEntities = memoizeOne(
     (
       exposedEntities: Record<string, ExposeEntitySettings>,
+      lockedEntities: Record<string, ExposeEntitySettings> | undefined,
       registries: ContextType<typeof registriesContext>,
       filter?: string
     ): ExposeEntityRow[] => {
@@ -176,7 +179,9 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
       for (const entity of Object.values(this._states)) {
         if (
           this.params!.filterAssistants.every(
-            (ass) => exposedEntities[entity.entity_id]?.[ass]
+            (ass) =>
+              exposedEntities[entity.entity_id]?.[ass] ||
+              lockedEntities?.[entity.entity_id]?.[ass]
           )
         ) {
           continue;

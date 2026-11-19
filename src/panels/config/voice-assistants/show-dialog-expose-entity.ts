@@ -4,6 +4,7 @@ import type { ExposeEntitySettings } from "../../../data/expose";
 export interface ExposeEntityDialogParams {
   filterAssistants: string[];
   exposedEntities: Record<string, ExposeEntitySettings>;
+  lockedEntities?: Record<string, ExposeEntitySettings>;
   exposeEntities: (entities: string[]) => void;
 }
 

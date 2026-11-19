@@ -1,5 +1,5 @@
 import { mdiFilterVariantRemove } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { createRef, ref } from "lit/directives/ref";
@@ -39,7 +39,8 @@ export class HaFilterVoiceAssistants extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
-  @state() private _voiceAssistantOptions: string[] = [];
+  /** Assistants to offer; all known assistants when not set. */
+  @property({ attribute: false }) public assistants?: string[];
 
   private _content = createRef<HTMLElement>();
 
@@ -77,7 +78,7 @@ export class HaFilterVoiceAssistants extends LitElement {
                 @ha-list-item-deselected=${this._handleItemToggled}
               >
                 ${repeat(
-                  this._voiceAssistantOptions,
+                  this.assistants ?? Object.keys(voiceAssistants),
                   (voiceAssistantId) => voiceAssistantId,
                   (voiceAssistantId) =>
                     html`<ha-list-item-option
@@ -101,11 +102,6 @@ export class HaFilterVoiceAssistants extends LitElement {
           : nothing
       }
     `;
-  }
-
-  protected firstUpdated(changedProps: PropertyValues<this>) {
-    super.firstUpdated(changedProps);
-    this._voiceAssistantOptions = Object.keys(voiceAssistants);
   }
 
   private _expandedChanged(ev) {

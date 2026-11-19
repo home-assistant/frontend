@@ -213,6 +213,8 @@ export class HaConfigEntities extends LitElement {
   // including entities without unique id
   @state() private _exposedEntities?: Record<string, ExposeEntitySettings>;
 
+  private _lockedEntities?: Record<string, ExposeEntitySettings>;
+
   private _tableSettings = new DataTableSettingsController(
     this,
     {
@@ -1151,6 +1153,7 @@ export class HaConfigEntities extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
         <ha-filter-voice-assistants
+          .assistants=${this._availableAssistants}
           .value=${this._filters["ha-filter-voice-assistants"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -1264,13 +1267,16 @@ export class HaConfigEntities extends LitElement {
 
   private _fetchExposedEntities = async () => {
     try {
-      this._exposedEntities = (
-        await listExposedEntities(this.hass)
-      ).exposed_entities;
+      const { exposed_entities, locked_entities } = await listExposedEntities(
+        this.hass
+      );
+      this._exposedEntities = exposed_entities;
+      this._lockedEntities = locked_entities;
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("Failed to fetch exposed entities", err);
       this._exposedEntities = {};
+      this._lockedEntities = {};
     }
   };
 
@@ -1800,17 +1806,25 @@ ${rejected
     let changedEntities: { assistant: string; entityIds: string[] }[];
     try {
       changedEntities = await Promise.all(
-        assistants.map(async (assistant) => ({
-          assistant,
-          entityIds: (
-            await exposeEntities(
-              this.hass,
-              [assistant],
-              entityIds,
-              shouldExpose
-            )
-          ).changed_entity_ids,
-        }))
+        assistants.map(async (assistant) => {
+          // Core rejects the whole batch if it includes a YAML-locked pair
+          const unlockedEntityIds = entityIds.filter(
+            (entityId) => !this._lockedEntities?.[entityId]?.[assistant]
+          );
+          return {
+            assistant,
+            entityIds: unlockedEntityIds.length
+              ? (
+                  await exposeEntities(
+                    this.hass,
+                    [assistant],
+                    unlockedEntityIds,
+                    shouldExpose
+                  )
+                ).changed_entity_ids
+              : [],
+          };
+        })
       );
     } catch (err: any) {
       showAlertDialog(this, {
