@@ -127,6 +127,9 @@ export class HaCameraPlayer extends LitElement {
 
   private _pointers = new Map<number, PointerInfo>();
 
+  // More than one finger touched since all were lifted, so it is no tap
+  private _multiPointer = false;
+
   // The size of the viewport the zoom was last made for
   private _zoomSize: ZoomPanSize = { width: 0, height: 0 };
 
@@ -535,6 +538,8 @@ export class HaCameraPlayer extends LitElement {
       return;
     }
     this._video = this._stream?.videoElement;
+    // Binds the video first, which resets its paused state
+    await this.updateComplete;
     if (!this._status.connecting) {
       this._ensurePlaying();
     }
@@ -553,7 +558,12 @@ export class HaCameraPlayer extends LitElement {
       if (err instanceof DOMException && err.name === "NotAllowedError") {
         this._muted = true;
         video.muted = true;
-        await video.play().catch(() => undefined);
+        await video.play().catch(() => {
+          // Blocked completely, only the play button can start it
+          if (video === this._video) {
+            this._paused = true;
+          }
+        });
       }
     }
   }
@@ -802,7 +812,10 @@ export class HaCameraPlayer extends LitElement {
     });
     // Also a mouse released outside of the player ends its press here
     (ev.currentTarget as HTMLElement).setPointerCapture(ev.pointerId);
-    if (this._pointers.size > 1 || isZoomed(this._zoom)) {
+    if (this._pointers.size > 1) {
+      this._multiPointer = true;
+    }
+    if (this._multiPointer || isZoomed(this._zoom)) {
       this._gesture = true;
     }
   }
@@ -855,12 +868,9 @@ export class HaCameraPlayer extends LitElement {
 
   private _pointerUp(ev: PointerEvent) {
     const pointer = this._pointers.get(ev.pointerId);
-    const wasSingle = this._pointers.size === 1;
-    this._pointers.delete(ev.pointerId);
-    if (!this._pointers.size) {
-      this._gesture = false;
-    }
-    if (!pointer || !wasSingle) {
+    const multiPointer = this._multiPointer;
+    this._pointerCancel(ev);
+    if (!pointer || multiPointer) {
       return;
     }
     const isTap =
@@ -881,6 +891,7 @@ export class HaCameraPlayer extends LitElement {
     this._pointers.delete(ev.pointerId);
     if (!this._pointers.size) {
       this._gesture = false;
+      this._multiPointer = false;
     }
   }
 

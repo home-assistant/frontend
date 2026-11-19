@@ -1,5 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { live } from "lit/directives/live";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 
@@ -75,16 +76,22 @@ export class HaMjpegPlayer extends LitElement {
     }
   }
 
-  public connectedCallback() {
-    super.connectedCallback();
+  /** Loads the stream again and waits for its first frame. */
+  public restart() {
     if (!this.hasUpdated) {
       return;
     }
-    if (this._loaded) {
-      // The camera stream starts over when reattached, like when coming back
-      // from the history, while the picture still shows
-      fireEvent(this, "load");
-    } else {
+    // Without a source, the image drops its last frame, so the next one
+    // really is from the new stream
+    this._imageEl?.removeAttribute("src");
+    this._loaded = false;
+    this._canCopy = false;
+    this._startLoadCheck();
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated && !this._loaded) {
       this._startLoadCheck();
     }
   }
@@ -112,7 +119,7 @@ export class HaMjpegPlayer extends LitElement {
       <img
         id="stream"
         class=${this._loaded ? "" : "loading"}
-        .src=${this.src}
+        .src=${live(this.src)}
         alt=${this.alt ?? ""}
         style=${style}
         draggable="false"

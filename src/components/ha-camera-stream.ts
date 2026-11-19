@@ -104,6 +104,8 @@ export class HaCameraStream extends LitElement {
 
   @query("ha-web-rtc-player") private _webRtcPlayer?: HaWebRtcPlayer;
 
+  @query("ha-mjpeg-player") private _mjpegPlayer?: HaMjpegPlayer;
+
   @query(
     "ha-hls-player:not(.hidden), ha-web-rtc-player:not(.hidden), ha-mjpeg-player"
   )
@@ -145,6 +147,17 @@ export class HaCameraStream extends LitElement {
     if (entityChanged || backendStarted) {
       this._getCapabilities();
       this._getPosterUrl();
+    }
+
+    const oldConnection = changedProps.get("_connection") as
+      ContextType<typeof connectionContext> | undefined;
+    if (
+      oldConnection &&
+      !oldConnection.connected &&
+      this._connection.connected
+    ) {
+      // An MJPEG stream doesn't come back on its own
+      this._restartMjpeg();
     }
   }
 
@@ -204,7 +217,8 @@ export class HaCameraStream extends LitElement {
     const status: CameraStreamStatus = {
       ...computeCameraStreamStatus(
         streams,
-        this._loadedStreams,
+        // Nothing plays while Home Assistant is disconnected
+        this._connection.connected ? this._loadedStreams : new Set(),
         this._hlsStreams,
         this._webRtcStreams
       ),
@@ -341,6 +355,12 @@ export class HaCameraStream extends LitElement {
     this._webRtcStreams = undefined;
     this._loadedStreams = new Set();
     this._hlsInApp = false;
+    this._mjpegPlayer?.restart();
+  }
+
+  private _restartMjpeg() {
+    this._setLoaded(MJPEG_STREAM, false);
+    this._mjpegPlayer?.restart();
   }
 
   private _setLoaded(type: CameraStreamType, loaded: boolean) {
