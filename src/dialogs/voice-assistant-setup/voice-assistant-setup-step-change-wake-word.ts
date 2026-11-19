@@ -44,7 +44,7 @@ export class HaVoiceAssistantSetupStepChangeWakeWord extends LitElement {
               @click=${this._wakeWordPicked}
               .value=${wakeWord.id}
             >
-              ${wakeWord.wake_word}
+              <div slot="headline">${wakeWord.wake_word}</div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-list-item-button>`
         )}
