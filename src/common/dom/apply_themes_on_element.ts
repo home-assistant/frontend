@@ -18,7 +18,7 @@ import {
 } from "../color/convert-color";
 import { hexBlend } from "../color/hex";
 import { labBrighten, labDarken } from "../color/lab";
-import { generateColorPalette } from "../color/palette";
+import { generateColorPalette, normalizeLuminance } from "../color/palette";
 import { rgbContrast } from "../color/rgb";
 
 interface ProcessedTheme {
@@ -107,9 +107,13 @@ export const applyThemesOnElement = (
       ? toHexColor(customThemeRules["primary-color"])
       : undefined;
   if (themePrimaryColor) {
+    // Like colors picked by the user, keep the palette readable. Older themes
+    // often set a near black primary color for the header, which would
+    // otherwise give near black switches and buttons. The theme's own
+    // primary-color is kept as it is.
     themeRules = {
       ...themeRules,
-      ...getPrimaryPaletteRules(themePrimaryColor),
+      ...getPrimaryPaletteRules(normalizeLuminance(themePrimaryColor)),
     };
   }
 

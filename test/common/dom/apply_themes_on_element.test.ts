@@ -3,6 +3,7 @@ import {
   applyThemesOnElement,
   invalidateThemeCache,
 } from "../../../src/common/dom/apply_themes_on_element";
+import { normalizeLuminance } from "../../../src/common/color/palette";
 import type { Theme, Themes } from "../../../src/data/ws-themes";
 
 const PICKED_PRIMARY = "#e91e63";
@@ -125,7 +126,9 @@ describe("applyThemesOnElement theme palette", () => {
   it("generates the palette from the theme primary color", () => {
     const style = applyTheme(asTheme({ "primary-color": "#ff00ff" }));
 
-    expect(style.getPropertyValue("--ha-color-primary-50")).toBe("#ff00ff");
+    expect(style.getPropertyValue("--ha-color-primary-50")).toBe(
+      normalizeLuminance("#ff00ff")
+    );
     expect(style.getPropertyValue("--ha-color-primary-90")).not.toBe("");
     expect(style.getPropertyValue("--dark-primary-color")).not.toBe("");
   });
@@ -134,7 +137,9 @@ describe("applyThemesOnElement theme palette", () => {
     const style = applyTheme(asTheme({ "primary-color": "pink" }));
 
     expect(style.getPropertyValue("--primary-color")).toBe("pink");
-    expect(style.getPropertyValue("--ha-color-primary-50")).toBe("#ffc0cb");
+    expect(style.getPropertyValue("--ha-color-primary-50")).toBe(
+      normalizeLuminance("#ffc0cb")
+    );
   });
 
   it("doesn't recolor state icons or text on primary", () => {
@@ -153,7 +158,17 @@ describe("applyThemesOnElement theme palette", () => {
     );
 
     expect(style.getPropertyValue("--dark-primary-color")).toBe("#330033");
-    expect(style.getPropertyValue("--ha-color-primary-50")).toBe("#ff00ff");
+    expect(style.getPropertyValue("--ha-color-primary-50")).not.toBe("");
+  });
+
+  it("keeps the palette readable for a near black theme color", () => {
+    const style = applyTheme(asTheme({ "primary-color": "#111111" }));
+
+    expect(style.getPropertyValue("--primary-color")).toBe("#111111");
+    expect(style.getPropertyValue("--ha-color-primary-50")).toBe(
+      normalizeLuminance("#111111")
+    );
+    expect(style.getPropertyValue("--ha-color-primary-50")).not.toBe("#111111");
   });
 
   it("doesn't generate anything when the theme sets part of the palette", () => {
