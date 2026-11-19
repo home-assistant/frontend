@@ -55,10 +55,14 @@ export const createDashboard = (
     ...values,
   });
 
+export interface LovelaceDashboardUpdateParams extends Partial<LovelaceDashboardMutableParams> {
+  url_path?: string;
+}
+
 export const updateDashboard = (
   hass: HomeAssistant,
   id: string,
-  updates: Partial<LovelaceDashboardMutableParams>
+  updates: LovelaceDashboardUpdateParams
 ) =>
   hass.callWS<LovelaceDashboard>({
     type: "lovelace/dashboards/update",
