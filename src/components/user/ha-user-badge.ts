@@ -1,5 +1,4 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
 import type { ContextType } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -27,7 +26,7 @@ class UserBadge extends LitElement {
   @consume({ context: entitiesContext, subscribe: true })
   @transform<ContextType<typeof entitiesContext>, string[]>({
     transformer: (entities) =>
-      Object.keys(entities).filter(
+      Object.keys(entities ?? {}).filter(
         (entityId) => computeDomain(entityId) === "person"
       ),
   })
@@ -37,23 +36,14 @@ class UserBadge extends LitElement {
   @consumeEntityStates({ entityIdPath: ["_personEntityIds"] })
   private _personStates?: Record<string, HassEntity>;
 
-  @state() private _personEntityId?: string;
-
-  public willUpdate(changedProps: PropertyValues) {
-    super.willUpdate(changedProps);
-    if (changedProps.has("user") || changedProps.has("_personStates")) {
-      this._updatePersonEntityId();
-    }
-  }
-
   protected render() {
     if (!this.user) {
       return nothing;
     }
-    const picture =
-      this._personEntityId &&
-      (this._personStates?.[this._personEntityId]?.attributes.entity_picture as
-        string | undefined);
+    const userId = this.user.id;
+    const picture = Object.values(this._personStates ?? {}).find(
+      (entity) => entity.attributes.user_id === userId
+    )?.attributes.entity_picture as string | undefined;
 
     if (picture && this._connection) {
       return html`<div
@@ -69,15 +59,6 @@ class UserBadge extends LitElement {
     >
       ${initials}
     </div>`;
-  }
-
-  private _updatePersonEntityId() {
-    const userId = this.user?.id;
-    this._personEntityId = userId
-      ? Object.values(this._personStates ?? {}).find(
-          (entity) => entity.attributes.user_id === userId
-        )?.entity_id
-      : undefined;
   }
 
   static styles = css`
