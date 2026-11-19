@@ -207,6 +207,9 @@ class DialogPersonDetail
               >
               <ha-switch
                 slot="end"
+                .accessibleLabel=${this.hass!.localize(
+                  "ui.panel.config.person.detail.allow_login"
+                )}
                 @change=${this._allowLoginChanged}
                 ?disabled=${
                   this._user &&
@@ -395,6 +398,9 @@ class DialogPersonDetail
         >
         <ha-switch
           slot="end"
+          .accessibleLabel=${this.hass.localize(
+            "ui.panel.config.person.detail.local_access_only"
+          )}
           .disabled=${user.system_generated}
           .checked=${this._localOnly}
           @change=${this._localOnlyChanged}
@@ -411,6 +417,9 @@ class DialogPersonDetail
         >
         <ha-switch
           slot="end"
+          .accessibleLabel=${this.hass.localize(
+            "ui.panel.config.person.detail.admin"
+          )}
           .disabled=${user.system_generated || user.is_owner}
           .checked=${this._isAdmin}
           @change=${this._adminChanged}

@@ -132,6 +132,9 @@ class HaCounterForm extends LitElement {
           ></ha-input>
           <div class="row">
             <ha-switch
+              .accessibleLabel=${this._localize(
+                "ui.dialogs.helper_settings.counter.restore"
+              )}
               .checked=${this._restore}
               .configValue=${"restore"}
               @change=${this._valueChanged}

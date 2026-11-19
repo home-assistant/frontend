@@ -119,6 +119,16 @@ class DialogDeviceRegistryDetail extends DirtyStateProviderMixin<DeviceFormState
             ></ha-labels-picker>
             <div class="row">
               <ha-switch
+                .accessibleLabel=${this.hass.localize(
+                  "ui.dialogs.device-registry-detail.enabled_label",
+                  {
+                    type: this.hass.localize(
+                      `ui.dialogs.device-registry-detail.type.${
+                        device.entry_type || "device"
+                      }`
+                    ),
+                  }
+                )}
                 .checked=${!this._disabledBy}
                 .disabled=${
                   this._params.device.disabled_by === "config_entry" ||
