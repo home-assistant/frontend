@@ -1,6 +1,7 @@
 import type { ContextType } from "@lit/context";
 import {
   mdiArrowAll,
+  mdiBookmarkOutline,
   mdiMicrophone,
   mdiMicrophoneOff,
   mdiPhone,
@@ -52,9 +53,16 @@ import type {
   WebRtcStreamStopped,
 } from "../../../external_app/external_messaging";
 import { cameraControlHintStyle } from "../components/camera/camera-control-styles";
+import "../components/camera/ha-more-info-camera-presets";
 import "../components/camera/ha-more-info-camera-ptz";
 
-type CameraControlTab = "call" | "ptz";
+type CameraControlTab = "call" | "ptz" | "presets";
+
+const TAB_ICONS: Record<CameraControlTab, string> = {
+  call: mdiPhone,
+  ptz: mdiArrowAll,
+  presets: mdiBookmarkOutline,
+};
 
 @customElement("more-info-camera")
 class MoreInfoCamera extends LitElement {
@@ -165,8 +173,12 @@ class MoreInfoCamera extends LitElement {
     if (this._supportsTwoWayAudio) {
       tabs.push("call");
     }
-    if (this._ptzEntities(this.stateObj!.entity_id, this._fullEntities)) {
+    const ptz = this._ptzEntities(this.stateObj!.entity_id, this._fullEntities);
+    if (ptz?.move || ptz?.zoom || ptz?.zoomIn) {
       tabs.push("ptz");
+    }
+    if (ptz?.preset) {
+      tabs.push("presets");
     }
     return tabs;
   }
@@ -209,7 +221,7 @@ class MoreInfoCamera extends LitElement {
                           `ui.dialogs.more_info_control.camera.tabs.${item}`
                         )}
                         .selected=${tab === item}
-                        .path=${item === "call" ? mdiPhone : mdiArrowAll}
+                        .path=${TAB_ICONS[item]}
                         data-tab=${item}
                         @click=${this._selectTab}
                       ></ha-icon-button-toggle>
@@ -219,21 +231,30 @@ class MoreInfoCamera extends LitElement {
               `
             : nothing
         }
-        ${
-          tab === "call"
-            ? this._renderCall()
-            : tab === "ptz"
-              ? html`<ha-more-info-camera-ptz
-                  .ptz=${this._ptzEntities(
-                    this.stateObj!.entity_id,
-                    this._fullEntities
-                  )}
-                  .deviceId=${this._entry?.device_id}
-                ></ha-more-info-camera-ptz>`
-              : nothing
-        }
+        ${this._renderTab(tab)}
       </div>
     `;
+  }
+
+  private _renderTab(tab?: CameraControlTab) {
+    const ptz = this._ptzEntities(this.stateObj!.entity_id, this._fullEntities);
+    switch (tab) {
+      case "call":
+        return this._renderCall();
+      case "ptz":
+        return html`<ha-more-info-camera-ptz
+          .ptz=${ptz}
+          .deviceId=${this._entry?.device_id}
+        ></ha-more-info-camera-ptz>`;
+      case "presets":
+        return html`<ha-more-info-camera-presets
+          .entityId=${ptz?.preset}
+          .disabled=${ptz?.disabled.includes(ptz.preset!) ?? false}
+          .deviceId=${this._entry?.device_id}
+        ></ha-more-info-camera-presets>`;
+      default:
+        return nothing;
+    }
   }
 
   private _selectTab(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
@@ -448,7 +469,6 @@ class MoreInfoCamera extends LitElement {
     css`
       :host {
         display: block;
-        container-type: inline-size;
       }
 
       .controls {
@@ -461,13 +481,27 @@ class MoreInfoCamera extends LitElement {
         margin-top: var(--ha-space-4);
       }
 
-      /* Wide enough, like on a desktop: the controls go next to the picture */
-      @container (min-width: 760px) {
+      /* A phone on its side has no room below the picture, so the controls go
+         next to it */
+      @media (orientation: landscape) and (max-height: 500px) {
         .layout {
           display: flex;
+          --video-max-height: calc(100dvh - 80px);
+          /* Smaller controls, to fit the low height */
+          --camera-pad-size: 150px;
+          --camera-zoom-slider-height: 72px;
         }
 
-        /* Fills the height down to the dialog's corner, the picture centered */
+        /* Prefixed, to win over the rules below */
+        .layout .microphone {
+          --microphone-size: 72px;
+        }
+
+        .layout .tabs {
+          margin-top: var(--ha-space-2);
+        }
+
+        /* Fills the height, the picture centered */
         ha-camera-player {
           flex: 1;
           min-width: 0;
@@ -480,12 +514,14 @@ class MoreInfoCamera extends LitElement {
         /* The tabs stay at the top, so they don't move between tabs */
         .controls {
           flex: none;
-          width: 340px;
+          width: 300px;
           padding: var(--ha-space-2) 0;
         }
 
-        ha-more-info-camera-ptz,
-        .call {
+        .layout ha-more-info-camera-ptz,
+        .layout ha-more-info-camera-presets,
+        .layout .call {
+          margin: var(--ha-space-4) 0;
           flex: 1;
           display: flex;
           flex-direction: column;
@@ -494,7 +530,9 @@ class MoreInfoCamera extends LitElement {
       }
 
       ha-more-info-camera-ptz,
+      ha-more-info-camera-presets,
       .call {
+        align-self: stretch;
         padding: 0 var(--ha-space-4);
         margin: var(--ha-space-6) 0;
       }

@@ -2202,7 +2202,11 @@
           "microphone_webrtc_connecting": "You can talk to this camera as soon as the WebRTC stream is connected.",
           "tabs": {
             "call": "Talk",
-            "ptz": "Move camera"
+            "ptz": "Move camera",
+            "presets": "Preset positions"
+          },
+          "presets": {
+            "empty": "This camera has no saved positions yet."
           },
           "ptz": {
             "move": "Move camera",
@@ -2213,7 +2217,6 @@
             "zoom": "Zoom",
             "zoom_in": "Zoom in",
             "zoom_out": "Zoom out",
-            "preset": "Preset position",
             "unavailable": "The camera controls are unavailable.",
             "disabled_entities": "Some camera controls are disabled. Enable them in the {device_settings} to use them.",
             "device_settings": "device settings"

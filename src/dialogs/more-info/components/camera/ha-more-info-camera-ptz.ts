@@ -6,7 +6,6 @@ import {
   mdiChevronUp,
   mdiMinus,
   mdiPlus,
-  mdiStarFourPointsOutline,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
@@ -19,9 +18,7 @@ import type {
   HASSDomEvent,
 } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/ha-control-select-menu";
 import "../../../../components/ha-control-slider";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
 import {
@@ -29,15 +26,13 @@ import {
   type CameraPtzEntities,
   type PtzDirection,
 } from "../../../../data/camera-controls";
-import {
-  apiContext,
-  formattersContext,
-  statesContext,
-} from "../../../../data/context";
+import { apiContext, statesContext } from "../../../../data/context";
 import { UNAVAILABLE } from "../../../../data/entity/entity";
 import { forwardHaptic } from "../../../../data/haptics";
-import { setSelectOption } from "../../../../data/select";
-import { cameraControlHintStyle } from "./camera-control-styles";
+import {
+  cameraControlHintStyle,
+  disabledEntitiesHint,
+} from "./camera-control-styles";
 
 const DIRECTION_ICONS: Record<PtzDirection, string> = {
   up: mdiChevronUp,
@@ -62,10 +57,6 @@ export class HaMoreInfoCameraPtz extends LitElement {
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
 
-  @state()
-  @consume({ context: formattersContext, subscribe: true })
-  private _formatters!: ContextType<typeof formattersContext>;
-
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
@@ -87,7 +78,6 @@ export class HaMoreInfoCameraPtz extends LitElement {
       return nothing;
     }
     const zoom = ptz.zoom ? this._states[ptz.zoom] : undefined;
-    const preset = ptz.preset ? this._states[ptz.preset] : undefined;
     const hint = this._hint();
 
     return html`
@@ -103,36 +93,8 @@ export class HaMoreInfoCameraPtz extends LitElement {
           }
         </div>
         ${hint ? html`<div class="hint">${hint}</div>` : nothing}
-        ${
-          ptz.preset
-            ? html`
-                <ha-control-select-menu
-                  .label=${this._localize(
-                    "ui.dialogs.more_info_control.camera.ptz.preset"
-                  )}
-                  .value=${preset?.state}
-                  .disabled=${!preset || preset.state === UNAVAILABLE}
-                  .options=${this._presetOptions(preset)}
-                  @wa-select=${this._presetSelected}
-                >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiStarFourPointsOutline}
-                  ></ha-svg-icon>
-                </ha-control-select-menu>
-              `
-            : nothing
-        }
       </div>
     `;
-  }
-
-  private _presetOptions(preset?: HassEntity) {
-    const options = (preset?.attributes.options as string[] | undefined) ?? [];
-    return options.map((option) => ({
-      value: option,
-      label: this._formatters.formatEntityState(preset!, option),
-    }));
   }
 
   private _isUsable(entityId?: string): boolean {
@@ -150,21 +112,9 @@ export class HaMoreInfoCameraPtz extends LitElement {
 
   private _hint() {
     const ptz = this.ptz!;
-    if (ptz.disabled.length) {
-      return this._localize(
-        "ui.dialogs.more_info_control.camera.ptz.disabled_entities",
-        {
-          device_settings: this.deviceId
-            ? html`<a href=${`/config/devices/device/${this.deviceId}`}
-                >${this._localize(
-                  "ui.dialogs.more_info_control.camera.ptz.device_settings"
-                )}</a
-              >`
-            : this._localize(
-                "ui.dialogs.more_info_control.camera.ptz.device_settings"
-              ),
-        }
-      );
+    // The presets have their own tab
+    if (ptz.disabled.some((entityId) => entityId !== ptz.preset)) {
+      return disabledEntitiesHint(this._localize, this.deviceId);
     }
     if (ptz.move && !this._moveUsable()) {
       return this._localize(
@@ -398,15 +348,6 @@ export class HaMoreInfoCameraPtz extends LitElement {
     this._setZoom(Math.min(max, Math.max(min, value)));
   }
 
-  private _presetSelected(ev: HaDropdownSelectEvent) {
-    const option = ev.detail.item.value;
-    const preset = this._states[this.ptz!.preset!];
-    if (!option || !preset || option === preset.state) {
-      return;
-    }
-    setSelectOption(this._api.callService, preset.entity_id, option);
-  }
-
   static styles = [
     cameraControlHintStyle,
     css`
@@ -414,7 +355,7 @@ export class HaMoreInfoCameraPtz extends LitElement {
         display: block;
       }
 
-      /* As wide as the pad, the note and presets below line up with it */
+      /* As wide as the pad, the note below lines up with it */
       .ptz {
         display: flex;
         flex-direction: column;
@@ -423,8 +364,7 @@ export class HaMoreInfoCameraPtz extends LitElement {
         margin: 0 auto;
       }
 
-      .ptz > .hint,
-      ha-control-select-menu {
+      .ptz > .hint {
         display: block;
         box-sizing: border-box;
         width: 0;
@@ -440,7 +380,7 @@ export class HaMoreInfoCameraPtz extends LitElement {
       }
 
       .dpad {
-        --dpad-size: 200px;
+        --dpad-size: var(--camera-pad-size, 200px);
         position: relative;
         width: var(--dpad-size);
         height: var(--dpad-size);
@@ -534,7 +474,7 @@ export class HaMoreInfoCameraPtz extends LitElement {
       }
 
       ha-control-slider {
-        height: 120px;
+        height: var(--camera-zoom-slider-height, 120px);
         --control-slider-thickness: 40px;
         --control-slider-border-radius: var(--ha-border-radius-pill);
         --control-slider-color: var(--primary-color);
