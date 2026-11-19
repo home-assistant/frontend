@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { HassServices } from "home-assistant-js-websocket";
+import type { HassServices } from "../../src/data/service";
 import { portAction, portTrigger } from "../../src/data/automation_replace";
 import type { TriggerDescriptions } from "../../src/data/trigger";
 import type { HomeAssistant } from "../../src/types";

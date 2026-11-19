@@ -3,6 +3,7 @@ import { mdiContentCopy } from "@mdi/js";
 import { dump } from "js-yaml";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
 import { consume } from "../../../../common/decorators/consume";
 import { navigate } from "../../../../common/navigate";
@@ -64,7 +65,7 @@ const callToAction = (
   if (Object.keys(data).length) {
     action.data = data;
   }
-  if (service !== undefined && "response" in service) {
+  if (service?.response) {
     action.response_variable = "action_response";
   }
   return action;
@@ -95,7 +96,9 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
     }
     const { call, name, cause, user, traceUrl } = this.params;
     const localize = this._i18n.localize;
-    const canPerform = Boolean(this._services?.[call.domain]?.[call.service]);
+    const canPerform =
+      isComponentLoaded(this._config.config, call.domain) &&
+      Boolean(this._services?.[call.domain]?.[call.service]);
 
     return html`
       <ha-dialog
@@ -232,7 +235,7 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
         service_data,
         undefined,
         true,
-        "response" in this._services[domain][service]
+        !!this._services[domain][service].response
       );
     } catch {
       button.actionError();

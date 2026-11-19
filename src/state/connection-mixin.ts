@@ -5,7 +5,6 @@ import {
   ERR_INVALID_AUTH,
   subscribeConfig,
   subscribeEntities,
-  subscribeServices,
 } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeEntityNameDisplayWithoutContext } from "../common/entity/compute_entity_name_display";
@@ -21,6 +20,7 @@ import { forwardHaptic } from "../data/haptics";
 import {
   getServiceCallEntityIds,
   serviceCallWillDisconnect,
+  subscribeServices,
 } from "../data/service";
 import {
   DateFormat,

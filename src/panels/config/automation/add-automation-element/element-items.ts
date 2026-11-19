@@ -21,6 +21,7 @@ import { getTriggerDomain, getTriggerObjectId } from "../../../../data/trigger";
 import type { HomeAssistant } from "../../../../types";
 import { ELEMENT_TYPES } from "./constants";
 import type { AddAutomationElementListItem, AddElementType } from "./types";
+import { getServicePlaceholders } from "../../../../data/service";
 
 type GroupOptions = AutomationElementGroup[string];
 
@@ -96,7 +97,7 @@ export const getServiceListItem = (
   const serviceName =
     localize(
       `component.${domain}.services.${service}.name`,
-      serviceDef?.description_placeholders
+      getServicePlaceholders(serviceDef)
     ) ||
     serviceDef?.name ||
     service;
@@ -111,7 +112,7 @@ export const getServiceListItem = (
     description:
       localize(
         `component.${domain}.services.${service}.description`,
-        serviceDef?.description_placeholders
+        getServicePlaceholders(serviceDef)
       ) ||
       serviceDef?.description ||
       "",

@@ -47,14 +47,31 @@ export type FlattenObjectKeys<
     : `${Key}`
   : never;
 
+export type LocalizeValues = Record<
+  string,
+  string | number | HTMLTemplateResult | null | undefined
+>;
+
 // Later, don't return string when HTML is passed, and don't allow undefined
 export type LocalizeFunc<Keys extends string = LocalizeKeys> = (
   key: Keys,
-  values?: Record<
-    string,
-    string | number | HTMLTemplateResult | null | undefined
-  >
+  values?: LocalizeValues
 ) => string;
+
+/**
+ * Values for a message whose arguments are not known yet. Every argument
+ * formats as its own `{name}` text instead of being a translation error.
+ */
+export const UNKNOWN_PLACEHOLDERS: LocalizeValues = new Proxy<
+  Record<string, string>
+>(
+  {},
+  {
+    has: () => true,
+    get: (_target, name) =>
+      typeof name === "string" ? `{${name}}` : undefined,
+  }
+);
 
 type FormatType = Record<string, any>;
 export interface FormatsType {

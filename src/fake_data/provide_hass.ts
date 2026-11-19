@@ -663,6 +663,7 @@ export const provideHass = (
   hassObj.mockWS("frontend/get_icons", ({ category }: MockGetIconsMessage) => ({
     resources: category === "entity_component" ? ENTITY_COMPONENT_ICONS : {},
   }));
+  hassObj.mockWS("services/subscribe", () => () => undefined);
 
   // Set hass if required
   if (setHassProperty) {

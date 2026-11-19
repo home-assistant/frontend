@@ -2,6 +2,7 @@ import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { DEFAULT_SERVICE_ICON } from "./icons";
+import { getServicePlaceholders } from "./service";
 import type { HomeAssistant } from "../types";
 
 export interface ServiceInfo {
@@ -26,7 +27,7 @@ export const computeServiceLabel = (
   return (
     localize(
       `component.${domain}.services.${serviceName}.name`,
-      serviceDef?.description_placeholders
+      getServicePlaceholders(serviceDef)
     ) ||
     serviceDef?.name ||
     service

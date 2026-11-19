@@ -5,7 +5,6 @@ import type {
   HassConfig,
   HassEntities,
   HassEntity,
-  HassServices,
   HassServiceTarget,
   MessageBase,
 } from "home-assistant-js-websocket";
@@ -18,6 +17,7 @@ import type { AreaRegistryEntry } from "./data/area/area_registry";
 import type { DeviceRegistryEntry } from "./data/device/device_registry";
 import type { EntityRegistryDisplayEntry } from "./data/entity/entity_registry";
 import type { FloorRegistryEntry } from "./data/floor_registry";
+import type { HassServices } from "./data/service";
 import type {
   CoreFrontendSystemData,
   CoreFrontendUserData,

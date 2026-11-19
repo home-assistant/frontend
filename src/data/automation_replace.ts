@@ -1,8 +1,5 @@
 import deepClone from "deep-clone-simple";
-import type {
-  HassService,
-  HassServiceTarget,
-} from "home-assistant-js-websocket";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { hasTemplate } from "../common/string/has-template";
@@ -30,6 +27,7 @@ import {
   type TargetRegistries,
   type TargetSelector,
 } from "./selector";
+import type { HassService } from "./service";
 import type { HassServiceTargetWithExclude } from "./target";
 import type { TriggerDescriptions } from "./trigger";
 import { isTriggerList } from "./trigger";

@@ -1,7 +1,6 @@
 import type {
   HassEntityAttributeBase,
   HassEntityBase,
-  HassServices,
 } from "home-assistant-js-websocket";
 import type { Describe } from "superstruct";
 import {
@@ -30,6 +29,7 @@ import type {
 } from "./automation";
 import { migrateAutomationTrigger } from "./automation";
 import type { BlueprintInput } from "./blueprint";
+import type { HassServices } from "./service";
 import type { HassServiceTargetWithExclude } from "./target";
 
 export const MODES = ["single", "restart", "queued", "parallel"] as const;

@@ -11,4 +11,5 @@ global.__DEMO__ = false;
 global.__MAPLIBRE_WORKER_URL__ = "/frontend_latest/maplibre-gl-worker.test.js";
 global.__STATIC_PATH__ = "/static/";
 global.__DEV__ = false;
+global.__BACKWARDS_COMPAT__ = false;
 global.__HASS_URL__ = "";
