@@ -97,7 +97,7 @@ class HaConfigUpdates extends LitElement {
     }
   }
 
-  // The core row counts the breaking changes for your setup.
+  // The core row counts the breaking changes for the integrations you use.
   private async _fetchUpgradeCheck(): Promise<void> {
     // Any core update; the digest says which entity it is.
     const versions = (this.updateEntities ?? [])
@@ -118,7 +118,9 @@ class HaConfigUpdates extends LitElement {
   private _breakingCount(entity: UpdateEntity): number {
     return this._upgradeCheck?.entity_id === entity.entity_id &&
       this._upgradeCheck.target === entity.attributes.latest_version
-      ? upgradeCheckBreakingRows(this._upgradeCheck).length
+      ? upgradeCheckBreakingRows(this._upgradeCheck).filter(
+          (row) => row.domains.length
+        ).length
       : 0;
   }
 

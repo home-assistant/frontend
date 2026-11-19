@@ -40,9 +40,13 @@ import "./ha-upgrade-check-icon";
 
 const PREFIX = "ui.panel.config.updates.upgrade_check";
 
+// Hash on the page that opens the group of general changes.
+const GENERAL_ANCHOR = "breaking-general";
+
 // What's new for a core update: breaking changes for your setup first, then
 // improvements for your integrations, then the release announcements. Short
 // in the update dialog, linking to the full card on its own page.
+
 @customElement("ha-upgrade-check-whats-new")
 export class HaUpgradeCheckWhatsNew extends LitElement {
   @property({ attribute: false }) public digest?: UpgradeCheckDigest;
@@ -241,7 +245,33 @@ export class HaUpgradeCheckWhatsNew extends LitElement {
               : parts[0]!,
         })}
       </p>
-      ${this.full ? this._renderBreakingRows(rows) : this._renderRows(rows)}`;
+      ${this.full ? this._renderBreakingRows(rows) : this._renderBreakingChips(rows)}`;
+  }
+
+  // On the card, general changes share one chip after the integrations.
+  private _renderBreakingChips(rows: UpgradeCheckBreakingRow[]) {
+    const general = rows.filter((row) => !row.domains.length);
+    return html`<ha-chip-set>
+      ${rows
+        .filter((row) => row.domains.length)
+        .map((row) => this._renderChip(row))}
+      ${
+        general.length
+          ? html`<ha-assist-chip
+              .href=${`${UPGRADE_CHECK_PATH}#${GENERAL_ANCHOR}`}
+              .label=${this._localize(`${PREFIX}.count_general`, {
+                count: general.length,
+              })}
+              @click=${this._openPage}
+              ><ha-svg-icon
+                slot="icon"
+                class="general"
+                .path=${mdiHomeAssistant}
+              ></ha-svg-icon
+            ></ha-assist-chip>`
+          : nothing
+      }
+    </ha-chip-set>`;
   }
 
   // On the page, general changes fold into a group of their own below the
@@ -252,8 +282,12 @@ export class HaUpgradeCheckWhatsNew extends LitElement {
     ${
       general.length
         ? html`<ha-expansion-panel
+            id=${GENERAL_ANCHOR}
             class="full-row general-group"
-            .expanded=${general.some((row) => row.anchor === this.focusAnchor)}
+            .expanded=${
+              this.focusAnchor === GENERAL_ANCHOR ||
+              general.some((row) => row.anchor === this.focusAnchor)
+            }
             .header=${this._localize(`${PREFIX}.general_title`)}
             .secondary=${this._localize(`${PREFIX}.count_items`, {
               count: general.length,
