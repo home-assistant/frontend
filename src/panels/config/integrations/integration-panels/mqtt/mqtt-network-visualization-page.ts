@@ -825,8 +825,20 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
     this._liveMessages = [];
   }
 
+  // A deselected node passes the focus to its parent, as the nodes it
+  // revealed fold away and would leave the view on an empty spot
   private _toggleFocus(nodeId: string): void {
-    this._focusedNode = this._focusedNode === nodeId ? undefined : nodeId;
+    this._focusedNode =
+      this._focusedNode === nodeId ? this._parentNode(nodeId) : nodeId;
+  }
+
+  // The first parent, as in the tree layout
+  private _parentNode(nodeId: string): string | undefined {
+    return this._structure
+      ? this._chartData(this._structure).links.find(
+          (link) => link.target === nodeId
+        )?.source
+      : undefined;
   }
 
   private _clearFocus(): void {
