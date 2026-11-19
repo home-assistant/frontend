@@ -222,6 +222,7 @@ class HaBackupConfigAgents extends LitElement {
                       <ha-switch
                         slot="end"
                         id=${agentId}
+                        .accessibleLabel=${name}
                         .checked=${this._value.includes(agentId)}
                         .disabled=${
                           noCloudSubscription && !this._value.includes(agentId)

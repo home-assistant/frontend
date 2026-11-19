@@ -117,6 +117,9 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
                   </span>
                   <ha-switch
                     slot="end"
+                    .accessibleLabel=${this.hass.localize(
+                      "ui.panel.config.analytics.preferences.snapshots.title"
+                    )}
                     @change=${this._handleDeviceRowClick}
                     .checked=${!!this._analyticsDetails?.preferences.snapshots}
                     .disabled=${this._analyticsDetails === undefined}
@@ -180,6 +183,9 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
                       ? html`
                           <ha-switch
                             slot="end"
+                            .accessibleLabel=${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.data_collection.toggle_title"
+                            )}
                             @change=${this._zwaveDataCollectionToggled}
                             .checked=${this._zwaveDataCollectionOptIn === true}
                           ></ha-switch>

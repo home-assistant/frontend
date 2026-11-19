@@ -32,6 +32,9 @@ class HaDebugSafeAreaToolRow extends LitElement {
         >
         <ha-switch
           slot="end"
+          .accessibleLabel=${this._localize(
+            "ui.panel.config.tools.tabs.debug.safe_area_tool.title"
+          )}
           .checked=${this._enabled}
           @change=${this._checkedChanged}
         ></ha-switch>

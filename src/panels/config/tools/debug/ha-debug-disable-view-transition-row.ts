@@ -30,6 +30,9 @@ class HaDebugDisableViewTransitionRow extends LitElement {
         >
         <ha-switch
           slot="end"
+          .accessibleLabel=${this.hass.localize(
+            "ui.panel.config.tools.tabs.debug.disable_view_transition.title"
+          )}
           .checked=${this._disabled}
           @change=${this._checkedChanged}
         ></ha-switch>

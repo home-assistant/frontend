@@ -169,6 +169,9 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
                     >
                     <ha-switch
                       slot="end"
+                      .accessibleLabel=${this.hass.localize(
+                        "ui.panel.config.url.external_use_ha_cloud"
+                      )}
                       .disabled=${disabled}
                       .checked=${this._cloudChecked}
                       @change=${this._toggleCloud}
@@ -274,6 +277,9 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
             >
             <ha-switch
               slot="end"
+              .accessibleLabel=${this.hass.localize(
+                "ui.panel.config.url.internal_url_automatic"
+              )}
               .disabled=${disabled}
               .checked=${!this._showCustomInternalUrl}
               @change=${this._toggleInternalAutomatic}

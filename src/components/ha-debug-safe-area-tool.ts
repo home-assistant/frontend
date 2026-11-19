@@ -161,6 +161,9 @@ export class HaDebugSafeAreaTool extends LitElement {
                   <label class="highlight">
                     ${localize("ui.components.safe_area_tool.highlight")}
                     <ha-switch
+                      .accessibleLabel=${localize(
+                        "ui.components.safe_area_tool.highlight"
+                      )}
                       .checked=${this._config.highlight}
                       @change=${this._highlightChanged}
                     ></ha-switch>
