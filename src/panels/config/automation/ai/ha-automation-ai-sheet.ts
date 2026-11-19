@@ -7,6 +7,7 @@ import {
   mdiEyeOff,
   mdiSend,
   mdiStarFourPoints,
+  mdiStop,
 } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -64,7 +65,8 @@ interface RunningTurn {
 /**
  * @summary Lets the user ask the AI to change the automation and follow
  * what it does. The editor applies the changes and can show them. On narrow
- * screens it is a bottom sheet, otherwise a sidebar.
+ * screens it is a bottom sheet, otherwise a tab of the sidebar of the
+ * automation.
  *
  * @fires ai-request-started - The AI started to work on a request
  * @fires ai-request-finished - The AI is done, with the new config if any
@@ -80,7 +82,7 @@ export class HaAutomationAiSheet extends LitElement {
   /** The config the next request changes. */
   @property({ attribute: false }) public config!: AutomationConfig;
 
-  /** A sidebar on the side of the editor instead of a bottom sheet. */
+  /** In the sidebar of the automation instead of a bottom sheet. */
   @property({ type: Boolean, reflect: true }) public docked = false;
 
   /** Whether the last request of the AI changed the automation. */
@@ -175,7 +177,7 @@ export class HaAutomationAiSheet extends LitElement {
       return nothing;
     }
     const content = html`<div class="sheet">
-      ${this._renderHeader()}
+      ${this.docked ? nothing : this._renderHeader()}
       <div class="content">
         ${this._turns.map((turn, index) =>
           this._renderTurn(turn, index === this._turns.length - 1)
@@ -186,14 +188,7 @@ export class HaAutomationAiSheet extends LitElement {
       ${this._renderPrompt()}
     </div>`;
     if (this.docked) {
-      return html`<section
-        class="sidebar"
-        aria-label=${this.hass.localize(
-          "ui.panel.config.automation.editor.ai.title"
-        )}
-      >
-        ${content}
-      </section>`;
+      return content;
     }
     return html`
       <ha-snap-bottom-sheet
@@ -472,14 +467,25 @@ export class HaAutomationAiSheet extends LitElement {
           @prompt-submit=${this._submit}
           @pick-target=${this._pickTarget}
         ></ha-automation-ai-prompt>
-        <ha-icon-button
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.ai.send"
-          )}
-          .path=${mdiSend}
-          .disabled=${!!this._running || !this._prompt.trim()}
-          @click=${this._submit}
-        ></ha-icon-button>
+        ${
+          // The sidebar has no header with a stop button
+          this._running && this.docked
+            ? html`<ha-icon-button
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.ai.stop.label"
+                )}
+                .path=${mdiStop}
+                @click=${this._stop}
+              ></ha-icon-button>`
+            : html`<ha-icon-button
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.ai.send"
+                )}
+                .path=${mdiSend}
+                .disabled=${!!this._running || !this._prompt.trim()}
+                @click=${this._submit}
+              ></ha-icon-button>`
+        }
       </form>
     `;
   }
@@ -643,18 +649,9 @@ export class HaAutomationAiSheet extends LitElement {
       height: 100%;
       min-height: 0;
     }
-    /* Like the item sidebar of the editor */
-    .sidebar {
+    :host([docked]) {
+      display: block;
       height: 100%;
-      box-sizing: border-box;
-      overflow: hidden;
-      border: 1px solid var(--divider-color);
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-      background-color: var(--ha-card-background, var(--card-background-color));
-    }
-    :host([docked]) .header {
-      padding-top: 0;
-      border-radius: 0;
     }
     .header {
       position: relative;

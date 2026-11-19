@@ -200,11 +200,7 @@ export const manualEditorStyles = css`
   .has-sidebar {
     --sidebar-width: min(
       max(var(--sidebar-dynamic-width), ${SIDEBAR_MIN_WIDTH}px),
-      100vw -
-        ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px) - var(
-          --ai-sidebar-space,
-          0px
-        ),
+      100vw - ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px),
       var(--ha-automation-editor-max-width) -
         ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px)
     );

@@ -90,6 +90,8 @@ import { showAutomationSaveDialog } from "./automation-save-dialog/show-dialog-a
 import { showAutomationSaveTimeoutDialog } from "./automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 import { ADD_AUTOMATION_ELEMENT_QUERY_PARAM } from "./show-add-automation-element-dialog";
 import "./blueprint-automation-editor";
+import "./ha-automation-general-sidebar";
+import type { AutomationGeneralSidebarTab } from "./ha-automation-general-sidebar";
 import type { EditorDomainHooks } from "./ha-automation-script-editor-mixin";
 import {
   AutomationScriptEditorMixin,
@@ -135,7 +137,6 @@ declare global {
 }
 
 // The content, the item sidebar and the AI sidebar fit next to each other
-const AI_SIDEBAR_BESIDE_WIDTH = 1200;
 
 const withoutId = (config?: AutomationConfig) => {
   if (!config) {
@@ -209,9 +210,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   /** Whether the editor shows the last change of the AI instead of the config. */
   @state() private _aiShowChanges = false;
 
-  // Wide enough for the AI sidebar next to the item sidebar, otherwise the
-  // item sidebar covers it
-  @state() private _aiSidebarBeside = true;
+  // The sidebar of the automation as a whole, on wide screens
+  @state() private _generalSidebarOpen = false;
+
+  @state() private _generalSidebarTab: AutomationGeneralSidebarTab = "info";
 
   @provide({ context: automationDiffContext })
   @state()
@@ -225,18 +227,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   /** Whether editing is locked, while the AI works or its changes show. */
   private get _aiActive(): boolean {
     return this._aiBusy || this._aiShowChanges;
-  }
-
-  private _resizeObserver?: ResizeObserver;
-
-  @query("hass-subpage") private _subpage?: HTMLElement;
-
-  private _observedSubpage?: HTMLElement;
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._resizeObserver?.disconnect();
-    this._observedSubpage = undefined;
   }
 
   protected domainHooks: EditorDomainHooks<AutomationConfig> = {
@@ -335,10 +325,11 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     const shortcutIcon = renderCtrlOrCmd(this.hass.localize);
     const aiSettings = this._aiDiff?.settings ?? {};
     const aiSheetHidden = this.narrow && this._sidebarOpen;
-    // On wide screens the AI is a sidebar on the right, the editor makes room
-    const aiDocked = this._aiSheetOpen && !this.narrow;
+    // On wide screens the editor makes room for the sidebar of the
+    // automation, on narrow ones for the AI sheet
+    const generalSidebar = this._generalSidebarOpen && !this.narrow;
     const aiSheetSpace =
-      this._aiSheetOpen && !aiDocked && !aiSheetHidden
+      this._aiSheetOpen && this.narrow && !aiSheetHidden
         ? `${this._aiSheetHeight}px`
         : undefined;
 
@@ -446,6 +437,19 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                 @click=${this._toggleYamlMode}
               ></ha-icon-button>`
             : nothing
+        }
+        ${
+          this.narrow
+            ? nothing
+            : html`<ha-icon-button
+                slot="toolbar-icon"
+                class=${classMap({ active: generalSidebar })}
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.general_sidebar.open"
+                )}
+                .path=${mdiInformationOutline}
+                @click=${this._toggleGeneralSidebar}
+              ></ha-icon-button>`
         }
         <ha-dropdown
           slot="toolbar-icon"
@@ -641,7 +645,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         <div
           class=${classMap({
             "yaml-mode": this.mode === "yaml",
-            "ai-docked": aiDocked && this.mode === "yaml",
+            "general-sidebar": generalSidebar && this.mode === "yaml",
           })}
           style=${styleMap({
             "padding-bottom": this.mode === "yaml" ? aiSheetSpace : undefined,
@@ -689,8 +693,8 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                               .hideSave=${this._aiActive}
                               .aiAction=${this._aiAction()}
                               @ai-edit-requested=${this._openAiSheet}
-                              class=${aiDocked ? "ai-docked" : ""}
-                              .aiOverlay=${aiDocked && !this._aiSidebarBeside}
+                              class=${generalSidebar ? "general-sidebar" : ""}
+                              .generalSidebar=${generalSidebar}
                               style=${styleMap({
                                 "padding-bottom": aiSheetSpace,
                               })}
@@ -864,23 +868,44 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           }
         </div>
         ${
-          this._aiSheetOpen
-            ? html`<ha-automation-ai-sheet
-                .hass=${this.hass}
-                .config=${this.config}
-                .docked=${!this.narrow}
-                .changes=${!!this._computeAiDiff(
-                  this._aiChange?.before,
-                  this._aiChange?.after
-                )?.hasChanges}
-                .showingChanges=${this._aiShowChanges}
-                .suspended=${aiSheetHidden}
-                @ai-request-started=${this._aiRequestStarted}
-                @ai-request-finished=${this._aiRequestFinished}
-                @ai-toggle-changes=${this._aiToggleChanges}
-                @ai-sheet-closed=${this._aiSheetClosed}
-                @bottom-sheet-resized=${this._aiSheetResized}
-              ></ha-automation-ai-sheet>`
+          // Stays while hidden, so the AI keeps its conversation
+          this._generalSidebarOpen || this._aiSheetOpen
+            ? html`<ha-automation-general-sidebar
+                .config=${this._aiDiff?.config ?? this.config}
+                .stateObj=${stateObj}
+                .tab=${this._generalSidebarTab}
+                .disabled=${this.readOnly || this._aiActive || this.mode === "yaml"}
+                .aiAvailable=${this._aiSheetOpen}
+                .aiWorking=${this._aiBusy}
+                .narrow=${this.narrow}
+                ?hidden=${!this.narrow && !this._generalSidebarOpen}
+                @general-sidebar-tab-changed=${this._generalSidebarTabChanged}
+                @general-sidebar-closed=${this._closeGeneralSidebar}
+                @automation-info-changed=${this._automationInfoChanged}
+                @automation-info-action=${this._automationInfoAction}
+              >
+                ${
+                  this._aiSheetOpen
+                    ? html`<ha-automation-ai-sheet
+                        slot="ai"
+                        .hass=${this.hass}
+                        .config=${this.config}
+                        .docked=${!this.narrow}
+                        .changes=${!!this._computeAiDiff(
+                          this._aiChange?.before,
+                          this._aiChange?.after
+                        )?.hasChanges}
+                        .showingChanges=${this._aiShowChanges}
+                        .suspended=${aiSheetHidden}
+                        @ai-request-started=${this._aiRequestStarted}
+                        @ai-request-finished=${this._aiRequestFinished}
+                        @ai-toggle-changes=${this._aiToggleChanges}
+                        @ai-sheet-closed=${this._aiSheetClosed}
+                        @bottom-sheet-resized=${this._aiSheetResized}
+                      ></ha-automation-ai-sheet>`
+                    : nothing
+                }
+              </ha-automation-general-sidebar>`
             : nothing
         }
       </hass-subpage>
@@ -893,7 +918,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     if (
       !this._aiAvailable ||
       this.readOnly ||
-      this._aiSheetOpen ||
+      this._aiVisible ||
       this.yamlErrors ||
       !this.config
     ) {
@@ -908,9 +933,74 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     );
   }
 
+  // Whether the user sees the AI, which then needs no button to open it
+  private get _aiVisible(): boolean {
+    return (
+      this._aiSheetOpen &&
+      (this.narrow ||
+        (this._generalSidebarOpen && this._generalSidebarTab === "ai"))
+    );
+  }
+
   private async _openAiSheet() {
     await import("./ai/ha-automation-ai-sheet");
     this._aiSheetOpen = true;
+    this._openGeneralSidebar("ai");
+  }
+
+  private _openGeneralSidebar(tab: AutomationGeneralSidebarTab) {
+    // The sidebar of a row would cover it
+    this._manualEditor?.triggerCloseSidebar();
+    this._generalSidebarTab = tab;
+    this._generalSidebarOpen = true;
+  }
+
+  private _toggleGeneralSidebar() {
+    if (this._generalSidebarOpen && !this._sidebarOpen) {
+      this._closeGeneralSidebar();
+      return;
+    }
+    this._openGeneralSidebar(this._generalSidebarTab);
+  }
+
+  private _closeGeneralSidebar() {
+    this._generalSidebarOpen = false;
+    // Nothing to switch back with while the sidebar is closed
+    this._aiShowChanges = false;
+  }
+
+  private _generalSidebarTabChanged(
+    ev: HASSDomEvent<HASSDomEvents["general-sidebar-tab-changed"]>
+  ) {
+    this._generalSidebarTab = ev.detail.tab;
+  }
+
+  private _automationInfoChanged(
+    ev: HASSDomEvent<HASSDomEvents["automation-info-changed"]>
+  ) {
+    if (!this.config || this._aiActive) {
+      return;
+    }
+    this._updateConfig({ ...this.config, ...ev.detail });
+  }
+
+  private _automationInfoAction(
+    ev: HASSDomEvent<HASSDomEvents["automation-info-action"]>
+  ) {
+    switch (ev.detail.action) {
+      case "toggle":
+        this._toggle();
+        break;
+      case "mode":
+        this._promptAutomationMode();
+        break;
+      case "more_info":
+        this._showInfo();
+        break;
+      case "settings":
+        this.showSettings();
+        break;
+    }
   }
 
   private _aiRequestStarted() {
@@ -957,19 +1047,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-
-    // The host is inline and has no size, so this measures the page in it
-    if (this._subpage !== this._observedSubpage) {
-      this._resizeObserver?.disconnect();
-      this._observedSubpage = this._subpage;
-      if (this._subpage && "ResizeObserver" in window) {
-        this._resizeObserver ??= new ResizeObserver(([entry]) => {
-          this._aiSidebarBeside =
-            entry.contentRect.width >= AI_SIDEBAR_BESIDE_WIDTH;
-        });
-        this._resizeObserver.observe(this._subpage);
-      }
-    }
 
     if (!this.hass) {
       return;
@@ -1683,22 +1760,29 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           display: none;
         }
         :host {
-          --ai-sidebar-width: 380px;
+          --general-sidebar-width: 380px;
         }
-        /* Room for the AI sidebar on the right */
-        .ai-docked,
-        manual-automation-editor.ai-docked {
-          --ai-sidebar-space: calc(var(--ai-sidebar-width) + var(--ha-space-4));
-          margin-inline-end: var(--ai-sidebar-space);
+        /* Room for the sidebar of the automation on the right */
+        .general-sidebar,
+        manual-automation-editor.general-sidebar {
+          margin-inline-end: calc(
+            var(--general-sidebar-width) + var(--ha-space-4)
+          );
         }
-        ha-automation-ai-sheet[docked] {
+        ha-automation-general-sidebar:not([narrow]) {
           position: fixed;
           top: calc(var(--header-height) + 16px);
           inset-inline-end: var(--ha-space-3);
-          width: var(--ai-sidebar-width);
+          width: var(--general-sidebar-width);
           height: calc(-81px + 100vh - var(--safe-area-inset-top, 0px));
           height: calc(-81px + 100dvh - var(--safe-area-inset-top, 0px));
           z-index: 1;
+        }
+        ha-automation-general-sidebar[hidden] {
+          display: none;
+        }
+        ha-icon-button.active {
+          color: var(--primary-color);
         }
         .ai-alias {
           padding: 0 var(--ha-space-2);

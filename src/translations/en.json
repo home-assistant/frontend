@@ -5911,6 +5911,15 @@
               "no_inputs": "This blueprint doesn't have any inputs."
             },
             "change_mode": "Change mode",
+            "general_sidebar": {
+              "open": "Automation info",
+              "info": "Info",
+              "ai": "AI",
+              "status": "Automation status",
+              "enabled": "Enabled",
+              "disabled": "Disabled",
+              "mode": "Automation mode"
+            },
             "ai": {
               "menu": "Edit with AI",
               "title": "Edit with AI",
