@@ -410,8 +410,6 @@ class OnboardingLocation extends LitElement {
   }
 
   private async _handleButtonClick(ev) {
-    // The button turns into a spinner, which would drop focus to the page.
-    // focus() is a no-op here, as the button is already inside the input.
     this._input?.select();
     if (this._search) {
       this._searchAddress(ev.target.parentElement.value);
