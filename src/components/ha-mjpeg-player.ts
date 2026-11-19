@@ -3,10 +3,9 @@ import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 
-// How often the image is checked for its first frame
 const LOAD_CHECK_INTERVAL = 250;
 
-// MJPEG streams rarely send more frames than this
+// Limits the copying, MJPEG streams rarely send more frames than this
 const PICTURE_IN_PICTURE_FRAME_RATE = 15;
 
 /**
@@ -47,21 +46,33 @@ export class HaMjpegPlayer extends LitElement {
     return this._canCopy ? this._videoEl : undefined;
   }
 
-  /** Starts playing the video, which picture in picture needs first. */
-  public async preparePictureInPicture(): Promise<void> {
+  /**
+   * Starts copying the image into the video and opens it picture in
+   * picture. Stops copying again when it can't be opened.
+   */
+  public async requestPictureInPicture(): Promise<void> {
     const video = this._videoEl;
-    if (!this._canCopy || !video || this._stream) {
+    if (!this._canCopy || !video) {
       return;
     }
-    this._drawFrame();
-    // Captures a frame whenever the canvas is drawn
-    this._stream = this._canvas!.captureStream();
-    video.srcObject = this._stream;
-    this._drawInterval = window.setInterval(
-      () => this._drawFrame(),
-      1000 / PICTURE_IN_PICTURE_FRAME_RATE
-    );
-    await video.play();
+    try {
+      if (!this._stream) {
+        this._drawFrame();
+        // Captures a frame whenever the canvas is drawn
+        this._stream = this._canvas!.captureStream();
+        video.srcObject = this._stream;
+        this._drawInterval = window.setInterval(
+          () => this._drawFrame(),
+          1000 / PICTURE_IN_PICTURE_FRAME_RATE
+        );
+      }
+      // Picture in picture needs the video to play first
+      await video.play();
+      await video.requestPictureInPicture();
+    } catch (err: unknown) {
+      this._stopVideo();
+      throw err;
+    }
   }
 
   public connectedCallback() {

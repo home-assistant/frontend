@@ -99,6 +99,9 @@ export class HaCameraStream extends LitElement {
   // Streams that played their first frame
   @state() private _loadedStreams: ReadonlySet<CameraStreamType> = new Set();
 
+  // The app plays the HLS stream in its own player, over the page
+  @state() private _hlsInApp = false;
+
   @query("ha-web-rtc-player") private _webRtcPlayer?: HaWebRtcPlayer;
 
   @query(
@@ -150,17 +153,20 @@ export class HaCameraStream extends LitElement {
     return this._webRtcPlayer?.microphoneTrack;
   }
 
-  /** The video of the shown stream, for picture in picture and the like. */
+  /** The video of the shown stream. */
   public get videoElement(): HTMLVideoElement | undefined {
     return this._visiblePlayer?.videoElement;
   }
 
-  /** Gets the video of the shown stream ready for picture in picture. */
-  public async preparePictureInPicture() {
+  /** Opens the video of the shown stream picture in picture. */
+  public async requestPictureInPicture() {
     const player = this._visiblePlayer;
-    if (player && "preparePictureInPicture" in player) {
-      await player.preparePictureInPicture();
+    // An MJPEG stream first has to start copying its image into the video
+    if (player && "requestPictureInPicture" in player) {
+      await player.requestPictureInPicture();
+      return;
     }
+    await this.videoElement?.requestPictureInPicture();
   }
 
   /** Toggles sending the microphone to the camera, only on WebRTC streams. */
@@ -195,18 +201,22 @@ export class HaCameraStream extends LitElement {
       this._visibleStreamType = visibleStreamType;
       fireEvent(this, "stream-type-changed", { type: visibleStreamType });
     }
-    const status = computeCameraStreamStatus(
-      streams,
-      this._loadedStreams,
-      this._hlsStreams,
-      this._webRtcStreams
-    );
+    const status: CameraStreamStatus = {
+      ...computeCameraStreamStatus(
+        streams,
+        this._loadedStreams,
+        this._hlsStreams,
+        this._webRtcStreams
+      ),
+      inApp: visibleStreamType === STREAM_TYPE_HLS && this._hlsInApp,
+    };
     if (
       !this._status ||
       status.type !== this._status.type ||
       status.connecting !== this._status.connecting ||
       status.upgrading !== this._status.upgrading ||
-      status.hasAudio !== this._status.hasAudio
+      status.hasAudio !== this._status.hasAudio ||
+      status.inApp !== this._status.inApp
     ) {
       this._status = status;
       fireEvent(this, "camera-stream-status-changed", status);
@@ -271,6 +281,7 @@ export class HaCameraStream extends LitElement {
         .posterUrl=${this._posterUrl}
         @streams=${this._handleHlsStreams}
         @load=${this._handleHlsLoad}
+        @exoplayer-changed=${this._handleExoPlayerChanged}
         class=${stream.visible ? "" : "hidden"}
         .aspectRatio=${this.aspectRatio}
         .fitMode=${this.fitMode}
@@ -329,6 +340,7 @@ export class HaCameraStream extends LitElement {
     this._hlsStreams = undefined;
     this._webRtcStreams = undefined;
     this._loadedStreams = new Set();
+    this._hlsInApp = false;
   }
 
   private _setLoaded(type: CameraStreamType, loaded: boolean) {
@@ -369,6 +381,12 @@ export class HaCameraStream extends LitElement {
 
   private _handleHlsLoad() {
     this._setLoaded(STREAM_TYPE_HLS, true);
+  }
+
+  private _handleExoPlayerChanged(
+    ev: HASSDomEvent<HASSDomEvents["exoplayer-changed"]>
+  ) {
+    this._hlsInApp = ev.detail.active;
   }
 
   private _handleWebRtcLoad() {

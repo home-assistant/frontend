@@ -89,6 +89,8 @@ export interface CameraStreamStatus {
   upgrading?: CameraStreamType;
   /** The shown stream has sound */
   hasAudio: boolean;
+  /** The app plays the shown stream in its own player, over the page */
+  inApp?: boolean;
 }
 
 export const computeCameraStreamStatus = (

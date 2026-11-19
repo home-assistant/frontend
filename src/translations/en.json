@@ -1370,6 +1370,7 @@
         "retry": "[%key:ui::panel::app::retry%]"
       },
       "camera-player": {
+        "play": "Play",
         "mute": "Mute",
         "unmute": "Unmute",
         "picture_in_picture": "Picture in picture",

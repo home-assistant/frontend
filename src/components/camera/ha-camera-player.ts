@@ -1,9 +1,11 @@
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import {
   mdiFullscreen,
   mdiFullscreenExit,
   mdiMagnifyMinusOutline,
   mdiPictureInPictureBottomRight,
   mdiPictureInPictureBottomRightOutline,
+  mdiPlay,
   mdiVolumeHigh,
   mdiVolumeOff,
 } from "@mdi/js";
@@ -12,6 +14,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import { deepActiveElement } from "../../common/dom/deep-active-element";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { ctrlOrCmdLabel } from "../../common/keyboard/ctrl-or-cmd";
 import type { LocalizeFunc } from "../../common/translations/localize";
@@ -26,17 +29,17 @@ import "../ha-spinner";
 import "../ha-svg-icon";
 import "./ha-camera-stream-badge";
 import {
+  clampZoomPan,
   isZoomed,
   panBy,
   ZOOM_PAN_IDENTITY,
   zoomAtPoint,
   type ZoomPan,
+  type ZoomPanSize,
 } from "./zoom-pan";
 
-// How long the controls stay after the last interaction
 const CONTROLS_TIMEOUT = 3000;
 
-// How long the hint to hold the modifier key to zoom stays
 const WHEEL_HINT_TIMEOUT = 1500;
 
 // Movement in pixels up to which a press is a tap rather than a drag
@@ -47,6 +50,9 @@ const TAP_MAX_DURATION = 300;
 // Zoom per pixel scrolled, a mouse wheel notch scrolls about 100 pixels
 const WHEEL_ZOOM_SPEED = 0.0025;
 
+// The longer side of the minimap of a zoomed in picture, in pixels
+const MINIMAP_SIZE = 64;
+
 interface PointerInfo {
   x: number;
   y: number;
@@ -56,7 +62,7 @@ interface PointerInfo {
   type: string;
 }
 
-// Only Safari on iPhone can't show elements full screen, only the video
+// Safari on iPhone can only show a video full screen, not other elements
 interface WebKitVideoElement extends HTMLVideoElement {
   webkitEnterFullscreen?: () => void;
   webkitSupportsFullscreen?: boolean;
@@ -107,6 +113,10 @@ export class HaCameraPlayer extends LitElement {
 
   @state() private _wheelHint = false;
 
+  // Paused from outside, like in picture in picture or the iPhone's own
+  // full screen player
+  @state() private _paused = false;
+
   @query("ha-camera-stream") private _stream?: HaCameraStream;
 
   @query(".player") private _player?: HTMLElement;
@@ -116,6 +126,15 @@ export class HaCameraPlayer extends LitElement {
   @query(".overlay") private _overlay?: HTMLElement;
 
   private _pointers = new Map<number, PointerInfo>();
+
+  // The size of the viewport the zoom was last made for
+  private _zoomSize: ZoomPanSize = { width: 0, height: 0 };
+
+  private _viewportResize = new ResizeController(this, {
+    target: null,
+    skipInitial: true,
+    callback: () => this._viewportResized(),
+  });
 
   private _controlsTimeout?: number;
 
@@ -182,6 +201,12 @@ export class HaCameraPlayer extends LitElement {
     }
   }
 
+  protected firstUpdated() {
+    if (this._viewport) {
+      this._viewportResize.observe(this._viewport);
+    }
+  }
+
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("keepAwake")) {
@@ -201,8 +226,11 @@ export class HaCameraPlayer extends LitElement {
     if (!this.stateObj) {
       return nothing;
     }
-    const zoomed = isZoomed(this._zoom);
     const status = this._status;
+    // The app plays the stream in its own player over the page, which the
+    // controls and zoom of this one can't reach, so it shows just the stream
+    const inApp = Boolean(status.inApp);
+    const zoomed = !inApp && isZoomed(this._zoom);
     // Stays while the connection changes, so the user sees what happens
     const badgeVisible =
       this._controlsVisible ||
@@ -230,6 +258,7 @@ export class HaCameraPlayer extends LitElement {
           @pointerdown=${this._pointerDown}
           @pointerup=${this._pointerUp}
           @pointercancel=${this._pointerCancel}
+          @lostpointercapture=${this._pointerCancel}
           @dblclick=${this._doubleClick}
           @dragstart=${this._preventDrag}
           @wheel=${this._wheelListener}
@@ -249,102 +278,150 @@ export class HaCameraPlayer extends LitElement {
             @camera-capabilities-changed=${this._capabilitiesChanged}
           ></ha-camera-stream>
         </div>
-        <div
-          class=${classMap({ overlay: true, visible: this._controlsVisible })}
-        >
-          <div class="row">
-            <ha-camera-stream-badge
-              class=${classMap({ visible: badgeVisible })}
-              .status=${status}
-              @click=${this._showStreamInfo}
-            ></ha-camera-stream-badge>
-            <div class="group">
-              ${
-                this._wheelHint
-                  ? html`<span class="wheel-hint" aria-hidden="true">
-                      ${this._localize(
-                        "ui.components.camera-player.zoom_hint",
-                        { modifier: ctrlOrCmdLabel(this._localize) }
-                      )}
-                    </span>`
-                  : nothing
-              }
-              ${
-                zoomed
-                  ? html`<ha-icon-button
-                      class="control"
-                      .label=${this._localize(
-                        "ui.components.camera-player.reset_zoom"
-                      )}
-                      .path=${mdiMagnifyMinusOutline}
-                      @click=${this._resetZoom}
-                    ></ha-icon-button>`
-                  : nothing
-              }
-            </div>
+        ${inApp ? nothing : this._renderControls(status, zoomed, badgeVisible)}
+      </div>
+    `;
+  }
+
+  private _renderControls(
+    status: CameraStreamStatus,
+    zoomed: boolean,
+    badgeVisible: boolean
+  ) {
+    return html`
+      ${
+        this._paused && !status.connecting
+          ? html`<ha-icon-button
+              class="control pinned play"
+              .label=${this._localize("ui.components.camera-player.play")}
+              .path=${mdiPlay}
+              @click=${this._ensurePlaying}
+            ></ha-icon-button>`
+          : nothing
+      }
+      <div class=${classMap({ overlay: true, visible: this._controlsVisible })}>
+        <div class="row">
+          <ha-camera-stream-badge
+            class=${classMap({ visible: badgeVisible })}
+            .status=${status}
+            @click=${this._showStreamInfo}
+          ></ha-camera-stream-badge>
+          <div class="group">
+            ${
+              this._wheelHint
+                ? html`<span class="wheel-hint" aria-hidden="true">
+                    ${this._localize("ui.components.camera-player.zoom_hint", {
+                      modifier: ctrlOrCmdLabel(this._localize),
+                    })}
+                  </span>`
+                : nothing
+            }
+            ${zoomed ? this._renderMinimap() : nothing}
+            ${
+              zoomed
+                ? html`<ha-icon-button
+                    class="control"
+                    .label=${this._localize(
+                      "ui.components.camera-player.reset_zoom"
+                    )}
+                    .path=${mdiMagnifyMinusOutline}
+                    @click=${this._resetZoom}
+                  ></ha-icon-button>`
+                : nothing
+            }
           </div>
-          <div class="row">
-            <div class="group">
-              ${
-                status.hasAudio
-                  ? html`<ha-icon-button
-                      class=${classMap({
-                        control: true,
-                        // Stays while muted, so it is clear there is sound
-                        pinned: this._muted,
-                      })}
-                      .label=${this._localize(
-                        this._muted
-                          ? "ui.components.camera-player.unmute"
-                          : "ui.components.camera-player.mute"
-                      )}
-                      .path=${this._muted ? mdiVolumeOff : mdiVolumeHigh}
-                      @click=${this._toggleMute}
-                    ></ha-icon-button>`
-                  : nothing
-              }
-            </div>
-            <div class="group">
-              ${
-                this._supportsPictureInPicture()
-                  ? html`<ha-icon-button
-                      class="control"
-                      .label=${this._localize(
-                        this._pictureInPicture
-                          ? "ui.components.camera-player.exit_picture_in_picture"
-                          : "ui.components.camera-player.picture_in_picture"
-                      )}
-                      .path=${
-                        this._pictureInPicture
-                          ? mdiPictureInPictureBottomRightOutline
-                          : mdiPictureInPictureBottomRight
-                      }
-                      @click=${this._togglePictureInPicture}
-                    ></ha-icon-button>`
-                  : nothing
-              }
-              ${
-                this._supportsFullscreen()
-                  ? html`<ha-icon-button
-                      class="control"
-                      .label=${this._localize(
-                        this._fullscreen
-                          ? "ui.components.camera-player.exit_fullscreen"
-                          : "ui.components.camera-player.fullscreen"
-                      )}
-                      .path=${this._fullscreen ? mdiFullscreenExit : mdiFullscreen}
-                      @click=${this._toggleFullscreen}
-                    ></ha-icon-button>`
-                  : nothing
-              }
-            </div>
+        </div>
+        <div class="row">
+          <div class="group">
+            ${
+              status.hasAudio
+                ? html`<ha-icon-button
+                    class=${classMap({
+                      control: true,
+                      // Stays while muted, so it is clear there is sound
+                      pinned: this._muted,
+                    })}
+                    .label=${this._localize(
+                      this._muted
+                        ? "ui.components.camera-player.unmute"
+                        : "ui.components.camera-player.mute"
+                    )}
+                    .path=${this._muted ? mdiVolumeOff : mdiVolumeHigh}
+                    @click=${this._toggleMute}
+                  ></ha-icon-button>`
+                : nothing
+            }
+          </div>
+          <div class="group">
+            ${
+              this._supportsPictureInPicture()
+                ? html`<ha-icon-button
+                    class="control"
+                    .label=${this._localize(
+                      this._pictureInPicture
+                        ? "ui.components.camera-player.exit_picture_in_picture"
+                        : "ui.components.camera-player.picture_in_picture"
+                    )}
+                    .path=${
+                      this._pictureInPicture
+                        ? mdiPictureInPictureBottomRightOutline
+                        : mdiPictureInPictureBottomRight
+                    }
+                    @click=${this._togglePictureInPicture}
+                  ></ha-icon-button>`
+                : nothing
+            }
+            ${
+              this._supportsFullscreen()
+                ? html`<ha-icon-button
+                    class="control"
+                    .label=${this._localize(
+                      this._fullscreen
+                        ? "ui.components.camera-player.exit_fullscreen"
+                        : "ui.components.camera-player.fullscreen"
+                    )}
+                    .path=${this._fullscreen ? mdiFullscreenExit : mdiFullscreen}
+                    @click=${this._toggleFullscreen}
+                  ></ha-icon-button>`
+                : nothing
+            }
           </div>
         </div>
       </div>
     `;
   }
 
-  // Screen
+  /**
+   * The whole picture with the part that shows, so it is clear the zoom is
+   * digital and where in the picture it is. Positioned like the picture,
+   * which isn't mirrored in right to left languages.
+   */
+  private _renderMinimap() {
+    const { scale, x, y } = this._zoom;
+    const { width, height } = this._zoomSize;
+    if (!width || !height) {
+      return nothing;
+    }
+    const longSide = Math.max(width, height);
+    return html`<div
+      class=${classMap({ minimap: true, gesture: this._gesture })}
+      style=${styleMap({
+        width: `${(MINIMAP_SIZE * width) / longSide}px`,
+        height: `${(MINIMAP_SIZE * height) / longSide}px`,
+      })}
+      aria-hidden="true"
+    >
+      <div
+        class="area"
+        style=${styleMap({
+          left: `${(-x / (width * scale)) * 100}%`,
+          top: `${(-y / (height * scale)) * 100}%`,
+          width: `${100 / scale}%`,
+          height: `${100 / scale}%`,
+        })}
+      ></div>
+    </div>`;
+  }
 
   /**
    * Browsers release the lock when the page is hidden, so it is requested
@@ -384,8 +461,6 @@ export class HaCameraPlayer extends LitElement {
     this._wakeLock = undefined;
   }
 
-  // Controls
-
   private _showControls = () => {
     this._controlsVisible = true;
     this._scheduleHideControls();
@@ -395,17 +470,24 @@ export class HaCameraPlayer extends LitElement {
     clearTimeout(this._controlsTimeout);
     this._controlsTimeout = window.setTimeout(() => {
       this._controlsTimeout = undefined;
-      // Stay while the mouse is on a control
       if (
         this._overlay?.querySelector(
           ".control:hover, ha-camera-stream-badge:hover"
-        )
+        ) ||
+        this._hasKeyboardFocus()
       ) {
         this._scheduleHideControls();
         return;
       }
       this._controlsVisible = false;
     }, CONTROLS_TIMEOUT);
+  }
+
+  private _hasKeyboardFocus(): boolean {
+    return Boolean(
+      this.shadowRoot &&
+      deepActiveElement(this.shadowRoot)?.matches(":focus-visible")
+    );
   }
 
   private _hideControls() {
@@ -419,6 +501,9 @@ export class HaCameraPlayer extends LitElement {
   ) {
     const oldStatus = this._status;
     this._status = ev.detail;
+    if (ev.detail.inApp) {
+      this._zoom = ZOOM_PAN_IDENTITY;
+    }
     if (
       oldStatus.connecting !== ev.detail.connecting ||
       oldStatus.type !== ev.detail.type
@@ -441,8 +526,6 @@ export class HaCameraPlayer extends LitElement {
       supportedTypes: this._capabilities?.frontend_stream_types,
     });
   }
-
-  // Video
 
   private async _updateVideo() {
     const request = ++this._videoRequest;
@@ -478,8 +561,15 @@ export class HaCameraPlayer extends LitElement {
   private _bindVideo(video?: HTMLVideoElement) {
     if (!video) {
       this._pictureInPicture = false;
+      this._paused = false;
       return;
     }
+    for (const type of ["play", "pause", "emptied"]) {
+      video.addEventListener(type, this._updatePaused);
+    }
+    // Only a pause from outside shows the play button, not the moment before
+    // a new video starts playing
+    this._paused = false;
     video.addEventListener(
       "enterpictureinpicture",
       this._pictureInPictureChanged
@@ -492,6 +582,9 @@ export class HaCameraPlayer extends LitElement {
   }
 
   private _unbindVideo(video?: HTMLVideoElement) {
+    for (const type of ["play", "pause", "emptied"]) {
+      video?.removeEventListener(type, this._updatePaused);
+    }
     video?.removeEventListener(
       "enterpictureinpicture",
       this._pictureInPictureChanged
@@ -501,6 +594,15 @@ export class HaCameraPlayer extends LitElement {
       this._pictureInPictureChanged
     );
   }
+
+  // Without a source, like an MJPEG stream's video outside of picture in
+  // picture, it isn't paused
+  private _updatePaused = () => {
+    const video = this._video;
+    this._paused = Boolean(
+      video?.paused && (video.srcObject || video.currentSrc)
+    );
+  };
 
   private _toggleMute() {
     this._muted = !this._muted;
@@ -528,9 +630,7 @@ export class HaCameraPlayer extends LitElement {
       if (this._pictureInPicture) {
         await document.exitPictureInPicture();
       } else {
-        // An MJPEG stream only plays its video for picture in picture
-        await this._stream?.preparePictureInPicture();
-        await this._video?.requestPictureInPicture();
+        await this._stream?.requestPictureInPicture();
       }
     } catch (_err: unknown) {
       // Not possible right now, like before the video has loaded
@@ -593,11 +693,34 @@ export class HaCameraPlayer extends LitElement {
     }
   }
 
-  // Zoom and pan
-
   private _viewportSize() {
     const rect = this._viewport!.getBoundingClientRect();
-    return { rect, size: { width: rect.width, height: rect.height } };
+    // Kept for the minimap, every zoom and pan measures it first
+    this._zoomSize = { width: rect.width, height: rect.height };
+    return { rect, size: this._zoomSize };
+  }
+
+  /**
+   * Keeps the same part of the picture in view when the size changes, like
+   * when turning a phone.
+   */
+  private _viewportResized() {
+    const oldSize = this._zoomSize;
+    if (!isZoomed(this._zoom) || !this._viewport || !oldSize.width) {
+      return;
+    }
+    const { size } = this._viewportSize();
+    if (!size.width || !size.height) {
+      return;
+    }
+    this._zoom = clampZoomPan(
+      {
+        scale: this._zoom.scale,
+        x: (this._zoom.x * size.width) / oldSize.width,
+        y: (this._zoom.y * size.height) / oldSize.height,
+      },
+      size
+    );
   }
 
   private _resetZoom() {
@@ -605,7 +728,7 @@ export class HaCameraPlayer extends LitElement {
   }
 
   private _wheel(ev: WheelEvent) {
-    if (!this._viewport) {
+    if (!this._viewport || this._status.inApp) {
       return;
     }
     // A pinch on a touchpad scrolls with ctrl held
@@ -649,7 +772,7 @@ export class HaCameraPlayer extends LitElement {
   }
 
   private _doubleClick(ev: MouseEvent) {
-    if (!this._viewport) {
+    if (!this._viewport || this._status.inApp) {
       return;
     }
     if (isZoomed(this._zoom)) {
@@ -666,7 +789,7 @@ export class HaCameraPlayer extends LitElement {
   }
 
   private _pointerDown(ev: PointerEvent) {
-    if (ev.pointerType === "mouse" && ev.button !== 0) {
+    if (this._status.inApp || (ev.pointerType === "mouse" && ev.button !== 0)) {
       return;
     }
     this._pointers.set(ev.pointerId, {
@@ -677,9 +800,10 @@ export class HaCameraPlayer extends LitElement {
       startTime: ev.timeStamp,
       type: ev.pointerType,
     });
+    // Also a mouse released outside of the player ends its press here
+    (ev.currentTarget as HTMLElement).setPointerCapture(ev.pointerId);
     if (this._pointers.size > 1 || isZoomed(this._zoom)) {
       this._gesture = true;
-      (ev.currentTarget as HTMLElement).setPointerCapture(ev.pointerId);
     }
   }
 
@@ -704,10 +828,11 @@ export class HaCameraPlayer extends LitElement {
       if (!oldDistance) {
         return;
       }
+      // Zooms where the fingers were, then moves along with them
       const zoomed = zoomAtPoint(
         this._zoom,
         (this._zoom.scale * newDistance) / oldDistance,
-        { x: newCenter.x - rect.left, y: newCenter.y - rect.top },
+        { x: oldCenter.x - rect.left, y: oldCenter.y - rect.top },
         size
       );
       this._zoom = panBy(
@@ -760,7 +885,11 @@ export class HaCameraPlayer extends LitElement {
   }
 
   private _pointerLeave(ev: PointerEvent) {
-    if (ev.pointerType === "mouse" && !this._pointers.size) {
+    if (
+      ev.pointerType === "mouse" &&
+      !this._pointers.size &&
+      !this._hasKeyboardFocus()
+    ) {
       this._hideControls();
     }
   }
@@ -862,12 +991,14 @@ export class HaCameraPlayer extends LitElement {
     }
 
     .control,
+    .minimap,
     ha-camera-stream-badge {
       opacity: 0;
       transition: opacity var(--ha-animation-duration-normal, 250ms) ease-in-out;
     }
 
     .overlay.visible .control,
+    .overlay.visible .minimap,
     .control.pinned,
     ha-camera-stream-badge.visible {
       opacity: 1;
@@ -884,6 +1015,46 @@ export class HaCameraPlayer extends LitElement {
       border-radius: var(--ha-border-radius-circle);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
+    }
+
+    .play {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      --ha-icon-button-size: 64px;
+      --mdc-icon-size: 40px;
+    }
+
+    .minimap {
+      position: relative;
+      flex: none;
+      box-sizing: border-box;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: var(--ha-border-radius-sm);
+      background-color: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      animation: fade-in var(--ha-animation-duration-fast, 150ms) ease-out;
+    }
+
+    .minimap .area {
+      position: absolute;
+      box-sizing: border-box;
+      border: 1.5px solid white;
+      border-radius: 2px;
+      background-color: rgba(255, 255, 255, 0.2);
+      transition:
+        left var(--ha-animation-duration-fast, 150ms) ease-out,
+        top var(--ha-animation-duration-fast, 150ms) ease-out,
+        width var(--ha-animation-duration-fast, 150ms) ease-out,
+        height var(--ha-animation-duration-fast, 150ms) ease-out;
+    }
+
+    .minimap.gesture .area {
+      transition: none;
     }
 
     /* Where the reset zoom button comes once zoomed in */
@@ -911,8 +1082,12 @@ export class HaCameraPlayer extends LitElement {
     }
 
     @media (prefers-reduced-motion: reduce) {
-      ha-camera-stream {
+      ha-camera-stream,
+      .minimap .area {
         transition: none;
+      }
+      .minimap {
+        animation: none;
       }
       .wheel-hint {
         animation: none;
