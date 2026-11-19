@@ -8062,13 +8062,6 @@
           },
           "search_show_more": "Show {count} more",
           "subcategories": "Subcategories",
-          "kind": {
-            "label": "Type: {value}",
-            "all": "All",
-            "device": "Device",
-            "hub": "Hub",
-            "service": "Service"
-          },
           "connection": {
             "label": "Connection: {value}",
             "all": "All",

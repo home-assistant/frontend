@@ -132,19 +132,12 @@ type Connection = "local" | "cloud";
 
 const CONNECTIONS: Connection[] = ["local", "cloud"];
 
-// Like the website's types: a device, a hub of devices, or a service
-type Kind = "device" | "hub" | "service";
-
-const KINDS: Kind[] = ["device", "hub", "service"];
-
 interface ListFilters {
   connection?: Connection;
-  kind?: Kind;
 }
 
 const ofFilters = (item: IntegrationListItem, filters?: ListFilters) =>
-  (!filters?.connection || (filters.connection === "cloud") === !!item.cloud) &&
-  (!filters?.kind || item.integration_type === filters.kind);
+  !filters?.connection || (filters.connection === "cloud") === !!item.cloud;
 
 type SearchSection = "brand" | "category" | "integration" | "helper";
 
@@ -324,8 +317,6 @@ class AddIntegrationDialog extends LitElement {
   @state() private _connection?: Connection;
 
   // Only devices, hubs, or services
-  @state() private _kind?: Kind;
-
   // The section of the search results picked with its chip
   @state() private _searchSection?: SearchSection;
 
@@ -464,7 +455,6 @@ class AddIntegrationDialog extends LitElement {
     this._brand = undefined;
     this._searchSection = undefined;
     this._connection = undefined;
-    this._kind = undefined;
     this._showDiscoveredView = false;
     this._expanded = new Set();
     this._drilled = false;
@@ -503,8 +493,7 @@ class AddIntegrationDialog extends LitElement {
       changedProps.has("_brand") ||
       changedProps.has("_showDiscoveredView") ||
       changedProps.has("_searchSection") ||
-      changedProps.has("_connection") ||
-      changedProps.has("_kind")
+      changedProps.has("_connection")
     ) {
       this._stickyBrand = undefined;
       this._listScrolled = false;
@@ -765,11 +754,7 @@ class AddIntegrationDialog extends LitElement {
         (PROTOCOL_INTEGRATIONS as readonly string[]).includes(domain)
       )
       // Adding a Zigbee, Z-Wave or Matter device is local
-      .filter(
-        () =>
-          this._connection !== "cloud" &&
-          (!this._kind || this._kind === "device")
-      )
+      .filter(() => this._connection !== "cloud")
       .map((domain) => ({
         id: `${item.domain}/add_${domain}`,
         interactive: true,
@@ -802,9 +787,7 @@ class AddIntegrationDialog extends LitElement {
               ?.integration_type
           : integration.integration_type,
       }))
-      .filter((row) =>
-        ofFilters(row, this._getFilters(this._connection, this._kind))
-      )
+      .filter((row) => ofFilters(row, this._getFilters(this._connection)))
       .sort((a, b) =>
         caseInsensitiveStringCompare(a.name, b.name, this.hass.locale.language)
       );
@@ -908,7 +891,7 @@ class AddIntegrationDialog extends LitElement {
       this._integrations,
       this._helpers,
       this.hass.localize,
-      this._getFilters(this._connection, this._kind)
+      this._getFilters(this._connection)
     );
     return this._getCategoryCounts(integrations, helpers);
   }
@@ -922,17 +905,14 @@ class AddIntegrationDialog extends LitElement {
       this._subcategory,
       this._byBrand(),
       this._brand,
-      this._getFilters(this._connection, this._kind)
+      this._getFilters(this._connection)
     );
   }
 
   // One object while the filters stay, so the lists built from it stay too
-  private _getFilters = memoizeOne(
-    (connection?: Connection, kind?: Kind): ListFilters => ({
-      connection,
-      kind,
-    })
-  );
+  private _getFilters = memoizeOne((connection?: Connection): ListFilters => ({
+    connection,
+  }));
 
   // What the list shows: the search results, or what is browsed
   private _getRows(): IntegrationListItem[] {
@@ -956,7 +936,7 @@ class AddIntegrationDialog extends LitElement {
       this._filter!,
       this._categoryIcons,
       !this._integrationFilter,
-      this._getFilters(this._connection, this._kind)
+      this._getFilters(this._connection)
     );
   }
 
@@ -1394,12 +1374,6 @@ class AddIntegrationDialog extends LitElement {
                   ["all", ...CONNECTIONS],
                   this._connectionSelected
                 )}
-                ${this._renderFilterChip(
-                  "kind",
-                  this._kind ?? "all",
-                  ["all", ...KINDS],
-                  this._kindSelected
-                )}
               </div>`
       }
       <div
@@ -1513,7 +1487,7 @@ class AddIntegrationDialog extends LitElement {
   // All, or only what works without the cloud, or only what needs it
   // Like the data tables' group by: the filter's name and its value
   private _renderFilterChip(
-    filter: "browse_by" | "connection" | "kind",
+    filter: "browse_by" | "connection",
     value: string,
     options: readonly string[],
     selected: (ev: HaDropdownSelectEvent) => void
@@ -1548,11 +1522,6 @@ class AddIntegrationDialog extends LitElement {
           </ha-dropdown-item>`
       )}
     </ha-dropdown>`;
-  }
-
-  private _kindSelected(ev: HaDropdownSelectEvent) {
-    const value = ev.detail.item.value;
-    this._kind = value === "all" ? undefined : (value as Kind);
   }
 
   private _connectionSelected(ev: HaDropdownSelectEvent) {
@@ -1946,7 +1915,7 @@ class AddIntegrationDialog extends LitElement {
           this._integrations,
           this._helpers!,
           this.hass.localize,
-          this._getFilters(this._connection, this._kind)
+          this._getFilters(this._connection)
         )
       : [];
     const allBrands =
