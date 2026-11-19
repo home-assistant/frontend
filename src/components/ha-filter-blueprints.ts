@@ -91,8 +91,12 @@ export class HaFilterBlueprints extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    // An item may have been edited while the cached page was hidden
+    // An item may have been edited while the cached page was hidden, so look
+    // up the items without one again
     this._withoutBlueprint = undefined;
+    if (this.hasUpdated && listFilterValue(this.value)?.none) {
+      this._findRelated();
+    }
   }
 
   // Untyped, as it also checks private state
