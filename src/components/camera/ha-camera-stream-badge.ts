@@ -94,7 +94,7 @@ export class HaCameraStreamBadge extends LitElement {
       background-color: rgba(0, 0, 0, 0.45);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      color: white;
+      color: var(--ha-color-white);
       font-family: inherit;
       font-size: var(--ha-font-size-s);
       font-weight: var(--ha-font-weight-medium);
@@ -103,15 +103,16 @@ export class HaCameraStreamBadge extends LitElement {
     }
 
     button:focus-visible {
-      outline: 2px solid white;
-      outline-offset: 2px;
+      outline: var(--wa-focus-ring-style) var(--wa-focus-ring-width)
+        var(--ha-color-white);
+      outline-offset: var(--wa-focus-ring-offset);
     }
 
     .dot {
       width: 8px;
       height: 8px;
       border-radius: var(--ha-border-radius-circle);
-      background-color: var(--ha-color-green-60, #3fb950);
+      background-color: var(--ha-color-green-60);
     }
 
     .connecting .dot {
@@ -126,7 +127,7 @@ export class HaCameraStreamBadge extends LitElement {
       padding-inline-start: var(--ha-space-1);
       border-inline-start: 1px solid rgba(255, 255, 255, 0.3);
       opacity: 0.7;
-      --ha-spinner-indicator-color: white;
+      --ha-spinner-indicator-color: var(--ha-color-white);
       --ha-spinner-size: 10px;
       --ha-spinner-divider-color: rgba(255, 255, 255, 0.3);
     }

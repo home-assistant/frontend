@@ -963,7 +963,7 @@ export class HaCameraPlayer extends LitElement {
 
     ha-camera-stream {
       transform-origin: 0 0;
-      transition: transform var(--ha-animation-duration-fast, 150ms) ease-out;
+      transition: transform var(--ha-animation-duration-fast) ease-out;
     }
 
     .viewport.gesture ha-camera-stream {
@@ -994,7 +994,7 @@ export class HaCameraPlayer extends LitElement {
     .minimap,
     ha-camera-stream-badge {
       opacity: 0;
-      transition: opacity var(--ha-animation-duration-normal, 250ms) ease-in-out;
+      transition: opacity var(--ha-animation-duration-normal) ease-in-out;
     }
 
     .overlay.visible .control,
@@ -1009,7 +1009,7 @@ export class HaCameraPlayer extends LitElement {
     .control {
       --ha-icon-button-size: 40px;
       --mdc-icon-size: 22px;
-      color: white;
+      color: var(--ha-color-white);
       background-color: rgba(0, 0, 0, 0.45);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: var(--ha-border-radius-circle);
@@ -1037,20 +1037,20 @@ export class HaCameraPlayer extends LitElement {
       background-color: rgba(0, 0, 0, 0.45);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      animation: fade-in var(--ha-animation-duration-fast, 150ms) ease-out;
+      animation: fade-in var(--ha-animation-duration-fast) ease-out;
     }
 
     .minimap .area {
       position: absolute;
       box-sizing: border-box;
-      border: 1.5px solid white;
+      border: 1.5px solid var(--ha-color-white);
       border-radius: 2px;
       background-color: rgba(255, 255, 255, 0.2);
       transition:
-        left var(--ha-animation-duration-fast, 150ms) ease-out,
-        top var(--ha-animation-duration-fast, 150ms) ease-out,
-        width var(--ha-animation-duration-fast, 150ms) ease-out,
-        height var(--ha-animation-duration-fast, 150ms) ease-out;
+        left var(--ha-animation-duration-fast) ease-out,
+        top var(--ha-animation-duration-fast) ease-out,
+        width var(--ha-animation-duration-fast) ease-out,
+        height var(--ha-animation-duration-fast) ease-out;
     }
 
     .minimap.gesture .area {
@@ -1068,29 +1068,16 @@ export class HaCameraPlayer extends LitElement {
       background-color: rgba(0, 0, 0, 0.45);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      color: white;
+      color: var(--ha-color-white);
       font-size: var(--ha-font-size-s);
       font-weight: var(--ha-font-weight-medium);
       white-space: nowrap;
-      animation: fade-in var(--ha-animation-duration-fast, 150ms) ease-out;
+      animation: fade-in var(--ha-animation-duration-fast) ease-out;
     }
 
     @keyframes fade-in {
       from {
         opacity: 0;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      ha-camera-stream,
-      .minimap .area {
-        transition: none;
-      }
-      .minimap {
-        animation: none;
-      }
-      .wheel-hint {
-        animation: none;
       }
     }
   `;
