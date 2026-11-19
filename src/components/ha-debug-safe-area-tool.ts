@@ -330,8 +330,6 @@ export class HaDebugSafeAreaTool extends LitElement {
     .highlight {
       display: flex;
     }
-    /* The switch renders its control before the label, so flip the row to keep
-       the label on the start side with the control pushed to the end. */
     .highlight::part(base) {
       width: 100%;
       flex-direction: row-reverse;
