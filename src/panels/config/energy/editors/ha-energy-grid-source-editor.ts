@@ -70,7 +70,11 @@ import type {
   EnergyEditorStatus,
   EnergyGridSourceEditorParams,
 } from "./energy-editor";
-import { EnergyEditorMixin, energyEditorStyles } from "./energy-editor";
+import {
+  EnergyEditorMixin,
+  energyEditorStyles,
+  preselectedStatistics,
+} from "./energy-editor";
 
 const energyUnitClasses = ["energy"];
 
@@ -238,6 +242,13 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
         exportCostType: this._exportCostType,
       }
     );
+    if (!params.source) {
+      this._source = {
+        ...this._source,
+        ...preselectedStatistics(["stat_energy_from", "stat_energy_to"]),
+      };
+      this._updateFormDirtyState();
+    }
     this._loadUnits();
   }
 

@@ -4736,6 +4736,28 @@
               "now": "Now"
             }
           },
+          "suggestions": {
+            "title": "{count, plural,\n  one {# meter isn't}\n  other {# meters aren't}\n} in your energy dashboard yet",
+            "sub": "Choose where each meter belongs and add it, or dismiss it.",
+            "slot": "Add as",
+            "add": "Add",
+            "dismiss": "Dismiss",
+            "dismiss_failed": "Couldn't dismiss this meter",
+            "load_failed": "Couldn't check for meters that aren't in your energy dashboard yet.",
+            "slots": {
+              "grid_import": "Grid consumption",
+              "grid_export": "Return to grid",
+              "solar": "Solar production",
+              "battery_charge": "Battery charging",
+              "battery_discharge": "Battery discharging",
+              "home": "[%key:ui::panel::config::energy::home::title%]",
+              "gas": "Gas consumption",
+              "water": "Water consumption",
+              "device": "Individual device",
+              "device_gas": "[%key:ui::panel::config::energy::suggestions::slots::device%]",
+              "device_water": "[%key:ui::panel::config::energy::suggestions::slots::device%]"
+            }
+          },
           "delete_source": "Are you sure you want to remove this source?",
           "save_config_failed": "Failed to save config: {error}",
           "unsaved_confirm_title": "[%key:ui::panel::config::automation::editor::unsaved_confirm_title%]",
