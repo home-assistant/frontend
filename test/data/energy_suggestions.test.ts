@@ -195,28 +195,23 @@ describe("computeEnergySuggestions", () => {
       energy_sources: [
         {
           ...emptyGasEnergyPreference(),
-          stat_energy_from: "sensor.gas_volume",
+          stat_energy_from: "sensor.gas_energy",
         },
       ],
     },
     {
       ...EMPTY_PREFERENCES,
-      device_consumption_gas: [{ stat_consumption: "sensor.gas_volume" }],
+      device_consumption_gas: [{ stat_consumption: "sensor.gas_energy" }],
     },
   ])("doesn't mix gas units with the configured gas meter", (preferences) => {
     const input = buildInput(
       [
-        {
-          entityId: "sensor.gas_volume",
-          deviceClass: "gas",
-          unitClass: "volume",
-        },
-        { entityId: "sensor.gas_energy", deviceClass: "gas" },
+        { entityId: "sensor.gas_energy" },
         { entityId: "sensor.gas_new", deviceClass: "gas", unitClass: "volume" },
       ],
       preferences
     );
-    expect(tabs(input)).toEqual({ "sensor.gas_new": "gas" });
+    expect(tabs(input)).toEqual({});
   });
 });
 

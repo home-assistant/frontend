@@ -1,6 +1,7 @@
 import type { LitElement, PropertyValues } from "lit";
 import { css } from "lit";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { energyEditorQueryParamConfig } from "../../../../common/url/energy-editor-query-params";
 import { decodeQueryParams } from "../../../../common/url/query-params";
 import { shallowEqual } from "../../../../common/util/shallow-equal";
 import type {
@@ -86,12 +87,8 @@ export type EnergyEditorConfig =
   | { kind: "water"; params: EnergyWaterSourceEditorParams }
   | { kind: "water_gas_device"; params: EnergyWaterGasDeviceEditorParams };
 
-export const ENERGY_EDITOR_QUERY_PARAMS = {
-  string: ["stat_energy_from", "stat_energy_to", "stat_consumption"],
-} as const;
-
 type PreselectedStatistic =
-  (typeof ENERGY_EDITOR_QUERY_PARAMS)["string"][number];
+  (typeof energyEditorQueryParamConfig)["string"][number];
 
 /**
  * The statistics of a new item that the page URL preselects, like an energy

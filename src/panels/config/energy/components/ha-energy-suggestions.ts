@@ -10,7 +10,7 @@ import { consume } from "../../../../common/decorators/consume";
 import { consumeEntityStates } from "../../../../common/decorators/consume-context-entry";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { getEntityAreaId } from "../../../../common/entity/context/get_entity_context";
-import { createQueryString } from "../../../../common/url/query-params";
+import { createEnergyEditorQueryString } from "../../../../common/url/energy-editor-query-params";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
@@ -47,7 +47,6 @@ import { getStatisticIds } from "../../../../data/recorder_statistic_ids";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { ENERGY_EDITOR_QUERY_PARAMS } from "../editors/energy-editor";
 import { energyCardStyles } from "./styles";
 
 const TAB_ICONS: Record<EnergySuggestionTab, string> = {
@@ -332,10 +331,9 @@ export class EnergySuggestions extends LitElement {
     slot: EnergySuggestionSlot
   ) {
     const { kind, stat } = ENERGY_SUGGESTION_EDITORS[slot];
-    return `${this.listPath}/${kind}/new?${createQueryString(
-      { [stat]: suggestion.statisticId },
-      ENERGY_EDITOR_QUERY_PARAMS
-    )}`;
+    return `${this.listPath}/${kind}/new?${createEnergyEditorQueryString({
+      [stat]: suggestion.statisticId,
+    })}`;
   }
 
   private async _dismiss(ev: Event) {
