@@ -31,14 +31,18 @@ describe("logs query params", () => {
       provider: "core",
       search: "timeout",
       integrations: ["hue", "mqtt"],
+      integrationsExclude: false,
       levels: [],
+      levelsExclude: false,
       raw: false,
     });
     expect(logsLinkFromUrl("?provider=supervisor")).toEqual({
       provider: "supervisor",
       search: "",
       integrations: [],
+      integrationsExclude: false,
       levels: [],
+      levelsExclude: false,
       raw: false,
     });
     expect(logsLinkFromUrl("?integration=hue&raw=1")?.raw).toBe(true);
@@ -72,7 +76,9 @@ describe("logs query params", () => {
           provider: "core",
           search: "",
           integrations: [],
+          integrationsExclude: false,
           levels: [],
+          levelsExclude: false,
           raw: false,
         }),
         logsQueryParamConfig
@@ -88,7 +94,9 @@ describe("logs query params", () => {
           provider: "core",
           search: "old",
           integrations: [],
+          integrationsExclude: false,
           levels: [],
+          levelsExclude: false,
           raw: false,
         }),
         logsQueryParamConfig
@@ -101,7 +109,9 @@ describe("logs query params", () => {
       provider: "core",
       search: "timeout",
       integrations: ["hue", "mqtt"],
+      integrationsExclude: true,
       levels: ["critical", "error"],
+      levelsExclude: true,
       raw: true,
     };
     expect(
@@ -109,5 +119,19 @@ describe("logs query params", () => {
         createQueryString(logsQueryParams(state), logsQueryParamConfig)
       )
     ).toEqual(state);
+  });
+
+  it("leaves out the mode of a filter without a selection", () => {
+    expect(
+      logsQueryParams({
+        provider: "core",
+        search: "",
+        integrations: [],
+        integrationsExclude: true,
+        levels: [],
+        levelsExclude: true,
+        raw: false,
+      }).exclude
+    ).toEqual([]);
   });
 });

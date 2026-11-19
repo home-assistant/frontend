@@ -17,13 +17,24 @@ import type {
   HASSDomEvent,
 } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
+import type { ListFilterValue } from "../data/data_table_filters";
+import {
+  hasFilterSelection,
+  listFilterEventValue,
+  listFilterValue,
+} from "../data/data_table_filters";
+import { computeDomain } from "../common/entity/compute_domain";
 import { deepEqual } from "../common/util/deep-equal";
 import type { Blueprints } from "../data/blueprint";
 import { fetchBlueprints } from "../data/blueprint";
-import { apiContext } from "../data/context";
-import type { RelatedResult } from "../data/search";
+import { apiContext, statesContext } from "../data/context";
 import { findRelated } from "../data/search";
 import "./ha-expansion-panel";
+import {
+  filterBadgeStyles,
+  NO_VALUE_ID,
+  renderFilterBadge,
+} from "./ha-filter-mode";
 import "./ha-icon-button";
 import "./item/ha-list-item-option";
 import type { HaListItemOption } from "./item/ha-list-item-option";
@@ -39,7 +50,13 @@ export class HaFilterBlueprints extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
-  @property({ attribute: false }) public value?: string[];
+  // Only read when looking up the items without a blueprint, so it doesn't
+  // rerender the filter
+  @consume({ context: statesContext, subscribe: true })
+  private _states?: ContextType<typeof statesContext>;
+
+  // A plain list of ids is still accepted
+  @property({ attribute: false }) public value?: string[] | ListFilterValue;
 
   @property() public type?: "automation" | "script";
 
@@ -76,8 +93,12 @@ export class HaFilterBlueprints extends LitElement {
         <div slot="header" class="header">
           ${this._localize("ui.panel.config.blueprint.caption")}
           ${
-            this.value?.length
-              ? html`<div class="badge">${this.value?.length}</div>
+            this._count
+              ? html`${renderFilterBadge(
+                    this._localize,
+                    this._count,
+                    listFilterValue(this.value)?.exclude
+                  )}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._localize(
@@ -93,6 +114,10 @@ export class HaFilterBlueprints extends LitElement {
         this._panel.showContent
           ? html`
               <div class="content" ${ref(this._content)}>
+                <ha-filter-mode
+                  .exclude=${listFilterValue(this.value)?.exclude ?? false}
+                  @filter-mode-changed=${this._modeChanged}
+                ></ha-filter-mode>
                 ${
                   this._blueprints
                     ? html`
@@ -112,13 +137,25 @@ export class HaFilterBlueprints extends LitElement {
                                     appearance="checkbox"
                                     selection-position="end"
                                     .value=${id}
-                                    .selected=${this.value?.includes(id) ?? false}
+                                    .selected=${listFilterValue(this.value)?.ids?.includes(id) ?? false}
                                   >
                                     <span slot="headline"
                                       >${blueprint.metadata.name || id}</span
                                     >
                                   </ha-list-item-option>`
                           )}
+                          <ha-list-item-option
+                            appearance="checkbox"
+                            selection-position="end"
+                            .value=${NO_VALUE_ID}
+                            .selected=${listFilterValue(this.value)?.none ?? false}
+                          >
+                            <span slot="headline" class="no-value"
+                              >${this._localize(
+                                "ui.components.subpage-data-table.no_blueprint"
+                              )}</span
+                            >
+                          </ha-list-item-option>
                         </ha-list-selectable>
                       `
                     : nothing
@@ -137,6 +174,15 @@ export class HaFilterBlueprints extends LitElement {
     this._blueprints = await fetchBlueprints(this._api.callWS, this.type);
   }
 
+  private get _count(): number {
+    const value = listFilterValue(this.value);
+    return (value?.ids?.length || 0) + (value?.none ? 1 : 0);
+  }
+
+  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
+    this.value = { ...listFilterValue(this.value), exclude: ev.detail.exclude };
+  }
+
   private _expandedChanged(ev) {
     this.expanded = ev.detail.expanded;
   }
@@ -151,51 +197,79 @@ export class HaFilterBlueprints extends LitElement {
       return;
     }
 
-    this.value =
-      ev.type === "ha-list-item-selected"
-        ? arrayWith(this.value, blueprintId)
-        : arrayWithout(this.value, blueprintId);
+    const value = listFilterValue(this.value) ?? {};
+    if (blueprintId === NO_VALUE_ID) {
+      this.value = { ...value, none: ev.type === "ha-list-item-selected" };
+      return;
+    }
+    this.value = {
+      ...value,
+      ids:
+        ev.type === "ha-list-item-selected"
+          ? arrayWith(value.ids, blueprintId)
+          : arrayWithout(value.ids, blueprintId),
+    };
   }
 
   private async _findRelated() {
     const requestId = ++this._relatedRequestId;
-    if (!this.value?.length) {
-      this.value = [];
+    const value = listFilterValue(this.value) ?? {};
+
+    if (!hasFilterSelection(value)) {
       fireEvent(this, "data-table-filter-changed", {
-        value: [],
+        value: listFilterEventValue(value),
         items: undefined,
       });
       return;
     }
 
-    const relatedPromises: Promise<RelatedResult>[] = [];
+    const type = this.type;
 
-    for (const blueprintId of this.value) {
-      if (this.type) {
-        relatedPromises.push(
-          findRelated(this._api, `${this.type}_blueprint`, blueprintId)
-        );
-      }
-    }
-
-    const results = await Promise.all(relatedPromises);
+    const [results, withoutBlueprint] = await Promise.all([
+      type ? this._findForBlueprints(type, value.ids ?? []) : undefined,
+      type && value.none ? this._itemsWithoutBlueprint(type) : undefined,
+    ]);
 
     // The value changed while this lookup ran
     if (requestId !== this._relatedRequestId) {
       return;
     }
 
-    const items = new Set<string>();
-    for (const result of results) {
-      if (result[this.type!]) {
-        result[this.type!]!.forEach((item) => items.add(item));
-      }
-    }
+    const items = new Set<string>(withoutBlueprint);
+    results?.forEach((item) => items.add(item));
 
     fireEvent(this, "data-table-filter-changed", {
-      value: this.value,
-      items: this.type ? items : undefined,
+      value: listFilterEventValue(value),
+      items: type ? items : undefined,
     });
+  }
+
+  // The automations or scripts made from any of the blueprints
+  private async _findForBlueprints(
+    type: "automation" | "script",
+    blueprintIds: string[]
+  ): Promise<Set<string>> {
+    const results = await Promise.all(
+      blueprintIds.map((blueprintId) =>
+        findRelated(this._api, `${type}_blueprint`, blueprintId)
+      )
+    );
+    return new Set(results.flatMap((result) => result[type] ?? []));
+  }
+
+  private async _itemsWithoutBlueprint(
+    type: "automation" | "script"
+  ): Promise<string[]> {
+    const blueprints =
+      this._blueprints ?? (await fetchBlueprints(this._api.callWS, type));
+    const fromBlueprint = await this._findForBlueprints(
+      type,
+      Object.keys(blueprints)
+    );
+    return Object.keys(this._states ?? {}).filter(
+      (entityId) =>
+        computeDomain(entityId) === type && !fromBlueprint.has(entityId)
+    );
   }
 
   private _clearFilter(ev) {
@@ -210,6 +284,7 @@ export class HaFilterBlueprints extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       filterPanelStyles,
+      filterBadgeStyles,
       css`
         ha-list-selectable {
           display: flex;

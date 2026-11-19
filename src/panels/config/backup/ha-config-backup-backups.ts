@@ -69,6 +69,11 @@ import type {
   DataTableFiltersValue,
   DataTableFiltersValues,
 } from "../../../data/data_table_filters";
+import {
+  countActiveFilters,
+  hasFilterSelection,
+  matchesListFilter,
+} from "../../../data/data_table_filters";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   showAlertDialog,
@@ -362,11 +367,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         });
       }
 
-      if (Array.isArray(locationFilter) && locationFilter.length) {
+      if (hasFilterSelection(locationFilter)) {
         filteredBackups = filteredBackups.filter((backup) =>
-          Object.keys(backup.agents).some((agentId) =>
-            locationFilter.includes(agentId)
-          )
+          matchesListFilter(locationFilter, Object.keys(backup.agents))
         );
       }
       return filteredBackups.map((backup) => {
@@ -436,16 +439,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         clickable
         id="backup_id"
         has-filters
-        .filters=${
-          Object.values(this._filters).filter((filter) =>
-            Array.isArray(filter)
-              ? filter.length
-              : filter &&
-                Object.values(filter).some((val) =>
-                  Array.isArray(val) ? val.length : val
-                )
-          ).length
-        }
+        .filters=${countActiveFilters(Object.values(this._filters))}
         selectable
         .selected=${this._selected.length}
         .initialGroupColumn=${this._tableSettings.grouping}
@@ -526,6 +520,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           .narrow=${this.narrow}
         ></ha-filter-states>
         <ha-filter-states
+          excludable
           .label=${this.hass.localize("ui.panel.config.backup.locations")}
           .value=${this._filters[BACKUP_LOCATIONS_FILTER]}
           .states=${this._locations(

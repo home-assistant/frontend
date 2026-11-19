@@ -50,7 +50,11 @@ import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import { manifestsContext } from "../../../data/context";
-import type { DataTableFiltersValue } from "../../../data/data_table_filters";
+import type {
+  DataTableFiltersValue,
+  ListFilterValue,
+} from "../../../data/data_table_filters";
+import { listFilterValue } from "../../../data/data_table_filters";
 import type { LogProvider } from "../../../data/error_log";
 import {
   fetchHassioAddonsInfo,
@@ -127,11 +131,18 @@ export class HaConfigLogs extends LitElement {
 
   @state() private _integrations: string[] = [];
 
+  // Show the errors of the other integrations instead. The raw log is
+  // streamed per integration, so it can't leave any out.
+  @state() private _integrationsExclude = false;
+
   @state() private _logProviders = logProviders;
 
   @state() private _showFilters = false;
 
   @state() private _levels: SystemLogLevel[] = [];
+
+  // Show the entries of the other levels instead
+  @state() private _levelsExclude = false;
 
   // Only one filter is expanded at a time, so that it can use the height
   // that is left in the pane.
@@ -159,11 +170,27 @@ export class HaConfigLogs extends LitElement {
 
   @storage({
     storage: "sessionStorage",
+    key: "logs-integrations-exclude",
+    state: false,
+    subscribe: false,
+  })
+  private _storedIntegrationsExclude = false;
+
+  @storage({
+    storage: "sessionStorage",
     key: "logs-levels",
     state: false,
     subscribe: false,
   })
   private _storedLevels: SystemLogLevel[] = [];
+
+  @storage({
+    storage: "sessionStorage",
+    key: "logs-levels-exclude",
+    state: false,
+    subscribe: false,
+  })
+  private _storedLevelsExclude = false;
 
   @storage({ key: "logs-raw", state: false, subscribe: false })
   private _storedRaw = false;
@@ -218,8 +245,15 @@ export class HaConfigLogs extends LitElement {
   protected render(): TemplateResult {
     const core = this._selectedLogProvider === DEFAULT_LOG_PROVIDER;
     const integrations = core ? this._integrations : NO_INTEGRATIONS;
+    const integrationsExclude = core && this._integrationsExclude;
+    // The raw log can only show picked integrations
+    const rawIntegrations = integrationsExclude
+      ? NO_INTEGRATIONS
+      : integrations;
     const levels = core && !this._detail ? this._levels : NO_LEVELS;
-    const filterCount = integrations.length + levels.length;
+    const levelsExclude = core && !this._detail && this._levelsExclude;
+    const filterCount =
+      (this._detail ? rawIntegrations : integrations).length + levels.length;
     const filtersShown = core && this._showFilters;
     const filtersLabel = this.hass.localize(
       "ui.components.subpage-data-table.filters"
@@ -276,7 +310,12 @@ export class HaConfigLogs extends LitElement {
                 >
                   <ha-filter-integrations
                     .narrow=${this.narrow}
-                    .value=${this._integrations}
+                    excludable
+                    .modeDisabled=${this._detail}
+                    .value=${this._integrationsValue(
+                      this._integrations,
+                      this._integrationsExclude
+                    )}
                     .expanded=${
                       this._expandedFilter === "ha-filter-integrations"
                     }
@@ -288,7 +327,9 @@ export class HaConfigLogs extends LitElement {
                               this._logItems,
                               this._filter,
                               undefined,
+                              false,
                               levels,
+                              levelsExclude,
                               this.hass.localize,
                               this.hass.locale,
                               this.hass.config
@@ -304,7 +345,10 @@ export class HaConfigLogs extends LitElement {
                     this._detail
                       ? nothing
                       : html`<ha-filter-log-levels
-                          .value=${this._levels}
+                          .value=${this._levelsValue(
+                            this._levels,
+                            this._levelsExclude
+                          )}
                           .expanded=${
                             this._expandedFilter === "ha-filter-log-levels"
                           }
@@ -316,7 +360,9 @@ export class HaConfigLogs extends LitElement {
                                 integrations,
                                 this._manifests
                               ),
+                              integrationsExclude,
                               undefined,
+                              false,
                               this.hass.localize,
                               this.hass.locale,
                               this.hass.config
@@ -367,7 +413,9 @@ export class HaConfigLogs extends LitElement {
                           integrations,
                           this._manifests
                         )}
+                        .excludeIntegrations=${integrationsExclude}
                         .levels=${levels}
+                        .excludeLevels=${levelsExclude}
                         @switch-log-view=${this._showDetail}
                         @system-log-items-changed=${this._logItemsChanged}
                       ></system-log-card>
@@ -380,7 +428,7 @@ export class HaConfigLogs extends LitElement {
                       }
                       .filter=${this._filter}
                       .provider=${this._selectedLogProvider}
-                      .integrations=${integrations}
+                      .integrations=${rawIntegrations}
                       @switch-log-view=${this._showDetail}
                       allow-switch
                     ></error-log-card>`
@@ -414,10 +462,14 @@ export class HaConfigLogs extends LitElement {
     this._selectedLogProvider = provider;
     this._filter = "";
     this._integrations = [];
+    this._integrationsExclude = false;
     this._levels = [];
+    this._levelsExclude = false;
     this._storedSearch = "";
     this._storedIntegrations = [];
+    this._storedIntegrationsExclude = false;
     this._storedLevels = [];
+    this._storedLevelsExclude = false;
     // Keep the search typed so far on the entry Back returns to
     this._queryParams.flush();
     // Picking another provider is a navigation of its own, so Back returns
@@ -427,7 +479,9 @@ export class HaConfigLogs extends LitElement {
         provider,
         search: "",
         integrations: [],
+        integrationsExclude: false,
         levels: [],
+        levelsExclude: false,
         raw: this._detail,
       }),
       logsQueryParamConfig
@@ -449,19 +503,23 @@ export class HaConfigLogs extends LitElement {
     ev: HASSDomEvent<{ value: DataTableFiltersValue }>
   ) {
     ev.stopPropagation();
-    const value = ev.detail.value;
-    const integrations = Array.isArray(value) ? value : [];
+    const value = listFilterValue(ev.detail.value);
+    const integrations = value?.ids ?? [];
+    const exclude = !!value?.exclude;
 
     // The filter also sends the value it was given once it has its items, in
     // its own order, so only a change is the user's
     if (
       this._currentProvider() === DEFAULT_LOG_PROVIDER &&
-      !deepEqual([...integrations].sort(), [...this._integrations].sort())
+      (!deepEqual([...integrations].sort(), [...this._integrations].sort()) ||
+        exclude !== this._integrationsExclude)
     ) {
       this._storedIntegrations = integrations;
+      this._storedIntegrationsExclude = exclude;
     }
 
     this._integrations = integrations;
+    this._integrationsExclude = exclude;
     this._writeUrl();
   }
 
@@ -469,17 +527,21 @@ export class HaConfigLogs extends LitElement {
     const core = this._currentProvider() === DEFAULT_LOG_PROVIDER;
 
     this._integrations = [];
+    this._integrationsExclude = false;
 
     if (core) {
       this._storedIntegrations = [];
+      this._storedIntegrationsExclude = false;
     }
 
     // Levels don't apply to the raw log, so they're kept for the errors view
     if (!this._detail) {
       this._levels = [];
+      this._levelsExclude = false;
 
       if (core) {
         this._storedLevels = [];
+        this._storedLevelsExclude = false;
       }
     }
     this._writeUrl();
@@ -499,18 +561,18 @@ export class HaConfigLogs extends LitElement {
   private _levelsChanged(ev: HASSDomEvent<{ value: DataTableFiltersValue }>) {
     ev.stopPropagation();
 
-    const value = ev.detail.value;
+    const value = listFilterValue(ev.detail.value);
 
-    const levels = Array.isArray(value)
-      ? LOG_LEVELS.map((item) => item.level).filter((level) =>
-          value.includes(level)
-        )
-      : [];
+    const levels = LOG_LEVELS.map((item) => item.level).filter((level) =>
+      value?.ids?.includes(level)
+    );
 
     this._levels = levels;
+    this._levelsExclude = !!value?.exclude;
 
     if (this._currentProvider() === DEFAULT_LOG_PROVIDER) {
       this._storedLevels = levels;
+      this._storedLevelsExclude = this._levelsExclude;
     }
 
     this._writeUrl();
@@ -533,7 +595,9 @@ export class HaConfigLogs extends LitElement {
       provider: this._currentProvider(),
       search: this._filter,
       integrations: this._integrations,
+      integrationsExclude: this._integrationsExclude,
       levels: this._levels,
+      levelsExclude: this._levelsExclude,
       raw: this._detail,
     };
   }
@@ -590,7 +654,9 @@ export class HaConfigLogs extends LitElement {
               ...DEFAULT_LOGS_STATE,
               search: this._storedSearch,
               integrations: this._storedIntegrations,
+              integrationsExclude: this._storedIntegrationsExclude,
               levels: this._storedLevels,
+              levelsExclude: this._storedLevelsExclude,
               raw: this._storedRaw,
             }
           : DEFAULT_LOGS_STATE
@@ -618,6 +684,7 @@ export class HaConfigLogs extends LitElement {
       if (!deepEqual(link.levels, this._levels)) {
         this._levels = link.levels;
       }
+      this._levelsExclude = link.levelsExclude;
       const integrations = link.integrations.filter((domain) =>
         loaded.includes(domain)
       );
@@ -625,6 +692,7 @@ export class HaConfigLogs extends LitElement {
       if (!deepEqual(integrations, this._integrations)) {
         this._integrations = integrations;
       }
+      this._integrationsExclude = link.integrationsExclude;
     }
     // Before the alert adds its history entry, so closing it doesn't go back
     // to the missing provider
@@ -687,7 +755,9 @@ export class HaConfigLogs extends LitElement {
     items: LoggedError[] | undefined,
     search: string,
     loggers: string[] | undefined,
+    excludeLoggers: boolean,
     levels: SystemLogLevel[] | undefined,
+    excludeLevels: boolean,
     localize: LocalizeFunc,
     locale: FrontendLocaleData,
     config: HassConfig
@@ -695,13 +765,23 @@ export class HaConfigLogs extends LitElement {
     items &&
     filterSystemLogItems(
       items,
-      { search, loggers, levels },
+      { search, loggers, excludeLoggers, levels, excludeLevels },
       localize,
       locale,
       config
     );
 
   private _getLevelCountItems = memoizeOne(this._filterLogItems);
+
+  // The value of a filter, as the filters send it
+  private static _filterValue = (
+    ids: string[],
+    exclude: boolean
+  ): string[] | ListFilterValue => (exclude ? { ids, exclude } : ids);
+
+  private _integrationsValue = memoizeOne(HaConfigLogs._filterValue);
+
+  private _levelsValue = memoizeOne(HaConfigLogs._filterValue);
 
   private _getIntegrationCountItems = memoizeOne(this._filterLogItems);
 

@@ -12,6 +12,11 @@ import { subscribeLogbook } from "../../data/logbook";
 import type { TraceContexts } from "../../data/trace";
 import { loadTraceContexts } from "../../data/trace";
 import { fetchUsers } from "../../data/user";
+import type { ListFilterValue } from "../../data/data_table_filters";
+import {
+  hasFilterSelection,
+  matchesListFilter,
+} from "../../data/data_table_filters";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook-renderer";
 import type { LogbookNameDetail } from "./logbook-entry-model";
@@ -60,7 +65,17 @@ export class HaLogbook extends LitElement {
   @property({ attribute: false }) public stateFilter?: string[];
 
   /** Keys from `computeLogbookCauseKey` to keep. */
-  @property({ attribute: false }) public causeFilter?: string[];
+  /** Keys from `computeLogbookCauseKey`, or the causes to leave out. */
+  @property({ attribute: false }) public causeFilter?:
+    string[] | ListFilterValue;
+
+  /**
+   * Leaves out the entries of the entities this returns false for. Entries
+   * without an entity, like Home Assistant starting, always stay.
+   */
+  @property({ attribute: false }) public entityFilter?: (
+    entityId: string
+  ) => boolean;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -167,7 +182,7 @@ export class HaLogbook extends LitElement {
 
   private _shownEntries(): LogbookEntry[] | undefined {
     return this._filterEntriesByCause(
-      this._logbookEntries,
+      this._filterEntriesByEntity(this._logbookEntries, this.entityFilter),
       this.causeFilter,
       this._userIdToName,
       this._systemUserIds,
@@ -180,26 +195,37 @@ export class HaLogbook extends LitElement {
       maxEntries ? entries.slice(0, maxEntries) : entries
   );
 
+  private _filterEntriesByEntity = memoizeOne(
+    (
+      entries: LogbookEntry[] | undefined,
+      entityFilter: ((entityId: string) => boolean) | undefined
+    ): LogbookEntry[] | undefined =>
+      entries && entityFilter
+        ? entries.filter(
+            (entry) => !entry.entity_id || entityFilter(entry.entity_id)
+          )
+        : entries
+  );
+
   private _filterEntriesByCause = memoizeOne(
     (
       entries: LogbookEntry[] | undefined,
-      causeFilter: string[] | undefined,
+      causeFilter: string[] | ListFilterValue | undefined,
       userIdToName: Record<string, string>,
       systemUserIds: Set<string>,
       personUserIds: Set<string>
     ): LogbookEntry[] | undefined => {
-      if (!entries || !causeFilter?.length) {
+      if (!entries || !hasFilterSelection(causeFilter)) {
         return entries;
       }
-      const causes = new Set(causeFilter);
       return entries.filter((entry) =>
-        causes.has(
+        matchesListFilter(causeFilter, [
           computeLogbookCauseKey(
             entry,
             computeRowCause(this.hass, entry, userIdToName, systemUserIds),
             personUserIds
-          )
-        )
+          ),
+        ])
       );
     }
   );
