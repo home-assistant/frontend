@@ -10,20 +10,22 @@ export class HaSpinner extends Spinner {
   @property() public size?: "tiny" | "small" | "medium" | "large";
 
   /**
-   * Accessible name of the progress indicator, forwarded to the inner
-   * `progressbar`. Name what is in progress, like "Installing update",
-   * rather than its state. Defaults to the translated "Loading".
+   * Accessible name of the progress indicator. Name what is in progress, like
+   * "Installing update", rather than its state. Defaults to the translated
+   * "Loading".
    */
-  @property({ type: String, attribute: "aria-label", reflect: false })
-  public override ariaLabel: string | null = null;
+  @property({ attribute: "accessible-label" })
+  public accessibleLabel?: string;
 
   @state() @consumeLocalize() private _localize?: LocalizeFunc;
 
   // Same template as wa-spinner, which always names the progressbar with an
-  // untranslated "Loading" and ignores the host's aria-label.
+  // untranslated "Loading".
   public override render() {
     const label =
-      this.ariaLabel || this._localize?.("ui.common.loading") || "Loading";
+      this.accessibleLabel ||
+      this._localize?.("ui.common.loading") ||
+      "Loading";
 
     return html`
       <svg

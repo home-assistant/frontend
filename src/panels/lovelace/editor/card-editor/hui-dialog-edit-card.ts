@@ -276,7 +276,7 @@ export class HuiDialogEditCard
               this._error
                 ? html`
                     <ha-spinner
-                      aria-label=${this.hass!.localize(
+                      .accessibleLabel=${this.hass!.localize(
                         "ui.panel.lovelace.editor.edit_card.preview_error"
                       )}
                     ></ha-spinner>

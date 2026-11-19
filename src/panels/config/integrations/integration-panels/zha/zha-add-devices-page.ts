@@ -102,7 +102,7 @@ class ZHAAddDevicesPage extends LitElement {
                     )}
                   </h1>
                   <ha-spinner
-                    aria-label=${this.hass!.localize(
+                    .accessibleLabel=${this.hass!.localize(
                       "ui.panel.config.zha.add_device_page.spinner"
                     )}
                   ></ha-spinner>

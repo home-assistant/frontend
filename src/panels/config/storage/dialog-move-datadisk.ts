@@ -135,7 +135,7 @@ class MoveDatadiskDialog extends DirtyStateProviderMixin<MoveDatadiskFormState>(
           this._moving
             ? html`
                 <ha-spinner
-                  aria-label=${this.hass.localize(
+                  .accessibleLabel=${this.hass.localize(
                     "ui.panel.config.storage.datadisk.moving"
                   )}
                   size="large"
