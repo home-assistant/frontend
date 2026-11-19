@@ -1367,7 +1367,10 @@
           "restore": "Restore defaults"
         },
         "load_error": "Failed to load data",
-        "retry": "[%key:ui::panel::app::retry%]"
+        "retry": "[%key:ui::panel::app::retry%]",
+        "select_all": "[%key:ui::components::subpage-data-table::select_all%]",
+        "select_row": "Select {name}",
+        "select_row_generic": "Select row"
       },
       "web-rtc-player": {
         "not_supported": "WebRTC is not supported in this browser.",
