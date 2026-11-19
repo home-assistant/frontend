@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   combineItemSets,
+  floorAreaItemSets,
+  floorAreaLookups,
   floorSelection,
   setFloorAreasAll,
   toggleFloorArea,
@@ -120,17 +122,17 @@ describe("toggleFloorArea", () => {
   });
 });
 
-// While matching all, each floor and area is a pick of its own: ticking every
-// area of a floor must not turn into "anywhere on the floor".
+// The tree works the same while matching all: a floor stands for its areas,
+// and only No area and the picks untick each other.
 describe("floors and areas while matching all", () => {
-  it("keeps a floor and its areas apart", () => {
+  it("ticks a floor for its areas, as when matching any", () => {
     expect(
       floorSelection(
         { areas: ["kitchen", "living_room", "hall"], all: true },
         "ground",
         FLOOR_AREAS.ground
       )
-    ).toBe("none");
+    ).toBe("all");
     expect(
       toggleFloorArea(
         { areas: ["kitchen", "living_room"], all: true },
@@ -139,20 +141,7 @@ describe("floors and areas while matching all", () => {
         "hall",
         true
       )
-    ).toEqual({
-      areas: ["kitchen", "living_room", "hall"],
-      all: true,
-      no_area: false,
-    });
-    expect(
-      toggleFloorArea(
-        { floors: ["ground"], areas: ["kitchen"], all: true },
-        FLOOR_AREAS,
-        "floors",
-        "ground",
-        false
-      )
-    ).toEqual({ floors: [], areas: ["kitchen"], all: true });
+    ).toEqual({ floors: ["ground"], areas: [], all: true, no_area: false });
   });
 
   it("unticks No area and the floors and areas against each other", () => {
@@ -167,7 +156,7 @@ describe("floors and areas while matching all", () => {
         "hall",
         true
       )
-    ).toEqual({ areas: ["hall"], no_area: false, all: true });
+    ).toEqual({ floors: [], areas: ["hall"], no_area: false, all: true });
     expect(setFloorAreasAll({ areas: ["hall"], no_area: true }, true)).toEqual({
       areas: ["hall"],
       no_area: false,
@@ -177,6 +166,82 @@ describe("floors and areas while matching all", () => {
       areas: ["hall"],
       no_area: true,
     });
+  });
+});
+
+// A ticked floor and its ticked areas must match the same, and an automation
+// that targets a floor acts on each of its areas.
+describe("floorAreaLookups", () => {
+  it("looks up the areas of a picked floor", () => {
+    expect(
+      floorAreaLookups({ floors: ["ground"], areas: [] }, FLOOR_AREAS, false)
+    ).toEqual({ areas: ["kitchen", "living_room", "hall"], floors: [] });
+  });
+
+  it("looks up a floor without areas itself", () => {
+    expect(floorAreaLookups({ floors: ["attic"] }, FLOOR_AREAS, false)).toEqual(
+      { areas: [], floors: ["attic"] }
+    );
+  });
+
+  it("also looks up the floors of the picks for floor references", () => {
+    expect(floorAreaLookups({ areas: ["kitchen"] }, FLOOR_AREAS, true)).toEqual(
+      {
+        areas: ["kitchen", "living_room", "hall"],
+        floors: ["ground"],
+      }
+    );
+  });
+});
+
+describe("floorAreaItemSets", () => {
+  // automation.floor targets the ground floor itself
+  const related = {
+    areas: {
+      kitchen: ["automation.kitchen", "automation.both"],
+      living_room: ["automation.both"],
+      hall: [],
+      bedroom: ["automation.bedroom"],
+    },
+    floors: {
+      ground: ["automation.kitchen", "automation.both", "automation.floor"],
+      attic: ["automation.attic"],
+    },
+  };
+
+  it("counts what targets a floor for each of its areas", () => {
+    expect(
+      floorAreaItemSets({ areas: ["kitchen", "bedroom"] }, FLOOR_AREAS, related)
+    ).toEqual([
+      ["automation.kitchen", "automation.both", "automation.floor"],
+      ["automation.bedroom"],
+    ]);
+  });
+
+  it("matches the same for a floor and all its areas", () => {
+    const floor = floorAreaItemSets(
+      { floors: ["ground"] },
+      FLOOR_AREAS,
+      related
+    );
+    const areas = floorAreaItemSets(
+      { areas: ["kitchen", "living_room", "hall"] },
+      FLOOR_AREAS,
+      related
+    );
+    expect(floor).toEqual(areas);
+    expect([...combineItemSets(floor, true)]).toEqual(["automation.floor"]);
+    expect([...combineItemSets(floor, false)].sort()).toEqual([
+      "automation.both",
+      "automation.floor",
+      "automation.kitchen",
+    ]);
+  });
+
+  it("uses what targets a floor without areas", () => {
+    expect(
+      floorAreaItemSets({ floors: ["attic"] }, FLOOR_AREAS, related)
+    ).toEqual([["automation.attic"]]);
   });
 });
 

@@ -23,6 +23,8 @@ import type { AreaRegistryEntry } from "../data/area/area_registry";
 import type { FloorAreasFilterValue } from "../data/data_table_filters";
 import {
   combineItemSets,
+  floorAreaItemSets,
+  floorAreaLookups,
   floorSelection,
   setFloorAreasAll,
   toggleFloorArea,
@@ -278,11 +280,7 @@ export class HaFilterFloorAreas extends LitElement {
         .value=${area.area_id}
         .selected=${
           this.value?.areas?.includes(area.area_id) ||
-          // A picked floor stands for its areas, unless each is a pick of its
-          // own while matching all
-          (!this.value?.all &&
-            !!area.floor_id &&
-            !!this.value?.floors?.includes(area.floor_id))
+          (!!area.floor_id && !!this.value?.floors?.includes(area.floor_id))
         }
         .type=${"areas"}
         class=${classMap({
@@ -415,23 +413,35 @@ export class HaFilterFloorAreas extends LitElement {
     }
 
     const type = this.type;
-    const lookups = type
-      ? [
-          ...(this.value.areas ?? []).map((areaId) =>
-            findRelated(this._api, "area", areaId, this.includeDisabledEntities)
-          ),
-          ...(this.value.floors ?? []).map((floorId) =>
-            findRelated(
+    const value = this.value;
+    const floorAreas = this._floorAreaIds(this._areasReg, this._floorsReg);
+    // Automations and scripts can target a floor directly, which a search for
+    // one of its areas doesn't find
+    const lookups = floorAreaLookups(
+      value,
+      floorAreas,
+      type === "automation" || type === "script"
+    );
+    const search = (itemType: "area" | "floor", ids: string[]) =>
+      Promise.all(
+        ids.map(async (id): Promise<[string, string[]]> => [
+          id,
+          (
+            await findRelated(
               this._api,
-              "floor",
-              floorId,
+              itemType,
+              id,
               this.includeDisabledEntities
             )
-          ),
-        ]
-      : [];
-
-    const results = await Promise.all(lookups);
+          )[type!] ?? [],
+        ])
+      );
+    const [areas, floors] = type
+      ? await Promise.all([
+          search("area", lookups.areas),
+          search("floor", lookups.floors),
+        ])
+      : [[], []];
 
     // The value changed while this lookup ran
     if (requestId !== this._relatedRequestId) {
@@ -440,10 +450,13 @@ export class HaFilterFloorAreas extends LitElement {
 
     const items = combineItemSets(
       [
-        ...(this.value.no_area ? [this._itemsWithoutArea()] : []),
-        ...results.map((result) => result[type!] ?? []),
+        ...(value.no_area ? [this._itemsWithoutArea()] : []),
+        ...floorAreaItemSets(value, floorAreas, {
+          areas: Object.fromEntries(areas),
+          floors: Object.fromEntries(floors),
+        }),
       ],
-      this.value.all
+      value.all
     );
 
     fireEvent(this, "data-table-filter-changed", {
