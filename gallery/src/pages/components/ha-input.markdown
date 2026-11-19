@@ -29,8 +29,8 @@ This component is based on the webawesome input component.
 
 **Slots**
 
-- `start`: Content placed before the input (usually for icons or prefixes).
-- `end`: Content placed after the input (usually for icons or suffixes).
+- `start`: Content placed before the input, usually an icon. Use `input-prefix` for text.
+- `end`: Content placed after the input, usually an icon. Use `input-suffix` for text.
 - `label`: Custom label content. Overrides the `label` property.
 - `hint`: Custom hint content. Overrides the `hint` property.
 - `clear-icon`: Custom clear icon.
@@ -56,6 +56,8 @@ This component is based on the webawesome input component.
 | auto-validate        | Boolean                                                                                        | false      | Validates the input on blur instead of on form submit.                                                     |
 | invalid              | Boolean                                                                                        | false      | Marks the input as invalid.                                                                                |
 | inset-label          | Boolean                                                                                        | false      | Uses an inset label style where the label stays inside the input.                                          |
+| input-prefix         | String                                                                                         | -          | Fixed text shown before the value. With a label, the label is inset above the prefix.                      |
+| input-suffix         | String                                                                                         | -          | Fixed text shown after the value.                                                                          |
 | validation-message   | String                                                                                         | ""         | Custom validation message shown when the input is invalid.                                                 |
 | input-id             | String                                                                                         | -          | Sets the native input's `id` and associated label `for` on the inner `wa-input`. Defaults to `"input"`.    |
 | pattern              | String                                                                                         | -          | A regular expression pattern to validate input against.                                                    |

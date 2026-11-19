@@ -975,7 +975,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       <ha-input
         class="entityId"
         .value=${computeObjectId(this._entityId)}
-        inset-label
+        .inputPrefix=${domain + "."}
         .label=${this.hass.localize(
           "ui.dialogs.entity_registry.editor.entity_id"
         )}
@@ -987,7 +987,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
         .autocorrect=${false}
         .spellcheck=${false}
       >
-        <span class="input-prefix" slot="start">${domain + "."}</span>
         <ha-icon-button
           slot="end"
           @click=${this._restoreEntityId}
@@ -2005,11 +2004,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
         :host {
           display: block;
         }
-        .input-prefix {
-          color: var(--secondary-text-color);
-          margin: var(--ha-space-3) 0 0;
-        }
-
         ha-input.entityId,
         ha-input.name {
           --ha-icon-button-size: 36px;
@@ -2017,7 +2011,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
         }
 
         ha-input.name {
-          --ha-input-start-max-width: 35%;
           --ha-input-padding-bottom: 0;
         }
         ha-input.entityId ha-icon-button:last-child {
