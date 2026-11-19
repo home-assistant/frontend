@@ -80,16 +80,15 @@ export class HacSpinner extends LitElement {
   static styles = css`
     :host {
       --track-width: 4px;
-      --_size: 1em;
+      --_size: var(
+        --hac-spinner-size,
+        var(--ha-spinner-size, var(--_preset-size, 48px))
+      );
       box-sizing: border-box;
       flex: none;
       display: inline-flex;
       width: var(--_size);
       height: var(--_size);
-      font-size: var(
-        --hac-spinner-size,
-        var(--ha-spinner-size, var(--_preset-size, 48px))
-      );
     }
 
     :host([hidden]) {
