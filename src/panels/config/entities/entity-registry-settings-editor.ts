@@ -221,9 +221,7 @@ const computeDeviceClassOptions = (
   const groups: string[][] = OVERRIDE_DEVICE_CLASSES[domain];
   for (const group of groups) {
     if (originalDeviceClass && group.includes(originalDeviceClass)) {
-      related.push(
-        ...group.filter((deviceClass) => deviceClass !== originalDeviceClass)
-      );
+      related.push(...group);
     } else {
       others.push(...group);
     }
@@ -345,10 +343,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._name = this.entry.name || this._originalName;
     this._isMainEntity = !!this._device && !this._entryName;
     this._icon = this.entry.icon || "";
-    this._deviceClass =
-      this.entry.device_class === this._originalDeviceClass
-        ? null
-        : (this.entry.device_class ?? null);
+    this._deviceClass = this.entry.device_class ?? null;
     this._origEntityId = this.entry.entity_id;
     this._areaId = this.entry.area_id;
     this._mainEntityWithOwnArea = this._isMainEntity && !!this.entry.area_id;

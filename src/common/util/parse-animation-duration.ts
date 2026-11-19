@@ -11,7 +11,8 @@
  * parseAnimationDuration("invalid") // Returns 0
  */
 export const parseAnimationDuration = (duration: string): number => {
-  const trimmed = duration.trim();
+  // CSS units are case-insensitive, e.g. "3S" is the same as "3s".
+  const trimmed = duration.trim().toLowerCase();
 
   let value: number;
   let multiplier: number;

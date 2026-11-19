@@ -240,6 +240,8 @@ export class HaNetworkGraph extends LitElement {
 
   private _dragMoved = false;
 
+  private _dragTarget?: Displayable;
+
   private _followSelectedNode = false;
 
   private _followedChart?: EChartsType;
@@ -1008,6 +1010,7 @@ export class HaNetworkGraph extends LitElement {
     chart?.getZr().on("click", this._handleEmptyClick);
     chart?.on("click", this._handleEdgeClick);
     chart?.on("mousedown", this._handleNodeMouseDown);
+    chart?.getZr().on("dragstart", this._handleDragStart);
     chart?.getZr().on("drag", this._handleDrag);
     chart?.getZr().on("dragend", this._handleDragEnd);
     chart?.on("finished", this._captureInitialForceView);
@@ -1104,6 +1107,54 @@ export class HaNetworkGraph extends LitElement {
     this._dragMoved = false;
   };
 
+  // The dragged element gets the drag before the ECharts handler of its node
+  private _handleDragStart = (ev: { target?: Displayable }) => {
+    this._dragTarget?.off("drag", this._handleNodeDrag);
+    this._dragTarget = ev.target;
+    this._dragTarget?.on("drag", this._handleNodeDrag);
+  };
+
+  // Without layout animation, the ECharts handler runs the whole force layout
+  // on every move, which puts the node back before it reads its position. So
+  // the node moves here, and the other nodes stay where they are.
+  private _handleNodeDrag = (ev: { cancelBubble?: boolean }) => {
+    const chart = this._baseChart?.chart;
+    const series = this._getGraphSeries(chart);
+    const node =
+      this._dragNode === undefined
+        ? undefined
+        : series?.getGraph().getNodeById(this._dragNode);
+    if (
+      !chart ||
+      !node ||
+      !series.forceLayout ||
+      series.get(["force", "layoutAnimation"])
+    ) {
+      return;
+    }
+    ev.cancelBubble = true;
+    const data = series.getData();
+    const el = data.getItemGraphicEl(node.dataIndex);
+    data.setItemLayout(node.dataIndex, [el.x, el.y]);
+    // A new layout run starts from here, e.g. after a legend change
+    if (series.preservedPoints) {
+      series.preservedPoints[node.id] = [el.x, el.y];
+    }
+    series.forceLayout.setFixed(node.dataIndex);
+    for (const edge of node.edges) {
+      const source: number[] | undefined = edge.node1.getLayout();
+      const target: number[] | undefined = edge.node2.getLayout();
+      // The nodes of hidden legend categories have no layout
+      if (source && target) {
+        edge.setLayout([[...source], [...target]]);
+      }
+    }
+    // @ts-ignore private method but no other way to draw the new layout
+    chart.getViewOfSeriesModel(series).updateLayout(series);
+    // The handlers of the chart miss the drag now
+    chart.getZr().handler.trigger("drag", ev);
+  };
+
   private _handleDrag = () => {
     this._dragMoved = true;
   };
@@ -1113,6 +1164,8 @@ export class HaNetworkGraph extends LitElement {
     const moved = this._dragMoved;
     this._dragNode = undefined;
     this._dragMoved = false;
+    this._dragTarget?.off("drag", this._handleNodeDrag);
+    this._dragTarget = undefined;
     // The positions of a fixed layout come from the data, not from the force
     // layout. A click also ends a drag, which releases a pinned node in ECharts
     if (

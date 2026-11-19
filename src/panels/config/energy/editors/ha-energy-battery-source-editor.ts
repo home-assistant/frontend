@@ -16,9 +16,13 @@ import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
 } from "../../../../common/dom/fire_event";
+import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
 import type { HaStatisticPicker } from "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-alert";
+import "../../../../components/radio/ha-radio-group";
+import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
+import "../../../../components/radio/ha-radio-option";
 import "../../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../components/ha-select";
 import "../../../../components/input/ha-input";
@@ -36,6 +40,7 @@ import {
   getBatteryPrimaryStat,
   isBatteryDirections,
 } from "../../../../data/energy";
+import { batteryCapacityUnits } from "../../../../data/energy-battery";
 import {
   getStatisticLabel,
   getStatisticMetadata,
@@ -89,8 +94,10 @@ type BatteryEnergyKey =
 type BatteryDraft = Partial<Record<BatteryEnergyKey, string>> &
   Pick<
     BatteryTotalsSourceTypeEnergyPreference,
-    "name" | "stat_soc" | "capacity"
+    "name" | "stat_soc" | "capacity" | "entity_capacity"
   >;
+
+type CapacityType = "manual" | "sensor";
 
 interface BatteryPower {
   powerType: PowerType;
@@ -100,6 +107,7 @@ interface BatteryPower {
 
 interface BatteryFormState {
   mode?: BatteryMode;
+  capacityType: CapacityType;
   powerType?: PowerType;
   source?: BatterySourceTypeEnergyPreference;
 }
@@ -108,6 +116,7 @@ const energyUnitClasses = ["energy"];
 const powerUnitClasses = ["power"];
 const socStatisticsUnits = ["%"];
 const socDeviceClass = "battery";
+const capacitySensorDomains = ["sensor"];
 
 const ENERGY_NAME_KEYS: Record<BatteryEnergyKey, LocalizeKeys> = {
   stat_energy_from:
@@ -157,6 +166,7 @@ const toDraft = (source?: BatterySourceTypeEnergyPreference): BatteryDraft => {
     name: source.name,
     stat_soc: source.stat_soc,
     capacity: source.capacity,
+    entity_capacity: source.entity_capacity,
   };
   if (isBatteryDirections(source)) {
     BATTERY_DIRECTIONS.forEach(({ energy }) => {
@@ -174,11 +184,13 @@ const activeEnergyKeys = (mode: BatteryMode): BatteryEnergyKey[] =>
     ? ["stat_energy_from", "stat_energy_to"]
     : BATTERY_DIRECTIONS.map(({ energy }) => energy);
 
-// Only the active mode's fields are saved. The backend writes stat_rate itself.
+// Only the active mode's fields and the selected capacity source are saved.
+// The backend writes stat_rate itself.
 const toSource = (
   draft: BatteryDraft,
   mode: BatteryMode,
-  power: BatteryPower
+  power: BatteryPower,
+  capacityType: CapacityType
 ): BatterySourceTypeEnergyPreference => {
   let source: BatterySourceTypeEnergyPreference;
   if (mode === "total") {
@@ -214,7 +226,11 @@ const toSource = (
   if (draft.stat_soc) {
     source.stat_soc = draft.stat_soc;
   }
-  if (draft.capacity != null) {
+  if (capacityType === "sensor") {
+    if (draft.entity_capacity) {
+      source.entity_capacity = draft.entity_capacity;
+    }
+  } else if (draft.capacity != null) {
     source.capacity = draft.capacity;
   }
   return source;
@@ -297,6 +313,8 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
 
   @state() private _source?: BatteryDraft;
 
+  @state() private _capacityType: CapacityType = "manual";
+
   @state() private _powerType: PowerType = "none";
 
   @state() private _powerConfig: PowerConfig = {};
@@ -329,6 +347,7 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
     this._saving = false;
     this._mode = getBatteryMode(saved);
     this._source = toDraft(saved);
+    this._capacityType = saved?.entity_capacity ? "sensor" : "manual";
 
     const totals = saved && !isBatteryDirections(saved) ? saved : undefined;
     this._powerType = getPowerTypeFromConfig(
@@ -372,9 +391,15 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
   private _formState(): BatteryFormState {
     return {
       mode: this._mode,
+      capacityType: this._capacityType,
       powerType: this._mode === "total" ? this._powerType : undefined,
       source: this._mode
-        ? toSource(this._source ?? {}, this._mode, this._power)
+        ? toSource(
+            this._source ?? {},
+            this._mode,
+            this._power,
+            this._capacityType
+          )
         : undefined,
     };
   }
@@ -515,7 +540,9 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
   private _renderDirections(pending: PowerIntegral<BatteryEnergyKey>[]) {
     const source = this._source!;
     const labelStatistic =
-      getBatteryPrimaryStat(toSource(source, "directions", this._power)) ||
+      getBatteryPrimaryStat(
+        toSource(source, "directions", this._power, this._capacityType)
+      ) ||
       pending[0]?.rate ||
       BATTERY_DIRECTIONS.map(({ power }) => this._directionPower[power]).find(
         Boolean
@@ -687,22 +714,62 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
         @value-changed=${this._statisticSocChanged}
         .disabled=${this._saving}
       ></ha-statistic-picker>
-      <ha-input
-        .value=${source.capacity != null ? String(source.capacity) : ""}
+      <ha-radio-group
         .label=${this._localize(
           "ui.panel.config.energy.battery.dialog.capacity"
         )}
-        .hint=${this._localize(
-          "ui.panel.config.energy.battery.dialog.capacity_helper"
-        )}
-        type="number"
-        step="any"
-        min="0"
-        @input=${this._capacityChanged}
+        .value=${this._capacityType}
         .disabled=${this._saving}
+        @change=${this._capacityTypeChanged}
       >
-        <span slot="end">kWh</span>
-      </ha-input>
+        <ha-radio-option value="manual">
+          ${this._localize(
+            "ui.panel.config.energy.battery.dialog.capacity_manual"
+          )}
+        </ha-radio-option>
+        <ha-radio-option value="sensor">
+          ${this._localize(
+            "ui.panel.config.energy.battery.dialog.capacity_use_sensor"
+          )}
+        </ha-radio-option>
+      </ha-radio-group>
+      ${
+        this._capacityType === "sensor"
+          ? html`
+              <ha-entity-picker
+                .value=${source.entity_capacity}
+                .includeDomains=${capacitySensorDomains}
+                .includeUnitOfMeasurement=${batteryCapacityUnits}
+                .label=${this._localize(
+                  "ui.panel.config.energy.battery.dialog.capacity_sensor"
+                )}
+                .helper=${this._localize(
+                  "ui.panel.config.energy.battery.dialog.capacity_sensor_helper"
+                )}
+                .disabled=${this._saving}
+                required
+                @value-changed=${this._capacitySensorChanged}
+              ></ha-entity-picker>
+            `
+          : html`
+              <ha-input
+                .accessibleLabel=${this._localize(
+                  "ui.panel.config.energy.battery.dialog.capacity"
+                )}
+                .value=${source.capacity != null ? String(source.capacity) : ""}
+                .hint=${this._localize(
+                  "ui.panel.config.energy.battery.dialog.capacity_helper"
+                )}
+                type="number"
+                step="any"
+                min="0"
+                @input=${this._capacityChanged}
+                .disabled=${this._saving}
+              >
+                <span slot="end">kWh</span>
+              </ha-input>
+            `
+      }
     `;
   }
 
@@ -728,6 +795,9 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
   private _isValid(pending: PowerIntegral<BatteryEnergyKey>[]): boolean {
     const source = this._source;
     if (!source || !this._mode) {
+      return false;
+    }
+    if (this._capacityType === "sensor" && !source.entity_capacity) {
       return false;
     }
     // Energy fields can be provided by power sensors
@@ -878,6 +948,23 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
     this._updateDirtyState(this._formState());
   }
 
+  private _capacityTypeChanged(ev: HASSDomCurrentTargetEvent<HaRadioGroup>) {
+    const value = ev.currentTarget.value;
+    if (value !== "manual" && value !== "sensor") {
+      return;
+    }
+    this._capacityType = value;
+    this._updateFormDirtyState();
+  }
+
+  private _capacitySensorChanged(ev: ValueChangedEvent<string>) {
+    this._source = {
+      ...this._source!,
+      entity_capacity: ev.detail.value || undefined,
+    };
+    this._updateFormDirtyState();
+  }
+
   private _capacityChanged(ev: InputEvent) {
     const rawValue = (ev.target as HaInput).value;
     const value = rawValue ? parseFloat(rawValue) : NaN;
@@ -900,6 +987,7 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
     // be saved with the submitted source
     const params = this.params;
     const power = this._power;
+    const capacityType = this._capacityType;
     let draft = this._source!;
     const isCurrent = () => this.params === params && this.isConnected;
     this._error = undefined;
@@ -922,7 +1010,7 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
         }
       }
 
-      await params.saveCallback(toSource(draft, mode, power));
+      await params.saveCallback(toSource(draft, mode, power, capacityType));
       if (isCurrent()) {
         this._markDirtyStateClean();
       }

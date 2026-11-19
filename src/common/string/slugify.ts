@@ -1,8 +1,8 @@
 // https://gist.github.com/hagemann/382adfc57adbd5af078dc93feef01fe1
 export const slugify = (value: string, delimiter = "_") => {
   const a =
-    "àáâäæãåāăąабçćčđďдèéêëēėęěеёэфğǵгḧхîïíīįìıİийкłлḿмñńǹňнôöòóœøōõőоṕпŕřрßśšşșсťțтûüùúūǘůűųувẃẍÿýыžźżз·";
-  const b = `aaaaaaaaaaabcccdddeeeeeeeeeeefggghhiiiiiiiiijkllmmnnnnnoooooooooopprrrsssssstttuuuuuuuuuuvwxyyyzzzz${delimiter}`;
+    "àáâäæãåāăąабçćčđďдèéêëēėęěеёэфğǵгḧîïíīįìıİийкłлḿмñńǹňнôöòóœøōõőоṕпŕřрßśšşșсťțтûüùúūǘůűųувẃẍÿýыžźżз·";
+  const b = `aaaaaaaaaaabcccdddeeeeeeeeeeefggghiiiiiiiiijkllmmnnnnnoooooooooopprrrsssssstttuuuuuuuuuuvwxyyyzzzz${delimiter}`;
   const p = new RegExp(a.split("").join("|"), "g");
   const complex_cyrillic = {
     ж: "zh",

@@ -1663,7 +1663,8 @@ export class HaDataTable extends LitElement {
         }
 
         .mdc-data-table__row ~ .mdc-data-table__row {
-          border-top: 1px solid var(--divider-color);
+          border-top: var(--data-table-row-border-width, 1px) solid
+            var(--divider-color);
         }
 
         .mdc-data-table__row.clickable:not(

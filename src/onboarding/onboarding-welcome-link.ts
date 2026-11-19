@@ -1,6 +1,7 @@
 import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { consume } from "../common/decorators/consume";
 import "../components/ha-card";
 import "../components/ha-ripple";
@@ -23,6 +24,7 @@ class OnboardingWelcomeLink extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-card
+        role=${ifDefined(this.noninteractive ? undefined : "button")}
         .tabIndex=${this.noninteractive ? "-1" : "0"}
         @keydown=${this._handleKeyDown}
       >
@@ -35,6 +37,7 @@ class OnboardingWelcomeLink extends LitElement {
 
   private _handleKeyDown(ev: KeyboardEvent): void {
     if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
       (ev.target as HTMLElement).click();
     }
   }
