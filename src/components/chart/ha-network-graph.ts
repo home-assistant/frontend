@@ -348,6 +348,16 @@ export class HaNetworkGraph extends LitElement {
     this._zoomFrame = requestAnimationFrame(this._animateZoom);
   };
 
+  // A wheel zoom that is still gliding would undo a reset
+  private _stopZoomAnimation() {
+    if (this._zoomFrame !== undefined) {
+      cancelAnimationFrame(this._zoomFrame);
+    }
+    this._zoomFrame = undefined;
+    this._zoomLastFrame = undefined;
+    this._pendingZoom = 1;
+  }
+
   protected willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
     if (this._physicsEnabled === undefined && this.data?.nodes?.length > 1) {
@@ -407,6 +417,7 @@ export class HaNetworkGraph extends LitElement {
       height="100%"
       .extraComponents=${[GraphChart]}
       @chart-setup=${this._handleChartSetup}
+      @chart-zoom-reset=${this._stopZoomAnimation}
     >
       <slot name="search" slot="search"></slot>
       <slot name="button" slot="button"></slot>
@@ -1033,8 +1044,12 @@ export class HaNetworkGraph extends LitElement {
     const fewVisibleNodes = this._fewVisibleNodes();
     this._setHiddenCategories(selected);
     if (this._fewVisibleNodes() !== fewVisibleNodes) {
-      // The new series option lays out again from where the nodes are now
-      this._saveNodePositions();
+      // The new series option lays out again from where the nodes are now.
+      // The positions of a fixed layout would overwrite those of the force
+      // layout.
+      if (!this.fixedLayout) {
+        this._saveNodePositions();
+      }
       this.requestUpdate();
     }
     fireEvent(this, "network-legend-changed", {
@@ -1481,12 +1496,7 @@ export class HaNetworkGraph extends LitElement {
     super.disconnectedCallback();
     this._stopSelectAnimation();
     this._stopWaitingForLayout?.();
-    if (this._zoomFrame !== undefined) {
-      cancelAnimationFrame(this._zoomFrame);
-      this._zoomFrame = undefined;
-      this._zoomLastFrame = undefined;
-      this._pendingZoom = 1;
-    }
+    this._stopZoomAnimation();
     if (this._emphasisGuardHandler) {
       this._baseChart?.chart?.off("mouseover", this._emphasisGuardHandler);
       this._baseChart?.chart?.off("mouseout", this._emphasisGuardHandler);
