@@ -77,7 +77,14 @@ export class HaMjpegPlayer extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    if (this.hasUpdated && !this._loaded) {
+    if (!this.hasUpdated) {
+      return;
+    }
+    if (this._loaded) {
+      // The camera stream starts over when reattached, like when coming back
+      // from the history, while the picture still shows
+      fireEvent(this, "load");
+    } else {
       this._startLoadCheck();
     }
   }
