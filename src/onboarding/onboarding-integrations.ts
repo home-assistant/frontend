@@ -1,7 +1,7 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
@@ -42,6 +42,8 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
   @state() private _discoveredDomains: Set<string> = new Set<string>();
 
   @state() private _discoveredDomainsReceived = false;
+
+  @query("h1") private _heading?: HTMLElement;
 
   public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
@@ -123,51 +125,51 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
 
     const foundIntegrations = domains.length;
 
-    // there is a possibility that the user has no integrations
-    if (foundIntegrations === 0) {
-      return html`
-        <div class="all-set-icon">🎉</div>
-        <h1>
-          ${this._localize("ui.panel.page-onboarding.integration.all_set")}
-        </h1>
-        <p>
-          ${this._localize("ui.panel.page-onboarding.integration.lets_start")}
-        </p>
-        <div class="footer">
-          <ha-button @click=${this._finish}>
-            ${this._localize("ui.panel.page-onboarding.integration.finish")}
-          </ha-button>
-        </div>
-      `;
-    }
-
     if (domains.length > 12) {
       domains = domains.slice(0, 11);
     }
 
+    // there is a possibility that the user has no integrations
+    const allSet = foundIntegrations === 0;
+
     return html`
-      <h1>${this._localize("ui.panel.page-onboarding.integration.header")}</h1>
-      <p>${this._localize("ui.panel.page-onboarding.integration.intro")}</p>
-      <div class="badges">
-        ${domains.map(
-          ([domain, title]) =>
-            html`<integration-badge
-              .domain=${domain}
-              .title=${title}
-              .darkOptimizedIcon=${this.hass.themes?.darkMode}
-            ></integration-badge>`
+      ${allSet ? html`<div class="all-set-icon">🎉</div>` : nothing}
+      <h1 tabindex="-1">
+        ${this._localize(
+          allSet
+            ? "ui.panel.page-onboarding.integration.all_set"
+            : "ui.panel.page-onboarding.integration.header"
         )}
-        ${
-          foundIntegrations > domains.length
-            ? html`<div class="more">
-                ${this._localize(
-                  "ui.panel.page-onboarding.integration.more_integrations",
-                  { count: foundIntegrations - domains.length }
+      </h1>
+      ${
+        allSet
+          ? html`<p>
+              ${this._localize("ui.panel.page-onboarding.integration.lets_start")}
+            </p>`
+          : html`<p>
+                ${this._localize("ui.panel.page-onboarding.integration.intro")}
+              </p>
+              <div class="badges">
+                ${domains.map(
+                  ([domain, title]) =>
+                    html`<integration-badge
+                      .domain=${domain}
+                      .title=${title}
+                      .darkOptimizedIcon=${this.hass.themes?.darkMode}
+                    ></integration-badge>`
                 )}
+                ${
+                  foundIntegrations > domains.length
+                    ? html`<div class="more">
+                        ${this._localize(
+                          "ui.panel.page-onboarding.integration.more_integrations",
+                          { count: foundIntegrations - domains.length }
+                        )}
+                      </div>`
+                    : nothing
+                }
               </div>`
-            : nothing
-        }
-      </div>
+      }
       <div class="footer">
         <ha-button @click=${this._finish}>
           ${this._localize("ui.panel.page-onboarding.integration.finish")}
@@ -180,6 +182,16 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
     this._scanUSBDevices();
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (
+      changedProps.has("_discoveredDomainsReceived") &&
+      this._discoveredDomainsReceived
+    ) {
+      this._heading?.focus();
+    }
   }
 
   private async _scanUSBDevices() {

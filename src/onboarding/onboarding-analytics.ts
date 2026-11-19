@@ -1,7 +1,7 @@
 import { mdiOpenInNew } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent, type HASSDomEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
@@ -35,9 +35,13 @@ class OnboardingAnalytics extends LitElement {
 
   private _retryTimeout?: number;
 
+  @query("h1", true) private _heading?: HTMLElement;
+
   protected render(): TemplateResult {
     return html`
-      <h1>${this._localize("ui.panel.page-onboarding.analytics.header")}</h1>
+      <h1 tabindex="-1">
+        ${this._localize("ui.panel.page-onboarding.analytics.header")}
+      </h1>
       <p>${this._localize("ui.panel.page-onboarding.analytics.intro")}</p>
       <p>
         <a
@@ -79,6 +83,7 @@ class OnboardingAnalytics extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
+    this._heading?.focus();
     this.addEventListener("keypress", (ev) => {
       if (ev.key === "Enter") {
         this._save(ev);

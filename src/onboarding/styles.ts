@@ -10,6 +10,9 @@ export const onBoardingStyles = css`
     line-height: var(--ha-line-height-condensed);
     margin-bottom: 8px;
   }
+  h1:focus {
+    outline: none;
+  }
   ha-icon-button-arrow-prev {
     margin-left: -12px;
     display: block;
