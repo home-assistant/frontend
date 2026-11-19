@@ -189,11 +189,15 @@ class HaConfigEnergy extends LitElement {
           ${this.hass.localize("ui.panel.config.energy.new_device_info")}
         </ha-alert>
         <div class="content">
-          <ha-energy-suggestions
-            .preferences=${this._preferences!}
-            .listPath=${`${this.route.prefix}/${this._currTab}`}
-            .tab=${this._currTab}
-          ></ha-energy-suggestions>
+          ${
+            this._currTab === "heat"
+              ? nothing
+              : html`<ha-energy-suggestions
+                  .preferences=${this._preferences!}
+                  .listPath=${`${this.route.prefix}/${this._currTab}`}
+                  .tab=${this._currTab}
+                ></ha-energy-suggestions>`
+          }
           ${cache(this._renderTabContent())}
         </div>
       </hass-tabs-subpage>
