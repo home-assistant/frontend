@@ -2944,6 +2944,7 @@
       }
     },
     "sidebar": {
+      "title": "Sidebar",
       "external_app_configuration": "App settings",
       "sidebar_toggle": "Sidebar toggle",
       "edit_sidebar": "Edit sidebar",
