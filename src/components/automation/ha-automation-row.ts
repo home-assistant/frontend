@@ -1,12 +1,18 @@
 import { mdiChevronUp } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-icon-button";
 
 @customElement("ha-automation-row")
 export class HaAutomationRow extends LitElement {
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
   @property({ attribute: "left-chevron", type: Boolean })
   public leftChevron = false;
 
@@ -77,6 +83,9 @@ export class HaAutomationRow extends LitElement {
                 <ha-icon-button
                   class="expand-button"
                   .path=${mdiChevronUp}
+                  .label=${this._localize(
+                    this.collapsed ? "ui.common.expand" : "ui.common.collapse"
+                  )}
                   @click=${this._handleExpand}
                   @keydown=${this._handleExpand}
                 ></ha-icon-button>

@@ -229,7 +229,7 @@ export class HuiDialogEditCard
                   .path=${mdiHelpCircleOutline}
                   slot="headerActionItems"
                   href=${this._documentationURL}
-                  title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                  .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
                   target="_blank"
                   rel="noreferrer"
                   dir=${computeRTLDirection(this.hass)}

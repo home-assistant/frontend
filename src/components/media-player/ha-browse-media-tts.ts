@@ -121,7 +121,7 @@ class BrowseMediaTTS extends LitElement {
                 <ha-icon-button
                   .path=${mdiContentCopy}
                   @click=${this._copyVoiceId}
-                  title=${this._localize(
+                  .label=${this._localize(
                     "ui.components.media-browser.tts.copy_voice_id"
                   )}
                 ></ha-icon-button>

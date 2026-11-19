@@ -670,7 +670,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
                     class="zoom-reset"
                     .path=${mdiRestart}
                     @click=${this._handleZoomReset}
-                    title=${this._i18n.localize(
+                    .label=${this._i18n.localize(
                       "ui.components.history_charts.zoom_reset"
                     )}
                   ></ha-icon-button>`

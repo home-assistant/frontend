@@ -72,6 +72,7 @@ export class HaConfigAppsRegistries extends LitElement {
           <ha-icon-button
             .registry=${row.registry}
             .path=${mdiDelete}
+            .label=${localize("ui.panel.config.apps.registries.remove")}
             @click=${this._removeRegistry}
             class="delete"
           ></ha-icon-button>

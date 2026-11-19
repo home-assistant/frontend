@@ -359,6 +359,9 @@ export class HaConfigAreasDashboard extends LitElement {
             <ha-icon-button
               .area=${area}
               .path=${mdiPencil}
+              .label=${this.hass.localize(
+                "ui.panel.config.areas.edit_settings"
+              )}
               @click=${this._openAreaDetails}
             ></ha-icon-button>
           </div>

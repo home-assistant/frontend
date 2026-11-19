@@ -347,6 +347,8 @@ class HaConfigSectionStorage extends LitElement {
         <ha-tooltip slot="extra">
           <ha-icon-button
             .path=${mdiInformationOutline}
+            .label=${this.hass.localize("ui.common.more_info")}
+            hide-title
             class="help-button"
           ></ha-icon-button>
           <p class="metric-description" slot="content">

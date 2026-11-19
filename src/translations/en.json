@@ -301,7 +301,8 @@
         "media_players": "Media players",
         "select_all": "Select all",
         "idle": "Idle",
-        "track_position": "Track position"
+        "track_position": "Track position",
+        "volume": "Volume"
       },
       "persistent_notification": {
         "dismiss": "Dismiss"
@@ -493,6 +494,8 @@
       "update": "Update",
       "hide": "Hide",
       "close": "Close",
+      "expand": "Expand",
+      "collapse": "Collapse",
       "dismiss_alert": "Dismiss alert",
       "clear": "Clear",
       "leave": "Leave",
@@ -523,6 +526,7 @@
       "overflow_menu": "Overflow menu",
       "overflow_menu_for": "Actions for {name}",
       "help": "Help",
+      "more_info": "More info",
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
       "successfully_replaced": "Successfully replaced",
@@ -570,6 +574,7 @@
       "selectors": {
         "serial_port": {
           "enter_manually": "Enter manually",
+          "choose_from_list": "Choose from list",
           "device_in_area": "{device}, {area}",
           "used_by": "Used by {integrations}",
           "type": {
@@ -941,8 +946,8 @@
       "filter-entity-types": {
         "caption": "Type",
         "no_device_class": "No type",
-        "expand": "Expand",
-        "collapse": "Collapse"
+        "expand": "[%key:ui::common::expand%]",
+        "collapse": "[%key:ui::common::collapse%]"
       },
       "entity-type-picker": {
         "no_types": "No types available"
@@ -1358,8 +1363,8 @@
         "hidden": "{number} hidden",
         "clear": "Clear",
         "ungrouped": "Ungrouped",
-        "collapse": "Collapse",
-        "expand": "Expand",
+        "collapse": "[%key:ui::common::collapse%]",
+        "expand": "[%key:ui::common::expand%]",
         "settings": {
           "header": "Customize",
           "hide": "Hide column {title}",
@@ -3930,6 +3935,7 @@
             "no_agents": "No locations configured",
             "encryption_turned_off": "Encryption turned off",
             "local_agent": "This system",
+            "location_settings": "Location settings",
             "retention_all": "Keep all backups",
             "retention_backups": "Keep {count} {count, plural,\n one {backup}\n other {backups}\n}",
             "retention_days": "Keep {count} {count, plural,\n one {day}\n other {days}\n}"
@@ -4460,7 +4466,7 @@
               "filter_states": "Filter states",
               "filter_attributes": "Filter attributes",
               "no_entities": "No entities",
-              "more_info": "More info",
+              "more_info": "[%key:ui::common::more_info%]",
               "alert_entity_field": "Entity is a mandatory field",
               "last_updated": "[%key:ui::dialogs::more_info_control::last_updated%]",
               "last_changed": "[%key:ui::dialogs::more_info_control::last_changed%]",
