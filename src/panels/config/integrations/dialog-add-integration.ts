@@ -94,7 +94,6 @@ import type { HaIntegrationListItem } from "./ha-integration-list-item";
 import type { AddIntegrationDialogParams } from "./show-add-integration-dialog";
 import { showYamlIntegrationDialog } from "./show-add-integration-dialog";
 import { showSingleConfigEntryWarning } from "./show-single-config-entry-warning";
-import { addIntegrationDemo } from "./demo-add-integration"; // DEMO
 
 export interface IntegrationListItem extends HaListVirtualizedItem {
   name: string;
@@ -404,21 +403,13 @@ class AddIntegrationDialog extends LitElement {
       "all and (max-width: 700px), all and (max-height: 500px)"
     );
     this._narrowQuery.addEventListener("change", this._narrowChanged);
-    this._narrow = addIntegrationDemo.narrow ?? this._narrowQuery.matches; // DEMO
-    // DEMO: each scenario opens in its own view
-    if (Object.keys(addIntegrationDemo).length) {
-      this._browseBy = addIntegrationDemo.browseBy ?? "brand";
-    }
+    this._narrow = this._narrowQuery.matches;
     // ha-adaptive-dialog keeps the mode it opened in, so this doesn't listen
     this._sheet = matchMedia(ADAPTIVE_DIALOG_MEDIA_QUERY).matches;
   }
 
-  // DEMO
   private _hasProtocol(domain: string) {
-    return (
-      addIntegrationDemo.protocols ??
-      this.hass.config.components.includes(domain)
-    );
+    return this.hass.config.components.includes(domain);
   }
 
   private _removeMediaListeners() {
@@ -2140,7 +2131,6 @@ class AddIntegrationDialog extends LitElement {
     this._flowsInProgress = flowsInProgress.filter((flow) =>
       DISCOVERY_SOURCES.includes(flow.context.source)
     );
-    this._flowsInProgress = addIntegrationDemo.flows ?? this._flowsInProgress; // DEMO
     // Start with what was found, it is what most people come for
     // A phone starts on the browse pane, with what was found at its top
     this._showDiscoveredView =
