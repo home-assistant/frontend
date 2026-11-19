@@ -192,9 +192,6 @@ export class HaAutomationAiPrompt extends LitElement {
 
   @property() public placeholder = "";
 
-  @property({ type: Boolean, attribute: "focus-on-open" })
-  public focusOnOpen = false;
-
   @consumeLocalize()
   private _localize!: LocalizeFunc;
 
@@ -246,9 +243,6 @@ export class HaAutomationAiPrompt extends LitElement {
         ],
       }),
     });
-    if (this.focusOnOpen) {
-      this.focus();
-    }
   }
 
   protected updated(changedProps: PropertyValues<this>) {

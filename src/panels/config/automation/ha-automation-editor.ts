@@ -91,7 +91,11 @@ import { showAutomationSaveTimeoutDialog } from "./automation-save-timeout-dialo
 import { ADD_AUTOMATION_ELEMENT_QUERY_PARAM } from "./show-add-automation-element-dialog";
 import "./blueprint-automation-editor";
 import "./ha-automation-general-sidebar";
-import type { AutomationGeneralSidebarTab } from "./ha-automation-general-sidebar";
+import type { HaAutomationAiPanel } from "./ai/ha-automation-ai-panel";
+import type {
+  AutomationGeneralSidebarTab,
+  HaAutomationGeneralSidebar,
+} from "./ha-automation-general-sidebar";
 import type { EditorDomainHooks } from "./ha-automation-script-editor-mixin";
 import {
   AutomationScriptEditorMixin,
@@ -159,6 +163,11 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
+  @query("ha-automation-general-sidebar")
+  private _generalSidebar?: HaAutomationGeneralSidebar;
+
+  @query("ha-automation-ai-panel") private _aiPanel?: HaAutomationAiPanel;
+
   private _configSubscriptions: Record<
     string,
     (config?: AutomationConfig) => void
@@ -191,12 +200,13 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   private _aiPreferencesRequested = false;
 
-  @state() private _aiSheetOpen = false;
+  // The AI shows in a tab once it was opened, and keeps its conversation
+  @state() private _aiLoaded = false;
 
   @state() private _aiBusy = false;
 
   // The editor leaves room for the sheet so it doesn't cover the last rows
-  @state() private _aiSheetHeight = 0;
+  @state() private _generalSheetHeight = 0;
 
   // On narrow screens the sidebar is a bottom sheet too, and hides this one
   @state() private _sidebarOpen = false;
@@ -324,14 +334,16 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     const useBlueprint = "use_blueprint" in this.config;
     const shortcutIcon = renderCtrlOrCmd(this.hass.localize);
     const aiSettings = this._aiDiff?.settings ?? {};
-    const aiSheetHidden = this.narrow && this._sidebarOpen;
+    // On narrow screens the sheet of a row hides the one of the automation
+    const generalSheetHidden = this.narrow && this._sidebarOpen;
     // On wide screens the editor makes room for the sidebar of the
-    // automation, on narrow ones for the AI sheet
+    // automation, on narrow ones for its sheet
     const generalSidebar = this._generalSidebarOpen && !this.narrow;
     const aiSheetSpace =
-      this._aiSheetOpen && this.narrow && !aiSheetHidden
-        ? `${this._aiSheetHeight}px`
+      this.narrow && !generalSheetHidden
+        ? `${this._generalSheetHeight}px`
         : undefined;
+    const aiTab = this._aiAvailable && !useBlueprint && !this.readOnly;
 
     return html`
       <hass-subpage
@@ -343,7 +355,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           this.config.alias ||
           this.hass.localize("ui.panel.config.automation.editor.default_name")
         }
-        style=${styleMap({ "--ai-sheet-space": aiSheetSpace })}
+        style=${styleMap({ "--general-sheet-space": aiSheetSpace })}
       >
         ${
           aiSettings.alias
@@ -869,40 +881,38 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         </div>
         ${
           // Stays while hidden, so the AI keeps its conversation
-          this._generalSidebarOpen || this._aiSheetOpen
+          this.narrow || this._generalSidebarOpen || this._aiLoaded
             ? html`<ha-automation-general-sidebar
                 .config=${this._aiDiff?.config ?? this.config}
                 .stateObj=${stateObj}
                 .tab=${this._generalSidebarTab}
                 .disabled=${this.readOnly || this._aiActive || this.mode === "yaml"}
-                .aiAvailable=${this._aiSheetOpen}
+                .aiAvailable=${aiTab}
                 .aiWorking=${this._aiBusy}
                 .narrow=${this.narrow}
+                .suspended=${generalSheetHidden}
                 ?hidden=${!this.narrow && !this._generalSidebarOpen}
+                @bottom-sheet-resized=${this._generalSheetResized}
                 @general-sidebar-tab-changed=${this._generalSidebarTabChanged}
                 @general-sidebar-closed=${this._closeGeneralSidebar}
                 @automation-info-changed=${this._automationInfoChanged}
                 @automation-info-action=${this._automationInfoAction}
               >
                 ${
-                  this._aiSheetOpen
-                    ? html`<ha-automation-ai-sheet
+                  this._aiLoaded
+                    ? html`<ha-automation-ai-panel
                         slot="ai"
                         .hass=${this.hass}
                         .config=${this.config}
-                        .docked=${!this.narrow}
                         .changes=${!!this._computeAiDiff(
                           this._aiChange?.before,
                           this._aiChange?.after
                         )?.hasChanges}
                         .showingChanges=${this._aiShowChanges}
-                        .suspended=${aiSheetHidden}
                         @ai-request-started=${this._aiRequestStarted}
                         @ai-request-finished=${this._aiRequestFinished}
                         @ai-toggle-changes=${this._aiToggleChanges}
-                        @ai-sheet-closed=${this._aiSheetClosed}
-                        @bottom-sheet-resized=${this._aiSheetResized}
-                      ></ha-automation-ai-sheet>`
+                      ></ha-automation-ai-panel>`
                     : nothing
                 }
               </ha-automation-general-sidebar>`
@@ -933,19 +943,27 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     );
   }
 
-  // Whether the user sees the AI, which then needs no button to open it
+  // Whether the AI tab shows, which then needs no button to open it. On
+  // narrow screens the collapsed sheet still shows the tab.
   private get _aiVisible(): boolean {
     return (
-      this._aiSheetOpen &&
-      (this.narrow ||
-        (this._generalSidebarOpen && this._generalSidebarTab === "ai"))
+      this._aiLoaded &&
+      this._generalSidebarTab === "ai" &&
+      (this.narrow || this._generalSidebarOpen)
     );
   }
 
+  private async _loadAi() {
+    await import("./ai/ha-automation-ai-panel");
+    this._aiLoaded = true;
+  }
+
   private async _openAiSheet() {
-    await import("./ai/ha-automation-ai-sheet");
-    this._aiSheetOpen = true;
+    await this._loadAi();
     this._openGeneralSidebar("ai");
+    await this.updateComplete;
+    this._generalSidebar?.expand();
+    this._aiPanel?.focusPrompt();
   }
 
   private _openGeneralSidebar(tab: AutomationGeneralSidebarTab) {
@@ -973,6 +991,15 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     ev: HASSDomEvent<HASSDomEvents["general-sidebar-tab-changed"]>
   ) {
     this._generalSidebarTab = ev.detail.tab;
+    if (ev.detail.tab === "ai") {
+      this._openAiTab();
+    }
+  }
+
+  private async _openAiTab() {
+    await this._loadAi();
+    await this.updateComplete;
+    this._aiPanel?.focusPrompt();
   }
 
   private _automationInfoChanged(
@@ -1034,15 +1061,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     this._aiChange = undefined;
   }
 
-  private _aiSheetResized(
+  private _generalSheetResized(
     ev: HASSDomEvent<HASSDomEvents["bottom-sheet-resized"]>
   ) {
-    this._aiSheetHeight = ev.detail.height;
-  }
-
-  private _aiSheetClosed() {
-    this._aiSheetOpen = false;
-    this._resetAi();
+    this._generalSheetHeight = ev.detail.height;
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -1336,7 +1358,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         },
         onClose: () => resolve(false),
         onDiscard: () => {
-          this._aiSheetOpen = false;
+          this._aiLoaded = false;
           this._resetAi();
           this.yamlErrors = undefined;
           this._markDirtyStateClean();

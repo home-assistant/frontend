@@ -1,7 +1,8 @@
 import { mdiChevronRight, mdiClose, mdiStarFourPoints } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -9,6 +10,11 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-snap-bottom-sheet";
+import type {
+  BottomSheetPosition,
+  HaSnapBottomSheet,
+} from "../../../components/ha-snap-bottom-sheet";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import "../../../components/ha-tab-group";
@@ -22,10 +28,14 @@ export type AutomationGeneralSidebarTab = "info" | "ai";
 
 export type AutomationInfoAction = "toggle" | "mode" | "more_info" | "settings";
 
+// The strip the collapsed sheet keeps visible until the header is measured
+const COLLAPSED_HEIGHT = 72;
+
 /**
- * @summary The sidebar of the automation as a whole, next to the editor on
- * wide screens: its info, and the AI that edits it. The sidebar of a row
- * covers it. On narrow screens it only shows the AI, as a bottom sheet.
+ * @summary The sidebar of the automation as a whole: its info, and the AI
+ * that edits it. On wide screens it is next to the editor and the sidebar of
+ * a row covers it. On narrow screens it is a bottom sheet that stays
+ * collapsed below the editor, and the sheet of a row hides it.
  *
  * @slot ai - The AI, which stays while another tab shows
  *
@@ -53,58 +63,118 @@ export class HaAutomationGeneralSidebar extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
+  /** Hides the sheet without losing the AI, e.g. for the sheet of a row. */
+  @property({ type: Boolean }) public suspended = false;
+
   @consumeLocalize()
   private _localize!: LocalizeFunc;
 
-  protected render() {
-    // The AI is a bottom sheet of its own there
-    if (this.narrow) {
-      return html`<slot name="ai"></slot>`;
+  // The collapsed sheet keeps the tabs visible
+  @state() private _headerHeight?: number;
+
+  @query(".header") private _header?: HTMLElement;
+
+  @query("ha-snap-bottom-sheet") private _sheet?: HaSnapBottomSheet;
+
+  // The sheet the position was last applied to, a new one starts at it
+  private _positionedSheet?: HaSnapBottomSheet;
+
+  // Where the sheet rests, so it comes back there after it was suspended
+  private _position: BottomSheetPosition = "collapsed";
+
+  /** Shows the content of the bottom sheet, if it is collapsed. */
+  public expand() {
+    if (this._sheet && this._sheet.position === "collapsed") {
+      this._sheet.snapTo("half");
     }
+  }
+
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
+    const headerHeight = this._header?.offsetHeight;
+    if (this.narrow && headerHeight && headerHeight !== this._headerHeight) {
+      this._headerHeight = headerHeight;
+    }
+    if (this._sheet && this._sheet !== this._positionedSheet) {
+      this._positionedSheet = this._sheet;
+      this._sheet.snapTo(this._position);
+    }
+  }
+
+  protected render() {
+    if (!this.narrow) {
+      return html`<ha-card outlined>${this._renderContent()}</ha-card>`;
+    }
+    // The AI stays in the light DOM meanwhile, so it keeps its conversation
+    if (this.suspended) {
+      return nothing;
+    }
+    return html`
+      <ha-snap-bottom-sheet
+        .minHeight=${this._headerHeight ?? COLLAPSED_HEIGHT}
+        .label=${this._localize(
+          "ui.panel.config.automation.editor.general_sidebar.open"
+        )}
+        @bottom-sheet-resized=${this._sheetResized}
+      >
+        <div class="sheet">${this._renderContent()}</div>
+      </ha-snap-bottom-sheet>
+    `;
+  }
+
+  private _renderContent() {
     const tab = this.aiAvailable ? this.tab : "info";
     return html`
-      <ha-card outlined>
-        <div class="header">
-          <ha-icon-button
-            .label=${this._localize("ui.common.close")}
-            .path=${mdiClose}
-            @click=${this._close}
-          ></ha-icon-button>
-          <ha-tab-group @wa-tab-show=${this._tabChanged}>
-            <ha-tab-group-tab slot="nav" panel="info" .active=${tab === "info"}>
-              ${this._localize(
-                "ui.panel.config.automation.editor.general_sidebar.info"
-              )}
-            </ha-tab-group-tab>
-            ${
-              this.aiAvailable
-                ? html`<ha-tab-group-tab
-                    slot="nav"
-                    panel="ai"
-                    .active=${tab === "ai"}
-                  >
-                    <ha-svg-icon
-                      class=${classMap({
-                        "ai-icon": true,
-                        working: this.aiWorking,
-                      })}
-                      .path=${mdiStarFourPoints}
-                    ></ha-svg-icon>
-                    ${this._localize(
-                      "ui.panel.config.automation.editor.general_sidebar.ai"
-                    )}
-                  </ha-tab-group-tab>`
-                : nothing
-            }
-          </ha-tab-group>
-        </div>
-        <div class="info ha-scrollbar" ?hidden=${tab !== "info"}>
-          ${this._renderInfo()}
-        </div>
-        <div class="ai" ?hidden=${tab !== "ai"}>
-          <slot name="ai"></slot>
-        </div>
-      </ha-card>
+      <div class="header">
+        ${
+          // The sheet only collapses
+          this.narrow
+            ? nothing
+            : html`<ha-icon-button
+                .label=${this._localize("ui.common.close")}
+                .path=${mdiClose}
+                @click=${this._close}
+              ></ha-icon-button>`
+        }
+        <ha-tab-group @wa-tab-show=${this._tabChanged} @click=${this.expand}>
+          <ha-tab-group-tab slot="nav" panel="info" .active=${tab === "info"}>
+            ${this._localize(
+              "ui.panel.config.automation.editor.general_sidebar.info"
+            )}
+          </ha-tab-group-tab>
+          ${
+            this.aiAvailable
+              ? html`<ha-tab-group-tab
+                  slot="nav"
+                  panel="ai"
+                  .active=${tab === "ai"}
+                >
+                  <ha-svg-icon
+                    class=${classMap({
+                      "ai-icon": true,
+                      working: this.aiWorking,
+                    })}
+                    .path=${mdiStarFourPoints}
+                  ></ha-svg-icon>
+                  ${this._localize(
+                    "ui.panel.config.automation.editor.general_sidebar.ai"
+                  )}
+                </ha-tab-group-tab>`
+              : nothing
+          }
+        </ha-tab-group>
+      </div>
+      <div class="info ha-scrollbar" ?hidden=${tab !== "info"}>
+        ${this._renderInfo()}
+      </div>
+      <div
+        class="ai"
+        ?hidden=${tab !== "ai"}
+        @ai-request-started=${this.expand}
+        @ai-request-finished=${this._aiRequestFinished}
+      >
+        <slot name="ai"></slot>
+      </div>
     `;
   }
 
@@ -219,6 +289,19 @@ export class HaAutomationGeneralSidebar extends LitElement {
     fireEvent(this, "general-sidebar-closed");
   }
 
+  private _sheetResized() {
+    this._position = this._sheet?.position ?? this._position;
+  }
+
+  // Out of the way, so the user sees the changed automation
+  private _aiRequestFinished(
+    ev: HASSDomEvent<HASSDomEvents["ai-request-finished"]>
+  ) {
+    if (ev.detail.config) {
+      this._sheet?.snapTo("collapsed");
+    }
+  }
+
   private _infoChanged(ev: Event) {
     const field = ev.target as HTMLInputElement;
     const value = field.value.trim();
@@ -240,7 +323,26 @@ export class HaAutomationGeneralSidebar extends LitElement {
         display: block;
       }
       :host([narrow]) {
-        display: contents;
+        /* Centers the sheet on wide screens */
+        --ha-bottom-sheet-inset-left: max(
+          var(--safe-area-inset-left, 0px),
+          calc((100vw - 720px) / 2)
+        );
+        --ha-bottom-sheet-inset-right: max(
+          var(--safe-area-inset-right, 0px),
+          calc((100vw - 720px) / 2)
+        );
+        /* The grab area of the handle stays above the tabs */
+        --ha-bottom-sheet-handle-padding: 0px;
+      }
+      :host([narrow]) .header {
+        padding-top: var(--ha-space-5);
+      }
+      .sheet {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
       }
       [hidden] {
         display: none !important;
@@ -256,7 +358,7 @@ export class HaAutomationGeneralSidebar extends LitElement {
         display: flex;
         align-items: center;
         gap: var(--ha-space-1);
-        padding-inline-start: var(--ha-space-1);
+        padding-inline: var(--ha-space-1);
         border-bottom: 1px solid var(--divider-color);
         flex-shrink: 0;
       }
