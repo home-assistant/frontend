@@ -73,10 +73,12 @@ export const toggleFloorArea = (
       areas = areas.filter((areaId) => !siblings.includes(areaId));
     }
   } else if (floorId && floors.includes(floorId)) {
+    // Older values can list the floor and some of its areas, so drop the
+    // floor's areas before adding all of them but the unticked one.
     floors = arrayWithout(floors, floorId);
     areas = [
-      ...areas,
-      ...siblings.filter((areaId) => areaId !== id && !areas.includes(areaId)),
+      ...areas.filter((areaId) => !siblings.includes(areaId)),
+      ...siblings.filter((areaId) => areaId !== id),
     ];
   } else {
     areas = arrayWithout(areas, id);

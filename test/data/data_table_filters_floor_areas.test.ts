@@ -78,6 +78,18 @@ describe("toggleFloorArea", () => {
     ).toEqual({ floors: [], areas: ["living_room", "hall"], no_area: true });
   });
 
+  it("unticking an area also listed next to its ticked floor unticks it", () => {
+    expect(
+      toggleFloorArea(
+        { floors: ["ground"], areas: ["kitchen", "bedroom"] },
+        FLOOR_AREAS,
+        "areas",
+        "kitchen",
+        false
+      )
+    ).toEqual({ floors: [], areas: ["bedroom", "living_room", "hall"] });
+  });
+
   it("ticking the last area of a floor picks the floor", () => {
     expect(
       toggleFloorArea(

@@ -753,8 +753,9 @@ export class HaConfigEntities extends LitElement {
         const disabled = !!entry.disabled_by;
         const readonly = entry.readonly;
         // Entities without a state (disabled ones) count as unavailable too,
-        // so the Available and Unavailable filters are exact opposites.
-        const available = !!entity?.state && entity.state !== UNAVAILABLE;
+        // so the Available and Unavailable filters are exact opposites. An
+        // empty state, like that of a cleared text helper, is a valid one.
+        const available = !!entity && entity.state !== UNAVAILABLE;
 
         if (!(
           (showAvailable && available) ||
