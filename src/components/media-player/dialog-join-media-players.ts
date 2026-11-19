@@ -110,7 +110,12 @@ class DialogJoinMediaPlayers extends LitElement {
 
     const entityId = this._entityId;
     return html`
-      <ha-dialog .open=${this._open} flexcontent @closed=${this._dialogClosed}>
+      <ha-dialog
+        .open=${this._open}
+        .accessibleLabel=${this._localize("ui.card.media_player.media_players")}
+        flexcontent
+        @closed=${this._dialogClosed}
+      >
         <ha-dialog-header show-border slot="header">
           <ha-icon-button
             .label=${this._localize("ui.common.close")}

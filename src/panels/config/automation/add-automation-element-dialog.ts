@@ -526,10 +526,13 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
       return nothing;
     }
 
+    const title = this._getDialogTitle(this.params.type);
+
     if (this._bottomSheetMode) {
       return html`
         <ha-bottom-sheet
           open
+          .accessibleLabel=${title}
           @closed=${this._handleClosed}
           @after-show=${this._handleAfterShow}
           flexcontent
@@ -543,6 +546,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
       <ha-dialog
         width="large"
         open
+        .accessibleLabel=${title}
         @closed=${this._handleClosed}
         @after-show=${this._handleAfterShow}
         flexcontent

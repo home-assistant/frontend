@@ -358,6 +358,7 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
     return html`
       <ha-dialog
         .open=${this._open}
+        .accessibleLabel=${dialogTitle}
         .preventScrimClose=${this._preventScrimClose}
         @after-show=${this._focusFormStep}
         @closed=${this._dialogClosed}

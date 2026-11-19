@@ -189,6 +189,7 @@ class DialogGenerateBackup
     return html`
       <ha-dialog
         .open=${this._open}
+        .accessibleLabel=${dialogTitle}
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
