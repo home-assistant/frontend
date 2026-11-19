@@ -1946,10 +1946,18 @@
         "update": {
           "release_announcement": "Read release announcement",
           "upgrade_check": {
-            "affects": "{count, plural, one {One change in this update affects your integrations.} other {# changes in this update affect your integrations.}}",
-            "breaking": "{count, plural, one {One of them is backward-incompatible.} other {# of them are backward-incompatible.}}",
-            "nothing_applies": "None of the changes in this update affect your integrations.",
-            "show": "Show what changes for you"
+            "breaking_title": "Breaking changes",
+            "summary_title": "What changes for you",
+            "breaking_intro": "These integrations have backward-incompatible changes that may need your attention:",
+            "general": "{count, plural, one {One general change} other {# general changes}}",
+            "also": "Also in this update:",
+            "category": {
+              "noteworthy": "{count, plural, one {# noteworthy improvement} other {# noteworthy improvements}}",
+              "quality_scale": "{count, plural, one {# integration reached a higher quality scale level} other {# integrations reached a higher quality scale level}}",
+              "removed": "{count, plural, one {# integration was removed} other {# integrations were removed}}"
+            },
+            "nothing_applies": "Nothing in this update affects your integrations.",
+            "show": "Show all changes"
           },
           "skip": "Skip",
           "clear_skipped": "Clear skipped",
@@ -3159,11 +3167,14 @@
           "update_in_progress": "Update in progress",
           "no_area": "No area",
           "upgrade_check": {
-            "title": "Before you upgrade",
-            "subtitle": "Upgrading from {from} to {to}: changes that affect your integrations",
+            "page_title": "Upgrade check",
+            "title": "Before you update",
+            "entry": "{count, plural, =0 {Nothing in this update affects your integrations} one {One change affects your integrations} other {# changes affect your integrations}}",
+            "entry_breaking": "{count, plural, one {One change affects your integrations} other {# changes affect your integrations}}, {breaking, plural, one {one of them breaking} other {# of them breaking}}",
+            "subtitle": "Updating from {from} to {to}: changes that affect your integrations",
             "no_releases": "No releases newer than {version} are available yet.",
             "unavailable": "Unable to read the release notes right now. Try again later.",
-            "nothing_applies": "None of the changes in the newer releases affect your integrations.",
+            "nothing_applies": "Nothing in the newer releases affects your integrations.",
             "count": "{count, plural, one {# item} other {# items}}",
             "global": "General changes",
             "related": "Also mentions your integrations:",

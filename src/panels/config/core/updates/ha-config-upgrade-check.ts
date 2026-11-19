@@ -8,10 +8,12 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-markdown";
 import "../../../../components/ha-spinner";
+import "../../../../components/ha-svg-icon";
 import { domainToName } from "../../../../data/integration";
 import { QUALITY_SCALE_MAP } from "../../../../data/integration_quality_scale";
 import type {
   UpgradeCheckCategory,
+  UpgradeCheckCategoryKey,
   UpgradeCheckDigest,
   UpgradeCheckItem,
 } from "../../../../data/upgrade_check";
@@ -19,12 +21,17 @@ import {
   UPGRADE_CHECK_ANCHOR,
   UPGRADE_CHECK_UNAVAILABLE,
   fetchUpgradeCheckDigest,
+  upgradeCheckCategoryAnchor,
+  upgradeCheckGroupAnchor,
+  upgradeCheckItemLink,
 } from "../../../../data/upgrade_check";
 import type { HomeAssistant } from "../../../../types";
+import "./ha-upgrade-check-icon";
 
 interface ItemGroup {
   name: string;
   global: boolean;
+  anchor: string;
   items: UpgradeCheckItem[];
 }
 
@@ -35,6 +42,9 @@ class HaConfigUpgradeCheck extends LitElement {
   @state() private _digest?: UpgradeCheckDigest;
 
   @state() private _error?: string;
+
+  // Group the update dialog linked to; it opens and stays open.
+  @state() private _focus?: string;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -56,11 +66,18 @@ class HaConfigUpgradeCheck extends LitElement {
 
   // Wait for the digest: it sets the card's height and so where it ends up.
   private _scrollIfRequested = async (): Promise<void> => {
-    if (window.location.hash !== `#${UPGRADE_CHECK_ANCHOR}` || !this._digest) {
+    const hash = window.location.hash.slice(1);
+    if (!hash.startsWith(UPGRADE_CHECK_ANCHOR) || !this._digest) {
       return;
     }
+    if (hash !== UPGRADE_CHECK_ANCHOR) {
+      this._focus = hash;
+      await this.updateComplete;
+    }
     await nextRender();
-    this.scrollIntoView({ behavior: "smooth", block: "start" });
+    // A group no longer in the digest falls back to the card.
+    const target = this.shadowRoot!.getElementById(hash) ?? this;
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
     replaceCurrentUrl(window.location.pathname);
   };
 
@@ -89,10 +106,6 @@ class HaConfigUpgradeCheck extends LitElement {
   }
 
   protected render() {
-    // Nothing to check without a pending core update.
-    if (this._digest && !this._digest.target) {
-      return nothing;
-    }
     const localize = this.hass.localize;
     return html`
       <ha-card outlined>
@@ -149,8 +162,8 @@ class HaConfigUpgradeCheck extends LitElement {
     switch (category.key) {
       case "breaking":
       case "noteworthy":
-        content = this._groups(category.items).map((group) =>
-          this._renderGroup(group)
+        content = this._groups(category.key, category.items).map((group) =>
+          this._renderGroup(category.key, group)
         );
         break;
       case "quality_scale":
@@ -160,10 +173,16 @@ class HaConfigUpgradeCheck extends LitElement {
         content = category.items.map((item) => this._renderRemoved(item));
         break;
     }
+    const anchor = upgradeCheckCategoryAnchor(category.key);
     return html`
       <ha-expansion-panel
-        outlined
-        .expanded=${category.key === "breaking"}
+        class="category"
+        id=${anchor}
+        .expanded=${
+          category.key === "breaking" ||
+          this._focus === anchor ||
+          !!this._focus?.startsWith(`${anchor}-`)
+        }
         .header=${this.hass.localize(
           `ui.panel.config.updates.upgrade_check.category.${category.key}`
         )}
@@ -172,39 +191,49 @@ class HaConfigUpgradeCheck extends LitElement {
           { count: category.count }
         )}
       >
-        ${content} ${this._renderRelated(category.related)}
+        <ha-upgrade-check-icon
+          slot="leading-icon"
+          .category=${category.key}
+        ></ha-upgrade-check-icon>
+        ${content} ${this._renderRelated(category.key, category.related)}
       </ha-expansion-panel>
     `;
   }
 
-  // One group per integration (or set of integrations), plus a first one for
-  // general changes that no single integration covers.
-  private _groups(items: UpgradeCheckItem[]): ItemGroup[] {
+  // One group per integration (or set of integrations a change covers
+  // together), in release notes order, which puts the most used first;
+  // general changes come before them all.
+  private _groups(
+    category: UpgradeCheckCategoryKey,
+    items: UpgradeCheckItem[]
+  ): ItemGroup[] {
     const groups = new Map<string, ItemGroup>();
     for (const item of items) {
       const global = item.scope === "global";
-      const key = global ? "" : item.domains.join(",");
+      const domains = global ? [] : item.domains;
+      const key = domains.join(",");
       if (!groups.has(key)) {
         groups.set(key, {
           name: this._scope(item),
           global,
+          anchor: upgradeCheckGroupAnchor(category, domains),
           items: [],
         });
       }
       groups.get(key)!.items.push(item);
     }
-    return [...groups.values()].sort((a, b) =>
-      a.global !== b.global
-        ? Number(b.global) - Number(a.global)
-        : a.name.localeCompare(b.name, this.hass.locale.language)
+    return [...groups.values()].sort(
+      (a, b) => Number(b.global) - Number(a.global)
     );
   }
 
-  private _renderGroup(group: ItemGroup) {
+  private _renderGroup(category: UpgradeCheckCategoryKey, group: ItemGroup) {
     const versions = [...new Set(group.items.map((item) => item.version))];
     return html`
       <ha-expansion-panel
         class="group"
+        id=${group.anchor}
+        .expanded=${group.anchor === this._focus}
         .header=${group.name}
         .secondary=${versions.join(", ")}
       >
@@ -218,7 +247,7 @@ class HaConfigUpgradeCheck extends LitElement {
                     ? html`<span class="change-title">${item.title}</span>`
                     : nothing
                 }
-                ${this._renderVersion(item)}
+                ${this._renderVersion(category, item)}
               </div>
               ${
                 item.text
@@ -246,27 +275,32 @@ class HaConfigUpgradeCheck extends LitElement {
             >@${user}</a
           >`
     );
+    const tier = QUALITY_SCALE_MAP[item.tier!];
     return html`<div class="line">
-      ${this.hass.localize(
-        "ui.panel.config.updates.upgrade_check.tier_reached",
-        {
-          integration: item.title,
-          tier: this.hass.localize(
-            QUALITY_SCALE_MAP[item.tier!].translationKey
-          ),
+      <ha-svg-icon
+        class=${`tier ${item.tier}`}
+        .path=${tier.icon}
+      ></ha-svg-icon>
+      <div>
+        ${this.hass.localize(
+          "ui.panel.config.updates.upgrade_check.tier_reached",
+          {
+            integration: item.title,
+            tier: this.hass.localize(tier.translationKey),
+          }
+        )}
+        ${this._renderVersion("quality_scale", item)}
+        ${
+          credits.length
+            ? html`<div class="secondary">
+                ${this.hass.localize(
+                  "ui.panel.config.updates.upgrade_check.thanks",
+                  { users: html`${credits}` }
+                )}
+              </div>`
+            : nothing
         }
-      )}
-      ${this._renderVersion(item)}
-      ${
-        credits.length
-          ? html`<div class="secondary">
-              ${this.hass.localize(
-                "ui.panel.config.updates.upgrade_check.thanks",
-                { users: html`${credits}` }
-              )}
-            </div>`
-          : nothing
-      }
+      </div>
     </div>`;
   }
 
@@ -290,7 +324,10 @@ class HaConfigUpgradeCheck extends LitElement {
     `;
   }
 
-  private _renderRelated(related: UpgradeCheckItem[]) {
+  private _renderRelated(
+    category: UpgradeCheckCategoryKey,
+    related: UpgradeCheckItem[]
+  ) {
     if (!related.length) {
       return nothing;
     }
@@ -302,17 +339,22 @@ class HaConfigUpgradeCheck extends LitElement {
         ${related.map(
           (item) =>
             html`<li>
-              ${item.title} (${this._scope(item)}) ${this._renderVersion(item)}
+              ${item.title} (${this._scope(item)})
+              ${this._renderVersion(category, item)}
             </li>`
         )}
       </ul>
     `;
   }
 
-  private _renderVersion(item: UpgradeCheckItem) {
+  // Opens the item itself in its release notes, in a new window.
+  private _renderVersion(
+    category: UpgradeCheckCategoryKey,
+    item: UpgradeCheckItem
+  ) {
     return html`<a
       class="version"
-      href=${item.url}
+      href=${upgradeCheckItemLink(category, item)}
       target="_blank"
       rel="noreferrer"
       >${item.version}</a
@@ -359,8 +401,18 @@ class HaConfigUpgradeCheck extends LitElement {
     .card-content {
       display: flex;
       flex-direction: column;
-      gap: var(--ha-space-2);
-      padding: var(--ha-space-4);
+      padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+    }
+    .category {
+      --expansion-panel-summary-padding: var(--ha-space-2) 0;
+      --expansion-panel-content-padding: 0 0 var(--ha-space-2)
+        calc(40px + var(--ha-space-4));
+    }
+    .category + .category {
+      border-top: 1px solid var(--ha-color-border-neutral-quiet);
+    }
+    ha-upgrade-check-icon {
+      margin-inline-end: var(--ha-space-4);
     }
     .center {
       display: flex;
@@ -368,9 +420,12 @@ class HaConfigUpgradeCheck extends LitElement {
     }
     a {
       color: var(--primary-color);
+      text-decoration: none;
     }
     .group {
+      scroll-margin-top: var(--ha-space-4);
       --expansion-panel-summary-padding: 0;
+      --expansion-panel-content-padding: 0 var(--ha-space-2);
     }
     .change + .change {
       border-top: 1px solid var(--divider-color);
@@ -389,7 +444,27 @@ class HaConfigUpgradeCheck extends LitElement {
       font-size: var(--ha-font-size-s);
     }
     .line {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--ha-space-2);
       padding: var(--ha-space-2) 0;
+    }
+    /* Same colors as the quality scale on the integration page. */
+    .tier {
+      flex: none;
+      --mdc-icon-size: 20px;
+    }
+    .tier.bronze {
+      color: #cd7f32;
+    }
+    .tier.silver {
+      color: silver;
+    }
+    .tier.gold {
+      color: gold;
+    }
+    .tier.platinum {
+      color: #727272;
     }
     .prs {
       display: flex;

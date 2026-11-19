@@ -53,10 +53,10 @@ import {
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../dashboard/ha-config-updates";
-import "./updates/ha-config-upgrade-check";
+import "./updates/ha-config-upgrade-check-entry";
 import { showJoinBetaDialog } from "./updates/show-dialog-join-beta";
 
 interface UpdateGroup {
@@ -74,6 +74,8 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: false }) public route?: Route;
 
   @state() private _showSkipped = false;
 
@@ -200,7 +202,24 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
     }
   }
 
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    if (changedProps.has("route") && this._upgradeCheckPage) {
+      import("./updates/ha-config-upgrade-check-page");
+    }
+  }
+
+  private get _upgradeCheckPage(): boolean {
+    return this.route?.path === "/upgrade-check";
+  }
+
   protected render(): TemplateResult {
+    if (this._upgradeCheckPage) {
+      return html`<ha-config-upgrade-check-page
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+      ></ha-config-upgrade-check-page>`;
+    }
     const installableUpdates = this._filterInstallableUpdateEntities(
       this.hass.states,
       this.hass.formatEntityName
@@ -419,9 +438,9 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
                       this.hass.config,
                       "homeassistant_upgrade_check"
                     )
-                      ? html`<ha-config-upgrade-check
+                      ? html`<ha-config-upgrade-check-entry
                           .hass=${this.hass}
-                        ></ha-config-upgrade-check>`
+                        ></ha-config-upgrade-check-entry>`
                       : nothing
                   }
                 </div>
