@@ -86,6 +86,8 @@ export class HaMjpegPlayer extends LitElement {
     this._imageEl?.removeAttribute("src");
     this._loaded = false;
     this._canCopy = false;
+    // Sets the source again, also when nothing else changed
+    this.requestUpdate();
     this._startLoadCheck();
   }
 
