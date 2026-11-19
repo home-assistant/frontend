@@ -11,11 +11,8 @@ import { formatDurationNarrow } from "../../../common/datetime/format_duration";
 import { normalizeDuration } from "../../../common/datetime/normalize_duration";
 import { hasTemplate } from "../../../common/string/has-template";
 import type { ForDict, PlatformCondition } from "../../../data/automation";
-import {
-  getConditionDomain,
-  getConditionObjectId,
-  type ConditionDescription,
-} from "../../../data/condition";
+import type { ConditionDescription } from "../../../data/condition";
+import type { TriggerDescription } from "../../../data/trigger";
 import {
   formattersContext,
   internationalizationContext,
@@ -33,7 +30,6 @@ const SUMMARY_UNITS = {
 };
 
 interface HaAutomationRowOptionsConfig {
-  condition?: string;
   target?: PlatformCondition["target"];
   options?: {
     [key: string]: unknown;
@@ -72,7 +68,13 @@ const collectEntityIds = (selector: Selector, value: unknown): string[] => {
 export class HaAutomationRowOptions extends LitElement {
   @property({ attribute: false }) public config!: HaAutomationRowOptionsConfig;
 
-  @property({ attribute: false }) public description?: ConditionDescription;
+  @property({ attribute: false }) public description?:
+    ConditionDescription | TriggerDescription;
+
+  @property({ attribute: false }) public translationDomain?: string;
+
+  @property({ attribute: false })
+  public translationKey?: `component.${string}.${"conditions" | "triggers"}.${string}`;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -223,7 +225,7 @@ export class HaAutomationRowOptions extends LitElement {
   );
 
   private _formatFields(): string[] {
-    if (!this.config.condition || !this.description) {
+    if (!this.description) {
       return [];
     }
     const fields = Object.entries(this.description?.fields || {}).filter(
@@ -234,82 +236,36 @@ export class HaAutomationRowOptions extends LitElement {
         name !== "for" &&
         name !== "offset"
     );
-    const domain = getConditionDomain(this.config.condition);
-    const condition = getConditionObjectId(this.config.condition);
-    const target = this._targetId ? this._states?.[this._targetId] : undefined;
     return fields.flatMap(([name, field]) => {
       const value = this.config.options?.[name];
       const selector = field.selector!;
       if (value == null) {
         return [];
       }
-      let label: string;
-      if ("select" in selector || "state" in selector) {
-        label = ensureArray(value)
-          .map((item: unknown) => {
-            const text = String(item);
-            if ("select" in selector) {
-              const key = selector.select?.translation_key;
-              const option = selector.select?.options.find((entry) =>
-                typeof entry === "string"
-                  ? entry === text
-                  : entry.value === text
-              );
-              return (
-                (key &&
-                  this._i18n.localize(
-                    `component.${domain}.selector.${key}.options.${text}`
-                  )) ||
-                (typeof option === "object" ? option.label : text)
-              );
-            }
-            const extra = selector.state?.extra_options?.find(
-              (entry) => entry.value === item
-            );
-            if (extra) {
-              return extra.label;
-            }
-            const contextEntity = field.context?.filter_entity;
-            const entityIds =
-              selector.state?.entity_id ??
-              (contextEntity
-                ? this.config.options?.[contextEntity]
-                : undefined);
-            const entityId = ensureArray(entityIds || [])[0];
-            const entity =
-              typeof entityId === "string" ? this._states?.[entityId] : target;
-            if (!entity) {
-              return text;
-            }
-            return selector.state?.attribute
-              ? this._formatters.formatEntityAttributeValue(
-                  entity,
-                  selector.state.attribute,
-                  item
-                )
-              : this._formatters.formatEntityState(entity, text);
-          })
-          .join(", ");
-      } else {
-        label = formatSelectorValue(
-          {
-            ...this._i18n,
-            ...this._registries,
-            states: this._states || {},
-            formatEntityName: this._formatters.formatEntityName,
-          },
-          value,
-          selector
-        );
-      }
+      const contextEntity = field.context?.filter_entity;
+      const entityIds = contextEntity
+        ? this.config.options?.[contextEntity]
+        : undefined;
+      const entityId = ensureArray(entityIds || [])[0];
+      const label = formatSelectorValue(
+        {
+          ...this._i18n,
+          ...this._registries,
+          ...this._formatters,
+          states: this._states || {},
+          translationDomain: this.translationDomain,
+          entityId: typeof entityId === "string" ? entityId : this._targetId,
+        },
+        value,
+        selector
+      );
       if (!label) {
         return [];
       }
       const fieldLabel =
-        fields.length > 1
-          ? this._i18n.localize(
-              `component.${domain}.conditions.${condition}.fields.${name}.name`
-            ) || name
+        fields.length > 1 && this.translationKey
+          ? this._i18n.localize(`${this.translationKey}.fields.${name}.name`) ||
+            name
           : undefined;
       return [fieldLabel ? `${fieldLabel}: ${label}` : label];
     });

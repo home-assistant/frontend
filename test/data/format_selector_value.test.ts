@@ -171,3 +171,105 @@ describe("formatSelectorValue ui_color selector", () => {
     );
   });
 });
+
+describe("formatSelectorValue select selector", () => {
+  const selectOptions = {
+    localize: (key: string) => (key.endsWith(".heat") ? "Heating" : ""),
+    translationDomain: "climate",
+  } as FormatSelectorValueOptions;
+  const selector = {
+    select: {
+      translation_key: "mode",
+      options: [
+        { value: "heat", label: "heat" },
+        { value: "cool", label: "Cooling" },
+      ],
+    },
+  };
+
+  it("prefers translations and falls back to option labels and raw values", () => {
+    expect(
+      formatSelectorValue(selectOptions, ["heat", "cool", "custom"], selector)
+    ).toBe("Heating, Cooling, custom");
+  });
+
+  it("falls back to raw values for string options without translations", () => {
+    expect(
+      formatSelectorValue(selectOptions, "cool", {
+        select: { translation_key: "mode", options: ["heat", "cool"] },
+      })
+    ).toBe("cool");
+  });
+
+  it("uses option labels without a translation domain", () => {
+    expect(formatSelectorValue(options, ["heat", "cool"], selector)).toBe(
+      "heat, Cooling"
+    );
+  });
+});
+
+describe("formatSelectorValue state selector", () => {
+  const entity = {
+    entity_id: "climate.living_room",
+    state: "heat",
+    attributes: {},
+    last_changed: "",
+    last_updated: "",
+    context: { id: "", parent_id: null, user_id: null },
+  };
+  const stateOptions = {
+    states: { [entity.entity_id]: entity },
+    entityId: entity.entity_id,
+    formatEntityState: (_entity, value) => `state:${value}`,
+    formatEntityAttributeValue: (_entity, attribute, value) =>
+      `${attribute}:${value}`,
+  } satisfies Partial<FormatSelectorValueOptions>;
+  const formatOptions = stateOptions as FormatSelectorValueOptions;
+
+  it("formats states using the supplied entity context", () => {
+    expect(
+      formatSelectorValue(formatOptions, ["heat", "cool"], { state: {} })
+    ).toBe("state:heat, state:cool");
+  });
+
+  it("prefers an explicit entity ID over the context entity", () => {
+    expect(
+      formatSelectorValue(formatOptions, "heat", {
+        state: { entity_id: "climate.missing" },
+      })
+    ).toBe("heat");
+  });
+
+  it("formats attribute values with the entity attribute formatter", () => {
+    expect(
+      formatSelectorValue(formatOptions, 22, {
+        state: { attribute: "temperature" },
+      })
+    ).toBe("temperature:22");
+  });
+
+  it("prefers extra option labels even without an entity", () => {
+    expect(
+      formatSelectorValue(
+        { states: {} } as FormatSelectorValueOptions,
+        ["any", "heat"],
+        {
+          state: { extra_options: [{ value: "any", label: "Any state" }] },
+        }
+      )
+    ).toBe("Any state, heat");
+  });
+
+  it("falls back to raw values without optional formatters", () => {
+    const rawOptions = {
+      states: stateOptions.states,
+      entityId: entity.entity_id,
+    } as FormatSelectorValueOptions;
+    expect(formatSelectorValue(rawOptions, "heat", { state: {} })).toBe("heat");
+    expect(
+      formatSelectorValue(rawOptions, 22, {
+        state: { attribute: "temperature" },
+      })
+    ).toBe("22");
+  });
+});
