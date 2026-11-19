@@ -77,6 +77,8 @@ export type InputType =
  * @attr {boolean} auto-validate - Validates the input on blur instead of on form submit.
  * @attr {boolean} invalid - Marks the input as invalid.
  * @attr {boolean} inset-label - Uses an inset label style where the label stays inside the input.
+ * @attr {string} input-prefix - Fixed text shown before the value. With a label, the label is inset above the prefix.
+ * @attr {string} input-suffix - Fixed text shown after the value.
  * @attr {string} validation-message - Custom validation message shown when the input is invalid.
  * @attr {string} input-id - Sets the native input's `id` (and associated label `for`) on the inner `wa-input`.
  */
@@ -125,6 +127,12 @@ export class HaInput extends WaInputMixin(LitElement) {
 
   @property({ type: Boolean, attribute: "inset-label" })
   public insetLabel = false;
+
+  @property({ attribute: "input-prefix" })
+  public inputPrefix?: string;
+
+  @property({ attribute: "input-suffix" })
+  public inputSuffix?: string;
 
   /** Accessible name for the input when it has no visible label. */
   @property({ attribute: "accessible-label" })
@@ -207,22 +215,30 @@ export class HaInput extends WaInputMixin(LitElement) {
     this.addEventListener("focusin", this._syncFromNativeInput);
   }
 
-  protected override async firstUpdated(
-    changedProperties: PropertyValues<this>
-  ): Promise<void> {
-    super.firstUpdated(changedProperties);
-
-    if (!this.insetLabel) {
-      // Wait for wa-input to finish its first render
-      await this._input?.updateComplete;
-      this._syncStartSlotWidth();
-      this._observeStartSlot();
-    }
-  }
-
   protected override updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     this._syncAriaInvalid();
+    if (
+      changedProperties.has("insetLabel") ||
+      changedProperties.has("inputPrefix") ||
+      changedProperties.has("label")
+    ) {
+      this._syncStartSlot();
+    }
+  }
+
+  private get _insetLabel(): boolean {
+    return this.insetLabel || (!!this.inputPrefix && !!this.label);
+  }
+
+  private async _syncStartSlot(): Promise<void> {
+    await this._input?.updateComplete;
+    this._syncStartSlotWidth();
+    if (this._insetLabel) {
+      this._startSlotResizeObserver?.disconnect();
+    } else {
+      this._observeStartSlot();
+    }
   }
 
   // wa-input never sets aria-invalid on its native input. Without it, WebKit
@@ -251,7 +267,9 @@ export class HaInput extends WaInputMixin(LitElement) {
       ? false
       : this._hasSlotController.test("hint");
 
-    const hasStartSlot = this._hasSlotController.test("start");
+    const hasStartSlot =
+      !!this.inputPrefix || this._hasSlotController.test("start");
+    const insetLabel = this._insetLabel;
 
     return html`
       <wa-input
@@ -287,7 +305,7 @@ export class HaInput extends WaInputMixin(LitElement) {
           "label-raised":
             (this.value !== undefined && this.value !== "") ||
             (this.label && this.placeholder) ||
-            (hasStartSlot && this.insetLabel),
+            (hasStartSlot && insetLabel),
           "no-label": !this.label,
           "hint-hidden":
             !this.hint &&
@@ -316,6 +334,23 @@ export class HaInput extends WaInputMixin(LitElement) {
         <slot name="start" slot="start" @slotchange=${this._syncStartSlotWidth}>
           ${this.renderStartDefault()}
         </slot>
+        ${
+          this.inputPrefix
+            ? html`<span
+                class=${classMap({
+                  prefix: true,
+                  inset: insetLabel && !!this.label,
+                })}
+                slot="start"
+                >${this.inputPrefix}</span
+              >`
+            : nothing
+        }
+        ${
+          this.inputSuffix
+            ? html`<span slot="end">${this.inputSuffix}</span>`
+            : nothing
+        }
         <slot name="end" slot="end"> ${this.renderEndDefault()} </slot>
         <slot name="clear-button" slot="clear-button">
           <ha-icon-button
@@ -389,7 +424,7 @@ export class HaInput extends WaInputMixin(LitElement) {
       '[part~="start"]'
     ) as HTMLElement | null;
     const startWidth = startEl?.offsetWidth ?? 0;
-    if (startWidth > 0 && !this.insetLabel) {
+    if (startWidth > 0 && !this._insetLabel) {
       this.style.setProperty(
         "--start-slot-width",
         `calc(${startWidth}px + var(--ha-space-1))`
@@ -540,6 +575,14 @@ export class HaInput extends WaInputMixin(LitElement) {
 
       wa-input::part(end) {
         color: var(--ha-color-text-secondary);
+      }
+
+      .prefix {
+        color: var(--ha-color-text-secondary);
+      }
+
+      .prefix.inset {
+        margin: var(--ha-space-3) 0 0;
       }
 
       ha-icon-button {

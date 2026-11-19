@@ -771,12 +771,10 @@ export class HaConfigDeviceDashboard extends LitElement {
           .value=${`label_${label.label_id}`}
           .action=${selected ? "remove" : "add"}
           keep-open
+          type="checkbox"
+          .checked=${selected}
+          .indeterminate=${partial}
         >
-          <ha-checkbox
-            slot="icon"
-            .checked=${selected}
-            .indeterminate=${partial}
-          ></ha-checkbox>
           <ha-label
             .color=${label.color}
             .description=${label.description || undefined}
