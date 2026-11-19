@@ -280,6 +280,8 @@ export type DurationSelectorMode = "positive" | "signed" | "offset";
 
 export interface DurationSelector {
   duration: {
+    /** Label for the duration value in offset mode. */
+    label?: string;
     enable_day?: boolean;
     enable_millisecond?: boolean;
     allow_negative?: boolean;
