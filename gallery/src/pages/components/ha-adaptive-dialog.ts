@@ -284,7 +284,9 @@ export class DemoHaAdaptiveDialog extends LitElement {
         <p>
           The header title can be set using the <code>header-title</code>
           attribute or by providing custom content in the
-          <code>headerTitle</code> slot.
+          <code>headerTitle</code> slot. When you use the slot, set the
+          <code>accessibleLabel</code> property so screen readers announce the
+          dialog's name.
         </p>
 
         <h4>Header subtitle</h4>

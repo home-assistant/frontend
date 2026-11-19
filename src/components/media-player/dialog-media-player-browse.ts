@@ -76,9 +76,14 @@ class DialogMediaPlayerBrowse extends LitElement {
       return nothing;
     }
 
+    const title = !this._currentItem
+      ? this._localize("ui.components.media-browser.media-player-browser")
+      : this._currentItem.title;
+
     return html`
       <ha-dialog
         .open=${this._open}
+        .accessibleLabel=${title}
         width="large"
         flexcontent
         @closed=${this.closeDialog}
@@ -95,15 +100,7 @@ class DialogMediaPlayerBrowse extends LitElement {
                 `
               : nothing
           }
-          <span slot="title">
-            ${
-              !this._currentItem
-                ? this._localize(
-                    "ui.components.media-browser.media-player-browser"
-                  )
-                : this._currentItem.title
-            }
-          </span>
+          <span slot="title">${title}</span>
           <ha-media-manage-button
             slot="actionItems"
             .currentItem=${this._currentItem}
