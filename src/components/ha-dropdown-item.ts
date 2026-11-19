@@ -45,6 +45,7 @@ export class HaDropdownItem extends DropdownItem {
       <ha-svg-icon
         id="check"
         part="checkmark"
+        class=${this.checked || this.indeterminate ? "checked" : ""}
         .path=${
           this.indeterminate
             ? mdiMinusBox
@@ -68,6 +69,11 @@ export class HaDropdownItem extends DropdownItem {
         #check {
           visibility: visible;
           flex-shrink: 0;
+          color: var(--ha-color-border-neutral-normal);
+        }
+
+        #check.checked {
+          color: var(--ha-color-fill-primary-loud-resting);
         }
 
         #icon ::slotted(*) {
