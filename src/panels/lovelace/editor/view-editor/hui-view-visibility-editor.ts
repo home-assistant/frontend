@@ -74,6 +74,7 @@ export class HuiViewVisibilityEditor extends LitElement {
               <span slot="headline">${user.name}</span>
               <ha-switch
                 slot="end"
+                .accessibleLabel=${user.name}
                 .userId=${user.id}
                 @change=${this._valChange}
                 .checked=${this.checkUser(user.id)}
