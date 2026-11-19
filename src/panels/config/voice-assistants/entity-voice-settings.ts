@@ -199,6 +199,9 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         </h3>
         <ha-switch
           slot="end"
+          .accessibleLabel=${this.hass.localize(
+            "ui.dialogs.voice-settings.expose_header"
+          )}
           @change=${this._toggleAll}
           .assistants=${uiAssistants}
           .checked=${anyExposed}
@@ -272,6 +275,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                   }
                   <ha-switch
                     slot="end"
+                    .accessibleLabel=${voiceAssistants[key].name}
                     .assistant=${key}
                     @change=${this._toggleAssistant}
                     .disabled=${manualConfig || (!exposed && !supported)}
@@ -333,6 +337,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                 </span>
                 <ha-switch
                   slot="end"
+                  .accessibleLabel=${this._computedName(this.entry)}
                   .checked=${(this._aliases ?? this.entry.aliases).includes(null)}
                   @change=${this._toggleEntityNameAlias}
                 ></ha-switch>

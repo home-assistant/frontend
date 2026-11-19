@@ -225,6 +225,9 @@ export class AssistPref extends LitElement {
           >
           <ha-switch
             slot="end"
+            .accessibleLabel=${this.hass!.localize(
+              "ui.panel.config.voice_assistants.expose.expose_new_entities"
+            )}
             .checked=${this._exposeNew}
             .disabled=${this._exposeNew === undefined}
             @change=${this._exposeNewToggleChanged}

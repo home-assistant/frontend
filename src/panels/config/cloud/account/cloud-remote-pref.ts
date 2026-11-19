@@ -95,6 +95,9 @@ export class CloudRemotePref extends LitElement {
                   >
                     <div class="header-actions">
                       <ha-switch
+                        .accessibleLabel=${this.hass.localize(
+                          "ui.panel.config.cloud.account.remote.card_title"
+                        )}
                         .checked=${remote_enabled}
                         @change=${this._toggleChanged}
                       ></ha-switch>
@@ -183,6 +186,9 @@ export class CloudRemotePref extends LitElement {
                           >
                           <ha-switch
                             slot="end"
+                            .accessibleLabel=${this.hass.localize(
+                              "ui.panel.config.cloud.account.remote.external_activation"
+                            )}
                             .checked=${remote_allow_remote_enable}
                             @change=${this._toggleAllowRemoteEnabledChanged}
                           ></ha-switch>

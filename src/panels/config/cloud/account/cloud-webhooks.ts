@@ -233,6 +233,7 @@ export class CloudWebhooks extends LitElement {
               : html`
                   <ha-switch
                     slot="end"
+                    .accessibleLabel=${entry.name}
                     data-webhook-id=${entry.webhook_id}
                     @click=${this._enableWebhook}
                   ></ha-switch>

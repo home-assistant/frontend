@@ -80,6 +80,9 @@ export class CloudAlexaPref extends LitElement {
             class="icon-link"
           ></ha-icon-button>
           <ha-switch
+            .accessibleLabel=${this.hass.localize(
+              "ui.panel.config.cloud.account.alexa.title"
+            )}
             .checked=${alexa_enabled}
             @change=${this._enabledToggleChanged}
           ></ha-switch>
@@ -152,6 +155,9 @@ export class CloudAlexaPref extends LitElement {
                     >
                     <ha-switch
                       slot="end"
+                      .accessibleLabel=${this.hass!.localize(
+                        "ui.panel.config.cloud.account.alexa.expose_new_entities"
+                      )}
                       .checked=${this._exposeNew}
                       .disabled=${this._exposeNew === undefined}
                       @change=${this._exposeNewToggleChanged}
@@ -173,6 +179,9 @@ export class CloudAlexaPref extends LitElement {
                             >
                             <ha-switch
                               slot="end"
+                              .accessibleLabel=${this.hass!.localize(
+                                "ui.panel.config.cloud.account.alexa.enable_state_reporting"
+                              )}
                               .checked=${alexa_report_state}
                               @change=${this._reportToggleChanged}
                             ></ha-switch>
