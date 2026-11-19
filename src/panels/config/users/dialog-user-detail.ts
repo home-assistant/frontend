@@ -10,9 +10,9 @@ import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-label";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-switch";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
+import "../../../components/item/ha-list-item-switch";
 import "../../../components/item/ha-row-item";
 import { adminChangeUsername } from "../../../data/auth";
 import {
@@ -185,7 +185,11 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
                   `
                 : nothing
             }
-            <ha-row-item>
+            <ha-list-item-switch
+              .disabled=${user.system_generated || user.is_owner}
+              .checked=${this._isActive}
+              @change=${this._activeChanged}
+            >
               <span slot="headline"
                 >${this.hass.localize(
                   "ui.panel.config.users.editor.active"
@@ -196,17 +200,12 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
                   "ui.panel.config.users.editor.active_description"
                 )}</span
               >
-              <ha-switch
-                slot="end"
-                .accessibleLabel=${this.hass.localize(
-                  "ui.panel.config.users.editor.active"
-                )}
-                .disabled=${user.system_generated || user.is_owner}
-                .checked=${this._isActive}
-                @change=${this._activeChanged}
-              ></ha-switch>
-            </ha-row-item>
-            <ha-row-item>
+            </ha-list-item-switch>
+            <ha-list-item-switch
+              .disabled=${user.system_generated}
+              .checked=${this._localOnly}
+              @change=${this._localOnlyChanged}
+            >
               <span slot="headline"
                 >${this.hass.localize(
                   "ui.panel.config.users.editor.local_access_only"
@@ -217,17 +216,12 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
                   "ui.panel.config.users.editor.local_access_only_description"
                 )}</span
               >
-              <ha-switch
-                slot="end"
-                .accessibleLabel=${this.hass.localize(
-                  "ui.panel.config.users.editor.local_access_only"
-                )}
-                .disabled=${user.system_generated}
-                .checked=${this._localOnly}
-                @change=${this._localOnlyChanged}
-              ></ha-switch>
-            </ha-row-item>
-            <ha-row-item>
+            </ha-list-item-switch>
+            <ha-list-item-switch
+              .disabled=${user.system_generated || user.is_owner}
+              .checked=${this._isAdmin}
+              @change=${this._adminChanged}
+            >
               <span slot="headline"
                 >${this.hass.localize(
                   "ui.panel.config.users.editor.admin"
@@ -238,16 +232,7 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
                   "ui.panel.config.users.editor.admin_description"
                 )}</span
               >
-              <ha-switch
-                slot="end"
-                .accessibleLabel=${this.hass.localize(
-                  "ui.panel.config.users.editor.admin"
-                )}
-                .disabled=${user.system_generated || user.is_owner}
-                .checked=${this._isAdmin}
-                @change=${this._adminChanged}
-              ></ha-switch>
-            </ha-row-item>
+            </ha-list-item-switch>
             ${
               !this._isAdmin && !user.system_generated
                 ? html`
@@ -447,7 +432,8 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
         .secondary {
           color: var(--secondary-text-color);
         }
-        ha-row-item {
+        ha-row-item,
+        ha-list-item-switch {
           --ha-row-item-padding-inline: 0;
         }
         .badge-container {

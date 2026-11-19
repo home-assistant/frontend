@@ -12,6 +12,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/input/ha-input";
+import "../../../components/item/ha-list-item-switch";
 import "../../../components/item/ha-row-item";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { adminChangeUsername } from "../../../data/auth";
@@ -194,7 +195,16 @@ class DialogPersonDetail
               @change=${this._pictureChanged}
             ></ha-picture-upload>
 
-            <ha-row-item>
+            <ha-list-item-switch
+              @change=${this._allowLoginChanged}
+              ?disabled=${
+                this._user &&
+                (this._user.id === this.hass.user?.id ||
+                  this._user.system_generated ||
+                  this._user.is_owner)
+              }
+              .checked=${!!this._userId}
+            >
               <span slot="headline"
                 >${this.hass!.localize(
                   "ui.panel.config.person.detail.allow_login"
@@ -205,21 +215,7 @@ class DialogPersonDetail
                   "ui.panel.config.person.detail.allow_login_description"
                 )}</span
               >
-              <ha-switch
-                slot="end"
-                .accessibleLabel=${this.hass!.localize(
-                  "ui.panel.config.person.detail.allow_login"
-                )}
-                @change=${this._allowLoginChanged}
-                ?disabled=${
-                  this._user &&
-                  (this._user.id === this.hass.user?.id ||
-                    this._user.system_generated ||
-                    this._user.is_owner)
-                }
-                .checked=${this._userId}
-              ></ha-switch>
-            </ha-row-item>
+            </ha-list-item-switch>
 
             ${this._renderUserFields()}
             ${
@@ -385,7 +381,11 @@ class DialogPersonDetail
             `
           : nothing
       }
-      <ha-row-item>
+      <ha-list-item-switch
+        .disabled=${user.system_generated}
+        .checked=${this._localOnly}
+        @change=${this._localOnlyChanged}
+      >
         <span slot="headline"
           >${this.hass.localize(
             "ui.panel.config.person.detail.local_access_only"
@@ -396,17 +396,12 @@ class DialogPersonDetail
             "ui.panel.config.person.detail.local_access_only_description"
           )}</span
         >
-        <ha-switch
-          slot="end"
-          .accessibleLabel=${this.hass.localize(
-            "ui.panel.config.person.detail.local_access_only"
-          )}
-          .disabled=${user.system_generated}
-          .checked=${this._localOnly}
-          @change=${this._localOnlyChanged}
-        ></ha-switch>
-      </ha-row-item>
-      <ha-row-item>
+      </ha-list-item-switch>
+      <ha-list-item-switch
+        .disabled=${user.system_generated || user.is_owner}
+        .checked=${this._isAdmin}
+        @change=${this._adminChanged}
+      >
         <span slot="headline"
           >${this.hass.localize("ui.panel.config.person.detail.admin")}</span
         >
@@ -415,16 +410,7 @@ class DialogPersonDetail
             "ui.panel.config.person.detail.admin_description"
           )}</span
         >
-        <ha-switch
-          slot="end"
-          .accessibleLabel=${this.hass.localize(
-            "ui.panel.config.person.detail.admin"
-          )}
-          .disabled=${user.system_generated || user.is_owner}
-          .checked=${this._isAdmin}
-          @change=${this._adminChanged}
-        ></ha-switch>
-      </ha-row-item>
+      </ha-list-item-switch>
     `;
   }
 
@@ -681,7 +667,8 @@ class DialogPersonDetail
           margin-bottom: 16px;
           --file-upload-image-border-radius: var(--ha-picture-border-radius);
         }
-        ha-row-item {
+        ha-row-item,
+        ha-list-item-switch {
           --ha-row-item-padding-inline: 0;
         }
         a {

@@ -9,9 +9,8 @@ import { conditionalClamp } from "../../../../common/number/clamp";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import { GRID_SIZE_PICKER_ROWS } from "../../../../components/ha-grid-size-picker";
-import "../../../../components/ha-switch";
-import type { HaSwitch } from "../../../../components/ha-switch";
-import "../../../../components/item/ha-row-item";
+import "../../../../components/item/ha-list-item-switch";
+import type { HaListItemSwitch } from "../../../../components/item/ha-list-item-switch";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import {
   DEFAULT_SECTION_COLUMN_SPAN,
@@ -118,20 +117,18 @@ export class HuiCardLayoutEditor extends LitElement {
             `
           : nothing
       }
-      <ha-row-item wrap-supporting-text>
+      <ha-list-item-switch
+        wrap-supporting-text
+        @change=${this._recommendedSizeChanged}
+        .checked=${!this._customSize}
+      >
         <span slot="headline"
           >${this.hass.localize(
             "ui.panel.lovelace.editor.edit_card.layout.recommended_size"
           )}</span
         >
         <span slot="supporting-text">${this._sizeText(recommended)}</span>
-        <ha-switch
-          slot="end"
-          @change=${this._recommendedSizeChanged}
-          .checked=${!this._customSize}
-          name="recommended-size"
-        ></ha-switch>
-      </ha-row-item>
+      </ha-list-item-switch>
       ${
         this._customSize
           ? html`
@@ -151,7 +148,11 @@ export class HuiCardLayoutEditor extends LitElement {
                 .columnMax=${gridOptions.max_columns}
                 .step=${this._preciseMode ? 1 : GRID_COLUMN_MULTIPLIER}
               ></ha-grid-size-picker>
-              <ha-row-item wrap-supporting-text>
+              <ha-list-item-switch
+                wrap-supporting-text
+                @change=${this._autoHeightChanged}
+                .checked=${options.rows === "auto"}
+              >
                 <span slot="headline"
                   >${this.hass.localize(
                     "ui.panel.lovelace.editor.edit_card.layout.fit_content"
@@ -162,14 +163,12 @@ export class HuiCardLayoutEditor extends LitElement {
                     "ui.panel.lovelace.editor.edit_card.layout.fit_content_helper"
                   )}</span
                 >
-                <ha-switch
-                  slot="end"
-                  @change=${this._autoHeightChanged}
-                  .checked=${options.rows === "auto"}
-                  name="auto-height"
-                ></ha-switch>
-              </ha-row-item>
-              <ha-row-item wrap-supporting-text>
+              </ha-list-item-switch>
+              <ha-list-item-switch
+                wrap-supporting-text
+                @change=${this._fullWidthChanged}
+                .checked=${options.columns === "full"}
+              >
                 <span slot="headline"
                   >${this.hass.localize(
                     "ui.panel.lovelace.editor.edit_card.layout.full_width"
@@ -180,13 +179,7 @@ export class HuiCardLayoutEditor extends LitElement {
                     "ui.panel.lovelace.editor.edit_card.layout.full_width_helper"
                   )}</span
                 >
-                <ha-switch
-                  slot="end"
-                  @change=${this._fullWidthChanged}
-                  .checked=${options.columns === "full"}
-                  name="full-width"
-                ></ha-switch>
-              </ha-row-item>
+              </ha-list-item-switch>
             `
           : nothing
       }
@@ -299,7 +292,7 @@ export class HuiCardLayoutEditor extends LitElement {
   }
 
   private _recommendedSizeChanged(
-    ev: HASSDomCurrentTargetEvent<HaSwitch>
+    ev: HASSDomCurrentTargetEvent<HaListItemSwitch>
   ): void {
     ev.stopPropagation();
     this._customSize = !ev.currentTarget.checked;

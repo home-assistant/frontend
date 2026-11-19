@@ -1,14 +1,14 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-switch";
-import type { HaSwitch } from "../../../components/ha-switch";
-import "../../../components/item/ha-row-item";
+import "../../../components/item/ha-list-item-switch";
+import type { HaListItemSwitch } from "../../../components/item/ha-list-item-switch";
 import type { BackupConfig } from "../../../data/backup";
 import { fetchBackupConfig } from "../../../data/backup";
 import { getSupervisorUpdateConfig } from "../../../data/supervisor/update";
@@ -119,8 +119,8 @@ export class DialogLabsPreviewFeatureEnable
     };
   }
 
-  private _createBackupChanged(ev: Event): void {
-    this._createBackup = (ev.target as HaSwitch).checked;
+  private _createBackupChanged(ev: HASSDomTargetEvent<HaListItemSwitch>): void {
+    this._createBackup = ev.target.checked;
   }
 
   private _handleCancel(): void {
@@ -157,7 +157,10 @@ export class DialogLabsPreviewFeatureEnable
         ${
           createBackupTexts
             ? html`
-                <ha-row-item>
+                <ha-list-item-switch
+                  .checked=${this._createBackup}
+                  @change=${this._createBackupChanged}
+                >
                   <span slot="headline">${createBackupTexts.title}</span>
                   ${
                     createBackupTexts.description
@@ -168,13 +171,7 @@ export class DialogLabsPreviewFeatureEnable
                         `
                       : nothing
                   }
-                  <ha-switch
-                    slot="end"
-                    .accessibleLabel=${createBackupTexts.title}
-                    .checked=${this._createBackup}
-                    @change=${this._createBackupChanged}
-                  ></ha-switch>
-                </ha-row-item>
+                </ha-list-item-switch>
               `
             : nothing
         }
@@ -209,7 +206,7 @@ export class DialogLabsPreviewFeatureEnable
       color: var(--secondary-text-color);
     }
 
-    ha-row-item {
+    ha-list-item-switch {
       --ha-row-item-padding-inline: var(--ha-space-6);
       margin: 0;
       padding: 0;
