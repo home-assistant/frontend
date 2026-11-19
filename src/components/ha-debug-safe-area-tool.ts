@@ -158,16 +158,12 @@ export class HaDebugSafeAreaTool extends LitElement {
                       `
                     )}
                   </div>
-                  <label class="highlight">
-                    ${localize("ui.components.safe_area_tool.highlight")}
-                    <ha-switch
-                      .accessibleLabel=${localize(
-                        "ui.components.safe_area_tool.highlight"
-                      )}
-                      .checked=${this._config.highlight}
-                      @change=${this._highlightChanged}
-                    ></ha-switch>
-                  </label>
+                  <ha-switch
+                    class="highlight"
+                    .checked=${this._config.highlight}
+                    @change=${this._highlightChanged}
+                    >${localize("ui.components.safe_area_tool.highlight")}</ha-switch
+                  >
                 </div>
               `
             : nothing
@@ -333,8 +329,17 @@ export class HaDebugSafeAreaTool extends LitElement {
     }
     .highlight {
       display: flex;
-      align-items: center;
+    }
+    /* The switch renders its control before the label, so flip the row to keep
+       the label on the start side with the control pushed to the end. */
+    .highlight::part(base) {
+      width: 100%;
+      flex-direction: row-reverse;
       justify-content: space-between;
+      gap: var(--ha-space-2);
+    }
+    .highlight::part(label) {
+      margin-inline-start: 0;
     }
   `;
 }

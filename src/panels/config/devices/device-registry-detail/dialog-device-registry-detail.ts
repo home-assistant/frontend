@@ -119,16 +119,6 @@ class DialogDeviceRegistryDetail extends DirtyStateProviderMixin<DeviceFormState
             ></ha-labels-picker>
             <div class="row">
               <ha-switch
-                .accessibleLabel=${this.hass.localize(
-                  "ui.dialogs.device-registry-detail.enabled_label",
-                  {
-                    type: this.hass.localize(
-                      `ui.dialogs.device-registry-detail.type.${
-                        device.entry_type || "device"
-                      }`
-                    ),
-                  }
-                )}
                 .checked=${!this._disabledBy}
                 .disabled=${
                   this._params.device.disabled_by === "config_entry" ||
@@ -136,8 +126,6 @@ class DialogDeviceRegistryDetail extends DirtyStateProviderMixin<DeviceFormState
                 }
                 @change=${this._disabledByChanged}
               >
-              </ha-switch>
-              <div>
                 <div>
                   ${this.hass.localize(
                     "ui.dialogs.device-registry-detail.enabled_label",
@@ -172,7 +160,7 @@ class DialogDeviceRegistryDetail extends DirtyStateProviderMixin<DeviceFormState
                     "ui.dialogs.device-registry-detail.enabled_description"
                   )}
                 </div>
-              </div>
+              </ha-switch>
             </div>
           </div>
         </div>
@@ -257,10 +245,11 @@ class DialogDeviceRegistryDetail extends DirtyStateProviderMixin<DeviceFormState
           --ha-input-padding-bottom: 0;
         }
         ha-switch {
-          margin-right: 16px;
-          margin-inline-end: 16px;
-          margin-inline-start: initial;
           direction: var(--direction);
+        }
+        ha-switch::part(label) {
+          margin-inline-start: var(--ha-space-4);
+          line-height: var(--ha-line-height-normal);
         }
         .row {
           margin-top: 8px;
