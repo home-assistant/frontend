@@ -117,6 +117,7 @@ export class HaMoreInfoCameraPresets extends LitElement {
         width: 100%;
         max-width: 360px;
         margin: 0 auto;
+        border: 1px solid var(--divider-color);
         border-radius: var(--ha-border-radius-lg);
         overflow: hidden;
       }
