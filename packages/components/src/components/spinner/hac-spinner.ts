@@ -14,6 +14,8 @@ import { property } from "lit/decorators.js";
  * parent's name.
  *
  * @csspart spinner - The `svg` element.
+ * @csspart base - Same as `spinner`, kept for styles written for `ha-spinner`.
+ * Temporary, like the legacy variables.
  *
  * @cssprop --hac-spinner-size - Diameter of the spinner. Overrides `size`.
  * @cssprop --hac-spinner-indicator-color - Color of the moving arc.
@@ -55,7 +57,7 @@ export class HacSpinner extends LitElement {
   protected render() {
     return html`
       <svg
-        part="spinner"
+        part="spinner base"
         role="progressbar"
         aria-label=${this.accessibleLabel || this.defaultLabel()}
         aria-hidden=${this.getAttribute("aria-hidden") ?? nothing}

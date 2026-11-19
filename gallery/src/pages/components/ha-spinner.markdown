@@ -3,7 +3,7 @@ title: Spinner
 subtitle: Can be used to indicate an ongoing task.
 ---
 
-`ha-spinner` is `hac-spinner` from `@home-assistant/components`, named with the translated "Loading" by default.
+`ha-spinner` is `hac-spinner` from `@home-assistant/components`.
 
 ## Accessibility
 

@@ -5,8 +5,7 @@ import type { LocalizeFunc } from "../common/translations/localize";
 
 /**
  * `hac-spinner` under its existing name, named with the translated "Loading"
- * by default. Takes the same `size`, `accessible-label` and `--ha-spinner-*`
- * variables as before.
+ * by default. Takes the same `size` and `--ha-spinner-*` variables as before.
  */
 @customElement("ha-spinner")
 export class HaSpinner extends HacSpinner {
