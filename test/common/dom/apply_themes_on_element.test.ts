@@ -64,7 +64,6 @@ describe("applyThemesOnElement user colors", () => {
     );
 
     expect(style.getPropertyValue("--primary-color")).toBe("#ff00ff");
-    expect(style.getPropertyValue("--ha-color-primary-50")).toBe("");
     expect(style.getPropertyValue("--accent-color")).toBe(PICKED_ACCENT);
   });
 
@@ -77,7 +76,6 @@ describe("applyThemesOnElement user colors", () => {
     expect(style.getPropertyValue("--primary-color")).not.toBe(PICKED_PRIMARY);
     expect(style.getPropertyValue("--ha-color-primary-40")).toBe("#123456");
   });
-
   it("reads theme colors from the active mode", () => {
     const themes = makeThemes({
       modes: asTheme({
@@ -108,5 +106,69 @@ describe("applyThemesOnElement user colors", () => {
     expect(style.getPropertyValue("--app-header-background-color")).toBe(
       "#000000"
     );
+  });
+});
+
+// A custom theme that sets a primary color without the palette used to keep
+// the default blue palette, so switches and buttons ignored the theme color.
+describe("applyThemesOnElement theme palette", () => {
+  beforeEach(() => {
+    invalidateThemeCache();
+  });
+
+  const applyTheme = (theme: Theme): CSSStyleDeclaration => {
+    const element = document.createElement("div");
+    applyThemesOnElement(element, makeThemes({ custom: theme }), "custom");
+    return element.style;
+  };
+
+  it("generates the palette from the theme primary color", () => {
+    const style = applyTheme(asTheme({ "primary-color": "#ff00ff" }));
+
+    expect(style.getPropertyValue("--ha-color-primary-50")).toBe("#ff00ff");
+    expect(style.getPropertyValue("--ha-color-primary-90")).not.toBe("");
+    expect(style.getPropertyValue("--dark-primary-color")).not.toBe("");
+  });
+
+  it("parses named colors", () => {
+    const style = applyTheme(asTheme({ "primary-color": "pink" }));
+
+    expect(style.getPropertyValue("--primary-color")).toBe("pink");
+    expect(style.getPropertyValue("--ha-color-primary-50")).toBe("#ffc0cb");
+  });
+
+  it("doesn't recolor state icons or text on primary", () => {
+    const style = applyTheme(asTheme({ "primary-color": "#ff00ff" }));
+
+    expect(style.getPropertyValue("--state-icon-color")).toBe("");
+    expect(style.getPropertyValue("--text-primary-color")).toBe("");
+  });
+
+  it("keeps palette keys and shades the theme sets itself", () => {
+    const style = applyTheme(
+      asTheme({
+        "primary-color": "#ff00ff",
+        "dark-primary-color": "#330033",
+      })
+    );
+
+    expect(style.getPropertyValue("--dark-primary-color")).toBe("#330033");
+    expect(style.getPropertyValue("--ha-color-primary-50")).toBe("#ff00ff");
+  });
+
+  it("doesn't generate anything when the theme sets part of the palette", () => {
+    const style = applyTheme(
+      asTheme({ "primary-color": "#ff00ff", "ha-color-primary-40": "#123456" })
+    );
+
+    expect(style.getPropertyValue("--ha-color-primary-40")).toBe("#123456");
+    expect(style.getPropertyValue("--ha-color-primary-50")).toBe("");
+  });
+
+  it("skips colors it can't parse", () => {
+    const style = applyTheme(asTheme({ "primary-color": "var(--my-color)" }));
+
+    expect(style.getPropertyValue("--primary-color")).toBe("var(--my-color)");
+    expect(style.getPropertyValue("--ha-color-primary-50")).toBe("");
   });
 });

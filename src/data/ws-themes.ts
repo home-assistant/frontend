@@ -104,8 +104,14 @@ export const themeDefinesColor = (
   }
   return (
     "primary-color" in themeVariables ||
-    Object.keys(themeVariables).some((key) =>
-      key.startsWith("ha-color-primary-")
-    )
+    themeDefinesPrimaryPalette(themeVariables)
   );
 };
+
+/** Whether the theme sets any key of the generated primary palette. */
+export const themeDefinesPrimaryPalette = (
+  themeVariables: Partial<ThemeVars>
+): boolean =>
+  Object.keys(themeVariables).some((key) =>
+    key.startsWith("ha-color-primary-")
+  );

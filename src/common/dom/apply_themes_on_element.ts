@@ -1,5 +1,10 @@
+import { formatHex } from "culori";
 import type { ThemeVars } from "../../data/ws-themes";
-import { getThemeVariables, themeDefinesColor } from "../../data/ws-themes";
+import {
+  getThemeVariables,
+  themeDefinesColor,
+  themeDefinesPrimaryPalette,
+} from "../../data/ws-themes";
 import { darkColorVariables } from "../../resources/theme/color";
 import { darkSemanticVariables } from "../../resources/theme/semantic.globals";
 import { derivedStyles } from "../../resources/theme/theme";
@@ -93,6 +98,21 @@ export const applyThemesOnElement = (
     return;
   }
 
+  // A custom theme that sets a primary color but not the palette gets the
+  // palette generated from that color, so components using the palette
+  // follow the theme. Colors that can't be parsed, like `var(--x)`, are
+  // left as they are.
+  const themePrimaryColor =
+    customThemeRules && !themeDefinesPrimaryPalette(customThemeRules)
+      ? toHexColor(customThemeRules["primary-color"])
+      : undefined;
+  if (themePrimaryColor) {
+    themeRules = {
+      ...themeRules,
+      ...getPrimaryPaletteRules(themePrimaryColor),
+    };
+  }
+
   // Custom theme variables go last, so they win over the defaults and over
   // anything derived from the colors picked by the user.
   if (customThemeRules) {
@@ -123,6 +143,28 @@ export const applyThemesOnElement = (
   }
 };
 
+const toHexColor = (value: string | undefined): string | undefined =>
+  value ? formatHex(value) : undefined;
+
+/**
+ * The generated primary palette and primary color shades for a hex color.
+ * Used for colors picked by the user and for custom themes that set a primary
+ * color without a palette.
+ */
+const getPrimaryPaletteRules = (primaryColor: string): Partial<ThemeVars> => {
+  const rules: Partial<ThemeVars> = {};
+  const labPrimaryColor = rgb2lab(hex2rgb(primaryColor));
+
+  generateColorPalette(primaryColor, "primary").forEach(([key, color]) => {
+    rules[key] = color;
+  });
+
+  rules["light-primary-color"] = rgb2hex(lab2rgb(labBrighten(labPrimaryColor)));
+  rules["dark-primary-color"] = lab2hex(labDarken(labPrimaryColor));
+  rules["darker-primary-color"] = lab2hex(labDarken(labPrimaryColor, 2));
+  return rules;
+};
+
 /**
  * Derive the theme variables for the primary and accent colors picked by the
  * user, including the generated primary palette.
@@ -143,22 +185,14 @@ const getUserColorRules = (
       );
     }
 
-    const rgbPrimaryColor = hex2rgb(primaryColor);
-    const labPrimaryColor = rgb2lab(rgbPrimaryColor);
+    Object.assign(rules, getPrimaryPaletteRules(primaryColor));
     rules["primary-color"] = primaryColor;
-    const rgbLightPrimaryColor = lab2rgb(labBrighten(labPrimaryColor));
-
-    generateColorPalette(primaryColor, "primary").forEach(([key, color]) => {
-      rules[key] = color;
-    });
-
-    rules["light-primary-color"] = rgb2hex(rgbLightPrimaryColor);
-    rules["dark-primary-color"] = lab2hex(labDarken(labPrimaryColor));
-    rules["darker-primary-color"] = lab2hex(labDarken(labPrimaryColor, 2));
     rules["text-primary-color"] =
-      rgbContrast(rgbPrimaryColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
+      rgbContrast(hex2rgb(primaryColor), [33, 33, 33]) < 6 ? "#fff" : "#212121";
     rules["text-light-primary-color"] =
-      rgbContrast(rgbLightPrimaryColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
+      rgbContrast(hex2rgb(rules["light-primary-color"]!), [33, 33, 33]) < 6
+        ? "#fff"
+        : "#212121";
     rules["state-icon-color"] = rules["dark-primary-color"];
   }
 
