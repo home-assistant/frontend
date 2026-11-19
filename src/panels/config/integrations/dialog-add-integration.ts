@@ -421,8 +421,25 @@ class AddIntegrationDialog extends LitElement {
 
   // DEMO: no phone sends its apps yet
   private _phoneApps(): Record<string, string> | undefined {
-    return addIntegrationDemo.phoneApps;
+    return this._withoutDiscovered(
+      addIntegrationDemo.phoneApps,
+      this._flowsInProgress
+    );
   }
+
+  // What was discovered is already under Discovered, not suggested again
+  private _withoutDiscovered = memoizeOne(
+    (
+      apps?: Record<string, string>,
+      _flows?: DataEntryFlowProgress[]
+    ): Record<string, string> | undefined =>
+      apps &&
+      Object.fromEntries(
+        Object.entries(apps).filter(
+          ([domain]) => !this._getFlowsInProgressForDomains([domain]).length
+        )
+      )
+  );
 
   // DEMO
   private _hasProtocol(domain: string) {
