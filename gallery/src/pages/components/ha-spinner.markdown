@@ -3,6 +3,8 @@ title: Spinner
 subtitle: Can be used to indicate an ongoing task.
 ---
 
+`ha-spinner` is `hac-spinner` from `@home-assistant/components`, named with the translated "Loading" by default.
+
 ## Accessibility
 
 `ha-spinner` is exposed to screen readers as a `progressbar` named with the translated "Loading". When the surrounding text does not already say what is in progress, name it with a translated `accessible-label`, like "Installing update", rather than its state.
