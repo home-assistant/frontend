@@ -1,3 +1,4 @@
+import { mdiHomeAssistant } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -26,11 +27,13 @@ import {
   upgradeCheckItemLink,
 } from "../../../../data/upgrade_check";
 import type { HomeAssistant } from "../../../../types";
+import "./ha-upgrade-check-brand";
 import "./ha-upgrade-check-icon";
 
 interface ItemGroup {
   name: string;
   global: boolean;
+  domains: string[];
   anchor: string;
   items: UpgradeCheckItem[];
 }
@@ -109,22 +112,19 @@ class HaConfigUpgradeCheck extends LitElement {
     const localize = this.hass.localize;
     return html`
       <ha-card outlined>
-        <div class="card-header">
-          <div class="title" role="heading" aria-level="2">
-            ${localize("ui.panel.config.updates.upgrade_check.title")}
-          </div>
+        <div class="card-content">
           ${
             this._digest?.releases.length
-              ? html`<div class="secondary">
+              ? html`<p class="secondary intro">
                   ${localize("ui.panel.config.updates.upgrade_check.subtitle", {
                     from: this._digest.running,
                     to: this._digest.target,
                   })}
-                </div>`
+                </p>`
               : nothing
           }
+          ${this._renderBody()}
         </div>
-        <div class="card-content">${this._renderBody()}</div>
       </ha-card>
     `;
   }
@@ -216,6 +216,7 @@ class HaConfigUpgradeCheck extends LitElement {
         groups.set(key, {
           name: this._scope(item),
           global,
+          domains,
           anchor: upgradeCheckGroupAnchor(category, domains),
           items: [],
         });
@@ -237,6 +238,18 @@ class HaConfigUpgradeCheck extends LitElement {
         .header=${group.name}
         .secondary=${versions.join(", ")}
       >
+        ${
+          group.global
+            ? html`<ha-svg-icon
+                slot="leading-icon"
+                class="general"
+                .path=${mdiHomeAssistant}
+              ></ha-svg-icon>`
+            : html`<ha-upgrade-check-brand
+                slot="leading-icon"
+                .domain=${group.domains[0]}
+              ></ha-upgrade-check-brand>`
+        }
         ${group.items.map(
           (item) => html`
             <div class="change">
@@ -266,7 +279,7 @@ class HaConfigUpgradeCheck extends LitElement {
   }
 
   private _renderTier(item: UpgradeCheckItem) {
-    const credits = item.credits.map(
+    const credits = item.authors.map(
       (user, index) =>
         html`${index ? ", " : nothing}<a
             href=${`https://github.com/${user}`}
@@ -277,16 +290,25 @@ class HaConfigUpgradeCheck extends LitElement {
     );
     const tier = QUALITY_SCALE_MAP[item.tier!];
     return html`<div class="line">
-      <ha-svg-icon
-        class=${`tier ${item.tier}`}
-        .path=${tier.icon}
-      ></ha-svg-icon>
+      ${
+        item.domains.length
+          ? html`<ha-upgrade-check-brand
+              .domain=${item.domains[0]}
+            ></ha-upgrade-check-brand>`
+          : nothing
+      }
       <div>
         ${this.hass.localize(
           "ui.panel.config.updates.upgrade_check.tier_reached",
           {
             integration: item.title,
-            tier: this.hass.localize(tier.translationKey),
+            tier: html`<span class="tier-name"
+              ><ha-svg-icon
+                class=${`tier ${item.tier}`}
+                .path=${tier.icon}
+              ></ha-svg-icon
+              >${this.hass.localize(tier.translationKey)}</span
+            >`,
           }
         )}
         ${this._renderVersion("quality_scale", item)}
@@ -315,6 +337,10 @@ class HaConfigUpgradeCheck extends LitElement {
           { version: item.version }
         )}
       >
+        <ha-upgrade-check-brand
+          slot="leading-icon"
+          .domain=${item.domains[0]}
+        ></ha-upgrade-check-brand>
         ${
           item.text
             ? html`<ha-markdown .content=${item.text} breaks></ha-markdown>`
@@ -388,11 +414,8 @@ class HaConfigUpgradeCheck extends LitElement {
     ha-card {
       margin-bottom: max(24px, var(--safe-area-inset-bottom));
     }
-    .card-header {
-      padding: var(--ha-space-4) var(--ha-space-4) 0;
-    }
-    .title {
-      font-size: var(--ha-font-size-l);
+    .intro {
+      margin-bottom: var(--ha-space-2);
     }
     .secondary {
       color: var(--secondary-text-color);
@@ -407,6 +430,12 @@ class HaConfigUpgradeCheck extends LitElement {
       --expansion-panel-summary-padding: var(--ha-space-2) 0;
       --expansion-panel-content-padding: 0 0 var(--ha-space-2)
         calc(40px + var(--ha-space-4));
+    }
+    /* Phones need the width more than the indent under the category icon. */
+    @media (max-width: 600px) {
+      .category {
+        --expansion-panel-content-padding: 0 0 var(--ha-space-2);
+      }
     }
     .category + .category {
       border-top: 1px solid var(--ha-color-border-neutral-quiet);
@@ -426,6 +455,9 @@ class HaConfigUpgradeCheck extends LitElement {
       scroll-margin-top: var(--ha-space-4);
       --expansion-panel-summary-padding: 0;
       --expansion-panel-content-padding: 0 var(--ha-space-2);
+    }
+    .general {
+      color: var(--secondary-text-color);
     }
     .change + .change {
       border-top: 1px solid var(--divider-color);
@@ -449,10 +481,25 @@ class HaConfigUpgradeCheck extends LitElement {
       gap: var(--ha-space-2);
       padding: var(--ha-space-2) 0;
     }
-    /* Same colors as the quality scale on the integration page. */
+    .tier-name {
+      white-space: nowrap;
+    }
+    /* Same icons, colors and shimmer as the quality scale on the integration page. */
     .tier {
-      flex: none;
-      --mdc-icon-size: 20px;
+      --mdc-icon-size: 18px;
+      vertical-align: text-bottom;
+      margin-inline-end: var(--ha-space-1);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .tier {
+        mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/350% 100%;
+        animation: shimmer 2.5s infinite;
+      }
+    }
+    @keyframes shimmer {
+      100% {
+        mask-position: left;
+      }
     }
     .tier.bronze {
       color: #cd7f32;

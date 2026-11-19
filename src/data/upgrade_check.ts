@@ -49,11 +49,14 @@ export interface UpgradeCheckLink {
 }
 
 export interface UpgradeCheckItem {
+  // Unique within its release, not across releases.
+  id: string;
   title: string;
   text: string | null;
   tier: UpgradeCheckTier | null;
-  // GitHub usernames thanked for a quality scale achievement.
-  credits: string[];
+  // GitHub usernames of the authors, or those thanked for a quality scale
+  // achievement.
+  authors: string[];
   prs: UpgradeCheckLink[];
   // Release the item is from, and its release notes.
   version: string;

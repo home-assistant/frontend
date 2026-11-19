@@ -1946,9 +1946,9 @@
         "update": {
           "release_announcement": "Read release announcement",
           "upgrade_check": {
-            "breaking_title": "Breaking changes",
+            "breaking_title": "Backward-incompatible changes",
             "summary_title": "What changes for you",
-            "breaking_intro": "These integrations have backward-incompatible changes that may need your attention:",
+            "breaking_intro": "These integrations have changes that may need your attention:",
             "general": "{count, plural, one {One general change} other {# general changes}}",
             "also": "Also in this update:",
             "category": {
@@ -3167,10 +3167,7 @@
           "update_in_progress": "Update in progress",
           "no_area": "No area",
           "upgrade_check": {
-            "page_title": "Upgrade check",
-            "title": "Before you update",
-            "entry": "{count, plural, =0 {Nothing in this update affects your integrations} one {One change affects your integrations} other {# changes affect your integrations}}",
-            "entry_breaking": "{count, plural, one {One change affects your integrations} other {# changes affect your integrations}}, {breaking, plural, one {one of them breaking} other {# of them breaking}}",
+            "page_title": "Before you update",
             "subtitle": "Updating from {from} to {to}: changes that affect your integrations",
             "no_releases": "No releases newer than {version} are available yet.",
             "unavailable": "Unable to read the release notes right now. Try again later.",

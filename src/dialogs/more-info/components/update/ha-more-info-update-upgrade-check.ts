@@ -1,4 +1,5 @@
-import type { PropertyValues } from "lit";
+import { mdiHomeAssistant } from "@mdi/js";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
@@ -25,6 +26,10 @@ import {
   upgradeCheckCategoryAnchor,
   upgradeCheckGroupAnchor,
 } from "../../../../data/upgrade_check";
+import "../../../../components/chips/ha-assist-chip";
+import "../../../../components/chips/ha-chip-set";
+import "../../../../components/ha-svg-icon";
+import "../../../../panels/config/core/updates/ha-upgrade-check-brand";
 import "../../../../panels/config/core/updates/ha-upgrade-check-icon";
 import type {
   HomeAssistantApi,
@@ -156,9 +161,9 @@ export class HaMoreInfoUpdateUpgradeCheck extends LitElement {
   }
 
   // Name what breaks, so the band says enough without opening the full list.
-  // One line per integration, or per set a change covers together, in release
+  // One chip per integration, or per set a change covers together, in release
   // notes order, which puts the most used integrations first; general changes
-  // close the list. Each line opens its group on the updates page.
+  // close the list. Each chip opens its group on the upgrade check page.
   private _renderBreaking(breaking: UpgradeCheckItem[]) {
     const groups = new Map<string, string[]>();
     for (const item of breaking) {
@@ -168,29 +173,41 @@ export class HaMoreInfoUpdateUpgradeCheck extends LitElement {
     }
     const general = breaking.filter((item) => item.scope === "global").length;
     return html`<p>${this._localize(`${PREFIX}.breaking_intro`)}</p>
-      <ul>
-        ${[...groups.values()].map(
-          (domains) =>
-            html`<li>
-              ${this._renderLink(
-                `${UPGRADE_CHECK_PATH}#${upgradeCheckGroupAnchor("breaking", domains)}`,
-                domains
-                  .map((domain) => domainToName(this._localize, domain))
-                  .join(", ")
-              )}
-            </li>`
+      <ha-chip-set>
+        ${[...groups.values()].map((domains) =>
+          this._renderChip(
+            `${UPGRADE_CHECK_PATH}#${upgradeCheckGroupAnchor("breaking", domains)}`,
+            domains
+              .map((domain) => domainToName(this._localize, domain))
+              .join(", "),
+            html`<ha-upgrade-check-brand
+              slot="icon"
+              .domain=${domains[0]}
+            ></ha-upgrade-check-brand>`
+          )
         )}
         ${
           general
-            ? html`<li>
-                ${this._renderLink(
-                  `${UPGRADE_CHECK_PATH}#${upgradeCheckGroupAnchor("breaking", [])}`,
-                  this._localize(`${PREFIX}.general`, { count: general })
-                )}
-              </li>`
+            ? this._renderChip(
+                `${UPGRADE_CHECK_PATH}#${upgradeCheckGroupAnchor("breaking", [])}`,
+                this._localize(`${PREFIX}.general`, { count: general }),
+                html`<ha-svg-icon
+                  slot="icon"
+                  .path=${mdiHomeAssistant}
+                ></ha-svg-icon>`
+              )
             : nothing
         }
-      </ul>`;
+      </ha-chip-set>`;
+  }
+
+  private _renderChip(href: string, label: string, icon: TemplateResult) {
+    return html`<ha-assist-chip
+      .href=${href}
+      .label=${label}
+      @click=${this._openUpdates}
+      >${icon}</ha-assist-chip
+    >`;
   }
 
   private _renderCategory(
@@ -224,8 +241,7 @@ export class HaMoreInfoUpdateUpgradeCheck extends LitElement {
       font-size: var(--ha-font-size-l);
       font-weight: var(--ha-font-weight-medium);
     }
-    p,
-    ul {
+    p {
       margin: 0;
     }
     .secondary {
@@ -242,10 +258,10 @@ export class HaMoreInfoUpdateUpgradeCheck extends LitElement {
       gap: var(--ha-space-3);
     }
     ha-upgrade-check-icon {
-      --upgrade-check-icon-size: 32px;
+      --upgrade-check-icon-size: 24px;
     }
-    ul {
-      padding-inline-start: var(--ha-space-5);
+    ha-upgrade-check-brand {
+      --upgrade-check-brand-size: 18px;
     }
     a {
       color: var(--primary-color);
