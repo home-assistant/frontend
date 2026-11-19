@@ -18,6 +18,7 @@ import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
 import { stringCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { deepEqual } from "../common/util/deep-equal";
+import { mapWithConcurrency } from "../common/util/map-with-concurrency";
 import {
   apiContext,
   devicesContext,
@@ -32,7 +33,7 @@ import {
   listFilterValue,
 } from "../data/data_table_filters";
 import type { RelatedResult } from "../data/search";
-import { findRelated } from "../data/search";
+import { findRelated, RELATED_SEARCH_CONCURRENCY } from "../data/search";
 import "./ha-expansion-panel";
 import { filterBadgeStyles, renderFilterBadge } from "./ha-filter-mode";
 import "./input/ha-input-search";
@@ -101,6 +102,24 @@ export class HaFilterDevices extends LitElement {
   private _panel = new FilterPanelController(this, this._content);
 
   private _relatedRequestId = 0;
+
+  // The last lookup of the automations, scripts or scenes without a device,
+  // reused while nothing it depends on changed, such as when only the mode
+  // changes
+  private _withoutDevice?: {
+    type: keyof RelatedResult;
+    includeDisabledEntities: boolean;
+    stateIds?: Set<string>;
+    devices: ContextType<typeof devicesContext>;
+    entities?: ContextType<typeof fullEntitiesContext>;
+    items: Promise<string[]>;
+  };
+
+  public connectedCallback() {
+    super.connectedCallback();
+    // An item may have been edited while the cached page was hidden
+    this._withoutDevice = undefined;
+  }
 
   // Untyped, as it also checks private state
   public willUpdate(properties: PropertyValues) {
@@ -361,16 +380,50 @@ export class HaFilterDevices extends LitElement {
       return items;
     }
 
-    // Automations, scripts and scenes use a device when they reference it or
-    // one of its entities, which only a search for each of them tells. This
-    // matches the items a search for each device finds.
+    const cached = this._withoutDevice;
+    if (
+      cached?.type === type &&
+      cached.includeDisabledEntities === this.includeDisabledEntities &&
+      cached.stateIds === this._stateIds &&
+      cached.devices === this._devicesReg &&
+      cached.entities === this._entities
+    ) {
+      return cached.items;
+    }
+
+    const items = this._searchItemsWithoutDevice(type);
+    const lookup = {
+      type,
+      includeDisabledEntities: this.includeDisabledEntities,
+      stateIds: this._stateIds,
+      devices: this._devicesReg,
+      entities: this._entities,
+      items,
+    };
+    this._withoutDevice = lookup;
+    // Look them up again next time when this lookup fails
+    items.catch(() => {
+      if (this._withoutDevice === lookup) {
+        this._withoutDevice = undefined;
+      }
+    });
+    return items;
+  }
+
+  // Automations, scripts and scenes use a device when they reference it or one
+  // of its entities, which only a search for each of them tells. This matches
+  // the items a search for each device finds.
+  private async _searchItemsWithoutDevice(
+    type: keyof RelatedResult
+  ): Promise<string[]> {
     const itemIds = [...(this._stateIds || [])].filter(
       (entityId) => computeDomain(entityId) === type
     );
-    const results = await Promise.all(
-      itemIds.map((itemId) =>
+    const results = await mapWithConcurrency(
+      itemIds,
+      RELATED_SEARCH_CONCURRENCY,
+      (itemId) =>
         findRelated(this._api, type, itemId, this.includeDisabledEntities)
-      )
     );
     return itemIds.filter((_itemId, index) => !results[index].device?.length);
   }

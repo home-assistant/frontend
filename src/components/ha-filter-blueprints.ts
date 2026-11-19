@@ -26,10 +26,11 @@ import {
 } from "../data/data_table_filters";
 import { computeDomain } from "../common/entity/compute_domain";
 import { deepEqual } from "../common/util/deep-equal";
+import { mapWithConcurrency } from "../common/util/map-with-concurrency";
 import type { Blueprints } from "../data/blueprint";
 import { fetchBlueprints } from "../data/blueprint";
 import { apiContext, statesContext } from "../data/context";
-import { findRelated } from "../data/search";
+import { findRelated, RELATED_SEARCH_CONCURRENCY } from "../data/search";
 import "./ha-expansion-panel";
 import {
   filterBadgeStyles,
@@ -79,6 +80,20 @@ export class HaFilterBlueprints extends LitElement {
   private _panel = new FilterPanelController(this, this._content);
 
   private _relatedRequestId = 0;
+
+  // The last lookup of the items without a blueprint, reused while the items
+  // are the same, such as when only the mode changes
+  private _withoutBlueprint?: {
+    type: "automation" | "script";
+    stateIds?: Set<string>;
+    items: Promise<string[]>;
+  };
+
+  public connectedCallback() {
+    super.connectedCallback();
+    // An item may have been edited while the cached page was hidden
+    this._withoutBlueprint = undefined;
+  }
 
   // Untyped, as it also checks private state
   public willUpdate(properties: PropertyValues) {
@@ -260,15 +275,35 @@ export class HaFilterBlueprints extends LitElement {
     type: "automation" | "script",
     blueprintIds: string[]
   ): Promise<Set<string>> {
-    const results = await Promise.all(
-      blueprintIds.map((blueprintId) =>
-        findRelated(this._api, `${type}_blueprint`, blueprintId)
-      )
+    const results = await mapWithConcurrency(
+      blueprintIds,
+      RELATED_SEARCH_CONCURRENCY,
+      (blueprintId) => findRelated(this._api, `${type}_blueprint`, blueprintId)
     );
     return new Set(results.flatMap((result) => result[type] ?? []));
   }
 
-  private async _itemsWithoutBlueprint(
+  private _itemsWithoutBlueprint(
+    type: "automation" | "script"
+  ): Promise<string[]> {
+    const cached = this._withoutBlueprint;
+    if (cached?.type === type && cached.stateIds === this._stateIds) {
+      return cached.items;
+    }
+
+    const items = this._searchItemsWithoutBlueprint(type);
+    const lookup = { type, stateIds: this._stateIds, items };
+    this._withoutBlueprint = lookup;
+    // Look them up again next time when this lookup fails
+    items.catch(() => {
+      if (this._withoutBlueprint === lookup) {
+        this._withoutBlueprint = undefined;
+      }
+    });
+    return items;
+  }
+
+  private async _searchItemsWithoutBlueprint(
     type: "automation" | "script"
   ): Promise<string[]> {
     // A blueprint can be added while the page stays open, so get the current
