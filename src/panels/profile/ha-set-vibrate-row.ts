@@ -14,16 +14,16 @@ class HaSetVibrateRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   protected render(): TemplateResult {
+    const label = this.hass.localize("ui.panel.profile.vibrate.header");
     return html`
       <ha-row-item>
-        <span slot="headline"
-          >${this.hass.localize("ui.panel.profile.vibrate.header")}</span
-        >
+        <span slot="headline">${label}</span>
         <span slot="supporting-text"
           >${this.hass.localize("ui.panel.profile.vibrate.description")}</span
         >
         <ha-switch
           slot="end"
+          .accessibleLabel=${label}
           .checked=${this.hass.vibrate}
           @change=${this._checkedChanged}
         ></ha-switch>

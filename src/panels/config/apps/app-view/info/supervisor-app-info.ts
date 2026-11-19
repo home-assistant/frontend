@@ -829,6 +829,9 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                     </span>
                     <ha-switch
                       slot="end"
+                      .accessibleLabel=${this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.option.boot.title"
+                      )}
                       .disabled=${
                         (systemManaged && !this.controlEnabled) ||
                         this._uninstalling
@@ -855,6 +858,9 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                             </span>
                             <ha-switch
                               slot="end"
+                              .accessibleLabel=${this.i18n.localize(
+                                "ui.panel.config.apps.dashboard.option.watchdog.title"
+                              )}
                               .disabled=${
                                 (systemManaged && !this.controlEnabled) ||
                                 this._uninstalling
@@ -880,6 +886,9 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                     </span>
                     <ha-switch
                       slot="end"
+                      .accessibleLabel=${this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.option.auto_update.title"
+                      )}
                       .disabled=${
                         (systemManaged && !this.controlEnabled) ||
                         this._uninstalling
@@ -906,6 +915,9 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                             </span>
                             <ha-switch
                               slot="end"
+                              .accessibleLabel=${this.i18n.localize(
+                                "ui.panel.config.apps.dashboard.option.ingress_panel.title"
+                              )}
                               .disabled=${
                                 (systemManaged && !this.controlEnabled) ||
                                 this._uninstalling
@@ -936,6 +948,9 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                             </span>
                             <ha-switch
                               slot="end"
+                              .accessibleLabel=${this.i18n.localize(
+                                "ui.panel.config.apps.dashboard.option.protected.title"
+                              )}
                               .disabled=${
                                 (systemManaged && !this.controlEnabled) ||
                                 this._uninstalling

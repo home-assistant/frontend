@@ -198,6 +198,9 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
             >
             <ha-switch
               slot="end"
+              .accessibleLabel=${this.hass.localize(
+                "ui.panel.config.users.editor.local_access_only"
+              )}
               .checked=${this._localOnly}
               @change=${this._localOnlyChanged}
             ></ha-switch>
@@ -213,6 +216,9 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
             >
             <ha-switch
               slot="end"
+              .accessibleLabel=${this.hass.localize(
+                "ui.panel.config.users.editor.admin"
+              )}
               .checked=${this._isAdmin}
               @change=${this._adminChanged}
             ></ha-switch>

@@ -88,6 +88,9 @@ export class CloudGooglePref extends LitElement {
             class="icon-link"
           ></ha-icon-button>
           <ha-switch
+            .accessibleLabel=${this.hass.localize(
+              "ui.panel.config.cloud.account.google.title"
+            )}
             .checked=${google_enabled}
             @change=${this._enabledToggleChanged}
           ></ha-switch>
@@ -151,6 +154,9 @@ export class CloudGooglePref extends LitElement {
                     >
                     <ha-switch
                       slot="end"
+                      .accessibleLabel=${this.hass!.localize(
+                        "ui.panel.config.cloud.account.google.expose_new_entities"
+                      )}
                       .checked=${this._exposeNew}
                       .disabled=${this._exposeNew === undefined}
                       @change=${this._exposeNewToggleChanged}
@@ -196,6 +202,9 @@ export class CloudGooglePref extends LitElement {
                             >
                             <ha-switch
                               slot="end"
+                              .accessibleLabel=${this.hass!.localize(
+                                "ui.panel.config.cloud.account.google.enable_state_reporting"
+                              )}
                               .checked=${google_report_state}
                               @change=${this._reportToggleChanged}
                             ></ha-switch>
@@ -212,7 +221,12 @@ export class CloudGooglePref extends LitElement {
                                 "ui.panel.config.cloud.account.google.enter_pin_info"
                               )}</span
                             >
-                            <ha-switch slot="end"></ha-switch>
+                            <ha-switch
+                              slot="end"
+                              .accessibleLabel=${this.hass.localize(
+                                "ui.panel.config.cloud.account.google.security_devices"
+                              )}
+                            ></ha-switch>
                           </ha-row-item>
 
                           <ha-input

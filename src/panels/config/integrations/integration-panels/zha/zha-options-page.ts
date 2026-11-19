@@ -129,6 +129,9 @@ class ZHAOptionsPage extends LitElement {
                         >
                         <ha-switch
                           slot="end"
+                          .accessibleLabel=${this.hass.localize(
+                            "ui.panel.config.zha.configuration_page.enable_identify_on_join_label"
+                          )}
                           .checked=${
                             (this._configuration.data.zha_options
                               ?.enable_identify_on_join as boolean) ?? true
@@ -174,6 +177,9 @@ class ZHAOptionsPage extends LitElement {
                         >
                         <ha-switch
                           slot="end"
+                          .accessibleLabel=${this.hass.localize(
+                            "ui.panel.config.zha.configuration_page.enhanced_light_transition_label"
+                          )}
                           .checked=${
                             (this._configuration.data.zha_options
                               ?.enhanced_light_transition as boolean) ?? false
@@ -194,6 +200,9 @@ class ZHAOptionsPage extends LitElement {
                         >
                         <ha-switch
                           slot="end"
+                          .accessibleLabel=${this.hass.localize(
+                            "ui.panel.config.zha.configuration_page.light_transitioning_flag_label"
+                          )}
                           .checked=${
                             (this._configuration.data.zha_options
                               ?.light_transitioning_flag as boolean) ?? true
@@ -214,6 +223,9 @@ class ZHAOptionsPage extends LitElement {
                         >
                         <ha-switch
                           slot="end"
+                          .accessibleLabel=${this.hass.localize(
+                            "ui.panel.config.zha.configuration_page.group_members_assume_state_label"
+                          )}
                           .checked=${
                             (this._configuration.data.zha_options
                               ?.group_members_assume_state as boolean) ?? true
@@ -322,6 +334,9 @@ class ZHAOptionsPage extends LitElement {
                         >
                         <ha-switch
                           slot="end"
+                          .accessibleLabel=${this.hass.localize(
+                            "ui.panel.config.zha.configuration_page.enable_mains_startup_polling_label"
+                          )}
                           .checked=${
                             (this._configuration.data.zha_options
                               ?.enable_mains_startup_polling as boolean) ?? true

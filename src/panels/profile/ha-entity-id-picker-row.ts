@@ -18,17 +18,14 @@ class EntityIdPickerRow extends LitElement {
   @state() private _error?: string;
 
   protected render(): TemplateResult {
+    const label = this.hass.localize("ui.panel.profile.entity_id_picker.title");
     return html`${
         this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : nothing
       }
       <ha-row-item>
-        <span slot="headline"
-          >${this.hass.localize(
-            "ui.panel.profile.entity_id_picker.title"
-          )}</span
-        >
+        <span slot="headline">${label}</span>
         <span slot="supporting-text"
           >${this.hass.localize(
             "ui.panel.profile.entity_id_picker.description"
@@ -36,6 +33,7 @@ class EntityIdPickerRow extends LitElement {
         >
         <ha-switch
           slot="end"
+          .accessibleLabel=${label}
           haptic
           .checked=${
             !!this.coreUserData && !!this.coreUserData.showEntityIdPicker

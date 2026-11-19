@@ -27,6 +27,9 @@ class HaDebugConnectionRow extends LitElement {
         >
         <ha-switch
           slot="end"
+          .accessibleLabel=${this.hass.localize(
+            "ui.panel.config.tools.tabs.debug.debug_connection.title"
+          )}
           .checked=${this.hass.debugConnection}
           @change=${this._checkedChanged}
         ></ha-switch>

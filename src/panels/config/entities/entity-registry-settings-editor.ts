@@ -573,6 +573,15 @@ export class EntityRegistrySettingsEditor extends LitElement {
               >
               <ha-switch
                 slot="end"
+                .accessibleLabel=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.main_entity",
+                  {
+                    device: computeDeviceNameDisplay(
+                      this._device,
+                      this.hass.localize
+                    ),
+                  }
+                )}
                 .checked=${this._isMainEntity}
                 .disabled=${this.disabled}
                 @change=${this._mainEntityChanged}
@@ -748,6 +757,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
                           >
                           <ha-switch
                             slot="end"
+                            .accessibleLabel=${this.hass.localize(
+                              "ui.dialogs.entity_registry.editor.invert.label"
+                            )}
                             .checked=${!!this.entry.options?.switch_as_x?.invert}
                             @change=${this._switchAsInvertChanged}
                           ></ha-switch>
@@ -1025,6 +1037,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 >
                 <ha-switch
                   slot="end"
+                  .accessibleLabel=${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.stream.preload_stream"
+                  )}
                   .checked=${this._cameraPrefs.preload_stream}
                   .disabled=${this.disabled}
                   @change=${this._handleCameraPrefsChanged}
@@ -1182,6 +1197,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
         >
         <ha-switch
           slot="end"
+          .accessibleLabel=${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.enabled_label"
+          )}
           .checked=${!this._disabledBy}
           .disabled=${
             this.disabled ||
@@ -1222,6 +1240,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
         >
         <ha-switch
           slot="end"
+          .accessibleLabel=${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.visible_label"
+          )}
           .checked=${!this._disabledBy && !this._hiddenBy}
           .disabled=${this.disabled || this._disabledBy}
           @change=${this._hiddenChanged}
@@ -1265,6 +1286,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 >
                 <ha-switch
                   slot="end"
+                  .accessibleLabel=${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.use_device_area"
+                  )}
                   .checked=${live(
                     this._useDeviceArea ||
                       (!this._areaId && !this._noDeviceArea)

@@ -29,16 +29,16 @@ class HaSetSuspendRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   protected render(): TemplateResult {
+    const label = this.hass.localize("ui.panel.profile.suspend.header");
     return html`
       <ha-row-item>
-        <span slot="headline"
-          >${this.hass.localize("ui.panel.profile.suspend.header")}</span
-        >
+        <span slot="headline">${label}</span>
         <span slot="supporting-text"
           >${this.hass.localize("ui.panel.profile.suspend.description")}</span
         >
         <ha-switch
           slot="end"
+          .accessibleLabel=${label}
           .checked=${this.hass.suspendWhenHidden}
           @change=${this._checkedChanged}
         ></ha-switch>

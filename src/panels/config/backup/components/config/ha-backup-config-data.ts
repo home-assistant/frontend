@@ -256,6 +256,9 @@ class HaBackupConfigData extends LitElement {
             }
           </span>
           <ha-switch
+            .accessibleLabel=${this.hass.localize(
+              "ui.panel.config.backup.data.ha_settings"
+            )}
             id="homeassistant"
             slot="end"
             @change=${this._switchChanged}
@@ -277,6 +280,9 @@ class HaBackupConfigData extends LitElement {
                   )}
                 </span>
                 <ha-switch
+                  .accessibleLabel=${this.hass.localize(
+                    "ui.panel.config.backup.data.history"
+                  )}
                   id="database"
                   slot="end"
                   @change=${this._switchChanged}
@@ -302,6 +308,9 @@ class HaBackupConfigData extends LitElement {
                     )}
                   </span>
                   <ha-switch
+                    .accessibleLabel=${this.hass.localize(
+                      "ui.panel.config.backup.data.media"
+                    )}
                     id="media"
                     slot="end"
                     @change=${this._switchChanged}
@@ -322,6 +331,9 @@ class HaBackupConfigData extends LitElement {
                     )}
                   </span>
                   <ha-switch
+                    .accessibleLabel=${this.hass.localize(
+                      "ui.panel.config.backup.data.share_folder"
+                    )}
                     id="share"
                     slot="end"
                     @change=${this._switchChanged}
@@ -348,6 +360,9 @@ class HaBackupConfigData extends LitElement {
                             )}
                           </span>
                           <ha-switch
+                            .accessibleLabel=${this.hass.localize(
+                              "ui.panel.config.backup.data.local_apps"
+                            )}
                             id="local_addons"
                             slot="end"
                             @change=${this._switchChanged}

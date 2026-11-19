@@ -198,6 +198,9 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
               >
               <ha-switch
                 slot="end"
+                .accessibleLabel=${this.hass.localize(
+                  "ui.panel.config.users.editor.active"
+                )}
                 .disabled=${user.system_generated || user.is_owner}
                 .checked=${this._isActive}
                 @change=${this._activeChanged}
@@ -216,6 +219,9 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
               >
               <ha-switch
                 slot="end"
+                .accessibleLabel=${this.hass.localize(
+                  "ui.panel.config.users.editor.local_access_only"
+                )}
                 .disabled=${user.system_generated}
                 .checked=${this._localOnly}
                 @change=${this._localOnlyChanged}
@@ -234,6 +240,9 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
               >
               <ha-switch
                 slot="end"
+                .accessibleLabel=${this.hass.localize(
+                  "ui.panel.config.users.editor.admin"
+                )}
                 .disabled=${user.system_generated || user.is_owner}
                 .checked=${this._isAdmin}
                 @change=${this._adminChanged}

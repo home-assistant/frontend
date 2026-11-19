@@ -13,11 +13,10 @@ class HaForcedNarrowRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   protected render(): TemplateResult {
+    const label = this.hass.localize("ui.panel.profile.force_narrow.header");
     return html`
       <ha-row-item>
-        <span slot="headline"
-          >${this.hass.localize("ui.panel.profile.force_narrow.header")}</span
-        >
+        <span slot="headline">${label}</span>
         <span slot="supporting-text"
           >${this.hass.localize(
             "ui.panel.profile.force_narrow.description"
@@ -25,6 +24,7 @@ class HaForcedNarrowRow extends LitElement {
         >
         <ha-switch
           slot="end"
+          .accessibleLabel=${label}
           .checked=${this.hass.dockedSidebar === "always_hidden"}
           @change=${this._checkedChanged}
         ></ha-switch>

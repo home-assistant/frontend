@@ -170,6 +170,7 @@ export class DialogLabsPreviewFeatureEnable
                   }
                   <ha-switch
                     slot="end"
+                    .accessibleLabel=${createBackupTexts.title}
                     .checked=${this._createBackup}
                     @change=${this._createBackupChanged}
                   ></ha-switch>
