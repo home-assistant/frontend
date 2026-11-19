@@ -105,6 +105,10 @@ export class HaTimeDuration extends LitElement {
       return this._renderInput(data, mode, this.label, this.helper);
     }
 
+    const durationLabel =
+      this.selector.duration?.label ??
+      this._localize("ui.components.selectors.duration.duration");
+
     return html`
       <div class="container">
         ${
@@ -136,9 +140,7 @@ export class HaTimeDuration extends LitElement {
                   @value-changed=${this._durationChanged}
                 >
                   <span id="duration-label" class="value-label"
-                    >${this._localize(
-                      "ui.components.selectors.duration.duration"
-                    )}${this.required ? "*" : ""}</span
+                    >${durationLabel}${this.required ? "*" : ""}</span
                   >
                   ${this._renderInput(data, mode)}
                 </div>`
