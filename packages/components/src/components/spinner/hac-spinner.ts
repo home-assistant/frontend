@@ -72,17 +72,32 @@ export class HacSpinner extends LitElement {
    * Fallback order: --hac-spinner-*, then the variables of ha-spinner
    * (--ha-spinner-*, --primary-color, --divider-color) so existing themes and
    * callers keep working, then the semantic tokens and their light values for
-   * use outside Home Assistant. --track-width is the stroke width variable
-   * ha-spinner inherited from wa-spinner; it is set here like it was there, so
-   * a value from an ancestor doesn't leak in. The ha-spinner variables are
-   * temporary, see "Theming" in the README.
+   * use outside Home Assistant. A size preset wins over --ha-spinner-size, as
+   * it did in ha-spinner.
+   *
+   * --indicator-color, --track-color, --track-width and --speed are the
+   * variables ha-spinner inherited from wa-spinner. They are set on the host
+   * like they were there, so a rule on the element still overrides them but a
+   * value from an ancestor doesn't leak in.
+   *
+   * The ha-spinner and wa-spinner variables are temporary, see "Theming" in
+   * the README.
    */
   static styles = css`
     :host {
+      --indicator-color: var(
+        --ha-spinner-indicator-color,
+        var(--primary-color, var(--ha-color-fill-primary-loud-resting, #009ac7))
+      );
+      --track-color: var(
+        --ha-spinner-divider-color,
+        var(--divider-color, var(--ha-color-border-neutral-quiet, #e6e6e6))
+      );
       --track-width: 4px;
+      --speed: 3.5s;
       --_size: var(
         --hac-spinner-size,
-        var(--ha-spinner-size, var(--_preset-size, 48px))
+        var(--_preset-size, var(--ha-spinner-size, 48px))
       );
       box-sizing: border-box;
       flex: none;
@@ -92,7 +107,7 @@ export class HacSpinner extends LitElement {
     }
 
     :host([hidden]) {
-      display: none;
+      display: none !important;
     }
 
     :host([size="tiny"]) {
@@ -115,7 +130,7 @@ export class HacSpinner extends LitElement {
       width: 100%;
       height: 100%;
       aspect-ratio: 1;
-      animation: spin 3.5s linear infinite;
+      animation: spin var(--speed) linear infinite;
     }
 
     .track,
@@ -131,26 +146,11 @@ export class HacSpinner extends LitElement {
     }
 
     .track {
-      stroke: var(
-        --hac-spinner-track-color,
-        var(
-          --ha-spinner-divider-color,
-          var(--divider-color, var(--ha-color-border-neutral-quiet, #e6e6e6))
-        )
-      );
+      stroke: var(--hac-spinner-track-color, var(--track-color));
     }
 
     .indicator {
-      stroke: var(
-        --hac-spinner-indicator-color,
-        var(
-          --ha-spinner-indicator-color,
-          var(
-            --primary-color,
-            var(--ha-color-fill-primary-loud-resting, #009ac7)
-          )
-        )
-      );
+      stroke: var(--hac-spinner-indicator-color, var(--indicator-color));
       stroke-linecap: round;
       stroke-dasharray:
         calc(0.597 * var(--_circumference)), calc(0.796 * var(--_circumference));
