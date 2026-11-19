@@ -474,6 +474,30 @@ describe("generatePowerSourcesGraphData with separate sources", () => {
   });
 });
 
+describe("generatePowerSourcesGraphData with idle sources", () => {
+  it("breaks the line where a source stays at 0, keeping the slope to 0", () => {
+    const result = generatePowerSourcesGraphData({
+      localize: mockLocalize,
+      formatPower: (w: number) => `${w} W`,
+      states: {} as HassEntities,
+      computedStyles,
+      energyData: buildHomeEnergyData([solarSource], {
+        [RATE_IDS.solar]: hourlyStats([0, 0, 0, 2, 0, 0]),
+      }),
+      start: new Date(FIXED_EPOCH_MS),
+      end: new Date(FIXED_EPOCH_MS + dayMs),
+      now: FIXED_EPOCH_MS + dayMs + 60 * 60 * 1000,
+    });
+    const solar = result.chartData.find((series) => series.id === "solar")!;
+
+    expect(
+      (solar.data as ({ value: number[] } | number[])[]).map(
+        (p) => ("value" in p ? p.value : p)[1]
+      )
+    ).toEqual([null, null, 0, 2, 0, null]);
+  });
+});
+
 describe("getPowerLegendValues with a home meter", () => {
   const format = (w: number) => `${w} W`;
   const power = (id: string, value: string) =>
