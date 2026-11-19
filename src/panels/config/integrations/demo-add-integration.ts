@@ -16,8 +16,6 @@ interface DemoState {
   narrow?: boolean;
   // Open browsing by category or by brand
   browseBy?: "category" | "brand";
-  // Integrations the apps on the phone suggest, by domain: the app's name
-  phoneApps?: Record<string, string>;
 }
 
 export const addIntegrationDemo: DemoState = {};
@@ -58,18 +56,6 @@ const FOUND = [
   flow("bluetooth", "usb", "Bluetooth adapter"),
   flow("zha", "usb", "Zigbee coordinator"),
 ];
-
-// What the companion app could match on a phone
-const PHONE_APPS: Record<string, string> = {
-  hue: "Hue",
-  sonos: "Sonos",
-  ring: "Ring",
-  nest: "Google Home",
-  tado: "tado°",
-  ecobee: "ecobee",
-  roborock: "Roborock",
-  spotify: "Spotify",
-};
 
 const SCENARIOS: {
   label: string;
@@ -153,16 +139,6 @@ const SCENARIOS: {
     hint: "integrationFilter: zha, zwave_js → narrow, no categories",
     demo: { flows: FOUND, protocols: true },
     params: { integrationFilter: { domains: ["zha", "zwave_js"] } },
-  },
-  {
-    label: "13. From your phone",
-    hint: "Pick From your phone: suggestions with the reason on each",
-    demo: { flows: FOUND, protocols: true, phoneApps: PHONE_APPS },
-  },
-  {
-    label: "13b. Phone layout, from your phone",
-    hint: "The From your phone row in the phone's browse pane",
-    demo: { flows: [], protocols: true, narrow: true, phoneApps: PHONE_APPS },
   },
 ];
 

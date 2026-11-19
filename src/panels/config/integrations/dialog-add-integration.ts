@@ -1,5 +1,4 @@
 import {
-  mdiCellphone,
   mdiChevronRight,
   mdiRadar,
   mdiMenuDown,
@@ -148,11 +147,6 @@ const SEARCH_SECTIONS: SearchSection[] = [
   "integration",
   "helper",
 ];
-
-// Picked like a collection: what the apps on the user's phone suggest. The
-// companion app would match a fixed list of brand apps on the phone and send
-// only the integrations, never the apps.
-const PHONE = "_phone";
 
 // Like the automation editor's search, a section shows this many until it
 // is picked
@@ -419,28 +413,6 @@ class AddIntegrationDialog extends LitElement {
     this._sheet = matchMedia(ADAPTIVE_DIALOG_MEDIA_QUERY).matches;
   }
 
-  // DEMO: no phone sends its apps yet
-  private _phoneApps(): Record<string, string> | undefined {
-    return this._withoutDiscovered(
-      addIntegrationDemo.phoneApps,
-      this._flowsInProgress
-    );
-  }
-
-  // What was discovered is already under Discovered, not suggested again
-  private _withoutDiscovered = memoizeOne(
-    (
-      apps?: Record<string, string>,
-      _flows?: DataEntryFlowProgress[]
-    ): Record<string, string> | undefined =>
-      apps &&
-      Object.fromEntries(
-        Object.entries(apps).filter(
-          ([domain]) => !this._getFlowsInProgressForDomains([domain]).length
-        )
-      )
-  );
-
   // DEMO
   private _hasProtocol(domain: string) {
     return (
@@ -686,8 +658,7 @@ class AddIntegrationDialog extends LitElement {
       subcategory?: string,
       byBrand = false,
       brand?: string,
-      filters?: ListFilters,
-      phoneApps?: Record<string, string>
+      filters?: ListFilters
     ): IntegrationListItem[] => {
       const { integrations, helpers } = this._getListItems(
         i,
@@ -707,38 +678,23 @@ class AddIntegrationDialog extends LitElement {
 
       // Wherever they are in a brand, without the brands
       // A brand in it as the brand, otherwise the brand's integrations in it
-      const domains =
-        brand === PHONE
-          ? Object.keys(phoneApps ?? {})
-          : brand && COLLECTIONS[brand]?.domains;
-      if (domains) {
+      const collection = brand && COLLECTIONS[brand];
+      if (collection) {
         return [...integrations]
           .sort(byName)
           .flatMap((item) =>
-            domains.includes(item.domain)
+            collection.domains.includes(item.domain)
               ? [item]
               : this._brandRows(item).filter(
                   (row) =>
                     !row.is_header &&
                     !row.is_add &&
-                    domains.includes(row.domain)
+                    collection.domains.includes(row.domain)
                 )
           )
           .filter(
             (row, index, rows) =>
               rows.findIndex((other) => other.domain === row.domain) === index
-          )
-          .map((row) =>
-            brand === PHONE
-              ? {
-                  ...row,
-                  // Why it is suggested, so it doesn't feel like snooping
-                  description: localize(
-                    "ui.panel.config.integrations.from_your_phone_reason",
-                    { app: phoneApps![row.domain] }
-                  ),
-                }
-              : row
           );
       }
 
@@ -949,8 +905,7 @@ class AddIntegrationDialog extends LitElement {
       this._subcategory,
       this._byBrand(),
       this._brand,
-      this._getFilters(this._connection),
-      this._phoneApps()
+      this._getFilters(this._connection)
     );
   }
 
@@ -1200,9 +1155,6 @@ class AddIntegrationDialog extends LitElement {
   private _browsingTitle(): string {
     if (this._showDiscoveredView) {
       return this.hass.localize("ui.panel.config.integrations.discovered");
-    }
-    if (this._brand === PHONE) {
-      return this.hass.localize("ui.panel.config.integrations.from_your_phone");
     }
     if (this._brand && this._brand in COLLECTIONS) {
       return this.hass.localize(
@@ -1725,7 +1677,6 @@ class AddIntegrationDialog extends LitElement {
     const counts = this._getCounts();
     const categories = this._getCategories(counts, this.hass.localize);
     const discovered = this._flowsInProgress?.length || 0;
-    const fromPhone = Object.keys(this._phoneApps() ?? {}).length;
     const protocols = PROTOCOL_INTEGRATIONS.filter((domain) =>
       this._hasProtocol(domain)
     );
@@ -1748,25 +1699,6 @@ class AddIntegrationDialog extends LitElement {
             ${this.hass.localize("ui.panel.config.integrations.discovered")}
           </span>
           <ha-label slot="end" dense>${discovered}</ha-label>
-          ${this._narrow ? html`<ha-icon-next slot="end"></ha-icon-next>` : nothing}
-        </ha-list-item-button>`
-      : nothing;
-    const phoneRow = fromPhone
-      ? html`<ha-list-item-button
-          class=${classMap({
-            selected:
-              !this._filter &&
-              !this._showDiscoveredView &&
-              this._brand === PHONE,
-          })}
-          .brand=${PHONE}
-          @click=${this._brandPicked}
-        >
-          <ha-svg-icon slot="start" .path=${mdiCellphone}></ha-svg-icon>
-          <span slot="headline">
-            ${this.hass.localize("ui.panel.config.integrations.from_your_phone")}
-          </span>
-          <ha-label slot="end" dense>${fromPhone}</ha-label>
           ${this._narrow ? html`<ha-icon-next slot="end"></ha-icon-next>` : nothing}
         </ha-list-item-button>`
       : nothing;
@@ -1796,13 +1728,11 @@ class AddIntegrationDialog extends LitElement {
         class=${classMap({ groups: true, browse: true, narrow: this._narrow })}
       >
         ${
-          discovered || fromPhone || protocols.length
+          discovered || protocols.length
             ? html`<ha-section-title>
                   ${this.hass.localize("ui.panel.config.integrations.add_a_device")}
                 </ha-section-title>
-                <ha-list-base
-                  >${discoveredRow}${phoneRow}${protocolRows}</ha-list-base
-                >`
+                <ha-list-base>${discoveredRow}${protocolRows}</ha-list-base>`
             : nothing
         }
         <ha-section-title>

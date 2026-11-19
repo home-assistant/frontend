@@ -8053,8 +8053,6 @@
           "all_brands": "All brands",
           "featured": "Featured",
           "works_with": "Works with Home Assistant",
-          "from_your_phone": "From your phone",
-          "from_your_phone_reason": "You have the {app} app on your phone",
           "search_brand": "Search all brands and integrations",
           "search_section": {
             "brand": "Brands",
