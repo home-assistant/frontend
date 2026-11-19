@@ -2442,6 +2442,10 @@ class AddIntegrationDialog extends LitElement {
         margin: calc(var(--ha-space-1) * -1) 0 var(--ha-space-4);
         padding: 0 var(--ha-space-4);
         overflow-x: auto;
+        /* Scrolls sideways only, overflow-x alone also lets it scroll up and
+           down */
+        overflow-y: hidden;
+        overscroll-behavior-x: contain;
         scrollbar-width: none;
         flex-shrink: 0;
         /* Shaped like the search's filter chips */
