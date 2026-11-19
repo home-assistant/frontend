@@ -17,22 +17,17 @@ describe("whenDocumentVisible", () => {
     vi.useRealTimers();
   });
 
-  it("releases a suspended reconnect after thaw without lifecycle events", async () => {
-    let release!: () => void;
-    const reconnect = vi.fn();
-    const suspended = new Promise<void>((resolve) => {
-      release = resolve;
-    }).then(reconnect);
-    cancel = whenDocumentVisible(release);
+  it("runs the callback after thaw without lifecycle events", async () => {
+    const recover = vi.fn();
+    cancel = whenDocumentVisible(recover);
 
     await vi.advanceTimersByTimeAsync(360000);
-    expect(reconnect).not.toHaveBeenCalled();
+    expect(recover).not.toHaveBeenCalled();
 
     // The WebView changes visibility but emits no event when the screen wakes.
     hidden = false;
     await vi.advanceTimersByTimeAsync(1000);
-    await suspended;
-    expect(reconnect).toHaveBeenCalledTimes(1);
+    expect(recover).toHaveBeenCalledTimes(1);
     expect(vi.getTimerCount()).toBe(0);
   });
 
