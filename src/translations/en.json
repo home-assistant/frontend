@@ -945,8 +945,8 @@
       "filter-entity-types": {
         "caption": "Type",
         "no_device_class": "No type",
-        "expand": "Expand",
-        "collapse": "Collapse"
+        "expand": "[%key:ui::common::expand%]",
+        "collapse": "[%key:ui::common::collapse%]"
       },
       "entity-type-picker": {
         "no_types": "No types available"
@@ -1362,8 +1362,8 @@
         "hidden": "{number} hidden",
         "clear": "Clear",
         "ungrouped": "Ungrouped",
-        "collapse": "Collapse",
-        "expand": "Expand",
+        "collapse": "[%key:ui::common::collapse%]",
+        "expand": "[%key:ui::common::expand%]",
         "settings": {
           "header": "Customize",
           "hide": "Hide column {title}",
@@ -4465,7 +4465,7 @@
               "filter_states": "Filter states",
               "filter_attributes": "Filter attributes",
               "no_entities": "No entities",
-              "more_info": "More info",
+              "more_info": "[%key:ui::common::more_info%]",
               "alert_entity_field": "Entity is a mandatory field",
               "last_updated": "[%key:ui::dialogs::more_info_control::last_updated%]",
               "last_changed": "[%key:ui::dialogs::more_info_control::last_changed%]",
