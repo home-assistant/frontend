@@ -23,7 +23,6 @@ import type { AreaRegistryEntry } from "../data/area/area_registry";
 import type { FloorAreasFilterValue } from "../data/data_table_filters";
 import {
   combineItemSets,
-  floorAreaItemSets,
   floorAreaLookups,
   floorSelection,
   toggleFloorArea,
@@ -129,7 +128,10 @@ export class HaFilterFloorAreas extends LitElement {
       (this.value?.no_area &&
         (properties.has("_devices") ||
           properties.has("_entities") ||
-          (this.type !== "device" && properties.has("_stateIds"))))
+          (this.type !== "device" && properties.has("_stateIds")))) ||
+      // Whether a floor is picked whole depends on which areas it has
+      ((!!this.value?.floors?.length || !!this.value?.areas?.length) &&
+        (properties.has("_areasReg") || properties.has("_floorsReg")))
     ) {
       this._findRelated();
     }
@@ -414,27 +416,23 @@ export class HaFilterFloorAreas extends LitElement {
 
     const type = this.type;
     const value = this.value;
-    const floorAreas = this._floorAreaIds(this._areasReg, this._floorsReg);
-    // Automations and scripts can target a floor directly, which a search for
-    // one of its areas doesn't find
     const lookups = floorAreaLookups(
       value,
-      floorAreas,
-      type === "automation" || type === "script"
+      this._floorAreaIds(this._areasReg, this._floorsReg)
     );
     const search = (itemType: "area" | "floor", ids: string[]) =>
       Promise.all(
-        ids.map(async (id): Promise<[string, string[]]> => [
-          id,
-          (
-            await findRelated(
-              this._api,
-              itemType,
-              id,
-              this.includeDisabledEntities
-            )
-          )[type!] ?? [],
-        ])
+        ids.map(
+          async (id) =>
+            (
+              await findRelated(
+                this._api,
+                itemType,
+                id,
+                this.includeDisabledEntities
+              )
+            )[type!] ?? []
+        )
       );
     const [areas, floors] = type
       ? await Promise.all([
@@ -448,13 +446,13 @@ export class HaFilterFloorAreas extends LitElement {
       return;
     }
 
+    // A whole floor is one pick, found with the floor search, and each area
+    // picked without its whole floor another
     const items = combineItemSets(
       [
         ...(value.no_area ? [this._itemsWithoutArea()] : []),
-        ...floorAreaItemSets(value, floorAreas, {
-          areas: Object.fromEntries(areas),
-          floors: Object.fromEntries(floors),
-        }),
+        ...areas,
+        ...floors,
       ],
       value.all
     );

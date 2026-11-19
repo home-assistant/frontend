@@ -255,93 +255,32 @@ export interface FloorAreaLookups {
 }
 
 /**
- * The areas and floors to look up for a floor and area filter. A picked floor
- * stands for its areas. With `floorReferences`, for items that can target a
- * floor directly, like automations and scripts, the floors of the picks and
- * all their areas are looked up too, to tell what targets the floor itself.
+ * The floors and areas to look up for a floor and area filter. A floor whose
+ * areas are all picked counts as picked, so it matches the same as ticking the
+ * floor. Its search also finds the automations and scripts that target the
+ * floor itself. Areas picked without their whole floor are looked up on their
+ * own.
  *
  * @param floorAreas - The area ids of each floor, by floor id
  */
 export const floorAreaLookups = (
   value: FloorAreasFilterValue | undefined,
-  floorAreas: Readonly<Record<string, readonly string[]>>,
-  floorReferences: boolean
+  floorAreas: Readonly<Record<string, readonly string[]>>
 ): FloorAreaLookups => {
-  const floorOf = floorOfArea(floorAreas);
-  const areas = new Set(value?.areas ?? []);
-  const floors = new Set<string>();
-  for (const floorId of value?.floors ?? []) {
-    const floorAreaIds = floorAreas[floorId] ?? [];
-    floorAreaIds.forEach((areaId) => areas.add(areaId));
-    // A floor without areas only has what targets it directly
-    if (!floorAreaIds.length || floorReferences) {
+  const pickedAreas = value?.areas ?? [];
+  const floors = new Set(value?.floors ?? []);
+  for (const [floorId, areaIds] of Object.entries(floorAreas)) {
+    if (areaIds.length && areaIds.every((id) => pickedAreas.includes(id))) {
       floors.add(floorId);
     }
   }
-  if (floorReferences) {
-    for (const areaId of [...areas]) {
-      const floorId = floorOf.get(areaId);
-      if (floorId) {
-        floors.add(floorId);
-        floorAreas[floorId].forEach((id) => areas.add(id));
-      }
-    }
-  }
-  return { areas: [...areas], floors: [...floors] };
-};
-
-const floorOfArea = (
-  floorAreas: Readonly<Record<string, readonly string[]>>
-): Map<string, string> =>
-  new Map(
-    Object.entries(floorAreas).flatMap(([floorId, areaIds]) =>
-      areaIds.map((areaId): [string, string] => [areaId, floorId])
-    )
+  const inFloors = new Set(
+    [...floors].flatMap((floorId) => floorAreas[floorId] ?? [])
   );
-
-/**
- * The items each picked area of a floor and area filter matches, to combine
- * as any or all. A picked floor stands for all its areas, so ticking a floor
- * and ticking each of its areas match the same. An item that targets a floor
- * directly, which a search for one of its areas doesn't find, counts for each
- * area on that floor, as it acts on all of them.
- *
- * @param floorAreas - The area ids of each floor, by floor id
- * @param related - The items found for each area and floor looked up
- */
-export const floorAreaItemSets = (
-  value: FloorAreasFilterValue | undefined,
-  floorAreas: Readonly<Record<string, readonly string[]>>,
-  related: {
-    areas: Readonly<Record<string, readonly string[]>>;
-    floors: Readonly<Record<string, readonly string[]>>;
-  }
-): string[][] => {
-  const floorOf = floorOfArea(floorAreas);
-  const floorOnly = (floorId: string): string[] => {
-    const inAreas = new Set(
-      (floorAreas[floorId] ?? []).flatMap((id) => related.areas[id] ?? [])
-    );
-    return (related.floors[floorId] ?? []).filter((item) => !inAreas.has(item));
+  return {
+    areas: pickedAreas.filter((areaId) => !inFloors.has(areaId)),
+    floors: [...floors],
   };
-
-  const sets: string[][] = [];
-  const areas = new Set(value?.areas ?? []);
-  for (const floorId of value?.floors ?? []) {
-    const floorAreaIds = floorAreas[floorId] ?? [];
-    if (!floorAreaIds.length) {
-      sets.push([...(related.floors[floorId] ?? [])]);
-    }
-    floorAreaIds.forEach((areaId) => areas.add(areaId));
-  }
-  for (const areaId of areas) {
-    const floorId = floorOf.get(areaId);
-    sets.push([
-      ...(related.areas[areaId] ?? []),
-      ...(floorId ? floorOnly(floorId) : []),
-    ]);
-  }
-  return sets;
 };
 
 /**
