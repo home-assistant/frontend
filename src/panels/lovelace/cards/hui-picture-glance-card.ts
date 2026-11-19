@@ -300,7 +300,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           class=${classMap({
             "state-on": stateActive(stateObj),
           })}
-          title=${`${this.hass.formatEntityName(
+          .label=${`${this.hass.formatEntityName(
             stateObj,
             entityConf.name
           )} : ${this.hass.formatEntityState(stateObj)}`}

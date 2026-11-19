@@ -214,6 +214,9 @@ class HaBackupConfigAgents extends LitElement {
                                 id=${agentId}
                                 slot="end"
                                 path=${mdiCog}
+                                .label=${this.hass.localize(
+                                  "ui.panel.config.backup.agents.location_settings"
+                                )}
                                 @click=${this._showAgentSettings}
                               ></ha-icon-button>
                             `
@@ -255,6 +258,7 @@ class HaBackupConfigAgents extends LitElement {
                                 id=${agentId}
                                 slot="end"
                                 path=${mdiDelete}
+                                .label=${this.hass.localize("ui.common.remove")}
                                 @click=${this._deleteAgent}
                               ></ha-icon-button>
                             </ha-list-item-base>

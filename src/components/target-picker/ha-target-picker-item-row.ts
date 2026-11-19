@@ -456,6 +456,7 @@ export class HaTargetPickerItemRow extends LitElement {
           ? html`
               <ha-icon-button
                 .path=${mdiClose}
+                .label=${this._i18n.localize("ui.common.remove")}
                 slot="end"
                 @click=${this._removeItem}
               ></ha-icon-button>

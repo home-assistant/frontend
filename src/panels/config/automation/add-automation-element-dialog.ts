@@ -808,6 +808,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
               ></ha-icon-button-prev>`
             : html`<ha-icon-button
                 .path=${mdiClose}
+                .label=${this._i18n.localize("ui.common.close")}
                 @click=${this._close}
                 slot="navigationIcon"
               ></ha-icon-button>`

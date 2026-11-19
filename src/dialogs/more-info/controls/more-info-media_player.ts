@@ -485,7 +485,8 @@ class MoreInfoMediaPlayer extends LitElement {
 
     return html`<ha-icon-button
         @click=${this._showGroupMediaPlayers}
-        .title=${this._localize("ui.card.media_player.join")}
+        .label=${this._localize("ui.card.media_player.join")}
+        hide-title
         id="grouping-button"
       >
         <div class="grouping">

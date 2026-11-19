@@ -301,7 +301,8 @@
         "media_players": "Media players",
         "select_all": "Select all",
         "idle": "Idle",
-        "track_position": "Track position"
+        "track_position": "Track position",
+        "volume": "Volume"
       },
       "persistent_notification": {
         "dismiss": "Dismiss"
@@ -493,6 +494,8 @@
       "update": "Update",
       "hide": "Hide",
       "close": "Close",
+      "expand": "Expand",
+      "collapse": "Collapse",
       "dismiss_alert": "Dismiss alert",
       "clear": "Clear",
       "leave": "Leave",
@@ -3929,6 +3932,7 @@
             "no_agents": "No locations configured",
             "encryption_turned_off": "Encryption turned off",
             "local_agent": "This system",
+            "location_settings": "Location settings",
             "retention_all": "Keep all backups",
             "retention_backups": "Keep {count} {count, plural,\n one {backup}\n other {backups}\n}",
             "retention_days": "Keep {count} {count, plural,\n one {day}\n other {days}\n}"

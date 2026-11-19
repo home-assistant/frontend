@@ -534,6 +534,9 @@ export class HaServiceControl extends LitElement {
                     >
                       <ha-icon-button
                         .path=${mdiHelpCircleOutline}
+                        .label=${this.hass.localize(
+                          "ui.components.service-control.integration_doc"
+                        )}
                         class="help-icon"
                       ></ha-icon-button>
                     </a>`
