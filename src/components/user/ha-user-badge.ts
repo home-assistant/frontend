@@ -1,4 +1,4 @@
-import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import type { ContextType } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
@@ -6,11 +6,12 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../common/decorators/consume";
-import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { consumeEntityState } from "../../common/decorators/consume-context-entry";
+import { consumeEntityStates } from "../../common/decorators/consume-context-entry";
+import { transform } from "../../common/decorators/transform";
+import { computeDomain } from "../../common/entity/compute_domain";
 import type { User } from "../../data/user";
 import { computeUserInitials } from "../../data/user";
-import { connectionContext, statesContext } from "../../data/context";
+import { connectionContext, entitiesContext } from "../../data/context";
 import type { CurrentUser } from "../../types";
 
 @customElement("ha-user-badge")
@@ -21,27 +22,26 @@ class UserBadge extends LitElement {
   @consume({ context: connectionContext, subscribe: true })
   private _connection?: ContextType<typeof connectionContext>;
 
+  // Read by the @consumeEntityStates decorator below.
   @state()
-  @consume({ context: statesContext, subscribe: true })
-  private _states?: HassEntities;
+  @consume({ context: entitiesContext, subscribe: true })
+  @transform<ContextType<typeof entitiesContext>, string[]>({
+    transformer: (entities) =>
+      Object.keys(entities).filter(
+        (entityId) => computeDomain(entityId) === "person"
+      ),
+  })
+  protected _personEntityIds?: string[];
+
+  @state()
+  @consumeEntityStates({ entityIdPath: ["_personEntityIds"] })
+  private _personStates?: Record<string, HassEntity>;
 
   @state() private _personEntityId?: string;
 
-  @state()
-  @consumeEntityState({ entityIdPath: ["_personEntityId"] })
-  private _personState?: HassEntity;
-
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    // Re-scan for the user's person entity when the user changes, or when the
-    // states change while we don't have a (still-present) person entity. Once
-    // resolved, `_personState` keeps the picture up to date via
-    // `consumeEntityState`, so there's no need to rescan on every state update.
-    if (
-      changedProps.has("user") ||
-      (changedProps.has("_states") &&
-        (!this._personEntityId || !this._states?.[this._personEntityId]))
-    ) {
+    if (changedProps.has("user") || changedProps.has("_personStates")) {
       this._updatePersonEntityId();
     }
   }
@@ -52,7 +52,8 @@ class UserBadge extends LitElement {
     }
     const picture =
       this._personEntityId &&
-      (this._personState?.attributes.entity_picture as string | undefined);
+      (this._personStates?.[this._personEntityId]?.attributes.entity_picture as
+        string | undefined);
 
     if (picture && this._connection) {
       return html`<div
@@ -71,19 +72,12 @@ class UserBadge extends LitElement {
   }
 
   private _updatePersonEntityId() {
-    this._personEntityId = undefined;
-    if (!this.user || !this._states) {
-      return;
-    }
-    for (const entity of Object.values(this._states)) {
-      if (
-        entity.attributes.user_id === this.user.id &&
-        computeStateDomain(entity) === "person"
-      ) {
-        this._personEntityId = entity.entity_id;
-        return;
-      }
-    }
+    const userId = this.user?.id;
+    this._personEntityId = userId
+      ? Object.values(this._personStates ?? {}).find(
+          (entity) => entity.attributes.user_id === userId
+        )?.entity_id
+      : undefined;
   }
 
   static styles = css`
