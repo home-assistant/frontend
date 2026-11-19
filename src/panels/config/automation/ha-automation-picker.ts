@@ -422,6 +422,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                 : nothing
               : html`
                   <ha-switch
+                    .accessibleLabel=${automation.name}
                     @click=${stopPropagation}
                     @change=${this._handleSwitchToggle}
                     .automation=${automation}

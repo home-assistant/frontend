@@ -695,6 +695,13 @@ export class HaServiceControl extends LitElement {
       domain && serviceName
         ? this.hass.services[domain][serviceName].description_placeholders
         : undefined;
+    const fieldName =
+      this.hass.localize(
+        `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`,
+        descriptionPlaceholders
+      ) ||
+      dataField.name ||
+      dataField.key;
 
     return dataField.selector
       ? html`<ha-settings-row
@@ -710,6 +717,7 @@ export class HaServiceControl extends LitElement {
                 : ""
               : html`<ha-checkbox
                   .key=${dataField.key}
+                  .accessibleLabel=${fieldName}
                   .checked=${
                     this._checkedKeys.has(dataField.key) ||
                     (!!this._value?.data &&
@@ -724,14 +732,7 @@ export class HaServiceControl extends LitElement {
             slot="heading"
             class=${showOptional ? "clickable" : ""}
             @click=${showOptional ? this._toggleCheckbox : undefined}
-            >${
-              this.hass.localize(
-                `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`,
-                descriptionPlaceholders
-              ) ||
-              dataField.name ||
-              dataField.key
-            }</span
+            >${fieldName}</span
           >
           <span
             slot="description"

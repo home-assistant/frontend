@@ -473,6 +473,7 @@ export class HaTargetPickerItemRow extends LitElement {
               .indeterminate=${live(rowState.indeterminate)}
               .disabled=${rowState.disabled}
               .title=${name}
+              .accessibleLabel=${name}
               @change=${this._selectionChanged}
               @click=${stopPropagation}
             ></ha-checkbox>`
