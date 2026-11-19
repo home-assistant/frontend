@@ -1,3 +1,9 @@
+import { startOfToday } from "date-fns";
+import {
+  EMPTY_PREFERENCES,
+  type EnergyPreferences,
+} from "../../../../../src/data/energy";
+import { StatisticMeanType } from "../../../../../src/data/recorder";
 import type { AssistPipeline } from "../../../../../src/data/assist_pipeline";
 import type { ConfigEntry } from "../../../../../src/data/config_entries";
 import type {
@@ -507,10 +513,126 @@ const systemLogReportingScenario: Scenario = async (hass) => {
   });
 };
 
+// Heat-only preferences exercise the dashboard without electricity sources.
+const energyHeatScenario = (
+  hass: MockHomeAssistant,
+  sources?: EnergyPreferences["energy_sources"]
+): void => {
+  let prefs: EnergyPreferences = {
+    ...EMPTY_PREFERENCES,
+    energy_sources: sources ?? [
+      {
+        type: "heat",
+        stat_energy_from: "sensor.district_heat",
+        number_energy_price: 0.12,
+        entity_energy_price: null,
+        stat_cost: null,
+      },
+    ],
+  };
+  hass.addEntities([
+    {
+      entity_id: "sensor.district_heat",
+      state: "12",
+      attributes: {
+        friendly_name: "District heating",
+        device_class: "energy",
+        state_class: "total_increasing",
+        unit_of_measurement: "GJ",
+      },
+    },
+  ]);
+  const metadata = [
+    "sensor.district_heat",
+    "district:heat",
+    "district:cost",
+    "sensor.district_heat_cost",
+  ].map((id) => ({
+    statistic_id: id,
+    source: id.includes(":") ? "district" : "recorder",
+    name:
+      id === "district:heat"
+        ? "External heat"
+        : id === "district:cost"
+          ? "External heat cost"
+          : null,
+    statistics_unit_of_measurement: id.endsWith("cost") ? "EUR" : "GJ",
+    unit_class: id.endsWith("cost") ? null : "energy",
+    mean_type: StatisticMeanType.NONE,
+    has_sum: true,
+  }));
+  hass.mockWS("energy/get_prefs", () => prefs);
+  hass.mockWS("energy/save_prefs", (msg) => {
+    prefs = { ...prefs, energy_sources: msg.energy_sources };
+    return prefs;
+  });
+  hass.mockWS("energy/info", () => ({
+    cost_sensors: { "sensor.district_heat": "sensor.district_heat_cost" },
+    solar_forecast_domains: [],
+  }));
+  hass.mockWS("energy/validate", () => ({
+    energy_sources: prefs.energy_sources.map(() => []),
+    device_consumption: [],
+    device_consumption_water: [],
+    device_consumption_gas: [],
+  }));
+  hass.mockWS("recorder/list_statistic_ids", () => metadata);
+  hass.mockWS("recorder/get_statistics_metadata", ({ statistic_ids }) =>
+    metadata.filter((m) => statistic_ids.includes(m.statistic_id))
+  );
+  hass.mockWS("sensor/device_class_convertible_units", () => ({
+    units: ["Wh", "kWh", "MWh", "GJ"],
+  }));
+  hass.mockWS(
+    "recorder/statistics_during_period",
+    ({ statistic_ids, start_time }) =>
+      Object.fromEntries(
+        statistic_ids.map((id: string) => {
+          const start = new Date(start_time ?? startOfToday()).getTime();
+          const previous = start < startOfToday().getTime();
+          const change = id.endsWith("cost")
+            ? previous
+              ? 9
+              : 12
+            : previous
+              ? 75
+              : 100;
+          return [
+            id,
+            [
+              {
+                start,
+                end: start + 3600000,
+                change,
+                sum: change,
+                state: change,
+                last_reset: null,
+                mean: null,
+                min: null,
+                max: null,
+              },
+            ],
+          ];
+        })
+      )
+  );
+};
+
 // ── Registry ──────────────────────────────────────────────────────────────
 
 export const scenarios: Record<string, Scenario> = {
   default: defaultScenario,
+  "energy-heat": energyHeatScenario,
+  "energy-heat-external": (hass) =>
+    energyHeatScenario(hass, [
+      {
+        type: "heat",
+        stat_energy_from: "district:heat",
+        stat_cost: "district:cost",
+        entity_energy_price: "sensor.heat_price",
+        number_energy_price: 0.12,
+      },
+    ]),
   "automation-editor": automationEditorScenario,
   "non-admin": nonAdminScenario,
   "dark-theme": darkThemeScenario,

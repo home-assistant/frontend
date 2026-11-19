@@ -35,6 +35,7 @@ const cardConfigStruct = assign(
           literal("battery"),
           literal("home"),
           literal("gas"),
+          literal("heat"),
           literal("water"),
         ])
       )
@@ -50,6 +51,7 @@ const sourceTypeOpts = [
   "battery",
   "home",
   "gas",
+  "heat",
   "water",
 ] as const;
 

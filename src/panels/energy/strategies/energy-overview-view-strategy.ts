@@ -166,6 +166,22 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       });
     }
 
+    if (isEnergyCardVisible("overview", "energy-heat-graph", prefs, hidden)) {
+      view.sections!.push({
+        type: "grid",
+        cards: [
+          {
+            title: hass.localize(
+              "ui.panel.energy.cards.energy_heat_graph_title"
+            ),
+            type: "energy-heat-graph",
+            collection_key: collectionKey,
+            combine_sources: true,
+          },
+        ],
+      });
+    }
+
     if (isEnergyCardVisible("overview", "energy-water-graph", prefs, hidden)) {
       view.sections!.push({
         type: "grid",

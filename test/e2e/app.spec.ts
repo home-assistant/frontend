@@ -881,3 +881,108 @@ test.describe("Config panel", () => {
     getConnectivity
   );
 });
+
+test.describe("Heat energy", () => {
+  test("compares heat consumption and costs with the previous period", async ({
+    page,
+  }) => {
+    const errors = trackPageErrors(page);
+    await goToPanel(page, "/?scenario=energy-heat#/energy/heat");
+    const totals = page.locator("hui-energy-sources-table-card");
+    await expect(totals).toBeVisible({ timeout: PANEL_TIMEOUT });
+    const selector = page.locator("hui-energy-period-selector");
+    await selector.getByRole("button", { name: "Overflow menu" }).click();
+    await selector
+      .locator("ha-dropdown-item")
+      .filter({ hasText: "Compare data" })
+      .click();
+    await expect(totals).toContainText("75 kWh");
+    await expect(totals).toContainText("$9.00");
+    expectNoPageErrors(errors);
+  });
+
+  test("saves a fixed heat price per kWh for a GJ meter", async ({ page }) => {
+    const errors = trackPageErrors(page);
+    await goToPanel(page, "/?scenario=energy-heat#/config/energy/heat");
+    await page.getByRole("link", { name: "District heating" }).click();
+    const editor = page.locator("ha-energy-heat-source-editor");
+    await expect(editor).toBeVisible();
+    await editor
+      .getByRole("textbox", { name: "Display name" })
+      .fill("City heat");
+    await editor.getByRole("spinbutton", { name: /USD\/kWh/ }).fill("0");
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    await expect(page).toHaveURL(/#\/config\/energy\/heat$/);
+    await expect(page.getByRole("link", { name: "City heat" })).toBeVisible();
+    const prefs = await page.evaluate(() =>
+      window.__mockHass!.callWS({ type: "energy/get_prefs" })
+    );
+    expect(prefs).toMatchObject({
+      energy_sources: [
+        {
+          type: "heat",
+          name: "City heat",
+          number_energy_price: 0,
+          entity_energy_price: null,
+          stat_cost: null,
+        },
+      ],
+    });
+    expectNoPageErrors(errors);
+  });
+
+  test("preserves configured external heat costs when editing the source", async ({
+    page,
+  }) => {
+    const errors = trackPageErrors(page);
+    await goToPanel(
+      page,
+      "/?scenario=energy-heat-external#/config/energy/heat"
+    );
+    await page
+      .getByRole("link", { name: "External heat", exact: true })
+      .click();
+    const editor = page.locator("ha-energy-heat-source-editor");
+    await expect(editor).toBeVisible();
+    await editor
+      .getByRole("textbox", { name: "Display name" })
+      .fill("External district heating");
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    await expect(page).toHaveURL(/#\/config\/energy\/heat$/);
+    const prefs = await page.evaluate(() =>
+      window.__mockHass!.callWS({ type: "energy/get_prefs" })
+    );
+    expect(prefs).toMatchObject({
+      energy_sources: [
+        {
+          type: "heat",
+          stat_energy_from: "district:heat",
+          stat_cost: "district:cost",
+          entity_energy_price: null,
+          number_energy_price: null,
+          name: "External district heating",
+        },
+      ],
+    });
+    expectNoPageErrors(errors);
+  });
+
+  test("loads a heat-only dashboard with consumption and costs", async ({
+    page,
+  }) => {
+    const errors = trackPageErrors(page);
+    await goToPanel(page, "/?scenario=energy-heat#/energy/heat");
+    const graph = page.locator("hui-energy-heat-graph-card");
+    await expect(graph.locator("ha-chart-base")).toBeVisible({
+      timeout: PANEL_TIMEOUT,
+    });
+    await expect(graph).toContainText("100");
+    await expect(page.locator("hui-energy-sources-table-card")).toContainText(
+      "12.00"
+    );
+    await expect(
+      page.locator("hui-energy-usage-graph-card")
+    ).not.toBeAttached();
+    expectNoPageErrors(errors);
+  });
+});

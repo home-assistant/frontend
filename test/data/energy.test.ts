@@ -28,6 +28,8 @@ import {
   EMPTY_PREFERENCES,
   CompareMode,
   computeConsumptionData,
+  getReferencedStatisticIds,
+  energySourcesByType,
 } from "../../src/data/energy";
 import type {
   EnergyData,
@@ -2396,6 +2398,7 @@ describe("getEnergyDataCollection gas energy unit", () => {
   });
 
   const sharedSources: Record<string, EnergySource> = {
+    heat: { type: "heat", stat_energy_from: "integration:gas" },
     grid: {
       type: "grid",
       stat_energy_from: "integration:gas",
@@ -2866,5 +2869,118 @@ describe("computeConsumptionData with a home meter", () => {
 
   it("never changes the measured grid value", () => {
     assert.equal(consumption.used_grid[1], baseline.used_grid[1]);
+  });
+});
+
+describe("heat statistics", () => {
+  it("requests consumption and configured or generated costs for heat", () => {
+    const prefs: EnergyPreferences = {
+      ...EMPTY_PREFERENCES,
+      energy_sources: [
+        {
+          type: "heat",
+          stat_energy_from: "sensor.heat",
+          number_energy_price: 0.5,
+        },
+        {
+          type: "heat",
+          stat_energy_from: "district:heat",
+          stat_cost: "district:cost",
+        },
+        {
+          type: "solar",
+          stat_energy_from: "sensor.solar",
+          config_entry_solar_forecast: null,
+        },
+      ],
+    };
+    const ids = getReferencedStatisticIds(
+      prefs,
+      {
+        cost_sensors: { "sensor.heat": "sensor.heat_cost" },
+        solar_forecast_domains: [],
+      },
+      ["heat"]
+    );
+    assert.deepEqual(ids, [
+      "sensor.heat",
+      "sensor.heat_cost",
+      "district:heat",
+      "district:cost",
+    ]);
+    assert.lengthOf(energySourcesByType(prefs).heat!, 2);
+  });
+
+  it("fetches heat in kWh for both periods with cost metadata", async () => {
+    const hass = createMockHass();
+    const requests: Record<string, unknown>[] = [];
+    const metadataIds: string[] = [];
+    const callWS = vi.fn(async (msg: Record<string, unknown>) => {
+      if (msg.type === "energy/info") {
+        return {
+          cost_sensors: { "sensor.heat": "sensor.heat_cost" },
+          solar_forecast_domains: [],
+        };
+      }
+      if (msg.type === "recorder/get_statistics_metadata") {
+        metadataIds.push(...(msg.statistic_ids as string[]));
+        return (msg.statistic_ids as string[]).map((id) => ({
+          statistic_id: id,
+          source: "test",
+          name: null,
+          statistics_unit_of_measurement: id === "sensor.heat" ? "GJ" : "EUR",
+          unit_class: id === "sensor.heat" ? "energy" : null,
+          mean_type: StatisticMeanType.NONE,
+          has_sum: true,
+        }));
+      }
+      if (msg.type === "recorder/statistics_during_period") {
+        requests.push(msg);
+        return {};
+      }
+      throw new Error(`unexpected ${msg.type}`);
+    });
+    Object.assign(hass, {
+      connection: {
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        connected: true,
+      },
+      callWS,
+    });
+    const collection = getEnergyDataCollection(hass.connection, {
+      callWS: hass.callWS,
+      entities: hass.entities,
+      states: hass.states,
+      locale: hass.locale,
+      config: hass.config,
+      panelUrl: hass.panelUrl,
+      key: "energy_heat_units",
+      prefs: {
+        ...EMPTY_PREFERENCES,
+        energy_sources: [
+          {
+            type: "heat",
+            stat_energy_from: "sensor.heat",
+            number_energy_price: 0.5,
+          },
+        ],
+      },
+    });
+    collection.setPeriod(
+      new Date(2026, 8, 18),
+      endOfDay(new Date(2026, 8, 18))
+    );
+    collection.setCompare(CompareMode.PREVIOUS);
+    await collection.refresh();
+    assert.includeMembers(metadataIds, ["sensor.heat", "sensor.heat_cost"]);
+    assert.lengthOf(requests, 2);
+    for (const request of requests) {
+      assert.deepInclude(request.units, { energy: "kWh" });
+      assert.includeMembers(request.statistic_ids as string[], [
+        "sensor.heat",
+        "sensor.heat_cost",
+      ]);
+    }
   });
 });

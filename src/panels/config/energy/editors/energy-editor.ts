@@ -10,6 +10,7 @@ import type {
   EnergyGasUnitClass,
   EnergyInfo,
   GasSourceTypeEnergyPreference,
+  HeatSourceTypeEnergyPreference,
   GridSourceTypeEnergyPreference,
   HomeSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
@@ -58,6 +59,13 @@ export interface EnergyGasSourceEditorParams {
   saveCallback: (source: GasSourceTypeEnergyPreference) => Promise<void>;
 }
 
+export interface EnergyHeatSourceEditorParams {
+  source?: HeatSourceTypeEnergyPreference;
+  heat_sources: HeatSourceTypeEnergyPreference[];
+  statsMetadata?: Record<string, StatisticsMetaData>;
+  saveCallback: (source: HeatSourceTypeEnergyPreference) => Promise<void>;
+}
+
 export interface EnergyWaterSourceEditorParams {
   source?: WaterSourceTypeEnergyPreference;
   water_sources: WaterSourceTypeEnergyPreference[];
@@ -84,6 +92,7 @@ export type EnergyEditorConfig =
   | { kind: "battery"; params: EnergyBatterySourceEditorParams }
   | { kind: "device"; params: EnergyDeviceEditorParams }
   | { kind: "gas"; params: EnergyGasSourceEditorParams }
+  | { kind: "heat"; params: EnergyHeatSourceEditorParams }
   | { kind: "water"; params: EnergyWaterSourceEditorParams }
   | { kind: "water_gas_device"; params: EnergyWaterGasDeviceEditorParams };
 

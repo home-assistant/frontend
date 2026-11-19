@@ -53,6 +53,7 @@ const colorPropertyMap = {
   battery_out: "--energy-battery-out-color",
   solar: "--energy-solar-color",
   gas: "--energy-gas-color",
+  heat: "--energy-heat-color",
   water: "--energy-water-color",
   home: "--primary-color",
 };
@@ -375,24 +376,29 @@ export class HuiEnergySourcesTableCard
 
     const totals = {
       gas: 0,
+      heat: 0,
       water: 0,
       solar: 0,
     };
     const totalsCompare = {
       gas: 0,
+      heat: 0,
       water: 0,
       solar: 0,
     };
     const totalCosts = {
       gas: 0,
+      heat: 0,
       water: 0,
     };
     const totalCostsCompare = {
       gas: 0,
+      heat: 0,
       water: 0,
     };
     const hasCosts = {
       gas: false,
+      heat: false,
       water: false,
     };
 
@@ -444,6 +450,12 @@ export class HuiEnergySourcesTableCard
         (flow) =>
           flow.stat_cost || flow.entity_energy_price || flow.number_energy_price
       ) ||
+      types.heat?.some(
+        (flow) =>
+          flow.stat_cost ||
+          flow.entity_energy_price ||
+          flow.number_energy_price != null
+      ) ||
       types.water?.some(
         (flow) =>
           flow.stat_cost || flow.entity_energy_price || flow.number_energy_price
@@ -452,6 +464,7 @@ export class HuiEnergySourcesTableCard
 
     const units = {
       solar: "kWh",
+      heat: "kWh",
       gas: this._data.gasUnit,
       water: this._data.waterUnit,
     };
@@ -605,7 +618,7 @@ export class HuiEnergySourcesTableCard
       "ui.panel.lovelace.cards.energy.energy_distribution.grid"
     );
 
-    const _renderSimpleCategory = (type: "solar" | "gas" | "water") =>
+    const _renderSimpleCategory = (type: "solar" | "gas" | "water" | "heat") =>
       html` ${types[type]?.map((source, idx) => {
         const cost_stat =
           type in hasCosts &&
@@ -1040,9 +1053,14 @@ export class HuiEnergySourcesTableCard
                   : ""
               }
               ${_renderSimpleCategory("gas")} ${_renderSimpleCategory("water")}
+              ${_renderSimpleCategory("heat")}
               ${
-                [hasCosts.gas, hasCosts.water, hasGridCost].filter(Boolean)
-                  .length > 1
+                [
+                  hasCosts.gas,
+                  hasCosts.water,
+                  hasCosts.heat,
+                  hasGridCost,
+                ].filter(Boolean).length > 1
                   ? this._renderTotalRow(
                       this._i18n.localize(
                         "ui.panel.lovelace.cards.energy.energy_sources_table.total_costs"
@@ -1050,10 +1068,14 @@ export class HuiEnergySourcesTableCard
                       null,
                       null,
                       "",
-                      totalCosts.gas + totalGridCost + totalCosts.water,
+                      totalCosts.gas +
+                        totalGridCost +
+                        totalCosts.water +
+                        totalCosts.heat,
                       totalCostsCompare.gas +
                         totalGridCostCompare +
-                        totalCostsCompare.water,
+                        totalCostsCompare.water +
+                        totalCostsCompare.heat,
                       showCosts,
                       compare,
                       undefined,

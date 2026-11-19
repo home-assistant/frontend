@@ -19,6 +19,7 @@ import {
   hasEnergySource,
   hasGasDevices,
   hasGasSource,
+  hasHeatSource,
   hasNowViewContent,
   hasPowerSources,
   hasWaterDevices,
@@ -54,6 +55,14 @@ const GAS_VIEW = {
   path: "gas",
   strategy: {
     type: "gas",
+    collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+  },
+} as LovelaceStrategyViewConfig;
+
+const HEAT_VIEW = {
+  path: "heat",
+  strategy: {
+    type: "heat",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
   },
 } as LovelaceStrategyViewConfig;
@@ -105,6 +114,7 @@ export class EnergyDashboardStrategy extends ReactiveElement {
     const hasPowerSource = hasPowerSources(prefs);
     const hasWater = hasWaterSource(prefs) || hasWaterDevices(prefs);
     const hasGas = hasGasSource(prefs) || hasGasDevices(prefs);
+    const hasHeat = hasHeatSource(prefs);
     const hasDevices = hasDeviceConsumption(prefs);
 
     const hidden = _config.hidden_cards;
@@ -119,12 +129,15 @@ export class EnergyDashboardStrategy extends ReactiveElement {
     if (hasWater) {
       candidateViews.push(WATER_VIEW);
     }
+    if (hasHeat) {
+      candidateViews.push(HEAT_VIEW);
+    }
     if (hasNowViewContent(prefs)) {
       candidateViews.push(POWER_VIEW);
     }
     if (
       hasPowerSource ||
-      [hasEnergy, hasGas, hasWater].filter(Boolean).length > 1
+      [hasEnergy, hasGas, hasWater, hasHeat].filter(Boolean).length > 1
     ) {
       candidateViews.unshift(OVERVIEW_VIEW);
     }
