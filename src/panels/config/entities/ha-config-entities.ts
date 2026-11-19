@@ -814,12 +814,10 @@ export class HaConfigEntities extends LitElement {
           .slot=${slot}
           .value=${`label_${label.label_id}`}
           .action=${selected ? "remove" : "add"}
+          type="checkbox"
+          .checked=${selected}
+          .indeterminate=${partial}
         >
-          <ha-checkbox
-            slot="icon"
-            .checked=${selected}
-            .indeterminate=${partial}
-          ></ha-checkbox>
           <ha-label
             .color=${label.color}
             .description=${label.description}
