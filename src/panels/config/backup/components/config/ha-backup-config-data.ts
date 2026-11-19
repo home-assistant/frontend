@@ -10,6 +10,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_event";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-alert";
@@ -17,10 +18,10 @@ import "../../../../../components/ha-button";
 import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-spinner";
-import "../../../../../components/ha-switch";
-import type { HaSwitch } from "../../../../../components/ha-switch";
 import "../../../../../components/ha-tooltip";
 import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/item/ha-list-item-switch";
+import type { HaListItemSwitch } from "../../../../../components/item/ha-list-item-switch";
 import "../../../../../components/list/ha-list-base";
 import { fetchHassioAddonsInfo } from "../../../../../data/hassio/addon";
 import type { HostDisksUsage } from "../../../../../data/hassio/host";
@@ -239,7 +240,14 @@ class HaBackupConfigData extends LitElement {
     return html`
       ${this._renderSizeEstimate()}
       <ha-list-base>
-        <ha-list-item-base wrap-headline wrap-supporting-text>
+        <ha-list-item-switch
+          wrap-headline
+          wrap-supporting-text
+          id="homeassistant"
+          @change=${this._switchChanged}
+          .checked=${data.homeassistant}
+          .disabled=${this.forceHomeAssistant || data.database}
+        >
           <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
           <span slot="headline">
             ${this.hass.localize("ui.panel.config.backup.data.ha_settings")}
@@ -255,21 +263,17 @@ class HaBackupConfigData extends LitElement {
                   )
             }
           </span>
-          <ha-switch
-            .accessibleLabel=${this.hass.localize(
-              "ui.panel.config.backup.data.ha_settings"
-            )}
-            id="homeassistant"
-            slot="end"
-            @change=${this._switchChanged}
-            .checked=${data.homeassistant}
-            .disabled=${this.forceHomeAssistant || data.database}
-          ></ha-switch>
-        </ha-list-item-base>
+        </ha-list-item-switch>
 
         ${
           this._showDbOption
-            ? html`<ha-list-item-base wrap-headline wrap-supporting-text>
+            ? html`<ha-list-item-switch
+                wrap-headline
+                wrap-supporting-text
+                id="database"
+                @change=${this._switchChanged}
+                .checked=${data.database}
+              >
                 <ha-svg-icon slot="start" .path=${mdiChartBox}></ha-svg-icon>
                 <span slot="headline">
                   ${this.hass.localize("ui.panel.config.backup.data.history")}
@@ -279,22 +283,19 @@ class HaBackupConfigData extends LitElement {
                     "ui.panel.config.backup.data.history_description"
                   )}
                 </span>
-                <ha-switch
-                  .accessibleLabel=${this.hass.localize(
-                    "ui.panel.config.backup.data.history"
-                  )}
-                  id="database"
-                  slot="end"
-                  @change=${this._switchChanged}
-                  .checked=${data.database}
-                ></ha-switch>
-              </ha-list-item-base>`
+              </ha-list-item-switch>`
             : nothing
         }
         ${
           isHassio
             ? html`
-                <ha-list-item-base wrap-headline wrap-supporting-text>
+                <ha-list-item-switch
+                  wrap-headline
+                  wrap-supporting-text
+                  id="media"
+                  @change=${this._switchChanged}
+                  .checked=${data.media}
+                >
                   <ha-svg-icon
                     slot="start"
                     .path=${mdiPlayBoxMultiple}
@@ -307,18 +308,15 @@ class HaBackupConfigData extends LitElement {
                       "ui.panel.config.backup.data.media_description"
                     )}
                   </span>
-                  <ha-switch
-                    .accessibleLabel=${this.hass.localize(
-                      "ui.panel.config.backup.data.media"
-                    )}
-                    id="media"
-                    slot="end"
-                    @change=${this._switchChanged}
-                    .checked=${data.media}
-                  ></ha-switch>
-                </ha-list-item-base>
+                </ha-list-item-switch>
 
-                <ha-list-item-base wrap-headline wrap-supporting-text>
+                <ha-list-item-switch
+                  wrap-headline
+                  wrap-supporting-text
+                  id="share"
+                  @change=${this._switchChanged}
+                  .checked=${data.share}
+                >
                   <ha-svg-icon slot="start" .path=${mdiFolder}></ha-svg-icon>
                   <span slot="headline">
                     ${this.hass.localize(
@@ -330,21 +328,18 @@ class HaBackupConfigData extends LitElement {
                       "ui.panel.config.backup.data.share_folder_desc"
                     )}
                   </span>
-                  <ha-switch
-                    .accessibleLabel=${this.hass.localize(
-                      "ui.panel.config.backup.data.share_folder"
-                    )}
-                    id="share"
-                    slot="end"
-                    @change=${this._switchChanged}
-                    .checked=${data.share}
-                  ></ha-switch>
-                </ha-list-item-base>
+                </ha-list-item-switch>
 
                 ${
                   this._hasLocalAddons(this._addons)
                     ? html`
-                        <ha-list-item-base wrap-headline wrap-supporting-text>
+                        <ha-list-item-switch
+                          wrap-headline
+                          wrap-supporting-text
+                          id="local_addons"
+                          @change=${this._switchChanged}
+                          .checked=${data.local_addons}
+                        >
                           <ha-svg-icon
                             slot="start"
                             .path=${mdiFolder}
@@ -359,16 +354,7 @@ class HaBackupConfigData extends LitElement {
                               "ui.panel.config.backup.data.local_apps_description"
                             )}
                           </span>
-                          <ha-switch
-                            .accessibleLabel=${this.hass.localize(
-                              "ui.panel.config.backup.data.local_apps"
-                            )}
-                            id="local_addons"
-                            slot="end"
-                            @change=${this._switchChanged}
-                            .checked=${data.local_addons}
-                          ></ha-switch>
-                        </ha-list-item-base>
+                        </ha-list-item-switch>
                       `
                     : nothing
                 }
@@ -445,8 +431,8 @@ class HaBackupConfigData extends LitElement {
     `;
   }
 
-  private _switchChanged(ev: Event) {
-    const target = ev.currentTarget as HaSwitch;
+  private _switchChanged(ev: HASSDomCurrentTargetEvent<HaListItemSwitch>) {
+    const target = ev.currentTarget;
     const data = this._getData(this.value, this._showAddons);
     this._setData({
       ...data,
@@ -581,7 +567,8 @@ class HaBackupConfigData extends LitElement {
     ha-list-base {
       --ha-row-item-padding-inline: 0;
     }
-    ha-list-item-base::part(start) {
+    ha-list-item-base::part(start),
+    ha-list-item-switch::part(start) {
       color: var(--ha-color-text-secondary);
     }
     ha-select {

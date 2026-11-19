@@ -5,11 +5,11 @@ import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_e
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
-import "../../../../../components/ha-switch";
-import type { HaSwitch } from "../../../../../components/ha-switch";
 import "../../../../../components/input/ha-input";
 import type { HaInput } from "../../../../../components/input/ha-input";
 import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/item/ha-list-item-switch";
+import type { HaListItemSwitch } from "../../../../../components/item/ha-list-item-switch";
 import "../../../../../components/list/ha-list-base";
 import type { ZHAConfiguration } from "../../../../../data/zha";
 import {
@@ -21,7 +21,7 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 
 const PREDEFINED_TIMEOUTS = [1800, 3600, 7200, 21600, 43200, 86400];
-type ZHASwitchChangeEvent = HASSDomCurrentTargetEvent<HaSwitch>;
+type ZHASwitchChangeEvent = HASSDomCurrentTargetEvent<HaListItemSwitch>;
 type ZHAInputChangeEvent = HASSDomCurrentTargetEvent<HaInput>;
 
 @customElement("zha-options-page")
@@ -116,7 +116,15 @@ class ZHAOptionsPage extends LitElement {
               this._configuration
                 ? html`
                     <ha-list-base>
-                      <ha-list-item-base wrap-headline wrap-supporting-text>
+                      <ha-list-item-switch
+                        wrap-headline
+                        wrap-supporting-text
+                        .checked=${
+                          (this._configuration.data.zha_options
+                            ?.enable_identify_on_join as boolean) ?? true
+                        }
+                        @change=${this._enableIdentifyOnJoinChanged}
+                      >
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.enable_identify_on_join_label"
@@ -127,18 +135,7 @@ class ZHAOptionsPage extends LitElement {
                             "ui.panel.config.zha.configuration_page.enable_identify_on_join_description"
                           )}</span
                         >
-                        <ha-switch
-                          slot="end"
-                          .accessibleLabel=${this.hass.localize(
-                            "ui.panel.config.zha.configuration_page.enable_identify_on_join_label"
-                          )}
-                          .checked=${
-                            (this._configuration.data.zha_options
-                              ?.enable_identify_on_join as boolean) ?? true
-                          }
-                          @change=${this._enableIdentifyOnJoinChanged}
-                        ></ha-switch>
-                      </ha-list-item-base>
+                      </ha-list-item-switch>
                       <ha-list-item-base wrap-headline wrap-supporting-text>
                         <span slot="headline"
                           >${this.hass.localize(
@@ -164,7 +161,15 @@ class ZHAOptionsPage extends LitElement {
                           <span slot="end">s</span>
                         </ha-input>
                       </ha-list-item-base>
-                      <ha-list-item-base wrap-headline wrap-supporting-text>
+                      <ha-list-item-switch
+                        wrap-headline
+                        wrap-supporting-text
+                        .checked=${
+                          (this._configuration.data.zha_options
+                            ?.enhanced_light_transition as boolean) ?? false
+                        }
+                        @change=${this._enhancedLightTransitionChanged}
+                      >
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.enhanced_light_transition_label"
@@ -175,19 +180,16 @@ class ZHAOptionsPage extends LitElement {
                             "ui.panel.config.zha.configuration_page.enhanced_light_transition_description"
                           )}</span
                         >
-                        <ha-switch
-                          slot="end"
-                          .accessibleLabel=${this.hass.localize(
-                            "ui.panel.config.zha.configuration_page.enhanced_light_transition_label"
-                          )}
-                          .checked=${
-                            (this._configuration.data.zha_options
-                              ?.enhanced_light_transition as boolean) ?? false
-                          }
-                          @change=${this._enhancedLightTransitionChanged}
-                        ></ha-switch>
-                      </ha-list-item-base>
-                      <ha-list-item-base wrap-headline wrap-supporting-text>
+                      </ha-list-item-switch>
+                      <ha-list-item-switch
+                        wrap-headline
+                        wrap-supporting-text
+                        .checked=${
+                          (this._configuration.data.zha_options
+                            ?.light_transitioning_flag as boolean) ?? true
+                        }
+                        @change=${this._lightTransitioningFlagChanged}
+                      >
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.light_transitioning_flag_label"
@@ -198,19 +200,16 @@ class ZHAOptionsPage extends LitElement {
                             "ui.panel.config.zha.configuration_page.light_transitioning_flag_description"
                           )}</span
                         >
-                        <ha-switch
-                          slot="end"
-                          .accessibleLabel=${this.hass.localize(
-                            "ui.panel.config.zha.configuration_page.light_transitioning_flag_label"
-                          )}
-                          .checked=${
-                            (this._configuration.data.zha_options
-                              ?.light_transitioning_flag as boolean) ?? true
-                          }
-                          @change=${this._lightTransitioningFlagChanged}
-                        ></ha-switch>
-                      </ha-list-item-base>
-                      <ha-list-item-base wrap-headline wrap-supporting-text>
+                      </ha-list-item-switch>
+                      <ha-list-item-switch
+                        wrap-headline
+                        wrap-supporting-text
+                        .checked=${
+                          (this._configuration.data.zha_options
+                            ?.group_members_assume_state as boolean) ?? true
+                        }
+                        @change=${this._groupMembersAssumeStateChanged}
+                      >
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.group_members_assume_state_label"
@@ -221,18 +220,7 @@ class ZHAOptionsPage extends LitElement {
                             "ui.panel.config.zha.configuration_page.group_members_assume_state_description"
                           )}</span
                         >
-                        <ha-switch
-                          slot="end"
-                          .accessibleLabel=${this.hass.localize(
-                            "ui.panel.config.zha.configuration_page.group_members_assume_state_label"
-                          )}
-                          .checked=${
-                            (this._configuration.data.zha_options
-                              ?.group_members_assume_state as boolean) ?? true
-                          }
-                          @change=${this._groupMembersAssumeStateChanged}
-                        ></ha-switch>
-                      </ha-list-item-base>
+                      </ha-list-item-switch>
                       <ha-list-item-base wrap-headline wrap-supporting-text>
                         <span slot="headline"
                           >${this.hass.localize(
@@ -321,7 +309,15 @@ class ZHAOptionsPage extends LitElement {
                             `
                           : nothing
                       }
-                      <ha-list-item-base wrap-headline wrap-supporting-text>
+                      <ha-list-item-switch
+                        wrap-headline
+                        wrap-supporting-text
+                        .checked=${
+                          (this._configuration.data.zha_options
+                            ?.enable_mains_startup_polling as boolean) ?? true
+                        }
+                        @change=${this._enableMainsStartupPollingChanged}
+                      >
                         <span slot="headline"
                           >${this.hass.localize(
                             "ui.panel.config.zha.configuration_page.enable_mains_startup_polling_label"
@@ -332,18 +328,7 @@ class ZHAOptionsPage extends LitElement {
                             "ui.panel.config.zha.configuration_page.enable_mains_startup_polling_description"
                           )}</span
                         >
-                        <ha-switch
-                          slot="end"
-                          .accessibleLabel=${this.hass.localize(
-                            "ui.panel.config.zha.configuration_page.enable_mains_startup_polling_label"
-                          )}
-                          .checked=${
-                            (this._configuration.data.zha_options
-                              ?.enable_mains_startup_polling as boolean) ?? true
-                          }
-                          @change=${this._enableMainsStartupPollingChanged}
-                        ></ha-switch>
-                      </ha-list-item-base>
+                      </ha-list-item-switch>
                     </ha-list-base>
                     <div class="card-actions">
                       <ha-progress-button
