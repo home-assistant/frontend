@@ -167,7 +167,9 @@ class HaInputSelectForm extends LitElement {
                           trigger="focus"
                           association="description"
                           slot="start"
-                          for="move-option-${index}"
+                          for=${ifDefined(
+                            !this.disabled ? `move-option-${index}` : undefined
+                          )}
                           .disabled=${this.disabled}
                         >
                           ${renderMoveShortcutHint(
