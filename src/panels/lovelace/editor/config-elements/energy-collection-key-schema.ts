@@ -13,8 +13,11 @@ export const energyCollectionKeySchema = {
 
 export const collectionKeyToFormData = <T extends CollectionKeyConfig>(
   config: T
-): T =>
-  config.collection_key?.startsWith(ENERGY_COLLECTION_KEY_PREFIX)
+): T => {
+  if (config.collection_key === "") {
+    return { ...config, collection_key: undefined };
+  }
+  return config.collection_key?.startsWith(ENERGY_COLLECTION_KEY_PREFIX)
     ? {
         ...config,
         collection_key: config.collection_key.slice(
@@ -22,6 +25,7 @@ export const collectionKeyToFormData = <T extends CollectionKeyConfig>(
         ),
       }
     : config;
+};
 
 export const collectionKeyFromFormData = <T extends CollectionKeyConfig>(
   data: T
