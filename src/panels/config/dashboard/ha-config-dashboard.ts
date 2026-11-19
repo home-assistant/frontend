@@ -1,4 +1,10 @@
-import { mdiDotsVertical, mdiMagnify, mdiPower, mdiRefresh } from "@mdi/js";
+import {
+  mdiDotsVertical,
+  mdiLinkVariant,
+  mdiMagnify,
+  mdiPower,
+  mdiRefresh,
+} from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -33,7 +39,6 @@ import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-d
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import { ChildPanelReady } from "../../../layouts/panel-ready";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { mdiNabuCasaLogo } from "../../../resources/nabu-casa-logo-svg";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -182,7 +187,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                 path: "/config/cloud",
                 name: "Home Assistant Link",
                 info: cloudStatus,
-                iconPath: mdiNabuCasaLogo,
+                iconPath: mdiLinkVariant,
                 iconColor: "#3B808E",
                 translationKey: "cloud",
               },
