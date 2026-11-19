@@ -7008,7 +7008,7 @@
         "cloud": {
           "description_login": "Logged in and connected",
           "description_not_login": "Not logged in",
-          "description_features": "Control home when away and integrate with Alexa and Google Home",
+          "description_features": "Access your system away from home. Control your home with Google Home and Alexa.",
           "login": {
             "title": "Home Assistant Link login",
             "landing_title": "[%key:ui::panel::config::cloud::account::onboarding::ha_cloud_title%]",
