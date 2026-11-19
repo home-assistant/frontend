@@ -141,8 +141,8 @@ export const computeEnergySuggestions = (
       });
     } else if (
       deviceClass === "gas" &&
-      (meta.unit_class === "volume" || meta.unit_class === "energy") &&
-      (!gasUnitClass || meta.unit_class === gasUnitClass)
+      meta.unit_class === "volume" &&
+      gasUnitClass !== "energy"
     ) {
       suggestions.push({ statisticId, tab: "gas", slots: GAS_SLOTS });
     } else if (deviceClass === "water" && meta.unit_class === "volume") {
