@@ -95,6 +95,7 @@ import type {
 } from "../../../data/data_table_filters";
 import {
   countActiveFilters,
+  filterModeChanged,
   hasFilterSelection,
   listFilterValue,
   matchesFilterItems,
@@ -1217,10 +1218,12 @@ export class HaConfigEntities extends LitElement {
     const filters = { ...this._filters, [type]: ev.detail.value };
 
     // A filter also sends the value it was given, once it has found its items.
-    // Only a change to what the URL holds is the user's, so a link isn't stored.
+    // Only a change to what the URL holds, or to a filter's mode, is the
+    // user's, so a link isn't stored.
     if (
       entitiesFilterQueryString(filters) !==
-      entitiesFilterQueryString(this._filters)
+        entitiesFilterQueryString(this._filters) ||
+      filterModeChanged(this._filters[type], ev.detail.value)
     ) {
       this._storageFilters = {
         ...this._storedFilters(),

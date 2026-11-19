@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   countActiveFilters,
+  filterModeChanged,
   listFilterEventValue,
   matchesFilterItems,
   matchesListFilter,
@@ -167,6 +168,29 @@ describe("toggling a list filter", () => {
       ids: ["a"],
       all: false,
     });
+  });
+});
+
+// Pages store a filter only when the URL changes, which a mode without a
+// selection doesn't do, so they also store a change of mode.
+describe("filterModeChanged", () => {
+  it("sees a mode switched on or off, with or without a selection", () => {
+    expect(filterModeChanged({ all: true }, undefined)).toBe(true);
+    expect(filterModeChanged(undefined, { exclude: true })).toBe(true);
+    expect(
+      filterModeChanged({ ids: ["a"], all: true }, { ids: ["a"], all: false })
+    ).toBe(true);
+    expect(
+      filterModeChanged({ areas: ["hall"] }, { areas: ["hall"], exclude: true })
+    ).toBe(true);
+  });
+
+  it("ignores a change of selection, or the same value sent again", () => {
+    expect(filterModeChanged(["a"], ["a", "b"])).toBe(false);
+    expect(
+      filterModeChanged({ ids: ["a"], all: true }, { ids: ["b"], all: true })
+    ).toBe(false);
+    expect(filterModeChanged(undefined, undefined)).toBe(false);
   });
 });
 

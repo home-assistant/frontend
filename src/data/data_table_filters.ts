@@ -247,6 +247,19 @@ export const setListFilterAll = (
 export const isMatchAllFilter = (value: DataTableFiltersValue): boolean =>
   !!listFilterValue(value)?.all;
 
+/**
+ * Whether a filter shows the items that don't match, or matches all, after a
+ * change and not before, or the other way around. Such a change is the
+ * user's even when it leaves the URL as it was, as a mode without a
+ * selection isn't written to it.
+ */
+export const filterModeChanged = (
+  before: DataTableFiltersValue,
+  after: DataTableFiltersValue
+): boolean =>
+  isExcludeFilter(before) !== isExcludeFilter(after) ||
+  isMatchAllFilter(before) !== isMatchAllFilter(after);
+
 /** The number of filters that have anything selected. */
 export const countActiveFilters = (
   values: Iterable<DataTableFiltersValue>

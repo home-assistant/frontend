@@ -71,6 +71,7 @@ import type {
 } from "../../../data/data_table_filters";
 import {
   countActiveFilters,
+  filterModeChanged,
   hasFilterSelection,
   matchesListFilter,
 } from "../../../data/data_table_filters";
@@ -596,10 +597,12 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   private _filterChanged(type: string, value: DataTableFiltersValue) {
     const filters = { ...this._filters, [type]: value };
 
-    // Only a change to what the URL holds is the user's, so a link isn't stored
+    // Only a change to what the URL holds, or to a filter's mode, is the
+    // user's, so a link isn't stored
     if (
       backupsFilterQueryString(filters) !==
-      backupsFilterQueryString(this._filters)
+        backupsFilterQueryString(this._filters) ||
+      filterModeChanged(this._filters[type], value)
     ) {
       this._storageFilters = { ...this._storageFilters, [type]: value };
     }
