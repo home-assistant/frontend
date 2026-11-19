@@ -58,6 +58,7 @@ interface HeatFormState {
 
 const heatDeviceClasses = ["energy"];
 const heatUnitClasses = ["energy"];
+const powerUnitClasses = ["power"];
 
 @customElement("ha-energy-heat-source-editor")
 export class HaEnergyHeatSourceEditor extends EnergyEditorMixin(
@@ -225,6 +226,22 @@ export class HaEnergyHeatSourceEditor extends EnergyEditorMixin(
         >
         </ha-input>
       </div>
+
+      <wa-divider></wa-divider>
+
+      <ha-statistic-picker
+        statistic-types="mean"
+        .includeUnitClass=${powerUnitClasses}
+        .value=${this._source.stat_rate}
+        .label=${this._localize(
+          "ui.panel.config.energy.heat.dialog.heat_power"
+        )}
+        .helper=${this._localize(
+          "ui.panel.config.energy.heat.dialog.power_para"
+        )}
+        @value-changed=${this._powerStatisticChanged}
+        .disabled=${this._saving}
+      ></ha-statistic-picker>
 
       <wa-divider></wa-divider>
 
@@ -402,6 +419,14 @@ export class HaEnergyHeatSourceEditor extends EnergyEditorMixin(
         this._error = err instanceof Error ? err.message : String(err);
       }
     }
+  }
+
+  private _powerStatisticChanged(ev: ValueChangedEvent<string>) {
+    this._source = {
+      ...this._source!,
+      stat_rate: ev.detail.value || undefined,
+    };
+    this._updateFormDirtyState();
   }
 
   private _nameChanged(ev: HASSDomCurrentTargetEvent<HaInput>) {

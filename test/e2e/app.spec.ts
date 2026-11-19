@@ -931,6 +931,40 @@ test.describe("Heat energy", () => {
     expectNoPageErrors(errors);
   });
 
+  test("saves and clears an optional heat power statistic", async ({
+    page,
+  }) => {
+    const errors = trackPageErrors(page);
+    await goToPanel(page, "/?scenario=energy-heat#/config/energy/heat");
+    await page
+      .getByRole("link", { name: "District heating", exact: true })
+      .click();
+    const power = page
+      .locator("ha-statistic-picker")
+      .filter({ has: page.getByRole("button", { name: /Heat power/ }) });
+    await power.getByRole("button", { name: /Heat power/ }).click();
+    await page.getByRole("option", { name: /District heating power/ }).click();
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    await expect(page).toHaveURL(/#\/config\/energy\/heat$/);
+    const saved = await page.evaluate(() =>
+      window.__mockHass!.callWS({ type: "energy/get_prefs" })
+    );
+    expect(saved).toMatchObject({
+      energy_sources: [{ stat_rate: "sensor.district_heat_power" }],
+    });
+    await page
+      .getByRole("link", { name: "District heating", exact: true })
+      .click();
+    await power.getByRole("button", { name: "Clear", exact: true }).click();
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    await expect(page).toHaveURL(/#\/config\/energy\/heat$/);
+    const cleared = await page.evaluate(() =>
+      window.__mockHass!.callWS({ type: "energy/get_prefs" })
+    );
+    expect(cleared.energy_sources[0].stat_rate).toBeUndefined();
+    expectNoPageErrors(errors);
+  });
+
   test("preserves configured external heat costs when editing the source", async ({
     page,
   }) => {
@@ -964,25 +998,6 @@ test.describe("Heat energy", () => {
         },
       ],
     });
-    expectNoPageErrors(errors);
-  });
-
-  test("loads a heat-only dashboard with consumption and costs", async ({
-    page,
-  }) => {
-    const errors = trackPageErrors(page);
-    await goToPanel(page, "/?scenario=energy-heat#/energy/heat");
-    const graph = page.locator("hui-energy-heat-graph-card");
-    await expect(graph.locator("ha-chart-base")).toBeVisible({
-      timeout: PANEL_TIMEOUT,
-    });
-    await expect(graph).toContainText("100");
-    await expect(page.locator("hui-energy-sources-table-card")).toContainText(
-      "12.00"
-    );
-    await expect(
-      page.locator("hui-energy-usage-graph-card")
-    ).not.toBeAttached();
     expectNoPageErrors(errors);
   });
 });

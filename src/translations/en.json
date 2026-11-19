@@ -5127,7 +5127,9 @@
               "cost_entity_helper": "Any entity with a unit of {currency}/(valid energy unit) (like {currency}/kWh or {currency}/GJ) may be used and will be automatically converted.",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
-              "heat_usage": "Heat consumption"
+              "heat_usage": "Heat consumption",
+              "heat_power": "Heat power",
+              "power_para": "Pick a sensor which measures the thermal power supplied to your home. This is optional."
             }
           }
         },

@@ -542,6 +542,18 @@ const energyHeatScenario = (
       },
     },
   ]);
+  hass.addEntities([
+    {
+      entity_id: "sensor.district_heat_power",
+      state: "3.5",
+      attributes: {
+        friendly_name: "District heating power",
+        device_class: "power",
+        state_class: "measurement",
+        unit_of_measurement: "kW",
+      },
+    },
+  ]);
   const metadata = [
     "sensor.district_heat",
     "district:heat",
@@ -561,6 +573,15 @@ const energyHeatScenario = (
     mean_type: StatisticMeanType.NONE,
     has_sum: true,
   }));
+  metadata.push({
+    statistic_id: "sensor.district_heat_power",
+    source: "recorder",
+    name: null,
+    statistics_unit_of_measurement: "kW",
+    unit_class: "power",
+    mean_type: StatisticMeanType.ARITHMETIC,
+    has_sum: false,
+  });
   hass.mockWS("energy/get_prefs", () => prefs);
   hass.mockWS("energy/save_prefs", (msg) => {
     prefs = { ...prefs, energy_sources: msg.energy_sources };
