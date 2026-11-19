@@ -1945,20 +1945,6 @@
         },
         "update": {
           "release_announcement": "Read release announcement",
-          "upgrade_check": {
-            "breaking_title": "Backward-incompatible changes",
-            "summary_title": "What changes for you",
-            "breaking_intro": "These integrations have changes that may need your attention:",
-            "general": "{count, plural, one {One general change} other {# general changes}}",
-            "also": "Also in this update:",
-            "category": {
-              "noteworthy": "{count, plural, one {# noteworthy improvement} other {# noteworthy improvements}}",
-              "quality_scale": "{count, plural, one {# integration reached a higher quality scale level} other {# integrations reached a higher quality scale level}}",
-              "removed": "{count, plural, one {# integration was removed} other {# integrations were removed}}"
-            },
-            "nothing_applies": "Nothing in this update affects your integrations.",
-            "show": "Show all changes"
-          },
           "skip": "Skip",
           "clear_skipped": "Clear skipped",
           "install": "Install",
@@ -3167,23 +3153,34 @@
           "update_in_progress": "Update in progress",
           "no_area": "No area",
           "upgrade_check": {
-            "page_title": "Before you update",
-            "subtitle": "Updating from {from} to {to}: changes that affect your integrations",
-            "no_releases": "No releases newer than {version} are available yet.",
-            "unavailable": "Unable to read the release notes right now. Try again later.",
-            "nothing_applies": "Nothing in the newer releases affects your integrations.",
-            "count": "{count, plural, one {# item} other {# items}}",
-            "global": "General changes",
-            "related": "Also mentions your integrations:",
+            "core": "Home Assistant Core",
+            "update": "Update",
+            "status_available": "Installed {installed} · {latest} is available",
+            "status_up_to_date": "Installed {installed} · Up to date",
+            "whats_new": "What's new in {version}",
+            "releases": "Covers the {count} releases since {from}",
+            "breaking_title": "Breaking changes for your setup",
+            "breaking_count": "{count, plural, one {# breaking change for your setup} other {# breaking changes for your setup}}",
+            "count": "{changes}. Check them before you update.",
+            "count_and": "{first} and {second}",
+            "count_integrations": "{count, plural, one {# integration you use} other {# integrations you use}}",
+            "count_general": "{count, plural, one {# general change} other {# general changes}}",
+            "summary_more": "{summary} And {count} more.",
+            "improvements_title": "Improvements for your integrations",
+            "quality_scale_title": "Quality scale achievements for your integrations",
             "tier_reached": "{integration} reached {tier}",
             "thanks": "Thanks to {users}",
+            "nothing_applies": "Nothing in this update changes your integrations.",
+            "no_breaking": "No breaking changes for your setup.",
+            "general_title": "General changes",
+            "count_items": "{count, plural, one {# item} other {# items}}",
+            "show_all": "Details and what to do for each change since {version}",
+            "in_release": "In {version}",
             "removed_in": "Removed in {version}",
-            "category": {
-              "breaking": "Backward-incompatible changes",
-              "noteworthy": "Noteworthy improvements",
-              "quality_scale": "Quality scale changes",
-              "removed": "Removed integrations"
-            }
+            "removed_title": "Removed integrations you use",
+            "unavailable_title": "Can't check this update for your setup",
+            "unavailable_text": "The release notes couldn't be loaded. Read the release announcement to see what changed.",
+            "release_announcements": "{count, plural, one {Release announcement:} other {Release announcements:}}"
           },
           "backup_in_progress": {
             "title": {

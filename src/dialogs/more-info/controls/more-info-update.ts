@@ -270,6 +270,7 @@ class MoreInfoUpdate extends LitElement {
               ? html`<ha-more-info-update-upgrade-check
                   .entityId=${this.stateObj.entity_id}
                   .latestVersion=${this.stateObj.attributes.latest_version}
+                  .releaseUrl=${releaseUrl}
                 ></ha-more-info-update-upgrade-check>`
               : nothing
           }

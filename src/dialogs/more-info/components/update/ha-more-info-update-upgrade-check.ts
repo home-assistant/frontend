@@ -1,44 +1,24 @@
-import { mdiHomeAssistant } from "@mdi/js";
-import type { PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
-import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { isNavigationClick } from "../../../../common/dom/is-navigation-click";
-import { navigate } from "../../../../common/navigate";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
-import { nextRender } from "../../../../common/util/render-status";
 import {
   apiContext,
   internationalizationContext,
 } from "../../../../data/context";
-import { domainToName } from "../../../../data/integration";
-import type {
-  UpgradeCheckCategory,
-  UpgradeCheckCategoryKey,
-  UpgradeCheckDigest,
-  UpgradeCheckItem,
-} from "../../../../data/upgrade_check";
+import type { UpgradeCheckDigest } from "../../../../data/upgrade_check";
 import {
-  UPGRADE_CHECK_PATH,
+  UPGRADE_CHECK_UNAVAILABLE,
   fetchUpgradeCheckDigest,
-  upgradeCheckCategoryAnchor,
-  upgradeCheckGroupAnchor,
+  upgradeCheckBreakingRows,
 } from "../../../../data/upgrade_check";
-import "../../../../components/chips/ha-assist-chip";
-import "../../../../components/chips/ha-chip-set";
-import "../../../../components/ha-svg-icon";
-import "../../../../panels/config/core/updates/ha-upgrade-check-brand";
-import "../../../../panels/config/core/updates/ha-upgrade-check-icon";
+import "../../../../panels/config/core/updates/ha-upgrade-check-whats-new";
 import type {
   HomeAssistantApi,
   HomeAssistantInternationalization,
 } from "../../../../types";
 
-const PREFIX = "ui.dialogs.more_info_control.update.upgrade_check";
-
-// Summary of the upgrade check for a core update, linking to the full list.
+// What's new card of a core update, with the breaking changes for your setup.
 @customElement("ha-more-info-update-upgrade-check")
 export class HaMoreInfoUpdateUpgradeCheck extends LitElement {
   @property({ attribute: false }) public entityId?: string;
@@ -46,9 +26,7 @@ export class HaMoreInfoUpdateUpgradeCheck extends LitElement {
   // Refetches when the update offers a newer version.
   @property({ attribute: false }) public latestVersion?: string | null;
 
-  @state()
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
+  @property({ attribute: false }) public releaseUrl?: string;
 
   @consume({ context: apiContext, subscribe: true })
   private _api!: HomeAssistantApi;
@@ -58,6 +36,8 @@ export class HaMoreInfoUpdateUpgradeCheck extends LitElement {
 
   @state() private _digest?: UpgradeCheckDigest;
 
+  @state() private _unavailable = false;
+
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (changedProps.has("entityId") || changedProps.has("latestVersion")) {
@@ -65,207 +45,45 @@ export class HaMoreInfoUpdateUpgradeCheck extends LitElement {
     }
   }
 
-  // Closing the dialog refocuses the row that opened it, which scrolls the page
-  // back up; navigate() waits for a close only briefly, so close it first.
-  private async _openUpdates(ev: MouseEvent): Promise<void> {
-    const path = isNavigationClick(ev);
-    if (path === undefined) {
-      return;
-    }
-    const stop = new AbortController();
-    const closed = new Promise<void>((resolve) => {
-      window.addEventListener("dialog-closed", () => resolve(), {
-        once: true,
-        signal: stop.signal,
-      });
-      setTimeout(resolve, 1000);
-    });
-    fireEvent(this, "close-dialog");
-    await closed;
-    stop.abort();
-    // Focus is restored one render after the close.
-    await nextRender();
-    navigate(path);
-  }
-
   private async _fetch(): Promise<void> {
     this._digest = undefined;
+    this._unavailable = false;
     try {
       const digest = await fetchUpgradeCheckDigest(this._api);
-      // The band names the integrations, so load their titles first.
+      // The rows name the integrations, so load their titles first.
       await this._i18n.loadBackendTranslation(
         "title",
-        this._breaking(digest).flatMap((item) => item.domains)
+        upgradeCheckBreakingRows(digest).flatMap((row) => row.domains)
       );
       this._digest = digest;
-    } catch (_err) {
-      // The dialog still works without the check; it only adds a hint.
+    } catch (err: any) {
+      // Other errors leave the dialog as it was without the check.
+      this._unavailable = err?.code === UPGRADE_CHECK_UNAVAILABLE;
     }
   }
 
   protected render() {
+    if (this._unavailable) {
+      return html`<ha-upgrade-check-whats-new
+        unavailable
+        .version=${this.latestVersion}
+        .releaseUrl=${this.releaseUrl}
+      ></ha-upgrade-check-whats-new>`;
+    }
     // Only the core update has release notes to check.
-    if (
-      !this._digest ||
-      !this._localize ||
-      this._digest.entity_id !== this.entityId
-    ) {
+    if (!this._digest || this._digest.entity_id !== this.entityId) {
       return nothing;
     }
-    const breaking = this._breaking(this._digest);
-    const others = this._digest.categories.filter(
-      (
-        category
-      ): category is UpgradeCheckCategory & {
-        key: Exclude<UpgradeCheckCategoryKey, "breaking">;
-      } => category.key !== "breaking" && category.count > 0
-    );
-    if (!breaking.length && !others.length) {
-      return html`<div class="box">
-        <p>${this._localize(`${PREFIX}.nothing_applies`)}</p>
-      </div>`;
-    }
-    // Same outlined box as the release notes, so it reads as part of them.
-    return html`<div class="box">
-      <div class="title">
-        ${this._localize(
-          `${PREFIX}.${breaking.length ? "breaking_title" : "summary_title"}`
-        )}
-      </div>
-      ${breaking.length ? this._renderBreaking(breaking) : nothing}
-      ${
-        others.length
-          ? html`${
-                breaking.length
-                  ? html`<p class="secondary">
-                      ${this._localize(`${PREFIX}.also`)}
-                    </p>`
-                  : nothing
-              }
-              <div class="categories">
-                ${others.map((category) =>
-                  this._renderCategory(category.key, category.count)
-                )}
-              </div>`
-          : nothing
-      }
-      ${this._renderLink(UPGRADE_CHECK_PATH, this._localize(`${PREFIX}.show`))}
-    </div>`;
-  }
-
-  private _breaking(digest: UpgradeCheckDigest): UpgradeCheckItem[] {
-    return (
-      digest.categories.find((category) => category.key === "breaking")
-        ?.items ?? []
-    );
-  }
-
-  // Name what breaks, so the band says enough without opening the full list.
-  // One chip per integration, or per set a change covers together, in release
-  // notes order, which puts the most used integrations first; general changes
-  // close the list. Each chip opens its group on the upgrade check page.
-  private _renderBreaking(breaking: UpgradeCheckItem[]) {
-    const groups = new Map<string, string[]>();
-    for (const item of breaking) {
-      if (item.scope === "domains") {
-        groups.set(item.domains.join(","), item.domains);
-      }
-    }
-    const general = breaking.filter((item) => item.scope === "global").length;
-    return html`<p>${this._localize(`${PREFIX}.breaking_intro`)}</p>
-      <ha-chip-set>
-        ${[...groups.values()].map((domains) =>
-          this._renderChip(
-            `${UPGRADE_CHECK_PATH}#${upgradeCheckGroupAnchor("breaking", domains)}`,
-            domains
-              .map((domain) => domainToName(this._localize, domain))
-              .join(", "),
-            html`<ha-upgrade-check-brand
-              slot="icon"
-              .domain=${domains[0]}
-            ></ha-upgrade-check-brand>`
-          )
-        )}
-        ${
-          general
-            ? this._renderChip(
-                `${UPGRADE_CHECK_PATH}#${upgradeCheckGroupAnchor("breaking", [])}`,
-                this._localize(`${PREFIX}.general`, { count: general }),
-                html`<ha-svg-icon
-                  slot="icon"
-                  .path=${mdiHomeAssistant}
-                ></ha-svg-icon>`
-              )
-            : nothing
-        }
-      </ha-chip-set>`;
-  }
-
-  private _renderChip(href: string, label: string, icon: TemplateResult) {
-    return html`<ha-assist-chip
-      .href=${href}
-      .label=${label}
-      @click=${this._openUpdates}
-      >${icon}</ha-assist-chip
-    >`;
-  }
-
-  private _renderCategory(
-    key: Exclude<UpgradeCheckCategoryKey, "breaking">,
-    count: number
-  ) {
-    return html`<div class="category">
-      <ha-upgrade-check-icon .category=${key}></ha-upgrade-check-icon>
-      ${this._renderLink(
-        `${UPGRADE_CHECK_PATH}#${upgradeCheckCategoryAnchor(key)}`,
-        this._localize(`${PREFIX}.category.${key}`, { count })
-      )}
-    </div>`;
-  }
-
-  private _renderLink(href: string, label: string) {
-    return html`<a href=${href} @click=${this._openUpdates}>${label}</a>`;
+    return html`<ha-upgrade-check-whats-new
+      .digest=${this._digest}
+      .releaseUrl=${this.releaseUrl}
+    ></ha-upgrade-check-whats-new>`;
   }
 
   static styles = css`
-    .box {
-      display: flex;
-      flex-direction: column;
-      gap: var(--ha-space-2);
+    :host {
+      display: block;
       margin-top: var(--ha-space-4);
-      padding: var(--ha-space-4);
-      border: 1px solid var(--ha-color-border-neutral-quiet);
-      border-radius: var(--ha-border-radius-lg);
-    }
-    .title {
-      font-size: var(--ha-font-size-l);
-      font-weight: var(--ha-font-weight-medium);
-    }
-    p {
-      margin: 0;
-    }
-    .secondary {
-      color: var(--secondary-text-color);
-    }
-    .categories {
-      display: flex;
-      flex-direction: column;
-      gap: var(--ha-space-2);
-    }
-    .category {
-      display: flex;
-      align-items: center;
-      gap: var(--ha-space-3);
-    }
-    ha-upgrade-check-icon {
-      --upgrade-check-icon-size: 24px;
-    }
-    ha-upgrade-check-brand {
-      --upgrade-check-brand-size: 18px;
-    }
-    a {
-      color: var(--primary-color);
-      text-decoration: none;
     }
   `;
 }

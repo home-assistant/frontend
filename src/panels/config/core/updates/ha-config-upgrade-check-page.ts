@@ -17,7 +17,7 @@ class HaConfigUpgradeCheckPage extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize(
-          "ui.panel.config.updates.upgrade_check.page_title"
+          "ui.panel.config.updates.upgrade_check.core"
         )}
       >
         <div class="content">

@@ -1,28 +1,7 @@
-import {
-  mdiAlertOutline,
-  mdiArchiveOutline,
-  mdiMedalOutline,
-  mdiStarOutline,
-} from "@mdi/js";
 import type { HomeAssistant } from "../types";
 
-// Page with the full upgrade check.
+// Page with every breaking change and improvement since the running version.
 export const UPGRADE_CHECK_PATH = "/config/updates/upgrade-check";
-
-// Hash on its page that scrolls to the upgrade check card.
-export const UPGRADE_CHECK_ANCHOR = "upgrade-check";
-
-// Hashes on its page that open and scroll to a category, or one group
-// in it; general changes have no domains.
-export const upgradeCheckCategoryAnchor = (
-  category: UpgradeCheckCategoryKey
-): string => `${UPGRADE_CHECK_ANCHOR}-${category}`;
-
-export const upgradeCheckGroupAnchor = (
-  category: UpgradeCheckCategoryKey,
-  domains: string[]
-): string =>
-  `${upgradeCheckCategoryAnchor(category)}-${domains.join("-") || "general"}`;
 
 // Error code when the release notes cannot be read, e.g. while offline.
 export const UPGRADE_CHECK_UNAVAILABLE = "release_notes_unavailable";
@@ -31,17 +10,6 @@ export type UpgradeCheckCategoryKey =
   "breaking" | "noteworthy" | "quality_scale" | "removed";
 
 export type UpgradeCheckTier = "bronze" | "silver" | "gold" | "platinum";
-
-// Icon and tone of each category, like the status icons of update history.
-export const UPGRADE_CHECK_CATEGORY_ICONS: Record<
-  UpgradeCheckCategoryKey,
-  { icon: string; tone: "warning" | "primary" | "success" | "neutral" }
-> = {
-  breaking: { icon: mdiAlertOutline, tone: "warning" },
-  noteworthy: { icon: mdiStarOutline, tone: "primary" },
-  quality_scale: { icon: mdiMedalOutline, tone: "success" },
-  removed: { icon: mdiArchiveOutline, tone: "neutral" },
-};
 
 export interface UpgradeCheckLink {
   label: string;
@@ -53,6 +21,8 @@ export interface UpgradeCheckItem {
   id: string;
   title: string;
   text: string | null;
+  // First sentence of the text, as one plain line.
+  summary: string | null;
   tier: UpgradeCheckTier | null;
   // GitHub usernames of the authors, or those thanked for a quality scale
   // achievement.
@@ -87,6 +57,106 @@ export const fetchUpgradeCheckDigest = (hass: Pick<HomeAssistant, "callWS">) =>
     type: "homeassistant_upgrade_check/digest",
   });
 
+export const upgradeCheckItems = (
+  digest: UpgradeCheckDigest,
+  key: UpgradeCheckCategoryKey
+): UpgradeCheckItem[] =>
+  digest.categories.find((category) => category.key === key)?.items ?? [];
+
+// One row per integration you use, or set of integrations a change covers
+// together, or general change.
+export interface UpgradeCheckBreakingRow {
+  category: UpgradeCheckCategoryKey;
+  // Hash on the page that opens and scrolls to the row.
+  anchor: string;
+  // Integration domains; empty for a general change.
+  domains: string[];
+  removed: boolean;
+  items: UpgradeCheckItem[];
+}
+
+// Integrations you use that a release removes. Not a breaking change: they
+// stop working altogether, so they are listed on their own.
+export const upgradeCheckRemovedRows = (
+  digest: UpgradeCheckDigest
+): UpgradeCheckBreakingRow[] =>
+  upgradeCheckItems(digest, "removed").map((item) => ({
+    category: "removed",
+    anchor: `removed-${item.domains.join("-")}`,
+    domains: item.domains,
+    removed: true,
+    items: [item],
+  }));
+
+/**
+ * Breaking changes for your setup: integrations in release notes order, which
+ * puts the most used first, then general changes.
+ */
+export const upgradeCheckBreakingRows = (
+  digest: UpgradeCheckDigest
+): UpgradeCheckBreakingRow[] => {
+  const integrations = new Map<string, UpgradeCheckBreakingRow>();
+  const general: UpgradeCheckBreakingRow[] = [];
+  for (const item of upgradeCheckItems(digest, "breaking")) {
+    if (item.scope === "global") {
+      general.push({
+        category: "breaking",
+        anchor: `breaking-general-${item.version}-${item.id}`,
+        domains: [],
+        removed: false,
+        items: [item],
+      });
+      continue;
+    }
+    const key = item.domains.join("-");
+    if (!integrations.has(key)) {
+      integrations.set(key, {
+        category: "breaking",
+        anchor: `breaking-${key}`,
+        domains: item.domains,
+        removed: false,
+        items: [],
+      });
+    }
+    integrations.get(key)!.items.push(item);
+  }
+  return [...integrations.values(), ...general];
+};
+
+// Improvements for your integrations, one row per integration.
+export const upgradeCheckImprovementRows = (
+  digest: UpgradeCheckDigest
+): UpgradeCheckBreakingRow[] => {
+  const rows = new Map<string, UpgradeCheckBreakingRow>();
+  for (const item of upgradeCheckItems(digest, "noteworthy")) {
+    const domains = item.domains.slice(0, 1);
+    const key = domains[0] ?? item.id;
+    if (!rows.has(key)) {
+      rows.set(key, {
+        category: "noteworthy",
+        anchor: `improvement-${key}`,
+        domains,
+        removed: false,
+        items: [],
+      });
+    }
+    rows.get(key)!.items.push(item);
+  }
+  return [...rows.values()];
+};
+
+// Quality scale tier your integrations reached, one row per integration.
+export const upgradeCheckQualityScaleRows = (
+  digest: UpgradeCheckDigest
+): UpgradeCheckBreakingRow[] =>
+  upgradeCheckItems(digest, "quality_scale").map((item) => ({
+    category: "quality_scale",
+    anchor: `quality-scale-${item.domains.join("-") || item.id}`,
+    domains: item.domains,
+    removed: false,
+    items: [item],
+  }));
+
 // Section anchors of the release notes post for each category.
 const SECTION_ANCHORS: Record<UpgradeCheckCategoryKey, string> = {
   breaking: "backward-incompatible-changes",
@@ -106,10 +176,7 @@ export const upgradeCheckItemLink = (
   category: UpgradeCheckCategoryKey,
   item: UpgradeCheckItem
 ): string => {
-  // Quality scale lines have no text of their own; their credit line is unique.
-  const text =
-    category === "quality_scale" ? `${item.title}, thanks to` : item.text;
-  const words = (text ?? "")
+  const words = (item.text ?? "")
     .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
     // Only bold and code markers: underscores and stars also occur in names.
     .replace(/\*\*|`/g, "")
