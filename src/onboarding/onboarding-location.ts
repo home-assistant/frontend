@@ -43,29 +43,6 @@ const AMSTERDAM: [number, number] = [52.3731339, 4.8903147];
 const darkMql = matchMedia("(prefers-color-scheme: dark)");
 const LOCATION_MARKER_ID = "location";
 
-const placeLabels = (place: OpenStreetMapPlace): [string, string] => {
-  const primary = [
-    place.name || place.address[place.category],
-    place.address.house_number,
-    place.address.road || place.address.waterway,
-    place.address.village || place.address.town,
-    place.address.suburb || place.address.subdivision,
-    place.address.city || place.address.municipality,
-  ]
-    .filter(Boolean)
-    .join(", ");
-  const secondary = [
-    place.address.county ||
-      place.address.state_district ||
-      place.address.region,
-    place.address.state,
-    place.address.country,
-  ]
-    .filter(Boolean)
-    .join(", ");
-  return [primary, secondary];
-};
-
 @customElement("onboarding-location")
 class OnboardingLocation extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -84,11 +61,9 @@ class OnboardingLocation extends LitElement {
 
   @state() private _search = false;
 
-  @state() private _searchTerm = "";
+  @state() private _highlightedMarker?: number;
 
   @state() private _status?: string;
-
-  @state() private _highlightedMarker?: number;
 
   private _elevation?: string;
 
@@ -175,12 +150,29 @@ class OnboardingLocation extends LitElement {
                   aria-label=${this._localize(
                     "ui.panel.page-onboarding.core-config.search_results"
                   )}
-                  aria-busy=${this._working ? "true" : "false"}
                 >
                   ${
                     this._places?.length
                       ? this._places.map((place) => {
-                          const [primary, secondary] = placeLabels(place);
+                          const primary = [
+                            place.name || place.address[place.category],
+                            place.address.house_number,
+                            place.address.road || place.address.waterway,
+                            place.address.village || place.address.town,
+                            place.address.suburb || place.address.subdivision,
+                            place.address.city || place.address.municipality,
+                          ]
+                            .filter(Boolean)
+                            .join(", ");
+                          const secondary = [
+                            place.address.county ||
+                              place.address.state_district ||
+                              place.address.region,
+                            place.address.state,
+                            place.address.country,
+                          ]
+                            .filter(Boolean)
+                            .join(", ");
                           return html`<ha-list-item-button
                             @click=${this._itemClicked}
                             .placeId=${place.place_id}
@@ -201,11 +193,8 @@ class OnboardingLocation extends LitElement {
                             >${
                               this._places === null
                                 ? ""
-                                : searchResultsStatus(
-                                    this._searchTerm,
-                                    this._places,
-                                    () => true,
-                                    this._localize
+                                : this._localize(
+                                    "ui.components.combo-box.no_match"
                                   )
                             }</span
                           >
@@ -325,36 +314,32 @@ class OnboardingLocation extends LitElement {
     if (ev.detail.id === LOCATION_MARKER_ID) {
       return;
     }
-    this._highlightedMarker = Number(ev.detail.id);
-    const place = this._places!.find(
-      (plc) => plc.place_id === Number(ev.detail.id)
-    )!;
-    this._location = [Number(place.lat), Number(place.lon)];
-    this._setCountry(place.address.country_code);
-    this._announceSelection(place);
+    this._selectPlace(Number(ev.detail.id));
   }
 
   private _itemClicked(ev) {
-    this._highlightedMarker = ev.currentTarget.placeId;
-    const place = this._places!.find(
-      (plc) => plc.place_id === ev.currentTarget.placeId
-    )!;
-    this._location = [Number(place.lat), Number(place.lon)];
-    this._setCountry(place.address.country_code);
-    this._announceSelection(place);
+    this._selectPlace(ev.currentTarget.placeId);
   }
 
-  private _announceSelection(place: OpenStreetMapPlace) {
+  private _selectPlace(placeId: number) {
+    const place = this._places!.find((plc) => plc.place_id === placeId)!;
+    this._highlightedMarker = placeId;
+    this._location = [Number(place.lat), Number(place.lon)];
+    this._setCountry(place.address.country_code);
+    this._announceSelected(place);
+  }
+
+  private _announceSelected(place: OpenStreetMapPlace) {
     this._status = this._localize(
       "ui.panel.page-onboarding.core-config.selected_location",
-      { location: placeLabels(place).filter(Boolean).join(", ") }
+      { location: place.display_name }
     );
   }
 
   private async _addressSearch(ev: KeyboardEvent) {
     ev.stopPropagation();
     this._search = ((ev.currentTarget as HaInput).value ?? "").length > 0;
-    if (ev.key !== "Enter" || this._working) {
+    if (ev.key !== "Enter" || !this._search || this._working) {
       return;
     }
     this._searchAddress((ev.currentTarget as HaInput).value ?? "");
@@ -365,7 +350,6 @@ class OnboardingLocation extends LitElement {
     this._highlightedMarker = undefined;
     this._error = undefined;
     this._status = undefined;
-    this._searchTerm = address;
     this._places = null;
     this.map.addEventListener(
       "markers-updated",
@@ -414,7 +398,7 @@ class OnboardingLocation extends LitElement {
     this._setCountry(reverse.address.country_code);
     this._places = [reverse];
     this._highlightedMarker = reverse.place_id;
-    this._announceSelection(reverse);
+    this._announceSelected(reverse);
   }
 
   private _setCountry(countryCode: string) {
