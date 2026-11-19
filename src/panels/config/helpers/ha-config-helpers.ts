@@ -755,6 +755,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         ></ha-filter-floor-areas>
         <ha-filter-devices
           .type=${"entity"}
+          include-disabled-entities
           .value=${this._filters["ha-filter-devices"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"

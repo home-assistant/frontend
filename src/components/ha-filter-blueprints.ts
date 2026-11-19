@@ -9,6 +9,7 @@ import {
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
 import { consume } from "../common/decorators/consume";
+import { transform } from "../common/decorators/transform";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { arrayWith, arrayWithout } from "../common/array/array-with";
@@ -50,10 +51,17 @@ export class HaFilterBlueprints extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
-  // Only read when looking up the items without a blueprint, so it doesn't
-  // rerender the filter
+  // Only a state being added or removed can change the items without a
+  // blueprint, so plain state updates keep the previous set and don't rerender
+  @state()
   @consume({ context: statesContext, subscribe: true })
-  private _states?: ContextType<typeof statesContext>;
+  @transform<ContextType<typeof statesContext>, Set<string>>({
+    transformer: function (this: HaFilterBlueprints, states) {
+      const ids = new Set(Object.keys(states));
+      return deepEqual(ids, this._stateIds) ? this._stateIds : ids;
+    },
+  })
+  private _stateIds?: Set<string>;
 
   // A plain list of ids is still accepted
   @property({ attribute: false }) public value?: string[] | ListFilterValue;
@@ -72,12 +80,15 @@ export class HaFilterBlueprints extends LitElement {
 
   private _relatedRequestId = 0;
 
-  public willUpdate(properties: PropertyValues<this>) {
+  // Untyped, as it also checks private state
+  public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
 
     if (
-      properties.has("value") &&
-      !deepEqual(this.value, properties.get("value"))
+      (properties.has("value") &&
+        !deepEqual(this.value, properties.get("value"))) ||
+      // Items without a blueprint are worked out from the states
+      (listFilterValue(this.value)?.none && properties.has("_stateIds"))
     ) {
       this._findRelated();
     }
@@ -266,7 +277,7 @@ export class HaFilterBlueprints extends LitElement {
       type,
       Object.keys(blueprints)
     );
-    return Object.keys(this._states ?? {}).filter(
+    return [...(this._stateIds ?? [])].filter(
       (entityId) =>
         computeDomain(entityId) === type && !fromBlueprint.has(entityId)
     );

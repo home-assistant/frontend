@@ -281,7 +281,12 @@ export class HaLogbook extends LitElement {
 
     if (changed) {
       this.refresh(true);
-    } else if (changedProps.has("causeFilter")) {
+    } else if (
+      changedProps.has("causeFilter") ||
+      // The entity filter also changes with the states when it uses them, so
+      // only resume when it leaves nothing to show
+      (changedProps.has("entityFilter") && !this._shownEntries()?.length)
+    ) {
       // A filter without matches removes the renderer, which is what resumes
       // the live updates paused while scrolled down.
       this._setLiveUpdates(true);
