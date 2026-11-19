@@ -13,13 +13,12 @@ class HaEnableShortcutsRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   protected render(): TemplateResult {
+    const label = this.hass.localize(
+      "ui.panel.profile.enable_shortcuts.header"
+    );
     return html`
       <ha-row-item>
-        <span slot="headline"
-          >${this.hass.localize(
-            "ui.panel.profile.enable_shortcuts.header"
-          )}</span
-        >
+        <span slot="headline">${label}</span>
         <span slot="supporting-text"
           >${this.hass.localize(
             "ui.panel.profile.enable_shortcuts.description"
@@ -27,6 +26,7 @@ class HaEnableShortcutsRow extends LitElement {
         >
         <ha-switch
           slot="end"
+          .accessibleLabel=${label}
           .checked=${this.hass.enableShortcuts}
           @change=${this._checkedChanged}
         ></ha-switch>
