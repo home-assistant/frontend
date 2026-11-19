@@ -92,11 +92,6 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     this._panelUrl = panelUrl(path);
   }
 
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._onVisible();
-  }
-
   protected renderHass() {
     return html`
       <home-assistant-main
@@ -415,7 +410,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   }
 
   private _onHidden() {
-    if (!this.isConnected || this._visiblePromiseResolve) {
+    if (this._visiblePromiseResolve) {
       return;
     }
     this.hass!.connection.suspendReconnectUntil(
