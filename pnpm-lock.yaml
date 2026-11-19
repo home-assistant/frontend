@@ -583,11 +583,11 @@ importers:
         specifier: 1.0.0
         version: 1.0.0(@babel/core@8.1.2)
       browserslist:
-        specifier: 4.29.5
-        version: 4.29.5
+        specifier: 4.29.6
+        version: 4.29.6
       browserslist-useragent-regexp:
         specifier: 4.1.4
-        version: 4.1.4(browserslist@4.29.5)
+        version: 4.1.4(browserslist@4.29.6)
       core-js-compat:
         specifier: 3.51.0
         version: 3.51.0
@@ -4263,8 +4263,8 @@ packages:
     resolution: {integrity: sha512-lGe34o6EHj9y3Kts9R4ZYs/Gr+6N7MCaMlIFA3F1R2O5/m7K06AxfSeO5530PEERE6/WyEg3lsuyw4GHlPZHog==}
     engines: {node: ^4.5.0 || >= 5.9}
 
-  baseline-browser-mapping@2.11.33:
-    resolution: {integrity: sha512-yiVKDX+qCMRKBE084lXvq9EcwFUhKZ2nU8TK1EQQuOgPNR/lmbGxXOeDdlGUqC2Zz11Cs9rk1d/8NfgBmlkt0w==}
+  baseline-browser-mapping@2.11.37:
+    resolution: {integrity: sha512-QYph+vfurmaxhNwi9FprfmtkT5cx2Keg8FzZ0vnjO8ukscIybVyZGMFwdllKGlTI6qyU8ck43OM9UXh+IFJihQ==}
     engines: {node: '>=6.0.0'}
     hasBin: true
 
@@ -4336,8 +4336,8 @@ packages:
     peerDependencies:
       browserslist: '>=4.0.0'
 
-  browserslist@4.29.5:
-    resolution: {integrity: sha512-khTmKu5NGYTotqcYo8Bew2k4RAE9PuXRSFRXG2lQBrCEQHyeQ/vX6gKMxfokwywBsLiXZMnHsmWMG1pnO8J7uQ==}
+  browserslist@4.29.6:
+    resolution: {integrity: sha512-CmVVIQ3RVc5HxYEc9X84GvxK/C8C1wH8TlKAiO7uTxF8PDwt7r8t9Qk3J9NkMOVzX5O/HbLv3yzxZg9HPrnI9w==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
 
@@ -4395,8 +4395,8 @@ packages:
     resolution: {integrity: sha512-xlx1yCK2Oc1APsPXDL2LdlNP6+uu8OCDdhOBSVT279M/S+y75O30C2VuD8T2ogdePBBl7PfPF4504tnLgX3zfw==}
     engines: {node: '>=14.16'}
 
-  caniuse-lite@1.0.30001819:
-    resolution: {integrity: sha512-LFUqIIAwpzsIuevnKnsR9qnStBcgzPShTX61lBwN9uFkkf8o8zLiebEjbW8AYtZiF+1YKDWfdt/pWDtMuG8Xwg==}
+  caniuse-lite@1.0.30001826:
+    resolution: {integrity: sha512-wTB+9tIbLro/BCXwLuNV1meHE4L9dS6dArMDwgYfNBPMYScqClHyGunhkCSDtHhe/69Xl0sHlKgBVZ+fNsYtWA==}
 
   chai@6.3.0:
     resolution: {integrity: sha512-XWAtwJ6OHO+tj0EKCs0Y2UamnyOxseZWltU4x2U2wh8g4AigdjwvtUjvLP2tqkA/avxHEtzxNaqGq/YGNwckKg==}
@@ -4853,8 +4853,8 @@ packages:
     engines: {node: '>=0.10.0'}
     hasBin: true
 
-  electron-to-chromium@1.5.464:
-    resolution: {integrity: sha512-nRa65aFge40viPAKxMKULIY8tcXKwKboJWNn4RoKwyWXJ6SP7BnrDGKUTzc64818jIciH0PK7LSF8QzZes19GA==}
+  electron-to-chromium@1.5.486:
+    resolution: {integrity: sha512-rpybw4Ac4ak/An6G1Me2+61xzwobowDGyuJe71QHHOVpkZv4fPVobsLl7WH6zHSKusAMpaHxGKTpOvpy7+r3dQ==}
 
   element-internals-polyfill@3.0.2:
     resolution: {integrity: sha512-uB0/Qube3lkwh8SmkTnGIyUgJ9YdqVSzIoHMRCEQjAbD4Y5UzsVbch1tIxjTgUe5k3gy1U0ZMKMJ90A81lqwig==}
@@ -6367,8 +6367,8 @@ packages:
     engines: {node: ^22.22.2 || ^24.15.0 || >=26.0.0}
     hasBin: true
 
-  node-releases@2.0.60:
-    resolution: {integrity: sha512-OmO8+GM1JUZqXET720VrJCwkjUCXmCMQm0Z3UDDRbfNLHS4NEAvY60j5jiFv0tkKw2PNNlqOLhahVmwJIOLDIQ==}
+  node-releases@2.0.64:
+    resolution: {integrity: sha512-zAPCKqMcnqs2nGy6nlkm7JduFseiBJy3EXHGLh+8pFR+TxGCBxxiEN21+UROU5CKwX/f4TlUcYjiM+vs/tsyxw==}
     engines: {node: '>=18'}
 
   node-vibrant@4.0.4:
@@ -7690,8 +7690,8 @@ packages:
     resolution: {integrity: sha512-aZwGpamFO61g3OlfT7OQCHqhGnW43ieH9WZeP7QxN/G/jS4jfqUkZxoryvJgVPEcrl5NL/ggHsSmLMHuH64Lhg==}
     engines: {node: '>=4'}
 
-  update-browserslist-db@1.3.4:
-    resolution: {integrity: sha512-t8wonIOdQyOjtPd2VktlBu6QjTVTks6v8bSi7kd0r2Vll8TK1JYDZtRRdbmCHOAMphkZgrzK+L+vXK4pyZ8t4A==}
+  update-browserslist-db@1.4.0:
+    resolution: {integrity: sha512-WPJuOnjI9FWDct4fB+ej4Mz8opLaw5CDcZ2t44tFZ0vIQVYWzBhWR3mkixuUj/A7+vY4V9+ApOZ2YYLwdgq46w==}
     hasBin: true
     peerDependencies:
       browserslist: '>= 4.21.0'
@@ -8289,7 +8289,7 @@ snapshots:
     dependencies:
       '@babel/compat-data': 7.29.7
       '@babel/helper-validator-option': 7.29.7
-      browserslist: 4.29.5
+      browserslist: 4.29.6
       lru-cache: 5.1.1
       semver: 6.3.1
 
@@ -8297,7 +8297,7 @@ snapshots:
     dependencies:
       '@babel/compat-data': 8.0.5
       '@babel/helper-validator-option': 8.0.0
-      browserslist: 4.29.5
+      browserslist: 4.29.6
       flru: 1.0.2
       verkit: 0.5.0
 
@@ -12002,7 +12002,7 @@ snapshots:
 
   base64id@2.0.0: {}
 
-  baseline-browser-mapping@2.11.33: {}
+  baseline-browser-mapping@2.11.37: {}
 
   bcp-47-match@2.0.3: {}
 
@@ -12084,24 +12084,24 @@ snapshots:
 
   browserslist-to-es-version@1.4.2:
     dependencies:
-      browserslist: 4.29.5
+      browserslist: 4.29.6
 
-  browserslist-useragent-regexp@4.1.4(browserslist@4.29.5):
+  browserslist-useragent-regexp@4.1.4(browserslist@4.29.6):
     dependencies:
       argue-cli: 2.1.0
-      browserslist: 4.29.5
+      browserslist: 4.29.6
       easy-table: 1.2.0
       picocolors: 1.1.1
       regexp-tree: 0.1.27
       ua-regexes-lite: 1.2.1
 
-  browserslist@4.29.5:
+  browserslist@4.29.6:
     dependencies:
-      baseline-browser-mapping: 2.11.33
-      caniuse-lite: 1.0.30001819
-      electron-to-chromium: 1.5.464
-      node-releases: 2.0.60
-      update-browserslist-db: 1.3.4(browserslist@4.29.5)
+      baseline-browser-mapping: 2.11.37
+      caniuse-lite: 1.0.30001826
+      electron-to-chromium: 1.5.486
+      node-releases: 2.0.64
+      update-browserslist-db: 1.4.0(browserslist@4.29.6)
 
   buffer-from@1.1.2: {}
 
@@ -12183,7 +12183,7 @@ snapshots:
 
   camelcase@7.0.1: {}
 
-  caniuse-lite@1.0.30001819: {}
+  caniuse-lite@1.0.30001826: {}
 
   chai@6.3.0: {}
 
@@ -12369,7 +12369,7 @@ snapshots:
 
   core-js-compat@3.51.0:
     dependencies:
-      browserslist: 4.29.5
+      browserslist: 4.29.6
 
   core-js@3.51.0: {}
 
@@ -12627,7 +12627,7 @@ snapshots:
     dependencies:
       jake: 10.9.4
 
-  electron-to-chromium@1.5.464: {}
+  electron-to-chromium@1.5.486: {}
 
   element-internals-polyfill@3.0.2: {}
 
@@ -14306,7 +14306,7 @@ snapshots:
       undici: 8.12.4
       which: 7.0.0
 
-  node-releases@2.0.60: {}
+  node-releases@2.0.64: {}
 
   node-vibrant@4.0.4:
     dependencies:
@@ -15818,9 +15818,9 @@ snapshots:
 
   upath@1.2.0: {}
 
-  update-browserslist-db@1.3.4(browserslist@4.29.5):
+  update-browserslist-db@1.4.0(browserslist@4.29.6):
     dependencies:
-      browserslist: 4.29.5
+      browserslist: 4.29.6
       escalade: 3.2.0
       picocolors: 1.1.1
 
