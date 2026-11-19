@@ -192,7 +192,7 @@ class MoreInfoCamera extends LitElement {
     const tab = this._tab && tabs.includes(this._tab) ? this._tab : tabs[0];
 
     return html`
-      <div class="layout">
+      <div class=${classMap({ layout: true, "has-controls": tabs.length > 0 })}>
         <ha-camera-player
           .stateObj=${this.stateObj}
           allow-exoplayer
@@ -469,12 +469,29 @@ class MoreInfoCamera extends LitElement {
     css`
       :host {
         display: block;
+        /* Fits the talk, move and preset controls without scrolling */
+        --camera-controls-height: 340px;
       }
 
       .controls {
         display: flex;
         flex-direction: column;
         align-items: center;
+      }
+
+      /* The picture leaves room for the controls below it, within the
+         dialog's height without its header. The controls keep their height,
+         so nothing moves between tabs. */
+      .layout.has-controls {
+        --video-max-height: calc(
+          100dvh - 116px - var(--camera-controls-height)
+        );
+      }
+
+      .layout.has-controls .controls {
+        box-sizing: border-box;
+        height: var(--camera-controls-height);
+        overflow-y: auto;
       }
 
       .tabs {
@@ -484,7 +501,7 @@ class MoreInfoCamera extends LitElement {
       /* A phone on its side has no room below the picture, so the controls go
          next to it */
       @media (orientation: landscape) and (max-height: 500px) {
-        .layout {
+        .layout.has-controls {
           display: flex;
           --video-max-height: calc(100dvh - 80px);
           /* Smaller controls, to fit the low height */
@@ -512,9 +529,10 @@ class MoreInfoCamera extends LitElement {
         }
 
         /* The tabs stay at the top, so they don't move between tabs */
-        .controls {
+        .layout.has-controls .controls {
           flex: none;
           width: 300px;
+          height: auto;
           padding: var(--ha-space-2) 0;
         }
 
