@@ -3,12 +3,13 @@ import type {
   LocationSelectorValue,
 } from "../../data/selector";
 
-const DEFAULT_RADIUS = 1000;
+export const DEFAULT_RADIUS = 1000;
 
 /**
- * The selector's value from its form's value. A missing radius falls back to
- * the default the map draws, and a read-only radius is kept as is because core
- * stores it as a float.
+ * The selector's value from its form's value. A value that never had a radius
+ * falls back to the default the map draws, while a radius the user cleared is
+ * left out so the field stays empty. A read-only radius is kept as is because
+ * core stores it as a float.
  */
 export const computeLocationSelectorValue = (
   selector: LocationSelector,
@@ -17,7 +18,10 @@ export const computeLocationSelectorValue = (
   if (!selector.location?.radius) {
     return { latitude: value.latitude, longitude: value.longitude };
   }
-  const radius = value.radius ?? DEFAULT_RADIUS;
+  const radius = "radius" in value ? value.radius : DEFAULT_RADIUS;
+  if (radius === undefined || radius === null) {
+    return { latitude: value.latitude, longitude: value.longitude };
+  }
   return {
     latitude: value.latitude,
     longitude: value.longitude,

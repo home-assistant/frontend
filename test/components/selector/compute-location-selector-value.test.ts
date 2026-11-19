@@ -20,6 +20,15 @@ describe("computeLocationSelectorValue", () => {
     ).toEqual({ latitude: 3, longitude: 2, radius: 1000 });
   });
 
+  it("leaves out a radius the user cleared", () => {
+    expect(
+      computeLocationSelectorValue(
+        { location: { radius: true } },
+        { latitude: 3, longitude: 2, radius: undefined }
+      )
+    ).toEqual({ latitude: 3, longitude: 2 });
+  });
+
   it("keeps a read-only radius unrounded", () => {
     expect(
       computeLocationSelectorValue(
