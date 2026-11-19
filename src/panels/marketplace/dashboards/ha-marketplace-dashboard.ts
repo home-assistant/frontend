@@ -459,7 +459,11 @@ export class HaMarketplaceDashboard extends LitElement {
           slot="filter-pane"
           excludable
           .label=${this._i18n.localize("ui.panel.marketplace.filters.status")}
-          .value=${repositoryFilterValue(filters, STATUS_FILTER)}
+          .value=${{
+            // The mode is kept without a selection, which the URL leaves out
+            ...repositoryFilterValue(this._filters, STATUS_FILTER),
+            ids: filters[STATUS_FILTER],
+          }}
           .states=${this._statusStates(this._i18n.localize, this.tab)}
           .narrow=${this.narrow}
           @data-table-filter-changed=${this._statusFilterChanged}
