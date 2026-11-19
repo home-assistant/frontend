@@ -9,10 +9,8 @@ subtitle: Can be used to indicate an ongoing task.
 
 `ha-spinner` is exposed to screen readers as a `progressbar` named with the translated "Loading". When the surrounding text does not already say what is in progress, name it with a translated `accessible-label`, like "Installing update", rather than its state.
 
-```ts
-html`<ha-spinner
-  .accessibleLabel=${this._localize("ui.panel.config.updates.update_in_progress")}
-></ha-spinner>`;
+```html
+<ha-spinner accessible-label="Installing update"></ha-spinner>
 ```
 
 If the spinner only decorates text that already says what is in progress, hide it with `aria-hidden="true"`.
