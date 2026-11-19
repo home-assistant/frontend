@@ -1,5 +1,5 @@
 import type { ContextType } from "@lit/context";
-import { mdiPuzzleOutline } from "@mdi/js";
+import { mdiPuzzleOutline, mdiPuzzleRemoveOutline } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -17,6 +17,9 @@ import { brandsUrl } from "../../../../util/brands-url";
 export class HaUpgradeCheckBrand extends LitElement {
   @property() public domain!: string;
 
+  // A removed integration, which usually has no brand left.
+  @property({ type: Boolean }) public removed = false;
+
   @state()
   @consume({ context: configContext, subscribe: true })
   private _hassConfig?: ContextType<typeof configContext>;
@@ -30,7 +33,6 @@ export class HaUpgradeCheckBrand extends LitElement {
   // @ts-ignore re-render trigger only, its value is never read
   private _brandsAccessToken?: string;
 
-  // Removed integrations may no longer have a brand image.
   @state() private _missing = false;
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
@@ -50,12 +52,18 @@ export class HaUpgradeCheckBrand extends LitElement {
       this._hassConfig?.auth.data.hassUrl
     );
     if (this._missing || !src) {
-      return html`<ha-svg-icon .path=${mdiPuzzleOutline}></ha-svg-icon>`;
+      return html`<ha-svg-icon
+        .path=${this.removed ? mdiPuzzleRemoveOutline : mdiPuzzleOutline}
+      ></ha-svg-icon>`;
     }
+    // A missing brand otherwise gets a generic placeholder image instead of
+    // an error, so the fallback icon would never show.
+    const url = new URL(src, window.location.origin);
+    url.searchParams.set("placeholder", "no");
     // The integration's name is always shown next to it.
     return html`<img
       alt=""
-      src=${src}
+      src=${url.toString()}
       loading="lazy"
       crossorigin="anonymous"
       referrerpolicy="no-referrer"

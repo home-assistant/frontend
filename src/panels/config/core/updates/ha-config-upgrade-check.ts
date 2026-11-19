@@ -340,6 +340,7 @@ class HaConfigUpgradeCheck extends LitElement {
         <ha-upgrade-check-brand
           slot="leading-icon"
           .domain=${item.domains[0]}
+          removed
         ></ha-upgrade-check-brand>
         ${
           item.text
