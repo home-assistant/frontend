@@ -26,9 +26,7 @@ import {
   floorAreaItemSets,
   floorAreaLookups,
   floorSelection,
-  setFloorAreasAll,
   toggleFloorArea,
-  toggleNoArea,
 } from "../data/data_table_filters";
 import {
   apiContext,
@@ -329,7 +327,9 @@ export class HaFilterFloorAreas extends LitElement {
     }
 
     if (item.type === "no_area") {
-      this.value = toggleNoArea(this.value, selected);
+      // No area is the item's own area, while an area finds what uses it, so
+      // an automation without an area of its own can still use the Kitchen
+      this.value = { ...this.value, no_area: selected };
       return;
     }
 
@@ -361,7 +361,7 @@ export class HaFilterFloorAreas extends LitElement {
   }
 
   private _matchChanged(ev: CustomEvent<{ all: boolean }>) {
-    this.value = setFloorAreasAll(this.value, ev.detail.all);
+    this.value = { ...this.value, all: ev.detail.all };
   }
 
   private _expandedChanged(ev) {

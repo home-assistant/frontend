@@ -5,9 +5,7 @@ import {
   floorAreaItemSets,
   floorAreaLookups,
   floorSelection,
-  setFloorAreasAll,
   toggleFloorArea,
-  toggleNoArea,
 } from "../../src/data/data_table_filters";
 
 // A ticked floor stands for all its areas. These keep what the Areas filter
@@ -141,13 +139,11 @@ describe("floors and areas while matching all", () => {
         "hall",
         true
       )
-    ).toEqual({ floors: ["ground"], areas: [], all: true, no_area: false });
+    ).toEqual({ floors: ["ground"], areas: [], all: true });
   });
 
-  it("unticks No area and the floors and areas against each other", () => {
-    expect(
-      toggleNoArea({ floors: ["first"], areas: ["hall"], all: true }, true)
-    ).toEqual({ floors: [], areas: [], no_area: true, all: true });
+  it("keeps No area next to the areas, as both can hold for an automation", () => {
+    // No area is an automation's own area, an area finds what it uses
     expect(
       toggleFloorArea(
         { no_area: true, all: true },
@@ -156,16 +152,13 @@ describe("floors and areas while matching all", () => {
         "hall",
         true
       )
-    ).toEqual({ floors: [], areas: ["hall"], no_area: false, all: true });
-    expect(setFloorAreasAll({ areas: ["hall"], no_area: true }, true)).toEqual({
-      areas: ["hall"],
-      no_area: false,
-      all: true,
-    });
-    expect(toggleNoArea({ areas: ["hall"] }, true)).toEqual({
-      areas: ["hall"],
-      no_area: true,
-    });
+    ).toEqual({ floors: [], areas: ["hall"], no_area: true, all: true });
+    expect([
+      ...combineItemSets(
+        [["automation.own_area_unset"], ["automation.own_area_unset", "b"]],
+        true
+      ),
+    ]).toEqual(["automation.own_area_unset"]);
   });
 });
 

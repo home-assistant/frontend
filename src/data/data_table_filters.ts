@@ -78,9 +78,6 @@ export const toggleFloorArea = (
   id: string,
   selected: boolean
 ): FloorAreasFilterValue => {
-  // An item can't have no area and some at once, so while matching all,
-  // ticking a floor or area unticks No area
-  const noArea = selected && value?.all ? { no_area: false } : {};
   let floors = value?.floors ?? [];
   let areas = value?.areas ?? [];
 
@@ -88,7 +85,7 @@ export const toggleFloorArea = (
     const floorAreaIds = floorAreas[id] ?? [];
     areas = areas.filter((areaId) => !floorAreaIds.includes(areaId));
     floors = selected ? arrayWith(floors, id) : arrayWithout(floors, id);
-    return { ...value, floors, areas, ...noArea };
+    return { ...value, floors, areas };
   }
 
   const floorId = Object.keys(floorAreas).find((floor) =>
@@ -114,7 +111,7 @@ export const toggleFloorArea = (
     areas = arrayWithout(areas, id);
   }
 
-  return { ...value, floors, areas, ...noArea };
+  return { ...value, floors, areas };
 };
 
 export type DataTableFiltersValue =
@@ -346,35 +343,6 @@ export const floorAreaItemSets = (
   }
   return sets;
 };
-
-/**
- * The floor and area filter after its No area option is ticked or unticked.
- * While matching all, it unticks the floors and areas, as an item can't have
- * no area and some at once.
- */
-export const toggleNoArea = (
-  value: FloorAreasFilterValue | undefined,
-  selected: boolean
-): FloorAreasFilterValue => ({
-  ...value,
-  no_area: selected,
-  ...(selected && value?.all ? { floors: [], areas: [] } : {}),
-});
-
-/**
- * The floor and area filter after picking whether it matches any or all of
- * its floors and areas. Matching all keeps them and unticks No area.
- */
-export const setFloorAreasAll = (
-  value: FloorAreasFilterValue | undefined,
-  all: boolean
-): FloorAreasFilterValue => ({
-  ...value,
-  all,
-  ...(all && (value?.floors?.length || value?.areas?.length)
-    ? { no_area: false }
-    : {}),
-});
 
 /**
  * The items a filter of related items shows: those found for any of its
