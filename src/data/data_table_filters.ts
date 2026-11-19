@@ -1,3 +1,5 @@
+import { arrayWith, arrayWithout } from "../common/array/array-with";
+
 export interface DataTableFilter {
   value: DataTableFiltersValue;
   items: Set<string> | undefined;
@@ -24,6 +26,80 @@ export interface ListFilterValue {
   /** Show the items that don't match the selection */
   exclude?: boolean;
 }
+
+/** Whether a floor of the floor and area filter is picked, partly or not. */
+export type FloorSelection = "all" | "some" | "none";
+
+/**
+ * Whether a floor is picked. A picked floor stands for all its areas, so a
+ * floor whose areas are all picked counts as picked too.
+ */
+export const floorSelection = (
+  value: FloorAreasFilterValue | undefined,
+  floorId: string,
+  areaIds: readonly string[]
+): FloorSelection => {
+  if (value?.floors?.includes(floorId)) {
+    return "all";
+  }
+  const picked = areaIds.filter((id) => value?.areas?.includes(id)).length;
+  if (!picked) {
+    return "none";
+  }
+  return picked === areaIds.length ? "all" : "some";
+};
+
+/**
+ * The floor and area filter after a floor or area is ticked or unticked.
+ *
+ * A ticked floor stands for all its areas, so ticking a floor drops its areas
+ * from the list. Unticking one area of a ticked floor keeps its other areas,
+ * and ticking the last area of a floor picks the floor instead.
+ *
+ * @param floorAreas - The area ids of each floor, by floor id
+ */
+export const toggleFloorArea = (
+  value: FloorAreasFilterValue | undefined,
+  floorAreas: Readonly<Record<string, readonly string[]>>,
+  type: "floors" | "areas",
+  id: string,
+  selected: boolean
+): FloorAreasFilterValue => {
+  let floors = value?.floors ?? [];
+  let areas = value?.areas ?? [];
+
+  if (type === "floors") {
+    const floorAreaIds = floorAreas[id] ?? [];
+    areas = areas.filter((areaId) => !floorAreaIds.includes(areaId));
+    floors = selected ? arrayWith(floors, id) : arrayWithout(floors, id);
+    return { ...value, floors, areas };
+  }
+
+  const floorId = Object.keys(floorAreas).find((floor) =>
+    floorAreas[floor].includes(id)
+  );
+  const siblings = floorId ? floorAreas[floorId] : [];
+
+  if (selected) {
+    areas = arrayWith(areas, id);
+    if (floorId && siblings.every((areaId) => areas.includes(areaId))) {
+      floors = arrayWith(floors, floorId);
+      areas = areas.filter((areaId) => !siblings.includes(areaId));
+    }
+  } else if (floorId && floors.includes(floorId)) {
+    // Older values can list the floor and some of its areas, so drop the
+    // floor's areas before adding all of them but the unticked one.
+    floors = arrayWithout(floors, floorId);
+    areas = [
+      ...areas.filter((areaId) => !siblings.includes(areaId)),
+      ...siblings.filter((areaId) => areaId !== id),
+    ];
+  } else {
+    areas = arrayWithout(areas, id);
+  }
+
+  return { ...value, floors, areas };
+};
 
 export type DataTableFiltersValue =
   | string[]
