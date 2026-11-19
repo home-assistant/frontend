@@ -501,9 +501,16 @@ class MoreInfoCamera extends LitElement {
       /* A phone on its side has no room below the picture, so the controls go
          next to it */
       @media (orientation: landscape) and (max-height: 500px) {
+        /* The height of the bottom sheet without its header, so neither the
+           picture nor the controls need scrolling */
         .layout.has-controls {
+          --camera-layout-height: calc(
+            min(90dvh, 100dvh - max(var(--safe-area-inset-top, 0px), 48px)) -
+              72px - var(--safe-area-inset-bottom, 0px)
+          );
           display: flex;
-          --video-max-height: calc(100dvh - 80px);
+          height: var(--camera-layout-height);
+          --video-max-height: var(--camera-layout-height);
           /* Smaller controls, to fit the low height */
           --camera-pad-size: 150px;
           --camera-zoom-slider-height: 72px;
@@ -533,6 +540,7 @@ class MoreInfoCamera extends LitElement {
           flex: none;
           width: 300px;
           height: auto;
+          max-height: 100%;
           padding: var(--ha-space-2) 0;
         }
 
@@ -545,6 +553,10 @@ class MoreInfoCamera extends LitElement {
           flex-direction: column;
           justify-content: center;
         }
+
+        .layout ha-more-info-camera-presets {
+          justify-content: flex-start;
+        }
       }
 
       ha-more-info-camera-ptz,
@@ -553,6 +565,12 @@ class MoreInfoCamera extends LitElement {
         align-self: stretch;
         padding: 0 var(--ha-space-4);
         margin: var(--ha-space-6) 0;
+      }
+
+      /* Takes the rest of the controls' height, its list scrolls in it */
+      ha-more-info-camera-presets {
+        flex: 1;
+        min-height: 0;
       }
 
       .call {

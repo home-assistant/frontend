@@ -108,18 +108,22 @@ export class HaMoreInfoCameraPresets extends LitElement {
     cameraControlHintStyle,
     css`
       :host {
-        display: block;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
       }
 
+      /* Scrolls on its own, the tabs above stay */
       ha-list-selectable {
         display: block;
         box-sizing: border-box;
         width: 100%;
         max-width: 360px;
+        min-height: 0;
         margin: 0 auto;
         border: 1px solid var(--divider-color);
         border-radius: var(--ha-border-radius-lg);
-        overflow: hidden;
+        overflow-y: auto;
       }
     `,
   ];
