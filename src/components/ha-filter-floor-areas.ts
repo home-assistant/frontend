@@ -120,7 +120,10 @@ export class HaFilterFloorAreas extends LitElement {
       (this.value?.no_area &&
         (properties.has("_devices") ||
           properties.has("_entities") ||
-          (this.type !== "device" && properties.has("_stateIds"))))
+          (this.type !== "device" && properties.has("_stateIds")))) ||
+      // Whether a floor is picked whole depends on which areas it has
+      ((!!this.value?.floors?.length || !!this.value?.areas?.length) &&
+        (properties.has("_areasReg") || properties.has("_floorsReg")))
     ) {
       this._findRelated();
     }
