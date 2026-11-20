@@ -10,6 +10,7 @@ import "../components/ha-button";
 import "../components/ha-icon-next";
 import "../components/item/ha-list-item-button";
 import "../components/list/ha-list-base";
+import { skeletonOr } from "../components/skeleton/skeleton-arrival";
 import { translationsReadyContext } from "../mixins/lit-localize-lite-mixin";
 import { renderSkeleton, skeletonStyles } from "./render-skeleton";
 import { onBoardingStyles } from "./styles";
@@ -28,37 +29,29 @@ class OnboardingWelcome extends LitElement {
     const ready = this._translationsReady;
     return html`
       <h1>
-        ${
-          ready
-            ? this._localize("ui.panel.page-onboarding.welcome.header")
-            : renderSkeleton("title")
-        }
+        ${skeletonOr(!ready, renderSkeleton("title"), () =>
+          this._localize("ui.panel.page-onboarding.welcome.header")
+        )}
       </h1>
       <p>
-        ${
-          ready
-            ? this._localize("ui.panel.page-onboarding.intro")
-            : renderSkeleton("line")
-        }
+        ${skeletonOr(!ready, renderSkeleton("line"), () =>
+          this._localize("ui.panel.page-onboarding.intro")
+        )}
       </p>
 
       <ha-button @click=${this._start} class="start" .disabled=${!ready}>
-        ${
-          ready
-            ? this._localize("ui.panel.page-onboarding.welcome.start")
-            : renderSkeleton("button")
-        }
+        ${skeletonOr(!ready, renderSkeleton("button"), () =>
+          this._localize("ui.panel.page-onboarding.welcome.start")
+        )}
       </ha-button>
 
       <div class="divider">
         <wa-divider></wa-divider>
         <div>
           <span>
-            ${
-              ready
-                ? this._localize("ui.panel.page-onboarding.welcome.or_restore")
-                : renderSkeleton("chip")
-            }
+            ${skeletonOr(!ready, renderSkeleton("chip"), () =>
+              this._localize("ui.panel.page-onboarding.welcome.or_restore")
+            )}
           </span>
         </div>
       </div>
@@ -69,22 +62,16 @@ class OnboardingWelcome extends LitElement {
           .disabled=${!ready}
         >
           <div slot="headline">
-            ${
-              ready
-                ? this._localize(
-                    "ui.panel.page-onboarding.restore.upload_backup"
-                  )
-                : renderSkeleton("headline")
-            }
+            ${skeletonOr(!ready, renderSkeleton("headline"), () =>
+              this._localize("ui.panel.page-onboarding.restore.upload_backup")
+            )}
           </div>
           <div slot="supporting-text">
-            ${
-              ready
-                ? this._localize(
-                    "ui.panel.page-onboarding.restore.options.upload_description"
-                  )
-                : renderSkeleton("line")
-            }
+            ${skeletonOr(!ready, renderSkeleton("line"), () =>
+              this._localize(
+                "ui.panel.page-onboarding.restore.options.upload_description"
+              )
+            )}
           </div>
           <ha-icon-next slot="end"></ha-icon-next>
         </ha-list-item-button>
@@ -93,16 +80,18 @@ class OnboardingWelcome extends LitElement {
           .disabled=${!ready}
         >
           <div slot="headline">
-            ${ready ? "Home Assistant Link" : renderSkeleton("headline")}
+            ${skeletonOr(
+              !ready,
+              renderSkeleton("headline"),
+              () => "Home Assistant Link"
+            )}
           </div>
           <div slot="supporting-text">
-            ${
-              ready
-                ? this._localize(
-                    "ui.panel.page-onboarding.restore.ha-cloud.description"
-                  )
-                : renderSkeleton("line")
-            }
+            ${skeletonOr(!ready, renderSkeleton("line"), () =>
+              this._localize(
+                "ui.panel.page-onboarding.restore.ha-cloud.description"
+              )
+            )}
           </div>
           <ha-icon-next slot="end"></ha-icon-next>
         </ha-list-item-button>

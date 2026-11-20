@@ -6,6 +6,7 @@ import { consume } from "../common/decorators/consume";
 import "../components/ha-card";
 import "../components/ha-ripple";
 import "../components/ha-svg-icon";
+import { skeletonOr } from "../components/skeleton/skeleton-arrival";
 import { translationsReadyContext } from "../mixins/lit-localize-lite-mixin";
 import { renderSkeleton, skeletonStyles } from "./render-skeleton";
 
@@ -29,7 +30,11 @@ class OnboardingWelcomeLink extends LitElement {
         @keydown=${this._handleKeyDown}
       >
         <ha-svg-icon .path=${this.iconPath}></ha-svg-icon>
-        ${this._translationsReady === false ? renderSkeleton("label") : this.label}
+        ${skeletonOr(
+          this._translationsReady === false,
+          renderSkeleton("label"),
+          () => this.label
+        )}
         <ha-ripple></ha-ripple>
       </ha-card>
     `;

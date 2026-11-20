@@ -1,8 +1,13 @@
 import "../../../../components/skeleton/ha-skeleton";
 import "../../../../components/skeleton/ha-skeleton-text";
 import type { HassConfig } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import {
+  fadeInArrival,
+  skeletonOr,
+} from "../../../../components/skeleton/skeleton-arrival";
 import { consume } from "../../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { relativeTime } from "../../../../common/datetime/relative_time";
@@ -65,6 +70,8 @@ export class HaMoreInfoUpdateBackup extends LitElement {
 
   @state() private _entitySources?: EntitySources;
 
+  @query("ha-row-item") private _rowItem?: HTMLElement;
+
   @consume({ context: apiContext, subscribe: true })
   private _api!: HomeAssistantApi;
 
@@ -89,6 +96,19 @@ export class HaMoreInfoUpdateBackup extends LitElement {
 
   protected firstUpdated(): void {
     this._setupBackup();
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+
+    // The row's text takes its skeleton's place
+    if (
+      changedProps.get("_backupConfigLoading") === true &&
+      !this._backupConfigLoading &&
+      this._rowItem
+    ) {
+      fadeInArrival(this._rowItem);
+    }
   }
 
   protected render() {
@@ -119,19 +139,20 @@ export class HaMoreInfoUpdateBackup extends LitElement {
               ></ha-fade-in>`
             : nothing
         }
-        ${
-          this._createBackupLoading
-            ? html`<ha-fade-in class="skeleton-end" slot="end" .delay=${500}
-                ><ha-skeleton></ha-skeleton
-              ></ha-fade-in>`
-            : html`<ha-switch
-                slot="end"
-                .accessibleLabel=${createBackupTexts?.title ?? ""}
-                .checked=${this._createBackup}
-                @change=${this._createBackupChanged}
-                .disabled=${this.disabled || updateIsInstalling(this.stateObj)}
-              ></ha-switch>`
-        }
+        ${skeletonOr(
+          this._createBackupLoading,
+          html`<ha-fade-in class="skeleton-end" slot="end" .delay=${500}
+            ><ha-skeleton></ha-skeleton
+          ></ha-fade-in>`,
+          () =>
+            html`<ha-switch
+              slot="end"
+              .accessibleLabel=${createBackupTexts?.title ?? ""}
+              .checked=${this._createBackup}
+              @change=${this._createBackupChanged}
+              .disabled=${this.disabled || updateIsInstalling(this.stateObj!)}
+            ></ha-switch>`
+        )}
       </ha-row-item>
     `;
   }
