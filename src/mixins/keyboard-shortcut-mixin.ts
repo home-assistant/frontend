@@ -1,4 +1,4 @@
-import type { LitElement } from "lit";
+import type { ReactiveElement } from "lit";
 import type { Constructor } from "../types";
 import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
 import { deepActiveElement } from "../common/dom/deep-active-element";
@@ -24,11 +24,32 @@ const isModalBoundary = (el: EventTarget): boolean =>
     el.getAttribute("role") === "dialog" ||
     el.getAttribute("aria-modal") === "true");
 
-export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
+export const KeyboardShortcutMixin = <T extends Constructor<ReactiveElement>>(
   superClass: T
 ) =>
   class extends superClass {
     private _keydownEvent = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.altKey && !event.shiftKey) {
+        const altShortcuts = this.supportedAltShortcuts();
+        const logicalKey = normalizeShortcutKey(event).toUpperCase();
+        const code = event.code.replace("Key", "");
+        const key =
+          logicalKey in altShortcuts
+            ? logicalKey
+            : !/^[A-Z]$/.test(logicalKey) && code in altShortcuts
+              ? code
+              : undefined;
+        if (
+          key &&
+          !getTopOpenDialogTag() &&
+          this._isEventInScope(event) &&
+          canOverrideAlphanumericInput(event.composedPath())
+        ) {
+          event.preventDefault();
+          altShortcuts[key]();
+        }
+        return;
+      }
       const supportedShortcuts = this.supportedShortcuts();
       const key =
         event.shiftKey && event.key.length > 1
@@ -174,6 +195,13 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
      * Shortcuts that also work while an input or code editor is focused.
      */
     protected supportedShortcutsInInput(): SupportedShortcuts {
+      return {};
+    }
+
+    /**
+     * Ctrl/Cmd+Alt shortcuts, keyed by the physical letter. Ignored while a dialog is open.
+     */
+    protected supportedAltShortcuts(): SupportedShortcuts {
       return {};
     }
 
