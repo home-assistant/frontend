@@ -1,8 +1,10 @@
 import type { ContextType } from "@lit/context";
-import type { CSSResultGroup } from "lit";
+import type { HassConfig } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
@@ -19,15 +21,26 @@ import "../../../components/item/ha-list-item-button";
 import "../../../components/list/ha-list-base";
 import "../../../components/progress/ha-progress-ring";
 import {
+  apiContext,
   areasContext,
+  configContext,
   devicesContext,
   formattersContext,
   fullEntitiesContext,
 } from "../../../data/context";
 import { entityRegistryByEntityId } from "../../../data/entity/entity_registry";
 import type { UpdateEntity } from "../../../data/update";
+import type { UpgradeCheckDigest } from "../../../data/upgrade_check";
+import {
+  fetchUpgradeCheckDigest,
+  upgradeCheckBreakingRows,
+} from "../../../data/upgrade_check";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import type { HomeAssistantFormatters } from "../../../types";
+import type {
+  HomeAssistantApi,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+} from "../../../types";
 
 @customElement("ha-config-updates")
 class HaConfigUpdates extends LitElement {
@@ -59,6 +72,57 @@ class HaConfigUpdates extends LitElement {
     transformer: ({ formatEntityName }) => formatEntityName,
   })
   private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _config!: HassConfig;
+
+  @state() private _upgradeCheck?: UpgradeCheckDigest;
+
+  // Core update version the upgrade check was last asked for.
+  private _upgradeCheckFor?: string;
+
+  protected willUpdate(changedProps: PropertyValues<this>): void {
+    super.willUpdate(changedProps);
+    if (
+      changedProps.has("updateEntities") &&
+      isComponentLoaded(this._config, "homeassistant_upgrade_check")
+    ) {
+      this._fetchUpgradeCheck();
+    }
+  }
+
+  // The core row counts the breaking changes for the integrations you use.
+  private async _fetchUpgradeCheck(): Promise<void> {
+    // Any core update; the digest says which entity it is.
+    const versions = (this.updateEntities ?? [])
+      .map((entity) => entity.attributes.latest_version)
+      .join(",");
+    if (versions === this._upgradeCheckFor) {
+      return;
+    }
+    this._upgradeCheckFor = versions;
+    try {
+      this._upgradeCheck = await fetchUpgradeCheckDigest(this._api);
+    } catch (_err) {
+      // The row shows without the count.
+      this._upgradeCheck = undefined;
+    }
+  }
+
+  private _breakingCount(entity: UpdateEntity): number {
+    return this._upgradeCheck?.entity_id === entity.entity_id &&
+      this._upgradeCheck.target === entity.attributes.latest_version
+      ? upgradeCheckBreakingRows(this._upgradeCheck).filter(
+          (row) => row.domains.length
+        ).length
+      : 0;
+  }
 
   private _renderUpdateProgress(entity: UpdateEntity, slot?: string) {
     if (entity.attributes.update_percentage != null) {
@@ -147,6 +211,15 @@ class HaConfigUpdates extends LitElement {
                 ${
                   entity.attributes.skipped_version
                     ? `(${this._localize("ui.panel.config.updates.skipped")})`
+                    : nothing
+                }
+                ${
+                  this._breakingCount(entity)
+                    ? html` ⸱
+                      ${this._localize(
+                        "ui.panel.config.updates.upgrade_check.breaking_count",
+                        { count: this._breakingCount(entity) }
+                      )}`
                     : nothing
                 }
               </span>
