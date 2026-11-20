@@ -28,7 +28,7 @@ Wrap the indicator in `ha-fade-in` from `src/components/animation/ha-fade-in.ts`
 
 - Fade a skeleton in straight away over about 300ms (`.duration=${300}`), as the data table does. It stands in for the content, so a delay would leave an empty gap.
 - Delay a spinner or progress bar, usually by `.delay=${500}`, so a load that finishes within that time never flashes it. Some slower areas, such as backups and updates, use `${1000}`.
-- Don't add your own fade to loaded content. `ha-skeleton-overlay` fades each part in over `--ha-animation-duration-fast`, which reduced motion makes instant.
+- Content that takes a skeleton's place fades in over `--ha-animation-duration-fast`, which reduced motion makes instant. `ha-skeleton-overlay` does this for you. Elsewhere, use `skeletonOr(loading, skeleton, () => content)` from `src/components/skeleton/skeleton-arrival.ts`: it shows the skeleton while loading and fades the content in once when it replaces it, but not where no skeleton showed, such as table rows made as the table scrolls. Put text in an element of its own inside the content, as only elements fade. For content that fills in where it already is, such as a log, call `fadeInArrival(element)` once when its skeleton goes. Don't add any other fade to loaded content.
 
 Give a skeleton group the `progressbar` role and a translated label, as `ha-spinner` has, rather than visible "Loading" text.
 
