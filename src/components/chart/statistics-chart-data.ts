@@ -43,6 +43,7 @@ export interface StatisticsChartDataParams {
   chartType: "line" | "line-stack" | "bar" | "bar-stack";
   period?: string;
   hideLegend: boolean;
+  hideSingleStatType?: boolean;
   hiddenStats: ReadonlySet<string>;
   computedStyle: CSSStyleDeclaration;
   now: Date;
@@ -285,6 +286,10 @@ export function generateStatisticsChartData(
         })
       : params.statTypes;
 
+    const showStatTypeSuffix =
+      !params.hideSingleStatType ||
+      sortedTypes.filter((t) => statisticsHaveType(stats, t)).length > 1;
+
     let displayedLegend = false;
     sortedTypes.forEach((type) => {
       if (statisticsHaveType(stats, type)) {
@@ -303,9 +308,11 @@ export function generateStatisticsChartData(
           cursor: "default",
           data: [],
           name: name
-            ? `${name} (${localize(
-                `ui.components.statistics_charts.statistic_types.${type}`
-              )})`
+            ? showStatTypeSuffix
+              ? `${name} (${localize(
+                  `ui.components.statistics_charts.statistic_types.${type}`
+                )})`
+              : name
             : localize(
                 `ui.components.statistics_charts.statistic_types.${type}`
               ),

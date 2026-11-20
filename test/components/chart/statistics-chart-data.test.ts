@@ -5,8 +5,12 @@
  */
 import { describe, expect, it } from "vitest";
 import { generateStatisticsChartData } from "../../../src/components/chart/statistics-chart-data";
+import type { StatisticsChartDataParams } from "../../../src/components/chart/statistics-chart-data";
 import { StatisticMeanType } from "../../../src/data/recorder";
-import type { StatisticsMetaData } from "../../../src/data/recorder";
+import type {
+  StatisticsMetaData,
+  StatisticValue,
+} from "../../../src/data/recorder";
 import { createMockComputedStyle } from "../../fixtures/computed-style";
 import { digestResult } from "../../fixtures/digest";
 import { createMockEntityState, createMockHass } from "../../fixtures/hass";
@@ -306,5 +310,121 @@ describe("generateStatisticsChartData", () => {
         })
       )
     ).toMatchSnapshot();
+  });
+
+  describe("hideSingleStatType", () => {
+    const typeLabel = (type: string) =>
+      `ui.components.statistics_charts.statistic_types.${type}`;
+
+    const start = FIXED_EPOCH_MS;
+    const hourMs = 60 * 60 * 1000;
+    const point = (
+      index: number,
+      values: Partial<StatisticValue>
+    ): StatisticValue => ({
+      start: start + index * hourMs,
+      end: start + (index + 1) * hourMs,
+      ...values,
+    });
+
+    // Series names and ids, without the empty legend-only series.
+    const seriesOf = (result: ReturnType<typeof generateStatisticsChartData>) =>
+      result!.datasets
+        .filter((dataset) => dataset.xAxisIndex === undefined)
+        .map(({ id, name }) => ({ id, name }));
+
+    it("drops the type suffix when a statistic shows a single type", () => {
+      const params: StatisticsChartDataParams = {
+        ...baseParams,
+        statisticsData: {
+          "sensor.wallbox": [
+            point(0, { change: 1.5 }),
+            point(1, { change: 2.5 }),
+          ],
+        },
+        statisticsMetaData: buildMetadata(["sensor.wallbox"], "kWh", true),
+        names: { "sensor.wallbox": "Wallbox" },
+        statTypes: ["change"],
+        chartType: "bar",
+        period: "hour",
+      };
+
+      expect(
+        seriesOf(
+          generateStatisticsChartData({ ...params, hideSingleStatType: true })
+        )
+      ).toEqual([{ id: "sensor.wallbox-change", name: "Wallbox" }]);
+      // Default keeps the suffix.
+      expect(seriesOf(generateStatisticsChartData(params))).toEqual([
+        {
+          id: "sensor.wallbox-change",
+          name: `Wallbox (${typeLabel("change")})`,
+        },
+      ]);
+    });
+
+    it("keeps the type suffix when a statistic shows multiple types", () => {
+      expect(
+        seriesOf(
+          generateStatisticsChartData({
+            ...baseParams,
+            statisticsData: {
+              "sensor.temp": [
+                point(0, { mean: 20, min: 18, max: 22 }),
+                point(1, { mean: 21, min: 19, max: 23 }),
+              ],
+            },
+            statisticsMetaData: buildMetadata(["sensor.temp"]),
+            names: { "sensor.temp": "Temp" },
+            statTypes: ["mean", "min", "max"],
+            chartType: "line",
+            period: "hour",
+            hideSingleStatType: true,
+          })
+        )
+      ).toEqual(
+        // Band drawing sorts min first and max last.
+        ["min", "mean", "max"].map((type) => ({
+          id: `sensor.temp-${type}`,
+          name: `Temp (${typeLabel(type)})`,
+        }))
+      );
+    });
+
+    it("decides per statistic and ignores types with null or missing data", () => {
+      expect(
+        seriesOf(
+          generateStatisticsChartData({
+            ...baseParams,
+            statisticsData: {
+              "sensor.temp": [
+                point(0, { mean: 20, min: 18, max: 22, change: null }),
+                point(1, { mean: 21, min: 19, max: 23, change: null }),
+              ],
+              // mean is null, min/max are missing: only change has data.
+              "sensor.wallbox": [
+                point(0, { change: 1.5, mean: null }),
+                point(1, { change: 2.5, mean: null }),
+              ],
+            },
+            statisticsMetaData: {
+              ...buildMetadata(["sensor.temp"]),
+              ...buildMetadata(["sensor.wallbox"], "kWh", true),
+            },
+            names: { "sensor.temp": "Temp", "sensor.wallbox": "Wallbox" },
+            statTypes: ["mean", "min", "max", "change"],
+            chartType: "line",
+            period: "hour",
+            hideSingleStatType: true,
+          })
+        )
+      ).toEqual([
+        ...["min", "mean", "max"].map((type) => ({
+          id: `sensor.temp-${type}`,
+          name: `Temp (${typeLabel(type)})`,
+        })),
+        { id: "sensor.wallbox-change", name: "Wallbox" },
+      ]);
+    });
   });
 });
