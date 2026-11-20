@@ -345,6 +345,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                 <ha-icon-button
                   slot="trigger"
                   .path=${mdiVolumeHigh}
+                  .label=${this.hass.localize("ui.card.media_player.volume")}
                 ></ha-icon-button>
                 <div
                   class="volume-slider-container"

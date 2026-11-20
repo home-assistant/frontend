@@ -102,7 +102,7 @@ export interface MockHomeAssistant extends HomeAssistant {
   );
   mockEvent(event);
   mockTheme(
-    theme: Record<string, string> | null,
+    theme: Record<string, unknown> | null,
     selectedTheme?: ThemeSettings
   );
   formatEntityState(stateObj: HassEntity, state?: string): string;

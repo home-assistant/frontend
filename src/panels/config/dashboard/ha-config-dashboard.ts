@@ -1,6 +1,6 @@
 import {
-  mdiCloudLock,
   mdiDotsVertical,
+  mdiLinkVariant,
   mdiMagnify,
   mdiPower,
   mdiRefresh,
@@ -185,9 +185,9 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
               {
                 component: "cloud",
                 path: "/config/cloud",
-                name: "Home Assistant Cloud",
+                name: "Home Assistant Link",
                 info: cloudStatus,
-                iconPath: mdiCloudLock,
+                iconPath: mdiLinkVariant,
                 iconColor: "#3B808E",
                 translationKey: "cloud",
               },

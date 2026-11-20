@@ -165,7 +165,11 @@ export class HuiCardEditMode extends LitElement {
           placement="bottom-end"
           @wa-select=${this._handleDropdownSelect}
         >
-          <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
+          <ha-icon-button
+            slot="trigger"
+            .path=${mdiDotsVertical}
+            .label=${this._localize("ui.common.menu")}
+          >
           </ha-icon-button>
           ${
             this.noEdit

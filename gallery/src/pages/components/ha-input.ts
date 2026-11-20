@@ -136,14 +136,14 @@ export class DemoHaInput extends LitElement {
                     ></ha-input>
                   </div>
 
-                  <h3>With slots</h3>
+                  <h3>Prefix, suffix and slots</h3>
                   <div class="row">
-                    <ha-input label="With prefix">
-                      <span slot="start">$</span>
-                    </ha-input>
-                    <ha-input label="With suffix">
-                      <span slot="end">kg</span>
-                    </ha-input>
+                    <ha-input
+                      label="With prefix"
+                      input-prefix="update."
+                      value="living_room"
+                    ></ha-input>
+                    <ha-input label="With suffix" input-suffix="kg"></ha-input>
                     <ha-input label="With icon">
                       <ha-svg-icon
                         .path=${mdiMagnify}

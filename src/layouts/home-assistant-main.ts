@@ -71,6 +71,7 @@ export class HomeAssistantMain extends LitElement {
         .type=${sidebarNarrow ? "modal" : ""}
         .open=${sidebarNarrow ? this._drawerOpen : false}
         .direction=${computeRTLDirection(this.hass)}
+        .accessibleLabel=${this.hass.localize("ui.sidebar.title")}
         @hass-drawer-closed=${this._drawerClosed}
       >
         <ha-sidebar

@@ -19,6 +19,11 @@ import type { HomeAssistant } from "../../../../types";
 import type { EnergyDateSelectorCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import {
+  collectionKeyFromFormData,
+  collectionKeyToFormData,
+  energyCollectionKeySchema,
+} from "./energy-collection-key-schema";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -101,11 +106,7 @@ export class HuiEnergyDateSelectionCardEditor
             required: false,
             selector: { boolean: {} },
           },
-          {
-            type: "string",
-            name: "collection_key",
-            required: false,
-          },
+          energyCollectionKeySchema,
         ],
       },
     ];
@@ -117,9 +118,7 @@ export class HuiEnergyDateSelectionCardEditor
       return nothing;
     }
 
-    const data = {
-      ...this._config,
-    };
+    const data = collectionKeyToFormData(this._config);
 
     const schema = this._schema(this.hass.localize);
 
@@ -134,7 +133,9 @@ export class HuiEnergyDateSelectionCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    fireEvent(this, "config-changed", {
+      config: collectionKeyFromFormData(ev.detail.value),
+    });
   }
 
   private _computeHelperCallback = (schema) => {

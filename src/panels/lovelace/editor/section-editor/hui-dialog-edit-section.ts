@@ -257,6 +257,7 @@ export class HuiDialogEditSection
     return html`
       <ha-dialog
         .open=${this._open}
+        .accessibleLabel=${heading}
         .width=${this.large ? "full" : "large"}
         .preventScrimClose=${this.isDirtyState}
         @keydown=${this._ignoreKeydown}

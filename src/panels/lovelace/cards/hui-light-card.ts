@@ -183,6 +183,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                   "state-on": stateObj.state === "on",
                   "state-unavailable": stateObj.state === UNAVAILABLE,
                 })}"
+                .label=${name}
                 .disabled=${stateObj.state === UNAVAILABLE}
                 style=${styleMap({
                   filter: this._computeBrightness(stateObj),
