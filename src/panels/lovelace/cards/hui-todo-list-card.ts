@@ -29,6 +29,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { calcDate } from "../../../common/datetime/calc_date";
@@ -58,6 +59,7 @@ import "../../../components/list/ha-list-selectable";
 import type { HaListSelectable } from "../../../components/list/ha-list-selectable";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
+import { SkeletonLoadingController } from "../../../components/skeleton/skeleton-loading-controller";
 import {
   apiContext,
   configContext,
@@ -177,6 +179,23 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   private _api!: HomeAssistantApi;
 
   @state() private _items?: TodoItem[];
+
+  protected readonly _skeletonLoading = new SkeletonLoadingController(
+    this,
+    () => this._stateObj !== undefined && this._items === undefined
+  );
+
+  /* Stand-ins for the items while they load, as many as the list's state
+     says are still to do. They're drawn hidden, so a skeleton over the card
+     takes the space the items will. */
+  private _placeholderItems = memoizeOne((count: number): TodoItem[] =>
+    Array.from({ length: count }, (_, index) => ({
+      uid: `placeholder-${index}`,
+      // Hidden, only their length counts
+      summary: "x".repeat([14, 9, 18, 11][index % 4]),
+      status: TodoItemStatus.NeedsAction,
+    }))
+  );
 
   @state() private _reordering = false;
 
@@ -472,6 +491,16 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     const unavailable =
       stateObj.state === UNAVAILABLE || stateObj.state === UNKNOWN;
 
+    // While the items load, as many hidden rows as the list says are to do
+    const toDo = Number(stateObj.state);
+
+    const placeholders =
+      this._items === undefined && Number.isInteger(toDo) && toDo > 0
+        ? this._placeholderItems(Math.min(toDo, 50))
+        : undefined;
+
+    const items = this._items ?? placeholders;
+
     // Discard memoization when we rollover to a new day, so filters can be recalculated
     const memoTime = this._config.due_date_period
       ? calcDate(
@@ -483,20 +512,20 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       : 0;
 
     const checkedItems = this._getCheckedItems(
-      this._items,
+      items,
       this._config.display_order,
       this._config.due_date_period,
       memoTime
     );
     const uncheckedItems = this._getUncheckedItems(
-      this._items,
+      items,
       this._config.display_order,
       this._config.due_date_period,
       memoTime
     );
 
     const itemsWithoutStatus = this._getItemsWithoutStatus(
-      this._items,
+      items,
       this._config.display_order,
       this._config.due_date_period,
       memoTime
@@ -504,7 +533,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     const reorderableItems = this._reordering
       ? this._getUncheckedAndItemsWithoutStatus(
-          this._items,
+          items,
           this._config.display_order,
           this._config.due_date_period,
           memoTime
@@ -548,6 +577,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             : nothing
         }
         <ha-sortable
+          class=${classMap({ placeholder: placeholders !== undefined })}
+          ?inert=${placeholders !== undefined}
+          aria-hidden=${ifDefined(placeholders ? "true" : undefined)}
           handle-selector="ha-svg-icon"
           draggable-selector=".draggable"
           .disabled=${!this._reordering}
@@ -1117,6 +1149,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     .addRow ha-icon-button {
       --ha-icon-button-size: 32px;
+    }
+
+    ha-sortable.placeholder {
+      opacity: 0;
     }
 
     .addRow,

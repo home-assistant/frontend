@@ -19,6 +19,7 @@ import { formatNumber } from "../../../common/number/format_number";
 import { round } from "../../../common/number/round";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
+import { SkeletonLoadingController } from "../../../components/skeleton/skeleton-loading-controller";
 import {
   configContext,
   connectionContext,
@@ -31,6 +32,7 @@ import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type {
   ForecastAttribute,
   ForecastEvent,
+  ForecastType,
   WeatherEntity,
 } from "../../../data/weather";
 import {
@@ -125,7 +127,14 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   @state() private _forecastEvent?: ForecastEvent;
 
+  @state() private _forecastFailed = false;
+
   @state() private _subscribed?: Promise<() => void>;
+
+  protected readonly _skeletonLoading = new SkeletonLoadingController(
+    this,
+    () => this._isForecastLoading()
+  );
 
   private _dragScrollController = new DragScrollController(this, {
     selector: ".forecast",
@@ -162,6 +171,45 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     );
   }
 
+  /* Waiting for the first forecast of the type the card shows */
+  private _isForecastLoading(): boolean {
+    const stateObj = this._stateObj;
+
+    return Boolean(
+      this._config &&
+      this._config.show_forecast !== false &&
+      this._needForecastSubscription() &&
+      stateObj &&
+      stateObj.state !== UNAVAILABLE &&
+      this._forecastEvent?.type !== this._config.forecast_type &&
+      !this._forecastFailed
+    );
+  }
+
+  /* Stand-ins for the forecast while it loads, drawn hidden so a skeleton
+     over the card takes the space the forecast will */
+  private _placeholderForecast(
+    type: ForecastType | undefined,
+    condition: string,
+    count: number
+  ): ForecastAttribute[] {
+    const step =
+      type === "hourly"
+        ? 60 * 60 * 1000
+        : type === "twice_daily"
+          ? 12 * 60 * 60 * 1000
+          : 24 * 60 * 60 * 1000;
+
+    const now = Date.now();
+
+    return Array.from({ length: count }, (_, index) => ({
+      datetime: new Date(now + index * step).toISOString(),
+      condition,
+      temperature: 0,
+      is_daytime: type === "twice_daily" ? index % 2 === 0 : undefined,
+    }));
+  }
+
   private _unsubscribeForecastEvents() {
     if (this._subscribed) {
       this._subscribed.then((unsub) => unsub());
@@ -189,8 +237,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       this._config!.forecast_type as "daily" | "hourly" | "twice_daily",
       (event) => {
         this._forecastEvent = event;
+        this._forecastFailed = false;
       }
     ).catch((e) => {
+      this._forecastFailed = true;
       if (e.code === "invalid_entity_id") {
         setTimeout(() => {
           this._subscribed = undefined;
@@ -312,14 +362,26 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
     const itemsToShow = this._config?.forecast_slots ?? 5;
 
+    const forecastLoading = this._isForecastLoading();
+
     const forecast =
       this._config?.show_forecast !== false && forecastData?.forecast?.length
         ? forecastData.forecast.slice(0, itemsToShow)
-        : undefined;
+        : forecastLoading
+          ? this._placeholderForecast(
+              this._config.forecast_type,
+              stateObj.state,
+              itemsToShow
+            )
+          : undefined;
     const weather = !forecast || this._config?.show_current !== false;
 
-    const hourly = forecastData?.type === "hourly";
-    const dayNight = forecastData?.type === "twice_daily";
+    const forecastType = forecastLoading
+      ? this._config.forecast_type
+      : forecastData?.type;
+
+    const hourly = forecastType === "hourly";
+    const dayNight = forecastType === "twice_daily";
     const compactForecast = this._sizeController.value?.height === "short";
     // Hourly forecasts skip day names, because 0:00 already marks a new day.
     const showInlineDayLabel = compactForecast && dayNight;
@@ -485,6 +547,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                     compact: compactForecast,
                     dragging: this._dragScrollController.scrolling,
                   })}
+                  style=${ifDefined(forecastLoading ? "opacity: 0" : undefined)}
+                  aria-hidden=${ifDefined(forecastLoading ? "true" : undefined)}
                 >
                   ${
                     showDayHeader

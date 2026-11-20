@@ -7,6 +7,7 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
 import "../../components/ha-spinner";
+import { SkeletonLoadingController } from "../../components/skeleton/skeleton-loading-controller";
 import type { LogbookEntry, LogbookStreamMessage } from "../../data/logbook";
 import { subscribeLogbook } from "../../data/logbook";
 import type { TraceContexts } from "../../data/trace";
@@ -97,6 +98,15 @@ export class HaLogbook extends LitElement {
 
   @state() private _error?: string;
 
+  protected readonly _skeletonLoading = new SkeletonLoadingController(
+    this,
+    () =>
+      this.hass !== undefined &&
+      isComponentLoaded(this.hass.config, "logbook") &&
+      !this._error &&
+      this._logbookEntries === undefined
+  );
+
   private _unsubLogbook?: Promise<UnsubscribeFunc>;
 
   private _liveUpdatesEnabled = true;
@@ -133,7 +143,7 @@ export class HaLogbook extends LitElement {
 
     if (entries === undefined) {
       return html`
-        <div class="progress-wrapper">
+        <div class="progress-wrapper" data-skeleton="block">
           <ha-spinner></ha-spinner>
         </div>
       `;
@@ -587,6 +597,8 @@ export class HaLogbook extends LitElement {
           justify-content: center;
           height: 100%;
           align-items: center;
+          /* Inset like the entries, for the skeleton a card draws over it */
+          margin: 0 var(--ha-space-4);
         }
       `,
     ];
