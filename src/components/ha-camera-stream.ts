@@ -19,9 +19,11 @@ import {
   type CameraEntity,
 } from "../data/camera";
 import {
+  computeCameraStreamStatus,
   MJPEG_STREAM,
   selectCameraStreams,
   type CameraStream,
+  type CameraStreamStatus,
   type CameraStreamTracks,
   type CameraStreamType,
 } from "../data/camera-streams";
@@ -32,10 +34,16 @@ import {
   formattersContext,
 } from "../data/context";
 import "./ha-hls-player";
+import type { HaHLSPlayer } from "./ha-hls-player";
+import "./ha-mjpeg-player";
+import type { HaMjpegPlayer } from "./ha-mjpeg-player";
 import "./ha-web-rtc-player";
 import type { HaWebRtcPlayer } from "./ha-web-rtc-player";
 
-export type { CameraStreamType } from "../data/camera-streams";
+export type {
+  CameraStreamStatus,
+  CameraStreamType,
+} from "../data/camera-streams";
 
 @customElement("ha-camera-stream")
 export class HaCameraStream extends LitElement {
@@ -70,6 +78,13 @@ export class HaCameraStream extends LitElement {
   @property({ type: Boolean, attribute: "allow-exoplayer" })
   public allowExoPlayer = false;
 
+  /**
+   * Shows an MJPEG stream in a player that can also open it picture in
+   * picture, which copies its frames into a video while open.
+   */
+  @property({ type: Boolean, attribute: "mjpeg-video" })
+  public mjpegVideo = false;
+
   // Video background image before its loaded
   @state() private _posterUrl?: string;
 
@@ -81,9 +96,24 @@ export class HaCameraStream extends LitElement {
 
   @state() private _webRtcStreams?: CameraStreamTracks;
 
+  // Streams that played their first frame
+  @state() private _loadedStreams: ReadonlySet<CameraStreamType> = new Set();
+
+  // The app plays the HLS stream in its own player, over the page
+  @state() private _hlsInApp = false;
+
   @query("ha-web-rtc-player") private _webRtcPlayer?: HaWebRtcPlayer;
 
+  @query("ha-mjpeg-player") private _mjpegPlayer?: HaMjpegPlayer;
+
+  @query(
+    "ha-hls-player:not(.hidden), ha-web-rtc-player:not(.hidden), ha-mjpeg-player"
+  )
+  private _visiblePlayer?: HaHLSPlayer | HaWebRtcPlayer | HaMjpegPlayer;
+
   private _visibleStreamType?: CameraStreamType;
+
+  private _status?: CameraStreamStatus;
 
   private _capabilitiesRequest = 0;
 
@@ -118,11 +148,38 @@ export class HaCameraStream extends LitElement {
       this._getCapabilities();
       this._getPosterUrl();
     }
+
+    const oldConnection = changedProps.get("_connection") as
+      ContextType<typeof connectionContext> | undefined;
+    if (
+      oldConnection &&
+      !oldConnection.connected &&
+      this._connection.connected
+    ) {
+      // An MJPEG stream doesn't come back on its own
+      this._restartMjpeg();
+    }
   }
 
   /** The microphone track sent to the camera, only on WebRTC streams. */
   public get microphoneTrack(): MediaStreamTrack | undefined {
     return this._webRtcPlayer?.microphoneTrack;
+  }
+
+  /** The video of the shown stream. */
+  public get videoElement(): HTMLVideoElement | undefined {
+    return this._visiblePlayer?.videoElement;
+  }
+
+  /** Opens the video of the shown stream picture in picture. */
+  public async requestPictureInPicture() {
+    const player = this._visiblePlayer;
+    // An MJPEG stream first has to start copying its image into the video
+    if (player && "requestPictureInPicture" in player) {
+      await player.requestPictureInPicture();
+      return;
+    }
+    await this.videoElement?.requestPictureInPicture();
   }
 
   /** Toggles sending the microphone to the camera, only on WebRTC streams. */
@@ -157,6 +214,27 @@ export class HaCameraStream extends LitElement {
       this._visibleStreamType = visibleStreamType;
       fireEvent(this, "stream-type-changed", { type: visibleStreamType });
     }
+    const status: CameraStreamStatus = {
+      ...computeCameraStreamStatus(
+        streams,
+        // Nothing plays while Home Assistant is disconnected
+        this._connection.connected ? this._loadedStreams : new Set(),
+        this._hlsStreams,
+        this._webRtcStreams
+      ),
+      inApp: visibleStreamType === STREAM_TYPE_HLS && this._hlsInApp,
+    };
+    if (
+      !this._status ||
+      status.type !== this._status.type ||
+      status.connecting !== this._status.connecting ||
+      status.upgrading !== this._status.upgrading ||
+      status.hasAudio !== this._status.hasAudio ||
+      status.inApp !== this._status.inApp
+    ) {
+      this._status = status;
+      fireEvent(this, "camera-stream-status-changed", status);
+    }
   }
 
   protected render() {
@@ -176,13 +254,24 @@ export class HaCameraStream extends LitElement {
       return nothing;
     }
     if (stream.type === MJPEG_STREAM) {
+      const mjpegPath = computeMJPEGStreamUrl(this.stateObj);
       const streamUrl = __DEMO__
         ? this.stateObj.attributes.entity_picture
         : this._connected
-          ? computeMJPEGStreamUrl(this.stateObj)
+          ? // Like the other streams, as the frontend can be served elsewhere
+            mjpegPath && this._connection.hassUrl(mjpegPath)
           : this._posterUrl;
       if (!streamUrl) {
         return nothing;
+      }
+      if (this.mjpegVideo) {
+        return html`<ha-mjpeg-player
+          .src=${streamUrl}
+          .alt=${`Preview of the ${this._formatters?.formatEntityName(this.stateObj) ?? ""} camera.`}
+          .aspectRatio=${this.aspectRatio}
+          .fitMode=${this.fitMode}
+          @load=${this._handleMjpegLoad}
+        ></ha-mjpeg-player>`;
       }
       return html`<img
         .src=${streamUrl}
@@ -205,6 +294,8 @@ export class HaCameraStream extends LitElement {
         .entityid=${this.stateObj.entity_id}
         .posterUrl=${this._posterUrl}
         @streams=${this._handleHlsStreams}
+        @load=${this._handleHlsLoad}
+        @exoplayer-changed=${this._handleExoPlayerChanged}
         class=${stream.visible ? "" : "hidden"}
         .aspectRatio=${this.aspectRatio}
         .fitMode=${this.fitMode}
@@ -220,6 +311,7 @@ export class HaCameraStream extends LitElement {
         .entityid=${this.stateObj.entity_id}
         .posterUrl=${this._posterUrl}
         @streams=${this._handleWebRtcStreams}
+        @load=${this._handleWebRtcLoad}
         class=${stream.visible ? "" : "hidden"}
         .aspectRatio=${this.aspectRatio}
         .fitMode=${this.fitMode}
@@ -261,6 +353,27 @@ export class HaCameraStream extends LitElement {
   private _resetStreams() {
     this._hlsStreams = undefined;
     this._webRtcStreams = undefined;
+    this._loadedStreams = new Set();
+    this._hlsInApp = false;
+    this._mjpegPlayer?.restart();
+  }
+
+  private _restartMjpeg() {
+    this._setLoaded(MJPEG_STREAM, false);
+    this._mjpegPlayer?.restart();
+  }
+
+  private _setLoaded(type: CameraStreamType, loaded: boolean) {
+    if (this._loadedStreams.has(type) === loaded) {
+      return;
+    }
+    const loadedStreams = new Set(this._loadedStreams);
+    if (loaded) {
+      loadedStreams.add(type);
+    } else {
+      loadedStreams.delete(type);
+    }
+    this._loadedStreams = loadedStreams;
   }
 
   private async _getPosterUrl(): Promise<void> {
@@ -278,11 +391,33 @@ export class HaCameraStream extends LitElement {
   }
 
   private _handleImageLoad() {
+    this._setLoaded(MJPEG_STREAM, true);
     fireEvent(this, "load");
+  }
+
+  private _handleMjpegLoad() {
+    this._setLoaded(MJPEG_STREAM, true);
+  }
+
+  private _handleHlsLoad() {
+    this._setLoaded(STREAM_TYPE_HLS, true);
+  }
+
+  private _handleExoPlayerChanged(
+    ev: HASSDomEvent<HASSDomEvents["exoplayer-changed"]>
+  ) {
+    this._hlsInApp = ev.detail.active;
+  }
+
+  private _handleWebRtcLoad() {
+    this._setLoaded(STREAM_TYPE_WEB_RTC, true);
   }
 
   private _handleHlsStreams(ev: HASSDomEvent<HASSDomEvents["streams"]>) {
     this._hlsStreams = ev.detail;
+    if (!ev.detail.hasVideo) {
+      this._setLoaded(STREAM_TYPE_HLS, false);
+    }
   }
 
   private _handleWebRtcStreams(ev: HASSDomEvent<HASSDomEvents["streams"]>) {
@@ -294,9 +429,13 @@ export class HaCameraStream extends LitElement {
     ) {
       // Without another stream type, keep the player to show why it failed.
       // Only a browser without WebRTC falls back to MJPEG.
+      this._setLoaded(STREAM_TYPE_WEB_RTC, false);
       return;
     }
     this._webRtcStreams = ev.detail;
+    if (!ev.detail.hasVideo) {
+      this._setLoaded(STREAM_TYPE_WEB_RTC, false);
+    }
   }
 
   private _streams = memoizeOne(
@@ -318,7 +457,8 @@ export class HaCameraStream extends LitElement {
 
   static styles = css`
     :host,
-    img {
+    img,
+    ha-mjpeg-player {
       display: block;
     }
 
@@ -350,6 +490,7 @@ declare global {
     load: undefined;
     "stream-type-changed": { type?: CameraStreamType };
     "camera-capabilities-changed": { capabilities?: CameraCapabilities };
+    "camera-stream-status-changed": CameraStreamStatus;
     streams: {
       hasAudio: boolean;
       hasVideo: boolean;
