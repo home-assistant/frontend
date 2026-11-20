@@ -96,6 +96,38 @@ describe("ha-input password-manager autofill", () => {
     expect(el.value).toBe("");
     expect(nativeInput(el).value).toBe("");
   });
+
+  // Bitwarden fills with non-composed input/change events. Only change leaves
+  // wa-input, so password dialogs kept their submit button disabled.
+  it("emits input for a fill with non-composed events", async () => {
+    const el = await mountInput({ label: "Password", type: "password" });
+    const received: string[] = [];
+    el.addEventListener("input", () => {
+      received.push(el.value ?? "");
+    });
+
+    const native = nativeInput(el);
+    native.value = "s3cret";
+    native.dispatchEvent(new Event("input", { bubbles: true }));
+    native.dispatchEvent(new Event("change", { bubbles: true }));
+
+    expect(el.value).toBe("s3cret");
+    expect(received).toEqual(["s3cret"]);
+  });
+
+  it("does not emit input again on change after typing", async () => {
+    const el = await mountInput({ label: "Password", type: "password" });
+    const listener = vi.fn();
+    el.addEventListener("input", listener);
+
+    const native = nativeInput(el);
+    native.value = "s3cret";
+    native.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+    native.dispatchEvent(new Event("change", { bubbles: true }));
+
+    expect(el.value).toBe("s3cret");
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("ha-input native ids", () => {
