@@ -583,7 +583,11 @@ export const attributeIcon = async (
     for (const memberId of memberIds) {
       const member = entities[memberId] as
         EntityRegistryDisplayEntry | undefined;
-      if (!member?.translation_key || computeDomain(memberId) !== domain) {
+      if (
+        !member?.translation_key ||
+        !member.platform ||
+        computeDomain(memberId) !== domain
+      ) {
         continue;
       }
       // eslint-disable-next-line no-await-in-loop
