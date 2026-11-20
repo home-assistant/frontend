@@ -26,7 +26,11 @@ export class HaHelpTooltip extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-svg-icon id="svg-icon" .path=${mdiHelpCircleOutline}></ha-svg-icon>
-      <ha-tooltip for="svg-icon" .placement=${this.position}>
+      <ha-tooltip
+        trigger="hover focus click"
+        for="svg-icon"
+        .placement=${this.position}
+      >
         ${this.label}
       </ha-tooltip>
     `;

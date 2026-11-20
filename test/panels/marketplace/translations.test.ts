@@ -42,9 +42,9 @@ describe("Marketplace strings", () => {
       "1 star on GitHub",
     ],
     [
-      "repository.community.open_issues",
+      "repository.community.open_issues_and_prs",
       { number: 1, count: "1" },
-      "1 open issue on GitHub",
+      "1 open issue or pull request on GitHub",
     ],
   ])("formats %s with %o", (key, values, expected) => {
     expect(format(key, values)).toBe(expected);

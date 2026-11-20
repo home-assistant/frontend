@@ -25,7 +25,7 @@ export async function startNewAutomation(page: Page) {
     .getByRole("button", { name: "Create automation" })
     .click();
   await page
-    .locator("ha-dialog-new-automation ha-list-item")
+    .locator("ha-dialog-new-automation ha-list-item-button")
     .filter({ hasText: "Create new automation" })
     .click();
   await expect(page).toHaveURL(/#\/config\/automation\/edit\/new$/);

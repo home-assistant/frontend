@@ -26,6 +26,7 @@ export class HaTriggerList extends LitElement implements TriggerElement {
 
     return html`
       <ha-automation-trigger
+        path-key="triggers"
         .triggers=${triggers}
         .hass=${this.hass}
         .disabled=${this.disabled}

@@ -127,7 +127,8 @@ class DialogMatterAddDevice extends LitElement {
 
   private get _waitForCommissioningFinish(): boolean {
     // When the app supports reporting Matter commissioning status, defer
-    // advancing past the spinner until we receive matter/commission/finish.
+    // advancing past the spinner of its own flow until we receive
+    // matter/commission/finish.
     return !!this.hass.auth.external?.config.hasMatterStatusReport;
   }
 
@@ -135,7 +136,13 @@ class DialogMatterAddDevice extends LitElement {
     if (!this._newDevice) {
       return;
     }
-    if (this._waitForCommissioningFinish && !this._commissioningFinished) {
+    // Only the app's own flow, started from the "new" step, reports back.
+    // The other steps commission through core or another app.
+    if (
+      this._step === "new" &&
+      this._waitForCommissioningFinish &&
+      !this._commissioningFinished
+    ) {
       return;
     }
     this._step = "device_added";
@@ -149,6 +156,8 @@ class DialogMatterAddDevice extends LitElement {
       if (this._newDevice) {
         // Device already showed up in the registry — ignore the failure signal
         // and let the user finish the rename flow.
+        this._commissioningFinished = true;
+        this._maybeShowDeviceAdded();
         return;
       }
       showToast(this, {
@@ -309,7 +318,7 @@ class DialogMatterAddDevice extends LitElement {
       const areaChanged = area !== origArea;
 
       if (nameChanged || areaChanged) {
-        await updateDeviceRegistryEntry(this.hass, device.id, {
+        await updateDeviceRegistryEntry(this.hass.callWS, device.id, {
           ...(nameChanged && { name_by_user: name || null }),
           ...(areaChanged && { area_id: area || null }),
         }).catch((err: Error) =>
@@ -328,12 +337,15 @@ class DialogMatterAddDevice extends LitElement {
           .map((e) => e.entity_id);
 
         if (entityIds.length) {
-          const mapping = await getAutomaticEntityIds(this.hass, entityIds);
+          const mapping = await getAutomaticEntityIds(
+            this.hass.callWS,
+            entityIds
+          );
           await Promise.allSettled(
             Object.entries(mapping)
               .filter((entry): entry is [string, string] => !!entry[1])
               .map(([oldId, newId]) =>
-                updateEntityRegistryEntry(this.hass, oldId, {
+                updateEntityRegistryEntry(this.hass.callWS, oldId, {
                   new_entity_id: newId,
                 }).catch((err: Error) =>
                   showAlertDialog(this, {
@@ -355,7 +367,7 @@ class DialogMatterAddDevice extends LitElement {
           undefined;
         if (deviceClass !== origClass) {
           await updateEntityRegistryEntry(
-            this.hass,
+            this.hass.callWS,
             this._mainEntity.entity_id,
             { device_class: deviceClass || null }
           ).catch((err: Error) =>

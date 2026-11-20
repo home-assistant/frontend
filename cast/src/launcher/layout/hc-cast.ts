@@ -1,7 +1,7 @@
 import { mdiCast, mdiCastConnected, mdiViewDashboard } from "@mdi/js";
 import type { Auth, Connection } from "home-assistant-js-websocket";
 import type { TemplateResult, PropertyValues } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { CastManager } from "../../../../src/cast/cast_manager";
 import {
@@ -13,12 +13,14 @@ import {
   enableWrite,
   saveTokens,
 } from "../../../../src/common/auth/token_storage";
+import type { HASSDomCurrentTargetEvent } from "../../../../src/common/dom/fire_event";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-icon";
-import "../../../../src/components/ha-list";
-import "../../../../src/components/ha-list-item";
 import "../../../../src/components/ha-svg-icon";
+import "../../../../src/components/item/ha-list-item-option";
+import type { HaListItemOption } from "../../../../src/components/item/ha-list-item-option";
+import "../../../../src/components/list/ha-list-selectable";
 import {
   getLegacyLovelaceCollection,
   getLovelaceCollection,
@@ -51,6 +53,9 @@ class HcCast extends LitElement {
             <p>There were no suitable Chromecast devices to cast to found.</p>
           `
         : undefined;
+
+    const views = this.lovelaceViews ?? [{ title: "Home" }];
+    const hasIcons = views.some((view) => view.icon);
 
     return html`
       <hc-layout .auth=${this.auth} .connection=${this.connection}>
@@ -92,45 +97,41 @@ class HcCast extends LitElement {
                   </p>
                 `
               : html`
-                  <div class="section-header">PICK A VIEW</div>
-                  <ha-list @action=${this._handlePickView} activatable>
-                    ${(
-                      this.lovelaceViews ?? [
-                        {
-                          title: "Home",
-                        },
-                      ]
-                    ).map(
+                  <div class="section-header" id="pick-view-header">
+                    PICK A VIEW
+                  </div>
+                  <ha-list-selectable
+                    controlled
+                    aria-labelledby="pick-view-header"
+                  >
+                    ${views.map(
                       (view, idx) => html`
-                        <ha-list-item
-                          graphic="avatar"
-                          .activated=${
-                            this.castManager.status?.lovelacePath ===
-                            (view.path ?? idx)
-                          }
+                        <ha-list-item-option
+                          data-index=${idx}
+                          @click=${this._handlePickView}
+                          .headline=${view.title || view.path || "Unnamed view"}
                           .selected=${
                             this.castManager.status?.lovelacePath ===
                             (view.path ?? idx)
                           }
                         >
-                          ${view.title || view.path || "Unnamed view"}
                           ${
-                            view.icon
-                              ? html`
-                                  <ha-icon
+                            !hasIcons
+                              ? nothing
+                              : view.icon
+                                ? html`<ha-icon
+                                    slot="start"
                                     .icon=${view.icon}
-                                    slot="graphic"
-                                  ></ha-icon>
-                                `
-                              : html`<ha-svg-icon
-                                  slot="item-icon"
-                                  .path=${mdiViewDashboard}
-                                ></ha-svg-icon>`
+                                  ></ha-icon>`
+                                : html`<ha-svg-icon
+                                    slot="start"
+                                    .path=${mdiViewDashboard}
+                                  ></ha-svg-icon>`
                           }
-                        </ha-list-item>
+                        </ha-list-item-option>
                       `
-                    )}</ha-list
-                  >
+                    )}
+                  </ha-list-selectable>
                 `
         }
 
@@ -193,14 +194,6 @@ class HcCast extends LitElement {
     });
   }
 
-  protected updated(changedProps: PropertyValues<this>) {
-    super.updated(changedProps);
-    this.toggleAttribute(
-      "hide-icons",
-      this.lovelaceViews ? !this.lovelaceViews.some((view) => view.icon) : true
-    );
-  }
-
   private async _handleSkipSaveTokens() {
     this.askWrite = false;
   }
@@ -214,8 +207,13 @@ class HcCast extends LitElement {
     this.castManager.requestSession();
   }
 
-  private async _handlePickView(ev: CustomEvent<{ index: number }>) {
-    const path = this.lovelaceViews?.[ev.detail.index]?.path ?? ev.detail.index;
+  // Listens to clicks instead of `ha-list-item-selected`, which does not fire
+  // for the selected view, so the current view can still be cast again.
+  private async _handlePickView(
+    ev: HASSDomCurrentTargetEvent<HaListItemOption>
+  ) {
+    const index = Number(ev.currentTarget.dataset.index);
+    const path = this.lovelaceViews?.[index]?.path ?? index;
     await ensureConnectedCastSession(this.castManager!, this.auth!);
     castSendShowLovelaceView(this.castManager, this.auth.data.hassUrl, path);
   }
@@ -270,14 +268,9 @@ class HcCast extends LitElement {
       color: var(--secondary-text-color);
     }
 
-    ha-list-item ha-icon,
-    ha-list-item ha-svg-icon {
-      padding: 12px;
+    ha-list-item-option ha-icon,
+    ha-list-item-option ha-svg-icon {
       color: var(--secondary-text-color);
-    }
-
-    :host([hide-icons]) ha-icon {
-      display: none;
     }
 
     .spacer {

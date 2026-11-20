@@ -110,7 +110,7 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
     currentOptions.favorite_positions = this._favoritePositions;
 
     const result = await updateEntityRegistryEntry(
-      this._api,
+      this._api.callWS,
       this.entry.entity_id,
       {
         options_domain: "valve",

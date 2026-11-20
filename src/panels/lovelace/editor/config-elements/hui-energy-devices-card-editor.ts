@@ -25,6 +25,11 @@ import type {
 } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import {
+  collectionKeyFromFormData,
+  collectionKeyToFormData,
+  energyCollectionKeySchema,
+} from "./energy-collection-key-schema";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -102,11 +107,7 @@ export class HuiEnergyDevicesCardEditor
             required: false,
             selector: { number: { min: 1, mode: "box" } },
           },
-          {
-            type: "string",
-            name: "collection_key",
-            required: false,
-          },
+          energyCollectionKeySchema,
         ],
       },
     ];
@@ -120,9 +121,7 @@ export class HuiEnergyDevicesCardEditor
 
     const schema = this._schema(this.hass.localize);
 
-    const data = {
-      ...this._config,
-    };
+    const data = collectionKeyToFormData(this._config);
 
     return html` <ha-form
       .hass=${this.hass}
@@ -135,7 +134,9 @@ export class HuiEnergyDevicesCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    fireEvent(this, "config-changed", {
+      config: collectionKeyFromFormData(ev.detail.value),
+    });
   }
 
   private _computeHelperCallback = (schema) => {

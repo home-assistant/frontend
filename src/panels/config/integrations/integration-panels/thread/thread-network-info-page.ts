@@ -64,10 +64,7 @@ class ThreadNetworkInfoPage extends LitElement {
 
     this._otbrLoading = true;
     const otbrInfo = await getOTBRInfo(this.hass).catch(() => undefined);
-    const otbr = findOTBRInfoForDataset(otbrInfo, this._dataset);
-    if (otbr?.active_dataset_tlvs?.includes(this._dataset.extended_pan_id)) {
-      this._otbrInfo = otbr;
-    }
+    this._otbrInfo = findOTBRInfoForDataset(otbrInfo, this._dataset);
     this._otbrLoading = false;
   }
 
@@ -162,7 +159,7 @@ class ThreadNetworkInfoPage extends LitElement {
     if (value === null) {
       return nothing;
     }
-    return html`<ha-list-item-base>
+    return html`<ha-list-item-base wrap-supporting-text>
       <span slot="headline">${label}</span>
       <span slot="supporting-text">${value}</span>
     </ha-list-item-base>`;
@@ -173,17 +170,16 @@ class ThreadNetworkInfoPage extends LitElement {
       haStyle,
       css`
         .container {
-          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+          padding: var(--ha-space-2) var(--ha-content-gutter) var(--ha-space-4);
         }
 
         ha-card {
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
           margin: auto;
         }
 
         ha-list-item-base::part(supporting-text) {
           font-size: var(--ha-font-size-m);
-          white-space: normal;
           overflow-wrap: anywhere;
         }
       `,

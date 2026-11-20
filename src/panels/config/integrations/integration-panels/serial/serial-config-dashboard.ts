@@ -594,14 +594,14 @@ export class SerialConfigDashboard extends LitElement {
       haStyle,
       css`
         .container {
-          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+          padding: var(--ha-space-2) var(--ha-content-gutter) var(--ha-space-4);
         }
 
         ha-card,
         ha-alert {
           display: block;
           margin: 0px auto var(--ha-space-4);
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
         }
 
         ha-card:first-child {

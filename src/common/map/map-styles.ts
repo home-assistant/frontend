@@ -1,11 +1,12 @@
 // The vector cartographies the map can draw. Each is a light and a dark
-// palette; the theme mode picks the half.
+// palette; the theme mode picks the half, unless the style only has one.
 //
 // Only the default pair is generated at build time (build-scripts/gulp/
 // map-assets.js); everything else is built in the browser from the same
 // builder, against the tiles and glyphs core's proxy already serves.
 
 import { HA_MAP_COLORS, HA_MAP_COLORS_DARK } from "./ha-map-palette";
+import { NEON_MAP_COLORS_DARK, NEON_MAP_OPTIONS } from "./neon-map-palette";
 
 /** Style ids, in the order the card editor offers them */
 export const MAP_STYLES = [
@@ -15,6 +16,7 @@ export const MAP_STYLES = [
   "muted",
   "gray",
   "toner",
+  "neon",
 ] as const;
 
 export type MapStyle = (typeof MAP_STYLES)[number];
@@ -26,19 +28,30 @@ type VersatilesPalette = "colorful" | "natural" | "muted" | "gray" | "toner";
 
 export type MapPalette = VersatilesPalette | `${VersatilesPalette}-dark`;
 
-/** A cartography plus the colors painted over it; only the default has any */
+/**
+ * A cartography plus what is painted over it; the VersaTiles palettes have
+ * nothing. The color sets say which halves a style has: both, or neither, and
+ * the theme mode picks; only one, and that is the half the map draws.
+ */
 const STYLE_PALETTES: Record<
   MapStyle,
   {
     palette: VersatilesPalette;
     colors?: Record<string, string>;
     colorsDark?: Record<string, string>;
+    /** Builder options the style comes with, by option group */
+    options?: Record<string, Record<string, unknown>>;
   }
 > = {
   default: {
     palette: "colorful",
     colors: HA_MAP_COLORS,
     colorsDark: HA_MAP_COLORS_DARK,
+  },
+  neon: {
+    palette: "colorful",
+    colorsDark: NEON_MAP_COLORS_DARK,
+    options: NEON_MAP_OPTIONS,
   },
   colorful: { palette: "colorful" },
   natural: { palette: "natural" },
@@ -96,11 +109,12 @@ export interface ResolvedMapStyle {
   /** Fetched rather than built: the default, while nothing was added to it */
   shipped?: "light" | "dark";
   /**
-   * The style's own colors, without what the theme or the card painted over
-   * them. What to fall back on when the builder rejects an adjustment, so a
-   * bad value costs the adjustments rather than the cartography.
+   * The style as it comes: its colors and its own adjustments, without what
+   * the theme or the card painted over them. What to fall back on when the
+   * builder rejects an adjustment, so a bad value costs the card's adjustments
+   * rather than the style.
    */
-  baseColors?: Record<string, string>;
+  styleOptions?: Record<string, unknown>;
 }
 
 const isStyle = (value: unknown): value is MapStyle =>
@@ -110,9 +124,31 @@ export const isCustomMapStyle = (
   style: MapStyleConfig | undefined
 ): style is CustomMapStyleConfig => typeof style === "object" && style !== null;
 
-export const paletteFor = (style: MapStyle, darkMode: boolean): MapPalette => {
+const toStyle = (style: MapStyleConfig | undefined): MapStyle => {
+  const named = isCustomMapStyle(style) ? style.base : style;
+  return isStyle(named) ? named : DEFAULT_MAP_STYLE;
+};
+
+/**
+ * Whether the map comes out dark: the theme mode's answer, unless the style
+ * only has the one half. What the map's own chrome and the theme tokens have
+ * to follow, rather than the theme mode.
+ */
+export const isDarkMapStyle = (
+  style: MapStyleConfig | undefined,
+  darkMode: boolean
+): boolean => {
+  const { colors, colorsDark } = STYLE_PALETTES[toStyle(style)];
+  if (Boolean(colors) !== Boolean(colorsDark)) {
+    return Boolean(colorsDark);
+  }
+  return darkMode;
+};
+
+/** The half to draw; `dark` is the map's, from isDarkMapStyle */
+export const paletteFor = (style: MapStyle, dark: boolean): MapPalette => {
   const { palette } = STYLE_PALETTES[style];
-  return darkMode ? `${palette}-dark` : palette;
+  return dark ? `${palette}-dark` : palette;
 };
 
 // An allowlist, not a passthrough: the builder also takes the tile, glyph and
@@ -198,19 +234,33 @@ export const resolveMapStyle = (
   themeColors?: Record<string, string>
 ): ResolvedMapStyle => {
   const custom = isCustomMapStyle(style) ? style : undefined;
-  const named = custom ? custom.base : style;
-  const mapStyle = isStyle(named) ? named : DEFAULT_MAP_STYLE;
+  const mapStyle = toStyle(style);
+  // A dark-only style picks the dark half of everything, not just the palette.
+  const dark = isDarkMapStyle(style, darkMode);
 
-  const palette = paletteFor(mapStyle, darkMode);
-  const options = custom ? builderOptions(custom, darkMode) : {};
+  const palette = paletteFor(mapStyle, dark);
+  const options = custom ? builderOptions(custom, dark) : {};
   // Before the colors below are merged in, so it answers whether the card
   // asked for anything of its own.
   const cardAdjusted = Object.keys(options).length > 0;
 
+  // The style's own adjustments go under the card's, group by group, so a
+  // card that sets one recolor value keeps the style's others.
+  const {
+    colors,
+    colorsDark,
+    options: styleOptions,
+  } = STYLE_PALETTES[mapStyle];
+  for (const [group, values] of Object.entries(styleOptions ?? {})) {
+    options[group] = {
+      ...values,
+      ...(options[group] as Record<string, unknown> | undefined),
+    };
+  }
+
   // Bottom up: the style's colors, what the theme repaints, then what the card
   // names - so a card that sets one color keeps the rest of the look.
-  const { colors, colorsDark } = STYLE_PALETTES[mapStyle];
-  const styleColors = (darkMode ? colorsDark : colors) ?? colors;
+  const styleColors = dark ? colorsDark : colors;
   if (styleColors || themeColors) {
     options.colors = {
       ...styleColors,
@@ -223,11 +273,19 @@ export const resolveMapStyle = (
     return { palette };
   }
 
-  const base = styleColors ? { baseColors: styleColors } : {};
+  const own = styleColors || styleOptions;
+  const base = own
+    ? {
+        styleOptions: {
+          ...styleOptions,
+          ...(styleColors && { colors: styleColors }),
+        },
+      }
+    : {};
 
   // Anything added on top of the shipped default has to be built here.
   const untouched = !themeColors && !cardAdjusted;
   return mapStyle === DEFAULT_MAP_STYLE && untouched
-    ? { palette, options, ...base, shipped: darkMode ? "dark" : "light" }
+    ? { palette, options, ...base, shipped: dark ? "dark" : "light" }
     : { palette, options, ...base };
 };

@@ -358,6 +358,7 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
     return html`
       <ha-dialog
         .open=${this._open}
+        .accessibleLabel=${dialogTitle}
         .preventScrimClose=${this._preventScrimClose}
         @after-show=${this._focusFormStep}
         @closed=${this._dialogClosed}
@@ -481,6 +482,7 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
                                       .flowConfig=${this._params.flowConfig}
                                       .step=${this._step}
                                       .hass=${this.hass}
+                                      .manifest=${this._params.manifest}
                                       .navigateToResult=${
                                         this._params.navigateToResult ?? false
                                       }
@@ -595,6 +597,7 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
           <ha-dialog-footer slot="footer">
             <ha-button
               slot="primaryAction"
+              .loading=${this._formStepLoading}
               @click=${this._finishCreateEntryStep}
             >
               ${this.hass.localize(
@@ -837,6 +840,9 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
     return [
       haStyleDialog,
       css`
+        ha-dialog {
+          --ha-dialog-header-title-height: auto;
+        }
         .dialog-title {
           overflow: hidden;
           text-overflow: ellipsis;

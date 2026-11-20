@@ -155,6 +155,10 @@ export const DirtyStateProviderMixin =
 
       protected updated(changedProperties: PropertyValues<this>): void {
         super.updated(changedProperties);
+        // A late fetch can still update a removed provider
+        if (!this.isConnected) {
+          return;
+        }
         connectedDirtyStateProviders.set(this, this._blocksReload);
         publishGlobalDirtyState();
       }

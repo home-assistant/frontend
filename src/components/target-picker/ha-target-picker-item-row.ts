@@ -1,4 +1,5 @@
 import {
+  mdiChartLine,
   mdiClose,
   mdiDevices,
   mdiHome,
@@ -57,6 +58,11 @@ import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import type { FloorRegistryEntry } from "../../data/floor_registry";
 import { domainToName } from "../../data/integration";
 import type { LabelRegistryEntry } from "../../data/label/label_registry";
+import {
+  getStatisticMetadata,
+  isExternalStatistic,
+  type StatisticsMetaData,
+} from "../../data/recorder";
 import {
   deviceMeetsFilter,
   extractFromTarget,
@@ -176,6 +182,9 @@ export class HaTargetPickerItemRow extends LitElement {
   @state() private _domainName?: string;
 
   @state() private _entries?: ExtractFromTargetResult;
+
+  /** Metadata of an external statistic picked as entity, which has no state. */
+  @state() private _statistic?: StatisticsMetaData;
 
   private _fetchedEntries?: ExtractFromTargetResult;
 
@@ -447,6 +456,7 @@ export class HaTargetPickerItemRow extends LitElement {
           ? html`
               <ha-icon-button
                 .path=${mdiClose}
+                .label=${this._i18n.localize("ui.common.remove")}
                 slot="end"
                 @click=${this._removeItem}
               ></ha-icon-button>
@@ -463,6 +473,7 @@ export class HaTargetPickerItemRow extends LitElement {
               .indeterminate=${live(rowState.indeterminate)}
               .disabled=${rowState.disabled}
               .title=${name}
+              .accessibleLabel=${name}
               @change=${this._selectionChanged}
               @click=${stopPropagation}
             ></ha-checkbox>`
@@ -773,6 +784,19 @@ export class HaTargetPickerItemRow extends LitElement {
     this._fetchedEntries = undefined;
     if (this.type === "entity") {
       this._entries = undefined;
+      this._statistic = undefined;
+      if (isExternalStatistic(this.itemId)) {
+        try {
+          const [metadata] = await getStatisticMetadata(this._api.callWS, [
+            this.itemId,
+          ]);
+          if (requestId === this._lastFetch) {
+            this._statistic = metadata;
+          }
+        } catch {
+          // Without metadata the statistic is shown as not found
+        }
+      }
       return;
     }
     try {
@@ -859,6 +883,15 @@ export class HaTargetPickerItemRow extends LitElement {
     }
     if (type === "entity") {
       const stateObject: HassEntity | undefined = this._states?.[item];
+      // External statistics have no state, only the metadata the recorder keeps.
+      if (!stateObject && this._statistic?.statistic_id === item) {
+        return {
+          name: this._statistic.name || item,
+          context: domainToName(this._i18n.localize, this._statistic.source),
+          fallbackIconPath: mdiChartLine,
+          notFound: false,
+        };
+      }
       const { primary, secondary } = stateObject
         ? computeEntityPickerDisplay(
             {

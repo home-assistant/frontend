@@ -88,10 +88,7 @@ class MoreInfoGroup extends LitElement {
         return "";
       }
       return html`
-        <state-card-content
-          .stateObj=${entityState}
-          .hass=${this.hass}
-        ></state-card-content>
+        <state-card-content .stateObj=${entityState}></state-card-content>
       `;
     })}`;
   }

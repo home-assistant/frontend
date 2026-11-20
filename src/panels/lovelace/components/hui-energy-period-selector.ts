@@ -44,6 +44,7 @@ import {
   formatDateMonth,
   formatDateMonthShort,
   formatDateVeryShort,
+  formatDateWeekdayVeryShortDate,
   formatDateYear,
 } from "../../../common/datetime/format_date";
 import { consume } from "../../../common/decorators/consume";
@@ -72,6 +73,7 @@ import {
   CompareMode,
   downloadEnergyData,
   getEnergyDefaultPeriodStorageKey,
+  hasCombinableEnergySources,
 } from "../../../data/energy";
 import { EnergyCollectionController } from "../../../data/energy-collection-controller";
 import type {
@@ -116,6 +118,9 @@ export class HuiEnergyPeriodSelector extends LitElement {
   @property({ type: Boolean, attribute: "allow-compare" }) public allowCompare =
     true;
 
+  @property({ type: Boolean, attribute: "show-combine-sources" })
+  public showCombineSources = false;
+
   @property({ attribute: "vertical-opening-direction" })
   public verticalOpeningDirection?: VerticalOpeningDirection;
 
@@ -145,6 +150,10 @@ export class HuiEnergyPeriodSelector extends LitElement {
   @state() private _ranges: DateRangePickerRanges = {};
 
   @state() private _compare = false;
+
+  @state() private _combineSources?: boolean;
+
+  @state() private _hasCombinableSources = false;
 
   @state() private _collapseButtons = false;
 
@@ -197,6 +206,10 @@ export class HuiEnergyPeriodSelector extends LitElement {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
       this._measure();
+    }
+
+    if (changedProps.has("showCombineSources")) {
+      this._applyDefaultCombineSources();
     }
 
     if (changedProps.has("_i18n") || changedProps.has("_hassConfig")) {
@@ -279,6 +292,17 @@ export class HuiEnergyPeriodSelector extends LitElement {
         action: () => this._toggleCompare(),
       },
       {
+        path: this._combineSources
+          ? mdiCheckboxOutline
+          : mdiCheckboxBlankOutline,
+        alwaysCollapse: true,
+        hidden: !this._showCombineSources(),
+        label: this._i18n.localize(
+          "ui.panel.lovelace.components.energy_period_selector.combine_sources"
+        ),
+        action: () => this._toggleCombineSources(),
+      },
+      {
         path: mdiDownload,
         alwaysCollapse: true,
         label: this._i18n.localize(
@@ -344,7 +368,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
                                   this._hassConfig
                                 )}`
                               : simpleRange === "day"
-                                ? html`${formatDateVeryShort(
+                                ? html`${formatDateWeekdayVeryShortDate(
                                     this._startDate,
                                     this._i18n.locale,
                                     this._hassConfig
@@ -741,6 +765,9 @@ export class HuiEnergyPeriodSelector extends LitElement {
     }
     this._loading = false;
     this._compare = energyData.startCompare !== undefined;
+    this._combineSources = energyData.combineSources;
+    this._hasCombinableSources = hasCombinableEnergySources(energyData.prefs);
+    this._applyDefaultCombineSources();
     this._startDate = energyData.start;
     this._endDate = energyData.end || endOfToday();
   }
@@ -758,6 +785,21 @@ export class HuiEnergyPeriodSelector extends LitElement {
     );
     energyCollection.refresh();
     this._scheduleLoadingIndicator();
+  }
+
+  private _showCombineSources() {
+    return this.showCombineSources && this._hasCombinableSources;
+  }
+
+  private _applyDefaultCombineSources() {
+    if (this._showCombineSources() && this._combineSources === undefined) {
+      this._energyCollection.collection?.setDefaultCombineSources(false);
+    }
+  }
+
+  private _toggleCombineSources() {
+    const collection = this._energyCollection.collection;
+    collection?.setCombineSources(!collection.combineSources);
   }
 
   private _downloadData() {

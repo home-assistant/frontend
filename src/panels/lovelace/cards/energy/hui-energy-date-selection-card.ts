@@ -72,6 +72,7 @@ export class HuiEnergyDateSelectionCard
             .verticalOpeningDirection=${verticalOpeningDirection}
             .openingDirection=${openingDirection}
             .allowCompare=${!this._config.disable_compare}
+            .showCombineSources=${!!this._config.show_combine_sources}
           ></hui-energy-period-selector>
         </div>
       </ha-card>

@@ -272,7 +272,7 @@ export class AssistPipelineDebug extends LitElement {
       }
       .content {
         padding: 24px 0 32px;
-        max-width: 600px;
+        max-width: var(--ha-content-width-narrow);
         margin: 0 auto;
         direction: ltr;
       }

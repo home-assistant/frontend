@@ -52,7 +52,7 @@ class StateInfo extends LitElement {
         ${
           this.inDialog
             ? html`<div class="time-ago">
-                <ha-tooltip for="relative-time">
+                <ha-tooltip for="relative-time" trigger="hover focus click">
                   <div class="row">
                     <span class="column-name">
                       ${this._localize(

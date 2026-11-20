@@ -121,7 +121,13 @@ export class HuiCardElementEditor extends HuiTypedElementEditor<LovelaceCardConf
   }
 
   static override styles = [
+    HuiTypedElementEditor.styles,
     css`
+      .gui-editor,
+      .yaml-editor {
+        padding: 0;
+      }
+
       ha-tab-group {
         margin-bottom: 16px;
       }

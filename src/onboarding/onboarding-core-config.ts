@@ -1,4 +1,4 @@
-import type { PropertyValues, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -121,15 +121,6 @@ class OnboardingCoreConfig extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues<this>) {
-    super.firstUpdated(changedProps);
-    this.addEventListener("keyup", (ev) => {
-      if (this._location && ev.key === "Enter") {
-        this._save(ev);
-      }
-    });
-  }
-
   private _handleFormChanged(
     ev: ValueChangedEvent<{ country?: string; time_zone?: string }>
   ) {
@@ -154,8 +145,8 @@ class OnboardingCoreConfig extends LitElement {
     if (ev.detail.value.language) {
       this._language = ev.detail.value.language;
     }
-    if (ev.detail.value.timezone) {
-      this._timeZone = ev.detail.value.timezone;
+    if (ev.detail.value.time_zone) {
+      this._timeZone = ev.detail.value.time_zone;
       this._timeZoneDetected = true;
     }
     if (ev.detail.value.unit_system) {
@@ -175,7 +166,7 @@ class OnboardingCoreConfig extends LitElement {
         suggested = lang;
       }
     }
-    this._country = suggested;
+    this._country ??= suggested;
 
     fireEvent(this, "onboarding-progress", { increase: 0.5 });
     await this.updateComplete;
@@ -197,9 +188,10 @@ class OnboardingCoreConfig extends LitElement {
         longitude: this._location[1],
         elevation: Number(this._elevation),
         unit_system:
-          this._unitSystem || ["US", "MM", "LR"].includes(this._country)
+          this._unitSystem ||
+          (["US", "MM", "LR"].includes(this._country)
             ? "us_customary"
-            : "metric",
+            : "metric"),
         time_zone: this._timeZone,
         currency: this._currency || countryCurrency[this._country] || "EUR",
         country: this._country,

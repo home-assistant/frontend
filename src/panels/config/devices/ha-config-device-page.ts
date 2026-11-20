@@ -95,6 +95,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { showVoiceAssistantSetupDialog } from "../../../dialogs/voice-assistant-setup/show-voice-assistant-setup-dialog";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
@@ -519,10 +520,12 @@ export class HaConfigDevicePage extends LitElement {
 
     const relatedCard = html`
       <ha-card outlined>
-        <h1 class="card-header">
-          ${this.hass.localize(
-            "ui.panel.config.devices.automation.related_heading"
-          )}
+        <div class="card-header">
+          <h1>
+            ${this.hass.localize(
+              "ui.panel.config.devices.automation.related_heading"
+            )}
+          </h1>
           <ha-button
             appearance="filled"
             variant="brand"
@@ -532,7 +535,7 @@ export class HaConfigDevicePage extends LitElement {
             <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
             ${this.hass.localize("ui.dialogs.more_info_control.add_to.item")}
           </ha-button>
-        </h1>
+        </div>
         ${
           !this._related
             ? html`
@@ -994,7 +997,13 @@ export class HaConfigDevicePage extends LitElement {
               (batteryDomain === "binary_sensor" ||
                 !Number.isNaN(Number(battery.state)))
                 ? html`
-                    <div class="battery">
+                    <button
+                      class="battery"
+                      aria-label=${`${this.hass.formatEntityName(
+                        battery
+                      )} ${this.hass.formatEntityState(battery)}`}
+                      @click=${this._showBatteryMoreInfo}
+                    >
                       ${
                         batteryDomain === "sensor"
                           ? this.hass.formatEntityState(battery)
@@ -1004,7 +1013,7 @@ export class HaConfigDevicePage extends LitElement {
                         .batteryStateObj=${battery}
                         .batteryChargingStateObj=${batteryChargingState}
                       ></ha-battery-icon>
-                    </div>
+                    </button>
                   `
                 : ""
             }
@@ -1166,6 +1175,9 @@ export class HaConfigDevicePage extends LitElement {
         buttons.push({
           action: async () => {
             const confirmed = await showConfirmationDialog(this, {
+              title: this.hass.localize(
+                "ui.panel.config.devices.confirm_delete_title"
+              ),
               text:
                 this._integrations(device, this.entries, this.manifests)
                   .length > 1
@@ -1181,7 +1193,7 @@ export class HaConfigDevicePage extends LitElement {
                   : this.hass.localize(
                       `ui.panel.config.devices.confirm_delete`
                     ),
-              confirmText: this.hass.localize("ui.common.delete"),
+              confirmText: this.hass.localize("ui.common.remove"),
               dismissText: this.hass.localize("ui.common.cancel"),
               destructive: true,
             });
@@ -1387,6 +1399,15 @@ export class HaConfigDevicePage extends LitElement {
     }
   }
 
+  private _showBatteryMoreInfo() {
+    const batteryEntity = this._batteryEntity(
+      this._entities(this.deviceId, this._entityReg, this.hass.devices)
+    );
+    if (batteryEntity) {
+      showMoreInfoDialog(this, { entityId: batteryEntity.entity_id });
+    }
+  }
+
   private _computeEntityName(
     entity: EntityRegistryEntry,
     devices: HomeAssistant["devices"]
@@ -1584,7 +1605,11 @@ export class HaConfigDevicePage extends LitElement {
           delete updates.disabled_by;
         }
         try {
-          await updateDeviceRegistryEntry(this.hass, this.deviceId, updates);
+          await updateDeviceRegistryEntry(
+            this.hass.callWS,
+            this.deviceId,
+            updates
+          );
         } catch (err: unknown) {
           showAlertDialog(this, {
             title: this.hass.localize(
@@ -1600,7 +1625,7 @@ export class HaConfigDevicePage extends LitElement {
   };
 
   private async _enableDevice(): Promise<void> {
-    await updateDeviceRegistryEntry(this.hass, this.deviceId, {
+    await updateDeviceRegistryEntry(this.hass.callWS, this.deviceId, {
       disabled_by: null,
     });
   }
@@ -1652,9 +1677,8 @@ export class HaConfigDevicePage extends LitElement {
           flex-wrap: wrap;
           gap: var(--ha-space-4);
           margin: auto;
-          max-width: 1280px;
-          box-sizing: border-box;
-          padding: var(--ha-space-2) var(--ha-space-4);
+          max-width: var(--ha-content-width-wide);
+          padding: var(--ha-space-2) var(--ha-content-gutter);
           margin-top: var(--ha-space-8);
           margin-bottom: var(--ha-space-8);
         }
@@ -1757,6 +1781,19 @@ export class HaConfigDevicePage extends LitElement {
           align-items: center;
           display: flex;
           white-space: nowrap;
+          background: none;
+          border: none;
+          padding: 0;
+          margin: 0;
+          font: inherit;
+          color: inherit;
+          cursor: pointer;
+          border-radius: var(--ha-border-radius-sm);
+        }
+
+        .battery:focus-visible {
+          outline: 2px solid var(--primary-color);
+          outline-offset: 2px;
         }
 
         .column > *:not(:first-child) {

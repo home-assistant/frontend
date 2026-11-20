@@ -264,6 +264,23 @@ describe("downSampleLineData", () => {
     ]);
   });
 
+  it("drops a marker followed by a value that is neither min nor max", () => {
+    // The reading after the gap repeats the one before it, so it loses the
+    // min/max ties. The series then holds still for hours (#55896).
+    const points: GappedPoint[] = [
+      [FIXED_EPOCH_MS, 1.2],
+      [FIXED_EPOCH_MS + 1_000, 1.2],
+      [FIXED_EPOCH_MS + 1_001, 1.2],
+      [FIXED_EPOCH_MS + 1_001, null],
+      [FIXED_EPOCH_MS + 2_000, 1.2],
+      [FIXED_EPOCH_MS + 30_000, 1.2],
+      [FIXED_EPOCH_MS + 31_000, 1.2],
+    ];
+    expect(
+      downSampleLineData(points, 3).some((point) => point[1] === null)
+    ).toBe(false);
+  });
+
   it("keeps a marker sharing its x with a value after that value", () => {
     // statistics-chart-data.ts ends the line and breaks it at the same x
     const points: GappedPoint[] = [

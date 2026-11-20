@@ -12,10 +12,15 @@ import {
   registerUnsavedChangesGuard,
   unregisterUnsavedChangesGuard,
 } from "../../src/common/navigate";
+import { closeAllDialogs } from "../../src/dialogs/make-dialog-manager";
 
-// navigate() closes open dialogs before touching history.
+// navigate() closes open dialogs before touching history. A closed dialog
+// drops its state from the entry, which is what navigate() waits for.
 vi.mock("../../src/dialogs/make-dialog-manager", () => ({
-  closeAllDialogs: vi.fn(async () => true),
+  closeAllDialogs: vi.fn(async () => {
+    window.history.replaceState(null, "");
+    return true;
+  }),
 }));
 
 // Fabricates a raw entry like a document load, which navigate() never produces.
@@ -56,6 +61,7 @@ const trackDeferredGuard = (isDirty: () => boolean = () => true) => {
 
 afterEach(() => {
   registeredGuards.splice(0).forEach(unregisterUnsavedChangesGuard);
+  vi.mocked(closeAllDialogs).mockClear();
 });
 
 describe("navigate", () => {
@@ -96,6 +102,41 @@ describe("navigate", () => {
   it("does not stamp an entry the app did not push", () => {
     expect(window.history.state).toBeNull();
     expect(canGoBack()).toBe(false);
+  });
+
+  it("closes an open dialog before replacing the entry", async () => {
+    setEntry("/home", { dialog: "ha-more-info-dialog" });
+
+    await navigate("/home/overview", { replace: true });
+
+    expect(closeAllDialogs).toHaveBeenCalledOnce();
+    expect(window.location.pathname).toEqual("/home/overview");
+    expect(window.history.state).toBeNull();
+  });
+
+  it("keeps an open dialog and the entry state when asked to", async () => {
+    setEntry("/home", { dialog: "ha-more-info-dialog", from: "/" });
+
+    await navigate("/home/overview", { replace: true, keepDialogs: true });
+
+    expect(closeAllDialogs).not.toHaveBeenCalled();
+    expect(window.location.pathname).toEqual("/home/overview");
+    expect(window.history.state).toEqual({
+      dialog: "ha-more-info-dialog",
+      from: "/",
+    });
+  });
+
+  it("does not drop a navigation right after one that keeps dialogs", async () => {
+    setEntry("/home");
+
+    const results = await Promise.all([
+      navigate("/home/overview", { replace: true, keepDialogs: true }),
+      navigate("/config"),
+    ]);
+
+    expect(results).toEqual([true, true]);
+    expect(window.location.pathname).toEqual("/config");
   });
 });
 

@@ -1,17 +1,17 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-switch";
-import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
-import "../../../components/item/ha-row-item";
+import "../../../components/item/ha-list-item-switch";
+import type { HaListItemSwitch } from "../../../components/item/ha-list-item-switch";
 import { createAuthForUser } from "../../../data/auth";
 import type { User } from "../../../data/user";
 import {
@@ -185,7 +185,10 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
               "ui.panel.config.users.add_user.password_not_match"
             )}
           ></ha-input>
-          <ha-row-item>
+          <ha-list-item-switch
+            .checked=${this._localOnly}
+            @change=${this._localOnlyChanged}
+          >
             <span slot="headline"
               >${this.hass.localize(
                 "ui.panel.config.users.editor.local_access_only"
@@ -196,13 +199,11 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
                 "ui.panel.config.users.editor.local_access_only_description"
               )}</span
             >
-            <ha-switch
-              slot="end"
-              .checked=${this._localOnly}
-              @change=${this._localOnlyChanged}
-            ></ha-switch>
-          </ha-row-item>
-          <ha-row-item>
+          </ha-list-item-switch>
+          <ha-list-item-switch
+            .checked=${this._isAdmin}
+            @change=${this._adminChanged}
+          >
             <span slot="headline"
               >${this.hass.localize("ui.panel.config.users.editor.admin")}</span
             >
@@ -211,12 +212,7 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
                 "ui.panel.config.users.editor.admin_description"
               )}</span
             >
-            <ha-switch
-              slot="end"
-              .checked=${this._isAdmin}
-              @change=${this._adminChanged}
-            ></ha-switch>
-          </ha-row-item>
+          </ha-list-item-switch>
           ${
             !this._isAdmin
               ? html`
@@ -285,14 +281,16 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
     this._publishDirtyState();
   }
 
-  private async _adminChanged(ev: Event): Promise<void> {
-    const target = ev.target as HaSwitch;
+  private async _adminChanged(
+    ev: HASSDomTargetEvent<HaListItemSwitch>
+  ): Promise<void> {
+    const target = ev.target;
     this._isAdmin = target.checked;
     this._publishDirtyState();
   }
 
-  private _localOnlyChanged(ev: Event): void {
-    const target = ev.target as HaSwitch;
+  private _localOnlyChanged(ev: HASSDomTargetEvent<HaListItemSwitch>): void {
+    const target = ev.target;
     this._localOnly = target.checked;
     this._publishDirtyState();
   }
@@ -368,7 +366,7 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
           display: flex;
           padding: 8px 0;
         }
-        ha-row-item {
+        ha-list-item-switch {
           --ha-row-item-padding-inline: 0;
         }
       `,

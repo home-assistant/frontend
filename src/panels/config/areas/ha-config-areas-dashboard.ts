@@ -359,6 +359,9 @@ export class HaConfigAreasDashboard extends LitElement {
             <ha-icon-button
               .area=${area}
               .path=${mdiPencil}
+              .label=${this.hass.localize(
+                "ui.panel.config.areas.edit_settings"
+              )}
               @click=${this._openAreaDetails}
             ></ha-icon-button>
           </div>
@@ -676,7 +679,6 @@ export class HaConfigAreasDashboard extends LitElement {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       grid-gap: 16px 16px;
-      max-width: 2000px;
       margin-bottom: 16px;
     }
     .areas > * {

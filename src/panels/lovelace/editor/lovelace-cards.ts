@@ -209,6 +209,14 @@ export const energyCards: Card[] = [
     showElement: false,
   },
   {
+    type: "gas-sankey",
+    showElement: false,
+  },
+  {
+    type: "gas-flow-sankey",
+    showElement: false,
+  },
+  {
     type: "energy-solar-consumed-gauge",
     showElement: false,
   },

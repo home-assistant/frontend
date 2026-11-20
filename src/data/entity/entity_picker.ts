@@ -6,6 +6,7 @@ import {
   computeEntitySearchLabels,
 } from "../../common/entity/compute_entity_name_display";
 import type { RelatedIdSets } from "../../common/search/related-context";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { PickerComboBoxItem } from "../../components/ha-picker-combo-box";
 import type { FuseWeightedKey } from "../../resources/fuseMultiTerm";
@@ -51,6 +52,14 @@ export const entityComboBoxKeys: FuseWeightedKey[] = [
 ];
 
 export interface GetEntitiesOptions {
+  states: HomeAssistant["states"];
+  entities: HomeAssistant["entities"];
+  devices: HomeAssistant["devices"];
+  areas: HomeAssistant["areas"];
+  floors: HomeAssistant["floors"];
+  localize: LocalizeFunc;
+  language: string;
+  translationMetadata: HomeAssistant["translationMetadata"];
   includeDomains?: string[];
   excludeDomains?: string[];
   entityFilter?: HaEntityPickerEntityFilterFunc;
@@ -63,20 +72,11 @@ export interface GetEntitiesOptions {
 }
 
 export const getEntities = (
-  hass: Pick<
-    HomeAssistant,
-    | "states"
-    | "entities"
-    | "devices"
-    | "areas"
-    | "floors"
-    | "language"
-    | "translationMetadata"
-    | "localize"
-  >,
-  options?: GetEntitiesOptions
+  options: GetEntitiesOptions
 ): EntityComboBoxItem[] => {
   const {
+    states,
+    localize,
     includeDomains,
     excludeDomains,
     entityFilter,
@@ -86,11 +86,11 @@ export const getEntities = (
     excludeEntities,
     value,
     idPrefix = "",
-  } = options ?? {};
+  } = options;
 
   let items: EntityComboBoxItem[];
 
-  let entityIds = Object.keys(hass.states);
+  let entityIds = Object.keys(states);
 
   // These run over every entity, so use Sets for O(1) membership instead of
   // repeated Array.includes scans.
@@ -126,21 +126,21 @@ export const getEntities = (
   // of inside the map over (potentially thousands of) entities.
   const domainNames = new Map<string, string>();
   const displayOptions = {
-    entities: hass.entities,
-    devices: hass.devices,
-    areas: hass.areas,
-    floors: hass.floors,
-    language: hass.language,
-    translationMetadata: hass.translationMetadata,
+    entities: options.entities,
+    devices: options.devices,
+    areas: options.areas,
+    floors: options.floors,
+    language: options.language,
+    translationMetadata: options.translationMetadata,
   };
 
   items = entityIds.map<EntityComboBoxItem>((entityId) => {
-    const stateObj = hass.states[entityId];
+    const stateObj = states[entityId];
 
     const domain = computeDomain(entityId);
     let domainName = domainNames.get(domain);
     if (domainName === undefined) {
-      domainName = domainToName(hass.localize, domain);
+      domainName = domainToName(localize, domain);
       domainNames.set(domain, domainName);
     }
 
@@ -156,7 +156,7 @@ export const getEntities = (
       domain_name: domainName,
       sorting_label: [primary, secondary].filter(Boolean).join("_"),
       search_labels: {
-        ...computeEntitySearchLabels(stateObj, hass),
+        ...computeEntitySearchLabels(stateObj, displayOptions),
         domainName: domainName || null,
         entityId: entityId,
       },

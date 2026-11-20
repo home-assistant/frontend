@@ -35,8 +35,8 @@ import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
+import "../../../components/skeleton/ha-skeleton-log";
 
 import { getSignedPath } from "../../../data/auth";
 
@@ -337,9 +337,10 @@ class ErrorLogCard extends LitElement {
             <div id="scroll-top-marker"></div>
             ${
               this._loadingPrevState === "loading"
-                ? html`<div class="loading-old">
-                    <ha-spinner></ha-spinner>
-                  </div>`
+                ? html`<ha-skeleton-log
+                    lines="3"
+                    .label=${localize("ui.panel.config.logs.loading_log")}
+                  ></ha-skeleton-log>`
                 : nothing
             }
             ${
@@ -350,9 +351,13 @@ class ErrorLogCard extends LitElement {
                     )}
                   </ha-alert>`
                 : this._loadingState === "loading"
-                  ? html`<div>
-                      ${localize("ui.panel.config.logs.loading_log")}
-                    </div>`
+                  ? // Lines kept while reconnecting stay visible, unless the search hides them all
+                    this._ansiToHtmlElement?.hasLines &&
+                    !(this.filter && this._noSearchResults)
+                    ? nothing
+                    : html`<ha-skeleton-log
+                        .label=${localize("ui.panel.config.logs.loading_log")}
+                      ></ha-skeleton-log>`
                   : this._loadingState === "empty"
                     ? html`<div>
                         ${
@@ -749,6 +754,8 @@ class ErrorLogCard extends LitElement {
     // The backlog is sent again on every subscription
     this._integrationLines = [];
     this._ansiToHtmlElement?.clear();
+    // Show the skeleton again now the retained lines are gone
+    this.requestUpdate();
 
     // Each subscription starts with the integration's backlog, which are
     // merged in time order with the lines sent meanwhile once all arrived.
@@ -1106,6 +1113,14 @@ class ErrorLogCard extends LitElement {
       overflow-wrap: break-word;
     }
 
+    ha-skeleton-log {
+      --ha-skeleton-log-padding: var(--ha-space-4);
+    }
+
+    ha-skeleton-log[lines] {
+      --ha-skeleton-log-padding: var(--ha-space-2) 0;
+    }
+
     .error-log > div:hover {
       background-color: var(--secondary-background-color);
     }
@@ -1129,13 +1144,6 @@ class ErrorLogCard extends LitElement {
 
     .warning {
       color: var(--warning-color);
-    }
-
-    .loading-old {
-      display: flex;
-      width: 100%;
-      justify-content: center;
-      padding: 16px;
     }
 
     ha-assist-chip {

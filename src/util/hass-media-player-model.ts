@@ -7,14 +7,14 @@ import {
 import type { HomeAssistant } from "../types";
 
 export default class MediaPlayerEntity {
-  public hass: Pick<HomeAssistant, "callService">;
-
   public stateObj: HassEntity;
+
+  private _callService: HomeAssistant["callService"];
 
   private _attr: Record<string, any>;
 
-  constructor(hass: Pick<HomeAssistant, "callService">, stateObj: HassEntity) {
-    this.hass = hass;
+  constructor(callService: HomeAssistant["callService"], stateObj: HassEntity) {
+    this._callService = callService;
     this.stateObj = stateObj;
     this._attr = stateObj.attributes;
   }
@@ -240,6 +240,6 @@ export default class MediaPlayerEntity {
 
   callService(service, data: any = {}) {
     data.entity_id = this.stateObj.entity_id;
-    this.hass.callService("media_player", service, data);
+    this._callService("media_player", service, data);
   }
 }

@@ -13,7 +13,11 @@ import { computeRTL } from "../common/util/compute_rtl";
 import type { HomeAssistant } from "../types";
 import { isNumericSensorDeviceClass } from "./sensor";
 import type { FrontendLocaleData } from "./translation";
-import type { Statistics } from "./recorder";
+import {
+  isExternalStatistic,
+  type Statistics,
+  type StatisticsMetaData,
+} from "./recorder";
 
 const DOMAINS_USE_LAST_UPDATED = ["climate", "humidifier", "water_heater"];
 const NEED_ATTRIBUTE_DOMAINS = [
@@ -517,11 +521,29 @@ const isNumericFromAttributes = (attributes: Record<string, any>) =>
 
 const BLANK_UNIT = " ";
 
+/**
+ * Attributes for an external statistic, which has no entity. Without them the
+ * history names the series after its ID and shows it without a unit.
+ */
+const statisticAttributes = (
+  metadata: StatisticsMetaData | undefined
+): Record<string, string> => {
+  const attributes: Record<string, string> = {};
+  if (metadata?.name) {
+    attributes.friendly_name = metadata.name;
+  }
+  if (metadata?.statistics_unit_of_measurement) {
+    attributes.unit_of_measurement = metadata.statistics_unit_of_measurement;
+  }
+  return attributes;
+};
+
 export const convertStatisticsToHistory = (
   hass: HomeAssistant,
   statistics: Statistics,
   statisticIds: string[],
-  splitDeviceClasses = false
+  splitDeviceClasses = false,
+  statisticsMetadata?: Record<string, StatisticsMetaData>
 ): HistoryResult => {
   // Maintain the statistic id ordering
   const orderedStatistics: Statistics = {};
@@ -534,10 +556,15 @@ export const convertStatisticsToHistory = (
   // Convert statistics to HistoryResult format
   const statsHistoryStates: HistoryStates = {};
   Object.entries(orderedStatistics).forEach(([key, value]) => {
+    // Other statistics keep a blank unit, so that they merge into the history
+    // line of their entity even after the entity was removed.
+    const attributes = isExternalStatistic(key)
+      ? statisticAttributes(statisticsMetadata?.[key])
+      : {};
     const entityHistoryStates: EntityHistoryState[] = value.map((e) => ({
       s: e.mean != null ? e.mean.toString() : e.state!.toString(),
       lc: e.end / 1000,
-      a: {},
+      a: attributes,
       lu: e.end / 1000,
     }));
     statsHistoryStates[key] = entityHistoryStates;

@@ -108,10 +108,14 @@ class DialogMediaManage extends LitElement {
     }
 
     let fileIndex = 0;
+    const title = this._localize(
+      "ui.components.media-browser.file_management.title"
+    );
 
     return html`
       <ha-dialog
         .open=${this._open}
+        .accessibleLabel=${title}
         ?prevent-scrim-close=${this._uploading || this._deleting}
         @closed=${this._dialogClosed}
       >
@@ -127,11 +131,7 @@ class DialogMediaManage extends LitElement {
                 ></slot>`
               : nothing
           }
-          <h1 class="title" slot="title" id="dialog-box-title">
-            ${this._localize(
-              "ui.components.media-browser.file_management.title"
-            )}
-          </h1>
+          <h1 class="title" slot="title" id="dialog-box-title">${title}</h1>
           ${
             this._selected.size === 0
               ? html`<ha-media-upload-button

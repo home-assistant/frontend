@@ -465,10 +465,13 @@ export class HaServiceControl extends LitElement {
       serviceData?.flatFields.some((field) => showOptionalToggle(field))
     );
 
-    const targetEntities = this._getTargetedEntities(
-      serviceData?.target,
-      this._value
-    );
+    // Actions that can never have targets get null, like template targets
+    const targetEntities =
+      serviceData &&
+      ("target" in serviceData ||
+        serviceData.flatFields.some((field) => field.key === "entity_id"))
+        ? this._getTargetedEntities(serviceData.target, this._value)
+        : null;
 
     const domain = this._value?.action
       ? computeDomain(this._value.action)
@@ -531,6 +534,9 @@ export class HaServiceControl extends LitElement {
                     >
                       <ha-icon-button
                         .path=${mdiHelpCircleOutline}
+                        .label=${this.hass.localize(
+                          "ui.components.service-control.integration_doc"
+                        )}
                         class="help-icon"
                       ></ha-icon-button>
                     </a>`
@@ -689,6 +695,13 @@ export class HaServiceControl extends LitElement {
       domain && serviceName
         ? this.hass.services[domain][serviceName].description_placeholders
         : undefined;
+    const fieldName =
+      this.hass.localize(
+        `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`,
+        descriptionPlaceholders
+      ) ||
+      dataField.name ||
+      dataField.key;
 
     return dataField.selector
       ? html`<ha-settings-row
@@ -704,6 +717,7 @@ export class HaServiceControl extends LitElement {
                 : ""
               : html`<ha-checkbox
                   .key=${dataField.key}
+                  .accessibleLabel=${fieldName}
                   .checked=${
                     this._checkedKeys.has(dataField.key) ||
                     (!!this._value?.data &&
@@ -718,14 +732,7 @@ export class HaServiceControl extends LitElement {
             slot="heading"
             class=${showOptional ? "clickable" : ""}
             @click=${showOptional ? this._toggleCheckbox : undefined}
-            >${
-              this.hass.localize(
-                `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`,
-                descriptionPlaceholders
-              ) ||
-              dataField.name ||
-              dataField.key
-            }</span
+            >${fieldName}</span
           >
           <span
             slot="description"

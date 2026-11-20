@@ -33,6 +33,7 @@ import {
   getSummedData,
 } from "../../../data/energy";
 import { EnergyCollectionController } from "../../../data/energy-collection-controller";
+import { filterGroupsWithListedMembers } from "../../../data/group";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type {
   HomeAssistantConfig,
@@ -51,11 +52,13 @@ import {
   filterLowBatteryEntities,
   filterProblemEntities,
   filterUnavailableBatteryEntities,
+  findMaintenanceEntities,
 } from "../../maintenance/strategies/maintenance-view-strategy";
 import {
   isSecurityAlertActive,
   resolveSecurityAlertSeverity,
 } from "../../security/strategies/security-alerts";
+import { findSecurityEntities } from "../../security/strategies/security-view-strategy";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import { tileCardStyle } from "./tile/tile-card-style";
 import type { HomeSummaryCard } from "./types";
@@ -174,7 +177,10 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
           generateEntityFilter(states, entities, devices, areas, floors, filter)
         );
 
-        const lightEntities = findEntities(allEntities, lightsFilters);
+        const lightEntities = filterGroupsWithListedMembers(
+          findEntities(allEntities, lightsFilters),
+          states
+        );
 
         const onLights = lightEntities.filter((entityId) => {
           const s = states[entityId]?.state;
@@ -231,11 +237,13 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
       }
       case "security": {
         // Alarm and lock status
-        const securityFilters = HOME_SUMMARIES_FILTERS.security.map((filter) =>
-          generateEntityFilter(states, entities, devices, areas, floors, filter)
-        );
-
-        const securityEntities = findEntities(allEntities, securityFilters);
+        const securityEntities = findSecurityEntities({
+          states,
+          entities,
+          devices,
+          areas,
+          floors,
+        });
 
         const locks = securityEntities.filter((entityId) => {
           const domain = computeDomain(entityId);
@@ -318,22 +326,13 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
           : localize("ui.card.home-summary.no_media_playing");
       }
       case "maintenance": {
-        const maintenanceFilters = HOME_SUMMARIES_FILTERS.maintenance.map(
-          (filter) =>
-            generateEntityFilter(
-              states,
-              entities,
-              devices,
-              areas,
-              floors,
-              filter
-            )
-        );
-
-        const maintenanceEntities = findEntities(
-          allEntities,
-          maintenanceFilters
-        );
+        const maintenanceEntities = findMaintenanceEntities({
+          states,
+          entities,
+          devices,
+          areas,
+          floors,
+        });
 
         const lowBatteryEntities = filterLowBatteryEntities(
           states,

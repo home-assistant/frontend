@@ -57,6 +57,7 @@ import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../../components/ha-switch";
+import "../../../../../components/item/ha-list-item-switch";
 import "../../../../../components/item/ha-row-item";
 import {
   apiContext,
@@ -816,7 +817,16 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
             this._currentAddon.version
               ? html`
                   <wa-divider></wa-divider>
-                  <ha-row-item>
+                  <ha-list-item-switch
+                    wrap-supporting-text
+                    .disabled=${
+                      (systemManaged && !this.controlEnabled) ||
+                      this._uninstalling
+                    }
+                    @change=${this._startOnBootToggled}
+                    .checked=${this._currentAddon.boot === "auto"}
+                    haptic
+                  >
                     <span slot="headline">
                       ${this.i18n.localize(
                         "ui.panel.config.apps.dashboard.option.boot.title"
@@ -827,22 +837,21 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                         "ui.panel.config.apps.dashboard.option.boot.description"
                       )}
                     </span>
-                    <ha-switch
-                      slot="end"
-                      .disabled=${
-                        (systemManaged && !this.controlEnabled) ||
-                        this._uninstalling
-                      }
-                      @change=${this._startOnBootToggled}
-                      .checked=${this._currentAddon.boot === "auto"}
-                      haptic
-                    ></ha-switch>
-                  </ha-row-item>
+                  </ha-list-item-switch>
 
                   ${
                     this._currentAddon.startup !== "once"
                       ? html`
-                          <ha-row-item>
+                          <ha-list-item-switch
+                            wrap-supporting-text
+                            .disabled=${
+                              (systemManaged && !this.controlEnabled) ||
+                              this._uninstalling
+                            }
+                            @change=${this._watchdogToggled}
+                            .checked=${this._currentAddon.watchdog || false}
+                            haptic
+                          >
                             <span slot="headline">
                               ${this.i18n.localize(
                                 "ui.panel.config.apps.dashboard.option.watchdog.title"
@@ -853,21 +862,20 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                                 "ui.panel.config.apps.dashboard.option.watchdog.description"
                               )}
                             </span>
-                            <ha-switch
-                              slot="end"
-                              .disabled=${
-                                (systemManaged && !this.controlEnabled) ||
-                                this._uninstalling
-                              }
-                              @change=${this._watchdogToggled}
-                              .checked=${this._currentAddon.watchdog || false}
-                              haptic
-                            ></ha-switch>
-                          </ha-row-item>
+                          </ha-list-item-switch>
                         `
                       : nothing
                   }
-                  <ha-row-item>
+                  <ha-list-item-switch
+                    wrap-supporting-text
+                    .disabled=${
+                      (systemManaged && !this.controlEnabled) ||
+                      this._uninstalling
+                    }
+                    @change=${this._autoUpdateToggled}
+                    .checked=${this._currentAddon.auto_update}
+                    haptic
+                  >
                     <span slot="headline">
                       ${this.i18n.localize(
                         "ui.panel.config.apps.dashboard.option.auto_update.title"
@@ -878,22 +886,23 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                         "ui.panel.config.apps.dashboard.option.auto_update.description"
                       )}
                     </span>
-                    <ha-switch
-                      slot="end"
-                      .disabled=${
-                        (systemManaged && !this.controlEnabled) ||
-                        this._uninstalling
-                      }
-                      @change=${this._autoUpdateToggled}
-                      .checked=${this._currentAddon.auto_update}
-                      haptic
-                    ></ha-switch>
-                  </ha-row-item>
+                  </ha-list-item-switch>
                   ${
                     !this._computeCannotIngressSidebar &&
                     this._currentAddon.ingress
                       ? html`
-                          <ha-row-item>
+                          <ha-list-item-switch
+                            wrap-supporting-text
+                            .disabled=${
+                              (systemManaged && !this.controlEnabled) ||
+                              this._uninstalling
+                            }
+                            @change=${this._panelToggled}
+                            .checked=${
+                              this._currentAddon.ingress_panel || false
+                            }
+                            haptic
+                          >
                             <span slot="headline">
                               ${this.i18n.localize(
                                 "ui.panel.config.apps.dashboard.option.ingress_panel.title"
@@ -904,26 +913,23 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                                 "ui.panel.config.apps.dashboard.option.ingress_panel.description"
                               )}
                             </span>
-                            <ha-switch
-                              slot="end"
-                              .disabled=${
-                                (systemManaged && !this.controlEnabled) ||
-                                this._uninstalling
-                              }
-                              @change=${this._panelToggled}
-                              .checked=${
-                                this._currentAddon.ingress_panel || false
-                              }
-                              haptic
-                            ></ha-switch>
-                          </ha-row-item>
+                          </ha-list-item-switch>
                         `
                       : nothing
                   }
                   ${
                     this._computeUsesProtectedOptions
                       ? html`
-                          <ha-row-item>
+                          <ha-list-item-switch
+                            wrap-supporting-text
+                            .disabled=${
+                              (systemManaged && !this.controlEnabled) ||
+                              this._uninstalling
+                            }
+                            @change=${this._protectionToggled}
+                            .checked=${this._currentAddon.protected}
+                            haptic
+                          >
                             <span slot="headline">
                               ${this.i18n.localize(
                                 "ui.panel.config.apps.dashboard.option.protected.title"
@@ -934,17 +940,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                                 "ui.panel.config.apps.dashboard.option.protected.description"
                               )}
                             </span>
-                            <ha-switch
-                              slot="end"
-                              .disabled=${
-                                (systemManaged && !this.controlEnabled) ||
-                                this._uninstalling
-                              }
-                              @change=${this._protectionToggled}
-                              .checked=${this._currentAddon.protected}
-                              haptic
-                            ></ha-switch>
-                          </ha-row-item>
+                          </ha-list-item-switch>
                         `
                       : nothing
                   }
@@ -954,7 +950,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
           ${
             this._currentAddon.version && this._currentAddon.state === "started"
               ? html`<wa-divider></wa-divider>
-                  <ha-row-item>
+                  <ha-row-item wrap-supporting-text>
                     <span slot="supporting-text">
                       ${this.i18n.localize(
                         "ui.panel.config.apps.dashboard.hostname"
@@ -1593,7 +1589,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
         .app {
           display: flex;
           gap: var(--ha-space-4);
-          max-width: 1200px;
         }
         .app.column {
           flex-direction: column;
@@ -1629,10 +1624,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
           font-weight: var(--ha-font-weight-medium);
           padding: var(--ha-space-3) var(--ha-space-4) 0;
           color: var(--ha-color-text-secondary);
-        }
-
-        .controls ha-row-item::part(supporting-text) {
-          white-space: normal;
         }
 
         .controls .content {

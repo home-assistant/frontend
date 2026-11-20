@@ -5,6 +5,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { ctrlOrCmdLabel } from "../../../../common/keyboard/ctrl-or-cmd";
 import { fireEntityRelatedContext } from "../../../../data/context";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { stripDefaults } from "../../../../common/util/strip-defaults";
@@ -14,6 +15,7 @@ import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-spinner";
+import "../../../../components/ha-tooltip";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import {
   getCustomBadgeEntry,
@@ -191,6 +193,7 @@ export class HuiDialogEditBadge
     return html`
       <ha-dialog
         .open=${this._open}
+        .accessibleLabel=${heading}
         .width=${this.large ? "full" : "large"}
         .preventScrimClose=${this.isEffectiveDirtyState}
         @keydown=${this._ignoreKeydown}
@@ -215,7 +218,7 @@ export class HuiDialogEditBadge
                   .path=${mdiHelpCircleOutline}
                   slot="headerActionItems"
                   .href=${this._documentationURL}
-                  title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                  .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
                   target="_blank"
                   rel="noreferrer"
                   dir=${computeRTLDirection(this.hass)}
@@ -248,7 +251,9 @@ export class HuiDialogEditBadge
                 ? html`
                     <ha-spinner
                       size="small"
-                      aria-label="Can't update badge"
+                      .accessibleLabel=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_badge.preview_error"
+                      )}
                     ></ha-spinner>
                   `
                 : ``
@@ -265,6 +270,7 @@ export class HuiDialogEditBadge
                     @click=${this._toggleMode}
                     .disabled=${!this._guiModeAvailable}
                     class="gui-mode-button"
+                    id="toggle-editor-mode"
                   >
                     ${this.hass!.localize(
                       !this._badgeEditorEl || this._GUImode
@@ -272,6 +278,9 @@ export class HuiDialogEditBadge
                         : "ui.panel.lovelace.editor.edit_badge.show_visual_editor"
                     )}
                   </ha-button>
+                  <ha-tooltip slot="secondaryAction" for="toggle-editor-mode">
+                    ${ctrlOrCmdLabel(this.hass!.localize)}+Shift+Y
+                  </ha-tooltip>
                 `
               : nothing
           }

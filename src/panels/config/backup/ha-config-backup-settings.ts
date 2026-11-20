@@ -268,7 +268,7 @@ class HaConfigBackupSettings extends LitElement {
                         >${this.hass.localize(
                           "ui.panel.config.backup.settings.locations.ha_cloud_backup",
                           {
-                            home_assistant_cloud: "Home Assistant Cloud",
+                            home_assistant_cloud: "Home Assistant Link",
                           }
                         )}</span
                       >
@@ -448,8 +448,8 @@ class HaConfigBackupSettings extends LitElement {
       color: var(--error-color);
     }
     .content {
-      padding: 28px 20px 0;
-      max-width: 690px;
+      padding: 28px var(--ha-content-gutter) 0;
+      max-width: var(--ha-content-width-narrow);
       margin: 0 auto;
       gap: var(--ha-space-6);
       display: flex;

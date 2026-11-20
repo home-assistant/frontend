@@ -3,6 +3,7 @@ import { customElement } from "lit/decorators";
 import {
   DEFAULT_ENERGY_COLLECTION_KEY,
   getEnergyDataCollection,
+  hasCombinableEnergySources,
 } from "../../../data/energy";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
@@ -66,6 +67,11 @@ export class EnergyViewStrategy extends ReactiveElement {
         prefs.energy_sources.length === 0)
     ) {
       return view;
+    }
+
+    if (hasCombinableEnergySources(prefs, ["grid", "solar", "battery"])) {
+      view.footer!.card!.show_combine_sources = true;
+      energyCollection.setDefaultCombineSources(false);
     }
 
     const mainCards: LovelaceCardConfig[] = [];

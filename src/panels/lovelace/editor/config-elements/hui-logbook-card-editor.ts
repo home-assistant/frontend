@@ -131,7 +131,6 @@ export class HuiLogbookCardEditor
       ></ha-form>
 
       <ha-target-picker
-        .hass=${this.hass}
         .entityFilter=${this._filterFunc}
         .value=${this._targetPicker}
         @value-changed=${this._entitiesChanged}

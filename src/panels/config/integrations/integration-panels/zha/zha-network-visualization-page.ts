@@ -7,13 +7,11 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HASSDomTargetEvent } from "../../../../../common/dom/fire_event";
-import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/chart/ha-network-graph";
 import type { NetworkData } from "../../../../../components/chart/ha-network-graph";
 import "../../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
-import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZHADevice } from "../../../../../data/zha";
 import {
   fetchDevices,
@@ -21,16 +19,22 @@ import {
   ZHADeviceType,
 } from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
+import { MobileAwareMixin } from "../../../../../mixins/mobile-aware-mixin";
 import type { HomeAssistant, Route } from "../../../../../types";
 import {
   computeZHADeviceType,
   formatAsPaddedHex,
   formatGreenPowerSrcId,
+  getZHADeviceAreaName,
 } from "./functions";
-import { createZHANetworkChartData } from "./zha-network-data";
+import {
+  createZHANetworkChartData,
+  SPACER_PREFIX,
+  VIRTUAL_PARENT_PREFIX,
+} from "./zha-network-data";
 
 @customElement("zha-network-visualization-page")
-export class ZHANetworkVisualizationPage extends LitElement {
+export class ZHANetworkVisualizationPage extends MobileAwareMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -117,7 +121,8 @@ export class ZHANetworkVisualizationPage extends LitElement {
     this._networkData = createZHANetworkChartData(
       this._devices,
       this.hass,
-      this
+      this,
+      this._isMobileSize
     );
   }
 
@@ -158,6 +163,13 @@ export class ZHANetworkVisualizationPage extends LitElement {
     const { dataType, data, name } = params as CallbackDataParams;
     if (dataType === "edge") {
       const { source, target, value } = data as any;
+      // the chain from the coordinator to a virtual parent is invisible
+      if (
+        target.startsWith(SPACER_PREFIX) ||
+        target.startsWith(VIRTUAL_PARENT_PREFIX)
+      ) {
+        return nothing;
+      }
       const targetName = this._networkData.nodes.find(
         (node) => node.id === target
       )!.name;
@@ -167,23 +179,30 @@ export class ZHANetworkVisualizationPage extends LitElement {
       const reverseValue = this._networkData.links.find(
         (link) => link.source === source && link.target === target
       )?.reverseValue;
+      // a virtual link value only sets the edge length, it is not an LQI
+      const isVirtual = source.startsWith(VIRTUAL_PARENT_PREFIX);
       return html`${sourceName} →
-      ${targetName}${value ? html` <b>LQI:</b> ${value}` : nothing}${
+      ${targetName}${
+        value && !isVirtual ? html` <b>LQI:</b> ${value}` : nothing
+      }${
         reverseValue
           ? html`<br />${targetName} → ${sourceName}
               <b>LQI:</b> ${reverseValue}`
           : nothing
       }`;
     }
+    if ((data as any).id.startsWith(SPACER_PREFIX)) {
+      return nothing;
+    }
     const device = this._devices.find((d) => d.ieee === (data as any).id);
     if (!device) {
       return html`${name}`;
     }
-    const haDevice = this.hass.devices[device.device_reg_id] as
-      DeviceRegistryEntry | undefined;
-    const area = haDevice
-      ? getDeviceArea(haDevice, this.hass.areas, this.hass.devices)
-      : undefined;
+    const areaName = getZHADeviceAreaName(
+      device,
+      this.hass.areas,
+      this.hass.devices
+    );
     return html`<b>IEEE: </b>${device.ieee}<br /><b
         >${this.hass.localize("ui.panel.config.zha.visualization.device_type")}: </b
       >${computeZHADeviceType(device, this.hass.localize)}${
@@ -211,10 +230,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
                 )}</b
               >`
       }${
-        area
+        areaName
           ? html`<br /><b
                 >${this.hass.localize("ui.panel.config.zha.visualization.area")}: </b
-              >${area.name}`
+              >${areaName}`
           : nothing
       }`;
   };
