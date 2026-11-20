@@ -40,10 +40,11 @@ import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
-import type {
-  DataTableColumnContainer,
-  RowClickedEvent,
-  SelectionChangedEvent,
+import {
+  groupActionsSlot,
+  type DataTableColumnContainer,
+  type RowClickedEvent,
+  type SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-battery-icon";
@@ -53,6 +54,7 @@ import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-filter-floor-areas";
+import "./ha-floor-group-actions";
 import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
@@ -873,6 +875,18 @@ export class HaConfigDeviceDashboard extends LitElement {
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.devices.add_device")}
         </ha-button>
+        ${
+          this._tableSettings.grouping === "floor"
+            ? Object.values(this.hass.floors ?? {}).map(
+                (floor) => html`
+                  <ha-floor-group-actions
+                    slot=${groupActionsSlot(computeFloorName(floor))}
+                    .floor=${floor}
+                  ></ha-floor-group-actions>
+                `
+              )
+            : nothing
+        }
         ${
           Array.isArray(this._filters.config_entry?.value) &&
           this._filters.config_entry?.value.length

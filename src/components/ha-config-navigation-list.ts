@@ -76,6 +76,13 @@ class HaConfigNavigationList extends LitElement {
       border-radius: var(--ha-border-radius-circle);
       color: #fff;
     }
+    ha-list-item-button::part(supporting-text) {
+      white-space: normal;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
   `;
 }
 
