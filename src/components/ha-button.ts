@@ -1,6 +1,6 @@
 import Button from "@home-assistant/webawesome/dist/components/button/button";
-import { css, type CSSResultGroup } from "lit";
-import { customElement } from "lit/decorators";
+import { css, type CSSResultGroup, type PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators";
 
 export type Appearance = "accent" | "filled" | "outlined" | "plain";
 
@@ -32,10 +32,25 @@ export type Appearance = "accent" | "filled" | "outlined" | "plain";
  * @attr {("accent"|"filled"|"outlined"|"plain")} appearance - Sets the button appearance.
  * @attr {boolean} loading - shows a loading indicator instead of the buttons label and disable buttons click.
  * @attr {boolean} disabled - Disables the button and prevents user interaction.
+ * @attr {("true"|"false")} aria-pressed - Makes the button a toggle button and sets its pressed state, propagated to the underlying `<button>` element.
  */
 @customElement("ha-button")
 export class HaButton extends Button {
   variant: "brand" | "neutral" | "success" | "warning" | "danger" = "brand";
+
+  @property({ attribute: "aria-pressed" })
+  public override ariaPressed!: string | null;
+
+  protected override updated(changedProperties: PropertyValues<this>): void {
+    super.updated(changedProperties);
+    // The inner element gets focus, so it carries the state. Set it on every
+    // update while pressed is in use, as the base class can render a new element.
+    if (this.ariaPressed != null) {
+      this.button.setAttribute("aria-pressed", this.ariaPressed);
+    } else if (changedProperties.has("ariaPressed")) {
+      this.button.removeAttribute("aria-pressed");
+    }
+  }
 
   static get styles(): CSSResultGroup {
     return [
