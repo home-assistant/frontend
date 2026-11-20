@@ -1,5 +1,6 @@
 import type { ReactiveController, ReactiveControllerHost } from "lit";
 import { fireEvent } from "../../common/dom/fire_event";
+import { mainWindow } from "../../common/dom/get_main_window";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { currentPath } from "../../common/url/current-path";
 import { deepEqual } from "../../common/util/deep-equal";
@@ -52,13 +53,16 @@ export class RelatedItemsLookup<T> implements ReactiveController {
   }
 
   public hostConnected(): void {
+    // A page can be shown again without being disconnected, like when the
+    // user comes back before the next page loaded
+    mainWindow.addEventListener("location-changed", this._retryOnPage);
+    mainWindow.addEventListener("popstate", this._retryOnPage);
     this._retryOnPage();
   }
 
-  // A page can be shown again without being disconnected, like when the user
-  // comes back before the next page loaded
-  public hostUpdated(): void {
-    this._retryOnPage();
+  public hostDisconnected(): void {
+    mainWindow.removeEventListener("location-changed", this._retryOnPage);
+    mainWindow.removeEventListener("popstate", this._retryOnPage);
   }
 
   /** The value last sent, also when its items are out of date. */
@@ -149,11 +153,11 @@ export class RelatedItemsLookup<T> implements ReactiveController {
     return this._host.isConnected && isSamePage(currentPath(), path);
   }
 
-  private _retryOnPage() {
+  private _retryOnPage = () => {
     if (this._retry && this._isOnPage(this._retry.path)) {
       this._retry.lookUp();
     }
-  }
+  };
 
   private _send(value: T | undefined, items: Set<string> | undefined) {
     this._sent = { value, items };

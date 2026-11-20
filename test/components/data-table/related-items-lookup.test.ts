@@ -21,6 +21,9 @@ const deferred = () => {
   return { promise, resolve, reject };
 };
 
+// Controllers of connected hosts, disconnected after each test
+const connected = new Set<ReactiveController>();
+
 const filter = () => {
   const controllers: ReactiveController[] = [];
   const host = Object.assign(document.createElement("div"), {
@@ -35,18 +38,33 @@ const filter = () => {
     sent.push((ev as CustomEvent<DataTableFilter>).detail)
   );
   const lookup = new RelatedItemsLookup<string[]>(host);
-  // Like a page that is left and opened again
-  const reconnect = () => {
+  const connect = () => {
     document.body.append(host);
-    controllers.forEach((controller) => controller.hostConnected?.());
+    controllers.forEach((controller) => {
+      connected.add(controller);
+      controller.hostConnected?.();
+    });
   };
-  // Like a host that rendered again
-  const updated = () =>
-    controllers.forEach((controller) => controller.hostUpdated?.());
-  return { host, sent, lookup, reconnect, updated };
+  // Like a page that is left
+  const leave = () => {
+    host.remove();
+    controllers.forEach((controller) => {
+      connected.delete(controller);
+      controller.hostDisconnected?.();
+    });
+  };
+  connect();
+  return { host, sent, lookup, leave, reconnect: connect };
+};
+
+const navigate = (path: string) => {
+  history.pushState(null, "", path);
+  window.dispatchEvent(new CustomEvent("location-changed"));
 };
 
 afterEach(() => {
+  connected.forEach((controller) => controller.hostDisconnected?.());
+  connected.clear();
   vi.mocked(showAlertDialog).mockClear();
   document.body.replaceChildren();
   history.replaceState(null, "", "/");
@@ -152,7 +170,7 @@ describe("RelatedItemsLookup", () => {
   });
 
   it("tries again when a page that was left comes back", async () => {
-    const { host, sent, lookup, reconnect } = filter();
+    const { host, sent, lookup, leave, reconnect } = filter();
     await lookup.lookUp(
       ["kitchen"],
       async () => new Set(["automation.kitchen"]),
@@ -165,7 +183,7 @@ describe("RelatedItemsLookup", () => {
       .mockRejectedValueOnce(new Error("Connection lost"))
       .mockResolvedValueOnce(new Set(["automation.hall"]));
     const lookUp = lookup.lookUp(host.value, find, localize);
-    host.remove();
+    leave();
     await lookUp;
 
     expect(host.value).toEqual(["hall"]);
@@ -181,7 +199,7 @@ describe("RelatedItemsLookup", () => {
   });
 
   it("waits while another page is shown", async () => {
-    const { host, sent, lookup, updated } = filter();
+    const { host, sent, lookup } = filter();
     history.replaceState(null, "", "/config/automation/dashboard");
     host.value = ["hall"];
 
@@ -191,16 +209,15 @@ describe("RelatedItemsLookup", () => {
       .mockResolvedValueOnce(new Set(["automation.hall"]));
     const lookUp = lookup.lookUp(host.value, find, localize);
     // The router keeps the page connected while the next one loads
-    history.pushState(null, "", "/config/script/dashboard");
+    navigate("/config/script/dashboard");
     await lookUp;
-    updated();
 
     expect(host.value).toEqual(["hall"]);
     expect(showAlertDialog).not.toHaveBeenCalled();
     expect(find).toHaveBeenCalledOnce();
 
-    history.pushState(null, "", "/config/automation/dashboard");
-    updated();
+    // Back before the page was disconnected, without it rendering again
+    navigate("/config/automation/dashboard");
     await vi.waitFor(() => expect(sent).toHaveLength(1));
     expect(sent[0]).toEqual({
       value: ["hall"],
