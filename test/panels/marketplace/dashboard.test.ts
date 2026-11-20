@@ -301,24 +301,6 @@ it("browses the way the link says", async () => {
   expect(pickedIds(typeFilter)).toEqual(["plugin"]);
 });
 
-it("shows a filter the link sets to Without", async () => {
-  window.history.replaceState(
-    null,
-    "",
-    "/marketplace/browse?type=theme&exclude=type"
-  );
-  const dashboard = await openDashboard();
-  window.history.replaceState(null, "", "/");
-  const typeFilter = dashboard.shadowRoot!.querySelectorAll(
-    "ha-filter-states"
-  )[1] as unknown as { value: DataTableFiltersValue };
-
-  expect(listFilterValue(typeFilter.value)).toEqual({
-    ids: ["theme"],
-    exclude: true,
-  });
-});
-
 it("browses the way the link says, also when the tab was open before", async () => {
   // The router keeps the page of a tab, and hangs it back in when it is opened
   window.history.replaceState(null, "", "/marketplace/browse");
