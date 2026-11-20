@@ -1,3 +1,4 @@
+import type { ContextType } from "@lit/context";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -14,8 +15,8 @@ import type {
   HASSDomEvent,
 } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
-import { consumeLocalize } from "../common/decorators/consume-context-entry";
-import type { LocalizeFunc } from "../common/translations/localize";
+import { consume } from "../common/decorators/consume";
+import { internationalizationContext } from "../data/context";
 import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-icon-button";
@@ -55,8 +56,8 @@ const isPair = (item: FilterStateItem): item is FilterStatePair =>
 @customElement("ha-filter-states")
 export class HaFilterStates extends LitElement {
   @state()
-  @consumeLocalize()
-  protected _localize!: LocalizeFunc;
+  @consume({ context: internationalizationContext, subscribe: true })
+  protected _i18n!: ContextType<typeof internationalizationContext>;
 
   @property() public label?: string;
 
@@ -89,7 +90,7 @@ export class HaFilterStates extends LitElement {
               ? html`<div class="badge">${this.value?.length}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
-                    .label=${this._localize(
+                    .label=${this._i18n.localize(
                       "ui.components.subpage-data-table.clear_filter"
                     )}
                     @click=${this._clearFilter}
