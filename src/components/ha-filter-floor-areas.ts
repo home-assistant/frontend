@@ -114,19 +114,17 @@ export class HaFilterFloorAreas extends LitElement {
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
 
+    // Going back to the value last sent finds its items again
+    if (this._registriesChanged(this._related.sentValue, properties)) {
+      this._related.markOutdated();
+    }
+
     const valueChanged =
       properties.has("value") &&
       !deepEqual(this.value, properties.get("value"));
     if (
       (valueChanged && !this._related.wasSent(this.value)) ||
-      // Items without an area are worked out from the registries
-      (this.value?.no_area &&
-        (properties.has("_devices") ||
-          properties.has("_entities") ||
-          (this.type !== "device" && properties.has("_stateIds")))) ||
-      // Whether a floor is picked whole depends on which areas it has
-      ((!!this.value?.floors?.length || !!this.value?.areas?.length) &&
-        (properties.has("_areasReg") || properties.has("_floorsReg")))
+      this._registriesChanged(this.value, properties)
     ) {
       this._findRelated();
     } else if (valueChanged) {
@@ -134,6 +132,23 @@ export class HaFilterFloorAreas extends LitElement {
       // have changed the page's filter meanwhile, so send it again.
       this._related.resend();
     }
+  }
+
+  // Whether the registries changed the items of a value
+  private _registriesChanged(
+    value: FloorAreasFilterValue | undefined,
+    properties: PropertyValues
+  ): boolean {
+    return (
+      // Items without an area are worked out from the registries
+      (!!value?.no_area &&
+        (properties.has("_devices") ||
+          properties.has("_entities") ||
+          (this.type !== "device" && properties.has("_stateIds")))) ||
+      // Whether a floor is picked whole depends on which areas it has
+      ((!!value?.floors?.length || !!value?.areas?.length) &&
+        (properties.has("_areasReg") || properties.has("_floorsReg")))
+    );
   }
 
   protected render() {

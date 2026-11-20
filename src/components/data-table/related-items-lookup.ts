@@ -1,11 +1,19 @@
+import type { ReactiveController, ReactiveControllerHost } from "lit";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { deepEqual } from "../../common/util/deep-equal";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { getWsErrorMessage } from "../../util/ws-error";
 
-interface RelatedItemsFilter<T> extends HTMLElement {
+interface RelatedItemsFilter<T>
+  extends HTMLElement, Pick<ReactiveControllerHost, "addController"> {
   value?: T;
+}
+
+interface SentFilter<T> {
+  value: T | undefined;
+  items: Set<string> | undefined;
+  outdated?: boolean;
 }
 
 /**
@@ -17,29 +25,55 @@ interface RelatedItemsFilter<T> extends HTMLElement {
  * of looking that value up again, so the page gets the matching items back,
  * even if a link changed the page's filter meanwhile.
  */
-export class RelatedItemsLookup<T> {
+export class RelatedItemsLookup<T> implements ReactiveController {
   private _requestId = 0;
 
-  private _sent?: { value: T | undefined; items: Set<string> | undefined };
+  private _sent?: SentFilter<T>;
 
-  constructor(private readonly _host: RelatedItemsFilter<T>) {}
+  private _retry?: () => void;
+
+  constructor(private readonly _host: RelatedItemsFilter<T>) {
+    _host.addController(this);
+  }
+
+  public hostConnected(): void {
+    const retry = this._retry;
+    this._retry = undefined;
+    retry?.();
+  }
+
+  /** The value last sent, also when its items are out of date. */
+  public get sentValue(): T | undefined {
+    return this._sent?.value;
+  }
 
   /** Whether this is the value last sent, so its items are known. */
   public wasSent(value: T | undefined): boolean {
-    return this._sent !== undefined && deepEqual(value, this._sent.value);
+    return (
+      this._sent !== undefined &&
+      !this._sent.outdated &&
+      deepEqual(value, this._sent.value)
+    );
+  }
+
+  /** Makes going back to the value last sent look up its items again. */
+  public markOutdated(): void {
+    if (this._sent) {
+      this._sent.outdated = true;
+    }
   }
 
   /** Sends the last value and its items again, dropping the running lookup. */
   public resend(): void {
-    this._requestId++;
+    this._drop();
     if (this._sent) {
-      fireEvent(this._host, "data-table-filter-changed", this._sent);
+      this._fire(this._sent);
     }
   }
 
   /** Sends a value that needs no lookup, dropping the running lookup. */
   public apply(value: T | undefined, items: Set<string> | undefined): void {
-    this._requestId++;
+    this._drop();
     this._send(value, items);
   }
 
@@ -49,14 +83,22 @@ export class RelatedItemsLookup<T> {
     find: () => Promise<Set<string> | undefined>,
     localize: LocalizeFunc
   ): Promise<void> {
-    const requestId = ++this._requestId;
+    this._drop();
+    const requestId = this._requestId;
     let items: Set<string> | undefined;
     try {
       items = await find();
     } catch (err: unknown) {
-      if (requestId === this._requestId) {
-        this._restore(err, localize);
+      if (requestId !== this._requestId) {
+        return;
       }
+      if (!this._host.isConnected) {
+        // The page was left, which keeps its filter as it is. Try again when
+        // the page comes back, so the filter stays in line with it.
+        this._retry = () => this.lookUp(value, find, localize);
+        return;
+      }
+      this._restore(err, localize);
       return;
     }
 
@@ -68,15 +110,26 @@ export class RelatedItemsLookup<T> {
     this._send(value, items);
   }
 
+  private _drop() {
+    this._requestId++;
+    this._retry = undefined;
+  }
+
   private _send(value: T | undefined, items: Set<string> | undefined) {
     this._sent = { value, items };
-    fireEvent(this._host, "data-table-filter-changed", this._sent);
+    this._fire(this._sent);
+  }
+
+  private _fire({ value, items }: SentFilter<T>) {
+    fireEvent(this._host, "data-table-filter-changed", { value, items });
   }
 
   private _restore(err: unknown, localize: LocalizeFunc) {
-    // Before this filter sent anything the page doesn't filter by it at all,
-    // so the filter is cleared
-    this._host.value = this._sent?.value;
+    // Before this filter sent anything, the page may still filter by what it
+    // stored, so the value stays
+    if (this._sent) {
+      this._host.value = this._sent.value;
+    }
     showAlertDialog(this._host, {
       title: localize("ui.components.subpage-data-table.related_lookup_failed"),
       text: getWsErrorMessage(err) ?? localize("ui.common.unknown_error"),
