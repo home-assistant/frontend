@@ -42,6 +42,9 @@ import type { Action, ServiceAction } from "../../../../data/script";
 import { migrateAutomationAction } from "../../../../data/script";
 import {
   callExecuteScript,
+  getServiceFieldDefaults,
+  getServiceFieldVisibility,
+  getServiceHiddenFields,
   serviceCallWillDisconnect,
 } from "../../../../data/service";
 import { haStyle } from "../../../../resources/styles";
@@ -403,6 +406,8 @@ class HaPanelDevAction extends MatchMinHeightMixin(
     serviceData: ServiceAction | undefined,
     fields,
     target,
+    visibility: ReturnType<typeof getServiceFieldVisibility>,
+    defaults: ReturnType<typeof getServiceFieldDefaults>,
     yamlMode: boolean,
     localize: LocalizeFunc
   ): string | undefined => {
@@ -421,6 +426,9 @@ class HaPanelDevAction extends MatchMinHeightMixin(
     }
     const dataIsTemplate =
       typeof serviceData.data === "string" && isTemplate(serviceData.data);
+    const hidden = dataIsTemplate
+      ? new Set<string>()
+      : getServiceHiddenFields(visibility, defaults, serviceData.data);
     if (
       target &&
       !dataIsTemplate &&
@@ -437,6 +445,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(
       if (
         field.required &&
         !dataIsTemplate &&
+        !hidden.has(field.key) &&
         (!serviceData.data || serviceData.data[field.key] === undefined)
       ) {
         return localize(
@@ -452,17 +461,22 @@ class HaPanelDevAction extends MatchMinHeightMixin(
     (
       serviceDomains: HomeAssistant["services"],
       domainService: string | undefined
-    ): { target: boolean; fields: any[] } => {
+    ): {
+      target: boolean;
+      fields: any[];
+      visibility: ReturnType<typeof getServiceFieldVisibility>;
+      defaults: ReturnType<typeof getServiceFieldDefaults>;
+    } => {
       if (!domainService) {
-        return { target: false, fields: [] };
+        return { target: false, fields: [], visibility: [], defaults: {} };
       }
       const domain = computeDomain(domainService);
       const service = computeObjectId(domainService);
       if (!(domain in serviceDomains)) {
-        return { target: false, fields: [] };
+        return { target: false, fields: [], visibility: [], defaults: {} };
       }
       if (!(service in serviceDomains[domain])) {
-        return { target: false, fields: [] };
+        return { target: false, fields: [], visibility: [], defaults: {} };
       }
       const target = "target" in serviceDomains[domain][service];
       const fields = serviceDomains[domain][service].fields;
@@ -488,6 +502,8 @@ class HaPanelDevAction extends MatchMinHeightMixin(
       return {
         target,
         fields: result,
+        visibility: getServiceFieldVisibility(fields),
+        defaults: getServiceFieldDefaults(fields),
       };
     }
   );
@@ -504,7 +520,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(
       return;
     }
 
-    const { target, fields } = this._fields(
+    const { target, fields, visibility, defaults } = this._fields(
       this.hass.services,
       this._serviceData?.action
     );
@@ -513,6 +529,8 @@ class HaPanelDevAction extends MatchMinHeightMixin(
       this._serviceData,
       fields,
       target,
+      visibility,
+      defaults,
       this._yamlMode,
       this.hass.localize
     );
