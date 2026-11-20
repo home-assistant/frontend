@@ -86,6 +86,7 @@ const mql = matchMedia("(prefers-color-scheme: dark)");
 const galleryLocalize = (key: string) =>
   (
     ({
+      "ui.common.loading": "Loading",
       "ui.sidebar.sidebar_toggle": "Toggle sidebar",
       "ui.notification_drawer.title": "Notifications",
       "ui.sidebar.external_app_configuration": "App configuration",
