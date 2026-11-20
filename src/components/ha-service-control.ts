@@ -5,6 +5,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../common/array/ensure-array";
+import { kelvinValueInsideEntityRange } from "../common/color/color-temp-selector-range";
 import {
   fireEvent,
   type HASSDomCurrentTargetEvent,
@@ -384,6 +385,21 @@ export class HaServiceControl extends LitElement {
     return targetEntities;
   });
 
+  private _targetEntitiesForService(
+    serviceData: ExtHassService | undefined
+  ): string[] | null {
+    if (
+      !serviceData ||
+      !(
+        "target" in serviceData ||
+        serviceData.flatFields.some((field) => field.key === "entity_id")
+      )
+    ) {
+      return null;
+    }
+    return this._getTargetedEntities(serviceData.target, this._value);
+  }
+
   private _filterField(
     filter: ExtHassService["fields"][number]["filter"],
     targetEntities: string[] | null
@@ -466,12 +482,7 @@ export class HaServiceControl extends LitElement {
     );
 
     // Actions that can never have targets get null, like template targets
-    const targetEntities =
-      serviceData &&
-      ("target" in serviceData ||
-        serviceData.flatFields.some((field) => field.key === "entity_id"))
-        ? this._getTargetedEntities(serviceData.target, this._value)
-        : null;
+    const targetEntities = this._targetEntitiesForService(serviceData);
 
     const domain = this._value?.action
       ? computeDomain(this._value.action)
@@ -806,15 +817,36 @@ export class HaServiceControl extends LitElement {
 
     if (checked) {
       this._checkedKeys.add(key);
-      const field = this._getServiceInfo(
+      const serviceData = this._getServiceInfo(
         this._value?.action,
         this.hass.services
-      )?.flatFields.find((_field) => _field.key === key);
+      );
+      const field = serviceData?.flatFields.find(
+        (_field) => _field.key === key
+      );
 
       let defaultValue = field?.default;
 
       if (defaultValue == null && field?.selector) {
         defaultValue = getSelectorFallbackValue(field.selector);
+        if (
+          typeof defaultValue === "number" &&
+          "color_temp" in field.selector &&
+          field.selector.color_temp?.unit === "kelvin"
+        ) {
+          const entityIds = this._targetEntitiesForService(serviceData);
+          const states = entityIds
+            ? Object.fromEntries(
+                entityIds.map((entityId) => [
+                  entityId,
+                  this.hass.states[entityId],
+                ])
+              )
+            : undefined;
+          // This is the value created by checking the field. It has to start
+          // inside the range the slider shows. Later state updates leave it.
+          defaultValue = kelvinValueInsideEntityRange(defaultValue, states);
+        }
       }
 
       if (defaultValue != null) {
