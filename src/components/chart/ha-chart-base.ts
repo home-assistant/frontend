@@ -1881,6 +1881,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       series.option.center = null;
       series.option.zoom = 1;
     });
+    fireEvent(this, "chart-zoom-reset");
   }
 
   private _getGraphRoams(): {
@@ -2535,5 +2536,7 @@ declare global {
     };
     "chart-sankeyroam": { zoom: number };
     "chart-setup": undefined;
+    // The user reset the zoom
+    "chart-zoom-reset": undefined;
   }
 }
