@@ -510,3 +510,79 @@ export const ZHA_CHANNEL_MSG = "zha_channel_message";
 export const ZHA_CHANNEL_MSG_BIND = "zha_channel_bind";
 export const ZHA_CHANNEL_MSG_CFG_RPT = "zha_channel_configure_reporting";
 export const ZHA_CHANNEL_CFG_DONE = "zha_channel_cfg_done";
+
+export interface ZHAWeeklyScheduleCapabilities {
+  max_transitions_per_day: number | null;
+  temperature_step: number;
+  supports_clear: boolean;
+}
+
+export interface ZHAWeeklyScheduleThermostat {
+  entity_id: string;
+  device_id: string;
+  capabilities: ZHAWeeklyScheduleCapabilities;
+}
+
+export interface ZHAWeeklyScheduleLink {
+  link_id: string;
+  thermostat_entity_id: string | null;
+  schedule_entity_id: string | null;
+  block_temperature: number | null;
+  gap_temperature: number | null;
+  state: "pending" | "syncing" | "synced" | "error";
+  last_synced_at: string | null;
+  last_error: string | null;
+  written_days: string[];
+}
+
+export interface ZHAWeeklySchedules {
+  thermostats: ZHAWeeklyScheduleThermostat[];
+  links: ZHAWeeklyScheduleLink[];
+}
+
+export const subscribeZHAWeeklySchedules = (
+  hass: HomeAssistant,
+  callback: (data: ZHAWeeklySchedules) => void
+) =>
+  hass.connection.subscribeMessage<ZHAWeeklySchedules>(callback, {
+    type: "zha/weekly_schedules/subscribe",
+  });
+
+export const addZHAWeeklySchedule = (
+  hass: HomeAssistant,
+  params: {
+    thermostat_entity_id: string;
+    schedule_entity_id: string;
+    block_temperature?: number | null;
+    gap_temperature?: number | null;
+  }
+): Promise<ZHAWeeklyScheduleLink> =>
+  hass.callWS({ type: "zha/weekly_schedules/add", ...params });
+
+export const updateZHAWeeklySchedule = (
+  hass: HomeAssistant,
+  params: {
+    link_id: string;
+    schedule_entity_id: string;
+    block_temperature?: number | null;
+    gap_temperature?: number | null;
+  }
+): Promise<ZHAWeeklyScheduleLink> =>
+  hass.callWS({ type: "zha/weekly_schedules/update", ...params });
+
+export const removeZHAWeeklySchedule = (
+  hass: HomeAssistant,
+  linkId: string,
+  withoutClearing = false
+): Promise<void> =>
+  hass.callWS({
+    type: "zha/weekly_schedules/remove",
+    link_id: linkId,
+    without_clearing: withoutClearing,
+  });
+
+export const syncZHAWeeklySchedule = (
+  hass: HomeAssistant,
+  linkId: string
+): Promise<void> =>
+  hass.callWS({ type: "zha/weekly_schedules/sync", link_id: linkId });
