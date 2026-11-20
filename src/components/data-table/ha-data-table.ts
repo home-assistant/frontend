@@ -45,6 +45,7 @@ import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../skeleton/ha-skeleton-icon";
 import "../skeleton/ha-skeleton-text";
+import { skeletonArrivalStyles } from "../skeleton/skeleton-arrival";
 import "../ha-svg-icon";
 import "../input/ha-input-search";
 import { filterData, sortData } from "./sort-filter";
@@ -800,9 +801,11 @@ export class HaDataTable extends LitElement {
                         </div>`
                       : nothing
                   }
+                  <!-- The list fades in once as it takes the skeleton rows'
+                    place; rows made later as it scrolls show at once -->
                   <lit-virtualizer
                     scroller
-                    class="mdc-data-table__content scroller ha-scrollbar ${classMap(
+                    class="mdc-data-table__content scroller ha-scrollbar arriving ${classMap(
                       { grouped: Boolean(this.groupColumn) && !this.autoHeight }
                     )}"
                     tabindex=${ifDefined(!this.autoHeight ? "0" : undefined)}
@@ -1628,6 +1631,7 @@ export class HaDataTable extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
+      skeletonArrivalStyles,
       css`
         /* default mdc styles, colors changed, without checkbox styles */
         :host {

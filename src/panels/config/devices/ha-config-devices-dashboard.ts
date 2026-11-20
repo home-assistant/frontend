@@ -59,6 +59,7 @@ import "../../../components/ha-filter-states";
 import "../../../components/ha-icon-button";
 import "../../../components/skeleton/ha-skeleton-icon";
 import "../../../components/skeleton/ha-skeleton-text";
+import { skeletonOr } from "../../../components/skeleton/skeleton-arrival";
 import { createAreaRegistryEntry } from "../../../data/area/area_registry";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getSubEntries, sortConfigEntries } from "../../../data/config_entries";
@@ -548,23 +549,26 @@ export class HaConfigDeviceDashboard extends LitElement {
         moveable: false,
         showNarrow: true,
         template: (device) =>
-          !this.entries
-            ? html`<ha-skeleton-icon></ha-skeleton-icon>`
-            : device.domains.length
-              ? html`<img
-                  alt=""
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                  src=${brandsUrl(
-                    {
-                      domain: device.domains[0],
-                      type: "icon",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    },
-                    this.hass.auth.data.hassUrl
-                  )}
-                />`
-              : "",
+          skeletonOr(
+            !this.entries,
+            html`<ha-skeleton-icon></ha-skeleton-icon>`,
+            () =>
+              device.domains.length
+                ? html`<img
+                    alt=""
+                    crossorigin="anonymous"
+                    referrerpolicy="no-referrer"
+                    src=${brandsUrl(
+                      {
+                        domain: device.domains[0],
+                        type: "icon",
+                        darkOptimized: this.hass.themes?.darkMode,
+                      },
+                      this.hass.auth.data.hassUrl
+                    )}
+                  />`
+                : ""
+          ),
       },
       name: {
         title: localize("ui.panel.config.devices.data_table.device"),
@@ -586,17 +590,20 @@ export class HaConfigDeviceDashboard extends LitElement {
                 </div>`
               : nothing
           }
-          ${
-            device.label_entries.length
-              ? html`
-                  <ha-data-table-labels
-                    .labels=${device.label_entries}
-                  ></ha-data-table-labels>
-                `
-              : device.labels.length && !this._labels
-                ? html`<ha-skeleton-text></ha-skeleton-text>`
+          ${skeletonOr(
+            !device.label_entries.length &&
+              device.labels.length > 0 &&
+              !this._labels,
+            html`<ha-skeleton-text></ha-skeleton-text>`,
+            () =>
+              device.label_entries.length
+                ? html`
+                    <ha-data-table-labels
+                      .labels=${device.label_entries}
+                    ></ha-data-table-labels>
+                  `
                 : nothing
-          }
+          )}
         `,
       },
       area: getAreaTableColumn(localize),
@@ -609,9 +616,11 @@ export class HaConfigDeviceDashboard extends LitElement {
         urlName: "integration",
         minWidth: "120px",
         template: (device) =>
-          !this.entries
-            ? html`<ha-skeleton-text></ha-skeleton-text>`
-            : device.integration,
+          skeletonOr(
+            !this.entries,
+            html`<ha-skeleton-text></ha-skeleton-text>`,
+            () => device.integration
+          ),
       },
       device_family_name: {
         title: localize("ui.panel.config.devices.data_table.parent_device"),
@@ -672,38 +681,46 @@ export class HaConfigDeviceDashboard extends LitElement {
         maxWidth: "101px",
         minWidth: "101px",
         valueColumn: "battery_level",
-        template: (device) => {
-          if (!this.entities) {
-            return html`<ha-skeleton-text></ha-skeleton-text>`;
-          }
-          const batteryEntityPair = device.battery_entity;
-          const battery =
-            batteryEntityPair && batteryEntityPair[0]
-              ? this.hass.states[batteryEntityPair[0]]
-              : undefined;
-          const batteryDomain = battery
-            ? computeStateDomain(battery)
-            : undefined;
-          const batteryCharging =
-            batteryEntityPair && batteryEntityPair[1]
-              ? this.hass.states[batteryEntityPair[1]]
-              : undefined;
+        template: (device) =>
+          skeletonOr(
+            !this.entities,
+            html`<ha-skeleton-text></ha-skeleton-text>`,
+            () => {
+              const batteryEntityPair = device.battery_entity;
 
-          return battery &&
-            (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
-            ? html`
-                ${
-                  batteryDomain === "sensor"
-                    ? this.hass.formatEntityState(battery)
-                    : nothing
-                }
-                <ha-battery-icon
-                  .batteryStateObj=${battery}
-                  .batteryChargingStateObj=${batteryCharging}
-                ></ha-battery-icon>
-              `
-            : "—";
-        },
+              const battery =
+                batteryEntityPair && batteryEntityPair[0]
+                  ? this.hass.states[batteryEntityPair[0]]
+                  : undefined;
+
+              const batteryDomain = battery
+                ? computeStateDomain(battery)
+                : undefined;
+
+              const batteryCharging =
+                batteryEntityPair && batteryEntityPair[1]
+                  ? this.hass.states[batteryEntityPair[1]]
+                  : undefined;
+
+              return battery &&
+                (batteryDomain === "binary_sensor" ||
+                  !isNaN(Number(battery.state)))
+                ? html`
+                    ${
+                      batteryDomain === "sensor"
+                        ? html`<span
+                            >${this.hass.formatEntityState(battery)}</span
+                          >`
+                        : nothing
+                    }
+                    <ha-battery-icon
+                      .batteryStateObj=${battery}
+                      .batteryChargingStateObj=${batteryCharging}
+                    ></ha-battery-icon>
+                  `
+                : "—";
+            }
+          ),
       },
       created_at: getCreatedAtTableColumn(localize, this.hass),
       modified_at: getModifiedAtTableColumn(localize, this.hass),
@@ -888,15 +905,15 @@ export class HaConfigDeviceDashboard extends LitElement {
                 ${this.hass.localize(
                   "ui.panel.config.devices.filtering_by_config_entry"
                 )}
-                ${
-                  !this.entries
-                    ? html`<ha-skeleton-text></ha-skeleton-text>`
-                    : this.entries.find(
-                        (entry) =>
-                          entry.entry_id ===
-                          this._filters.config_entry!.value![0]
-                      )?.title || this._filters.config_entry.value[0]
-                }${
+                ${skeletonOr(
+                  !this.entries,
+                  html`<ha-skeleton-text></ha-skeleton-text>`,
+                  () =>
+                    this.entries?.find(
+                      (entry) =>
+                        entry.entry_id === this._filters.config_entry!.value![0]
+                    )?.title || this._filters.config_entry!.value![0]
+                )}${
                   this._filters.config_entry.value.length === 1 &&
                   Array.isArray(this._filters.sub_entry?.value) &&
                   this._filters.sub_entry.value.length
