@@ -94,6 +94,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
               !this.schema.required
                 ? html`
                     <ha-checkbox
+                      .accessibleLabel=${this.label ?? ""}
                       @change=${this._handleCheckboxChange}
                       .checked=${this.data !== undefined}
                       .disabled=${this.disabled}

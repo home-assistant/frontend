@@ -33,6 +33,7 @@ import {
   getSummedData,
 } from "../../../data/energy";
 import { EnergyCollectionController } from "../../../data/energy-collection-controller";
+import { filterGroupsWithListedMembers } from "../../../data/group";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type {
   HomeAssistantConfig,
@@ -176,7 +177,10 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
           generateEntityFilter(states, entities, devices, areas, floors, filter)
         );
 
-        const lightEntities = findEntities(allEntities, lightsFilters);
+        const lightEntities = filterGroupsWithListedMembers(
+          findEntities(allEntities, lightsFilters),
+          states
+        );
 
         const onLights = lightEntities.filter((entityId) => {
           const s = states[entityId]?.state;
@@ -322,10 +326,13 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
           : localize("ui.card.home-summary.no_media_playing");
       }
       case "maintenance": {
-        const maintenanceEntities = findMaintenanceEntities(
-          { states, entities, devices, areas, floors },
-          this._config.hidden_entities
-        );
+        const maintenanceEntities = findMaintenanceEntities({
+          states,
+          entities,
+          devices,
+          areas,
+          floors,
+        });
 
         const lowBatteryEntities = filterLowBatteryEntities(
           states,

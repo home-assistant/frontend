@@ -87,11 +87,12 @@ export class HaFilterCategories extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._unsubscribeCategories();
+    this._categories = [];
   }
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (changedProps.get("scope") !== undefined) {
+    if (changedProps.has("scope") && this.scope !== this._categoriesScope) {
       this._categories = [];
     }
   }
@@ -149,6 +150,9 @@ export class HaFilterCategories extends LitElement {
               ? html`<div class="badge">${this.value?.length}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
+                    .label=${this._localize(
+                      "ui.components.subpage-data-table.clear_filter"
+                    )}
                     @click=${this._clearFilter}
                   ></ha-icon-button>`
               : nothing

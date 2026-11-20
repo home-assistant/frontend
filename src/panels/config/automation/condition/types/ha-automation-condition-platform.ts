@@ -291,6 +291,10 @@ export class HaPlatformCondition extends LitElement {
     const description = this.hass.localize(
       `component.${domain}.conditions.${conditionName}.fields.${fieldName}.description`
     );
+    const label =
+      this.hass.localize(
+        `component.${domain}.conditions.${conditionName}.fields.${fieldName}.name`
+      ) || fieldName;
 
     return html`<ha-settings-row narrow>
       ${
@@ -300,6 +304,7 @@ export class HaPlatformCondition extends LitElement {
             : nothing
           : html`<ha-checkbox
               .key=${fieldName}
+              .accessibleLabel=${label}
               .checked=${
                 this._checkedKeys.has(fieldName) ||
                 (!!this.condition?.options &&
@@ -314,11 +319,7 @@ export class HaPlatformCondition extends LitElement {
         slot="heading"
         class=${showOptional ? "clickable" : ""}
         @click=${showOptional ? this._toggleCheckbox : undefined}
-        >${
-          this.hass.localize(
-            `component.${domain}.conditions.${conditionName}.fields.${fieldName}.name`
-          ) || fieldName
-        }${this._renderForPrimingInfo(fieldName)}</span
+        >${label}${this._renderForPrimingInfo(fieldName)}</span
       >
       ${
         description

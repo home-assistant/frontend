@@ -132,14 +132,18 @@ export class HaRowItem extends LitElement {
     return html`
       ${
         showHeadline
-          ? html`<div part="headline" class="headline">
+          ? html`<div part="headline" class="headline" id="headline">
               <slot name="headline">${this.headline ?? nothing}</slot>
             </div>`
           : nothing
       }
       ${
         showSupporting
-          ? html`<div part="supporting-text" class="supporting">
+          ? html`<div
+              part="supporting-text"
+              class="supporting"
+              id="supporting-text"
+            >
               <slot name="supporting-text"
                 >${this.supportingText ?? nothing}</slot
               >

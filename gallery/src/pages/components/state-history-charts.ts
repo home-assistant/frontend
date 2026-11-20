@@ -10,6 +10,7 @@ import type {
 } from "../../../../src/data/history";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../../src/types";
+import { followGalleryTheme } from "../../data/follow-gallery-theme";
 
 const HOUR = 60 * 60 * 1000;
 const HOURS = 48;
@@ -166,6 +167,7 @@ export class DemoStateHistoryCharts extends LitElement {
     super.firstUpdated(changedProps);
     const hass = provideHass(this);
     hass.updateTranslations(null, "en");
+    followGalleryTheme(this, hass);
     hass.addEntities(ENTITIES);
   }
 

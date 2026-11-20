@@ -350,12 +350,12 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
           return false;
         }
 
-        let pipelineName = "Home Assistant Cloud";
+        let pipelineName = "Home Assistant Link";
         let i = 1;
         while (
           pipelines.pipelines.find((pipeline) => pipeline.name === pipelineName)
         ) {
-          pipelineName = `Home Assistant Cloud ${i}`;
+          pipelineName = `Home Assistant Link ${i}`;
           i++;
         }
 

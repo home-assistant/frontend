@@ -33,7 +33,11 @@ export class HuiPersistentNotificationItem extends LitElement {
               .datetime=${this.notification.created_at}
               capitalize
             ></ha-relative-time>
-            <ha-tooltip for="relative-time" placement="bottom">
+            <ha-tooltip
+              trigger="hover focus click"
+              for="relative-time"
+              placement="bottom"
+            >
               ${this._computeTooltip(this.hass, this.notification)}
             </ha-tooltip>
           </span>

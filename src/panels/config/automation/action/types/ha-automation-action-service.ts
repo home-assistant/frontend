@@ -100,6 +100,9 @@ export class HaServiceAction extends LitElement implements ActionElement {
               ${
                 optionalResponse
                   ? html`<ha-checkbox
+                      .accessibleLabel=${this.hass.localize(
+                        "ui.panel.config.automation.editor.actions.type.service.response_variable"
+                      )}
                       .checked=${
                         !!this._action.response_variable ||
                         this._responseChecked

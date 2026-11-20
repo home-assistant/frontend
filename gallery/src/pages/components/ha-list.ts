@@ -14,6 +14,7 @@ import {
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
+import type { HASSDomTargetEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-icon-button";
 import "../../../../src/components/ha-icon-next";
@@ -21,6 +22,8 @@ import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/item/ha-list-item-base";
 import "../../../../src/components/item/ha-list-item-button";
 import "../../../../src/components/item/ha-list-item-option";
+import "../../../../src/components/item/ha-list-item-switch";
+import type { HaListItemSwitch } from "../../../../src/components/item/ha-list-item-switch";
 import "../../../../src/components/list/ha-list-base";
 import "../../../../src/components/list/ha-list-nav";
 import "../../../../src/components/list/ha-list-selectable";
@@ -92,6 +95,12 @@ export class DemoHaList extends LitElement {
   @state() private _multiCheckEnd: number | Set<number> = new Set();
 
   @state() private _tree = new Set<string>();
+
+  @state() private _switches: Record<string, boolean> = {
+    wifi: true,
+    advanced: false,
+    standalone: false,
+  };
 
   private _options = ["Alpha", "Beta", "Gamma", "Delta", "Epsilon"];
 
@@ -283,6 +292,56 @@ export class DemoHaList extends LitElement {
             <ha-icon-next slot="end"></ha-icon-next>
           </ha-list-item-button>
         </ha-list-base>
+      </ha-card>
+
+      <h2>ha-list-item-switch</h2>
+      <p>
+        Row with a switch. The whole row is the label of the switch, so clicking
+        anywhere on it toggles the switch.
+      </p>
+
+      <ha-card header="In a list">
+        <ha-list-base aria-label="Switch items">
+          <ha-list-item-switch
+            wrap-supporting-text
+            .checked=${this._switches.wifi}
+            data-switch="wifi"
+            @change=${this._onSwitchChange}
+          >
+            <ha-svg-icon slot="start" .path=${mdiWifi}></ha-svg-icon>
+            <span slot="headline">Wi-Fi</span>
+            <span slot="supporting-text"
+              >Connect to known networks automatically.</span
+            >
+          </ha-list-item-switch>
+          <ha-list-item-switch
+            .checked=${this._switches.advanced}
+            data-switch="advanced"
+            @change=${this._onSwitchChange}
+          >
+            <span slot="headline">Advanced mode</span>
+          </ha-list-item-switch>
+          <ha-list-item-switch
+            disabled
+            checked
+            headline="Disabled"
+            supporting-text="Can't be changed"
+          ></ha-list-item-switch>
+        </ha-list-base>
+      </ha-card>
+
+      <ha-card header="Without a list">
+        <ha-list-item-switch
+          wrap-headline
+          .checked=${this._switches.standalone}
+          data-switch="standalone"
+          @change=${this._onSwitchChange}
+        >
+          <span slot="headline">A row on its own, without a list role</span>
+        </ha-list-item-switch>
+        <p class="card-text">
+          State: <code>${JSON.stringify(this._switches)}</code>
+        </p>
       </ha-card>
 
       <h2>ha-list-selectable + ha-list-item-option</h2>
@@ -501,6 +560,13 @@ selected: ${JSON.stringify(this._toJson(this._multiCheckEnd))}</pre>
 
   private _onButtonClick = () => {
     this._buttonClicks++;
+  };
+
+  private _onSwitchChange = (ev: HASSDomTargetEvent<HaListItemSwitch>) => {
+    this._switches = {
+      ...this._switches,
+      [ev.target.dataset.switch!]: ev.target.checked,
+    };
   };
 
   private _withIndex(

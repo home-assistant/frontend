@@ -22,7 +22,7 @@ export class HaMoreInfoViewVacuumCleanAreasHeaderAction extends LitElement {
     if (!this.params.entityId || !this.hass.user?.is_admin) return;
     try {
       const entry = await getExtendedEntityRegistryEntry(
-        this.hass,
+        this.hass.callWS,
         this.params.entityId
       );
       const areaMapping = entry?.options?.vacuum?.area_mapping;

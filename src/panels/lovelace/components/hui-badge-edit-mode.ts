@@ -123,7 +123,11 @@ export class HuiBadgeEditMode extends LitElement {
           @opened=${this._handleOpened}
           @closed=${this._handleClosed}
         >
-          <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
+          <ha-icon-button
+            slot="trigger"
+            .path=${mdiDotsVertical}
+            .label=${this._localize("ui.common.menu")}
+          >
           </ha-icon-button>
           <ha-dropdown-item value="edit">
             <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>

@@ -50,7 +50,7 @@ export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
     if (!this.params.entityId) return;
 
     this._entry = await getExtendedEntityRegistryEntry(
-      this.hass,
+      this.hass.callWS,
       this.params.entityId
     );
 

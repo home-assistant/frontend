@@ -1,7 +1,6 @@
 import type { DemoConfig } from "../types";
 import { demoEntitiesArsaboo } from "./entities";
 import { demoLovelaceArsaboo } from "./lovelace";
-import { demoThemeArsaboo } from "./theme";
 
 export const demoArsaboo: DemoConfig = {
   authorName: "Arsaboo",
@@ -9,5 +8,5 @@ export const demoArsaboo: DemoConfig = {
   name: "ARS Home",
   lovelace: demoLovelaceArsaboo,
   entities: demoEntitiesArsaboo,
-  theme: demoThemeArsaboo,
+  theme: { theme: "default", dark: false },
 };

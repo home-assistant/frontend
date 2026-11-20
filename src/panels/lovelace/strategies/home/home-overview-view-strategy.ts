@@ -36,7 +36,10 @@ import type {
   TileCardConfig,
   UpdatesCardConfig,
 } from "../../cards/types";
-import { computeFavoriteCardConfig } from "../helpers/favorite-cards";
+import {
+  computeFavoriteCardConfig,
+  computeFavoriteCardsSize,
+} from "../helpers/favorite-cards";
 import { findMaintenanceEntities } from "../../../maintenance/strategies/maintenance-view-strategy";
 import {
   computeDefaultSecurityAlertVisibility,
@@ -57,7 +60,6 @@ import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
   alert_entities?: SecurityAlertEntityConfig[];
-  maintenance_hidden_entities?: string[];
   favorite_entities?: string[];
   home_panel?: boolean;
   hide_welcome_message?: boolean;
@@ -290,7 +292,10 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     const favoriteEntities = (config.favorite_entities || []).filter(
       (entityId) => hass.states[entityId] !== undefined
     );
-    const maxCommonControls = Math.max(8, favoriteEntities.length);
+    const maxCommonControls = Math.max(
+      8,
+      computeFavoriteCardsSize(favoriteEntities)
+    );
 
     const favoritesHeadingCard: HeadingCardConfig = {
       type: "heading",
@@ -365,9 +370,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     const hasSecurity =
       hass.panels.security && findSecurityEntities(hass).length > 0;
     const hasMaintenance =
-      hass.panels.maintenance &&
-      findMaintenanceEntities(hass, config.maintenance_hidden_entities).length >
-        0;
+      hass.panels.maintenance && findMaintenanceEntities(hass).length > 0;
 
     const alertEntities = config.alert_entities ?? [];
     const alertSeverityEntities = filterSecurityAlertEntities(
@@ -465,9 +468,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           ? ({
               type: "home-summary",
               summary: "maintenance",
-              hidden_entities: config.maintenance_hidden_entities?.length
-                ? config.maintenance_hidden_entities
-                : undefined,
               tap_action: {
                 action: "navigate",
                 navigation_path: config.home_panel

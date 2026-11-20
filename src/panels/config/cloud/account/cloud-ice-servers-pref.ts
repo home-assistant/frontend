@@ -47,6 +47,9 @@ export class CloudICEServersPref extends LitElement {
           >
             <div class="header-actions">
               <ha-switch
+                .accessibleLabel=${this.hass.localize(
+                  "ui.panel.config.cloud.account.ice_servers.title"
+                )}
                 .checked=${cloudICEServersEnabled}
                 @change=${this._toggleCloudICEServersEnabledChanged}
               ></ha-switch>
