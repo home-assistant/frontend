@@ -43,6 +43,7 @@ import { supportsTargetHumidityCardFeature } from "./hui-target-humidity-card-fe
 import { supportsTargetTemperatureCardFeature } from "./hui-target-temperature-card-feature";
 import { supportsTimerActionsCardFeature } from "./hui-timer-actions-card-feature";
 import { supportsTimerPresetsCardFeature } from "./hui-timer-presets-card-feature";
+import { supportsTimerProgressCardFeature } from "./hui-timer-progress-card-feature";
 import { supportsToggleCardFeature } from "./hui-toggle-card-feature";
 import { supportsTrendGraphCardFeature } from "./hui-trend-graph-card-feature";
 import { supportsUpdateActionsCardFeature } from "./hui-update-actions-card-feature";
@@ -110,6 +111,7 @@ export const UI_FEATURE_TYPES = [
   "target-temperature",
   "timer-actions",
   "timer-presets",
+  "timer-progress",
   "toggle",
   "update-actions",
   "vacuum-commands",
@@ -169,6 +171,7 @@ export const SUPPORTS_FEATURE_TYPES: Record<UiFeatureType, SupportsFeature> = {
   "temperature-forecast": supportsTemperatureForecastCardFeature,
   "timer-actions": supportsTimerActionsCardFeature,
   "timer-presets": supportsTimerPresetsCardFeature,
+  "timer-progress": supportsTimerProgressCardFeature,
   toggle: supportsToggleCardFeature,
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,

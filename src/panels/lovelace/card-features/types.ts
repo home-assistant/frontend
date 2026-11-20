@@ -237,6 +237,10 @@ export interface TimerPresetsCardFeatureConfig {
   style?: "buttons" | "dropdown";
 }
 
+export interface TimerProgressCardFeatureConfig {
+  type: "timer-progress";
+}
+
 export interface WaterHeaterOperationModesCardFeatureConfig {
   type: "water-heater-operation-modes";
   style?: "dropdown" | "icons";
@@ -406,6 +410,7 @@ export type LovelaceCardFeatureConfig =
   | TargetTemperatureCardFeatureConfig
   | TimerActionsCardFeatureConfig
   | TimerPresetsCardFeatureConfig
+  | TimerProgressCardFeatureConfig
   | ToggleCardFeatureConfig
   | UpdateActionsCardFeatureConfig
   | VacuumCommandsCardFeatureConfig
