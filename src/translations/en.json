@@ -957,6 +957,7 @@
         "show_results": "Show {number} results",
         "clear_filter": "Clear filter",
         "close_filter": "Close filters",
+        "related_lookup_failed": "Unable to apply the filter",
         "exit_selection_mode": "Exit selection mode",
         "enter_selection_mode": "Enter selection mode",
         "sort_by": "Sort by {sortColumn}",

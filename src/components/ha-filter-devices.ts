@@ -23,6 +23,7 @@ import {
 } from "../data/context";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
+import { RelatedItemsLookup } from "./data-table/related-items-lookup";
 import "./ha-expansion-panel";
 import "./input/ha-input-search";
 import type { HaInputSearch } from "./input/ha-input-search";
@@ -72,7 +73,7 @@ export class HaFilterDevices extends LitElement {
 
   private _panel = new FilterPanelController(this, this._content);
 
-  private _relatedRequestId = 0;
+  private _related = new RelatedItemsLookup<string[]>(this);
 
   public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
@@ -81,7 +82,12 @@ export class HaFilterDevices extends LitElement {
       properties.has("value") &&
       !deepEqual(this.value, properties.get("value"))
     ) {
-      this._findRelated();
+      // Back to what the page filters by, like after a failed lookup
+      if (this._related.isApplied(this.value)) {
+        this._related.cancel();
+      } else {
+        this._findRelated();
+      }
     }
   }
 
@@ -219,52 +225,35 @@ export class HaFilterDevices extends LitElement {
     }
   );
 
-  private async _findRelated() {
-    const requestId = ++this._relatedRequestId;
-    const relatedPromises: Promise<RelatedResult>[] = [];
-
+  private _findRelated() {
     if (!this.value?.length) {
       this.value = [];
-      fireEvent(this, "data-table-filter-changed", {
-        value: [],
-        items: undefined,
-      });
+      this._related.apply([], undefined);
       return;
     }
 
-    const value: string[] = [];
-
-    for (const deviceId of this.value) {
-      value.push(deviceId);
-      if (this.type) {
-        relatedPromises.push(
-          findRelated(
-            this._api,
-            "device",
-            deviceId,
-            this.includeDisabledEntities
+    const type = this.type;
+    const value = [...this.value];
+    this._related.lookUp(
+      value,
+      async () => {
+        if (!type) {
+          return undefined;
+        }
+        const results = await Promise.all(
+          value.map((deviceId) =>
+            findRelated(
+              this._api,
+              "device",
+              deviceId,
+              this.includeDisabledEntities
+            )
           )
         );
-      }
-    }
-    const results = await Promise.all(relatedPromises);
-
-    // The value changed while this lookup ran
-    if (requestId !== this._relatedRequestId) {
-      return;
-    }
-
-    const items = new Set<string>();
-    for (const result of results) {
-      if (result[this.type!]) {
-        result[this.type!]!.forEach((item) => items.add(item));
-      }
-    }
-
-    fireEvent(this, "data-table-filter-changed", {
-      value,
-      items: this.type ? items : undefined,
-    });
+        return new Set(results.flatMap((result) => result[type] ?? []));
+      },
+      this._localize
+    );
   }
 
   private _handleClearFilterKeydown(ev: KeyboardEvent) {
