@@ -1,5 +1,5 @@
 import { render } from "lit";
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import type { MarketplaceData } from "../../../src/data/marketplace/marketplace";
@@ -672,4 +672,93 @@ it("uninstalls nothing when the setups could not be checked", async () => {
   );
   expect(vi.mocked(deleteConfigEntry)).not.toHaveBeenCalled();
   expect(vi.mocked(uninstallMarketplaceRepository)).not.toHaveBeenCalled();
+});
+
+describe("a selection sharing its files with an installed repository", () => {
+  const shared = {
+    id: "1",
+    name: "Shared",
+    category: "integration",
+    domain: "shared",
+    installed: true,
+  };
+  const sharer = { ...shared, id: "2", name: "Sharer" };
+
+  beforeEach(() => {
+    vi.mocked(getConfigEntries).mockResolvedValue([
+      { entry_id: "entry-1" },
+    ] as unknown as ConfigEntry[]);
+    vi.mocked(deleteConfigEntry).mockResolvedValue({ require_restart: false });
+    vi.mocked(uninstallMarketplaceRepository).mockResolvedValue(null);
+  });
+
+  const dialogText = (text: unknown) => {
+    const container = document.createElement("div");
+    render(text, container);
+    return container.textContent;
+  };
+
+  // Core releases it, the sharer keeps the files and the setup
+  it("keeps the setup when the sharer is not selected", async () => {
+    const dashboard = await openDashboard([shared, sharer], "installed");
+    selectForBulkUninstall(dashboard, ["1"]);
+
+    const dialog = await startBulkUninstall(dashboard);
+
+    const text = dialogText(dialog.text);
+    expect(text).toContain("ui.panel.marketplace.dialog.uninstall.selected");
+    expect(text).not.toContain("selected_in_use");
+    expect(text).toContain(
+      "ui.panel.marketplace.dialog.uninstall.selected_shared"
+    );
+
+    await dialog.action!();
+
+    expect(vi.mocked(deleteConfigEntry)).not.toHaveBeenCalled();
+    expect(vi.mocked(uninstallMarketplaceRepository)).toHaveBeenCalledWith(
+      expect.anything(),
+      "1"
+    );
+  });
+
+  it("deletes the setup when every sharer is selected", async () => {
+    const dashboard = await openDashboard([shared, sharer], "installed");
+    selectForBulkUninstall(dashboard, ["1", "2"]);
+
+    const dialog = await startBulkUninstall(dashboard);
+
+    expect(dialog.text).toBe(
+      "ui.panel.marketplace.dialog.uninstall.selected_in_use"
+    );
+
+    await dialog.action!();
+
+    expect(vi.mocked(deleteConfigEntry)).toHaveBeenCalledWith(
+      expect.anything(),
+      "entry-1"
+    );
+    expect(vi.mocked(uninstallMarketplaceRepository)).toHaveBeenCalledTimes(2);
+  });
+
+  // The table stays selectable while the setups are looked up
+  it("uses the selection from before the lookup", async () => {
+    let resolveEntries!: (entries: ConfigEntry[]) => void;
+    vi.mocked(getConfigEntries).mockReturnValue(
+      new Promise((resolve) => {
+        resolveEntries = resolve;
+      })
+    );
+    const dashboard = await openDashboard([shared, sharer], "installed");
+    selectForBulkUninstall(dashboard, ["1"]);
+
+    const opening = startBulkUninstall(dashboard);
+    selectForBulkUninstall(dashboard, ["1", "2"]);
+    resolveEntries([{ entry_id: "entry-1" }] as unknown as ConfigEntry[]);
+    const dialog = await opening;
+
+    await dialog.action!();
+
+    expect(vi.mocked(deleteConfigEntry)).not.toHaveBeenCalled();
+    expect(vi.mocked(uninstallMarketplaceRepository)).toHaveBeenCalledTimes(1);
+  });
 });

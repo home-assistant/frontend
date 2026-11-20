@@ -54,6 +54,7 @@ const API: MarketplaceApi = { callApi: vi.fn(), callWS: vi.fn() };
 
 const PAGE = {
   nodeName: "HA-MARKETPLACE-REPOSITORY-DASHBOARD",
+  marketplace: { repositories: [] },
 } as unknown as HaMarketplaceRepositoryDashboard;
 
 const menuValues = (entries: MarketplaceRepositoryMenuEntry[]) =>
@@ -222,9 +223,9 @@ describe("repositoryMenuItems", () => {
       { entry_id: "b", domain: "example", title: "", source: "ignore" },
     ] as ConfigEntry[];
 
-    const uninstallIntegration = async () => {
+    const uninstallIntegration = async (page = PAGE) => {
       const entry = repositoryMenuItems(
-        PAGE,
+        page,
         API,
         repository({ installed_version: "1.0.0", domain: "example" }),
         localize
@@ -248,6 +249,69 @@ describe("repositoryMenuItems", () => {
       );
       expect(showConfirmationDialog).not.toHaveBeenCalled();
       expect(uninstallMarketplaceRepository).not.toHaveBeenCalled();
+    });
+
+    const pageWith = (others: Partial<RepositoryBase>[]) =>
+      ({
+        ...PAGE,
+        marketplace: {
+          repositories: [
+            repository({ installed_version: "1.0.0", domain: "example" }),
+            ...others.map((other) => repository(other)),
+          ],
+        },
+      }) as unknown as HaMarketplaceRepositoryDashboard;
+
+    // Core releases it then, the sharer keeps the files and the entries
+    it("asks to uninstall it when an installed integration shares it", async () => {
+      vi.mocked(getConfigEntries).mockResolvedValueOnce(ENTRIES);
+
+      await uninstallIntegration(
+        pageWith([
+          { id: "2", name: "Sharer", installed: true, domain: "example" },
+        ])
+      );
+
+      expect(showMarketplaceInUseDialog).not.toHaveBeenCalled();
+      const params = vi.mocked(showConfirmationDialog).mock.lastCall![1];
+      expect(params.text).toBe(
+        "ui.panel.marketplace.dialog.uninstall.shared_message"
+      );
+
+      await params.action!();
+
+      expect(deleteConfigEntry).not.toHaveBeenCalled();
+      expect(uninstallMarketplaceRepository).toHaveBeenCalledWith(API, "1");
+    });
+
+    it.each<[string, Partial<RepositoryBase>]>([
+      ["is not installed", { installed: false }],
+      ["is not an integration", { installed: true, category: "plugin" }],
+      ["has another domain", { installed: true, domain: "other" }],
+    ])(
+      "shows what is set up when the other repository %s",
+      async (_case, extra) => {
+        vi.mocked(getConfigEntries).mockResolvedValueOnce(ENTRIES);
+
+        await uninstallIntegration(
+          pageWith([{ id: "2", domain: "example", ...extra }])
+        );
+
+        expect(showMarketplaceInUseDialog).toHaveBeenCalledTimes(1);
+        expect(showConfirmationDialog).not.toHaveBeenCalled();
+      }
+    );
+
+    // Without entries core deletes the files, even the shared ones
+    it("asks the usual way when nothing is set up, even if shared", async () => {
+      await uninstallIntegration(
+        pageWith([{ id: "2", installed: true, domain: "example" }])
+      );
+
+      expect(showMarketplaceInUseDialog).not.toHaveBeenCalled();
+      expect(vi.mocked(showConfirmationDialog).mock.lastCall![1].text).toBe(
+        "ui.panel.marketplace.dialog.uninstall.message"
+      );
     });
 
     const deleteAndUninstall = async () => {
