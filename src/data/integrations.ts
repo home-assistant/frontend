@@ -1,5 +1,5 @@
 import type { HomeAssistant } from "../types";
-import type { IntegrationType } from "./integration";
+import type { InstallationType, IntegrationType } from "./integration";
 
 export type IotStandards = "zwave" | "zigbee" | "homekit" | "matter";
 
@@ -12,6 +12,7 @@ export interface Integration {
   supported_by?: string;
   is_built_in?: boolean;
   overwrites_built_in?: boolean;
+  installation_type?: InstallationType;
   single_config_entry?: boolean;
 }
 
