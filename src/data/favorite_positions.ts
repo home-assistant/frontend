@@ -1,4 +1,7 @@
-export const normalizeFavoritePositions = (positions?: number[]): number[] => {
+export const normalizeFavoritePositions = (
+  positions?: number[],
+  { min = 0 }: { min?: number } = {}
+): number[] => {
   if (!positions) {
     return [];
   }
@@ -13,7 +16,7 @@ export const normalizeFavoritePositions = (positions?: number[]): number[] => {
       continue;
     }
 
-    const clamped = Math.max(0, Math.min(100, value));
+    const clamped = Math.max(min, Math.min(100, value));
 
     if (unique.has(clamped)) {
       continue;
