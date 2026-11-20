@@ -40,12 +40,16 @@ const filter = () => {
     document.body.append(host);
     controllers.forEach((controller) => controller.hostConnected?.());
   };
-  return { host, sent, lookup, reconnect };
+  // Like a host that rendered again
+  const updated = () =>
+    controllers.forEach((controller) => controller.hostUpdated?.());
+  return { host, sent, lookup, reconnect, updated };
 };
 
 afterEach(() => {
   vi.mocked(showAlertDialog).mockClear();
   document.body.replaceChildren();
+  history.replaceState(null, "", "/");
 });
 
 describe("RelatedItemsLookup", () => {
@@ -174,6 +178,61 @@ describe("RelatedItemsLookup", () => {
       items: new Set(["automation.hall"]),
     });
     expect(find).toHaveBeenCalledTimes(2);
+  });
+
+  it("waits while another page is shown", async () => {
+    const { host, sent, lookup, updated } = filter();
+    history.replaceState(null, "", "/config/automation/dashboard");
+    host.value = ["hall"];
+
+    const find = vi
+      .fn<() => Promise<Set<string>>>()
+      .mockRejectedValueOnce(new Error("Connection lost"))
+      .mockResolvedValueOnce(new Set(["automation.hall"]));
+    const lookUp = lookup.lookUp(host.value, find, localize);
+    // The router keeps the page connected while the next one loads
+    history.pushState(null, "", "/config/script/dashboard");
+    await lookUp;
+    updated();
+
+    expect(host.value).toEqual(["hall"]);
+    expect(showAlertDialog).not.toHaveBeenCalled();
+    expect(find).toHaveBeenCalledOnce();
+
+    history.pushState(null, "", "/config/automation/dashboard");
+    updated();
+    await vi.waitFor(() => expect(sent).toHaveLength(1));
+    expect(sent[0]).toEqual({
+      value: ["hall"],
+      items: new Set(["automation.hall"]),
+    });
+  });
+
+  it("keeps outdated items when going back after a failed lookup", async () => {
+    const { host, sent, lookup } = filter();
+    await lookup.lookUp(
+      ["kitchen"],
+      async () => new Set(["automation.kitchen"]),
+      localize
+    );
+    lookup.markOutdated();
+
+    host.value = ["hall"];
+    await lookup.lookUp(
+      host.value,
+      () => Promise.reject(new Error("Connection lost")),
+      localize
+    );
+
+    // The host sends the restored value again instead of looking it up, and
+    // the failed lookup already sent it
+    expect(lookup.wasSent(host.value)).toBe(true);
+    lookup.resend();
+    expect(sent).toHaveLength(2);
+    expect(showAlertDialog).toHaveBeenCalledOnce();
+
+    // Going back to it later still finds its items again
+    expect(lookup.wasSent(["kitchen"])).toBe(false);
   });
 
   it("looks up the value last sent again once its items are outdated", async () => {
