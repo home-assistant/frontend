@@ -8,7 +8,11 @@ import { consume } from "../../common/decorators/consume";
 import { truncateWithEllipsis } from "../../common/string/truncate-with-ellipsis";
 import type { Condition } from "../../data/automation";
 import { getRowNote } from "../../data/automation";
-import type { ConditionDescription } from "../../data/condition";
+import {
+  getConditionDomain,
+  getConditionObjectId,
+  type ConditionDescription,
+} from "../../data/condition";
 import { internationalizationContext } from "../../data/context";
 import "../../panels/config/automation/ha-automation-row-options";
 import "../../panels/config/automation/ha-automation-row-threshold";
@@ -76,6 +80,9 @@ export class HaAutomationConditionSummary extends LitElement {
                 ></ha-automation-row-threshold>
                 <ha-automation-row-options
                   .config=${this.condition}
+                  .description=${this.description}
+                  .translationDomain=${getConditionDomain(this.condition.condition)}
+                  .translationKey=${`component.${getConditionDomain(this.condition.condition)}.conditions.${getConditionObjectId(this.condition.condition)}`}
                 ></ha-automation-row-options> `
             : nothing
         }
