@@ -82,9 +82,10 @@ export class HaFilterDevices extends LitElement {
       properties.has("value") &&
       !deepEqual(this.value, properties.get("value"))
     ) {
-      // Back to what the page filters by, like after a failed lookup
-      if (this._related.isApplied(this.value)) {
-        this._related.cancel();
+      // Back to the value last sent, like after a failed lookup. A link may
+      // have changed the page's filter meanwhile, so send it again.
+      if (this._related.wasSent(this.value)) {
+        this._related.resend();
       } else {
         this._findRelated();
       }

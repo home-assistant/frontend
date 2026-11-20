@@ -118,7 +118,7 @@ export class HaFilterFloorAreas extends LitElement {
       properties.has("value") &&
       !deepEqual(this.value, properties.get("value"));
     if (
-      (valueChanged && !this._related.isApplied(this.value)) ||
+      (valueChanged && !this._related.wasSent(this.value)) ||
       // Items without an area are worked out from the registries
       (this.value?.no_area &&
         (properties.has("_devices") ||
@@ -130,8 +130,9 @@ export class HaFilterFloorAreas extends LitElement {
     ) {
       this._findRelated();
     } else if (valueChanged) {
-      // Back to what the page filters by, like after a failed lookup
-      this._related.cancel();
+      // Back to the value last sent, like after a failed lookup. A link may
+      // have changed the page's filter meanwhile, so send it again.
+      this._related.resend();
     }
   }
 

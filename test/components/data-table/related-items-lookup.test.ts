@@ -50,10 +50,10 @@ describe("RelatedItemsLookup", () => {
     expect(sent).toEqual([
       { value: ["hall"], items: new Set(["automation.hall"]) },
     ]);
-    expect(lookup.isApplied(["hall"])).toBe(true);
+    expect(lookup.wasSent(["hall"])).toBe(true);
   });
 
-  it("shows the value the page still filters by when a lookup fails", async () => {
+  it("goes back to the value last sent when a lookup fails", async () => {
     const { host, sent, lookup } = filter();
     await lookup.lookUp(
       ["kitchen"],
@@ -69,12 +69,42 @@ describe("RelatedItemsLookup", () => {
     );
 
     expect(host.value).toEqual(["kitchen"]);
-    expect(lookup.isApplied(host.value)).toBe(true);
+    expect(lookup.wasSent(host.value)).toBe(true);
     expect(sent).toHaveLength(1);
     expect(showAlertDialog).toHaveBeenCalledWith(host, {
       title: "ui.components.subpage-data-table.related_lookup_failed",
       text: "Lookup failed",
     });
+
+    // A link may have changed the page's filter meanwhile, so the host sends
+    // the restored value and its items again
+    lookup.resend();
+    expect(sent).toEqual([
+      { value: ["kitchen"], items: new Set(["automation.kitchen"]) },
+      { value: ["kitchen"], items: new Set(["automation.kitchen"]) },
+    ]);
+  });
+
+  it("sends the items again when the value goes back while a lookup runs", async () => {
+    const { sent, lookup } = filter();
+    await lookup.lookUp(
+      ["kitchen"],
+      async () => new Set(["automation.kitchen"]),
+      localize
+    );
+
+    // Like a link selecting another device, then one going back
+    const running = deferred();
+    const lookUp = lookup.lookUp(["hall"], () => running.promise, localize);
+    expect(lookup.wasSent(["kitchen"])).toBe(true);
+    lookup.resend();
+    running.resolve(new Set(["automation.hall"]));
+    await lookUp;
+
+    expect(sent).toEqual([
+      { value: ["kitchen"], items: new Set(["automation.kitchen"]) },
+      { value: ["kitchen"], items: new Set(["automation.kitchen"]) },
+    ]);
   });
 
   it("clears the filter when its first lookup fails", async () => {
@@ -88,7 +118,7 @@ describe("RelatedItemsLookup", () => {
     );
 
     expect(host.value).toBeUndefined();
-    expect(lookup.isApplied(undefined)).toBe(false);
+    expect(lookup.wasSent(undefined)).toBe(false);
     expect(sent).toEqual([]);
     expect(showAlertDialog).toHaveBeenCalledOnce();
   });
@@ -107,17 +137,5 @@ describe("RelatedItemsLookup", () => {
     expect(host.value).toEqual([]);
     expect(sent).toEqual([{ value: [], items: undefined }]);
     expect(showAlertDialog).not.toHaveBeenCalled();
-  });
-
-  it("drops a running lookup when cancelled", async () => {
-    const { sent, lookup } = filter();
-    const running = deferred();
-
-    const lookUp = lookup.lookUp(["kitchen"], () => running.promise, localize);
-    lookup.cancel();
-    running.resolve(new Set(["automation.kitchen"]));
-    await lookUp;
-
-    expect(sent).toEqual([]);
   });
 });
