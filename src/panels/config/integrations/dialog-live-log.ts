@@ -3,7 +3,7 @@ import {
   ERR_CONNECTION_LOST,
   type UnsubscribeFunc,
 } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { mdiCircle, mdiWrap, mdiWrapDisabled } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, query, state } from "lit/decorators";
@@ -20,6 +20,10 @@ import "../../../components/ha-svg-icon";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import "../../../components/skeleton/ha-skeleton-log";
+import {
+  fadeInArrival,
+  skeletonOr,
+} from "../../../components/skeleton/skeleton-arrival";
 import {
   connectionContext,
   internationalizationContext,
@@ -64,6 +68,29 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
   private _unsub?: Promise<UnsubscribeFunc>;
 
   private _resubscribeOnReady = false;
+
+  // Whether the skeleton showed last render, so the log fades in once its
+  // first lines take the skeleton's place
+  private _showedSkeleton = false;
+
+  private _linesArriving = false;
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    const showSkeleton = !this._lineCount && this._loading;
+    this._linesArriving =
+      this._showedSkeleton && !showSkeleton && this._lineCount > 0;
+    this._showedSkeleton = showSkeleton;
+  }
+
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
+
+    if (this._linesArriving && this._logViewer) {
+      this._linesArriving = false;
+      fadeInArrival(this._logViewer);
+    }
+  }
 
   connectedCallback() {
     super.connectedCallback();
@@ -217,18 +244,21 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
                     ${
                       this._lineCount
                         ? nothing
-                        : this._loading
-                          ? html`<ha-skeleton-log
+                        : skeletonOr(
+                            this._loading,
+                            html`<ha-skeleton-log
                               .label=${this._i18n.localize(
                                 "ui.panel.config.logs.loading_log"
                               )}
-                            ></ha-skeleton-log>`
-                          : html`<div class="waiting">
-                              ${this._i18n.localize(
-                                "ui.panel.config.integrations.config_entry.live_log.waiting",
-                                { integration: this.params.name }
-                              )}
-                            </div>`
+                            ></ha-skeleton-log>`,
+                            () =>
+                              html`<div class="waiting">
+                                ${this._i18n.localize(
+                                  "ui.panel.config.integrations.config_entry.live_log.waiting",
+                                  { integration: this.params!.name }
+                                )}
+                              </div>`
+                          )
                     }
                   </ha-log-viewer>
                   ${

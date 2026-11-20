@@ -18,6 +18,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/item/ha-list-item-button";
 import "../../../components/list/ha-list-base";
 import "../../../components/skeleton/ha-skeleton-text";
+import { skeletonOr } from "../../../components/skeleton/skeleton-arrival";
 import { getSignedPath } from "../../../data/auth";
 import {
   getCoreLogFileDownloadUnavailableReason,
@@ -182,37 +183,38 @@ export class SystemLogCard extends LitElement {
                 </ha-alert>`
               : nothing
           }
-          ${
-            this._items === undefined
-              ? html`<ha-fade-in .duration=${300} easing="ease-in">
-                  <div
-                    class="skeleton"
-                    role="progressbar"
-                    aria-label=${this.hass.localize(
-                      "ui.panel.config.logs.loading_log"
-                    )}
-                  >
-                    ${SKELETON_ROW_WIDTHS.map(
-                      ([primary, secondary]) => html`
-                        <div class="skeleton-row">
-                          <ha-skeleton-text
-                            class="primary"
-                            style=${styleMap({
-                              "--ha-skeleton-text-width": `${primary}%`,
-                            })}
-                          ></ha-skeleton-text>
-                          <ha-skeleton-text
-                            class="secondary"
-                            style=${styleMap({
-                              "--ha-skeleton-text-width": `${secondary}%`,
-                            })}
-                          ></ha-skeleton-text>
-                        </div>
-                      `
-                    )}
-                  </div>
-                </ha-fade-in>`
-              : this._items.length === 0
+          ${skeletonOr(
+            this._items === undefined,
+            html`<ha-fade-in .duration=${300} easing="ease-in">
+              <div
+                class="skeleton"
+                role="progressbar"
+                aria-label=${this.hass.localize(
+                  "ui.panel.config.logs.loading_log"
+                )}
+              >
+                ${SKELETON_ROW_WIDTHS.map(
+                  ([primary, secondary]) => html`
+                    <div class="skeleton-row">
+                      <ha-skeleton-text
+                        class="primary"
+                        style=${styleMap({
+                          "--ha-skeleton-text-width": `${primary}%`,
+                        })}
+                      ></ha-skeleton-text>
+                      <ha-skeleton-text
+                        class="secondary"
+                        style=${styleMap({
+                          "--ha-skeleton-text-width": `${secondary}%`,
+                        })}
+                      ></ha-skeleton-text>
+                    </div>
+                  `
+                )}
+              </div>
+            </ha-fade-in>`,
+            () =>
+              this._items!.length === 0
                 ? html`
                     <div class="card-content empty-content">
                       ${this.hass.localize("ui.panel.config.logs.no_issues")}
@@ -289,18 +291,19 @@ export class SystemLogCard extends LitElement {
                         `
                       )}</ha-list-base
                     >`
-          }
-          ${
-            this._items === undefined
-              ? nothing
-              : html`<div class="card-actions">
-                  <ha-call-service-button domain="system_log" service="clear"
-                    >${this.hass.localize(
-                      "ui.panel.config.logs.clear"
-                    )}</ha-call-service-button
-                  >
-                </div>`
-          }
+          )}
+          ${skeletonOr(
+            this._items === undefined,
+            nothing,
+            () =>
+              html`<div class="card-actions">
+                <ha-call-service-button domain="system_log" service="clear"
+                  >${this.hass.localize(
+                    "ui.panel.config.logs.clear"
+                  )}</ha-call-service-button
+                >
+              </div>`
+          )}
         </ha-card>
       </div>
     `;

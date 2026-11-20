@@ -37,6 +37,10 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/skeleton/ha-skeleton-log";
+import {
+  fadeInArrival,
+  skeletonArrivalStyles,
+} from "../../../components/skeleton/skeleton-arrival";
 
 import { getSignedPath } from "../../../data/auth";
 
@@ -158,6 +162,12 @@ class ErrorLogCard extends LitElement {
   @state() private _loadingState: "loading" | "empty" | "loaded" = "loading";
 
   @state() private _loadingPrevState?: "loading" | "end" | "loaded";
+
+  // Whether the skeleton showed last render, so the log fades in once it
+  // takes the skeleton's place
+  private _showedSkeleton = false;
+
+  private _logArriving = false;
 
   @state() private _noSearchResults = false;
 
@@ -359,7 +369,7 @@ class ErrorLogCard extends LitElement {
                         .label=${localize("ui.panel.config.logs.loading_log")}
                       ></ha-skeleton-log>`
                   : this._loadingState === "empty"
-                    ? html`<div>
+                    ? html`<div class="arriving">
                         ${
                           integrationLog
                             ? localize(
@@ -451,6 +461,18 @@ class ErrorLogCard extends LitElement {
       this._boot = 0;
       this._loadLogs();
     }
+
+    // As render decides: lines kept while reconnecting show instead
+    const showSkeleton =
+      this._loadingState === "loading" &&
+      !(
+        this._ansiToHtmlElement?.hasLines &&
+        !(this.filter && this._noSearchResults)
+      );
+
+    this._logArriving =
+      this._showedSkeleton && !showSkeleton && this._loadingState === "loaded";
+    this._showedSkeleton = showSkeleton;
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
@@ -464,6 +486,11 @@ class ErrorLogCard extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
+
+    if (this._logArriving && this._ansiToHtmlElement) {
+      this._logArriving = false;
+      fadeInArrival(this._ansiToHtmlElement);
+    }
 
     if (this._newLogsIndicator && this._scrolledToBottomController.value) {
       this._newLogsIndicator = false;
@@ -1041,6 +1068,7 @@ class ErrorLogCard extends LitElement {
 
   static styles: CSSResultGroup = css`
     ${haStyleScrollbar}
+    ${skeletonArrivalStyles}
 
     :host {
       direction: var(--direction);
