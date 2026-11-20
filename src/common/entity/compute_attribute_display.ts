@@ -182,6 +182,13 @@ export const computeAttributeValueToParts = (
       localize(
         `component.${registryEntry.platform}.entity.${domain}.${translationKey}.state_attributes.${attribute}.state.${attributeValue}`
       )) ||
+    computeMemberAttributeValueDisplay(
+      localize,
+      stateObj,
+      entities,
+      attribute,
+      attributeValue
+    ) ||
     (deviceClass &&
       localize(
         `component.${domain}.entity_component.${deviceClass}.state_attributes.${attribute}.state.${attributeValue}`
@@ -191,6 +198,35 @@ export const computeAttributeValueToParts = (
     ) ||
     attributeValue;
   return [{ type: "value", value: formattedValue }];
+};
+
+// A group has no translations for the values of its members, for example the
+// effects of a light group, so use the translation of a member.
+const computeMemberAttributeValueDisplay = (
+  localize: LocalizeFunc,
+  stateObj: HassEntity,
+  entities: HomeAssistant["entities"],
+  attribute: string,
+  attributeValue: string
+): string | undefined => {
+  const memberIds = stateObj.attributes.entity_id;
+  if (!Array.isArray(memberIds)) {
+    return undefined;
+  }
+  const domain = computeStateDomain(stateObj);
+  for (const memberId of memberIds) {
+    const member = entities[memberId] as EntityRegistryDisplayEntry | undefined;
+    if (!member?.translation_key || computeDomain(memberId) !== domain) {
+      continue;
+    }
+    const translation = localize(
+      `component.${member.platform}.entity.${domain}.${member.translation_key}.state_attributes.${attribute}.state.${attributeValue}`
+    );
+    if (translation) {
+      return translation;
+    }
+  }
+  return undefined;
 };
 
 export const computeAttributeNameDisplay = (
