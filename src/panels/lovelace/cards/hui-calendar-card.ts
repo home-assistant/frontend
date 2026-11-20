@@ -7,7 +7,7 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
-import "../../../components/ha-spinner";
+import { SkeletonLoadingController } from "../../../components/skeleton/skeleton-loading-controller";
 import type { Calendar } from "../../../data/calendar";
 import { getCalendarColors } from "../../../data/calendar";
 import { CalendarEventsController } from "../../../data/calendar-events-controller";
@@ -80,6 +80,11 @@ export class HuiCalendarCard
   private _resizeObserver?: ResizeObserver;
 
   private _events = new CalendarEventsController(this);
+
+  protected readonly _skeletonLoading = new SkeletonLoadingController(
+    this,
+    () => !this._entityRegistry || !this._eventsLoaded
+  );
 
   public setConfig(config: CalendarCardConfig): void {
     if (!config.entities?.length) {
@@ -174,7 +179,6 @@ export class HuiCalendarCard
       return nothing;
     }
 
-    const loading = !this._entityRegistry || !this._eventsLoaded;
     const rows = this._config.grid_options
       ? this._config.grid_options.rows
       : this._config.layout_options?.grid_rows;
@@ -198,7 +202,6 @@ export class HuiCalendarCard
             "is-grid": this.layout === "grid" && !autoHeight,
             "is-panel": this.layout === "panel",
             "has-title": !!this._config.title,
-            loading: loading,
           })}
           ?auto-height=${autoHeight}
           ?add-fab=${this._config.show_add_event}
@@ -219,13 +222,6 @@ export class HuiCalendarCard
           }
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
-        ${
-          loading
-            ? html`<div class="loading">
-                <ha-spinner></ha-spinner>
-              </div>`
-            : nothing
-        }
       </ha-card>
     `;
   }
@@ -344,10 +340,6 @@ export class HuiCalendarCard
       height: auto;
     }
 
-    ha-full-calendar.loading {
-      visibility: hidden;
-    }
-
     ha-full-calendar.is-grid,
     ha-full-calendar.is-panel {
       --calendar-height: calc(100% - 16px);
@@ -363,16 +355,6 @@ export class HuiCalendarCard
         100% - var(--ha-card-header-font-size, var(--ha-font-size-2xl)) - 22px
       );
       height: calc(100% - var(--header-height));
-    }
-
-    .loading {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--card-background-color, var(--ha-card-background));
-      z-index: 1;
     }
   `;
 }

@@ -1,5 +1,6 @@
 import type {
   HassConfig,
+  HassEntities,
   HassEntity,
   HassEntityAttributeBase,
   MessageBase,
@@ -743,6 +744,52 @@ export const isTimelineEntity = (
 ): boolean =>
   !isNumericEntity(domain, currentState, undefined) &&
   !LINE_CHART_DOMAINS.includes(domain);
+
+export interface ExpectedHistoryCharts {
+  lines: number;
+  timelineRows: number;
+}
+
+/* How many line charts and timeline rows `computeHistory` will draw these
+   entities' history in, guessed from their current states, so their space
+   can be held while it loads */
+export const expectedHistoryCharts = (
+  entityIds: string[],
+  states: HassEntities,
+  temperatureUnit: string,
+  splitDeviceClasses = false
+): ExpectedHistoryCharts => {
+  const lineGroups = new Set<string | undefined>();
+
+  let timelineRows = 0;
+
+  entityIds.forEach((entityId) => {
+    const domain = computeDomain(entityId);
+
+    const stateObj: HassEntity | undefined = states[entityId];
+
+    if (isTimelineEntity(domain, stateObj)) {
+      timelineRows++;
+
+      return;
+    }
+
+    const unit = isNumericEntity(domain, stateObj, undefined)
+      ? stateObj?.attributes.unit_of_measurement || BLANK_UNIT
+      : ({
+          climate: temperatureUnit,
+          humidifier: "%",
+          water_heater: temperatureUnit,
+        }[domain] ?? domain);
+
+    const deviceClass =
+      SPECIAL_DOMAIN_CLASSES[domain] || stateObj?.attributes.device_class;
+
+    lineGroups.add(computeGroupKey(unit, deviceClass, splitDeviceClasses));
+  });
+
+  return { lines: lineGroups.size, timelineRows };
+};
 
 export const mergeHistoryResults = (
   historyResult: HistoryResult,

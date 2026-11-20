@@ -36,6 +36,10 @@ const ROW_HEIGHT = 30;
 const ROW_HEIGHT_INSIDE_LABELS = 64;
 const GRID_BOTTOM = 30;
 
+/* How tall a timeline with this many rows is drawn */
+export const timelineHeight = (rows: number, tallRows: boolean) =>
+  rows * (tallRows ? ROW_HEIGHT_INSIDE_LABELS : ROW_HEIGHT) + GRID_BOTTOM;
+
 @customElement("state-history-chart-timeline")
 export class StateHistoryChartTimeline extends LitElement {
   @property({ attribute: false }) public data: TimelineEntity[] = [];
@@ -94,13 +98,10 @@ export class StateHistoryChartTimeline extends LitElement {
     return html`
       <ha-chart-base
         .options=${this._chartOptions}
-        .height=${`${
-          this.data.length *
-            (this.insideLabels && (this.chunked || this.showNames)
-              ? ROW_HEIGHT_INSIDE_LABELS
-              : ROW_HEIGHT) +
-          GRID_BOTTOM
-        }px`}
+        .height=${`${timelineHeight(
+          this.data.length,
+          this.insideLabels && (this.chunked || this.showNames)
+        )}px`}
         .data=${this._chartData as HaECSeries}
         small-controls
         grow-for-zoom-slider

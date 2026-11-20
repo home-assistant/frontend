@@ -1,7 +1,7 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import type { HassConfig } from "home-assistant-js-websocket";
+import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import {
   customElement,
   eventOptions,
@@ -9,6 +9,7 @@ import {
   queryAll,
   state,
 } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { consume } from "../../common/decorators/consume";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
@@ -20,18 +21,24 @@ import type {
   HASSDomTargetEvent,
 } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
-import { configContext } from "../../data/context";
+import { configContext, statesContext } from "../../data/context";
 import type {
   HistoryResult,
   LineChartUnit,
   TimelineEntity,
 } from "../../data/history";
+import { expectedHistoryCharts } from "../../data/history";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistantConfig } from "../../types";
+import { SkeletonLoadingController } from "../skeleton/skeleton-loading-controller";
+import { chartPlaceholderStyles } from "./chart-placeholder";
 import "./state-history-chart-line";
 import type { StateHistoryChartLine } from "./state-history-chart-line";
 import "./state-history-chart-timeline";
-import type { StateHistoryChartTimeline } from "./state-history-chart-timeline";
+import {
+  timelineHeight,
+  type StateHistoryChartTimeline,
+} from "./state-history-chart-timeline";
 
 const CANVAS_TIMELINE_ROWS_CHUNK = 10; // Split up the canvases to avoid hitting the render limit
 
@@ -93,6 +100,21 @@ export class StateHistoryCharts extends LitElement {
   @property({ attribute: "is-loading-data", type: Boolean })
   public isLoadingData = false;
 
+  /** The entities being loaded, so their charts' space can be held */
+  @property({ attribute: false }) public loadingEntityIds?: string[];
+
+  /** Whether those entities' charts are split by device class */
+  @property({ attribute: "split-device-classes", type: Boolean })
+  public splitDeviceClasses = false;
+
+  protected readonly _skeletonLoading = new SkeletonLoadingController(
+    this,
+    () =>
+      isComponentLoaded(this._hassConfig, "history") &&
+      this.isLoadingData &&
+      !this.historyData
+  );
+
   @property({ attribute: "logarithmic-scale", type: Boolean })
   public logarithmicScale = false;
 
@@ -129,6 +151,9 @@ export class StateHistoryCharts extends LitElement {
   })
   private _hassConfig!: HassConfig;
 
+  @consume({ context: statesContext, subscribe: true })
+  private _states?: HassEntities;
+
   @queryAll("state-history-chart-line, state-history-chart-timeline")
   private _chartComponents!: NodeListOf<
     StateHistoryChartLine | StateHistoryChartTimeline
@@ -147,9 +172,7 @@ export class StateHistoryCharts extends LitElement {
     }
 
     if (this.isLoadingData && !this.historyData) {
-      return html`<div class="info">
-        ${this._localize("ui.components.history_charts.loading_history")}
-      </div>`;
+      return this._renderLoading();
     }
 
     if (this._isHistoryEmpty()) {
@@ -187,6 +210,59 @@ export class StateHistoryCharts extends LitElement {
             )}`
       }
     `;
+  }
+
+  /* Takes the space the charts will, so nothing moves when they arrive */
+  private _renderLoading() {
+    const label = this._localize(
+      "ui.components.history_charts.loading_history"
+    );
+
+    const expected =
+      this.loadingEntityIds && this._states && !this.height && !this.virtualize
+        ? expectedHistoryCharts(
+            this.loadingEntityIds,
+            this._states,
+            this._hassConfig.unit_system.temperature,
+            this.splitDeviceClasses
+          )
+        : undefined;
+
+    if (!expected || (!expected.lines && !expected.timelineRows)) {
+      return html`<div class="info" data-skeleton="block">${label}</div>`;
+    }
+
+    // Only the first chart says what's happening, for where no skeleton is
+    // drawn
+    const timeline = expected.timelineRows
+      ? html`<div class="entry-container timeline">
+          <div
+            class="info"
+            data-skeleton="block"
+            style=${styleMap({
+              height: `${timelineHeight(
+                expected.timelineRows,
+                this.insideLabels && this.showNames
+              )}px`,
+            })}
+          >
+            ${label}
+          </div>
+        </div>`
+      : nothing;
+
+    const lines = Array.from(
+      { length: expected.lines },
+      (_, index) =>
+        html`<div class="entry-container line placeholder-container">
+          <div class="info placeholder" data-skeleton="block">
+            ${index === 0 && !expected.timelineRows ? label : nothing}
+          </div>
+          <div class="legend-placeholder" data-skeleton="text"></div>
+        </div>`
+    );
+
+    return html`${timeline}${lines}`;
   }
 
   private _renderHistoryItem: RenderItemFunction<
@@ -472,6 +548,8 @@ export class StateHistoryCharts extends LitElement {
     state-history-chart-line {
       width: 100%;
     }
+
+    ${chartPlaceholderStyles}
   `;
 }
 

@@ -173,6 +173,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   @property({ type: String }) public height?: string;
 
+  // While the data loads, the chart is read as one block and its legend as
+  // one line, so a skeleton drawn over it takes the size it will have
+  @property({ type: Boolean }) public loading = false;
+
   // Lets cards that key their data on ids have display names announced
   // instead when the chart is navigated with Chart2Music.
   @property({ attribute: false })
@@ -635,6 +639,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             class="chart ${classMap({
               "touch-scrub": this._isTouchDevice && this._hasZoomableXAxis(),
             })}"
+            data-skeleton=${ifDefined(this.loading ? "block" : undefined)}
             role=${ifDefined(sonifiable ? "application" : undefined)}
             tabindex=${ifDefined(
               sonifiable ? "0" : this._sonificationFocusHeld ? "-1" : undefined
@@ -706,6 +711,16 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     const items = this._getLegendItems();
     if (!items) {
       return nothing;
+    }
+
+    if (this.loading) {
+      return html`<div class="chart-legend">
+        <ul>
+          <li>
+            <span class="legend-placeholder" data-skeleton="text"></span>
+          </li>
+        </ul>
+      </div>`;
     }
     const datasets = ensureArray(this.data!);
     // Index datasets by id and name so each legend item is an O(1) lookup
@@ -2414,6 +2429,13 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     }
     .chart-legend.multiple-items li {
       max-width: 220px;
+    }
+    .chart-legend li:has(.legend-placeholder) {
+      width: 40%;
+    }
+    .legend-placeholder {
+      width: 100%;
+      height: var(--ha-font-size-s);
     }
     .chart-legend.multiple-items li:has(.value) {
       max-width: 300px;
