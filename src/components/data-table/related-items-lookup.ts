@@ -120,8 +120,12 @@ export class RelatedItemsLookup<T> implements ReactiveController {
     this._fire(this._sent);
   }
 
-  private _fire({ value, items }: SentFilter<T>) {
-    fireEvent(this._host, "data-table-filter-changed", { value, items });
+  private _fire({ value, items }: SentFilter<T>, restored?: boolean) {
+    fireEvent(
+      this._host,
+      "data-table-filter-changed",
+      restored ? { value, items, restored } : { value, items }
+    );
   }
 
   private _restore(err: unknown, localize: LocalizeFunc) {
@@ -131,8 +135,9 @@ export class RelatedItemsLookup<T> implements ReactiveController {
       this._host.value = this._sent.value;
       // The page writes its URL before the dialog adds a history entry, so
       // going back to close the dialog doesn't bring the failed value back.
-      // Outdated items are still looked up again by the host.
-      this._fire(this._sent);
+      // Marked as restored, so the page doesn't store a link's value as the
+      // user's. Outdated items are still looked up again by the host.
+      this._fire(this._sent, true);
     }
     showAlertDialog(this._host, {
       title: localize("ui.components.subpage-data-table.related_lookup_failed"),

@@ -558,6 +558,11 @@ declare global {
     "ha-filter-floor-areas": HaFilterFloorAreas;
   }
   interface HASSDomEvents {
-    "data-table-filter-changed": { value: any; items: Set<string> | undefined };
+    "data-table-filter-changed": {
+      value: any;
+      items: Set<string> | undefined;
+      // Sent back after a failed lookup, so not the user's choice
+      restored?: boolean;
+    };
   }
 }

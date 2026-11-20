@@ -757,17 +757,20 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   };
 
   private _filterChanged(ev) {
-    this._setFilter(ev.target.localName, ev.detail);
+    const { value, items, restored } = ev.detail;
+    this._setFilter(ev.target.localName, { value, items }, !restored);
   }
 
-  private _setFilter(type: string, filter: DataTableFilter) {
+  private _setFilter(type: string, filter: DataTableFilter, store = true) {
     const filters = { ...this._filters, [type]: filter };
 
     // A filter also sends the value it was given, once it has found its items.
-    // Only a change to what the URL holds is the user's, so a link isn't stored.
+    // Only a change to what the URL holds is the user's, so a link isn't stored,
+    // nor a value a filter restored after a failed lookup.
     if (
+      store &&
       scriptsFilterQueryString(filters) !==
-      scriptsFilterQueryString(this._filters)
+        scriptsFilterQueryString(this._filters)
     ) {
       this._storageFilters = { ...this._storageFilters, [type]: filter };
     }

@@ -1055,7 +1055,9 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   private _filterChanged(ev) {
     const type = ev.target.localName;
-    const filters = { ...this._filters, [type]: ev.detail };
+    const { value, items, restored } = ev.detail;
+    const filter = { value, items };
+    const filters = { ...this._filters, [type]: filter };
 
     // A filter can still finish looking up its items after the page is left.
     // Keep them for when the page comes back, but leave the URL alone.
@@ -1066,12 +1068,14 @@ export class HaConfigDeviceDashboard extends LitElement {
     }
 
     // A filter also sends the value it was given, once it has found its items.
-    // Only a change to what the URL holds is the user's, so a link isn't stored.
+    // Only a change to what the URL holds is the user's, so a link isn't stored,
+    // nor a value a filter restored after a failed lookup.
     if (
+      !restored &&
       devicesFilterQueryString(filters) !==
-      devicesFilterQueryString(this._filters)
+        devicesFilterQueryString(this._filters)
     ) {
-      this._storageFilters = { ...this._storageFilters, [type]: ev.detail };
+      this._storageFilters = { ...this._storageFilters, [type]: filter };
     }
 
     this._filters = filters;

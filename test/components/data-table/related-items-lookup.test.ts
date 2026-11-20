@@ -91,10 +91,15 @@ describe("RelatedItemsLookup", () => {
 
     expect(host.value).toEqual(["kitchen"]);
     expect(lookup.wasSent(host.value)).toBe(true);
-    // A link may have changed the page's filter meanwhile
+    // A link may have changed the page's filter meanwhile. Marked as restored,
+    // so the page doesn't store it as the user's choice.
     expect(sent).toEqual([
       { value: ["kitchen"], items: new Set(["automation.kitchen"]) },
-      { value: ["kitchen"], items: new Set(["automation.kitchen"]) },
+      {
+        value: ["kitchen"],
+        items: new Set(["automation.kitchen"]),
+        restored: true,
+      },
     ]);
     expect(sentBeforeDialog).toBe(2);
     expect(showAlertDialog).toHaveBeenCalledWith(host, {
