@@ -47,6 +47,12 @@ interface HaFilterDevicesItem extends HaListVirtualizedItem {
   name: string;
 }
 
+interface DeviceLinks {
+  deviceIds: string[];
+  /** The device of each entity that has one, by entity id */
+  entityDevices: Record<string, string>;
+}
+
 @customElement("ha-filter-devices")
 export class HaFilterDevices extends LitElement {
   @state()
@@ -110,8 +116,7 @@ export class HaFilterDevices extends LitElement {
     type: keyof RelatedResult;
     includeDisabledEntities: boolean;
     stateIds?: Set<string>;
-    devices: ContextType<typeof devicesContext>;
-    entities?: ContextType<typeof fullEntitiesContext>;
+    links: DeviceLinks;
     items: Promise<string[]>;
   };
 
@@ -384,13 +389,19 @@ export class HaFilterDevices extends LitElement {
       return items;
     }
 
+    // Most registry updates, like renaming an entity, don't change which
+    // devices the items use, so only search again when these links change
+    const links = this._deviceLinks(
+      this._devicesReg,
+      this._entities,
+      this.includeDisabledEntities
+    );
     const cached = this._withoutDevice;
     if (
       cached?.type === type &&
       cached.includeDisabledEntities === this.includeDisabledEntities &&
       cached.stateIds === this._stateIds &&
-      cached.devices === this._devicesReg &&
-      cached.entities === this._entities
+      deepEqual(cached.links, links)
     ) {
       return cached.items;
     }
@@ -400,8 +411,7 @@ export class HaFilterDevices extends LitElement {
       type,
       includeDisabledEntities: this.includeDisabledEntities,
       stateIds: this._stateIds,
-      devices: this._devicesReg,
-      entities: this._entities,
+      links,
       items,
     };
     this._withoutDevice = lookup;
@@ -413,6 +423,27 @@ export class HaFilterDevices extends LitElement {
     });
     return items;
   }
+
+  // The devices that exist and the device of each entity the search uses,
+  // which is what a search for an item's devices depends on
+  private _deviceLinks = memoizeOne(
+    (
+      devices: ContextType<typeof devicesContext>,
+      entities: ContextType<typeof fullEntitiesContext> | undefined,
+      includeDisabledEntities: boolean
+    ): DeviceLinks => {
+      const entityDevices: Record<string, string> = {};
+      for (const entity of entities ?? []) {
+        if (
+          entity.device_id &&
+          (includeDisabledEntities || !entity.disabled_by)
+        ) {
+          entityDevices[entity.entity_id] = entity.device_id;
+        }
+      }
+      return { deviceIds: Object.keys(devices).sort(), entityDevices };
+    }
+  );
 
   // Automations, scripts and scenes use a device when they reference it or one
   // of its entities, which only a search for each of them tells. This matches
