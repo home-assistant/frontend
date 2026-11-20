@@ -79,6 +79,27 @@ const formatShortDateTimeMem = memoizeOne(
     })
 );
 
+// Wed, Aug 9, 8:23 AM
+export const formatShortDateTimeWithWeekday = (
+  dateObj: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) =>
+  formatShortDateTimeWithWeekdayMem(locale, config.time_zone).format(dateObj);
+
+const formatShortDateTimeWithWeekdayMem = memoizeOne(
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
+    new Intl.DateTimeFormat(locale.language, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: useAmPm(locale) ? "numeric" : "2-digit",
+      minute: "2-digit",
+      hourCycle: useAmPm(locale) ? "h12" : "h23",
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
+    })
+);
+
 // Aug 9, 8:23:15 AM
 export const formatShortDateTimeWithSeconds = (
   dateObj: Date,
