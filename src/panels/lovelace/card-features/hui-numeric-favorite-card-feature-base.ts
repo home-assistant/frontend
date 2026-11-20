@@ -23,6 +23,7 @@ import type {
   LocalizeKeys,
 } from "../../../common/translations/localize";
 import "../../../components/ha-control-select";
+import { SkeletonLoadingController } from "../../../components/skeleton/skeleton-loading-controller";
 import { apiContext, connectionContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -136,6 +137,12 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
   private _subscribedEntityId?: string;
 
   private _subscribedConnection?: HomeAssistant["connection"];
+
+  // The favourites are read from the entity's settings
+  protected readonly _skeletonLoading = new SkeletonLoadingController(
+    this,
+    () => this._subscribedEntityId !== undefined && this._entry === undefined
+  );
 
   private _resizeController = new ResizeController<number | undefined>(this, {
     callback: (entries: { contentRect?: { width: number } }[]) => {

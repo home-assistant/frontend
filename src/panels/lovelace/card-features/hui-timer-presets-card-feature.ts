@@ -21,6 +21,7 @@ import type { HaControlButton } from "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-svg-icon";
+import { SkeletonLoadingController } from "../../../components/skeleton/skeleton-loading-controller";
 import {
   apiContext,
   connectionContext,
@@ -101,6 +102,12 @@ class HuiTimerPresetsCardFeature
 
   private _unsubEntityRegistry?: UnsubscribeFunc;
 
+  // The presets are read from the entity's settings
+  protected readonly _skeletonLoading = new SkeletonLoadingController(
+    this,
+    () => this._unsubEntityRegistry !== undefined && this._entry === undefined
+  );
+
   public connectedCallback() {
     super.connectedCallback();
     this._subscribeEntityEntry();
@@ -134,16 +141,18 @@ class HuiTimerPresetsCardFeature
     }
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("context") || changedProps.has("_connection")) {
-      this._unsubscribeEntityRegistry();
-      this._subscribeEntityEntry();
-    }
-
+  protected willUpdate(changedProps: PropertyValues): void {
     if (changedProps.has("_entry")) {
       this._presets = normalizeTimerPresets(
         this._entry?.options?.timer?.presets
       );
+    }
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("context") || changedProps.has("_connection")) {
+      this._unsubscribeEntityRegistry();
+      this._subscribeEntityEntry();
     }
   }
 
@@ -177,6 +186,11 @@ class HuiTimerPresetsCardFeature
     }
 
     const presets = this._presets;
+
+    // Keep the row while the presets load, so the card keeps its height
+    if (this._entry === undefined && this._unsubEntityRegistry) {
+      return html`<ha-control-button-group></ha-control-button-group>`;
+    }
 
     if (!presets.length) {
       return nothing;

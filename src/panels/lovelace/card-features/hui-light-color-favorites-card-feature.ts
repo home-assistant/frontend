@@ -15,6 +15,7 @@ import {
 import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import { SkeletonLoadingController } from "../../../components/skeleton/skeleton-loading-controller";
 import { apiContext, connectionContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
@@ -97,6 +98,12 @@ class HuiLightColorFavoritesCardFeature
 
   private _unsubEntityRegistry?: UnsubscribeFunc;
 
+  // The favourites are read from the entity's settings
+  protected readonly _skeletonLoading = new SkeletonLoadingController(
+    this,
+    () => this._unsubEntityRegistry !== undefined && this._entry === undefined
+  );
+
   private _resizeController = new ResizeController(this, {
     callback: (entries) => {
       const width = entries[0]?.contentRect.width;
@@ -131,10 +138,8 @@ class HuiLightColorFavoritesCardFeature
         this._unsubEntityRegistry = subscribeEntityRegistry(
           this._connection,
           (entries) => {
-            const entry = entries.find((e) => e.entity_id === id);
-            if (entry) {
-              this._entry = entry;
-            }
+            // Without an entry, there are no favourites to wait for
+            this._entry = entries.find((e) => e.entity_id === id) ?? null;
           }
         );
       } catch (_e) {
@@ -147,12 +152,7 @@ class HuiLightColorFavoritesCardFeature
     return this._resizeController.value ?? 0;
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("context") || changedProps.has("_connection")) {
-      this._unsubscribeEntityRegistry();
-      this._subscribeEntityEntry();
-    }
-
+  protected willUpdate(changedProps: PropertyValues): void {
     if (changedProps.has("_entry")) {
       if (this._entry?.options?.light?.favorite_colors) {
         this._favoriteColors = this._entry.options.light.favorite_colors;
@@ -161,6 +161,13 @@ class HuiLightColorFavoritesCardFeature
       } else {
         this._favoriteColors = [];
       }
+    }
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("context") || changedProps.has("_connection")) {
+      this._unsubscribeEntityRegistry();
+      this._subscribeEntityEntry();
     }
   }
 

@@ -19,6 +19,7 @@ import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { isNumericFromAttributes } from "../../../common/number/format_number";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import { SkeletonLoadingController } from "../../../components/skeleton/skeleton-loading-controller";
 import {
   configContext,
   connectionContext,
@@ -102,6 +103,24 @@ class HuiHistoryChartCardFeature
   @state() private _loading = true;
 
   @state() private _error?: { code: string; message: string };
+
+  protected readonly _skeletonLoading = new SkeletonLoadingController(
+    this,
+    () => {
+      const stateObj = this._stateObj;
+      const hassConfig = this._hassConfig;
+
+      // Only while there's history to wait for
+      return (
+        this._loading &&
+        !this._error &&
+        stateObj !== undefined &&
+        supportsTrendGraphCardFeatureFromState(stateObj) &&
+        hassConfig !== undefined &&
+        isComponentLoaded(hassConfig, "history")
+      );
+    }
+  );
 
   private _subscribed?: Promise<UnsubscribeFunc | undefined>;
 

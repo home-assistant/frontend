@@ -17,6 +17,7 @@ import { transform } from "../../../common/decorators/transform";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { FrontendLocaleData } from "../../../data/translation";
 import "../../../components/ha-spinner";
+import { SkeletonLoadingController } from "../../../components/skeleton/skeleton-loading-controller";
 import {
   configContext,
   connectionContext,
@@ -122,6 +123,16 @@ class HuiPrecipitationForecastCardFeature
   @state() private _forecast?: ForecastAttribute[];
 
   @state() private _error?: string;
+
+  // Only while there's a forecast to wait for
+  protected readonly _skeletonLoading = new SkeletonLoadingController(
+    this,
+    () =>
+      !this._forecast &&
+      !this._error &&
+      supportsForecast(this._stateObj) &&
+      this._resolvedForecastType() !== undefined
+  );
 
   private _subscribed?: Promise<UnsubscribeFunc | undefined>;
 
@@ -240,7 +251,7 @@ class HuiPrecipitationForecastCardFeature
     }
     if (!this._forecast) {
       return html`
-        <div class="container loading">
+        <div class="container loading" data-skeleton="block">
           <ha-spinner size="small"></ha-spinner>
         </div>
       `;
