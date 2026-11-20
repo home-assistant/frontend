@@ -46,7 +46,10 @@ import "../ha-alert";
 import "../ha-button";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
-import type { PickerComboBoxSearchFn } from "../ha-picker-combo-box";
+import type {
+  PickerComboBoxItem,
+  PickerComboBoxSearchFn,
+} from "../ha-picker-combo-box";
 import "../ha-svg-icon";
 import "../ha-tree-indicator";
 import { showDeviceReplacedDialog } from "./show-dialog-device-replaced";
@@ -480,6 +483,11 @@ export class HaDevicePicker extends LitElement {
     `;
   };
 
+  // Match the integration name shown in the trailing text of each device row,
+  // so similarly named devices remain distinguishable to screen-reader users.
+  private _getOptionAnnouncementDetail = (item: PickerComboBoxItem) =>
+    (item as DevicePickerItem).domain_name;
+
   protected render() {
     const placeholder =
       this.placeholder ??
@@ -530,6 +538,7 @@ export class HaDevicePicker extends LitElement {
         .placeholder=${placeholder}
         .value=${this.value}
         .rowRenderer=${this._rowRenderer}
+        .getOptionAnnouncementDetail=${this._getOptionAnnouncementDetail}
         .getItems=${this._getItems}
         .searchFn=${this._searchFn}
         no-sort

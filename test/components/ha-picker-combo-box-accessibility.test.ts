@@ -1,0 +1,163 @@
+import { describe, expect, it, vi } from "vitest";
+import type { LocalizeFunc } from "../../src/common/translations/localize";
+import {
+  getInitialActivePickerItemIndex,
+  getPickerOptionAnnouncement,
+} from "../../src/components/ha-picker-combo-box-accessibility";
+
+interface Item {
+  id: string;
+  primary: string;
+  secondary?: string;
+  disabled?: boolean;
+}
+
+const isOption = (item: Item | string): item is Item =>
+  typeof item !== "string" && !item.id.startsWith("___");
+
+const items: (Item | string)[] = [
+  "Devices",
+  { id: "disabled", primary: "Disabled device", disabled: true },
+  { id: "lamp", primary: "Hall lamp", secondary: "Main hall" },
+  { id: "switch", primary: "Hall switch" },
+];
+
+describe("picker keyboard accessibility", () => {
+  it("starts at the last available option for ArrowUp and first for ArrowDown", () => {
+    expect(
+      getInitialActivePickerItemIndex(
+        items,
+        undefined,
+        "",
+        "previous",
+        isOption
+      )
+    ).toBe(3);
+    expect(
+      getInitialActivePickerItemIndex(items, undefined, "", "next", isOption)
+    ).toBe(2);
+  });
+
+  it("starts from the selected option when one is available", () => {
+    expect(
+      getInitialActivePickerItemIndex(items, "lamp", "", "previous", isOption)
+    ).toBe(2);
+  });
+
+  it("announces the active option position and its supporting text", () => {
+    const localize: LocalizeFunc = (key, values) =>
+      `${key}:${String(values?.index)}/${String(values?.count)}:${String(values?.option)}`;
+
+    expect(
+      getPickerOptionAnnouncement(items, 2, undefined, isOption, localize)
+    ).toBe("ui.components.combo-box.active_option:1/2:Hall lamp, Main hall");
+  });
+
+  it("includes custom entity identifiers or domain text when displayed", () => {
+    const localize: LocalizeFunc = (_key, values) => String(values?.option);
+    expect(
+      getPickerOptionAnnouncement(
+        items,
+        2,
+        undefined,
+        isOption,
+        localize,
+        (item) => (item.id === "lamp" ? "light.hall" : undefined)
+      )
+    ).toBe("Hall lamp, Main hall, light.hall");
+    expect(
+      getPickerOptionAnnouncement(
+        items,
+        2,
+        undefined,
+        isOption,
+        localize,
+        (item) => (item.id === "lamp" ? "Light" : undefined)
+      )
+    ).toBe("Hall lamp, Main hall, Light");
+  });
+
+  it("distinguishes devices sharing a name and area by displayed integration", () => {
+    const devices = [
+      {
+        id: "device-zigbee",
+        primary: "Kitchen switch",
+        secondary: "Kitchen",
+        domain_name: "Zigbee",
+      },
+      {
+        id: "device-matter",
+        primary: "Kitchen switch",
+        secondary: "Kitchen",
+        domain_name: "Matter",
+      },
+    ];
+    type Device = (typeof devices)[number];
+    const isDeviceOption = (item: Device | string): item is Device =>
+      typeof item !== "string";
+    const localize: LocalizeFunc = (_key, values) => String(values?.option);
+    const getDeviceIntegration = (item: Device) => item.domain_name;
+
+    expect(
+      getPickerOptionAnnouncement(
+        devices,
+        0,
+        undefined,
+        isDeviceOption,
+        localize,
+        getDeviceIntegration
+      )
+    ).toBe("Kitchen switch, Kitchen, Zigbee");
+    expect(
+      getPickerOptionAnnouncement(
+        devices,
+        1,
+        undefined,
+        isDeviceOption,
+        localize,
+        getDeviceIntegration
+      )
+    ).toBe("Kitchen switch, Kitchen, Matter");
+  });
+
+  it("falls back to a useful announcement when localization returns an empty string", () => {
+    const missingTranslation: LocalizeFunc = () => "";
+    expect(
+      getPickerOptionAnnouncement(
+        items,
+        2,
+        undefined,
+        isOption,
+        missingTranslation
+      )
+    ).toBe("Option 1 of 2: Hall lamp, Main hall");
+  });
+
+  it("announces when the active option is the selected value", () => {
+    const localize = vi.fn<LocalizeFunc>((key) => key);
+
+    expect(
+      getPickerOptionAnnouncement(items, 3, "switch", isOption, localize)
+    ).toBe("ui.components.combo-box.selected_option");
+    expect(localize).toHaveBeenCalledWith(
+      "ui.components.combo-box.selected_option",
+      {
+        index: 2,
+        count: 2,
+        option: "Hall switch",
+      }
+    );
+  });
+
+  it("does not announce placeholders or disabled options", () => {
+    const localize = vi.fn<LocalizeFunc>((key) => key);
+
+    expect(
+      getPickerOptionAnnouncement(items, 0, undefined, isOption, localize)
+    ).toBeUndefined();
+    expect(
+      getPickerOptionAnnouncement(items, 1, undefined, isOption, localize)
+    ).toBeUndefined();
+    expect(localize).not.toHaveBeenCalled();
+  });
+});
