@@ -21,6 +21,7 @@ import { deepEqual } from "../common/util/deep-equal";
 import { mapWithConcurrency } from "../common/util/map-with-concurrency";
 import {
   apiContext,
+  connectionContext,
   devicesContext,
   fullEntitiesContext,
   internationalizationContext,
@@ -86,6 +87,15 @@ export class HaFilterDevices extends LitElement {
   })
   private _stateIds?: Set<string>;
 
+  // Home Assistant may have restarted with edited items while the connection
+  // was down, which nothing else here tells
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<ContextType<typeof connectionContext>, boolean>({
+    transformer: ({ connected }) => connected,
+  })
+  private _connected?: boolean;
+
   // A plain list of device ids is still accepted from stored filters
   @property({ attribute: false }) public value?: ListFilterValue | string[];
 
@@ -134,6 +144,12 @@ export class HaFilterDevices extends LitElement {
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
 
+    const reconnected =
+      properties.get("_connected") === false && !!this._connected;
+    if (reconnected) {
+      this._withoutDevice = undefined;
+    }
+
     if (
       (properties.has("value") &&
         !deepEqual(this.value, properties.get("value"))) ||
@@ -141,7 +157,8 @@ export class HaFilterDevices extends LitElement {
       (listFilterValue(this.value)?.none &&
         (properties.has("_devicesReg") ||
           properties.has("_entities") ||
-          properties.has("_stateIds")))
+          properties.has("_stateIds") ||
+          reconnected))
     ) {
       this._findRelated();
     }

@@ -29,7 +29,7 @@ import { deepEqual } from "../common/util/deep-equal";
 import { mapWithConcurrency } from "../common/util/map-with-concurrency";
 import type { Blueprints } from "../data/blueprint";
 import { fetchBlueprints } from "../data/blueprint";
-import { apiContext, statesContext } from "../data/context";
+import { apiContext, connectionContext, statesContext } from "../data/context";
 import { findRelated, RELATED_SEARCH_CONCURRENCY } from "../data/search";
 import "./ha-expansion-panel";
 import {
@@ -63,6 +63,15 @@ export class HaFilterBlueprints extends LitElement {
     },
   })
   private _stateIds?: Set<string>;
+
+  // Home Assistant may have restarted with edited items while the connection
+  // was down, which nothing else here tells
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<ContextType<typeof connectionContext>, boolean>({
+    transformer: ({ connected }) => connected,
+  })
+  private _connected?: boolean;
 
   // A plain list of ids is still accepted
   @property({ attribute: false }) public value?: string[] | ListFilterValue;
@@ -103,11 +112,18 @@ export class HaFilterBlueprints extends LitElement {
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
 
+    const reconnected =
+      properties.get("_connected") === false && !!this._connected;
+    if (reconnected) {
+      this._withoutBlueprint = undefined;
+    }
+
     if (
       (properties.has("value") &&
         !deepEqual(this.value, properties.get("value"))) ||
       // Items without a blueprint are worked out from the states
-      (listFilterValue(this.value)?.none && properties.has("_stateIds"))
+      (listFilterValue(this.value)?.none &&
+        (properties.has("_stateIds") || reconnected))
     ) {
       this._findRelated();
     }
