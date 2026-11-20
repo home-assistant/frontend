@@ -11,6 +11,7 @@ import memoizeOne from "memoize-one";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import { renderMoveShortcutHint } from "../common/keyboard/render-move-shortcut-hint";
 import { orderCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { afterNextRender } from "../common/util/render-status";
@@ -19,6 +20,7 @@ import "./ha-icon-button";
 import "./ha-icon-next";
 import "./ha-sortable";
 import "./ha-svg-icon";
+import "./ha-tooltip";
 import "./item/ha-list-item-button";
 import "./list/ha-list-base";
 
@@ -113,6 +115,7 @@ export class HaItemDisplayEditor extends LitElement {
               } = item;
               return html`
                 <ha-list-item-button
+                  id="move-item-row-${idx}"
                   @click=${
                     this.showNavigationButton ? this._navigate : undefined
                   }
@@ -128,6 +131,11 @@ export class HaItemDisplayEditor extends LitElement {
                       : undefined
                   }
                   .idx=${idx}
+                  aria-keyshortcuts=${ifDefined(
+                    isVisible && !disableSorting
+                      ? "Alt+ArrowUp Alt+ArrowDown"
+                      : undefined
+                  )}
                 >
                   <span slot="headline">${label}</span>
                   ${
@@ -203,10 +211,26 @@ export class HaItemDisplayEditor extends LitElement {
                                 ? this._dragHandleKeydown
                                 : undefined
                             }
+                            id="move-item-${idx}"
                             class="handle"
                             .path=${mdiDragHorizontalVariant}
                             slot="end"
                           ></ha-svg-icon>
+                          <ha-tooltip
+                            slot="end"
+                            trigger="focus"
+                            association="description"
+                            for=${
+                              this.showNavigationButton
+                                ? `move-item-${idx}`
+                                : `move-item-row-${idx}`
+                            }
+                          >
+                            ${renderMoveShortcutHint(
+                              this._localize("ui.common.move_up"),
+                              this._localize("ui.common.move_down")
+                            )}
+                          </ha-tooltip>
                         `
                       : html`<ha-svg-icon slot="end"></ha-svg-icon>`
                   }

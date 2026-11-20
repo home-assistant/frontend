@@ -5,12 +5,15 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { ifDefined } from "lit/directives/if-defined";
+import { renderMoveShortcutHint } from "../../../../common/keyboard/render-move-shortcut-hint";
 import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import type { Condition } from "../../../../data/automation";
 import type { ConditionDescriptions } from "../../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
@@ -213,6 +216,8 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
                     ? html`
                         <div
                           tabindex="0"
+                          id="move-row-${idx}"
+                          aria-keyshortcuts=${ifDefined(this.optionsInSidebar ? "Alt+ArrowUp Alt+ArrowDown" : undefined)}
                           class="handle ${
                             this.rowSortSelected === idx ? "active" : ""
                           }"
@@ -224,6 +229,20 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
                           <ha-svg-icon
                             .path=${mdiDragHorizontalVariant}
                           ></ha-svg-icon>
+                          ${
+                            this.optionsInSidebar
+                              ? html`<ha-tooltip
+                                  trigger="focus"
+                                  association="description"
+                                  for="move-row-${idx}"
+                                >
+                                  ${renderMoveShortcutHint(
+                                    this.hass.localize("ui.common.move_up"),
+                                    this.hass.localize("ui.common.move_down")
+                                  )}
+                                </ha-tooltip>`
+                              : nothing
+                          }
                         </div>
                       `
                     : nothing
