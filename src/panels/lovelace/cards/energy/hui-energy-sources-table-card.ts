@@ -359,7 +359,16 @@ export class HuiEnergySourcesTableCard
     }
 
     if (!this._data) {
-      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
+      return html`<ha-card>
+        ${
+          this._config.title
+            ? html`<h1 class="card-header">${this._config.title}</h1>`
+            : ""
+        }
+        <div class="loading" data-skeleton="block">
+          ${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}
+        </div>
+      </ha-card>`;
     }
 
     let totalGrid = 0;
@@ -1170,6 +1179,12 @@ export class HuiEnergySourcesTableCard
     }
     .card-header {
       padding-bottom: 0;
+    }
+    /* As tall as the header row and three sources (212px). Others are
+       remembered once seen. */
+    .loading {
+      height: 180px;
+      margin: 16px;
     }
     .content {
       padding: 16px;

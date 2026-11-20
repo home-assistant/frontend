@@ -21,6 +21,7 @@ import type {
 } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyGridNeutralityGaugeCardConfig } from "../types";
+import { renderEnergyGaugeLoading } from "./common/gauge-loading";
 
 const LEVELS: LevelDefinition[] = [
   { level: -1, stroke: "var(--energy-grid-return-color)" },
@@ -79,7 +80,12 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
     }
 
     if (!this._data) {
-      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
+      return html`<ha-card>
+        ${renderEnergyGaugeLoading(
+          this._i18n.locale,
+          this._i18n.localize("ui.panel.lovelace.cards.energy.loading")
+        )}
+      </ha-card>`;
     }
     const { summedData, compareSummedData: _ } = getSummedData(this._data);
 

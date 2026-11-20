@@ -13,6 +13,7 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import {
   configContext,
+  entitiesContext,
   internationalizationContext,
 } from "../../../../data/context";
 import type { EnergyData } from "../../../../data/energy";
@@ -30,6 +31,7 @@ import { createEntityNotFoundWarning } from "../../components/hui-warning";
 import type { LovelaceCard } from "../../types";
 import { severityMap } from "../hui-gauge-card";
 import type { EnergyCarbonGaugeCardConfig } from "../types";
+import { renderEnergyGaugeLoading } from "./common/gauge-loading";
 
 const FORMAT_OPTIONS = {
   maximumFractionDigits: 0,
@@ -71,6 +73,10 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
   })
   private _hassConfig!: HassConfig;
 
+  @state()
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities?: HomeAssistant["entities"];
+
   constructor() {
     super();
     new EnergyCollectionController(this, {
@@ -98,7 +104,23 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
     }
 
     if (!this._data) {
-      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
+      // Without a CO2 Signal sensor the card shows nothing, so it doesn't
+      // stand in for anything while the data loads
+      if (
+        this._entities &&
+        !Object.values(this._entities).some(
+          (entity) => entity.platform === "co2signal"
+        )
+      ) {
+        return nothing;
+      }
+
+      return html`<ha-card>
+        ${renderEnergyGaugeLoading(
+          this._i18n.locale,
+          this._i18n.localize("ui.panel.lovelace.cards.energy.loading")
+        )}
+      </ha-card>`;
     }
 
     if (!this._data.co2SignalEntity) {

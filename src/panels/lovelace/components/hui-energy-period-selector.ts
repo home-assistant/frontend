@@ -208,6 +208,13 @@ export class HuiEnergyPeriodSelector extends LitElement {
       this._measure();
     }
 
+    // The collection knows its period before its data comes, so the
+    // selector can show it from the start
+    if (!this._startDate && this._energyCollection.collection) {
+      this._startDate = this._energyCollection.collection.start;
+      this._endDate = this._energyCollection.collection.end || endOfToday();
+    }
+
     if (changedProps.has("showCombineSources")) {
       this._applyDefaultCombineSources();
     }

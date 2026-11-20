@@ -253,8 +253,10 @@ export class HuiEnergyUsageGraphCard
             )}
             chart-type="bar"
             .expandLegend=${this._config.expand_legend}
+            ?loading=${!this._data}
           ></ha-chart-base>
           ${
+            this._data &&
             !this._chartData.some((dataset) => dataset.data!.length)
               ? html`<div class="no-data">
                   ${

@@ -9,6 +9,7 @@ import {
   consumeContext,
   ContextController,
 } from "../common/decorators/consume";
+import { SkeletonLoadingController } from "../components/skeleton/skeleton-loading-controller";
 import {
   apiContext,
   configContext,
@@ -28,6 +29,9 @@ export interface EnergyCollectionControllerOptions {
   config: () => { collection_key?: string } | undefined;
   beforeSubscribe?: (collection: EnergyCollection) => void;
   onData: (data: EnergyData) => void;
+  /** Whether the host still loads once the data came, such as while it
+      fetches more for it. The host shows a skeleton until it's done. */
+  loading?: () => boolean;
 }
 
 /**
@@ -87,12 +91,22 @@ export class EnergyCollectionController extends ContextController {
 
   private _collection?: EnergyCollection;
 
+  /* Whether data has come since subscribing, so the host can show a
+     skeleton until it does */
+  private _hasData = false;
+
   constructor(
     host: ReactiveControllerHost & HTMLElement,
     options: EnergyCollectionControllerOptions
   ) {
     super(host);
     this._options = options;
+    new SkeletonLoadingController(
+      host,
+      () =>
+        this._unsub !== undefined &&
+        (!this._hasData || this._options.loading?.() === true)
+    );
   }
 
   get collection(): EnergyCollection | undefined {
@@ -142,6 +156,7 @@ export class EnergyCollectionController extends ContextController {
     }
     this._unsubscribe();
     this._key = key;
+    this._hasData = false;
     this._collection = getEnergyDataCollection(this._connection, {
       callWS: this._callWS,
       entities: this._entities,
@@ -152,7 +167,18 @@ export class EnergyCollectionController extends ContextController {
       key,
     });
     this._options.beforeSubscribe?.(this._collection);
-    this._unsub = this._collection.subscribe(this._options.onData);
+
+    this._unsub = this._collection.subscribe((data) => {
+      this._hasData = true;
+      this._options.onData(data);
+      // So the skeleton goes even if the host keeps nothing new
+      this.host.requestUpdate();
+    });
+
+    // So the host shows a skeleton until the data comes
+    if (!this._hasData) {
+      this.host.requestUpdate();
+    }
   }
 
   private _unsubscribe(): void {

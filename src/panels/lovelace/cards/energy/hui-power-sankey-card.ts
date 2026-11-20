@@ -227,8 +227,26 @@ class HuiPowerSankeyCard
       return nothing;
     }
 
+    const vertical =
+      this._config.layout === "vertical" ||
+      (this._config.layout !== "horizontal" && this._isMobileSize);
+
+    const cardClasses = classMap({
+      "is-grid": this.layout === "grid",
+      "is-panel": this.layout === "panel",
+      "is-vertical": vertical,
+    });
+
     if (!this._data) {
-      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
+      return html`
+        <ha-card .header=${this._config.title} class=${cardClasses}>
+          <div class="card-content">
+            <div class="loading" data-skeleton="block">
+              ${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}
+            </div>
+          </div>
+        </ha-card>
+      `;
     }
 
     const prefs = this._data.prefs;
@@ -450,19 +468,8 @@ class HuiPowerSankeyCard
 
     const hasData = nodes.some((node) => node.value > 0);
 
-    const vertical =
-      this._config.layout === "vertical" ||
-      (this._config.layout !== "horizontal" && this._isMobileSize);
-
     return html`
-      <ha-card
-        .header=${this._config.title}
-        class=${classMap({
-          "is-grid": this.layout === "grid",
-          "is-panel": this.layout === "panel",
-          "is-vertical": vertical,
-        })}
-      >
+      <ha-card .header=${this._config.title} class=${cardClasses}>
         <div class="card-content">
           ${
             hasData
@@ -861,6 +868,9 @@ class HuiPowerSankeyCard
     .card-content {
       flex: 1;
       display: flex;
+    }
+    .loading {
+      flex: 1;
     }
   `;
 }

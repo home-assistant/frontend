@@ -214,8 +214,10 @@ export class HuiPowerSourcesGraphCard
               this._yAxisFractionDigits
             )}
             .expandLegend=${this._config.expand_legend}
+            ?loading=${!this._energyData}
           ></ha-chart-base>
           ${
+            this._energyData &&
             !this._chartData.some((dataset) => dataset.data!.length)
               ? html`<div class="no-data">
                   ${

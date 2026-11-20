@@ -77,8 +77,30 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
+    const title =
+      this._config.title ||
+      this._i18n.localize("ui.panel.lovelace.cards.energy.grid_balance.title");
+
     if (!this._data) {
-      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
+      return html`
+        <ha-card>
+          <div class="content">
+            <ha-tile-icon>
+              <ha-svg-icon
+                slot="icon"
+                .path=${mdiTransmissionTower}
+              ></ha-svg-icon>
+            </ha-tile-icon>
+            <ha-tile-info>
+              <span slot="primary">${title}</span>
+              <span slot="secondary">
+                ${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}
+              </span>
+            </ha-tile-info>
+          </div>
+          <div class="bar loading" data-skeleton="block"></div>
+        </ha-card>
+      `;
     }
 
     const { summedData } = getSummedData(this._data);
@@ -117,14 +139,7 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
             ></ha-svg-icon>
           </ha-tile-icon>
           <ha-tile-info>
-            <span slot="primary">
-              ${
-                this._config.title ||
-                this._i18n.localize(
-                  "ui.panel.lovelace.cards.energy.grid_balance.title"
-                )
-              }
-            </span>
+            <span slot="primary">${title}</span>
             <span slot="secondary" class="equation">
               <span class="imported" id="eq-imported">
                 ${fmtEnergy(imported)}
@@ -308,6 +323,10 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
       height: 42px;
       margin: 0 var(--ha-space-3) var(--ha-space-4);
       overflow: visible;
+    }
+
+    .bar.loading {
+      border-radius: var(--ha-border-radius-lg);
     }
 
     .bar-half {

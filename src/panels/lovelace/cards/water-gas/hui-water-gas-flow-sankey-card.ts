@@ -164,8 +164,27 @@ abstract class HuiWaterGasFlowSankeyCard
       return nothing;
     }
 
+    const { group_by_area, group_by_floor, layout, title } = this._config;
+
+    const vertical =
+      layout === "vertical" || (layout !== "horizontal" && this._isMobileSize);
+
+    const cardClasses = classMap({
+      "is-grid": this.layout === "grid",
+      "is-panel": this.layout === "panel",
+      "is-vertical": vertical,
+    });
+
     if (!this._data) {
-      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
+      return html`
+        <ha-card .header=${title} class=${cardClasses}>
+          <div class="card-content">
+            <div class="loading" data-skeleton="block">
+              ${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}
+            </div>
+          </div>
+        </ha-card>
+      `;
     }
 
     const resource = this.resource;
@@ -335,7 +354,6 @@ abstract class HuiWaterGasFlowSankeyCard
     });
     links.push(...deviceLinks);
 
-    const { group_by_area, group_by_floor, layout, title } = this._config;
     const sankeyLayout = buildSankeyLayout({
       states: this._states,
       registries: this._registries,
@@ -354,18 +372,8 @@ abstract class HuiWaterGasFlowSankeyCard
 
     const hasData = nodes.some((node) => node.value > 0);
 
-    const vertical =
-      layout === "vertical" || (layout !== "horizontal" && this._isMobileSize);
-
     return html`
-      <ha-card
-        .header=${title}
-        class=${classMap({
-          "is-grid": this.layout === "grid",
-          "is-panel": this.layout === "panel",
-          "is-vertical": vertical,
-        })}
-      >
+      <ha-card .header=${title} class=${cardClasses}>
         <div class="card-content">
           ${
             hasData
@@ -437,6 +445,9 @@ abstract class HuiWaterGasFlowSankeyCard
     .card-content {
       flex: 1;
       display: flex;
+    }
+    .loading {
+      flex: 1;
     }
   `;
 }

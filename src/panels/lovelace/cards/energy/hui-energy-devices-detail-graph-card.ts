@@ -184,6 +184,7 @@ export class HuiEnergyDevicesDetailGraphCard
               this._legendData
             )}
             .expandLegend=${this._config.expand_legend}
+            ?loading=${!this._data}
             click-label-for-more-info
             @dataset-hidden=${this._datasetHidden}
             @dataset-unhidden=${this._datasetUnhidden}
