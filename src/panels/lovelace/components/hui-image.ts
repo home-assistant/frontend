@@ -261,6 +261,9 @@ export class HuiImage extends LitElement {
       filter = isOff && imageFallback ? DEFAULT_FILTER : "";
     }
 
+    // Snapshots load only once the card is on screen; skip the spinner until then.
+    const showSpinner = !this.cameraImage || this._imageVisible;
+
     return html`
       <div
         style=${styleMap({
@@ -340,7 +343,14 @@ export class HuiImage extends LitElement {
                       : undefined,
                   })}
                 >
-                  <ha-spinner class="render-spinner" size="small"></ha-spinner>
+                  ${
+                    showSpinner
+                      ? html`<ha-spinner
+                          class="render-spinner"
+                          size="small"
+                        ></ha-spinner>`
+                      : nothing
+                  }
                 </div>`
               : ""
         }

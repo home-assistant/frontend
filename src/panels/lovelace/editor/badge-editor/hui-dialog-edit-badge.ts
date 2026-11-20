@@ -251,7 +251,9 @@ export class HuiDialogEditBadge
                 ? html`
                     <ha-spinner
                       size="small"
-                      aria-label="Can't update badge"
+                      .accessibleLabel=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_badge.preview_error"
+                      )}
                     ></ha-spinner>
                   `
                 : ``
