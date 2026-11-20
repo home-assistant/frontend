@@ -10,6 +10,8 @@ import {
 } from "../../../src/data/config_entries";
 import { uninstallMarketplaceRepository } from "../../../src/data/marketplace/repository";
 import "../../../src/panels/marketplace/dashboards/ha-marketplace-dashboard";
+import type { DataTableFiltersValue } from "../../../src/data/data_table_filters";
+import { listFilterValue } from "../../../src/data/data_table_filters";
 
 const stubElement = vi.hoisted(() => (tag: string) => {
   if (!customElements.get(tag)) {
@@ -274,6 +276,10 @@ it("shows what to discover on the discover tab, not the table", async () => {
   ).not.toBeNull();
 });
 
+// A pane gets its picked ids, and whether it shows what doesn't match them
+const pickedIds = (pane: { value: DataTableFiltersValue }) =>
+  listFilterValue(pane.value)?.ids;
+
 it("browses the way the link says", async () => {
   window.history.replaceState(
     null,
@@ -287,12 +293,30 @@ it("browses the way the link says", async () => {
   ) as HTMLElement & { filter: string };
   const [statusFilter, typeFilter] = dashboard.shadowRoot!.querySelectorAll(
     "ha-filter-states"
-  ) as unknown as (HTMLElement & { value: string[] })[];
+  ) as unknown as (HTMLElement & { value: DataTableFiltersValue })[];
 
   // A search left behind would hide part of what the link promised
   expect(table.filter).toBe("");
-  expect(statusFilter.value).toEqual(["new", "installed"]);
-  expect(typeFilter.value).toEqual(["plugin"]);
+  expect(pickedIds(statusFilter)).toEqual(["new", "installed"]);
+  expect(pickedIds(typeFilter)).toEqual(["plugin"]);
+});
+
+it("shows a filter the link sets to Without", async () => {
+  window.history.replaceState(
+    null,
+    "",
+    "/marketplace/browse?type=theme&exclude=type"
+  );
+  const dashboard = await openDashboard();
+  window.history.replaceState(null, "", "/");
+  const typeFilter = dashboard.shadowRoot!.querySelectorAll(
+    "ha-filter-states"
+  )[1] as unknown as { value: DataTableFiltersValue };
+
+  expect(listFilterValue(typeFilter.value)).toEqual({
+    ids: ["theme"],
+    exclude: true,
+  });
 });
 
 it("browses the way the link says, also when the tab was open before", async () => {
@@ -307,17 +331,17 @@ it("browses the way the link says, also when the tab was open before", async () 
     dashboard.shadowRoot!.querySelectorAll(
       "ha-filter-states"
     )[1] as unknown as {
-      value: string[];
+      value: DataTableFiltersValue;
     };
 
-  expect(typeFilter().value).toEqual(["theme"]);
+  expect(pickedIds(typeFilter())).toEqual(["theme"]);
 
   window.history.replaceState(null, "", "/marketplace/browse?type=plugin");
   window.dispatchEvent(new CustomEvent("location-changed"));
   await dashboard.updateComplete;
   window.history.replaceState(null, "", "/");
 
-  expect(typeFilter().value).toEqual(["plugin"]);
+  expect(pickedIds(typeFilter())).toEqual(["plugin"]);
 });
 
 const LINK = "/marketplace/browse?sort=stars&direction=desc&status=new";
@@ -345,7 +369,7 @@ it.each([
   const dashboard = await openDashboard();
   const statusFilter = () =>
     dashboard.shadowRoot!.querySelector("ha-filter-states") as unknown as {
-      value: string[];
+      value: DataTableFiltersValue;
       dispatchEvent: (event: Event) => boolean;
     };
   statusFilter().dispatchEvent(
@@ -363,7 +387,7 @@ it.each([
   await dashboard.updateComplete;
   window.history.replaceState(null, "", "/");
 
-  expect(statusFilter().value).toEqual(statuses);
+  expect(pickedIds(statusFilter())).toEqual(statuses);
 });
 
 it("links to what is picked, so a My link shares it", async () => {
