@@ -13588,6 +13588,7 @@
           "uninstall": {
             "title": "Uninstall {name}?",
             "message": "This removes the files the Marketplace installed for it.",
+            "shared_message": "{owner} uses the same files, so they stay in place along with the integration's setup.",
             "selected_title": "Uninstall selected repositories?",
             "selected": "{count, plural,\n  one {The selected repository will be uninstalled. This removes the files the Marketplace installed for it.}\n  other {The {count} selected repositories will be uninstalled. This removes the files the Marketplace installed for them.}\n}",
             "selected_in_use": "{count, plural, one {The selected repository} other {The {count} selected repositories}} will be uninstalled. {in_use, plural, one {The setup of one of them} other {The setups of # of them}} will be deleted with their devices and entities. This cannot be undone.",

@@ -89,6 +89,7 @@ import type {
 import { marketplaceErrorMessage } from "../../../data/marketplace/websocket";
 import {
   dismissNewMarketplaceRepositories,
+  sharingInstall,
   uninstallMarketplaceRepository,
 } from "../../../data/marketplace/repository";
 import { haStyle } from "../../../resources/styles";
@@ -806,10 +807,27 @@ export class HaMarketplaceDashboard extends LitElement {
         return;
       }
 
+      // An installed sharer outside the selection keeps the files, so core
+      // releases these repositories and the entries stay
+      const releasedDomains = new Set(
+        selectedRepositories
+          .filter((repository) =>
+            sharingInstall(
+              this.marketplace.repositories,
+              repository,
+              this._selected
+            )
+          )
+          .map((repository) => repository.domain)
+      );
       const entriesByDomain = new Map<string, ConfigEntry[]>();
       domains.forEach((domain, index) => {
         const check = entriesChecks[index];
-        if (check.status === "fulfilled" && check.value.length) {
+        if (
+          check.status === "fulfilled" &&
+          check.value.length &&
+          !releasedDomains.has(domain)
+        ) {
           entriesByDomain.set(domain, check.value);
         }
       });
