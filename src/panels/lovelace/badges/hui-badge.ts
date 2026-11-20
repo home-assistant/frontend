@@ -3,12 +3,16 @@ import { ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-svg-icon";
+import "../../../components/skeleton/ha-skeleton-overlay";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { HomeAssistant } from "../../../types";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import { getConfigEntityId } from "../common/get-config-entity-id";
 import { createBadgeElement } from "../create-element/create-badge-element";
-import { createErrorBadgeConfig } from "../create-element/create-element-base";
+import {
+  createErrorBadgeConfig,
+  lovelaceElementPending,
+} from "../create-element/create-element-base";
 import type { LovelaceBadge } from "../types";
 
 declare global {
@@ -38,6 +42,15 @@ export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
   }
 
   private _element?: LovelaceBadge;
+
+  /* Holds the badge, and draws its skeleton while its code loads */
+  private _overlay = document.createElement("ha-skeleton-overlay");
+
+  constructor() {
+    super();
+    this._overlay.style.borderRadius =
+      "var(--ha-badge-border-radius, var(--ha-border-radius-pill))";
+  }
 
   protected createRenderRoot() {
     return this;
@@ -96,6 +109,28 @@ export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
     while (this.lastChild) {
       this.removeChild(this.lastChild);
     }
+
+    this._overlay.replaceChildren();
+    this.appendChild(this._overlay);
+
+    // A badge whose code is still loading has nothing to show yet, so it
+    // holds a badge's size for the wave until it does
+    const element = this._element;
+    const pending = lovelaceElementPending(element, config.type);
+    this._overlay.loading = pending !== undefined;
+    this._overlay.style.minHeight = pending ? "var(--ha-badge-size, 36px)" : "";
+    this._overlay.style.minWidth = pending
+      ? "calc(var(--ha-badge-size, 36px) * 3)"
+      : "";
+
+    pending?.then(() => {
+      if (this._element === element) {
+        this._overlay.loading = false;
+        this._overlay.style.minHeight = "";
+        this._overlay.style.minWidth = "";
+      }
+    });
+
     this._updateVisibility();
   }
 
@@ -181,12 +216,12 @@ export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
 
     if (this._element.connectedWhileHidden === true) {
       if (!this._element.parentElement) {
-        this.appendChild(this._element);
+        this._overlay.appendChild(this._element);
       }
     } else if (!visible && this._element.parentElement) {
-      this.removeChild(this._element);
+      this._overlay.removeChild(this._element);
     } else if (visible && !this._element.parentElement) {
-      this.appendChild(this._element);
+      this._overlay.appendChild(this._element);
     }
   }
 }

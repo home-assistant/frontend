@@ -3,6 +3,8 @@ import { ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-svg-icon";
+import "../../../components/skeleton/ha-skeleton-overlay";
+import { skeletonKey } from "../../../components/skeleton/skeleton-sizes";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
@@ -10,7 +12,10 @@ import { migrateLayoutToGridOptions } from "../common/compute-card-grid-size";
 import { computeCardSize } from "../common/compute-card-size";
 import { getConfigEntityId } from "../common/get-config-entity-id";
 import { tryCreateCardElement } from "../create-element/create-card-element";
-import { createErrorCardElement } from "../create-element/create-element-base";
+import {
+  createErrorCardElement,
+  lovelaceElementPending,
+} from "../create-element/create-element-base";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 
 declare global {
@@ -62,6 +67,16 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
   }
 
   private _element?: LovelaceCard;
+
+  /* Holds the card, and draws its skeleton while its code loads */
+  private _overlay = document.createElement("ha-skeleton-overlay");
+
+  constructor() {
+    super();
+    this._overlay.style.height = "100%";
+    this._overlay.style.borderRadius =
+      "var(--ha-card-border-radius, var(--ha-border-radius-lg))";
+  }
 
   protected createRenderRoot() {
     return this;
@@ -134,6 +149,9 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
     }
     this._element.setConfig(config);
     this._elementConfig = config;
+    this._overlay.skeletonKey = this.preview
+      ? undefined
+      : skeletonKey(JSON.stringify(config));
     fireEvent(this, "card-updated");
   }
 
@@ -183,6 +201,29 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
     while (this.lastChild) {
       this.removeChild(this.lastChild);
     }
+
+    this._overlay.replaceChildren();
+    this._overlay.skeletonKey = this.preview
+      ? undefined
+      : skeletonKey(JSON.stringify(config));
+    this.appendChild(this._overlay);
+
+    // A card whose code is still loading has nothing to show yet, so it
+    // holds a row's height for the wave until it does
+    const element = this._element;
+    const pending = lovelaceElementPending(element, config.type);
+    this._overlay.loading = pending !== undefined;
+    this._overlay.style.minHeight = pending
+      ? "var(--row-height, var(--ha-section-grid-row-height, 56px))"
+      : "";
+
+    pending?.then(() => {
+      if (this._element === element) {
+        this._overlay.loading = false;
+        this._overlay.style.minHeight = "";
+      }
+    });
+
     this._updateVisibility();
   }
 
@@ -285,12 +326,12 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
 
     if (this._element.connectedWhileHidden === true) {
       if (!this._element.parentElement) {
-        this.appendChild(this._element);
+        this._overlay.appendChild(this._element);
       }
     } else if (!visible && this._element.parentElement) {
-      this.removeChild(this._element);
+      this._overlay.removeChild(this._element);
     } else if (visible && !this._element.parentElement) {
-      this.appendChild(this._element);
+      this._overlay.appendChild(this._element);
     }
   }
 }

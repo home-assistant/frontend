@@ -13,7 +13,9 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-camera-stream";
 import type { HaCameraStream } from "../../../components/ha-camera-stream";
-import "../../../components/ha-spinner";
+import "../../../components/animation/ha-fade-in";
+import "../../../components/skeleton/ha-skeleton";
+import { fadeInArrival } from "../../../components/skeleton/skeleton-arrival";
 import type { CameraEntity } from "../../../data/camera";
 import { fetchThumbnailUrlWithCache } from "../../../data/camera";
 import { UNAVAILABLE } from "../../../data/entity/entity";
@@ -72,6 +74,8 @@ export class HuiImage extends LitElement {
   @state() private _loadState?: LoadState;
 
   @query("#image") private _img?: HTMLImageElement;
+
+  @query(".container") private _container?: HTMLDivElement;
 
   private _reconnectImg = false;
 
@@ -261,8 +265,8 @@ export class HuiImage extends LitElement {
       filter = isOff && imageFallback ? DEFAULT_FILTER : "";
     }
 
-    // Snapshots load only once the card is on screen; skip the spinner until then.
-    const showSpinner = !this.cameraImage || this._imageVisible;
+    // Snapshots load only once the card is on screen; skip the skeleton until then.
+    const showSkeleton = !this.cameraImage || this._imageVisible;
 
     return html`
       <div
@@ -334,7 +338,9 @@ export class HuiImage extends LitElement {
                 (imageSrc === undefined ||
                   this._loadState === LoadState.Loading)
               ? html`<div
-                  class="progress-container"
+                  class="loading"
+                  role="progressbar"
+                  aria-label=${this.hass.localize("ui.common.loading")}
                   style=${styleMap({
                     height: !useRatio
                       ? this._lastImageHeight
@@ -344,11 +350,10 @@ export class HuiImage extends LitElement {
                   })}
                 >
                   ${
-                    showSpinner
-                      ? html`<ha-spinner
-                          class="render-spinner"
-                          size="small"
-                        ></ha-spinner>`
+                    showSkeleton
+                      ? html`<ha-fade-in .duration=${300} easing="ease-in">
+                          <ha-skeleton></ha-skeleton>
+                        </ha-fade-in>`
                       : nothing
                   }
                 </div>`
@@ -406,6 +411,7 @@ export class HuiImage extends LitElement {
   private async _onImageLoad(
     ev: HASSDomTargetEvent<HTMLImageElement>
   ): Promise<void> {
+    const arriving = this._loadState === LoadState.Loading;
     this._loadState = LoadState.Loaded;
     const imgEl = ev.target;
     if (this._ratio && this._ratio.w > 0 && this._ratio.h > 0) {
@@ -413,6 +419,11 @@ export class HuiImage extends LitElement {
     }
     await this.updateComplete;
     this._lastImageHeight = imgEl.offsetHeight;
+
+    // The picture takes the skeleton's place, so it fades in
+    if (arriving && this._container) {
+      fadeInArrival(this._container);
+    }
   }
 
   private async _onVideoLoad(
@@ -497,10 +508,8 @@ export class HuiImage extends LitElement {
       width: 100%;
     }
 
-    .progress-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    ha-skeleton {
+      --ha-skeleton-border-radius: 0;
     }
 
     .ratio {

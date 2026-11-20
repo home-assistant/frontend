@@ -228,6 +228,35 @@ const _lazyCreate = <T extends keyof CreateElementConfigTypes>(
 const _getCustomTag = (type: string) =>
   isCustomType(type) ? stripCustomPrefix(type) : undefined;
 
+/**
+ * For an element made for `type` that is still waiting for its code, a
+ * promise for when it has something to show: once its code has loaded, or
+ * once a custom one gives up and shows its error. Undefined when it already
+ * has.
+ */
+export const lovelaceElementPending = (
+  element: HTMLElement,
+  type: string | undefined
+): Promise<void> | undefined => {
+  const customTag = type ? _getCustomTag(type) : undefined;
+  const tag = customTag ?? element.localName;
+
+  if (customElements.get(tag)) {
+    return undefined;
+  }
+
+  const defined = customElements.whenDefined(tag).then(() => undefined);
+
+  return customTag
+    ? Promise.race([
+        defined,
+        new Promise<void>((resolve) => {
+          setTimeout(resolve, TIMEOUT);
+        }),
+      ])
+    : defined;
+};
+
 export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   tagSuffix: T,
   config: CreateElementConfigTypes[T]["config"],
