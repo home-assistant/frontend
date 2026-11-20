@@ -84,7 +84,7 @@ When a page gains params, add them to its redirect in `getMyRedirects()` in `src
 - Point the redirect at the page's main path, the one the page's controller binds to.
 - Don't add legacy param names.
 - Add the same params to the redirect's entry in `redirect.json` in `home-assistant/my.home-assistant.io`, in a separate pull request that links the frontend pull request. Merge it only once the frontend pull request is in `dev`.
-- In the frontend pull request, link the My Home Assistant pull request under "Additional information": `- Link to My Home Assistant pull request: home-assistant/my.home-assistant.io#<n>`.
+- In the frontend pull request, list the My Home Assistant pull request under "This PR belongs together with": `- This PR belongs together with: home-assistant/my.home-assistant.io#<n>`. Add the same line, with the frontend pull request, to the My Home Assistant pull request.
 
 ## Tests
 
