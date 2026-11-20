@@ -97,6 +97,7 @@ import { haStyle } from "../../../resources/styles";
 import {
   applySkippedUpdates,
   browseLinkFromUrl,
+  countRepositoryFilters,
   EXCLUDE_FILTER,
   filterRepositories,
   filtersOfTab,
@@ -393,9 +394,7 @@ export class HaMarketplaceDashboard extends LitElement {
         sync-url
         .filter=${this._tableSettings.search}
         has-filters
-        .filters=${
-          Object.values(filters).filter((values) => values?.length).length
-        }
+        .filters=${countRepositoryFilters(filters)}
         .noDataText=${this._i18n.localize("ui.panel.marketplace.dashboard.no_data")}
         .empty=${!this.marketplace.repositories.length}
         .initialSorting=${this._tableSettings.sorting}

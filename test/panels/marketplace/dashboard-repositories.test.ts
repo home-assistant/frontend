@@ -8,6 +8,7 @@ import {
   applySkippedUpdates,
   browseLinkFromUrl,
   browseUrl,
+  countRepositoryFilters,
   filterRepositories,
   filtersOfTab,
   marketplaceUpdateEntityIds,
@@ -220,6 +221,16 @@ describe("filterRepositories without", () => {
     expect(
       withRepositoryFilterValue(filters, "type", ["theme"], ["theme"])
     ).toEqual({ status: ["new"], type: ["theme"] });
+  });
+
+  it("counts a pane set to Without once on the filter button", () => {
+    expect(
+      countRepositoryFilters({
+        type: ["theme"],
+        status: [],
+        exclude: ["type", "status"],
+      })
+    ).toBe(1);
   });
 
   it("leaves a mode without a selection out of the URL, and reads it back", () => {

@@ -72,6 +72,15 @@ export type RepositoryFilters = Partial<
   >
 >;
 
+/**
+ * The number of filter panes that have anything picked, for the badge of the
+ * filter button. Which panes exclude is how they match, not a filter.
+ */
+export const countRepositoryFilters = (filters: RepositoryFilters): number =>
+  [STATUS_FILTER, TYPE_FILTER, SOURCE_FILTER].filter(
+    (name) => filters[name]?.length
+  ).length;
+
 /** The value of a filter pane, with whether it excludes its selection. */
 export const repositoryFilterValue = (
   filters: RepositoryFilters,
