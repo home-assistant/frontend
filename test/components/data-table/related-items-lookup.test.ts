@@ -74,6 +74,14 @@ describe("RelatedItemsLookup", () => {
       localize
     );
 
+    // The page gets the restored value before the dialog opens, so the URL
+    // is written before the dialog's history entry
+    let sentBeforeDialog = 0;
+    vi.mocked(showAlertDialog).mockImplementationOnce(async () => {
+      sentBeforeDialog = sent.length;
+      return true;
+    });
+
     host.value = ["kitchen", "hall"];
     await lookup.lookUp(
       host.value,
@@ -83,19 +91,16 @@ describe("RelatedItemsLookup", () => {
 
     expect(host.value).toEqual(["kitchen"]);
     expect(lookup.wasSent(host.value)).toBe(true);
-    expect(sent).toHaveLength(1);
-    expect(showAlertDialog).toHaveBeenCalledWith(host, {
-      title: "ui.components.subpage-data-table.related_lookup_failed",
-      text: "Lookup failed",
-    });
-
-    // A link may have changed the page's filter meanwhile, so the host sends
-    // the restored value and its items again
-    lookup.resend();
+    // A link may have changed the page's filter meanwhile
     expect(sent).toEqual([
       { value: ["kitchen"], items: new Set(["automation.kitchen"]) },
       { value: ["kitchen"], items: new Set(["automation.kitchen"]) },
     ]);
+    expect(sentBeforeDialog).toBe(2);
+    expect(showAlertDialog).toHaveBeenCalledWith(host, {
+      title: "ui.components.subpage-data-table.related_lookup_failed",
+      text: "Lookup failed",
+    });
   });
 
   it("sends the items again when the value goes back while a lookup runs", async () => {

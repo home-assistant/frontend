@@ -21,9 +21,9 @@ interface SentFilter<T> {
  * to its page together with the items that belong to it.
  *
  * Only the newest lookup reaches the page. When a lookup fails, the filter
- * goes back to the value it last sent. Its host then calls `resend()` instead
- * of looking that value up again, so the page gets the matching items back,
- * even if a link changed the page's filter meanwhile.
+ * goes back to the value it last sent and sends it again with its items, so
+ * the page gets them back, even if a link changed the page's filter meanwhile.
+ * Its host then calls `resend()` instead of looking that value up again.
  */
 export class RelatedItemsLookup<T> implements ReactiveController {
   private _requestId = 0;
@@ -129,6 +129,10 @@ export class RelatedItemsLookup<T> implements ReactiveController {
     // stored, so the value stays
     if (this._sent) {
       this._host.value = this._sent.value;
+      // The page writes its URL before the dialog adds a history entry, so
+      // going back to close the dialog doesn't bring the failed value back.
+      // Outdated items are still looked up again by the host.
+      this._fire(this._sent);
     }
     showAlertDialog(this._host, {
       title: localize("ui.components.subpage-data-table.related_lookup_failed"),
