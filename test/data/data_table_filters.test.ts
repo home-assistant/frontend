@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   countActiveFilters,
+  filterModeChanged,
   matchesFilterItems,
   matchesListFilter,
 } from "../../src/data/data_table_filters";
@@ -83,5 +84,29 @@ describe("countActiveFilters", () => {
         undefined,
       ])
     ).toBe(2);
+  });
+});
+
+// Pages store a filter for when they're opened again only when the URL
+// changes, which leaves out the mode of a filter without a selection.
+describe("filterModeChanged", () => {
+  it("tells when the mode changes without a selection", () => {
+    expect(filterModeChanged({ exclude: true }, undefined)).toBe(true);
+    expect(filterModeChanged(undefined, { exclude: true })).toBe(true);
+  });
+
+  it("tells when the mode changes with a selection", () => {
+    expect(filterModeChanged({ ids: ["a"], exclude: true }, ["a"])).toBe(true);
+  });
+
+  it("ignores a filter sending back the value it was given", () => {
+    expect(
+      filterModeChanged(
+        { ids: ["a"], exclude: true },
+        { ids: ["a"], exclude: true }
+      )
+    ).toBe(false);
+    expect(filterModeChanged(["a"], ["a", "b"])).toBe(false);
+    expect(filterModeChanged(undefined, undefined)).toBe(false);
   });
 });

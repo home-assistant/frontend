@@ -108,6 +108,16 @@ export const hasFilterSelection = (value: DataTableFiltersValue): boolean => {
 export const isExcludeFilter = (value: DataTableFiltersValue): boolean =>
   !!value && !Array.isArray(value) && "exclude" in value && !!value.exclude;
 
+/**
+ * Whether a filter switched between showing the items that match its
+ * selection and the ones that don't. The URL leaves out the mode of a filter
+ * without a selection, so pages can't tell this change from the URL alone.
+ */
+export const filterModeChanged = (
+  value: DataTableFiltersValue,
+  previous: DataTableFiltersValue
+): boolean => isExcludeFilter(value) !== isExcludeFilter(previous);
+
 /** The number of filters that have anything selected. */
 export const countActiveFilters = (
   values: Iterable<DataTableFiltersValue>

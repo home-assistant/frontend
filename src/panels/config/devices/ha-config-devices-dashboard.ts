@@ -67,6 +67,7 @@ import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   countActiveFilters,
   deserializeFilters,
+  filterModeChanged,
   isFilterUsed,
   listFilterValue,
   matchesFilterItems,
@@ -1059,9 +1060,12 @@ export class HaConfigDeviceDashboard extends LitElement {
 
     // A filter also sends the value it was given, once it has found its items.
     // Only a change to what the URL holds is the user's, so a link isn't stored.
+    // The URL leaves out the mode of a filter without a selection, so a change
+    // to the mode is the user's too.
     if (
       devicesFilterQueryString(filters) !==
-      devicesFilterQueryString(this._filters)
+        devicesFilterQueryString(this._filters) ||
+      filterModeChanged(ev.detail.value, this._filters[type]?.value)
     ) {
       this._storageFilters = { ...this._storageFilters, [type]: ev.detail };
     }

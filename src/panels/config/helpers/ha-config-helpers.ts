@@ -87,6 +87,7 @@ import type {
 } from "../../../data/data_table_filters";
 import {
   countActiveFilters,
+  filterModeChanged,
   hasFilterSelection,
   listFilterValue,
   matchesFilterItems,
@@ -915,9 +916,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
     // A filter also sends the value it was given, once it has found its items.
     // Only a change to what the URL holds is the user's, so a link isn't stored.
+    // The URL leaves out the mode of a filter without a selection, so a change
+    // to the mode is the user's too.
     if (
       helpersFilterQueryString(filters) !==
-      helpersFilterQueryString(this._filters)
+        helpersFilterQueryString(this._filters) ||
+      filterModeChanged(value, this._filters[type])
     ) {
       this._storageFilters = {
         ...this._storageFilters,
