@@ -172,11 +172,19 @@ export class HuiHistoryGraphCardEditor
         disabled: this._shouldDisableColorOption(entityId),
         selector: { ui_color: {} },
       },
+      {
+        name: "secondary_y_axis",
+        selector: { boolean: {} },
+      },
     ] as const,
     computeLabel: (item: HaFormSchema) => {
       switch (item.name) {
         case "color":
           return localize(`ui.panel.lovelace.editor.card.generic.${item.name}`);
+        case "secondary_y_axis":
+          return localize(
+            `ui.panel.lovelace.editor.card.history-graph.${item.name}`
+          );
         default:
           return undefined;
       }
