@@ -549,6 +549,7 @@ const SCHEMAS: {
         selector: { color_temp: {} },
       },
       color_rgb: { name: "Color", selector: { color_rgb: {} } },
+      color_rgbw: { name: "RGBW color", selector: { color_rgbw: {} } },
       qr_code: {
         name: "QR Code",
         selector: { qr_code: { data: "https://home-assistant.io" } },

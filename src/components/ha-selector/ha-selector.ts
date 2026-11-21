@@ -22,6 +22,7 @@ const LOAD_ELEMENTS = {
   boolean: () => import("./ha-selector-boolean"),
   choose: () => import("./ha-selector-choose"),
   color_rgb: () => import("./ha-selector-color-rgb"),
+  color_rgbw: () => import("./ha-selector-color-rgbw"),
   condition: () => import("./ha-selector-condition"),
   config_entry: () => import("./ha-selector-config-entry"),
   conversation_agent: () => import("./ha-selector-conversation-agent"),
