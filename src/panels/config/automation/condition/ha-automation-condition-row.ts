@@ -980,6 +980,7 @@ export default class HaAutomationConditionRow extends LitElement {
     const sidebarCondition = condition || this.condition;
     this._sidebarCondition = sidebarCondition;
     fireEvent(this, "open-sidebar", {
+      type: "condition",
       save: (value) => {
         this._sidebarCondition = value;
         fireEvent(this, "value-changed", { value });

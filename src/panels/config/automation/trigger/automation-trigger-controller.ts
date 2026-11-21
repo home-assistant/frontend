@@ -30,6 +30,7 @@ import {
   type BlueprintTriggersStatus,
 } from "./automation-trigger-id";
 import { preserveAutomationRowKeys } from "../ha-automation-sortable-list-mixin";
+import { isConfigObject } from "../ui-support";
 
 interface AutomationTriggerControllerOptions {
   /** Read the editor's current configuration, including after an awaited dialog. */
@@ -149,23 +150,18 @@ export class AutomationTriggerController implements ReactiveController {
   private _isTriggerConditionSidebarActive(
     sidebarConfig: SidebarConfig | undefined
   ): boolean {
-    if (!sidebarConfig || !("config" in sidebarConfig)) {
-      return false;
+    if (sidebarConfig?.type === "condition") {
+      return sidebarConfig.config.condition === "trigger";
     }
-    const config = sidebarConfig.config as
-      { condition?: unknown } | { action?: unknown };
-    if ("condition" in config && config.condition === "trigger") {
-      return true;
+    if (sidebarConfig?.type === "action") {
+      const action = sidebarConfig.config.action;
+      return (
+        isConfigObject(action) &&
+        "condition" in action &&
+        action.condition === "trigger"
+      );
     }
-    // A row can hold any YAML, so `action` may be a service name instead of
-    // the wrapped action of an action sidebar.
-    return !!(
-      "action" in config &&
-      typeof config.action === "object" &&
-      config.action &&
-      "condition" in config.action &&
-      config.action.condition === "trigger"
-    );
+    return false;
   }
 
   /**
