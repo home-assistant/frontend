@@ -253,6 +253,57 @@ describe("computeAttributeValueDisplay", () => {
     expect(result).toBe("Media Player Attribute Name");
   });
 
+  it("should return the translation of a group member", () => {
+    const localize = (key: string) =>
+      ({
+        "component.member_platform.entity.light.member_key.state_attributes.effect.state.candle":
+          "Candle",
+        "component.switch_platform.entity.switch.switch_key.state_attributes.effect.state.candle":
+          "Switch candle",
+      })[key] || "";
+    const entities = {
+      "light.group": { platform: "group" },
+      "light.plain": { platform: "plain_platform" },
+      "switch.member": {
+        platform: "switch_platform",
+        translation_key: "switch_key",
+      },
+      "light.member": {
+        platform: "member_platform",
+        translation_key: "member_key",
+      },
+    } as unknown as HomeAssistant["entities"];
+    const stateObj = {
+      entity_id: "light.group",
+      attributes: {
+        entity_id: ["light.plain", "switch.member", "light.member"],
+      },
+    } as unknown as HassEntityBase;
+
+    expect(
+      computeAttributeValueDisplay(
+        localize,
+        stateObj,
+        localeMock,
+        configMock,
+        entities,
+        "effect",
+        "candle"
+      )
+    ).toBe("Candle");
+    expect(
+      computeAttributeValueDisplay(
+        localize,
+        stateObj,
+        localeMock,
+        configMock,
+        entities,
+        "effect",
+        "fire"
+      )
+    ).toBe("fire");
+  });
+
   it("should return attribute value", () => {
     const stateObj = {
       entity_id: "media_player.test",

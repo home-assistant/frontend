@@ -576,6 +576,35 @@ export const attributeIcon = async (
       );
     }
   }
+  // A group has no icons for the values of its members, for example the
+  // effects of a light group, so use the icon of a member for that value.
+  const memberIds = state.attributes.entity_id;
+  if (!icon && value !== undefined && Array.isArray(memberIds)) {
+    for (const memberId of memberIds) {
+      const member = entities[memberId] as
+        EntityRegistryDisplayEntry | undefined;
+      if (
+        !member?.translation_key ||
+        !member.platform ||
+        computeDomain(memberId) !== domain
+      ) {
+        continue;
+      }
+      // eslint-disable-next-line no-await-in-loop
+      const memberIcons = await getPlatformIcons(
+        hassConfig,
+        hassConnection,
+        member.platform
+      );
+      icon =
+        memberIcons?.[domain]?.[member.translation_key]?.state_attributes?.[
+          attribute
+        ]?.state?.[value];
+      if (icon) {
+        break;
+      }
+    }
+  }
   if (!icon) {
     const entityComponentIcons = await getComponentIcons(
       hassConnection,
