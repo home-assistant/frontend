@@ -55,7 +55,8 @@ import {
   fetchIntegrationManifest,
   type IntegrationManifest,
 } from "../../../data/integration";
-import { createSchedule } from "../../../data/schedule";
+import type { Schedule } from "../../../data/schedule";
+import { createSchedule, hasScheduleBlocks } from "../../../data/schedule";
 import { createTimer } from "../../../data/timer";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -65,7 +66,10 @@ import {
   multiTermSortedSearch,
   type FuseWeightedKey,
 } from "../../../resources/fuseMultiTerm";
-import { haStyleDialog } from "../../../resources/styles";
+import {
+  haStyleDialog,
+  haStyleDialogFixedTop,
+} from "../../../resources/styles";
 import type {
   HomeAssistantApi,
   HomeAssistantConfig,
@@ -77,6 +81,7 @@ import type {
   Helper,
   HelperCategory,
   HelperDomain,
+  HelperFormElement,
   HelperFormItem,
 } from "./const";
 import {
@@ -205,6 +210,8 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
+  @query(".helper-form > *") private _helperForm?: HelperFormElement;
+
   private _pendingConfigFlow?: {
     startFlowHandler: string;
     manifest: IntegrationManifest;
@@ -298,21 +305,36 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     let content: TemplateResult;
     let footer: TemplateResult | typeof nothing = nothing;
     let showPicker = false;
+    // The schedule editor shows its time block panel beside the week, and
+    // the area with the name and icon.
+    const isSchedule = this._domain === "schedule";
 
     if (this._domain && !this._loading) {
+      const areaPicker = html`
+        <ha-area-picker
+          slot="area"
+          .value=${this._area}
+          .disabled=${this._submitting}
+          @value-changed=${this._areaChanged}
+        ></ha-area-picker>
+      `;
       content = html`
         <div class="form" @value-changed=${this._valueChanged}>
           ${this._error ? html`<div class="error">${this._error}</div>` : ""}
-          ${dynamicElement(`ha-${this._domain}-form`, {
-            item: this._item,
-            new: true,
-            autofocus: true,
-          })}
-          <ha-area-picker
-            .value=${this._area}
-            .disabled=${this._submitting}
-            @value-changed=${this._areaChanged}
-          ></ha-area-picker>
+          <div class="helper-form">
+            ${
+              isSchedule
+                ? html`<ha-schedule-form .item=${this._item} new autofocus>
+                    ${areaPicker}
+                  </ha-schedule-form>`
+                : dynamicElement(`ha-${this._domain}-form`, {
+                    item: this._item,
+                    new: true,
+                    autofocus: true,
+                  })
+            }
+          </div>
+          ${isSchedule ? nothing : areaPicker}
         </div>
       `;
       footer = html`
@@ -332,7 +354,12 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
           <ha-button
             slot="primaryAction"
             @click=${this._createItem}
-            .disabled=${this._submitting}
+            .disabled=${
+              this._submitting ||
+              // A schedule without time blocks is never on.
+              (isSchedule &&
+                !hasScheduleBlocks((this._item ?? {}) as Partial<Schedule>))
+            }
           >
             ${this._i18n.localize("ui.panel.config.helpers.dialog.create")}
           </ha-button>
@@ -370,6 +397,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         class=${showPicker ? "picker" : ""}
         .flexContent=${showPicker}
         .open=${this._open}
+        .width=${isSchedule ? "large" : "medium"}
         .preventScrimClose=${this.isDirtyState}
         header-title=${
           this._domain
@@ -547,6 +575,10 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
   }
 
   private async _createItem(): Promise<void> {
+    // Updates `_item` through `value-changed`.
+    if ((await this._helperForm?.applyPendingChanges?.()) === false) {
+      return;
+    }
     if (!this._domain || !this._item) {
       return;
     }
@@ -703,6 +735,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
         ha-dialog {
           --dialog-content-padding: 0;

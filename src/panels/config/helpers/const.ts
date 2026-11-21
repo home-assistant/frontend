@@ -39,6 +39,17 @@ type HelperWithoutId<T> = T extends { id: string } ? Omit<T, "id"> : never;
 
 export type HelperFormItem = HelperWithoutId<Helper>;
 
+/** A helper form, as rendered by the dialogs that save helpers. */
+export interface HelperFormElement extends HTMLElement {
+  /**
+   * Adds edits that are not part of the form's value yet, like a schedule
+   * time block that was not applied, firing `value-changed` before saving.
+   * Resolves to `false` when they cannot be added and the user keeps
+   * editing, so the host does not save.
+   */
+  applyPendingChanges?(): Promise<boolean>;
+}
+
 export const HELPER_CATEGORIES = [
   "input",
   "time",
