@@ -375,3 +375,45 @@ export const pixelDistance = (
   const dx = Math.abs(pa.x - pb.x);
   return Math.hypot(Math.min(dx, scale - dx), pa.y - pb.y);
 };
+
+/**
+ * Shifts longitudes by 360 where needed so a plain min/max over the result
+ * spans the shortest arc covering all points, possibly across the
+ * antimeridian, with the middle of that arc kept within ±180°. The circle is
+ * cut at the widest empty gap between neighbouring longitudes; points are
+ * returned untouched when that gap already straddles ±180°. Only for lone
+ * positions: the corners of an area are not separate points, and the widest
+ * gap can fall inside the area.
+ */
+export const unwrapLongitudes = (points: MapLatLng[]): MapLatLng[] => {
+  const lngs = [...new Set(points.map(([, lng]) => lng))].sort((a, b) => a - b);
+  if (lngs.length < 2) {
+    return points;
+  }
+  // The gap across ±180° wins ties, so a fit never moves without need
+  let widestGap = lngs[0] + 360 - lngs[lngs.length - 1];
+  let cut = 0;
+  for (let i = 1; i < lngs.length; i++) {
+    const gap = lngs[i] - lngs[i - 1];
+    if (gap > widestGap) {
+      widestGap = gap;
+      cut = i;
+    }
+  }
+  if (cut === 0) {
+    return points;
+  }
+  const start = lngs[cut];
+  const end = lngs[cut - 1] + 360;
+  // Leaflet only draws markers at their literal longitude, so keep the
+  // fitted center on the original world rather than on a copy
+  const offset = (start + end) / 2 > 180 ? -360 : 0;
+  return points.map(([lat, lng]) => [
+    lat,
+    (lng < start ? lng + 360 : lng) + offset,
+  ]);
+};
+
+/** The copy of a longitude closest to a reference one, e.g. the view center */
+export const nearestWorldCopy = (lng: number, referenceLng: number): number =>
+  lng + 360 * Math.round((referenceLng - lng) / 360);

@@ -50,6 +50,34 @@ const STATES = {
   },
 } as unknown as HassEntities;
 
+const tracker = (
+  id: string,
+  latitude: number,
+  longitude: number,
+  gps_accuracy?: number
+) => ({
+  entity_id: id,
+  state: "not_home",
+  attributes: { friendly_name: id, latitude, longitude, gps_accuracy },
+  context: { id, user_id: null, parent_id: null },
+  last_changed: "2026-01-01T00:00:00Z",
+  last_updated: "2026-01-01T00:00:00Z",
+});
+
+const zone = (
+  id: string,
+  latitude: number,
+  longitude: number,
+  radius: number
+) => ({
+  entity_id: id,
+  state: "0",
+  attributes: { friendly_name: id, latitude, longitude, radius },
+  context: { id, user_id: null, parent_id: null },
+  last_changed: "2026-01-01T00:00:00Z",
+  last_updated: "2026-01-01T00:00:00Z",
+});
+
 // jsdom has no WebGL2, so ha-map runs its Leaflet fallback engine here; the
 // Leaflet map underneath is what the fit assertions read.
 const leafletMap = (el: HaMap) => (el as any)._engine?.leafletMap;
@@ -59,6 +87,7 @@ const createMap = async (
     clusterMarkers?: boolean;
     states?: HassEntities;
     entities?: string[];
+    fitZones?: boolean;
   } = {}
 ): Promise<HaMap> => {
   const el = document.createElement("ha-map");
@@ -67,6 +96,7 @@ const createMap = async (
     "device_tracker.anne_therese",
   ];
   el.clusterMarkers = options.clusterMarkers ?? false;
+  el.fitZones = options.fitZones ?? false;
   (el as any)._states = options.states ?? STATES;
   (el as any)._formatters = {
     formatEntityName: computeEntityNameDisplayWithoutContext,
@@ -152,6 +182,136 @@ describe("ha-map", () => {
     // Centred on the zone, not jumped to the home coordinates
     expect(map.getCenter().lat).toBeCloseTo(52.3, 2);
     expect(map.getCenter().lng).toBeCloseTo(4.8, 2);
+  });
+
+  it("shows entities across the antimeridian on the world copy in view", async () => {
+    const el = await createMap({
+      states: {
+        "device_tracker.nome": tracker(
+          "device_tracker.nome",
+          64.5,
+          -165.4,
+          50000
+        ),
+        "device_tracker.kamchatka": tracker(
+          "device_tracker.kamchatka",
+          53,
+          158.65
+        ),
+      } as unknown as HassEntities,
+      entities: ["device_tracker.nome", "device_tracker.kamchatka"],
+    });
+    setMapSize(el, 800, 500);
+    fireResizeObservers();
+    await el.updateComplete;
+
+    const map = leafletMap(el)!;
+    // Fitted across ±180°, not over the Atlantic
+    expect(map.getCenter().lng).toBeCloseTo(176.6, 0);
+    const markerLngs = () => {
+      const lngs: number[] = [];
+      map.eachLayer((layer: any) => {
+        if (layer.options?.icon) {
+          lngs.push(layer.getLatLng().lng);
+        }
+      });
+      return lngs.sort((a, b) => a - b);
+    };
+    const leafletModule = (el as any)._engine.Leaflet;
+    const circleLngs = () => {
+      const lngs: number[] = [];
+      map.eachLayer((layer: any) => {
+        if (layer instanceof leafletModule.Circle) {
+          lngs.push(layer.getLatLng().lng);
+        }
+      });
+      return lngs;
+    };
+    // Nome is drawn at -165.4 + 360, on the copy the view shows
+    const [kamchatka, nome] = markerLngs();
+    expect(kamchatka).toBeCloseTo(158.65, 6);
+    expect(nome).toBeCloseTo(194.6, 6);
+    // Nome's accuracy circle follows its marker
+    expect(circleLngs()).toHaveLength(1);
+    expect(circleLngs()[0]).toBeCloseTo(194.6, 6);
+    expect(el.containsLocation([64.5, -165.4])).toBe(true);
+    expect(el.containsLocation([53, 158.65])).toBe(true);
+
+    // Moving the view west of the seam moves Kamchatka to the copy in view
+    map.setView([60, -60], map.getZoom(), { animate: false });
+    const [movedKamchatka, movedNome] = markerLngs();
+    expect(movedKamchatka).toBeCloseTo(158.65 - 360, 6);
+    expect(movedNome).toBeCloseTo(-165.4, 6);
+    expect(circleLngs()[0]).toBeCloseTo(-165.4, 6);
+  });
+
+  describe("fits across the antimeridian", () => {
+    // The bounds handed to Leaflet, after padding
+    const spyFit = (el: HaMap) => {
+      const fit = vi.spyOn(leafletMap(el)!, "fitBounds");
+      return () => {
+        const bounds = fit.mock.lastCall![0] as any;
+        return [bounds.getWest(), bounds.getEast()];
+      };
+    };
+
+    it("keeps every zone in a zone-only fit", async () => {
+      const el = await createMap({
+        states: {
+          "zone.west": zone("zone.west", 89, -80, 96000),
+          "zone.east": zone("zone.east", 89, 80, 96000),
+        } as unknown as HassEntities,
+        entities: ["zone.west", "zone.east"],
+      });
+      const fitted = spyFit(el);
+      setMapSize(el, 800, 500);
+      fireResizeObservers();
+      await el.updateComplete;
+
+      // Each zone spans about ±59.7° of longitude near the pole; the fit
+      // covers both, west of -80 to east of 80, with the 0.5 padding
+      const [west, east] = fitted();
+      expect(west).toBeCloseTo(-279.4, 0);
+      expect(east).toBeCloseTo(279.4, 0);
+    });
+
+    it("keeps an explicit bounding box as given", async () => {
+      const el = await createMap();
+      setMapSize(el, 800, 500);
+      fireResizeObservers();
+      await el.updateComplete;
+      const fitted = spyFit(el);
+
+      el.fitBounds(
+        [
+          [-10, -170],
+          [10, 170],
+        ],
+        { pad: 0 }
+      );
+
+      expect(fitted()).toEqual([-170, 170]);
+    });
+
+    it("fits zones and entities on their literal longitudes", async () => {
+      const el = await createMap({
+        states: {
+          "zone.seam": zone("zone.seam", 0, 179.9, 100000),
+          "device_tracker.seam": tracker("device_tracker.seam", 0, -179.9),
+        } as unknown as HassEntities,
+        entities: ["zone.seam", "device_tracker.seam"],
+        fitZones: true,
+      });
+      const fitted = spyFit(el);
+      setMapSize(el, 800, 500);
+      fireResizeObservers();
+      await el.updateComplete;
+
+      // Unpadded, the fit spans -179.9 to 180.8 (the zone's east edge)
+      const [west, east] = fitted();
+      expect(west).toBeCloseTo(-179.9 - 360.7 / 2, 0);
+      expect(east).toBeCloseTo(180.8 + 360.7 / 2, 0);
+    });
   });
 
   it("does not defer fitting when the container already has a size", async () => {

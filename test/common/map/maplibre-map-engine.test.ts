@@ -352,7 +352,14 @@ const fakes = vi.hoisted(() => {
     }
 
     getBounds() {
-      return { contains: () => true };
+      return {
+        contains: (_lngLat: [number, number]) => true,
+        getCenter: () => ({ lng: 4, lat: 52 }),
+      };
+    }
+
+    getCenter() {
+      return { lng: 4, lat: 52 };
     }
 
     queryRenderedFeatures() {
@@ -733,6 +740,46 @@ describe("MapLibreMapEngine", () => {
     });
   });
 
+  describe("containsLocation", () => {
+    // MapLibre's LngLatBounds compares longitudes literally
+    const literalBounds = (
+      west: number,
+      east: number,
+      south: number,
+      north: number
+    ) => ({
+      contains: ([lng, lat]: [number, number]) =>
+        lng >= west && lng <= east && lat >= south && lat <= north,
+      getCenter: () => ({ lng: (west + east) / 2, lat: (south + north) / 2 }),
+    });
+
+    it("finds a location across the antimeridian on the world copy in view", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // A view fitted across ±180°: MapLibre reports its bounds unwrapped and
+      // compares longitudes literally
+      map.getCenter = () => ({ lng: 176.6, lat: 60 });
+      map.getBounds = () => literalBounds(150, 203, 45, 75);
+
+      expect(engine.containsLocation([64.5, -165.4])).toBe(true);
+      expect(engine.containsLocation([53, 158.65])).toBe(true);
+      expect(engine.containsLocation([64.5, 0])).toBe(false);
+    });
+
+    it("finds a location in a globe view whose bounds span the whole world", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // With a pole on screen, the globe reports -180 to 180 whatever its center
+      map.getCenter = () => ({ lng: 176.6, lat: 60 });
+      map.getBounds = () => literalBounds(-180, 180, 30, 90);
+
+      expect(engine.containsLocation([64.5, -165.4])).toBe(true);
+      expect(engine.containsLocation([53, 158.65])).toBe(true);
+    });
+  });
+
   describe("fitting", () => {
     it("keeps overlays clear of the fitted bounds", async () => {
       const { engine, map, ready } = await createEngine();
@@ -819,6 +866,23 @@ describe("MapLibreMapEngine", () => {
       expect(bounds[1][1]).toBe(90);
       expect(bounds[0][0]).toBe(-40);
       expect(bounds[1][0]).toBe(40);
+    });
+
+    it("keeps longitudes beyond 180 that fit across the antimeridian", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // ha-map unwraps Nome's -165.4 to 194.6 for the shorter arc
+      engine.fitBounds(
+        [
+          [64.5, 194.6],
+          [53, 158.65],
+        ],
+        { pad: 0 }
+      );
+      const [bounds] = map.fitBounds.mock.calls[0];
+      expect(bounds[0][0]).toBe(158.65);
+      expect(bounds[1][0]).toBeCloseTo(194.6);
     });
   });
 
@@ -996,6 +1060,41 @@ describe("MapLibreMapEngine", () => {
       expect(iconBuilder.mock.calls[0][0]).toHaveLength(2);
       // One cluster icon and one lone marker
       expect(fakeMarker.all).toHaveLength(2);
+    });
+
+    // Two markers either side of ±180°, side by side on screen as the globe
+    // shows them, so they group
+    const groupAcrossAntimeridian = async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+      map.project = ([lng, lat]) => ({
+        x: (lng < 0 ? lng + 360 : lng) * 10000,
+        y: -lat * 10000,
+      });
+      addMarker(engine, [0, 179.999]);
+      addMarker(engine, [0, -179.999]);
+      engine.setClustering({ radius: 40, iconBuilder });
+      expect(iconBuilder).toHaveBeenCalledOnce();
+      expect(iconBuilder.mock.calls[0][0]).toHaveLength(2);
+      return map;
+    };
+
+    it("centers a group across the antimeridian on it, not on the other side of the world", async () => {
+      await groupAcrossAntimeridian();
+
+      const [, location] = iconBuilder.mock.calls[0];
+      expect(Math.abs(location[1])).toBeCloseTo(180, 6);
+    });
+
+    it("zooms to a group across the antimeridian the short way", async () => {
+      const map = await groupAcrossAntimeridian();
+
+      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
+      const [bounds] = map.fitBounds.mock.calls[0];
+      // Both members, -179.999 as its 180.001 copy, in a fit under 1° wide
+      expect(bounds[0][0]).toBeLessThanOrEqual(179.999);
+      expect(bounds[1][0]).toBeGreaterThanOrEqual(180.001);
+      expect(bounds[1][0] - bounds[0][0]).toBeLessThan(1);
     });
 
     it("groups markers sharing a key while they fit the group radius", async () => {

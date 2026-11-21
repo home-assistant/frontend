@@ -1,8 +1,10 @@
 import type {
+  Circle,
   CircleMarker,
   Control,
   DivIcon,
   Map,
+  Marker,
   MarkerClusterGroup,
   Polyline,
 } from "leaflet";
@@ -26,6 +28,7 @@ import type {
   MapPathHandle,
   MapView,
 } from "../map-engine";
+import { nearestWorldCopy } from "../map-engine";
 import type { ResolvedMapStyle } from "../map-styles";
 import { setMarkerAccessibility } from "../marker-accessibility";
 
@@ -108,6 +111,9 @@ export class LeafletMapEngine implements MapEngine {
     if (events.moveStart) {
       map.on("movestart", () => events.moveStart!());
     }
+    // Leaflet draws a layer at its literal longitude only, so one across ±180°
+    // from the center would be missing from the world copy in view
+    map.on("moveend", () => this._wrapToView());
     // Leaflet draws its container as soon as the layer is on it, and fills the
     // tiles in over an opaque background from there
     events.drawn?.();
@@ -217,7 +223,47 @@ export class LeafletMapEngine implements MapEngine {
   }
 
   public containsLocation(location: MapLatLng): boolean {
-    return this.leafletMap?.getBounds().contains(location) ?? false;
+    // Checked on the world copy in view, where layers are drawn
+    return (
+      this.leafletMap?.getBounds().contains(this._nearView(location)) ?? false
+    );
+  }
+
+  /** A location on the world copy nearest the view center */
+  private _nearView([lat, lng]: MapLatLng): MapLatLng {
+    return [lat, nearestWorldCopy(lng, this.leafletMap!.getCenter().lng)];
+  }
+
+  /** Moves the markers and circles to the world copy nearest the view center */
+  private _wrapToView(): void {
+    // A debounced moveend can still come after destroy
+    const map = this.leafletMap;
+    if (!map) {
+      return;
+    }
+    const centerLng = map.getCenter().lng;
+    const wrap = (layer: Marker | Circle) => {
+      const { lat, lng } = layer.getLatLng();
+      const wrappedLng = nearestWorldCopy(lng, centerLng);
+      if (wrappedLng !== lng) {
+        layer.setLatLng([lat, wrappedLng]);
+      }
+    };
+    // Clustered markers and their decorations are off the map until shown
+    const markers = new Set<HandledMarker>(this._clusterable);
+    map.eachLayer((layer) => {
+      if (layer instanceof DecoratedMarker) {
+        markers.add(layer);
+      } else if (layer instanceof this.Leaflet!.Circle) {
+        wrap(layer);
+      }
+    });
+    markers.forEach((marker) => {
+      wrap(marker);
+      if (marker.decorationLayer instanceof this.Leaflet!.Circle) {
+        wrap(marker.decorationLayer);
+      }
+    });
   }
 
   public addMarker(
@@ -225,8 +271,9 @@ export class LeafletMapEngine implements MapEngine {
     location: MapLatLng,
     options: MapMarkerOptions
   ): MapMarkerHandle {
+    const drawn = this._nearView(location);
     const decoration = options.decoration
-      ? this.Leaflet!.circle(location, {
+      ? this.Leaflet!.circle(drawn, {
           interactive: false,
           color: options.decoration.color,
           stroke: options.decoration.outline !== false,
@@ -242,7 +289,7 @@ export class LeafletMapEngine implements MapEngine {
       element.title = options.title;
     }
     setMarkerAccessibility(element, options.title, focusable);
-    const marker: HandledMarker = new DecoratedMarker(location, decoration, {
+    const marker: HandledMarker = new DecoratedMarker(drawn, decoration, {
       zIndexOffset: options.raised ? 1000 : 0,
       icon: this.Leaflet!.divIcon({
         html: element,
@@ -282,7 +329,7 @@ export class LeafletMapEngine implements MapEngine {
     center: MapLatLng,
     options: MapCircleOptions
   ): MapCircleHandle {
-    const circle = this.Leaflet!.circle(center, {
+    const circle = this.Leaflet!.circle(this._nearView(center), {
       interactive: false,
       color: options.color,
       stroke: options.outline !== false,
@@ -291,7 +338,7 @@ export class LeafletMapEngine implements MapEngine {
     return {
       update: (newCenter, newOptions) => {
         circle
-          .setLatLng(newCenter)
+          .setLatLng(this._nearView(newCenter))
           .setRadius(newOptions.radius)
           .setStyle({
             color: newOptions.color,
