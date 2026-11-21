@@ -81,6 +81,24 @@ function processData(
   return { positive, negative };
 }
 
+type LineData = NonNullable<LineSeriesOption["data"]>;
+
+// A series that stays at 0 would draw its line over the x axis, so break the
+// line there and keep only the zeros next to a non-zero value.
+const hideZeroRuns = (data: LineData): LineData => {
+  const values = data.map(
+    (point) =>
+      (typeof point === "object" && "value" in point!
+        ? point.value
+        : point) as [number, number]
+  );
+  return data.map((point, i) =>
+    values[i][1] === 0 && !values[i - 1]?.[1] && !values[i + 1]?.[1]
+      ? [values[i][0], null]
+      : point
+  );
+};
+
 const sourceSeriesId = (type: PowerSourceType, statRate: string) =>
   `${type}-${statRate}`;
 
@@ -497,6 +515,9 @@ export function generatePowerSourcesGraphData(
     for (const stat of homeStats) {
       usageData.push([(stat.start + stat.end) / 2, Math.max(0, stat.mean!)]);
     }
+  }
+  for (const series of chartData) {
+    series.data = hideZeroRuns(series.data!);
   }
   chartData.push({
     ...commonSeriesOptions,
