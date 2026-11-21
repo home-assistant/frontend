@@ -135,6 +135,7 @@ export class HaNumberSelector extends LitElement {
           .validationMessage=${this.selector.number?.validation_message}
           type="number"
           auto-validate
+          ignore-step-mismatch
           .withoutSpinButtons=${!isBox}
           @input=${this._handleInputChange}
         >
