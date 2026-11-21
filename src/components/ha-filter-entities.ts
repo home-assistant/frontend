@@ -12,8 +12,16 @@ import {
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
-import { arrayWith, arrayWithout } from "../common/array/array-with";
 import { fireEvent } from "../common/dom/fire_event";
+import type { ListFilterValue } from "../data/data_table_filters";
+import {
+  combineItemSets,
+  hasFilterSelection,
+  listFilterEventValue,
+  listFilterValue,
+  setListFilterAll,
+  toggleListFilterIds,
+} from "../data/data_table_filters";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { stringCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
@@ -27,6 +35,7 @@ import {
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
 import "./ha-expansion-panel";
+import { filterBadgeStyles, renderFilterBadge } from "./ha-filter-mode";
 import "./ha-state-icon";
 import "./input/ha-input-search";
 import type { HaInputSearch } from "./input/ha-input-search";
@@ -61,9 +70,16 @@ export class HaFilterEntities extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
-  @property({ attribute: false }) public value?: string[];
+  // A plain list of ids is still accepted
+  @property({ attribute: false }) public value?: string[] | ListFilterValue;
 
   @property() public type?: keyof RelatedResult;
+
+  /**
+   * Offer to match the items related to all picked entities, for items that
+   * can relate to several, like automations
+   */
+  @property({ type: Boolean }) public matchable = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -110,8 +126,13 @@ export class HaFilterEntities extends LitElement {
         <div slot="header" class="header">
           ${this._localize("ui.panel.config.entities.caption")}
           ${
-            this.value?.length
-              ? html`<div class="badge">${this.value?.length}</div>
+            this._count
+              ? html`${renderFilterBadge(
+                    this._localize,
+                    this._count,
+                    listFilterValue(this.value)?.exclude,
+                    listFilterValue(this.value)?.all
+                  )}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._localize(
@@ -127,6 +148,13 @@ export class HaFilterEntities extends LitElement {
         this._panel.showContent
           ? html`
               <div class="content" ${ref(this._content)}>
+                <ha-filter-mode
+                  ?match-mode=${this.matchable}
+                  .exclude=${listFilterValue(this.value)?.exclude ?? false}
+                  .all=${listFilterValue(this.value)?.all ?? false}
+                  @filter-mode-changed=${this._modeChanged}
+                  @filter-match-changed=${this._matchChanged}
+                ></ha-filter-mode>
                 <ha-input-search
                   appearance="outlined"
                   .value=${this._filter}
@@ -156,7 +184,7 @@ export class HaFilterEntities extends LitElement {
           appearance="checkbox"
           selection-position="end"
           .value=${item.id}
-          .selected=${this.value?.includes(item.id) ?? false}
+          .selected=${listFilterValue(this.value)?.ids?.includes(item.id) ?? false}
         >
           <ha-state-icon
             slot="start"
@@ -171,10 +199,11 @@ export class HaFilterEntities extends LitElement {
       return;
     }
 
-    this.value =
+    this.value = toggleListFilterIds(
+      listFilterValue(this.value),
+      [entityId],
       ev.type === "ha-list-item-selected"
-        ? arrayWith(this.value, entityId)
-        : arrayWithout(this.value, entityId);
+    );
   }
 
   private _currentEntities() {
@@ -185,6 +214,19 @@ export class HaFilterEntities extends LitElement {
       this._filter || "",
       this._i18n.locale.language
     );
+  }
+
+  private get _count(): number {
+    const value = listFilterValue(this.value);
+    return (value?.ids?.length || 0) + (value?.none ? 1 : 0);
+  }
+
+  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
+    this.value = { ...listFilterValue(this.value), exclude: ev.detail.exclude };
+  }
+
+  private _matchChanged(ev: CustomEvent<{ all: boolean }>) {
+    this.value = setListFilterAll(listFilterValue(this.value), ev.detail.all);
   }
 
   private _expandedChanged(ev) {
@@ -224,17 +266,17 @@ export class HaFilterEntities extends LitElement {
   private async _findRelated() {
     const requestId = ++this._relatedRequestId;
     const relatedPromises: Promise<RelatedResult>[] = [];
+    const value = listFilterValue(this.value) ?? {};
 
-    if (!this.value?.length) {
-      this.value = [];
+    if (!hasFilterSelection(value)) {
       fireEvent(this, "data-table-filter-changed", {
-        value: [],
+        value: listFilterEventValue(value),
         items: undefined,
       });
       return;
     }
 
-    for (const entityId of this.value) {
+    for (const entityId of value.ids ?? []) {
       if (this.type) {
         relatedPromises.push(findRelated(this._api, "entity", entityId));
       }
@@ -247,15 +289,13 @@ export class HaFilterEntities extends LitElement {
       return;
     }
 
-    const items = new Set<string>();
-    for (const result of results) {
-      if (result[this.type!]) {
-        result[this.type!]!.forEach((item) => items.add(item));
-      }
-    }
+    const items = combineItemSets(
+      results.map((result) => result[this.type!] ?? []),
+      value.all
+    );
 
     fireEvent(this, "data-table-filter-changed", {
-      value: this.value,
+      value: listFilterEventValue(value),
       items: this.type ? items : undefined,
     });
   }
@@ -272,6 +312,7 @@ export class HaFilterEntities extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       filterPanelStyles,
+      filterBadgeStyles,
       css`
         ha-list-selectable-virtualized {
           flex: 1;
@@ -303,7 +344,7 @@ export class HaFilterEntities extends LitElement {
         }
         ha-input-search {
           display: block;
-          padding: var(--ha-space-1) var(--ha-space-2) 0;
+          padding: var(--ha-space-1) var(--ha-space-2) var(--ha-space-2);
         }
       `,
     ];

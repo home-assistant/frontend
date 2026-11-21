@@ -76,9 +76,14 @@ import type {
   DataTableFilters,
 } from "../../../data/data_table_filters";
 import {
+  countActiveFilters,
   deserializeFilters,
+  filterModeChanged,
   isFilterUsed,
   isRelatedItemsFilterUsed,
+  listFilterValue,
+  matchesFilterItems,
+  matchesListFilter,
   serializeFilters,
 } from "../../../data/data_table_filters";
 import { UNAVAILABLE } from "../../../data/entity/entity";
@@ -470,16 +475,9 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
-        .filters=${
-          Object.values(this._filters).filter((filter) =>
-            Array.isArray(filter.value)
-              ? filter.value.length
-              : filter.value &&
-                Object.values(filter.value).some((val) =>
-                  Array.isArray(val) ? val.length : val
-                )
-          ).length
-        }
+        .filters=${countActiveFilters(
+          Object.values(this._filters).map((filter) => filter.value)
+        )}
         .columns=${this._columns(this.hass.localize, scripts)}
         .data=${scripts}
         .empty=${!this.scripts.length}
@@ -504,6 +502,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           @click=${this._showHelp}
         ></ha-icon-button>
         <ha-filter-floor-areas
+          matchable
           .type=${"script"}
           .value=${this._filters["ha-filter-floor-areas"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -513,6 +512,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-floor-areas>
         <ha-filter-devices
+          matchable
           .type=${"script"}
           .value=${this._filters["ha-filter-devices"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -522,6 +522,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-devices>
         <ha-filter-entities
+          matchable
           .type=${"script"}
           .value=${this._filters["ha-filter-entities"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -734,7 +735,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   private _labelClicked = (ev: CustomEvent) => {
     const label = ev.detail.label;
     this._setFilter("ha-filter-labels", {
-      value: [label.label_id],
+      value: { ids: [label.label_id] },
       items: undefined,
     });
   };
@@ -742,16 +743,14 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   private _groupActions = memoizeOne(categoryGroupActions);
 
   private _categoryDeleted = (categoryId: string) => {
-    const value = this._filters["ha-filter-categories"]?.value;
+    const value = listFilterValue(this._filters["ha-filter-categories"]?.value);
 
-    if (!Array.isArray(value) || !value.includes(categoryId)) {
+    if (!value?.ids?.includes(categoryId)) {
       return;
     }
 
-    const remaining = value.filter((id) => id !== categoryId);
-
     this._setFilter("ha-filter-categories", {
-      value: remaining.length ? remaining : undefined,
+      value: { ...value, ids: value.ids.filter((id) => id !== categoryId) },
       items: undefined,
     });
   };
@@ -764,10 +763,12 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     const filters = { ...this._filters, [type]: filter };
 
     // A filter also sends the value it was given, once it has found its items.
-    // Only a change to what the URL holds is the user's, so a link isn't stored.
+    // Only a change to what the URL holds, or to a filter's mode, is the
+    // user's, so a link isn't stored.
     if (
       scriptsFilterQueryString(filters) !==
-      scriptsFilterQueryString(this._filters)
+        scriptsFilterQueryString(this._filters) ||
+      filterModeChanged(this._filters[type]?.value, filter.value)
     ) {
       this._storageFilters = { ...this._storageFilters, [type]: filter };
     }
@@ -799,33 +800,30 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         ])
       ) {
         filteredEntityIds = filteredEntityIds.filter((entityId) =>
-          filter.items!.has(entityId)
+          matchesFilterItems(filter.value, filter.items!, entityId)
         );
 
         // the filters below only expose the selected options (as filter.value);
         // applying the filter must be done here
       } else if (isFilterUsed(key, filter, "ha-filter-categories")) {
-        filteredEntityIds = filteredEntityIds.filter((entityId) => {
-          const category = this._entityReg.find(
-            (reg) => reg.entity_id === entityId
-          )?.categories.script;
-
-          return (
-            category !== undefined &&
-            Array.isArray(filter.value) &&
-            filter.value.includes(category)
-          );
-        });
+        filteredEntityIds = filteredEntityIds.filter((entityId) =>
+          matchesListFilter(filter.value, [
+            this._entityReg.find((reg) => reg.entity_id === entityId)
+              ?.categories.script,
+          ])
+        );
       } else if (isFilterUsed(key, filter, "ha-filter-labels")) {
         filteredEntityIds = filteredEntityIds.filter((entityId) =>
-          this._entityReg
-            .find((reg) => reg.entity_id === entityId)
-            ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
+          matchesListFilter(
+            filter.value,
+            this._entityReg.find((reg) => reg.entity_id === entityId)?.labels
+          )
         );
       } else if (isFilterUsed(key, filter, "ha-filter-voice-assistants")) {
         filteredEntityIds = filteredEntityIds.filter((entityId) =>
-          getEntityVoiceAssistantsIds(this._entityReg, entityId).some((va) =>
-            (filter.value as string[]).includes(va)
+          matchesListFilter(
+            filter.value,
+            getEntityVoiceAssistantsIds(this._entityReg, entityId)
           )
         );
       }

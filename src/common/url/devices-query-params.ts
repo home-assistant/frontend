@@ -1,9 +1,17 @@
 import type {
   DataTableFilter,
   DataTableFilters,
-  FloorAreasFilterValue,
 } from "../../data/data_table_filters";
 import { dataTableQueryParamConfig } from "./data-table-query-params";
+import {
+  excludedFilters,
+  floorAreasFilterFromParams,
+  floorAreasFilterParams,
+  listFilterFromParams,
+  listFilterIds,
+  listFilterNone,
+  matchAllFilters,
+} from "./filter-query-params";
 import {
   createQueryString,
   decodeQueryParams,
@@ -24,8 +32,15 @@ export const devicesFilterQueryParamConfig = {
     "label",
     "config_entry",
     "sub_entry",
+    // The filters that show the items that don't match their selection
+    "exclude",
+    // The filters that match the items with every selected id
+    "match_all",
   ],
-  boolean: [{ key: "no_area", trueValue: "1" }],
+  boolean: [
+    { key: "no_area", trueValue: "1" },
+    { key: "no_label", trueValue: "1" },
+  ],
 } as const satisfies QueryParamConfig;
 
 export type DevicesFilterQueryParams = QueryParamValues<
@@ -35,22 +50,24 @@ export type DevicesFilterQueryParams = QueryParamValues<
 const list = (filter: DataTableFilter | undefined): string[] | undefined =>
   Array.isArray(filter?.value) ? filter.value : undefined;
 
-const floorAreas = (
-  filter: DataTableFilter | undefined
-): FloorAreasFilterValue | undefined =>
-  filter?.value && !Array.isArray(filter.value) ? filter.value : undefined;
-
 export const devicesFilterQueryParams = (
   filters: DataTableFilters
 ): DevicesFilterQueryParams => ({
   status: list(filters["ha-filter-states"]),
-  floor: floorAreas(filters["ha-filter-floor-areas"])?.floors,
-  area: floorAreas(filters["ha-filter-floor-areas"])?.areas,
-  no_area: floorAreas(filters["ha-filter-floor-areas"])?.no_area,
-  domain: list(filters["ha-filter-integrations"]),
-  label: list(filters["ha-filter-labels"]),
+  ...floorAreasFilterParams(filters["ha-filter-floor-areas"]?.value),
+  domain: listFilterIds(filters["ha-filter-integrations"]?.value),
+  label: listFilterIds(filters["ha-filter-labels"]?.value),
+  no_label: listFilterNone(filters["ha-filter-labels"]?.value),
   config_entry: list(filters.config_entry),
   sub_entry: list(filters.sub_entry),
+  exclude: excludedFilters({
+    domain: filters["ha-filter-integrations"]?.value,
+    area: filters["ha-filter-floor-areas"]?.value,
+    label: filters["ha-filter-labels"]?.value,
+  }),
+  match_all: matchAllFilters({
+    label: filters["ha-filter-labels"]?.value,
+  }),
 });
 
 // The filters as the URL holds them, so values that filter the same, such as
@@ -101,18 +118,31 @@ export const devicesLinkFromUrl = (
 
   const floors = values("floor");
   const areas = values("area");
+  const exclude = values("exclude");
+  const matchAll = values("match_all");
 
   return {
     search: search ?? "",
     filters: {
       "ha-filter-states": filter(values("status")),
       "ha-filter-floor-areas": filter(
-        floors.length || areas.length || params.no_area
-          ? { floors, areas, no_area: params.no_area }
-          : undefined
+        floorAreasFilterFromParams(floors, areas, params.no_area, exclude)
       ),
-      "ha-filter-integrations": filter(values("domain")),
-      "ha-filter-labels": filter(values("label")),
+      "ha-filter-integrations": filter(
+        listFilterFromParams(
+          values("domain"),
+          false,
+          exclude.includes("domain")
+        )
+      ),
+      "ha-filter-labels": filter(
+        listFilterFromParams(
+          values("label"),
+          params.no_label,
+          exclude.includes("label"),
+          matchAll.includes("label")
+        )
+      ),
       config_entry: filter(values("config_entry")),
       sub_entry: filter(values("sub_entry")),
     },

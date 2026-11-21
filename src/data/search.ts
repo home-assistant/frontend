@@ -40,6 +40,12 @@ export type ItemType =
   | "automation_blueprint"
   | "script_blueprint";
 
+/**
+ * The number of related searches to run at a time when looking up many items,
+ * so a large setup doesn't send hundreds of requests at once.
+ */
+export const RELATED_SEARCH_CONCURRENCY = 10;
+
 export const findRelated = (
   hass: Pick<HomeAssistant, "callWS">,
   itemType: ItemType,

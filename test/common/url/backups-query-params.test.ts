@@ -31,6 +31,20 @@ describe("backups query params", () => {
     ).toEqual([]);
   });
 
+  it("round trips locations that match all", () => {
+    const filters = {
+      [BACKUP_TYPE_FILTER]: [],
+      [BACKUP_LOCATIONS_FILTER]: {
+        ids: ["cloud.cloud", "hassio.local"],
+        all: true,
+      },
+    };
+    const query = backupsFilterQueryString(filters);
+
+    expect(query).toContain("match_all=location");
+    expect(backupsLinkFromUrl(query)?.filters).toMatchObject(filters);
+  });
+
   it("round trips the filters", () => {
     const filters = {
       [BACKUP_TYPE_FILTER]: ["automatic", "manual"],
@@ -60,5 +74,22 @@ describe("backups query params", () => {
     expect(backupsFilterQueryString({ [BACKUP_TYPE_FILTER]: [] })).toBe(
       backupsFilterQueryString({})
     );
+  });
+
+  // Without it in the URL, a link shows the backups in the location instead
+  // of the ones that aren't
+  it("round trips a location that is excluded", () => {
+    const filters = {
+      [BACKUP_LOCATIONS_FILTER]: { ids: ["backup.local"], exclude: true },
+    };
+
+    expect(
+      backupsLinkFromUrl(
+        createQueryString(
+          backupsFilterQueryParams(filters),
+          backupsFilterQueryParamConfig
+        )
+      )?.filters
+    ).toMatchObject(filters);
   });
 });

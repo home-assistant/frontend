@@ -14,6 +14,11 @@ import {
   type SearchParamsSource,
 } from "../../../common/url/query-params";
 import type { DataTableRowData } from "../../../components/data-table/ha-data-table";
+import type {
+  DataTableFiltersValue,
+  ListFilterValue,
+} from "../../../data/data_table_filters";
+import { isExcludeFilter } from "../../../data/data_table_filters";
 import type { RepositoryBase } from "../../../data/marketplace/repository";
 import type { HomeAssistant } from "../../../types";
 import type { MarketplaceTab } from "./ha-marketplace-dashboard";
@@ -38,6 +43,15 @@ export const TYPE_FILTER = "type";
 
 export const SOURCE_FILTER = "source";
 
+// The filters that show the repositories that don't match their selection
+export const EXCLUDE_FILTER = "exclude";
+
+// Source has only two options, so excluding one is picking the other
+export type ExcludableRepositoryFilter =
+  typeof STATUS_FILTER | typeof TYPE_FILTER;
+
+const EXCLUDABLE_FILTERS: readonly string[] = [STATUS_FILTER, TYPE_FILTER];
+
 // Where a repository comes from, the community catalog or added from a link
 export const SOURCE_ORDER = ["catalog", "custom"] as const;
 
@@ -46,13 +60,53 @@ type RepositorySource = (typeof SOURCE_ORDER)[number];
 const repositorySource = (repository: RepositoryBase): RepositorySource =>
   repository.custom ? "custom" : "catalog";
 
-// What the filter panes picked, nothing picked in a pane shows everything
+// What the filter panes picked, nothing picked in a pane shows everything.
+// Exclude lists the filters that show what doesn't match their selection.
 export type RepositoryFilters = Partial<
   Record<
-    typeof STATUS_FILTER | typeof TYPE_FILTER | typeof SOURCE_FILTER,
+    | typeof STATUS_FILTER
+    | typeof TYPE_FILTER
+    | typeof SOURCE_FILTER
+    | typeof EXCLUDE_FILTER,
     string[]
   >
 >;
+
+/**
+ * The number of filter panes that have anything picked, for the badge of the
+ * filter button. Which panes exclude is how they match, not a filter.
+ */
+export const countRepositoryFilters = (filters: RepositoryFilters): number =>
+  [STATUS_FILTER, TYPE_FILTER, SOURCE_FILTER].filter(
+    (name) => filters[name]?.length
+  ).length;
+
+/** The value of a filter pane, with whether it excludes its selection. */
+export const repositoryFilterValue = (
+  filters: RepositoryFilters,
+  name: ExcludableRepositoryFilter
+): ListFilterValue => ({
+  ids: filters[name],
+  exclude: filters[EXCLUDE_FILTER]?.includes(name) ?? false,
+});
+
+/** The filters after a pane sent its value, a list or one that excludes. */
+export const withRepositoryFilterValue = (
+  filters: RepositoryFilters,
+  name: ExcludableRepositoryFilter,
+  ids: string[] | undefined,
+  value: DataTableFiltersValue
+): RepositoryFilters => {
+  const others = (filters[EXCLUDE_FILTER] ?? []).filter(
+    (filter) => filter !== name
+  );
+  const exclude = isExcludeFilter(value) ? [...others, name] : others;
+  return {
+    ...filters,
+    [name]: ids,
+    [EXCLUDE_FILTER]: exclude.length ? exclude : undefined,
+  };
+};
 
 export interface MarketplaceRepository extends RepositoryBase {
   update_skipped?: boolean;
@@ -134,12 +188,20 @@ export const filtersOfTab = (
   tab: MarketplaceTab
 ): RepositoryFilters => {
   const statuses: readonly string[] = statusesOfTab(tab);
-
-  return {
+  const ofTab: RepositoryFilters = {
     ...filters,
     [STATUS_FILTER]: filters[STATUS_FILTER]?.filter((status) =>
       statuses.includes(status)
     ),
+  };
+  // A mode without a selection filters nothing, so it is left out
+  const exclude = filters[EXCLUDE_FILTER]?.filter(
+    (name) => EXCLUDABLE_FILTERS.includes(name) && ofTab[name]?.length
+  );
+
+  return {
+    ...ofTab,
+    [EXCLUDE_FILTER]: exclude?.length ? exclude : undefined,
   };
 };
 
@@ -164,18 +226,25 @@ const matchesFilters = (
   repository: RepositoryBase,
   filters: RepositoryFilters = {}
 ): boolean => {
+  const excluded = (name: ExcludableRepositoryFilter) =>
+    !!filters[EXCLUDE_FILTER]?.includes(name);
+
   const statuses = filters[STATUS_FILTER];
   // Installed takes in what waits for an update or a restart, it is installed too
   if (
     statuses?.length &&
-    !statuses.includes(repository.status) &&
-    !(statuses.includes("installed") && repository.installed)
+    (statuses.includes(repository.status) ||
+      (statuses.includes("installed") && !!repository.installed)) ===
+      excluded(STATUS_FILTER)
   ) {
     return false;
   }
 
   const types = filters[TYPE_FILTER];
-  if (types?.length && !types.includes(repository.category)) {
+  if (
+    types?.length &&
+    types.includes(repository.category) === excluded(TYPE_FILTER)
+  ) {
     return false;
   }
 
@@ -289,6 +358,9 @@ export const browseLinkFromUrl = (
       [STATUS_FILTER]: lists.status?.filter(Boolean),
       [TYPE_FILTER]: lists.type?.filter(Boolean),
       [SOURCE_FILTER]: lists.source?.filter(Boolean),
+      [EXCLUDE_FILTER]: lists.exclude?.filter((name) =>
+        EXCLUDABLE_FILTERS.includes(name)
+      ),
     },
   };
 };

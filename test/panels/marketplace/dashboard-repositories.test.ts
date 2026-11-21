@@ -8,12 +8,19 @@ import {
   applySkippedUpdates,
   browseLinkFromUrl,
   browseUrl,
+  countRepositoryFilters,
   filterRepositories,
   filtersOfTab,
   marketplaceUpdateEntityIds,
+  repositoryFilterValue,
   skippedUpdateRepositories,
   statusesOfTab,
   statusFilterOfTab,
+  withRepositoryFilterValue,
+} from "../../../src/panels/marketplace/dashboards/dashboard-repositories";
+import type {
+  ExcludableRepositoryFilter,
+  RepositoryFilters,
 } from "../../../src/panels/marketplace/dashboards/dashboard-repositories";
 import {
   mockDevice,
@@ -165,6 +172,74 @@ describe("filterRepositories", () => {
     filterRepositories(unsorted, localize);
 
     expect(names(unsorted)).toEqual(["Beta", "Alpha"]);
+  });
+});
+
+// Without shows exactly what With hides, also for Installed, which takes in
+// what waits for an update or a restart.
+describe("filterRepositories without", () => {
+  const repositories = [
+    repository("Plain"),
+    repository("Theme", { category: "theme" }),
+    repository("Downloaded", { status: "installed", installed: true }),
+    repository("Outdated", { status: "pending-upgrade", installed: true }),
+  ];
+
+  it.each<[RepositoryFilters, ExcludableRepositoryFilter]>([
+    [{ status: ["installed"] }, "status"],
+    [{ type: ["theme"] }, "type"],
+  ])("shows what %o leaves out", (picked, name) => {
+    const included = names(filterRepositories(repositories, localize, picked));
+    const excluded = names(
+      filterRepositories(repositories, localize, {
+        ...picked,
+        exclude: [name],
+      })
+    );
+    expect([...included, ...excluded].sort()).toEqual(
+      names(repositories).sort()
+    );
+    expect(included.some((item) => excluded.includes(item))).toBe(false);
+  });
+
+  it("keeps the mode of a pane next to its selection", () => {
+    const filters = withRepositoryFilterValue(
+      { status: ["new"] },
+      "type",
+      ["theme"],
+      { ids: ["theme"], exclude: true }
+    );
+    expect(filters).toEqual({
+      status: ["new"],
+      type: ["theme"],
+      exclude: ["type"],
+    });
+    expect(repositoryFilterValue(filters, "type")).toEqual({
+      ids: ["theme"],
+      exclude: true,
+    });
+    expect(
+      withRepositoryFilterValue(filters, "type", ["theme"], ["theme"])
+    ).toEqual({ status: ["new"], type: ["theme"] });
+  });
+
+  it("counts a pane set to Without once on the filter button", () => {
+    expect(
+      countRepositoryFilters({
+        type: ["theme"],
+        status: [],
+        exclude: ["type", "status"],
+      })
+    ).toBe(1);
+  });
+
+  it("leaves a mode without a selection out of the URL, and reads it back", () => {
+    expect(
+      filtersOfTab({ type: [], exclude: ["type"] }, "browse").exclude
+    ).toBeUndefined();
+    expect(
+      browseLinkFromUrl("?type=theme&exclude=type,source")?.filters
+    ).toEqual({ type: ["theme"], exclude: ["type"] });
   });
 });
 

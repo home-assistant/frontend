@@ -93,6 +93,14 @@ import type {
   DataTableFiltersItems,
   DataTableFiltersValues,
 } from "../../../data/data_table_filters";
+import {
+  countActiveFilters,
+  filterModeChanged,
+  hasFilterSelection,
+  listFilterValue,
+  matchesFilterItems,
+  matchesListFilter,
+} from "../../../data/data_table_filters";
 import { computeDeviceClassName } from "../../../data/entity/device_class";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
@@ -581,24 +589,9 @@ export class HaConfigEntities extends LitElement {
     ) => {
       const result: EntityRow[] = [];
 
-      const stateFilters = filters["ha-filter-states"] as string[];
-
-      const showEnabled =
-        !stateFilters?.length || stateFilters.includes("enabled");
-      const showDisabled =
-        !stateFilters?.length || stateFilters.includes("disabled");
-      const showVisible =
-        !stateFilters?.length || stateFilters.includes("visible");
-      const showHidden =
-        !stateFilters?.length || stateFilters.includes("hidden");
-      const showAvailable =
-        !stateFilters?.length || stateFilters.includes("available");
-      const showUnavailable =
-        !stateFilters?.length || stateFilters.includes("unavailable");
-      const showRestored =
-        !stateFilters?.length || stateFilters.includes("restored");
-      const showReadOnly =
-        !stateFilters?.length || stateFilters.includes("readonly");
+      const statusFilter = listFilterValue(filters["ha-filter-states"]);
+      const statuses = statusFilter?.ids ?? [];
+      const matchAllStatuses = !!statusFilter?.all;
 
       // take both entities with and without unique id into account
       let filteredEntities = entities.concat(entitiesWithoutUniqueId);
@@ -653,15 +646,15 @@ export class HaConfigEntities extends LitElement {
           }
         } else if (
           key === "ha-filter-integrations" &&
-          Array.isArray(filter) &&
-          filter.length
+          hasFilterSelection(filter)
         ) {
           if (!entries) {
             this._loadConfigEntries();
             return;
           }
+          const { ids: domains = [], exclude } = listFilterValue(filter)!;
           const entryIds = entries
-            .filter((entry) => (filter as string[]).includes(entry.domain))
+            .filter((entry) => domains.includes(entry.domain))
             .map((entry) => entry.entry_id);
 
           const filteredEntitiesByDomain = new Set<string>();
@@ -677,7 +670,7 @@ export class HaConfigEntities extends LitElement {
             entitiesByDomain[source.domain].push(entity);
           }
 
-          for (const val of filter) {
+          for (const val of domains) {
             if (val in entitiesByDomain) {
               entitiesByDomain[val].forEach((item) =>
                 filteredEntitiesByDomain.add(item)
@@ -687,54 +680,47 @@ export class HaConfigEntities extends LitElement {
 
           filteredEntities = filteredEntities.filter(
             (entity) =>
-              filteredEntitiesByDomain.has(entity.entity_id) ||
-              (filter as string[]).includes(entity.platform) ||
-              (entity.config_entry_id &&
-                entryIds.includes(entity.config_entry_id))
+              (filteredEntitiesByDomain.has(entity.entity_id) ||
+                domains.includes(entity.platform) ||
+                (!!entity.config_entry_id &&
+                  entryIds.includes(entity.config_entry_id))) !== !!exclude
           );
-          filter!.forEach((domain) => filteredDomains.add(domain));
+          // Shows the integrations' own info, which only fits including them
+          if (!exclude) {
+            domains.forEach((domain) => filteredDomains.add(domain));
+          }
         } else if (
           key === "ha-filter-device-classes" &&
-          Array.isArray(filter) &&
-          filter.length
+          hasFilterSelection(filter)
         ) {
-          filteredEntities = filteredEntities.filter((entry) => {
-            const deviceClass = this._getDeviceClass(entry);
-            return deviceClass != null && filter.includes(deviceClass);
-          });
-        } else if (
-          key === "ha-filter-domains" &&
-          Array.isArray(filter) &&
-          filter.length
-        ) {
-          filteredEntities = filteredEntities.filter((entity) =>
-            (filter as string[]).includes(computeDomain(entity.entity_id))
+          filteredEntities = filteredEntities.filter((entry) =>
+            matchesListFilter(filter, [this._getDeviceClass(entry)])
           );
-        } else if (
-          key === "ha-filter-labels" &&
-          Array.isArray(filter) &&
-          filter.length
-        ) {
+        } else if (key === "ha-filter-domains" && hasFilterSelection(filter)) {
           filteredEntities = filteredEntities.filter((entity) =>
-            entity.labels.some((lbl) => (filter as string[]).includes(lbl))
+            matchesListFilter(filter, [computeDomain(entity.entity_id)])
+          );
+        } else if (key === "ha-filter-labels" && hasFilterSelection(filter)) {
+          filteredEntities = filteredEntities.filter((entity) =>
+            matchesListFilter(filter, entity.labels)
           );
         } else if (
           key === "ha-filter-voice-assistants" &&
-          Array.isArray(filter) &&
-          filter.length
+          hasFilterSelection(filter)
         ) {
           filteredEntities = filteredEntities.filter((entity) =>
-            getVoiceAssistantIds(exposedEntities, entity.entity_id).some((va) =>
-              (filter as string[]).includes(va)
+            matchesListFilter(
+              filter,
+              getVoiceAssistantIds(exposedEntities, entity.entity_id)
             )
           );
         }
       });
 
-      Object.values(filteredItems).forEach((items) => {
+      Object.entries(filteredItems).forEach(([key, items]) => {
         if (items) {
           filteredEntities = filteredEntities.filter((entity) =>
-            items.has(entity.entity_id)
+            matchesFilterItems(filters[key], items, entity.entity_id)
           );
         }
       });
@@ -757,16 +743,23 @@ export class HaConfigEntities extends LitElement {
         // empty state, like that of a cleared text helper, is a valid one.
         const available = !!entity && entity.state !== UNAVAILABLE;
 
-        if (!(
-          (showAvailable && available) ||
-          (showUnavailable && !available) ||
-          (showRestored && restored) ||
-          (showVisible && !hidden) ||
-          (showHidden && hidden) ||
-          (showDisabled && disabled) ||
-          (showEnabled && !disabled) ||
-          (showReadOnly && readonly)
-        )) {
+        // The statuses this entity has. Without a picked status, all show.
+        const entityStatuses: Record<string, boolean> = {
+          available,
+          unavailable: !available,
+          restored,
+          visible: !hidden,
+          hidden,
+          disabled,
+          enabled: !disabled,
+          readonly: !!readonly,
+        };
+        if (
+          statuses.length &&
+          !(matchAllStatuses
+            ? statuses.every((status) => entityStatuses[status])
+            : statuses.some((status) => entityStatuses[status]))
+        ) {
           continue;
         }
 
@@ -922,16 +915,7 @@ export class HaConfigEntities extends LitElement {
           { number: filteredEntities.length }
         )}
         has-filters
-        .filters=${
-          Object.values(this._filters).filter((filter) =>
-            Array.isArray(filter)
-              ? filter.length
-              : filter &&
-                Object.values(filter).some((val) =>
-                  Array.isArray(val) ? val.length : val
-                )
-          ).length
-        }
+        .filters=${countActiveFilters(Object.values(this._filters))}
         selectable
         .selected=${this._selected.length}
         .initialGroupColumn=${this._tableSettings.grouping}
@@ -1143,6 +1127,7 @@ export class HaConfigEntities extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-devices>
         <ha-filter-device-classes
+          excludable
           .label=${this.hass.localize(
             "ui.panel.config.entities.picker.headers.device_class"
           )}
@@ -1162,6 +1147,7 @@ export class HaConfigEntities extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-domains>
         <ha-filter-integrations
+          excludable
           .value=${this._filters["ha-filter-integrations"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -1170,6 +1156,7 @@ export class HaConfigEntities extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-integrations>
         <ha-filter-states
+          matchable
           .label=${this.hass.localize(
             "ui.panel.config.entities.picker.headers.status"
           )}
@@ -1231,10 +1218,12 @@ export class HaConfigEntities extends LitElement {
     const filters = { ...this._filters, [type]: ev.detail.value };
 
     // A filter also sends the value it was given, once it has found its items.
-    // Only a change to what the URL holds is the user's, so a link isn't stored.
+    // Only a change to what the URL holds, or to a filter's mode, is the
+    // user's, so a link isn't stored.
     if (
       entitiesFilterQueryString(filters) !==
-      entitiesFilterQueryString(this._filters)
+        entitiesFilterQueryString(this._filters) ||
+      filterModeChanged(this._filters[type], ev.detail.value)
     ) {
       this._storageFilters = {
         ...this._storedFilters(),

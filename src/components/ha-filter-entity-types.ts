@@ -20,6 +20,11 @@ import {
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { computeRTL } from "../common/util/compute_rtl";
 import { fireEvent } from "../common/dom/fire_event";
+import type { ListFilterValue } from "../data/data_table_filters";
+import {
+  listFilterEventValue,
+  listFilterValue,
+} from "../data/data_table_filters";
 import { stringCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { internationalizationContext, statesContext } from "../data/context";
@@ -34,6 +39,7 @@ import {
 import { domainToName } from "../data/integration";
 import "./ha-domain-icon";
 import "./ha-expansion-panel";
+import { filterBadgeStyles, renderFilterBadge } from "./ha-filter-mode";
 import "./ha-icon-button";
 import "./ha-svg-icon";
 import "./ha-tree-indicator";
@@ -68,7 +74,11 @@ export class HaFilterEntityTypes extends LitElement {
   @state()
   private _i18n!: ContextType<typeof internationalizationContext>;
 
-  @property({ attribute: false }) public value?: string[];
+  // A plain list of types is still accepted
+  @property({ attribute: false }) public value?: string[] | ListFilterValue;
+
+  /** Show the mode toggle, so the filter can show the items that don't match */
+  @property({ type: Boolean }) public excludable = false;
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
@@ -85,8 +95,8 @@ export class HaFilterEntityTypes extends LitElement {
   private _badgeTypes?: Map<string, string[]>;
 
   protected render() {
-    const count = this.value?.length
-      ? this._count(this.value, this._badgeTypes!)
+    const count = this._ids.length
+      ? this._count(this._ids, this._badgeTypes!)
       : 0;
 
     return html`
@@ -99,7 +109,11 @@ export class HaFilterEntityTypes extends LitElement {
           ${this._localize("ui.components.filter-entity-types.caption")}
           ${
             count
-              ? html`<div class="badge">${count}</div>
+              ? html`${renderFilterBadge(
+                    this._localize,
+                    count,
+                    listFilterValue(this.value)?.exclude
+                  )}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._localize(
@@ -129,6 +143,14 @@ export class HaFilterEntityTypes extends LitElement {
     );
 
     return html`<div class="content" ${ref(this._content)}>
+      ${
+        this.excludable
+          ? html`<ha-filter-mode
+              .exclude=${listFilterValue(this.value)?.exclude ?? false}
+              @filter-mode-changed=${this._modeChanged}
+            ></ha-filter-mode>`
+          : nothing
+      }
       <ha-input-search
         appearance="outlined"
         .value=${this._filter}
@@ -298,19 +320,44 @@ export class HaFilterEntityTypes extends LitElement {
     );
   }
 
+  private get _ids(): string[] {
+    return listFilterValue(this.value)?.ids ?? [];
+  }
+
+  private _setIds(ids: string[]) {
+    const value = { ...listFilterValue(this.value), ids };
+    this.value = value;
+    fireEvent(this, "data-table-filter-changed", {
+      value: listFilterEventValue(value),
+      items: undefined,
+    });
+  }
+
+  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
+    const value = {
+      ...listFilterValue(this.value),
+      exclude: ev.detail.exclude,
+    };
+    this.value = value;
+    fireEvent(this, "data-table-filter-changed", {
+      value: listFilterEventValue(value),
+      items: undefined,
+    });
+  }
+
   private _isSelected(row: TypeRow): boolean {
-    const value = this.value;
-    if (!value?.length) {
+    const value = this._ids;
+    if (!value.length) {
       return false;
     }
     return value.includes(row.domain) || value.includes(row.key);
   }
 
   private _isPartiallySelected(row: TypeRow): boolean {
-    if (row.deviceClass || !this.value?.length) {
+    if (row.deviceClass || !this._ids.length) {
       return false;
     }
-    return this.value.some(
+    return this._ids.some(
       (key) => parseEntityType(key).domain === row.domain && key !== row.domain
     );
   }
@@ -326,7 +373,7 @@ export class HaFilterEntityTypes extends LitElement {
 
     if (changed.has("expanded") && this.expanded) {
       this._expandedDomains = new Set(
-        (this.value ?? [])
+        this._ids
           .map((key) => parseEntityType(key))
           .filter((type) => type.deviceClass)
           .map((type) => type.domain)
@@ -369,7 +416,7 @@ export class HaFilterEntityTypes extends LitElement {
     }
     const { domain, deviceClass } = parseEntityType(key);
 
-    const value = new Set(this.value ?? []);
+    const value = new Set(this._ids);
     const siblings = (this._types(this._states).get(domain) ?? []).map(
       (entry) => entityTypeKey(domain, entry)
     );
@@ -402,11 +449,7 @@ export class HaFilterEntityTypes extends LitElement {
       }
     }
 
-    this.value = [...value];
-    fireEvent(this, "data-table-filter-changed", {
-      value: this.value.length ? this.value : undefined,
-      items: undefined,
-    });
+    this._setIds([...value]);
   }
 
   private _clearFilter(ev: Event) {
@@ -426,6 +469,7 @@ export class HaFilterEntityTypes extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       filterPanelStyles,
+      filterBadgeStyles,
       css`
         /* The list scrolls through its own container, not through the host. */
         ha-list-selectable {
@@ -463,7 +507,7 @@ export class HaFilterEntityTypes extends LitElement {
         }
         ha-input-search {
           display: block;
-          padding: var(--ha-space-1) var(--ha-space-2) 0;
+          padding: var(--ha-space-1) var(--ha-space-2) var(--ha-space-2);
         }
         /* Keeps a row that carries the chevron as tall as one that does not. */
         ha-list-item-option {

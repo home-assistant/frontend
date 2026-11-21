@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  combineItemSets,
   floorAreaLookups,
   floorSelection,
   toggleFloorArea,
@@ -155,5 +156,56 @@ describe("floorAreaLookups", () => {
       areas: [],
       floors: [],
     });
+  });
+});
+
+// The tree works the same while matching all: a floor stands for its areas,
+// and only No area and the picks untick each other.
+describe("floors and areas while matching all", () => {
+  it("ticks a floor for its areas, as when matching any", () => {
+    expect(
+      floorSelection(
+        { areas: ["kitchen", "living_room", "hall"], all: true },
+        "ground",
+        FLOOR_AREAS.ground
+      )
+    ).toBe("all");
+    expect(
+      toggleFloorArea(
+        { areas: ["kitchen", "living_room"], all: true },
+        FLOOR_AREAS,
+        "areas",
+        "hall",
+        true
+      )
+    ).toEqual({ floors: ["ground"], areas: [], all: true });
+  });
+
+  it("keeps No area next to the areas, as both can hold for an automation", () => {
+    // No area is an automation's own area, an area finds what it uses
+    expect(
+      toggleFloorArea(
+        { no_area: true, all: true },
+        FLOOR_AREAS,
+        "areas",
+        "hall",
+        true
+      )
+    ).toEqual({ floors: [], areas: ["hall"], no_area: true, all: true });
+    expect([
+      ...combineItemSets(
+        [["automation.own_area_unset"], ["automation.own_area_unset", "b"]],
+        true
+      ),
+    ]).toEqual(["automation.own_area_unset"]);
+  });
+});
+
+describe("combineItemSets", () => {
+  it("joins the items of every pick, or keeps those of all of them", () => {
+    const sets = [["a", "b"], new Set(["b", "c"])];
+    expect([...combineItemSets(sets, false)].sort()).toEqual(["a", "b", "c"]);
+    expect([...combineItemSets(sets, true)]).toEqual(["b"]);
+    expect([...combineItemSets([], true)]).toEqual([]);
   });
 });

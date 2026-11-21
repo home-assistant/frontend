@@ -91,13 +91,18 @@ import {
   dismissNewMarketplaceRepositories,
   uninstallMarketplaceRepository,
 } from "../../../data/marketplace/repository";
+import type { DataTableFiltersValue } from "../../../data/data_table_filters";
+import { listFilterValue } from "../../../data/data_table_filters";
 import { haStyle } from "../../../resources/styles";
 import {
   applySkippedUpdates,
   browseLinkFromUrl,
+  countRepositoryFilters,
+  EXCLUDE_FILTER,
   filterRepositories,
   filtersOfTab,
   marketplaceUpdateEntityIds,
+  repositoryFilterValue,
   skippedUpdateRepositories,
   SOURCE_FILTER,
   SOURCE_ORDER,
@@ -106,6 +111,7 @@ import {
   statusesOfTab,
   statusFilterOfTab,
   TYPE_FILTER,
+  withRepositoryFilterValue,
 } from "./dashboard-repositories";
 import type {
   MarketplaceRepository,
@@ -388,9 +394,7 @@ export class HaMarketplaceDashboard extends LitElement {
         sync-url
         .filter=${this._tableSettings.search}
         has-filters
-        .filters=${
-          Object.values(filters).filter((values) => values?.length).length
-        }
+        .filters=${countRepositoryFilters(filters)}
         .noDataText=${this._i18n.localize("ui.panel.marketplace.dashboard.no_data")}
         .empty=${!this.marketplace.repositories.length}
         .initialSorting=${this._tableSettings.sorting}
@@ -452,16 +456,22 @@ export class HaMarketplaceDashboard extends LitElement {
         }
         <ha-filter-states
           slot="filter-pane"
+          excludable
           .label=${this._i18n.localize("ui.panel.marketplace.filters.status")}
-          .value=${filters[STATUS_FILTER]}
+          .value=${{
+            // The mode is kept without a selection, which the URL leaves out
+            ...repositoryFilterValue(this._filters, STATUS_FILTER),
+            ids: filters[STATUS_FILTER],
+          }}
           .states=${this._statusStates(this._i18n.localize, this.tab)}
           .narrow=${this.narrow}
           @data-table-filter-changed=${this._statusFilterChanged}
         ></ha-filter-states>
         <ha-filter-states
           slot="filter-pane"
+          excludable
           .label=${this._i18n.localize("ui.panel.marketplace.filters.type")}
-          .value=${this._filters[TYPE_FILTER]}
+          .value=${repositoryFilterValue(this._filters, TYPE_FILTER)}
           .states=${this._typeStates(
             this._i18n.localize,
             this.marketplace.info.categories
@@ -1072,48 +1082,64 @@ export class HaMarketplaceDashboard extends LitElement {
   }
 
   // A filter can also send the value it was given. Only a change to what the
-  // URL holds is the user's, so what a link applied isn't stored.
+  // URL holds, or to whether a filter excludes, is the user's, so what a link
+  // applied isn't stored.
   private _isUserChange(filters: RepositoryFilters): boolean {
+    const excluded = (value: RepositoryFilters) =>
+      [...(value[EXCLUDE_FILTER] ?? [])].sort().join();
     return (
       sortedMarketplaceFilterQueryString(filtersOfTab(filters, this.tab)) !==
-      sortedMarketplaceFilterQueryString(filtersOfTab(this._filters, this.tab))
+        sortedMarketplaceFilterQueryString(
+          filtersOfTab(this._filters, this.tab)
+        ) || excluded(filters) !== excluded(this._filters)
     );
   }
 
   // The pane's own clear button sends no value
-  private _statusFilterChanged(ev: HASSDomEvent<{ value?: string[] }>) {
-    const filters = {
-      ...this._filters,
-      [STATUS_FILTER]: statusFilterOfTab(
-        this._filters,
-        this.tab,
-        ev.detail.value
-      ),
-    };
+  private _statusFilterChanged(
+    ev: HASSDomEvent<{ value?: DataTableFiltersValue }>
+  ) {
+    const { value } = ev.detail;
+    const ids = listFilterValue(value)?.ids;
+    const filters = withRepositoryFilterValue(
+      this._filters,
+      STATUS_FILTER,
+      statusFilterOfTab(this._filters, this.tab, ids),
+      value
+    );
 
     if (this._isUserChange(filters)) {
-      this._storageFilters = {
-        ...this._storageFilters,
-        [STATUS_FILTER]: statusFilterOfTab(
-          this._storageFilters,
-          this.tab,
-          ev.detail.value
-        ),
-      };
+      this._storageFilters = withRepositoryFilterValue(
+        this._storageFilters,
+        STATUS_FILTER,
+        statusFilterOfTab(this._storageFilters, this.tab, ids),
+        value
+      );
     }
 
     this._filters = filters;
     this._writeFilters();
   }
 
-  private _typeFilterChanged(ev: CustomEvent<{ value: string[] }>) {
-    const filters = { ...this._filters, [TYPE_FILTER]: ev.detail.value };
+  private _typeFilterChanged(
+    ev: CustomEvent<{ value?: DataTableFiltersValue }>
+  ) {
+    const { value } = ev.detail;
+    const ids = listFilterValue(value)?.ids;
+    const filters = withRepositoryFilterValue(
+      this._filters,
+      TYPE_FILTER,
+      ids,
+      value
+    );
 
     if (this._isUserChange(filters)) {
-      this._storageFilters = {
-        ...this._storageFilters,
-        [TYPE_FILTER]: ev.detail.value,
-      };
+      this._storageFilters = withRepositoryFilterValue(
+        this._storageFilters,
+        TYPE_FILTER,
+        ids,
+        value
+      );
     }
 
     this._filters = filters;

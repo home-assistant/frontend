@@ -62,7 +62,13 @@ export class SystemLogCard extends LitElement {
 
   @property({ attribute: false }) public integrationLoggers?: string[];
 
+  /** Show the entries of the other integrations than `integrations`. */
+  @property({ attribute: false }) public excludeIntegrations = false;
+
   @property({ attribute: false }) public levels?: SystemLogLevel[];
+
+  /** Show the entries of the other levels than `levels`. */
+  @property({ attribute: false }) public excludeLevels = false;
 
   public loaded = false;
 
@@ -98,11 +104,13 @@ export class SystemLogCard extends LitElement {
       items: LoggedError[],
       search: string,
       loggers: string[] | undefined,
-      levels: SystemLogLevel[] | undefined
+      excludeLoggers: boolean,
+      levels: SystemLogLevel[] | undefined,
+      excludeLevels: boolean
     ) =>
       filterSystemLogItems(
         items,
-        { search, loggers, levels },
+        { search, loggers, excludeLoggers, levels, excludeLevels },
         localize,
         locale,
         config
@@ -120,7 +128,9 @@ export class SystemLogCard extends LitElement {
           this._items,
           this.filter,
           this.integrations?.length ? this.integrationLoggers : undefined,
-          this.levels
+          this.excludeIntegrations,
+          this.levels,
+          this.excludeLevels
         )
       : [];
     const integrations = filteredItems.length
@@ -229,7 +239,7 @@ export class SystemLogCard extends LitElement {
                               "ui.panel.config.logs.no_issues_search",
                               { term: this.filter }
                             )
-                          : this.levels?.length
+                          : this.levels?.length || this.excludeIntegrations
                             ? this.hass.localize(
                                 "ui.panel.config.logs.no_issues_filters"
                               )

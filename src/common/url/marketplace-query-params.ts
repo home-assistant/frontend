@@ -9,7 +9,13 @@ import {
 // The filters of the Marketplace tables. Search, sorting and grouping are kept
 // by the data table, see data-table-query-params.
 export const marketplaceFilterQueryParamConfig = {
-  list: ["status", "type", "source"],
+  list: [
+    "status",
+    "type",
+    "source",
+    // The filters that show the repositories that don't match their selection
+    "exclude",
+  ],
 } as const satisfies QueryParamConfig;
 
 export type MarketplaceFilterQueryParams = QueryParamValues<

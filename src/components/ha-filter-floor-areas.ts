@@ -22,6 +22,7 @@ import type { LocalizeFunc } from "../common/translations/localize";
 import type { AreaRegistryEntry } from "../data/area/area_registry";
 import type { FloorAreasFilterValue } from "../data/data_table_filters";
 import {
+  combineItemSets,
   floorAreaLookups,
   floorSelection,
   toggleFloorArea,
@@ -39,6 +40,7 @@ import { getFloorAreaLookup } from "../data/floor_registry";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
 import "./ha-expansion-panel";
+import { filterBadgeStyles, renderFilterBadge } from "./ha-filter-mode";
 import "./ha-floor-icon";
 import "./ha-icon";
 import "./ha-icon-button";
@@ -95,6 +97,12 @@ export class HaFilterFloorAreas extends LitElement {
 
   @property() public type?: keyof RelatedResult;
 
+  /**
+   * Offer to match the items related to all picked floors and areas, for
+   * items that can relate to several, like automations
+   */
+  @property({ type: Boolean }) public matchable = false;
+
   @property({ type: Boolean, attribute: "include-disabled-entities" })
   public includeDisabledEntities = false;
 
@@ -148,7 +156,7 @@ export class HaFilterFloorAreas extends LitElement {
           ${this._localize("ui.panel.config.areas.caption")}
           ${
             count
-              ? html`<div class="badge">${count}</div>
+              ? html`${renderFilterBadge(this._localize, count, this.value?.exclude, this.value?.all)}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._localize(
@@ -165,23 +173,19 @@ export class HaFilterFloorAreas extends LitElement {
         this._panel.showContent
           ? html`
               <div class="content" ${ref(this._content)}>
+                <ha-filter-mode
+                  ?match-mode=${this.matchable}
+                  .exclude=${this.value?.exclude ?? false}
+                  .all=${this.value?.all ?? false}
+                  @filter-mode-changed=${this._modeChanged}
+                  @filter-match-changed=${this._matchChanged}
+                ></ha-filter-mode>
                 <ha-list-selectable
                   multi
                   @ha-list-item-selected=${this._handleAdded}
                   @ha-list-item-deselected=${this._handleRemoved}
                   aria-label=${this._localize("ui.panel.config.areas.caption")}
                 >
-                  <ha-list-item-option
-                    appearance="checkbox"
-                    selection-position="end"
-                    .value=${"no_area"}
-                    .type=${"no_area"}
-                    .selected=${this.value?.no_area || false}
-                  >
-                    <span slot="headline">
-                      ${this._localize("ui.components.area-picker.no_area")}
-                    </span>
-                  </ha-list-item-option>
                   ${repeat(
                     areas?.floors || [],
                     (floor) => floor.floor_id,
@@ -245,6 +249,17 @@ export class HaFilterFloorAreas extends LitElement {
                         groupOtherAreas
                       )
                   )}
+                  <ha-list-item-option
+                    appearance="checkbox"
+                    selection-position="end"
+                    .value=${"no_area"}
+                    .type=${"no_area"}
+                    .selected=${this.value?.no_area || false}
+                  >
+                    <span slot="headline" class="no-value">
+                      ${this._localize("ui.components.area-picker.no_area")}
+                    </span>
+                  </ha-list-item-option>
                 </ha-list-selectable>
               </div>
             `
@@ -314,6 +329,8 @@ export class HaFilterFloorAreas extends LitElement {
     }
 
     if (item.type === "no_area") {
+      // No area is the item's own area, while an area finds what uses it, so
+      // an automation without an area of its own can still use the Kitchen
       this.value = { ...this.value, no_area: selected };
       return;
     }
@@ -340,6 +357,14 @@ export class HaFilterFloorAreas extends LitElement {
         ])
       )
   );
+
+  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
+    this.value = { ...this.value, exclude: ev.detail.exclude };
+  }
+
+  private _matchChanged(ev: CustomEvent<{ all: boolean }>) {
+    this.value = { ...this.value, all: ev.detail.all };
+  }
 
   private _expandedChanged(ev) {
     this.expanded = ev.detail.expanded;
@@ -376,9 +401,14 @@ export class HaFilterFloorAreas extends LitElement {
         !this.value.floors?.length &&
         !this.value.no_area)
     ) {
-      this.value = {};
+      // The modes are kept, so they stay picked when the selection is cleared
+      const value = {
+        ...(this.value?.exclude ? { exclude: true } : {}),
+        ...(this.value?.all ? { all: true } : {}),
+      };
+      this.value = value;
       fireEvent(this, "data-table-filter-changed", {
-        value: {},
+        value,
         items: undefined,
       });
       return;
@@ -416,11 +446,16 @@ export class HaFilterFloorAreas extends LitElement {
       return;
     }
 
-    const items = new Set<string>([
-      ...(value.no_area ? this._itemsWithoutArea() : []),
-      ...areas.flat(),
-      ...floors.flat(),
-    ]);
+    // A whole floor is one pick, found with the floor search, and each area
+    // picked without its whole floor another
+    const items = combineItemSets(
+      [
+        ...(value.no_area ? [this._itemsWithoutArea()] : []),
+        ...areas,
+        ...floors,
+      ],
+      value.all
+    );
 
     fireEvent(this, "data-table-filter-changed", {
       value: this.value,
@@ -481,6 +516,7 @@ export class HaFilterFloorAreas extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       filterPanelStyles,
+      filterBadgeStyles,
       css`
         /* Only the list's own container scrolls, not the list as well */
         ha-list-selectable {

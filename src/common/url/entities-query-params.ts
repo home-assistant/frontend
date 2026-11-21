@@ -1,9 +1,17 @@
 import type {
   DataTableFiltersValue,
   DataTableFiltersValues,
-  FloorAreasFilterValue,
 } from "../../data/data_table_filters";
 import { dataTableQueryParamConfig } from "./data-table-query-params";
+import {
+  excludedFilters,
+  floorAreasFilterFromParams,
+  floorAreasFilterParams,
+  listFilterFromParams,
+  listFilterIds,
+  listFilterNone,
+  matchAllFilters,
+} from "./filter-query-params";
 import {
   createQueryString,
   decodeQueryParams,
@@ -30,8 +38,18 @@ export const entitiesFilterQueryParamConfig = {
     "sub_entry",
     // Read until 2027.5, replaced with `assistants` on the next write
     "voice_assistant",
+    // The filters that show the items that don't match their selection
+    "exclude",
+    // The filters that match the items with every selected id
+    "match_all",
   ],
-  boolean: [{ key: "no_area", trueValue: "1" }],
+  boolean: [
+    { key: "no_area", trueValue: "1" },
+    { key: "no_device", trueValue: "1" },
+    { key: "no_label", trueValue: "1" },
+    { key: "no_device_class", trueValue: "1" },
+    { key: "no_assistants", trueValue: "1" },
+  ],
 } as const satisfies QueryParamConfig;
 
 export type EntitiesFilterQueryParams = QueryParamValues<
@@ -41,26 +59,37 @@ export type EntitiesFilterQueryParams = QueryParamValues<
 const list = (value: DataTableFiltersValue): string[] | undefined =>
   Array.isArray(value) ? value : undefined;
 
-const floorAreas = (
-  value: DataTableFiltersValue
-): FloorAreasFilterValue | undefined =>
-  value && !Array.isArray(value) ? value : undefined;
-
 export const entitiesFilterQueryParams = (
   filters: DataTableFiltersValues
 ): EntitiesFilterQueryParams => ({
-  status: list(filters["ha-filter-states"]),
-  floor: floorAreas(filters["ha-filter-floor-areas"])?.floors,
-  area: floorAreas(filters["ha-filter-floor-areas"])?.areas,
-  no_area: floorAreas(filters["ha-filter-floor-areas"])?.no_area,
-  device: list(filters["ha-filter-devices"]),
-  device_class: list(filters["ha-filter-device-classes"]),
-  domain: list(filters["ha-filter-integrations"]),
-  entity_domain: list(filters["ha-filter-domains"]),
-  label: list(filters["ha-filter-labels"]),
-  assistants: list(filters["ha-filter-voice-assistants"]),
+  status: listFilterIds(filters["ha-filter-states"]),
+  ...floorAreasFilterParams(filters["ha-filter-floor-areas"]),
+  device: listFilterIds(filters["ha-filter-devices"]),
+  no_device: listFilterNone(filters["ha-filter-devices"]),
+  device_class: listFilterIds(filters["ha-filter-device-classes"]),
+  no_device_class: listFilterNone(filters["ha-filter-device-classes"]),
+  domain: listFilterIds(filters["ha-filter-integrations"]),
+  entity_domain: listFilterIds(filters["ha-filter-domains"]),
+  label: listFilterIds(filters["ha-filter-labels"]),
+  no_label: listFilterNone(filters["ha-filter-labels"]),
+  assistants: listFilterIds(filters["ha-filter-voice-assistants"]),
+  no_assistants: listFilterNone(filters["ha-filter-voice-assistants"]),
   config_entry: list(filters.config_entry),
   sub_entry: list(filters.sub_entry),
+  exclude: excludedFilters({
+    assistants: filters["ha-filter-voice-assistants"],
+    entity_domain: filters["ha-filter-domains"],
+    domain: filters["ha-filter-integrations"],
+    device_class: filters["ha-filter-device-classes"],
+    area: filters["ha-filter-floor-areas"],
+    device: filters["ha-filter-devices"],
+    label: filters["ha-filter-labels"],
+  }),
+  match_all: matchAllFilters({
+    status: filters["ha-filter-states"],
+    label: filters["ha-filter-labels"],
+    assistants: filters["ha-filter-voice-assistants"],
+  }),
 });
 
 // The filters as the URL holds them, so values that filter the same, such as
@@ -111,24 +140,60 @@ export const entitiesLinkFromUrl = (
 
   const floors = values("floor");
   const areas = values("area");
+  const exclude = values("exclude");
+  const matchAll = values("match_all");
   const assistants = values("assistants");
 
   return {
     search: search ?? "",
     filters: {
-      "ha-filter-states": values("status"),
-      "ha-filter-floor-areas":
-        floors.length || areas.length || params.no_area
-          ? { floors, areas, no_area: params.no_area }
-          : undefined,
-      "ha-filter-devices": values("device"),
-      "ha-filter-device-classes": values("device_class"),
-      "ha-filter-integrations": values("domain"),
-      "ha-filter-domains": values("entity_domain"),
-      "ha-filter-labels": values("label"),
-      "ha-filter-voice-assistants": assistants.length
-        ? assistants
-        : values("voice_assistant"),
+      // A cleared status is kept as an empty list, so the default doesn't
+      // come back
+      "ha-filter-states":
+        listFilterFromParams(
+          values("status"),
+          false,
+          false,
+          matchAll.includes("status")
+        ) ?? [],
+      "ha-filter-floor-areas": floorAreasFilterFromParams(
+        floors,
+        areas,
+        params.no_area,
+        exclude
+      ),
+      "ha-filter-devices": listFilterFromParams(
+        values("device"),
+        params.no_device,
+        exclude.includes("device")
+      ),
+      "ha-filter-device-classes": listFilterFromParams(
+        values("device_class"),
+        params.no_device_class,
+        exclude.includes("device_class")
+      ),
+      "ha-filter-integrations": listFilterFromParams(
+        values("domain"),
+        false,
+        exclude.includes("domain")
+      ),
+      "ha-filter-domains": listFilterFromParams(
+        values("entity_domain"),
+        false,
+        exclude.includes("entity_domain")
+      ),
+      "ha-filter-labels": listFilterFromParams(
+        values("label"),
+        params.no_label,
+        exclude.includes("label"),
+        matchAll.includes("label")
+      ),
+      "ha-filter-voice-assistants": listFilterFromParams(
+        assistants.length ? assistants : values("voice_assistant"),
+        params.no_assistants,
+        exclude.includes("assistants"),
+        matchAll.includes("assistants")
+      ),
       config_entry: values("config_entry"),
       sub_entry: values("sub_entry"),
     },

@@ -18,7 +18,13 @@ export const logSearchQueryParamConfig = {
 // `raw` shows the full Home Assistant Core log instead of the errors.
 export const logsQueryParamConfig = {
   string: ["provider", "search", "filter"],
-  list: ["integration", "level"],
+  list: [
+    "integration",
+    "level",
+    // The filters that show the entries that don't match: `integration`,
+    // which only applies to the errors, and `level`
+    "exclude",
+  ],
   boolean: [{ key: "raw", trueValue: "1" }],
 } as const satisfies QueryParamConfig;
 
@@ -29,8 +35,12 @@ export interface LogsState {
   search: string;
   // Only apply to the Home Assistant Core log
   integrations: string[];
+  // Show the entries of the other integrations instead, only in the errors
+  integrationsExclude: boolean;
   // Only apply to the Home Assistant Core errors, not the raw log
   levels: SystemLogLevel[];
+  // Show the entries of the other levels instead
+  levelsExclude: boolean;
   raw: boolean;
 }
 
@@ -41,7 +51,9 @@ export const DEFAULT_LOGS_STATE: LogsState = {
   provider: DEFAULT_LOG_PROVIDER,
   search: "",
   integrations: [],
+  integrationsExclude: false,
   levels: [],
+  levelsExclude: false,
   raw: false,
 };
 
@@ -61,6 +73,16 @@ export const logsQueryParams = (state: LogsState): LogsQueryParams => ({
   integration:
     state.provider === DEFAULT_LOG_PROVIDER ? state.integrations : undefined,
   level: state.provider === DEFAULT_LOG_PROVIDER ? state.levels : undefined,
+  // The mode only applies to picked integrations and levels
+  exclude:
+    state.provider === DEFAULT_LOG_PROVIDER
+      ? [
+          ...(state.integrations.length && state.integrationsExclude
+            ? ["integration"]
+            : []),
+          ...(state.levels.length && state.levelsExclude ? ["level"] : []),
+        ]
+      : undefined,
   raw: state.provider === DEFAULT_LOG_PROVIDER && state.raw,
 });
 
@@ -79,7 +101,9 @@ export const logsLinkFromUrl = (
     provider,
     search: params.search ?? params.filter ?? "",
     integrations: core ? (params.integration?.filter(Boolean) ?? []) : [],
+    integrationsExclude: core && !!params.exclude?.includes("integration"),
     levels: core ? (params.level?.filter(isLevel) ?? []) : [],
+    levelsExclude: core && !!params.exclude?.includes("level"),
     raw: core && !!params.raw,
   };
 };

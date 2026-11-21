@@ -15,8 +15,9 @@ import "./ha-svg-icon";
  *
  * @attr {ToggleButton[]} buttons - the button config
  * @attr {string} active - The value of the currently active button.
- * @attr {("s"|"m")} size - The size of the buttons in the group.
+ * @attr {("xs"|"s"|"m")} size - The size of the buttons in the group.
  * @attr {("brand"|"neutral"|"success"|"warning"|"danger")} variant - The variant of the buttons in the group.
+ * @attr {boolean} no-wrap - Keeps the buttons, and the label in each, on one line.
  *
  * @fires value-changed - Dispatched when the active button changes.
  */
@@ -26,7 +27,7 @@ export class HaButtonToggleGroup extends LitElement {
 
   @property() public active?: string;
 
-  @property({ reflect: true }) size: "s" | "m" = "m";
+  @property({ reflect: true }) size: "xs" | "s" | "m" = "m";
 
   @property({ type: Boolean, reflect: true, attribute: "no-wrap" })
   public nowrap = false;
@@ -89,6 +90,11 @@ export class HaButtonToggleGroup extends LitElement {
 
     :host([no-wrap]) wa-button-group::part(base) {
       flex-wrap: nowrap;
+    }
+
+    /* Nor does a label break onto a second line inside its button */
+    :host([no-wrap]) ha-button::part(base) {
+      white-space: nowrap;
     }
 
     wa-button-group {

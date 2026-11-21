@@ -59,6 +59,40 @@ describe("entities query params", () => {
     ).toBe("historyBack=1&assistants=conversation");
   });
 
+  it("round trips the filters without a value and the ones that exclude", () => {
+    const filters = {
+      "ha-filter-devices": { ids: [], none: true },
+      "ha-filter-device-classes": { ids: ["problem"], none: true },
+      "ha-filter-integrations": { ids: ["hue"], exclude: true },
+      "ha-filter-domains": { ids: ["light"], exclude: true },
+      "ha-filter-voice-assistants": { ids: [], none: true, exclude: true },
+    };
+
+    expect(
+      entitiesLinkFromUrl(
+        createQueryString(
+          entitiesFilterQueryParams(filters),
+          entitiesFilterQueryParamConfig
+        )
+      )?.filters
+    ).toMatchObject(filters);
+  });
+
+  it("round trips the filters that match all", () => {
+    const filters = {
+      "ha-filter-states": { ids: ["enabled", "hidden"], all: true },
+      "ha-filter-labels": { ids: ["a", "b"], all: true, exclude: true },
+      "ha-filter-voice-assistants": { ids: ["conversation"], all: true },
+    };
+    const query = createQueryString(
+      entitiesFilterQueryParams(filters),
+      entitiesFilterQueryParamConfig
+    );
+
+    expect(query).toContain("match_all=status%2Clabel%2Cassistants");
+    expect(entitiesLinkFromUrl(query)?.filters).toMatchObject(filters);
+  });
+
   it("round trips the filters", () => {
     const filters = {
       "ha-filter-states": ["enabled", "hidden"],
