@@ -266,6 +266,7 @@ class HaPanelHistory extends LitElement {
                       })}
                     >
                       <ha-filter-entity-types
+                        excludable
                         .value=${this._filters.types}
                         .expanded=${
                           this._expandedFilter === "ha-filter-entity-types"
@@ -274,6 +275,7 @@ class HaPanelHistory extends LitElement {
                         @expanded-changed=${this._filterExpanded}
                       ></ha-filter-entity-types>
                       <ha-filter-integrations
+                        excludable
                         .value=${this._filters.integrations}
                         .expanded=${
                           this._expandedFilter === "ha-filter-integrations"

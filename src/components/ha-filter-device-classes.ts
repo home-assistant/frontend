@@ -57,6 +57,9 @@ export class HaFilterDeviceClasses extends HaFilterStates {
       this._i18n &&
       (this.expanded || !this.states)
     ) {
+      this.noneLabel = this._localize(
+        "ui.components.subpage-data-table.no_device_class"
+      );
       this.states = this._deviceClasses(
         this._entityStates,
         this._localize,

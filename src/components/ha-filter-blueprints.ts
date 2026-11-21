@@ -9,6 +9,7 @@ import {
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
 import { consume } from "../common/decorators/consume";
+import { transform } from "../common/decorators/transform";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { arrayWith, arrayWithout } from "../common/array/array-with";
@@ -17,13 +18,25 @@ import type {
   HASSDomEvent,
 } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
+import type { ListFilterValue } from "../data/data_table_filters";
+import {
+  hasFilterSelection,
+  listFilterEventValue,
+  listFilterValue,
+} from "../data/data_table_filters";
+import { computeDomain } from "../common/entity/compute_domain";
 import { deepEqual } from "../common/util/deep-equal";
+import { mapWithConcurrency } from "../common/util/map-with-concurrency";
 import type { Blueprints } from "../data/blueprint";
 import { fetchBlueprints } from "../data/blueprint";
-import { apiContext } from "../data/context";
-import type { RelatedResult } from "../data/search";
-import { findRelated } from "../data/search";
+import { apiContext, connectionContext, statesContext } from "../data/context";
+import { findRelated, RELATED_SEARCH_CONCURRENCY } from "../data/search";
 import "./ha-expansion-panel";
+import {
+  filterBadgeStyles,
+  NO_VALUE_ID,
+  renderFilterBadge,
+} from "./ha-filter-mode";
 import "./ha-icon-button";
 import "./item/ha-list-item-option";
 import type { HaListItemOption } from "./item/ha-list-item-option";
@@ -39,7 +52,29 @@ export class HaFilterBlueprints extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
-  @property({ attribute: false }) public value?: string[];
+  // Only a state being added or removed can change the items without a
+  // blueprint, so plain state updates keep the previous set and don't rerender
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<ContextType<typeof statesContext>, Set<string>>({
+    transformer: function (this: HaFilterBlueprints, states) {
+      const ids = new Set(Object.keys(states));
+      return deepEqual(ids, this._stateIds) ? this._stateIds : ids;
+    },
+  })
+  private _stateIds?: Set<string>;
+
+  // Home Assistant may have restarted with edited items while the connection
+  // was down, which nothing else here tells
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<ContextType<typeof connectionContext>, boolean>({
+    transformer: ({ connected }) => connected,
+  })
+  private _connected?: boolean;
+
+  // A plain list of ids is still accepted
+  @property({ attribute: false }) public value?: string[] | ListFilterValue;
 
   @property() public type?: "automation" | "script";
 
@@ -55,12 +90,40 @@ export class HaFilterBlueprints extends LitElement {
 
   private _relatedRequestId = 0;
 
-  public willUpdate(properties: PropertyValues<this>) {
+  // The last lookup of the items without a blueprint, reused while the items
+  // are the same, such as when only the mode changes
+  private _withoutBlueprint?: {
+    type: "automation" | "script";
+    stateIds?: Set<string>;
+    items: Promise<string[]>;
+  };
+
+  public connectedCallback() {
+    super.connectedCallback();
+    // An item may have been edited while the cached page was hidden, so look
+    // up the items without one again
+    this._withoutBlueprint = undefined;
+    if (this.hasUpdated && listFilterValue(this.value)?.none) {
+      this._findRelated();
+    }
+  }
+
+  // Untyped, as it also checks private state
+  public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
 
+    const reconnected =
+      properties.get("_connected") === false && !!this._connected;
+    if (reconnected) {
+      this._withoutBlueprint = undefined;
+    }
+
     if (
-      properties.has("value") &&
-      !deepEqual(this.value, properties.get("value"))
+      (properties.has("value") &&
+        !deepEqual(this.value, properties.get("value"))) ||
+      // Items without a blueprint are worked out from the states
+      (listFilterValue(this.value)?.none &&
+        (properties.has("_stateIds") || reconnected))
     ) {
       this._findRelated();
     }
@@ -76,8 +139,12 @@ export class HaFilterBlueprints extends LitElement {
         <div slot="header" class="header">
           ${this._localize("ui.panel.config.blueprint.caption")}
           ${
-            this.value?.length
-              ? html`<div class="badge">${this.value?.length}</div>
+            this._count
+              ? html`${renderFilterBadge(
+                    this._localize,
+                    this._count,
+                    listFilterValue(this.value)?.exclude
+                  )}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._localize(
@@ -93,6 +160,10 @@ export class HaFilterBlueprints extends LitElement {
         this._panel.showContent
           ? html`
               <div class="content" ${ref(this._content)}>
+                <ha-filter-mode
+                  .exclude=${listFilterValue(this.value)?.exclude ?? false}
+                  @filter-mode-changed=${this._modeChanged}
+                ></ha-filter-mode>
                 ${
                   this._blueprints
                     ? html`
@@ -112,13 +183,25 @@ export class HaFilterBlueprints extends LitElement {
                                     appearance="checkbox"
                                     selection-position="end"
                                     .value=${id}
-                                    .selected=${this.value?.includes(id) ?? false}
+                                    .selected=${listFilterValue(this.value)?.ids?.includes(id) ?? false}
                                   >
                                     <span slot="headline"
                                       >${blueprint.metadata.name || id}</span
                                     >
                                   </ha-list-item-option>`
                           )}
+                          <ha-list-item-option
+                            appearance="checkbox"
+                            selection-position="end"
+                            .value=${NO_VALUE_ID}
+                            .selected=${listFilterValue(this.value)?.none ?? false}
+                          >
+                            <span slot="headline" class="no-value"
+                              >${this._localize(
+                                "ui.components.subpage-data-table.no_blueprint"
+                              )}</span
+                            >
+                          </ha-list-item-option>
                         </ha-list-selectable>
                       `
                     : nothing
@@ -137,6 +220,15 @@ export class HaFilterBlueprints extends LitElement {
     this._blueprints = await fetchBlueprints(this._api.callWS, this.type);
   }
 
+  private get _count(): number {
+    const value = listFilterValue(this.value);
+    return (value?.ids?.length || 0) + (value?.none ? 1 : 0);
+  }
+
+  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
+    this.value = { ...listFilterValue(this.value), exclude: ev.detail.exclude };
+  }
+
   private _expandedChanged(ev) {
     this.expanded = ev.detail.expanded;
   }
@@ -151,51 +243,101 @@ export class HaFilterBlueprints extends LitElement {
       return;
     }
 
-    this.value =
-      ev.type === "ha-list-item-selected"
-        ? arrayWith(this.value, blueprintId)
-        : arrayWithout(this.value, blueprintId);
+    const value = listFilterValue(this.value) ?? {};
+    if (blueprintId === NO_VALUE_ID) {
+      this.value = { ...value, none: ev.type === "ha-list-item-selected" };
+      return;
+    }
+    this.value = {
+      ...value,
+      ids:
+        ev.type === "ha-list-item-selected"
+          ? arrayWith(value.ids, blueprintId)
+          : arrayWithout(value.ids, blueprintId),
+    };
   }
 
   private async _findRelated() {
     const requestId = ++this._relatedRequestId;
-    if (!this.value?.length) {
-      this.value = [];
+    const value = listFilterValue(this.value) ?? {};
+
+    if (!hasFilterSelection(value)) {
       fireEvent(this, "data-table-filter-changed", {
-        value: [],
+        value: listFilterEventValue(value),
         items: undefined,
       });
       return;
     }
 
-    const relatedPromises: Promise<RelatedResult>[] = [];
+    const type = this.type;
 
-    for (const blueprintId of this.value) {
-      if (this.type) {
-        relatedPromises.push(
-          findRelated(this._api, `${this.type}_blueprint`, blueprintId)
-        );
-      }
-    }
-
-    const results = await Promise.all(relatedPromises);
+    const [results, withoutBlueprint] = await Promise.all([
+      type ? this._findForBlueprints(type, value.ids ?? []) : undefined,
+      type && value.none ? this._itemsWithoutBlueprint(type) : undefined,
+    ]);
 
     // The value changed while this lookup ran
     if (requestId !== this._relatedRequestId) {
       return;
     }
 
-    const items = new Set<string>();
-    for (const result of results) {
-      if (result[this.type!]) {
-        result[this.type!]!.forEach((item) => items.add(item));
-      }
-    }
+    const items = new Set<string>(withoutBlueprint);
+    results?.forEach((item) => items.add(item));
 
     fireEvent(this, "data-table-filter-changed", {
-      value: this.value,
-      items: this.type ? items : undefined,
+      value: listFilterEventValue(value),
+      items: type ? items : undefined,
     });
+  }
+
+  // The automations or scripts made from any of the blueprints
+  private async _findForBlueprints(
+    type: "automation" | "script",
+    blueprintIds: string[]
+  ): Promise<Set<string>> {
+    const results = await mapWithConcurrency(
+      blueprintIds,
+      RELATED_SEARCH_CONCURRENCY,
+      (blueprintId) => findRelated(this._api, `${type}_blueprint`, blueprintId)
+    );
+    return new Set(results.flatMap((result) => result[type] ?? []));
+  }
+
+  private _itemsWithoutBlueprint(
+    type: "automation" | "script"
+  ): Promise<string[]> {
+    const cached = this._withoutBlueprint;
+    if (cached?.type === type && cached.stateIds === this._stateIds) {
+      return cached.items;
+    }
+
+    const items = this._searchItemsWithoutBlueprint(type);
+    const lookup = { type, stateIds: this._stateIds, items };
+    this._withoutBlueprint = lookup;
+    // Look them up again next time when this lookup fails
+    items.catch(() => {
+      if (this._withoutBlueprint === lookup) {
+        this._withoutBlueprint = undefined;
+      }
+    });
+    return items;
+  }
+
+  private async _searchItemsWithoutBlueprint(
+    type: "automation" | "script"
+  ): Promise<string[]> {
+    // A blueprint can be added while the page stays open, so get the current
+    // ones, which also updates the list
+    const blueprints = await fetchBlueprints(this._api.callWS, type);
+    this._blueprints = blueprints;
+    const fromBlueprint = await this._findForBlueprints(
+      type,
+      Object.keys(blueprints)
+    );
+    return [...(this._stateIds ?? [])].filter(
+      (entityId) =>
+        computeDomain(entityId) === type && !fromBlueprint.has(entityId)
+    );
   }
 
   private _clearFilter(ev) {
@@ -210,6 +352,7 @@ export class HaFilterBlueprints extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       filterPanelStyles,
+      filterBadgeStyles,
       css`
         ha-list-selectable {
           display: flex;

@@ -16,7 +16,17 @@ import type {
   HASSDomEvent,
 } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
+import type { ListFilterValue } from "../data/data_table_filters";
+import {
+  listFilterEventValue,
+  listFilterValue,
+} from "../data/data_table_filters";
 import "./ha-expansion-panel";
+import {
+  filterBadgeStyles,
+  NO_VALUE_ID,
+  renderFilterBadge,
+} from "./ha-filter-mode";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./item/ha-list-item-option";
@@ -33,7 +43,8 @@ export class HaFilterVoiceAssistants extends LitElement {
   private _localize!: LocalizeFunc;
 
   // the list of selected voiceAssistantIds
-  @property({ attribute: false }) public value: string[] = [];
+  // A plain list of ids is still accepted
+  @property({ attribute: false }) public value?: string[] | ListFilterValue;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -55,8 +66,12 @@ export class HaFilterVoiceAssistants extends LitElement {
         <div slot="header" class="header">
           ${this._localize("ui.panel.config.dashboard.voice_assistants.main")}
           ${
-            this.value?.length
-              ? html`<div class="badge">${this.value?.length}</div>
+            this._count
+              ? html`${renderFilterBadge(
+                    this._localize,
+                    this._count,
+                    this._listValue?.exclude
+                  )}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._localize(
@@ -71,6 +86,10 @@ export class HaFilterVoiceAssistants extends LitElement {
       ${
         this._panel.showContent
           ? html`<div class="content" ${ref(this._content)}>
+              <ha-filter-mode
+                .exclude=${this._listValue?.exclude ?? false}
+                @filter-mode-changed=${this._modeChanged}
+              ></ha-filter-mode>
               <ha-list-selectable
                 multi
                 aria-label=${this._localize(
@@ -87,7 +106,7 @@ export class HaFilterVoiceAssistants extends LitElement {
                       appearance="checkbox"
                       selection-position="end"
                       .value=${voiceAssistantId}
-                      .selected=${this.value?.includes(voiceAssistantId) ?? false}
+                      .selected=${this._listValue?.ids?.includes(voiceAssistantId) ?? false}
                     >
                       <voice-assistant-brand-icon
                         slot="start"
@@ -99,6 +118,18 @@ export class HaFilterVoiceAssistants extends LitElement {
                       >
                     </ha-list-item-option>`
                 )}
+                <ha-list-item-option
+                  appearance="checkbox"
+                  selection-position="end"
+                  .value=${NO_VALUE_ID}
+                  .selected=${this._listValue?.none ?? false}
+                >
+                  <span slot="headline" class="no-value"
+                    >${this._localize(
+                      "ui.components.subpage-data-table.no_voice_assistant"
+                    )}</span
+                  >
+                </ha-list-item-option>
               </ha-list-selectable>
             </div>`
           : nothing
@@ -109,6 +140,27 @@ export class HaFilterVoiceAssistants extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._voiceAssistantOptions = Object.keys(voiceAssistants);
+  }
+
+  private get _listValue(): ListFilterValue | undefined {
+    return listFilterValue(this.value);
+  }
+
+  private get _count(): number {
+    const value = this._listValue;
+    return (value?.ids?.length || 0) + (value?.none ? 1 : 0);
+  }
+
+  private _setValue(value: ListFilterValue) {
+    this.value = value;
+    fireEvent(this, "data-table-filter-changed", {
+      value: listFilterEventValue(value),
+      items: undefined,
+    });
+  }
+
+  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
+    this._setValue({ ...this._listValue, exclude: ev.detail.exclude });
   }
 
   private _expandedChanged(ev) {
@@ -125,20 +177,27 @@ export class HaFilterVoiceAssistants extends LitElement {
       return;
     }
 
-    this.value =
-      ev.type === "ha-list-item-selected"
-        ? arrayWith(this.value, voiceAssistantId)
-        : arrayWithout(this.value, voiceAssistantId);
+    if (voiceAssistantId === NO_VALUE_ID) {
+      this._setValue({
+        ...this._listValue,
+        none: ev.type === "ha-list-item-selected",
+      });
+      return;
+    }
 
-    fireEvent(this, "data-table-filter-changed", {
-      value: this.value,
-      items: undefined,
+    const value = this._listValue ?? {};
+    this._setValue({
+      ...value,
+      ids:
+        ev.type === "ha-list-item-selected"
+          ? arrayWith(value.ids, voiceAssistantId)
+          : arrayWithout(value.ids, voiceAssistantId),
     });
   }
 
   private _clearFilter(ev) {
     ev.preventDefault();
-    this.value = [];
+    this.value = undefined;
     fireEvent(this, "data-table-filter-changed", {
       value: undefined,
       items: undefined,
@@ -148,6 +207,7 @@ export class HaFilterVoiceAssistants extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       filterPanelStyles,
+      filterBadgeStyles,
       css`
         ha-list-selectable {
           display: flex;

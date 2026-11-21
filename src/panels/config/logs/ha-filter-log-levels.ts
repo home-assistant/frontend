@@ -12,10 +12,19 @@ import { consumeLocalize } from "../../../common/decorators/consume-context-entr
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-expansion-panel";
+import {
+  filterBadgeStyles,
+  renderFilterBadge,
+} from "../../../components/ha-filter-mode";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/item/ha-list-item-option";
 import "../../../components/list/ha-list-selectable";
+import type { ListFilterValue } from "../../../data/data_table_filters";
+import {
+  listFilterEventValue,
+  listFilterValue,
+} from "../../../data/data_table_filters";
 import type { SystemLogLevel } from "../../../data/system_log";
 import { LOG_LEVELS } from "./util";
 
@@ -25,7 +34,9 @@ export class HaFilterLogLevels extends LitElement {
   @consumeLocalize()
   private _localize!: LocalizeFunc;
 
-  @property({ attribute: false }) public value?: SystemLogLevel[];
+  // A plain list of levels is still accepted
+  @property({ attribute: false }) public value?:
+    SystemLogLevel[] | ListFilterValue;
 
   /** Number of log entries per level. */
   @property({ attribute: false }) public counts?: Partial<
@@ -39,7 +50,7 @@ export class HaFilterLogLevels extends LitElement {
   private _panel = new FilterPanelController(this, this._content);
 
   protected render() {
-    const count = this.value?.length ?? 0;
+    const count = this._levels.length;
 
     return html`
       <ha-expansion-panel
@@ -51,7 +62,11 @@ export class HaFilterLogLevels extends LitElement {
           ${this._localize("ui.panel.config.logs.level_filter.caption")}
           ${
             count
-              ? html`<div class="badge">${count}</div>
+              ? html`${renderFilterBadge(
+                    this._localize,
+                    count,
+                    listFilterValue(this.value)?.exclude
+                  )}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._localize(
@@ -68,9 +83,13 @@ export class HaFilterLogLevels extends LitElement {
   }
 
   private _renderContent() {
-    const value = this.value ?? [];
+    const value = this._levels;
 
     return html`<div class="content" ${ref(this._content)}>
+      <ha-filter-mode
+        .exclude=${listFilterValue(this.value)?.exclude ?? false}
+        @filter-mode-changed=${this._modeChanged}
+      ></ha-filter-mode>
       <ha-list-selectable
         multi
         controlled
@@ -121,18 +140,36 @@ export class HaFilterLogLevels extends LitElement {
       return;
     }
 
-    const value = new Set(this.value ?? []);
+    const value = new Set(this._levels);
 
     if (!value.delete(level)) {
       value.add(level);
     }
 
     // Keep the levels in severity order, whatever order they were picked in
-    this.value = LOG_LEVELS.map((item) => item.level).filter((item) =>
-      value.has(item)
-    );
+    this._setValue({
+      ...listFilterValue(this.value),
+      ids: LOG_LEVELS.map((item) => item.level).filter((item) =>
+        value.has(item)
+      ),
+    });
+  }
+
+  private get _levels(): SystemLogLevel[] {
+    return (listFilterValue(this.value)?.ids ?? []) as SystemLogLevel[];
+  }
+
+  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
+    this._setValue({
+      ...listFilterValue(this.value),
+      exclude: ev.detail.exclude,
+    });
+  }
+
+  private _setValue(value: ListFilterValue) {
+    this.value = value;
     fireEvent(this, "data-table-filter-changed", {
-      value: this.value,
+      value: listFilterEventValue(value),
       items: undefined,
     });
   }
@@ -149,6 +186,7 @@ export class HaFilterLogLevels extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       filterPanelStyles,
+      filterBadgeStyles,
       css`
         ha-list-selectable {
           display: flex;
