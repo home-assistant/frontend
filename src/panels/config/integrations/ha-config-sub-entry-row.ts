@@ -68,6 +68,9 @@ class HaConfigSubEntryRow extends LitElement {
             ? html`<ha-icon-button
                 class="expand-button ${classMap({ expanded: this._expanded })}"
                 .path=${mdiChevronDown}
+                .label=${this.hass.localize(
+                  this._expanded ? "ui.common.collapse" : "ui.common.expand"
+                )}
                 slot="start"
                 @click=${this._toggleExpand}
               ></ha-icon-button>`

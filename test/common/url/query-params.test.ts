@@ -122,6 +122,18 @@ describe.each(panelQueryParams)("$type query params", (panel) => {
     );
   });
 
+  it("ignores date params that can't be parsed", () => {
+    const params = decodeQueryParams(
+      "?entity_id=light.kitchen&start_date=yesterday&end_date=2026-06-05T11:00:00.000Z",
+      historyLogbookQueryParamConfig
+    );
+
+    expect(params).toEqual({
+      entity_id: ["light.kitchen"],
+      end_date: new Date("2026-06-05T11:00:00.000Z"),
+    });
+  });
+
   it("creates typed URLs", () => {
     expect(
       createHistoryLogbookUrl(

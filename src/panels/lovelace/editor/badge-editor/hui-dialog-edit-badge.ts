@@ -193,6 +193,7 @@ export class HuiDialogEditBadge
     return html`
       <ha-dialog
         .open=${this._open}
+        .accessibleLabel=${heading}
         .width=${this.large ? "full" : "large"}
         .preventScrimClose=${this.isEffectiveDirtyState}
         @keydown=${this._ignoreKeydown}
@@ -217,7 +218,7 @@ export class HuiDialogEditBadge
                   .path=${mdiHelpCircleOutline}
                   slot="headerActionItems"
                   .href=${this._documentationURL}
-                  title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                  .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
                   target="_blank"
                   rel="noreferrer"
                   dir=${computeRTLDirection(this.hass)}
@@ -250,7 +251,9 @@ export class HuiDialogEditBadge
                 ? html`
                     <ha-spinner
                       size="small"
-                      aria-label="Can't update badge"
+                      .accessibleLabel=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_badge.preview_error"
+                      )}
                     ></ha-spinner>
                   `
                 : ``

@@ -1,7 +1,7 @@
 import {
   mdiCast,
   mdiClockOutline,
-  mdiCloud,
+  mdiLinkVariant,
   mdiPuzzle,
   mdiRobot,
   mdiScriptText,
@@ -23,8 +23,10 @@ import { brandsUrl } from "../../util/brands-url";
 import type { LogbookCause, LogbookGlyph } from "./logbook-entry-model";
 
 // Names are the fixed system user names set by core (cloud/cast integrations).
+// Core only renames the old "Home Assistant Cloud" user when Link first uses it.
 const SYSTEM_USER_ICONS: Record<string, string> = {
-  "Home Assistant Cloud": mdiCloud,
+  "Home Assistant Link": mdiLinkVariant,
+  "Home Assistant Cloud": mdiLinkVariant,
   "Home Assistant Cast": mdiCast,
 };
 

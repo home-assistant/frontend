@@ -98,6 +98,7 @@ export class HomeShortcutsEditor extends LitElement {
                       ></ha-icon>
                       <span slot="heading">${label}</span>
                       <ha-switch
+                        .accessibleLabel=${label}
                         .checked=${!item.hidden}
                         .summaryKey=${item.key}
                         .disabled=${this.disabled}

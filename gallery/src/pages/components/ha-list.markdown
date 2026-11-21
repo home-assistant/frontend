@@ -195,6 +195,51 @@ Subclasses customize the row by overriding `_renderStart()`,
 - `control` — the inner `<a>` or `<button>`.
 - `ripple` — the ripple effect element.
 
+### `<ha-list-item-switch>`
+
+Row with a switch at the end, for settings that turn something on or off. The
+whole row is the label of the switch: clicking anywhere on it toggles the
+switch. For screen readers, the headline names the switch and the supporting
+text describes it, so don't set `accessibleLabel` yourself.
+
+The switch is its own tab stop, so the row doesn't join the roving tabindex of
+a parent list. The row can also be used on its own, outside a list; it then has
+no role.
+
+Everything in the row is part of the label, so there is no `end` slot, and
+the `start` slot is for icons and avatars only. For a row with other controls
+next to the switch or inside its text, like an `ha-icon-button` or a link, use
+`ha-list-item-base` with an `ha-switch` in the `end` slot and set its
+`accessibleLabel`.
+
+The row inherits the slots and attributes of `ha-list-item-base`, except
+`interactive`, which it doesn't use.
+
+```html
+<ha-list-item-switch checked>
+  <span slot="headline">Advanced mode</span>
+  <span slot="supporting-text">Shows advanced settings and options.</span>
+</ha-list-item-switch>
+```
+
+**Attributes**
+
+- `checked` (Boolean, default `false`, reflected) — whether the switch is on.
+- `haptic` (Boolean, default `false`) — vibrates on toggle. Only set it when
+  the change is applied right away, not when the user still has to save.
+
+**Events**
+
+- `change` — the switch was toggled. Read the new state from `checked` on the
+  row.
+
+**CSS parts**
+
+- `switch` — the `ha-switch`. It only shows the state; the row handles
+  input.
+- `base`, `start`, `content`, `headline`, `supporting-text` — as on
+  `ha-row-item`. There is no `end` part.
+
 ### `<ha-list-item-option>`
 
 Selectable row. Host role is `option`; reflects `aria-selected`. Designed to

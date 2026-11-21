@@ -145,6 +145,7 @@ class DialogZWaveJSAddNode extends LitElement {
     return html`
       <ha-dialog
         .open=${this._open}
+        .accessibleLabel=${this._headerText()}
         ?prevent-scrim-close=${preventClose}
         @closed=${this._dialogClosed}
       >
@@ -161,34 +162,7 @@ class DialogZWaveJSAddNode extends LitElement {
     `;
   }
 
-  private _renderHeader(): TemplateResult {
-    let headerText = this.hass.localize(
-      `ui.panel.config.zwave_js.add_node.title`
-    );
-
-    if (this._step === "loading") {
-      return html`
-        <ha-fade-in slot="title" .delay=${1000}>
-          <span>${headerText}</span>
-        </ha-fade-in>
-      `;
-    }
-
-    let icon: string | undefined;
-    if (
-      (this._step && closeButtonStages.includes(this._step)) ||
-      (this._step === "search_devices" && !this._supportsSmartStart) ||
-      (this._step === "configure_device" && this._device?.id)
-    ) {
-      icon = mdiClose;
-    } else if (
-      (this._step && backButtonStages.includes(this._step)) ||
-      (this._step === "search_devices" && this._supportsSmartStart)
-    ) {
-      icon =
-        mainWindow.document.dir === "rtl" ? mdiChevronRight : mdiChevronLeft;
-    }
-
+  private _headerText(): string {
     let titleTranslationKey = "title";
 
     switch (this._step) {
@@ -228,9 +202,36 @@ class DialogZWaveJSAddNode extends LitElement {
         break;
     }
 
-    headerText = this.hass.localize(
+    return this.hass.localize(
       `ui.panel.config.zwave_js.add_node.${titleTranslationKey}`
     );
+  }
+
+  private _renderHeader(): TemplateResult {
+    const headerText = this._headerText();
+
+    if (this._step === "loading") {
+      return html`
+        <ha-fade-in slot="title" .delay=${1000}>
+          <span>${headerText}</span>
+        </ha-fade-in>
+      `;
+    }
+
+    let icon: string | undefined;
+    if (
+      (this._step && closeButtonStages.includes(this._step)) ||
+      (this._step === "search_devices" && !this._supportsSmartStart) ||
+      (this._step === "configure_device" && this._device?.id)
+    ) {
+      icon = mdiClose;
+    } else if (
+      (this._step && backButtonStages.includes(this._step)) ||
+      (this._step === "search_devices" && this._supportsSmartStart)
+    ) {
+      icon =
+        mainWindow.document.dir === "rtl" ? mdiChevronRight : mdiChevronLeft;
+    }
 
     return html`
       ${

@@ -55,7 +55,11 @@ import type {
   EnergyEditorStatus,
   EnergySolarSourceEditorParams,
 } from "./energy-editor";
-import { EnergyEditorMixin, energyEditorStyles } from "./energy-editor";
+import {
+  EnergyEditorMixin,
+  energyEditorStyles,
+  preselectedStatistics,
+} from "./energy-editor";
 
 const energyUnitClasses = ["energy"];
 const powerUnitClasses = ["power"];
@@ -154,6 +158,13 @@ export class HaEnergySolarSourceEditor extends EnergyEditorMixin(
       .map((entry) => entry.stat_rate)
       .filter((id) => id && id !== this._source?.stat_rate) as string[];
     this._initDirtyTracking({ type: "deep" }, this._source);
+    if (!params.source) {
+      this._source = {
+        ...this._source,
+        ...preselectedStatistics(["stat_energy_from"]),
+      };
+      this._updateDirtyState(this._source);
+    }
     this._fetchSolarForecastConfigEntries();
     this._loadUnits();
   }

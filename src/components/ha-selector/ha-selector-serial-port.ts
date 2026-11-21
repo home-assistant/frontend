@@ -529,6 +529,9 @@ export class HaSerialPortSelector extends LitElement {
                     slot="end"
                     @click=${this._revertToDropdown}
                     .path=${mdiClose}
+                    .label=${this._i18n.localize(
+                      "ui.components.selectors.serial_port.choose_from_list"
+                    )}
                   ></ha-icon-button>
                 `
               : nothing

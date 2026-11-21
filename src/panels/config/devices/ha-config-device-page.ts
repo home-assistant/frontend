@@ -520,10 +520,12 @@ export class HaConfigDevicePage extends LitElement {
 
     const relatedCard = html`
       <ha-card outlined>
-        <h1 class="card-header">
-          ${this.hass.localize(
-            "ui.panel.config.devices.automation.related_heading"
-          )}
+        <div class="card-header">
+          <h1>
+            ${this.hass.localize(
+              "ui.panel.config.devices.automation.related_heading"
+            )}
+          </h1>
           <ha-button
             appearance="filled"
             variant="brand"
@@ -533,7 +535,7 @@ export class HaConfigDevicePage extends LitElement {
             <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
             ${this.hass.localize("ui.dialogs.more_info_control.add_to.item")}
           </ha-button>
-        </h1>
+        </div>
         ${
           !this._related
             ? html`

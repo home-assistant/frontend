@@ -209,6 +209,7 @@ export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfi
     return html`
       <ha-dialog
         .open=${this._open}
+        .accessibleLabel=${this._viewConfigTitle}
         width="large"
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}

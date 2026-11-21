@@ -164,6 +164,7 @@ export class DialogVoiceAssistantPipelineDetail extends DirtyStateProviderMixin<
               >
                 <ha-icon-button
                   .path=${mdiDotsVertical}
+                  .label=${this.hass.localize("ui.common.menu")}
                   slot="trigger"
                 ></ha-icon-button>
                 <ha-dropdown-item value="show_wake_word">

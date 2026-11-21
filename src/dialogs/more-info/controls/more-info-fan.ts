@@ -11,8 +11,10 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../common/decorators/consume";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-outlined-icon-button";
@@ -42,6 +44,10 @@ class MoreInfoFan extends LitElement {
   @state()
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) public stateObj?: FanEntity;
 
@@ -182,6 +188,11 @@ class MoreInfoFan extends LitElement {
             ? html`
                 <div class="buttons">
                   <ha-outlined-icon-button
+                    .label=${this._localize(
+                      this.stateObj.state === "on"
+                        ? "ui.card.common.turn_off"
+                        : "ui.card.common.turn_on"
+                    )}
                     .disabled=${this.stateObj.state === UNAVAILABLE}
                     @click=${this._toggle}
                   >
