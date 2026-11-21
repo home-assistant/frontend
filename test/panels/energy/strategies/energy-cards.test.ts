@@ -9,6 +9,7 @@ import {
   energyCardKey,
   hasEnergySource,
   hasGasDevices,
+  hasHeatSource,
   hasGasRateSource,
   hasNowViewContent,
   hasWaterRateSource,
@@ -343,6 +344,36 @@ describe("gas devices", () => {
       hasNowViewContent(
         makePrefs({ device_consumption_gas: [GAS_DEVICE_RATE] })
       )
+    ).toBe(true);
+  });
+});
+
+describe("heat sources", () => {
+  it("provides independent heat cards without adding electricity content", () => {
+    const prefs = makePrefs({
+      energy_sources: [{ type: "heat", stat_energy_from: "sensor.heat" }],
+    });
+    expect(hasHeatSource(prefs)).toBe(true);
+    expect(hasEnergySource(prefs)).toBe(false);
+    expect(applicableEnergyCardKeys("electricity", prefs)).toEqual([]);
+    expect(applicableEnergyCardKeys("heat", prefs)).toEqual([
+      "heat.energy-heat-graph",
+      "heat.energy-sources-table",
+    ]);
+    expect(applicableEnergyCardKeys("overview", prefs)).toEqual([
+      "overview.energy-sources-table",
+      "overview.energy-heat-graph",
+    ]);
+    expect(
+      isEnergyViewEmpty("heat", prefs, [
+        "heat.energy-heat-graph",
+        "heat.energy-sources-table",
+      ])
+    ).toBe(true);
+    expect(
+      isEnergyCardVisible("overview", "energy-heat-graph", prefs, [
+        "heat.energy-heat-graph",
+      ])
     ).toBe(true);
   });
 });

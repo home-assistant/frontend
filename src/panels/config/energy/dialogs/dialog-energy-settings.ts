@@ -22,6 +22,7 @@ const HEADERS = {
   battery: "ui.panel.config.energy.battery.dialog.header",
   device: "ui.panel.config.energy.device_consumption.dialog.header",
   gas: "ui.panel.config.energy.gas.dialog.header",
+  heat: "ui.panel.config.energy.heat.dialog.header",
   water: "ui.panel.config.energy.water.dialog.header",
   water_gas_device: {
     water: "ui.panel.config.energy.device_consumption_water.dialog.header",

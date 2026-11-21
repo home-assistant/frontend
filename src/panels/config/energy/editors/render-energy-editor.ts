@@ -3,6 +3,7 @@ import type { EnergyEditorConfig } from "./energy-editor";
 import "./ha-energy-battery-source-editor";
 import "./ha-energy-device-editor";
 import "./ha-energy-gas-source-editor";
+import "./ha-energy-heat-source-editor";
 import "./ha-energy-grid-source-editor";
 import "./ha-energy-home-source-editor";
 import "./ha-energy-solar-source-editor";
@@ -41,6 +42,11 @@ export const renderEnergyEditor = (config: EnergyEditorConfig) => {
         class="energy-editor"
         .params=${config.params}
       ></ha-energy-gas-source-editor>`;
+    case "heat":
+      return html`<ha-energy-heat-source-editor
+        class="energy-editor"
+        .params=${config.params}
+      ></ha-energy-heat-source-editor>`;
     case "water":
       return html`<ha-energy-water-source-editor
         class="energy-editor"

@@ -228,6 +228,11 @@ export interface GasFlowSankeyCardConfig extends EnergyCardSankeyConfig {
   type: "gas-flow-sankey";
 }
 
+export interface EnergyHeatGraphCardConfig extends EnergyCardConfig {
+  type: "energy-heat-graph";
+  combine_sources?: boolean;
+}
+
 export interface EnergyWaterGraphCardConfig extends EnergyCardConfig {
   type: "energy-water-graph";
   combine_sources?: boolean;

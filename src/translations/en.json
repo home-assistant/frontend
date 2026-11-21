@@ -4723,7 +4723,8 @@
           "tabs": {
             "electricity": "Electricity",
             "gas": "Gas",
-            "water": "Water"
+            "water": "Water",
+            "heat": "Heat"
           },
           "customise": {
             "toolbar_action": "Customize cards",
@@ -5103,6 +5104,33 @@
             "counting_note": "New sensors start counting now, so earlier values are not included.",
             "use": "{count, plural,\n one {Use sensor}\n other {Use sensors}\n}",
             "create_failed": "Failed to create the sensor."
+          },
+          "heat": {
+            "title": "Heat consumption",
+            "sub": "Let Home Assistant monitor the heat supplied to your home, for example by a district heating network.",
+            "learn_more": "More information on how to get started",
+            "heat_consumption": "Heat consumption",
+            "delete_heat_source": "Remove heat source",
+            "add_heat_source": "Add heat source",
+            "dialog": {
+              "header": "Configure heat consumption",
+              "paragraph": "Track the heat supplied to your home using a sensor that measures thermal energy.",
+              "entity_para": "Pick a sensor which measures heat consumption in either of {unit}.",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
+              "cost_tracking": "[%key:ui::panel::config::energy::grid::dialog::import_cost%]",
+              "cost_para": "Select how Home Assistant should keep track of the costs of the consumed heat.",
+              "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
+              "cost_stat": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat%]",
+              "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
+              "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
+              "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
+              "cost_entity_helper": "Any entity with a unit of {currency}/(valid energy unit) (like {currency}/kWh or {currency}/GJ) may be used and will be automatically converted.",
+              "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
+              "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
+              "heat_usage": "Heat consumption",
+              "heat_power": "Heat power",
+              "power_para": "Pick a sensor which measures the thermal power supplied to your home. This is optional."
+            }
           }
         },
         "helpers": {
@@ -10449,7 +10477,8 @@
               "named_battery_charged": "{name} charged",
               "named_battery_discharged": "{name} discharged",
               "named_grid_imported": "{name} imported",
-              "named_grid_exported": "{name} exported"
+              "named_grid_exported": "{name} exported",
+              "heat_total": "Heat total"
             },
             "energy_solar_graph": {
               "production": "Production {name}",
@@ -10496,7 +10525,8 @@
               "solar": "Solar",
               "low_carbon": "Low-carbon",
               "battery": "Battery",
-              "go_to_energy_dashboard": "Go to the energy dashboard"
+              "go_to_energy_dashboard": "Go to the energy dashboard",
+              "heat": "Heat"
             },
             "energy_devices_graph": {
               "energy_usage": "Energy",
@@ -10532,7 +10562,10 @@
             },
             "power_total_title": "Power usage",
             "water_total_title": "[%key:ui::panel::config::energy::water::dialog::water_flow_rate%]",
-            "gas_total_title": "[%key:ui::panel::config::energy::gas::dialog::gas_flow_rate%]"
+            "gas_total_title": "[%key:ui::panel::config::energy::gas::dialog::gas_flow_rate%]",
+            "energy_heat_graph": {
+              "total_consumed": "[%key:ui::panel::lovelace::cards::energy::energy_gas_graph::total_consumed%]"
+            }
           },
           "distribution": {
             "no_entities": "No entities specified",
@@ -11406,6 +11439,7 @@
                 "solar": "Solar",
                 "battery": "Battery",
                 "gas": "Gas",
+                "heat": "Heat",
                 "water": "Water",
                 "home": "Home"
               }
@@ -11992,6 +12026,10 @@
               "daily": "Daily",
               "hourly": "Hourly",
               "twice_daily": "Twice daily"
+            },
+            "energy-heat-graph": {
+              "name": "Heat consumption graph",
+              "description": "This card shows the amount of heat consumed per source."
             }
           },
           "elements": {
@@ -13293,7 +13331,8 @@
           "electricity": "Electricity",
           "gas": "Gas",
           "water": "Water",
-          "now": "Now"
+          "now": "Now",
+          "heat": "Heat"
         },
         "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",
         "setup": {
@@ -13330,7 +13369,8 @@
           "energy_grid_neutrality_gauge_title": "Grid neutrality gauge",
           "energy_solar_consumed_gauge_title": "Solar consumed gauge",
           "energy_self_sufficiency_gauge_title": "Self-sufficiency gauge",
-          "energy_carbon_consumed_gauge_title": "Carbon consumed gauge"
+          "energy_carbon_consumed_gauge_title": "Carbon consumed gauge",
+          "energy_heat_graph_title": "Heat consumption"
         }
       },
       "history": {
