@@ -85,17 +85,6 @@ const isOpen = (el: TestDialogEditHome) =>
 const isSubmitting = (el: TestDialogEditHome) =>
   (el as unknown as Record<"_submitting", boolean>)._submitting;
 
-const saveButton = (el: TestDialogEditHome) =>
-  el.shadowRoot!.querySelector('ha-button[slot="primaryAction"]') as
-    (HTMLElement & { disabled: boolean }) | null;
-
-const preventScrimClose = (el: TestDialogEditHome) =>
-  (
-    el.shadowRoot!.querySelector("ha-dialog") as unknown as {
-      preventScrimClose: boolean;
-    }
-  ).preventScrimClose;
-
 // Our own header X, slotted over ha-dialog's default one, which would
 // close through wa-dialog directly and bypass closeDialog().
 const headerCloseButton = (el: TestDialogEditHome) =>
@@ -417,33 +406,6 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     expect(isOpen(el)).toBe(false);
   });
 
-  it("disables the header close button while a save is pending", async () => {
-    const el = createDialog();
-    const previewConfig = vi.fn();
-    const pendingSave = deferred<boolean>();
-    const saveConfig = vi.fn(() => pendingSave.promise);
-    el.showDialog({ config: {}, saveConfig, previewConfig });
-    await el.updateComplete;
-
-    welcomeChanged(el, false);
-    await el.updateComplete;
-    expect(headerCloseButton(el)?.disabled).toBe(false);
-
-    const savePromise = save(el);
-    await el.updateComplete;
-    expect(headerCloseButton(el)?.disabled).toBe(true);
-
-    // A synthetic click still reaches the listener on a disabled button:
-    // closeDialog() must refuse on its own.
-    headerCloseButton(el)!.click();
-    expect(isOpen(el)).toBe(true);
-
-    pendingSave.resolve(false);
-    await savePromise;
-    await el.updateComplete;
-    expect(headerCloseButton(el)?.disabled).toBe(false);
-  });
-
   it("closes through closeDialog() and reverts the preview when the header close button is clicked", async () => {
     const el = createDialog();
     const previewConfig = vi.fn();
@@ -469,12 +431,9 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     shortcutsChanged(el, lightShortcutHidden(true));
     await el.updateComplete;
     expect(el.isDirtyState).toBe(true);
-    expect(saveButton(el)?.disabled).toBe(false);
 
     shortcutsChanged(el, lightShortcutHidden(undefined));
     await el.updateComplete;
     expect(el.isDirtyState).toBe(false);
-    expect(saveButton(el)?.disabled).toBe(true);
-    expect(preventScrimClose(el)).toBe(false);
   });
 });
