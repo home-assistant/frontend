@@ -46,6 +46,21 @@ describe("Marketplace strings", () => {
       { number: 1, count: "1" },
       "1 open issue or pull request on GitHub",
     ],
+    [
+      "dialog.uninstall.shared_message",
+      { owner: "Sharer" },
+      "Sharer uses the same files, so they stay in place along with the integration's setup.",
+    ],
+    [
+      "dialog.uninstall.selected_shared",
+      { count: 1 },
+      "One of them shares its files with an installed repository that is not selected, so its files and setup stay in place.",
+    ],
+    [
+      "dialog.uninstall.selected_shared",
+      { count: 2 },
+      "2 of them share their files with installed repositories that are not selected, so their files and setups stay in place.",
+    ],
   ])("formats %s with %o", (key, values, expected) => {
     expect(format(key, values)).toBe(expected);
   });

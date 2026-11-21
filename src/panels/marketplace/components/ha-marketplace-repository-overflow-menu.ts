@@ -31,6 +31,7 @@ import { marketplaceErrorMessage } from "../../../data/marketplace/websocket";
 import {
   dismissNewMarketplaceRepository,
   refreshMarketplaceRepository,
+  sharingInstall,
   uninstallMarketplaceRepository,
 } from "../../../data/marketplace/repository";
 import type { HaMarketplaceDashboard } from "../dashboards/ha-marketplace-dashboard";
@@ -96,6 +97,8 @@ const confirmUninstallRepository = async (
   repository: RepositoryBase,
   localize: LocalizeFunc
 ) => {
+  let owner: RepositoryBase | undefined;
+
   // Its files are what the entries run, core refuses to uninstall it
   if (repository.category === "integration" && repository.domain) {
     let entries: ConfigEntry[];
@@ -108,7 +111,12 @@ const confirmUninstallRepository = async (
       return;
     }
 
-    if (entries.length) {
+    // Core releases it instead, so another install keeps the files and entries
+    owner = entries.length
+      ? sharingInstall(element.marketplace.repositories, repository)
+      : undefined;
+
+    if (entries.length && !owner) {
       showMarketplaceInUseDialog(element, {
         repository,
         entries,
@@ -134,7 +142,11 @@ const confirmUninstallRepository = async (
     title: localize("ui.panel.marketplace.dialog.uninstall.title", {
       name: repository.name,
     }),
-    text: localize("ui.panel.marketplace.dialog.uninstall.message"),
+    text: owner
+      ? localize("ui.panel.marketplace.dialog.uninstall.shared_message", {
+          owner: owner.name,
+        })
+      : localize("ui.panel.marketplace.dialog.uninstall.message"),
     confirmText: localize("ui.panel.marketplace.common.uninstall"),
     destructive: true,
     action: async () => {
