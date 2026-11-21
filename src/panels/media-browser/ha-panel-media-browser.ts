@@ -33,7 +33,10 @@ import type {
 } from "../../data/media-player";
 import { BROWSER_PLAYER, mediaPlayerPlayMedia } from "../../data/media-player";
 import type { ResolvedMediaSource } from "../../data/media_source";
-import { resolveMediaSource } from "../../data/media_source";
+import {
+  resolveMediaSource,
+  resolveMediaSourceWithCache,
+} from "../../data/media_source";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
@@ -41,6 +44,9 @@ import "./ha-bar-media-player";
 import type { BarMediaPlayer } from "./ha-bar-media-player";
 import { showWebBrowserPlayMediaDialog } from "./show-media-player-dialog";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
+
+const isImage = (item: MediaPlayerItem) =>
+  !item.can_expand && item.media_class === "image";
 
 const createMediaPanelUrl = (entityId: string, items: MediaPlayerItemId[]) => {
   let path = `/media-browser/${entityId}`;
@@ -287,10 +293,17 @@ class PanelMediaBrowser extends LitElement {
       return;
     }
 
+    // The folder can change while the picture is resolved
+    const images = this._currentItem?.children?.filter(isImage) ?? [];
+
     this._player.showResolvingNewMediaPicked();
     let resolvedUrl: ResolvedMediaSource;
     try {
-      resolvedUrl = await resolveMediaSource(this.hass, item.media_content_id);
+      // A picture is resolved through the cache, like the dialog does when
+      // browsing, so coming back to it does not download it again
+      resolvedUrl = await (isImage(item)
+        ? resolveMediaSourceWithCache(this.hass, item.media_content_id)
+        : resolveMediaSource(this.hass, item.media_content_id));
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
@@ -312,6 +325,10 @@ class PanelMediaBrowser extends LitElement {
       sourceType: resolvedUrl.mime_type,
       title: item.title,
       can_play: item.can_play,
+      images,
+      imageIndex: images.findIndex(
+        (image) => image.media_content_id === item.media_content_id
+      ),
     });
     this._player.hideResolvingNewMediaPicked();
   }
