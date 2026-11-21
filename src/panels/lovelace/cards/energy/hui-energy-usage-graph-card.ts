@@ -30,6 +30,7 @@ import type {
   GridSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import {
+  calculateGridNetCost,
   computeConsumptionData,
   energySourcesByType,
   getBatteryEnergyStatIds,
@@ -131,6 +132,8 @@ export class HuiEnergyUsageGraphCard
 
   @state() private _total?: number;
 
+  @state() private _totalCost?: number;
+
   private _data?: EnergyData;
 
   @state()
@@ -186,24 +189,48 @@ export class HuiEnergyUsageGraphCard
       return nothing;
     }
 
+    const totalCost =
+      this._totalCost !== undefined && this._hassConfig.currency
+        ? formatNumber(this._totalCost, this._i18n.locale, {
+            style: "currency",
+            currency: this._hassConfig.currency,
+          })
+        : undefined;
+
     return html`
       <ha-card>
         ${
           this._config.title
             ? html` <div class="card-header">
                 <span>${this._config.title}</span>
-                ${
-                  this._total
-                    ? html`<hui-energy-graph-chip
-                        .tooltip=${this._formatTotal(this._total)}
-                      >
-                        ${this._i18n.localize(
-                          "ui.panel.lovelace.cards.energy.energy_usage_graph.total_usage",
-                          { num: formatNumber(this._total, this._i18n.locale) }
-                        )}
-                      </hui-energy-graph-chip>`
-                    : nothing
-                }
+                <div class="chips">
+                  ${
+                    this._total
+                      ? html`<hui-energy-graph-chip
+                          .tooltip=${this._formatTotal(this._total)}
+                        >
+                          ${this._i18n.localize(
+                            "ui.panel.lovelace.cards.energy.energy_usage_graph.total_usage",
+                            {
+                              num: formatNumber(this._total, this._i18n.locale),
+                            }
+                          )}
+                        </hui-energy-graph-chip>`
+                      : nothing
+                  }
+                  ${
+                    totalCost
+                      ? html`<hui-energy-graph-chip
+                          .tooltip=${this._i18n.localize(
+                            "ui.panel.lovelace.cards.energy.energy_usage_graph.total_cost",
+                            { cost: totalCost }
+                          )}
+                        >
+                          ${totalCost}
+                        </hui-energy-graph-chip>`
+                      : nothing
+                  }
+                </div>
               </div>`
             : nothing
         }
@@ -603,6 +630,11 @@ export class HuiEnergyUsageGraphCard
     this._chartData = datasets;
     this._legendData = this._getLegendData(datasets);
     this._total = this._processTotal(consumption);
+    this._totalCost = calculateGridNetCost(
+      energySourcesByType(energyData.prefs).grid ?? [],
+      energyData.info,
+      energyData.stats
+    );
   }
 
   private _getLegendData(
@@ -906,6 +938,12 @@ export class HuiEnergyUsageGraphCard
       justify-content: space-between;
       align-items: center;
       padding-bottom: 0;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: var(--ha-space-2);
     }
     .content {
       padding: 16px;
