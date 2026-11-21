@@ -24,13 +24,19 @@ export class HaFavoritesEditor extends LitElement {
 
   @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
 
+  @property({ type: Boolean, reflect: true }) public disabled = false;
+
   protected render() {
     return html`
       ${this.label ? html`<p class="field-label">${this.label}</p>` : nothing}
       ${
         this.helper ? html`<p class="field-helper">${this.helper}</p>` : nothing
       }
-      <ha-sortable handle-selector=".handle" @item-moved=${this._moved}>
+      <ha-sortable
+        handle-selector=".handle"
+        .disabled=${this.disabled}
+        @item-moved=${this._moved}
+      >
         <div class="favorites-list">
           ${repeat(
             this.favorites,
@@ -44,6 +50,7 @@ export class HaFavoritesEditor extends LitElement {
                   class="favorite-content"
                   .entityId=${entityId}
                   .index=${index}
+                  .disabled=${this.disabled}
                   @delete-favorite-entity=${this._remove}
                 ></ha-favorite-entity-list-item>
               </div>
@@ -56,6 +63,7 @@ export class HaFavoritesEditor extends LitElement {
         .addButtonLabel=${this.addButtonLabel}
         .excludeEntities=${this.favorites}
         .entityFilter=${this.entityFilter}
+        .disabled=${this.disabled}
         @value-changed=${this._add}
       ></ha-entity-picker>
     `;
@@ -68,7 +76,7 @@ export class HaFavoritesEditor extends LitElement {
   private _add(ev: ValueChangedEvent<string | undefined>): void {
     ev.stopPropagation();
     const entityId = ev.detail.value;
-    if (!entityId) return;
+    if (!entityId || this.disabled) return;
 
     (ev.currentTarget as HaEntityPicker).value = "";
 
@@ -78,6 +86,7 @@ export class HaFavoritesEditor extends LitElement {
   }
 
   private _remove(ev: HASSDomEvent<{ index: number }>): void {
+    if (this.disabled) return;
     const { index } = ev.detail;
     const next = [...this.favorites];
     next.splice(index, 1);
@@ -86,6 +95,7 @@ export class HaFavoritesEditor extends LitElement {
 
   private _moved(ev: HASSDomEvent<HASSDomEvents["item-moved"]>): void {
     ev.stopPropagation();
+    if (this.disabled) return;
     const { oldIndex, newIndex } = ev.detail;
     const next = [...this.favorites];
     const [moved] = next.splice(oldIndex, 1);
@@ -123,6 +133,10 @@ export class HaFavoritesEditor extends LitElement {
       flex-shrink: 0;
       display: flex;
       align-items: center;
+    }
+    :host([disabled]) .handle {
+      cursor: default;
+      color: var(--disabled-text-color);
     }
     ha-entity-picker {
       display: block;
