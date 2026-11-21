@@ -116,7 +116,7 @@ const groupByPlace = (
   groupBy: "area" | "floor"
 ): EntityGroup[] => {
   const hierarchy = getAreasFloorHierarchy(
-    Object.values(hass.floors),
+    [...hass.orderedFloors.values()],
     Object.values(hass.areas)
   );
   const orderedGroupIds =

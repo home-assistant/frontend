@@ -31,7 +31,10 @@ import {
 } from "../data/translation";
 import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_display";
 import { deepEqual } from "../common/util/deep-equal";
-import { preserveUnchangedRecord } from "../common/util/preserve-unchanged-record";
+import {
+  preserveUnchangedMap,
+  preserveUnchangedRecord,
+} from "../common/util/preserve-unchanged-record";
 import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
@@ -71,6 +74,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         devices: null as any,
         areas: null as any,
         floors: null as any,
+        orderedFloors: null as any,
         config: null as any,
         themes: null as any,
         selectedTheme: null,
@@ -330,18 +334,16 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         }
       });
       subscribeFloorRegistry(conn, (floorReg) => {
-        const floors: HomeAssistant["floors"] = {};
-        for (const floor of floorReg) {
-          floors[floor.floor_id] = floor;
-        }
-        const updatedFloors = preserveUnchangedRecord(
-          this.hass?.floors,
-          floors,
-          deepEqual,
-          true
+        const orderedFloors = preserveUnchangedMap(
+          this.hass?.orderedFloors,
+          new Map(floorReg.map((floor) => [floor.floor_id, floor])),
+          deepEqual
         );
-        if (updatedFloors !== this.hass?.floors) {
-          this._updateHass({ floors: updatedFloors });
+        if (orderedFloors !== this.hass?.orderedFloors) {
+          this._updateHass({
+            orderedFloors,
+            floors: Object.fromEntries(orderedFloors),
+          });
         }
       });
       subscribeConfig(conn, (config) => this._updateHass({ config }));

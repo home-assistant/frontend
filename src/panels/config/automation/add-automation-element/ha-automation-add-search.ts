@@ -64,6 +64,7 @@ import {
   configEntriesContext,
   internationalizationContext,
   labelsContext,
+  orderedFloorsContext,
   registriesContext,
   relatedContext,
   statesContext,
@@ -167,6 +168,9 @@ export class HaAutomationAddSearch extends LitElement {
   // changes don't rebuild them
   @consume({ context: registriesContext, subscribe: true })
   private _registries!: ContextType<typeof registriesContext>;
+
+  @consume({ context: orderedFloorsContext, subscribe: true })
+  private _orderedFloors!: ContextType<typeof orderedFloorsContext>;
 
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
@@ -752,7 +756,7 @@ export class HaAutomationAddSearch extends LitElement {
       if (!selectedSection || selectedSection === "area") {
         let areasAndFloors = this._getAreasAndFloorsMemoized(
           this._states,
-          this._registries.floors,
+          this._orderedFloors,
           this._registries.areas,
           this._registries.devices,
           this._registries.entities,

@@ -17,6 +17,7 @@ import {
   devicesContext,
   entitiesContext,
   floorsContext,
+  orderedFloorsContext,
   formattersContext,
   internationalizationContext,
   registriesContext,
@@ -171,6 +172,9 @@ export const provideHass = (
         devices: new ContextProvider(baseEl(), { context: devicesContext }),
         areas: new ContextProvider(baseEl(), { context: areasContext }),
         floors: new ContextProvider(baseEl(), { context: floorsContext }),
+        orderedFloors: new ContextProvider(baseEl(), {
+          context: orderedFloorsContext,
+        }),
       }
     : undefined;
 
@@ -639,6 +643,7 @@ export const provideHass = (
     devices: {},
     entities: {},
     floors: {},
+    orderedFloors: new Map(),
     formatEntityState: (stateObj, state) =>
       (state !== null ? state : stateObj.state) ?? "",
     formatEntityStateToParts: (stateObj, state) => [

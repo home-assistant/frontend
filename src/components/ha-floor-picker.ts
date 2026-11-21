@@ -16,8 +16,8 @@ import {
   areasContext,
   devicesContext,
   entitiesContext,
-  floorsContext,
   internationalizationContext,
+  orderedFloorsContext,
   statesContext,
 } from "../data/context";
 import type {
@@ -131,8 +131,8 @@ export class HaFloorPicker extends LitElement {
   private _areas!: ContextType<typeof areasContext>;
 
   @state()
-  @consume({ context: floorsContext, subscribe: true })
-  private _floors!: ContextType<typeof floorsContext>;
+  @consume({ context: orderedFloorsContext, subscribe: true })
+  private _floors!: ContextType<typeof orderedFloorsContext>;
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
@@ -142,7 +142,7 @@ export class HaFloorPicker extends LitElement {
     if (
       this._pendingFloorId &&
       changedProperties.has("_floors") &&
-      this._floors[this._pendingFloorId]
+      this._floors.has(this._pendingFloorId)
     ) {
       this._setValue(this._pendingFloorId);
       this._pendingFloorId = undefined;
@@ -156,9 +156,9 @@ export class HaFloorPicker extends LitElement {
 
   // Recompute value renderer when the floors change
   private _computeValueRenderer = memoizeOne(
-    (haFloors: ContextType<typeof floorsContext>): PickerValueRenderer =>
+    (haFloors: ContextType<typeof orderedFloorsContext>): PickerValueRenderer =>
       (value) => {
-        const floor = haFloors[value];
+        const floor = haFloors.get(value);
 
         if (!floor) {
           return html`
@@ -178,7 +178,7 @@ export class HaFloorPicker extends LitElement {
 
   private _getFloors = memoizeOne(
     (
-      haFloors: ContextType<typeof floorsContext>,
+      haFloors: ContextType<typeof orderedFloorsContext>,
       haAreas: ContextType<typeof areasContext>,
       haDevices: ContextType<typeof devicesContext>,
       haEntities: ContextType<typeof entitiesContext>,
@@ -190,7 +190,7 @@ export class HaFloorPicker extends LitElement {
       entityFilter: this["entityFilter"],
       excludeFloors: this["excludeFloors"]
     ): FloorComboBoxItem[] => {
-      const floors = Object.values(haFloors);
+      const floors = [...haFloors.values()];
       const areas = Object.values(haAreas);
       const devices = Object.values(haDevices);
       const entities = Object.values(haEntities);
@@ -388,8 +388,8 @@ export class HaFloorPicker extends LitElement {
     );
 
   private _allFloorNames = memoizeOne(
-    (floors: ContextType<typeof floorsContext>) =>
-      Object.values(floors)
+    (floors: ContextType<typeof orderedFloorsContext>) =>
+      [...floors.values()]
         .map((floor) => computeFloorName(floor)?.toLowerCase())
         .filter(Boolean) as string[]
   );
@@ -487,7 +487,7 @@ export class HaFloorPicker extends LitElement {
                 floor_id: floor.floor_id,
               });
             });
-            if (this._floors[floor.floor_id]) {
+            if (this._floors.has(floor.floor_id)) {
               this._setValue(floor.floor_id);
             } else {
               this._pendingFloorId = floor.floor_id;

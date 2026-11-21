@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { deepEqual } from "../../../src/common/util/deep-equal";
-import { preserveUnchangedRecord } from "../../../src/common/util/preserve-unchanged-record";
+import {
+  preserveUnchangedMap,
+  preserveUnchangedRecord,
+} from "../../../src/common/util/preserve-unchanged-record";
 
 interface Item {
   id: string;
@@ -98,3 +101,48 @@ describe.each([false, true])(
     });
   }
 );
+
+describe("preserveUnchangedMap", () => {
+  const map = (...items: Item[]): Map<string, Item> =>
+    new Map(items.map((i) => [i.id, i]));
+
+  it("returns next as-is when there is no previous map", () => {
+    const next = map({ id: "a", name: "A" });
+    expect(preserveUnchangedMap(undefined, next, deepEqual)).toBe(next);
+  });
+
+  it("returns the previous map when nothing changed", () => {
+    const previous = map({ id: "a", name: "A" }, { id: "b", name: "B" });
+    const next = map({ id: "a", name: "A" }, { id: "b", name: "B" });
+    expect(preserveUnchangedMap(previous, next, deepEqual)).toBe(previous);
+  });
+
+  it("reuses unchanged items and keeps the order of next", () => {
+    const previous = map({ id: "a", name: "A" }, { id: "b", name: "B" });
+    const next = map({ id: "a", name: "A" }, { id: "b", name: "B2" });
+    const result = preserveUnchangedMap(previous, next, deepEqual);
+    expect(result).toBe(next);
+    expect(result.get("a")).toBe(previous.get("a"));
+    expect(result.get("b")).toBe(next.get("b"));
+    expect([...result.keys()]).toEqual(["a", "b"]);
+  });
+
+  it("returns next when an item is added or removed", () => {
+    const previous = map({ id: "a", name: "A" });
+    const added = map({ id: "a", name: "A" }, { id: "b", name: "B" });
+    expect(preserveUnchangedMap(previous, added, deepEqual)).toBe(added);
+    const removed = map();
+    expect(preserveUnchangedMap(previous, removed, deepEqual)).toBe(removed);
+  });
+
+  // Plain objects list integer-like keys first, so a record cannot see this
+  // reorder. This is why floors are kept in a Map.
+  it("detects a reorder of integer-like keys", () => {
+    const previous = map({ id: "2", name: "Two" }, { id: "1", name: "One" });
+    const next = map({ id: "1", name: "One" }, { id: "2", name: "Two" });
+    const result = preserveUnchangedMap(previous, next, deepEqual);
+    expect(result).toBe(next);
+    expect([...result.keys()]).toEqual(["1", "2"]);
+    expect(result.get("1")).toBe(previous.get("1"));
+  });
+});

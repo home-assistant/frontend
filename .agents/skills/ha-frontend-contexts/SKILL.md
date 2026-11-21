@@ -24,21 +24,22 @@ Container components may keep `hass` when they own it and feed providers. Leaf c
 
 ## Context Selection
 
-| Context                                                              | Replaces                                                                                                  |
-| -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `statesContext`                                                      | `hass.states`                                                                                             |
-| `entitiesContext`, `devicesContext`, `areasContext`, `floorsContext` | `hass.entities`, `hass.devices`, `hass.areas`, `hass.floors`                                              |
-| `registriesContext`                                                  | all four registries together                                                                              |
-| `servicesContext`                                                    | `hass.services`                                                                                           |
-| `internationalizationContext`                                        | `hass.localize`, `hass.locale`, `hass.language`                                                           |
-| `formattersContext`                                                  | entity and attribute formatters                                                                           |
-| `configContext`                                                      | `hass.config`, `hass.user`, `hass.auth`, `hass.userData`                                                  |
-| `connectionContext`                                                  | `hass.connection`, `hass.connected`, `hass.debugConnection`, `hass.hassUrl`                               |
-| `apiContext`                                                         | `hass.callService`, `hass.callApi`, `hass.callApiRaw`, `hass.callWS`, `hass.sendWS`, `hass.fetchWithAuth` |
-| `uiContext`                                                          | themes, selected theme, panels, sidebar, and UI state                                                     |
-| `narrowViewportContext`                                              | narrow-layout boolean                                                                                     |
-| `reducedMotionContext`                                               | `prefers-reduced-motion` media query                                                                      |
-| `brandsAccessTokenContext`                                           | the `hass` rerender that brand images wait for to get their token                                         |
+| Context                                             | Replaces                                                                                                    |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `statesContext`                                     | `hass.states`                                                                                               |
+| `entitiesContext`, `devicesContext`, `areasContext` | `hass.entities`, `hass.devices`, `hass.areas`                                                               |
+| `orderedFloorsContext`                              | `hass.orderedFloors`, and the deprecated `floorsContext` / `hass.floors`, which cannot keep the floor order |
+| `registriesContext`                                 | all four registries together                                                                                |
+| `servicesContext`                                   | `hass.services`                                                                                             |
+| `internationalizationContext`                       | `hass.localize`, `hass.locale`, `hass.language`                                                             |
+| `formattersContext`                                 | entity and attribute formatters                                                                             |
+| `configContext`                                     | `hass.config`, `hass.user`, `hass.auth`, `hass.userData`                                                    |
+| `connectionContext`                                 | `hass.connection`, `hass.connected`, `hass.debugConnection`, `hass.hassUrl`                                 |
+| `apiContext`                                        | `hass.callService`, `hass.callApi`, `hass.callApiRaw`, `hass.callWS`, `hass.sendWS`, `hass.fetchWithAuth`   |
+| `uiContext`                                         | themes, selected theme, panels, sidebar, and UI state                                                       |
+| `narrowViewportContext`                             | narrow-layout boolean                                                                                       |
+| `reducedMotionContext`                              | `prefers-reduced-motion` media query                                                                        |
+| `brandsAccessTokenContext`                          | the `hass` rerender that brand images wait for to get their token                                           |
 
 Lazy contexts subscribe on first consumer and tear down after the last consumer: `labelsContext`, `fullEntitiesContext`, `configEntriesContext`, `manifestsContext`, `triggerDescriptionsContext`, and `conditionDescriptionsContext`.
 

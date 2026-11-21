@@ -30,6 +30,7 @@ import {
   connectionContext,
   internationalizationContext,
   labelsContext,
+  orderedFloorsContext,
   registriesContext,
   statesContext,
   uiContext,
@@ -186,6 +187,10 @@ export class HaTargetPicker extends LitElement {
   @state()
   @consume({ context: registriesContext, subscribe: true })
   private _registries!: ContextType<typeof registriesContext>;
+
+  @state()
+  @consume({ context: orderedFloorsContext, subscribe: true })
+  private _orderedFloors!: ContextType<typeof orderedFloorsContext>;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -759,6 +764,7 @@ export class HaTargetPicker extends LitElement {
       this._configEntryLookup,
       this._states,
       this._registries,
+      this._orderedFloors,
       this._excludeSection,
       this._excludePickerIncludedDevices(this.value)
     );
@@ -973,6 +979,7 @@ export class HaTargetPicker extends LitElement {
       this._configEntryLookup,
       this._states,
       this._registries,
+      this._orderedFloors,
       this._selectedSection
     );
   };
@@ -990,6 +997,7 @@ export class HaTargetPicker extends LitElement {
       configEntryLookup: Record<string, ConfigEntry>,
       states: HomeAssistant["states"],
       registries: ContextType<typeof registriesContext>,
+      orderedFloors: ContextType<typeof orderedFloorsContext>,
       filterType?: TargetTypeFloorless,
       // Hidden without hiding their child devices.
       hiddenDeviceIds?: string[]
@@ -1133,7 +1141,7 @@ export class HaTargetPicker extends LitElement {
       if (!filterType || filterType === "area") {
         let areasAndFloors = this._getAreasAndFloorsMemoized(
           states,
-          registries.floors,
+          orderedFloors,
           registries.areas,
           registries.devices,
           registries.entities,

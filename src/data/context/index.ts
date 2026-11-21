@@ -96,8 +96,16 @@ export const areasContext = createContext<HomeAssistant["areas"]>("areas");
 
 /**
  * Map of all floors in the floor registry, keyed by floor ID.
+ * @deprecated Use `orderedFloorsContext`. A plain object cannot keep the floor
+ * order: integer-like floor IDs always come first.
  */
 export const floorsContext = createContext<HomeAssistant["floors"]>("floors");
+
+/**
+ * All floors in the floor registry in the user's order, keyed by floor ID.
+ */
+export const orderedFloorsContext =
+  createContext<HomeAssistant["orderedFloors"]>("orderedFloors");
 
 /**
  * Whether the main Home Assistant viewport is using the narrow layout.

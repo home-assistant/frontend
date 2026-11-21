@@ -182,7 +182,7 @@ export class SecurityViewStrategy extends ReactiveElement {
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = Object.values(hass.areas);
-    const floors = Object.values(hass.floors);
+    const floors = [...hass.orderedFloors.values()];
     const hierarchy = getAreasFloorHierarchy(floors, areas);
 
     const sections: LovelaceSectionRawConfig[] = [];

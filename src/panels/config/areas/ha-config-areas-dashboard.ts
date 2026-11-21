@@ -147,7 +147,7 @@ export class HaConfigAreasDashboard extends LitElement {
 
   private _computeHierarchy() {
     this._hierarchy = getAreasFloorHierarchy(
-      Object.values(this.hass.floors),
+      [...this.hass.orderedFloors.values()],
       Object.values(this.hass.areas)
     );
   }

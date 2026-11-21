@@ -32,9 +32,6 @@ export const setDemoFloors = (
     created_at: 0,
     modified_at: 0,
   }));
-  const floorsById: Record<string, FloorRegistryEntry> = {};
-  floors.forEach((floor) => {
-    floorsById[floor.floor_id] = floor;
-  });
-  hass.updateHass({ floors: floorsById });
+  const orderedFloors = new Map(floors.map((floor) => [floor.floor_id, floor]));
+  hass.updateHass({ orderedFloors, floors: Object.fromEntries(orderedFloors) });
 };

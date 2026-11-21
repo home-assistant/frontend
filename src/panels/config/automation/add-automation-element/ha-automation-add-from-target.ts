@@ -53,6 +53,7 @@ import {
   internationalizationContext,
   labelsContext,
   manifestsContext,
+  orderedFloorsContext,
   registriesContext,
   statesContext,
   uiContext,
@@ -145,6 +146,10 @@ export default class HaAutomationAddFromTarget extends LitElement {
   @state()
   @consume({ context: registriesContext, subscribe: true })
   private _registries!: ContextType<typeof registriesContext>;
+
+  @state()
+  @consume({ context: orderedFloorsContext, subscribe: true })
+  private _orderedFloors!: ContextType<typeof orderedFloorsContext>;
 
   @state()
   @consume({ context: labelsContext, subscribe: true })
@@ -1163,7 +1168,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
   private _getTreeData() {
     this._floorAreas = getAreasNestedInFloors(
       this.states,
-      this._registries.floors,
+      this._orderedFloors,
       this._registries.areas,
       this._registries.devices,
       this._registries.entities,
