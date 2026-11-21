@@ -26,6 +26,7 @@ import {
 } from "../data/context";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
+import { RelatedItemsLookup } from "./data-table/related-items-lookup";
 import "./ha-expansion-panel";
 import "./ha-state-icon";
 import "./input/ha-input-search";
@@ -78,7 +79,7 @@ export class HaFilterEntities extends LitElement {
   @query("ha-list-selectable-virtualized")
   private _list?: HaListSelectableVirtualized;
 
-  private _relatedRequestId = 0;
+  private _related = new RelatedItemsLookup<string[]>(this);
 
   public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
@@ -87,7 +88,13 @@ export class HaFilterEntities extends LitElement {
       properties.has("value") &&
       !deepEqual(this.value, properties.get("value"))
     ) {
-      this._findRelated();
+      // Back to the value last sent, like after a failed lookup. A link may
+      // have changed the page's filter meanwhile, so send it again.
+      if (this._related.wasSent(this.value)) {
+        this._related.resend();
+      } else {
+        this._findRelated();
+      }
     }
   }
 
@@ -221,43 +228,28 @@ export class HaFilterEntities extends LitElement {
         .sort((a, b) => stringCompare(a.name, b.name, language))
   );
 
-  private async _findRelated() {
-    const requestId = ++this._relatedRequestId;
-    const relatedPromises: Promise<RelatedResult>[] = [];
-
+  private _findRelated() {
     if (!this.value?.length) {
       this.value = [];
-      fireEvent(this, "data-table-filter-changed", {
-        value: [],
-        items: undefined,
-      });
+      this._related.apply([], undefined);
       return;
     }
 
-    for (const entityId of this.value) {
-      if (this.type) {
-        relatedPromises.push(findRelated(this._api, "entity", entityId));
-      }
-    }
-
-    const results = await Promise.all(relatedPromises);
-
-    // The value changed while this lookup ran
-    if (requestId !== this._relatedRequestId) {
-      return;
-    }
-
-    const items = new Set<string>();
-    for (const result of results) {
-      if (result[this.type!]) {
-        result[this.type!]!.forEach((item) => items.add(item));
-      }
-    }
-
-    fireEvent(this, "data-table-filter-changed", {
-      value: this.value,
-      items: this.type ? items : undefined,
-    });
+    const type = this.type;
+    const value = this.value;
+    this._related.lookUp(
+      value,
+      async () => {
+        if (!type) {
+          return undefined;
+        }
+        const results = await Promise.all(
+          value.map((entityId) => findRelated(this._api, "entity", entityId))
+        );
+        return new Set(results.flatMap((result) => result[type] ?? []));
+      },
+      this._localize
+    );
   }
 
   private _clearFilter(ev) {

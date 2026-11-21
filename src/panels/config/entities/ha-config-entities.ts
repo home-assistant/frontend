@@ -1231,10 +1231,12 @@ export class HaConfigEntities extends LitElement {
     const filters = { ...this._filters, [type]: ev.detail.value };
 
     // A filter also sends the value it was given, once it has found its items.
-    // Only a change to what the URL holds is the user's, so a link isn't stored.
+    // Only a change to what the URL holds is the user's, so a link isn't stored,
+    // nor a value a filter restored after a failed lookup.
     if (
+      !ev.detail.restored &&
       entitiesFilterQueryString(filters) !==
-      entitiesFilterQueryString(this._filters)
+        entitiesFilterQueryString(this._filters)
     ) {
       this._storageFilters = {
         ...this._storedFilters(),

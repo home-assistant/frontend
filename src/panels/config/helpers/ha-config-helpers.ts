@@ -904,21 +904,29 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   }
 
   private _filterChanged(ev) {
-    this._setFilter(ev.target.localName, ev.detail.value, ev.detail.items);
+    this._setFilter(
+      ev.target.localName,
+      ev.detail.value,
+      ev.detail.items,
+      !ev.detail.restored
+    );
   }
 
   private _setFilter(
     type: string,
     value: DataTableFiltersValue,
-    items: Set<string> | undefined
+    items: Set<string> | undefined,
+    store = true
   ) {
     const filters = { ...this._filters, [type]: value };
 
     // A filter also sends the value it was given, once it has found its items.
-    // Only a change to what the URL holds is the user's, so a link isn't stored.
+    // Only a change to what the URL holds is the user's, so a link isn't stored,
+    // nor a value a filter restored after a failed lookup.
     if (
+      store &&
       helpersFilterQueryString(filters) !==
-      helpersFilterQueryString(this._filters)
+        helpersFilterQueryString(this._filters)
     ) {
       this._storageFilters = {
         ...this._storageFilters,

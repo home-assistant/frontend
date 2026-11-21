@@ -21,8 +21,8 @@ import { deepEqual } from "../common/util/deep-equal";
 import type { Blueprints } from "../data/blueprint";
 import { fetchBlueprints } from "../data/blueprint";
 import { apiContext } from "../data/context";
-import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
+import { RelatedItemsLookup } from "./data-table/related-items-lookup";
 import "./ha-expansion-panel";
 import "./ha-icon-button";
 import "./item/ha-list-item-option";
@@ -53,7 +53,7 @@ export class HaFilterBlueprints extends LitElement {
 
   private _panel = new FilterPanelController(this, this._content);
 
-  private _relatedRequestId = 0;
+  private _related = new RelatedItemsLookup<string[]>(this);
 
   public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
@@ -62,7 +62,13 @@ export class HaFilterBlueprints extends LitElement {
       properties.has("value") &&
       !deepEqual(this.value, properties.get("value"))
     ) {
-      this._findRelated();
+      // Back to the value last sent, like after a failed lookup. A link may
+      // have changed the page's filter meanwhile, so send it again.
+      if (this._related.wasSent(this.value)) {
+        this._related.resend();
+      } else {
+        this._findRelated();
+      }
     }
   }
 
@@ -157,45 +163,30 @@ export class HaFilterBlueprints extends LitElement {
         : arrayWithout(this.value, blueprintId);
   }
 
-  private async _findRelated() {
-    const requestId = ++this._relatedRequestId;
+  private _findRelated() {
     if (!this.value?.length) {
       this.value = [];
-      fireEvent(this, "data-table-filter-changed", {
-        value: [],
-        items: undefined,
-      });
+      this._related.apply([], undefined);
       return;
     }
 
-    const relatedPromises: Promise<RelatedResult>[] = [];
-
-    for (const blueprintId of this.value) {
-      if (this.type) {
-        relatedPromises.push(
-          findRelated(this._api, `${this.type}_blueprint`, blueprintId)
+    const type = this.type;
+    const value = this.value;
+    this._related.lookUp(
+      value,
+      async () => {
+        if (!type) {
+          return undefined;
+        }
+        const results = await Promise.all(
+          value.map((blueprintId) =>
+            findRelated(this._api, `${type}_blueprint`, blueprintId)
+          )
         );
-      }
-    }
-
-    const results = await Promise.all(relatedPromises);
-
-    // The value changed while this lookup ran
-    if (requestId !== this._relatedRequestId) {
-      return;
-    }
-
-    const items = new Set<string>();
-    for (const result of results) {
-      if (result[this.type!]) {
-        result[this.type!]!.forEach((item) => items.add(item));
-      }
-    }
-
-    fireEvent(this, "data-table-filter-changed", {
-      value: this.value,
-      items: this.type ? items : undefined,
-    });
+        return new Set(results.flatMap((result) => result[type] ?? []));
+      },
+      this._localize
+    );
   }
 
   private _clearFilter(ev) {

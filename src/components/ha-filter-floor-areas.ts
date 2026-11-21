@@ -38,6 +38,7 @@ import {
 import { getFloorAreaLookup } from "../data/floor_registry";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
+import { RelatedItemsLookup } from "./data-table/related-items-lookup";
 import "./ha-expansion-panel";
 import "./ha-floor-icon";
 import "./ha-icon";
@@ -108,25 +109,46 @@ export class HaFilterFloorAreas extends LitElement {
 
   private _panel = new FilterPanelController(this, this._content);
 
-  private _relatedRequestId = 0;
+  private _related = new RelatedItemsLookup<FloorAreasFilterValue>(this);
 
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
 
+    // Going back to the value last sent finds its items again
+    if (this._registriesChanged(this._related.sentValue, properties)) {
+      this._related.markOutdated();
+    }
+
+    const valueChanged =
+      properties.has("value") &&
+      !deepEqual(this.value, properties.get("value"));
     if (
-      (properties.has("value") &&
-        !deepEqual(this.value, properties.get("value"))) ||
+      (valueChanged && !this._related.wasSent(this.value)) ||
+      this._registriesChanged(this.value, properties)
+    ) {
+      this._findRelated();
+    } else if (valueChanged) {
+      // Back to the value last sent, like after a failed lookup. A link may
+      // have changed the page's filter meanwhile, so send it again.
+      this._related.resend();
+    }
+  }
+
+  // Whether the registries changed the items of a value
+  private _registriesChanged(
+    value: FloorAreasFilterValue | undefined,
+    properties: PropertyValues
+  ): boolean {
+    return (
       // Items without an area are worked out from the registries
-      (this.value?.no_area &&
+      (!!value?.no_area &&
         (properties.has("_devices") ||
           properties.has("_entities") ||
           (this.type !== "device" && properties.has("_stateIds")))) ||
       // Whether a floor is picked whole depends on which areas it has
-      ((!!this.value?.floors?.length || !!this.value?.areas?.length) &&
+      ((!!value?.floors?.length || !!value?.areas?.length) &&
         (properties.has("_areasReg") || properties.has("_floorsReg")))
-    ) {
-      this._findRelated();
-    }
+    );
   }
 
   protected render() {
@@ -367,9 +389,7 @@ export class HaFilterFloorAreas extends LitElement {
     }
   );
 
-  private async _findRelated() {
-    const requestId = ++this._relatedRequestId;
-
+  private _findRelated() {
     if (
       !this.value ||
       (!this.value.areas?.length &&
@@ -377,10 +397,7 @@ export class HaFilterFloorAreas extends LitElement {
         !this.value.no_area)
     ) {
       this.value = {};
-      fireEvent(this, "data-table-filter-changed", {
-        value: {},
-        items: undefined,
-      });
+      this._related.apply({}, undefined);
       return;
     }
 
@@ -404,28 +421,24 @@ export class HaFilterFloorAreas extends LitElement {
             )[type!] ?? []
         )
       );
-    const [areas, floors] = type
-      ? await Promise.all([
+    this._related.lookUp(
+      value,
+      async () => {
+        if (!type) {
+          return undefined;
+        }
+        const [areas, floors] = await Promise.all([
           search("area", lookups.areas),
           search("floor", lookups.floors),
-        ])
-      : [[], []];
-
-    // The value changed while this lookup ran
-    if (requestId !== this._relatedRequestId) {
-      return;
-    }
-
-    const items = new Set<string>([
-      ...(value.no_area ? this._itemsWithoutArea() : []),
-      ...areas.flat(),
-      ...floors.flat(),
-    ]);
-
-    fireEvent(this, "data-table-filter-changed", {
-      value: this.value,
-      items: this.type ? items : undefined,
-    });
+        ]);
+        return new Set<string>([
+          ...(value.no_area ? this._itemsWithoutArea() : []),
+          ...areas.flat(),
+          ...floors.flat(),
+        ]);
+      },
+      this._localize
+    );
   }
 
   private _itemsWithoutArea(): string[] {
@@ -545,6 +558,11 @@ declare global {
     "ha-filter-floor-areas": HaFilterFloorAreas;
   }
   interface HASSDomEvents {
-    "data-table-filter-changed": { value: any; items: Set<string> | undefined };
+    "data-table-filter-changed": {
+      value: any;
+      items: Set<string> | undefined;
+      // Sent back after a failed lookup, so not the user's choice
+      restored?: boolean;
+    };
   }
 }
