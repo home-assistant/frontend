@@ -205,6 +205,7 @@ export class HuiDialogEditCard
     return html`
       <ha-dialog
         .open=${this._open}
+        .accessibleLabel=${heading}
         .width=${this.large ? "full" : "large"}
         .preventScrimClose=${this.isEffectiveDirtyState}
         @keydown=${this._ignoreKeydown}
@@ -229,7 +230,7 @@ export class HuiDialogEditCard
                   .path=${mdiHelpCircleOutline}
                   slot="headerActionItems"
                   href=${this._documentationURL}
-                  title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                  .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
                   target="_blank"
                   rel="noreferrer"
                   dir=${computeRTLDirection(this.hass)}
@@ -275,7 +276,11 @@ export class HuiDialogEditCard
             ${
               this._error
                 ? html`
-                    <ha-spinner aria-label="Can't update card"></ha-spinner>
+                    <ha-spinner
+                      .accessibleLabel=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_card.preview_error"
+                      )}
+                    ></ha-spinner>
                   `
                 : ``
             }

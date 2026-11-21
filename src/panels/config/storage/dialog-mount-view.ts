@@ -406,7 +406,12 @@ class ViewMountDialog extends DirtyStateProviderMixin<
           target="_blank"
           rel="noreferrer"
         >
-          <ha-icon-button .path=${mdiHelpCircleOutline}></ha-icon-button>
+          <ha-icon-button
+            .path=${mdiHelpCircleOutline}
+            .label=${this._i18n.localize(
+              "ui.panel.config.storage.network_mounts.documentation"
+            )}
+          ></ha-icon-button>
         </a>
         ${
           this._error

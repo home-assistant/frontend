@@ -1,4 +1,4 @@
-import type { PropertyValues, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -119,15 +119,6 @@ class OnboardingCoreConfig extends LitElement {
         </ha-button>
       </div>
     `;
-  }
-
-  protected firstUpdated(changedProps: PropertyValues<this>) {
-    super.firstUpdated(changedProps);
-    this.addEventListener("keyup", (ev) => {
-      if (this._location && ev.key === "Enter") {
-        this._save(ev);
-      }
-    });
   }
 
   private _handleFormChanged(

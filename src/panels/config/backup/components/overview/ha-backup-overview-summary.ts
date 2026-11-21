@@ -94,6 +94,9 @@ class HaBackupOverviewBackups extends LitElement {
                                 lastCompletedDate
                               )}
                               .path=${mdiInformationOutline}
+                              .label=${this.hass.localize(
+                                "ui.common.more_info"
+                              )}
                             ></ha-icon-button>
                           `
                         : nothing

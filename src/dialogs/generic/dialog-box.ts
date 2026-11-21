@@ -149,16 +149,9 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
                     .min=${this._params.inputMin}
                     .max=${this._params.inputMax}
                     .disabled=${this._loading}
+                    .inputSuffix=${this._params.inputSuffix}
                     @input=${this._validateInput}
-                  >
-                    ${
-                      this._params.inputSuffix
-                        ? html`<span slot="end"
-                            >${this._params.inputSuffix}</span
-                          >`
-                        : nothing
-                    }
-                  </ha-input>
+                  ></ha-input>
                 `
               : this._params.prompt && this._params.multiline
                 ? html`

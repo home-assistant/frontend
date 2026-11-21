@@ -848,6 +848,9 @@ class HaPanelHistory extends LitElement {
       },
     };
     const formatDate = (number) => new Date(number).toISOString();
+    // Entities without recorded states in the range get their current state
+    // added, which can be after the selected end
+    const end = this._endDate.getTime();
 
     for (const line of this._mungedStateHistory.line) {
       for (const entity of line.data) {
@@ -868,11 +871,17 @@ class HaPanelHistory extends LitElement {
 
         if (entity.statistics) {
           for (const s of entity.statistics) {
+            if (s.last_changed > end) {
+              continue;
+            }
             csv.push([entityId, s.state, formatDate(s.last_changed)]);
           }
         }
 
         for (const s of entity.states) {
+          if (s.last_changed > end) {
+            continue;
+          }
           const lastChanged = formatDate(s.last_changed);
           const data = [entityId, s.state, lastChanged];
 
@@ -892,6 +901,9 @@ class HaPanelHistory extends LitElement {
     for (const timeline of this._mungedStateHistory.timeline) {
       const entityId = timeline.entity_id;
       for (const s of timeline.data) {
+        if (s.last_changed > end) {
+          continue;
+        }
         csv.push([
           entityId,
           csvSafeString(s.state),

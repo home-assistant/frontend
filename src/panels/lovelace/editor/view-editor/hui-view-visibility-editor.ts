@@ -3,10 +3,10 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
-import "../../../../components/ha-switch";
-import type { HaSwitch } from "../../../../components/ha-switch";
-import "../../../../components/item/ha-list-item-base";
+import "../../../../components/item/ha-list-item-switch";
+import type { HaListItemSwitch } from "../../../../components/item/ha-list-item-switch";
 import "../../../../components/list/ha-list-base";
 import "../../../../components/user/ha-user-badge";
 import type {
@@ -69,16 +69,14 @@ export class HuiViewVisibilityEditor extends LitElement {
       <ha-list-base>
         ${this._sortedUsers(this._users).map(
           (user) => html`
-            <ha-list-item-base>
+            <ha-list-item-switch
+              .userId=${user.id}
+              @change=${this._valChange}
+              .checked=${this.checkUser(user.id)}
+            >
               <ha-user-badge slot="start" .user=${user}></ha-user-badge>
               <span slot="headline">${user.name}</span>
-              <ha-switch
-                slot="end"
-                .userId=${user.id}
-                @change=${this._valChange}
-                .checked=${this.checkUser(user.id)}
-              ></ha-switch>
-            </ha-list-item-base>
+            </ha-list-item-switch>
           `
         )}
       </ha-list-base>
@@ -95,9 +93,11 @@ export class HuiViewVisibilityEditor extends LitElement {
     return (this._visible as ShowViewConfig[]).some((u) => u.user === userId);
   }
 
-  private _valChange(ev: Event): void {
-    const userId = (ev.currentTarget as any).userId;
-    const checked = (ev.currentTarget as HaSwitch).checked;
+  private _valChange(
+    ev: HASSDomCurrentTargetEvent<HaListItemSwitch & { userId: string }>
+  ): void {
+    const userId = ev.currentTarget.userId;
+    const checked = ev.currentTarget.checked;
 
     let newVisible: ShowViewConfig[] = [];
 
@@ -135,7 +135,7 @@ export class HuiViewVisibilityEditor extends LitElement {
     :host {
       display: block;
     }
-    ha-list-item-base {
+    ha-list-item-switch {
       --ha-row-item-padding-inline: 0;
       --ha-row-item-padding-block: var(--ha-space-1);
       --ha-row-item-min-height: 48px;

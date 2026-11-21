@@ -2,7 +2,6 @@ import type { ContextType } from "@lit/context";
 import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consume } from "../common/decorators/consume";
-import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { computeDomain } from "../common/entity/compute_domain";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { stringCompare } from "../common/string/compare";
@@ -19,10 +18,6 @@ export class HaFilterDeviceClasses extends HaFilterStates {
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n?: ContextType<typeof internationalizationContext>;
-
-  @state()
-  @consumeLocalize()
-  private _localize?: LocalizeFunc;
 
   private _deviceClasses = memoizeOne(
     (

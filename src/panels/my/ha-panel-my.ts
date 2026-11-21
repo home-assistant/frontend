@@ -277,7 +277,12 @@ export const getMyRedirects = (): Redirects => ({
   config: {
     redirect: "/config/dashboard",
   },
+  link: {
+    component: "cloud",
+    redirect: "/config/cloud",
+  },
   cloud: {
+    // Old key of link, still used by existing links and my.home-assistant.io
     component: "cloud",
     redirect: "/config/cloud",
   },

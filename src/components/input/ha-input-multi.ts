@@ -146,19 +146,10 @@ class HaInputMulti extends LitElement {
                     ?data-last=${index === this._items.length - 1}
                     @input=${this._editItem}
                     @change=${this._editItem}
+                    .inputPrefix=${this.inputPrefix}
+                    .inputSuffix=${this.inputSuffix}
                     @keydown=${this._keyDown}
-                  >
-                    ${
-                      this.inputPrefix
-                        ? html`<span slot="start">${this.inputPrefix}</span>`
-                        : nothing
-                    }
-                    ${
-                      this.inputSuffix
-                        ? html`<span slot="end">${this.inputSuffix}</span>`
-                        : nothing
-                    }
-                  </ha-input>
+                  ></ha-input>
                   <ha-icon-button
                     .disabled=${this.disabled}
                     .index=${index}

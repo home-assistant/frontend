@@ -290,6 +290,11 @@ class MoreInfoFan extends LitElement {
             ? html`
                 <div class="buttons">
                   <ha-outlined-icon-button
+                    .label=${this._localize(
+                      this.stateObj.state === "on"
+                        ? "ui.card.common.turn_off"
+                        : "ui.card.common.turn_on"
+                    )}
                     .disabled=${this.stateObj.state === UNAVAILABLE}
                     @click=${this._toggle}
                   >

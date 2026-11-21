@@ -136,6 +136,7 @@ class MqttSubscribeCard extends LitElement {
                   <ha-icon-button
                     class="copy-button"
                     .path=${mdiContentCopy}
+                    .label=${this.hass.localize("ui.common.copy")}
                     @click=${this._handleCopyClick}
                     data-payload=${msg.payload}
                   ></ha-icon-button>

@@ -39,7 +39,11 @@ import type {
   EnergyEditorStatus,
   EnergyHomeSourceEditorParams,
 } from "./energy-editor";
-import { EnergyEditorMixin, energyEditorStyles } from "./energy-editor";
+import {
+  EnergyEditorMixin,
+  energyEditorStyles,
+  preselectedStatistics,
+} from "./energy-editor";
 
 const energyUnitClasses = ["energy"];
 const powerUnitClasses = ["power"];
@@ -111,6 +115,13 @@ export class HaEnergyHomeSourceEditor extends EnergyEditorMixin(
         ? { ...this.params.source }
         : emptyHomeEnergyPreference();
       this._initDirtyTracking({ type: "deep" }, this._source);
+      if (!this.params.source) {
+        this._source = {
+          ...this._source,
+          ...preselectedStatistics(["stat_energy_to"]),
+        };
+        this._updateDirtyState(this._source);
+      }
       this._loadUnits();
     }
   }

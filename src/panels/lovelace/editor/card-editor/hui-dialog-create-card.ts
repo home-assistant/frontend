@@ -114,6 +114,7 @@ export class HuiCreateDialogCard
     return html`
       <ha-dialog
         .open=${this._open}
+        .accessibleLabel=${title}
         flexcontent
         width="large"
         @keydown=${this._ignoreKeydown}

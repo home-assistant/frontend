@@ -378,6 +378,7 @@ class DialogBackupOnboarding
             <p>${this._config.create_backup.password}</p>
             <ha-icon-button
               .path=${mdiContentCopy}
+              .label=${this.hass.localize("ui.common.copy")}
               @click=${this._copyKeyToClipboard}
             ></ha-icon-button>
           </div>

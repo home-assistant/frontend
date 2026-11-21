@@ -21,6 +21,12 @@ describe("isIPAddress (IPv4)", () => {
     expect(isIPAddress("fe80::1")).toBe(false);
     expect(isIPAddress("")).toBe(false);
   });
+  it("rejects octets with leading zeros", () => {
+    expect(isIPAddress("010.1.1.1")).toBe(false);
+    expect(isIPAddress("1.1.1.01")).toBe(false);
+    expect(isIPAddress("192.168.001.1")).toBe(false);
+    expect(isIPAddress("00.0.0.0")).toBe(false);
+  });
 });
 
 describe("isIPv6Address", () => {
@@ -29,6 +35,19 @@ describe("isIPv6Address", () => {
     expect(isIPv6Address("::1")).toBe(true);
     expect(isIPv6Address("1050:0000:0000:0000:0005:0600:300c:326b")).toBe(true);
     expect(isIPv6Address("::ffff:192.168.1.1")).toBe(true);
+    expect(isIPv6Address("::")).toBe(true);
+    expect(isIPv6Address("1:2:3:4:5:6:7::")).toBe(true);
+  });
+  it("accepts IPv6 addresses ending in dotted IPv4", () => {
+    expect(isIPv6Address("1:2:3:4:5:6:192.168.1.1")).toBe(true);
+    expect(isIPv6Address("1:2:3:4:5::192.168.1.1")).toBe(true);
+    expect(isIPv6Address("1::2:3:4:192.168.1.1")).toBe(true);
+    expect(isIPv6Address("64:ff9b::192.0.2.33")).toBe(true);
+  });
+  it("rejects IPv6 addresses with too many groups before dotted IPv4", () => {
+    expect(isIPv6Address("1:2:3:4:5:6:7:192.168.1.1")).toBe(false);
+    expect(isIPv6Address("1:2:3:4:5:6::192.168.1.1")).toBe(false);
+    expect(isIPv6Address("::ffff:010.1.1.1")).toBe(false);
   });
   it("rejects invalid IPv6 addresses", () => {
     expect(isIPv6Address("192.168.1.10")).toBe(false);
@@ -111,5 +130,30 @@ describe("IP_ADDRESS_OR_NETWORK_PATTERN", () => {
     expect(matchesPattern(IP_ADDRESS_OR_NETWORK_PATTERN, "not-an-ip")).toBe(
       false
     );
+  });
+  it("rejects IPv4 octets with leading zeros", () => {
+    expect(matchesPattern(IP_ADDRESS_OR_NETWORK_PATTERN, "010.1.1.1")).toBe(
+      false
+    );
+    expect(matchesPattern(IP_ADDRESS_OR_NETWORK_PATTERN, "010.1.1.0/24")).toBe(
+      false
+    );
+  });
+  it("accepts IPv6 addresses and networks ending in dotted IPv4", () => {
+    expect(
+      matchesPattern(IP_ADDRESS_OR_NETWORK_PATTERN, "1:2:3:4:5:6:192.168.1.1")
+    ).toBe(true);
+    expect(
+      matchesPattern(
+        IP_ADDRESS_OR_NETWORK_PATTERN,
+        "1:2:3:4:5::192.168.1.0/120"
+      )
+    ).toBe(true);
+  });
+  it("compiles with the v flag used for the HTML pattern attribute", () => {
+    expect(
+      () => new RegExp(`^(?:${IP_ADDRESS_OR_NETWORK_PATTERN})$`, "v")
+    ).not.toThrow();
+    expect(() => new RegExp(`^(?:${IP_ADDRESS_PATTERN})$`, "v")).not.toThrow();
   });
 });

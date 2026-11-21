@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type {
   AutomationConfig,
   BlueprintAutomationConfig,
+  SidebarConfig,
   Trigger,
 } from "../../../../../src/data/automation";
 import { AutomationTriggerController } from "../../../../../src/panels/config/automation/trigger/automation-trigger-controller";
@@ -191,5 +192,65 @@ describe("AutomationTriggerController with a blueprint automation", () => {
 
     expect(ids()).toEqual(["motion_on"]);
     expect(context().blueprintStatus).toBe("failed");
+  });
+});
+
+describe("AutomationTriggerController.checkShowIndices", () => {
+  let host: TestHost;
+  let controller: AutomationTriggerController;
+
+  const showIndices = (): boolean => {
+    let value: AutomationTriggerContext | undefined;
+    const child = document.createElement("div");
+    host.appendChild(child);
+    child.dispatchEvent(
+      new ContextEvent(automationTriggerContext, child, (v) => {
+        value = v;
+      })
+    );
+    child.remove();
+    return value!.showIndices;
+  };
+
+  const sidebar = (config: unknown) => ({ config }) as unknown as SidebarConfig;
+
+  beforeEach(() => {
+    host = document.createElement("test-automation-trigger-host");
+    controller = new AutomationTriggerController(host, {
+      getConfig: () => ({ triggers: [], actions: [] }) as AutomationConfig,
+      canEdit: () => true,
+      commit: vi.fn(),
+      fetchBlueprintTriggers: vi.fn(),
+    });
+  });
+
+  afterEach(() => {
+    controller.hostDisconnected();
+  });
+
+  it.each([
+    ["a trigger condition", { condition: "trigger", id: "a" }],
+    [
+      "a trigger condition used as action",
+      { action: { condition: "trigger", id: "a" } },
+    ],
+  ])("shows the indices for %s", (_name, config) => {
+    controller.checkShowIndices(sidebar(config));
+    expect(showIndices()).toBe(true);
+  });
+
+  it.each([
+    ["no sidebar", undefined],
+    ["another condition", sidebar({ condition: "state" })],
+    ["a service action", sidebar({ action: { action: "number.set_value" } })],
+    // What a condition row holds after an action was entered as YAML.
+    [
+      "a service action in a condition row",
+      sidebar({ action: "number.set_value", data: { value: 20 } }),
+    ],
+  ])("hides the indices for %s", (_name, sidebarConfig) => {
+    controller.checkShowIndices(sidebar({ condition: "trigger" }));
+    controller.checkShowIndices(sidebarConfig);
+    expect(showIndices()).toBe(false);
   });
 });
