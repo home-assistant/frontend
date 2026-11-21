@@ -205,6 +205,20 @@ export class HaInput extends WaInputMixin(LitElement) {
     return true;
   }
 
+  // Password managers (like Bitwarden) fire synthetic `input`/`change` events
+  // that are not composed. wa-input re-dispatches only `change` out of its
+  // shadow root, so a filled value would otherwise never reach `input`
+  // listeners and forms would keep seeing an empty field.
+  protected override _handleChange(): void {
+    const changed = (this.value ?? "") !== (this._input?.value ?? "");
+    if (changed) {
+      this._handleInput();
+      this.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+      return;
+    }
+    super._handleChange();
+  }
+
   public override reportValidity(): boolean {
     this.syncFromNativeInput();
     return super.reportValidity();
