@@ -24,6 +24,7 @@ import {
   getEnergyLiveDayPeriod,
   shouldFallbackEnergyPeriodToYesterday,
   getEnergyDataCollection,
+  getReferencedStatisticIds,
   saveEnergyPreferences,
   EMPTY_PREFERENCES,
   CompareMode,
@@ -34,6 +35,7 @@ import type {
   EnergyPreferences,
   EnergySource,
   EnergySumData,
+  FixedCostEnergyPreference,
 } from "../../src/data/energy";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
 import type { EntityRegistryDisplayEntry } from "../../src/data/entity/entity_registry";
@@ -1528,6 +1530,7 @@ describe("getEnergyDataCollection overlapping refreshes", () => {
     const pending: {
       resolve: (info: {
         cost_sensors: Record<string, string>;
+        fixed_cost_sensors: Record<string, string>;
         solar_forecast_domains: string[];
       }) => void;
       reject: (error: Error) => void;
@@ -1573,7 +1576,11 @@ describe("getEnergyDataCollection overlapping refreshes", () => {
   const complete = async (
     request: ReturnType<typeof createCollection>["pending"][number]
   ) => {
-    request.resolve({ cost_sensors: {}, solar_forecast_domains: [] });
+    request.resolve({
+      cost_sensors: {},
+      fixed_cost_sensors: {},
+      solar_forecast_domains: [],
+    });
     await vi.advanceTimersByTimeAsync(0);
   };
 
@@ -1961,7 +1968,11 @@ describe("getEnergyDataCollection live day", () => {
     hass.config = { ...hass.config, time_zone: "America/New_York" };
     const callWS = vi.fn(async (msg: { type: string }) => {
       if (msg.type === "energy/info") {
-        return { cost_sensors: {}, solar_forecast_domains: [] };
+        return {
+          cost_sensors: {},
+          fixed_cost_sensors: {},
+          solar_forecast_domains: [],
+        };
       }
       throw new Error(`unexpected ${msg.type}`);
     });
@@ -2166,7 +2177,11 @@ describe("getEnergyDataCollection statistics range", () => {
     const callWS = vi.fn(async (msg: Record<string, unknown>) => {
       switch (msg.type) {
         case "energy/info":
-          return { cost_sensors: {}, solar_forecast_domains: [] };
+          return {
+            cost_sensors: {},
+            fixed_cost_sensors: {},
+            solar_forecast_domains: [],
+          };
         case "recorder/get_statistics_metadata":
           return [];
         case "recorder/statistics_during_period":
@@ -2266,7 +2281,11 @@ describe("getEnergyDataCollection gas energy unit", () => {
     const callWS = vi.fn(async (msg: Record<string, unknown>) => {
       switch (msg.type) {
         case "energy/info":
-          return { cost_sensors: {}, solar_forecast_domains: [] };
+          return {
+            cost_sensors: {},
+            fixed_cost_sensors: {},
+            solar_forecast_domains: [],
+          };
         case "recorder/get_statistics_metadata":
           return statisticIds.map((id) => gasMetadata(id, gasUnits[id]));
         case "recorder/statistics_during_period":
@@ -2866,5 +2885,54 @@ describe("computeConsumptionData with a home meter", () => {
 
   it("never changes the measured grid value", () => {
     assert.equal(consumption.used_grid[1], baseline.used_grid[1]);
+  });
+});
+
+describe("getReferencedStatisticIds fixed costs", () => {
+  const fixedCost = (
+    id: string,
+    type: FixedCostEnergyPreference["type"]
+  ): FixedCostEnergyPreference => ({
+    id,
+    type,
+    name: id,
+    number_amount: 1,
+    entity_amount: null,
+    period: "day",
+  });
+  const prefs: EnergyPreferences = {
+    ...EMPTY_PREFERENCES,
+    fixed_costs: [
+      fixedCost("grid", "grid"),
+      fixedCost("gas", "gas"),
+      fixedCost("water", "water"),
+      fixedCost("not_set_up", "grid"),
+    ],
+  };
+  const info = {
+    cost_sensors: {},
+    fixed_cost_sensors: {
+      grid: "sensor.grid_fixed_cost",
+      gas: "sensor.gas_fixed_cost",
+      water: "sensor.water_fixed_cost",
+    },
+    solar_forecast_domains: [],
+  };
+
+  it("fetches each fixed cost with the statistics of its type", () => {
+    assert.deepEqual(
+      getReferencedStatisticIds(prefs, info, [
+        "grid",
+        "solar",
+        "home",
+        "battery",
+        "gas",
+        "device",
+      ]),
+      ["sensor.grid_fixed_cost", "sensor.gas_fixed_cost"]
+    );
+    assert.deepEqual(getReferencedStatisticIds(prefs, info, ["water"]), [
+      "sensor.water_fixed_cost",
+    ]);
   });
 });

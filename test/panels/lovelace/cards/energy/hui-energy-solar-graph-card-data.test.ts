@@ -49,6 +49,7 @@ const solarPrefs = (opts: {
     device_consumption: [],
     device_consumption_water: [],
     device_consumption_gas: [],
+    fixed_costs: [],
   };
 };
 
@@ -80,6 +81,7 @@ describe("generateEnergySolarGraphData", () => {
         device_consumption: [],
         device_consumption_water: [],
         device_consumption_gas: [],
+        fixed_costs: [],
       },
     });
     const result = generateEnergySolarGraphData({

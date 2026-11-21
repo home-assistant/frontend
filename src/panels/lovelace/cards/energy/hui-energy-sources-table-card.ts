@@ -21,9 +21,14 @@ import {
   statesContext,
   uiContext,
 } from "../../../../data/context";
-import type { EnergyData, EnergySourceByType } from "../../../../data/energy";
+import type {
+  EnergyData,
+  EnergySourceByType,
+  FixedCostType,
+} from "../../../../data/energy";
 import {
   energySourcesByType,
+  fixedCostsByType,
   getBatteryEnergyStatIds,
   getBatteryName,
   validateEnergyCollectionKey,
@@ -177,8 +182,8 @@ export class HuiEnergySourcesTableCard
     type: string,
     statId: string,
     idx: number,
-    energy: number,
-    compareEnergy: number,
+    energy: number | null,
+    compareEnergy: number | null,
     energyUnit: string,
     cost: number | null,
     compareCost: number | null,
@@ -200,18 +205,24 @@ export class HuiEnergySourcesTableCard
           }
         : undefined;
 
-    const formattedEnergy = formatNumberWithUnit(
-      energy,
-      energyUnit,
-      this._i18n.locale,
-      formatOptions
-    );
-    const formattedCompareEnergy = formatNumberWithUnit(
-      compareEnergy,
-      energyUnit,
-      this._i18n.locale,
-      formatOptions
-    );
+    const formattedEnergy =
+      energy === null
+        ? ""
+        : formatNumberWithUnit(
+            energy,
+            energyUnit,
+            this._i18n.locale,
+            formatOptions
+          );
+    const formattedCompareEnergy =
+      compareEnergy === null
+        ? ""
+        : formatNumberWithUnit(
+            compareEnergy,
+            energyUnit,
+            this._i18n.locale,
+            formatOptions
+          );
 
     const label =
       name ||
@@ -447,7 +458,8 @@ export class HuiEnergySourcesTableCard
       types.water?.some(
         (flow) =>
           flow.stat_cost || flow.entity_energy_price || flow.number_energy_price
-      )
+      ) ||
+      this._data.prefs.fixed_costs.some((fixedCost) => types[fixedCost.type])
     );
 
     const units = {
@@ -605,6 +617,60 @@ export class HuiEnergySourcesTableCard
       "ui.panel.lovelace.cards.energy.energy_distribution.grid"
     );
 
+    const fixedCosts = fixedCostsByType(this._data.prefs);
+
+    const _renderFixedCosts = (type: FixedCostType) => {
+      const sourceCount = types[type]?.length;
+      if (!sourceCount) {
+        return nothing;
+      }
+      return fixedCosts[type]?.map((fixedCost, idx) => {
+        const statId = this._data!.info.fixed_cost_sensors[fixedCost.id];
+        if (!statId) {
+          return nothing;
+        }
+
+        const cost = calculateStatisticSumGrowth(this._data!.stats[statId]);
+        const costCompare = compare
+          ? calculateStatisticSumGrowth(this._data!.statsCompare[statId])
+          : null;
+
+        if (cost === null && costCompare === null) {
+          return nothing;
+        }
+
+        if (type === "grid") {
+          hasGridCost = true;
+          totalGridCost += cost ?? 0;
+          totalGridCostCompare += costCompare ?? 0;
+        } else {
+          hasCosts[type] = true;
+          totalCosts[type] += cost ?? 0;
+          totalCostsCompare[type] += costCompare ?? 0;
+        }
+
+        if (showOnlyTotals) {
+          return nothing;
+        }
+
+        // Shades after the source rows keep the bullets distinct from them
+        return this._renderRow(
+          computedStyles,
+          type === "grid" ? "grid_consumption" : type,
+          statId,
+          sourceCount + idx,
+          null,
+          null,
+          "",
+          cost,
+          costCompare,
+          showCosts,
+          compare,
+          fixedCost.name
+        );
+      });
+    };
+
     const _renderSimpleCategory = (type: "solar" | "gas" | "water") =>
       html` ${types[type]?.map((source, idx) => {
         const cost_stat =
@@ -646,6 +712,7 @@ export class HuiEnergySourcesTableCard
           source.name
         );
       })}
+      ${type === "solar" ? nothing : _renderFixedCosts(type)}
       ${
         types[type]
           ? this._renderTotalRow(
@@ -1017,6 +1084,7 @@ export class HuiEnergySourcesTableCard
                     )
                   : gridName
               )}
+              ${_renderFixedCosts("grid")}
               ${
                 types.grid &&
                 types.grid.some(

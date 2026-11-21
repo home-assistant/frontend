@@ -93,6 +93,7 @@ export const generateEnergyPreferences = (
     device_consumption: [],
     device_consumption_water: [],
     device_consumption_gas: [],
+    fixed_costs: [],
   };
 };
 
@@ -159,7 +160,11 @@ export const generateEnergyData = (
     start: new Date(FIXED_EPOCH_MS),
     end: new Date(FIXED_EPOCH_MS + days * dayMs),
     prefs,
-    info: { cost_sensors: {}, solar_forecast_domains: [] },
+    info: {
+      cost_sensors: {},
+      fixed_cost_sensors: {},
+      solar_forecast_domains: [],
+    },
     stats,
     statsMetadata: {},
     statsCompare,
