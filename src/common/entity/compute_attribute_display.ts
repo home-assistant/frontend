@@ -5,6 +5,7 @@ import {
   TEMPERATURE_ATTRIBUTES,
 } from "../../data/entity/entity_attributes";
 import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
+import { computeGroupMemberIds } from "../../data/group";
 import type { FrontendLocaleData } from "../../data/translation";
 import { TimeZone } from "../../data/translation";
 import type { WeatherEntity } from "../../data/weather";
@@ -209,8 +210,8 @@ const computeMemberAttributeValueDisplay = (
   attribute: string,
   attributeValue: string
 ): string | undefined => {
-  const memberIds = stateObj.attributes.entity_id;
-  if (!Array.isArray(memberIds)) {
+  const memberIds = computeGroupMemberIds(stateObj);
+  if (!memberIds) {
     return undefined;
   }
   const domain = computeStateDomain(stateObj);

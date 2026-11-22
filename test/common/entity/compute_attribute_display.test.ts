@@ -304,6 +304,39 @@ describe("computeAttributeValueDisplay", () => {
     ).toBe("fire");
   });
 
+  it("should return the translation of a member in group_entities", () => {
+    const localize = (key: string) =>
+      ({
+        "component.member_platform.entity.light.member_key.state_attributes.effect.state.candle":
+          "Candle",
+      })[key] || "";
+    const entities = {
+      "light.integration_group": { platform: "integration_platform" },
+      "light.member": {
+        platform: "member_platform",
+        translation_key: "member_key",
+      },
+    } as unknown as HomeAssistant["entities"];
+    const stateObj = {
+      entity_id: "light.integration_group",
+      attributes: {
+        group_entities: ["light.member"],
+      },
+    } as unknown as HassEntityBase;
+
+    expect(
+      computeAttributeValueDisplay(
+        localize,
+        stateObj,
+        localeMock,
+        configMock,
+        entities,
+        "effect",
+        "candle"
+      )
+    ).toBe("Candle");
+  });
+
   it("should return attribute value", () => {
     const stateObj = {
       entity_id: "media_player.test",

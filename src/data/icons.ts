@@ -75,6 +75,7 @@ import type {
 import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
 import { callWS } from "../util/websocket";
 import { getConditionDomain, getConditionObjectId } from "./condition";
+import { computeGroupMemberIds } from "./group";
 import { getTriggerDomain, getTriggerObjectId } from "./trigger";
 
 /** Icon to use when no icon specified for service. */
@@ -578,8 +579,8 @@ export const attributeIcon = async (
   }
   // A group has no icons for the values of its members, for example the
   // effects of a light group, so use the icon of a member for that value.
-  const memberIds = state.attributes.entity_id;
-  if (!icon && value !== undefined && Array.isArray(memberIds)) {
+  const memberIds = computeGroupMemberIds(state);
+  if (!icon && value !== undefined && memberIds) {
     for (const memberId of memberIds) {
       const member = entities[memberId] as
         EntityRegistryDisplayEntry | undefined;
