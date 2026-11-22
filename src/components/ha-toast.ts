@@ -52,6 +52,21 @@ export class HaToast extends LitElement {
 
   private _transitionId = 0;
 
+  // The last request, to continue it after a move to another parent.
+  private _shown = false;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (!this._active) {
+      return;
+    }
+    if (this._shown) {
+      this.show();
+    } else {
+      this.hide(this._closeReason);
+    }
+  }
+
   public disconnectedCallback(): void {
     clearTimeout(this._dismissTimer);
     this._transitionId += 1;
@@ -60,6 +75,7 @@ export class HaToast extends LitElement {
 
   public async show(): Promise<void> {
     clearTimeout(this._dismissTimer);
+    this._shown = true;
 
     if (this._active && this._visible) {
       this._setDismissTimer();
@@ -95,6 +111,7 @@ export class HaToast extends LitElement {
 
   public async hide(reason: ToastCloseReason = "programmatic"): Promise<void> {
     clearTimeout(this._dismissTimer);
+    this._shown = false;
     this._closeReason = reason;
 
     if (!this._active) {
