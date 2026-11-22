@@ -315,8 +315,8 @@ importers:
         specifier: 6.204.0
         version: 6.204.0
       '@webcomponents/scoped-custom-element-registry':
-        specifier: 0.0.10
-        version: 0.0.10
+        specifier: 0.0.11
+        version: 0.0.11
       barcode-detector:
         specifier: 3.2.4
         version: 3.2.4
@@ -3911,8 +3911,8 @@ packages:
     resolution: {integrity: sha512-XVKH79pk4d3EHRhofete8eAnqto1e8mCRAqPV00KLNFzCWSe8sWmLnqKCqkPNARC6nksMaGrATnA5sPDRllMpQ==}
     engines: {node: '>=10.0.0'}
 
-  '@webcomponents/scoped-custom-element-registry@0.0.10':
-    resolution: {integrity: sha512-wP4LF28aysE2Pq3NQRNQxko7Q0vOOwcoOSMg8FFI4S6z76UuXkYIc5ndC31dJMwso1/vSteL75LW2CEKedAJbA==}
+  '@webcomponents/scoped-custom-element-registry@0.0.11':
+    resolution: {integrity: sha512-O2VAVvWsiQgK3rmnNktP/3DauQ2rkUFqEZ3zckknce34NuLXj1mtVkbdelp7LYYW9J9OiQ871aHzoGTqEkdCgg==}
 
   '@xn-sakina/rml-darwin-arm64@2.9.0':
     resolution: {integrity: sha512-aCuqvf1+52HBnNHFYem9KSICyd0i6SaC9eXnHUvPmQM+mKWUHWA+5t5GubHHDRMstpYNFAKxePAl+ToeKs9hxw==}
@@ -11754,7 +11754,7 @@ snapshots:
     dependencies:
       semver: 7.8.5
 
-  '@webcomponents/scoped-custom-element-registry@0.0.10': {}
+  '@webcomponents/scoped-custom-element-registry@0.0.11': {}
 
   '@xn-sakina/rml-darwin-arm64@2.9.0':
     optional: true
