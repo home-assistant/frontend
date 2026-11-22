@@ -75,6 +75,14 @@ export class AreaViewStrategy extends ReactiveElement {
       });
     }
 
+    if (area.co2_entity_id) {
+      badges.push({
+        entity: area.co2_entity_id,
+        type: "entity",
+        color: "green",
+      });
+    }
+
     const groupedEntities = getAreaGroupedEntities(
       config.area,
       hass,

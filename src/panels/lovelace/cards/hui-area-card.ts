@@ -459,6 +459,15 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
             ? ""
             : this.hass.formatEntityState(stateObj);
         }
+        if (sensorClass === "carbon_dioxide" && area.co2_entity_id) {
+          const stateObj = this.hass.states[area.co2_entity_id] as
+            HassEntity | undefined;
+          return !stateObj ||
+            stateObj.state === UNAVAILABLE ||
+            stateObj.state === UNKNOWN
+            ? ""
+            : this.hass.formatEntityState(stateObj);
+        }
 
         const sensorEntityIds = groupedEntities.get(sensorClass) || [];
         const values: number[] = [];

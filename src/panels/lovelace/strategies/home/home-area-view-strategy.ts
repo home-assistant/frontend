@@ -75,6 +75,14 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       });
     }
 
+    if (area.co2_entity_id) {
+      badges.push({
+        entity: area.co2_entity_id,
+        type: "entity",
+        color: "green",
+      });
+    }
+
     const computeTileCard = computeAreaTileCardConfig(hass, true);
 
     const areaFilter = generateEntityFilter(

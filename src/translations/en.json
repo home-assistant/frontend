@@ -3757,6 +3757,8 @@
             "temperature_entity_description": "Sensor that represents the area temperature.",
             "humidity_entity": "Humidity sensor",
             "humidity_entity_description": "Sensor that represents the area humidity.",
+            "co2_entity": "CO₂ sensor",
+            "co2_entity_description": "Sensor that represents the area carbon dioxide level.",
             "related_entities_section": "Related sensors"
           },
           "delete": {
