@@ -43,11 +43,17 @@ const connection = {
   haVersion: "2026.11.0",
   sendMessagePromise: async (message: {
     category: "entity" | "entity_component";
-  }) => ({ resources: ICONS[message.category] }),
+    integration?: string;
+  }) => {
+    if (message.integration === "failing_platform") {
+      throw new Error("Icons not available");
+    }
+    return { resources: ICONS[message.category] };
+  },
 } as unknown as HomeAssistant["connection"];
 
 const config = {
-  components: ["light", "member_platform"],
+  components: ["light", "member_platform", "failing_platform"],
 } as unknown as HomeAssistant["config"];
 
 const entities = {
@@ -55,6 +61,10 @@ const entities = {
   "light.member": {
     platform: "member_platform",
     translation_key: "member_key",
+  },
+  "light.failing_member": {
+    platform: "failing_platform",
+    translation_key: "failing_key",
   },
 } as unknown as HomeAssistant["entities"];
 
@@ -101,5 +111,26 @@ describe("attributeIcon", () => {
         "60"
       )
     ).toBe("mdi:level-high");
+  });
+
+  it("continues when the icons of a group member fail to load", async () => {
+    const state = {
+      entity_id: "light.group",
+      attributes: { entity_id: ["light.failing_member", "light.member"] },
+    } as unknown as HassEntity;
+
+    expect(
+      await attributeIcon(
+        config,
+        connection,
+        entities,
+        state,
+        "effect",
+        "candle"
+      )
+    ).toBe("mdi:candle");
+    expect(
+      await attributeIcon(config, connection, entities, state, "effect", "fire")
+    ).toBe("mdi:circle-medium");
   });
 });

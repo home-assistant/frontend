@@ -591,12 +591,18 @@ export const attributeIcon = async (
       ) {
         continue;
       }
-      // eslint-disable-next-line no-await-in-loop
-      const memberIcons = await getPlatformIcons(
-        hassConfig,
-        hassConnection,
-        member.platform
-      );
+      let memberIcons: PlatformIcons | undefined;
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        memberIcons = await getPlatformIcons(
+          hassConfig,
+          hassConnection,
+          member.platform
+        );
+      } catch {
+        // The icons of a member are optional, so try the other fallbacks
+        continue;
+      }
       const memberTranslations =
         memberIcons?.[domain]?.[member.translation_key]?.state_attributes?.[
           attribute
