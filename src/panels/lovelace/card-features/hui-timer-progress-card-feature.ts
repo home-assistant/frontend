@@ -52,7 +52,7 @@ class HuiTimerProgressCardFeature
     this._config = config;
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected update(changedProps: PropertyValues): void {
     if (changedProps.has("_stateObj")) {
       this._timeRemaining.setStateObj(this._stateObj);
     }
@@ -62,6 +62,7 @@ class HuiTimerProgressCardFeature
         this._stateObj.state === "active" && ratio <= this._prevRatio;
       this._prevRatio = ratio;
     }
+    super.update(changedProps);
   }
 
   private _ratio(stateObj: HassEntity, offset = 0): number {
@@ -123,7 +124,7 @@ class HuiTimerProgressCardFeature
         border-radius: var(--feature-border-radius, 12px);
         background: color-mix(
           in srgb,
-          var(--tile-color, var(--primary-color)) 20%,
+          var(--tile-color, var(--feature-color)) 20%,
           transparent
         );
         overflow: hidden;
@@ -132,7 +133,7 @@ class HuiTimerProgressCardFeature
         height: 100%;
         width: 100%;
         transform-origin: var(--float-start, left);
-        background: var(--tile-color, var(--primary-color));
+        background: var(--tile-color, var(--feature-color));
       }
     `,
   ];
