@@ -73,16 +73,19 @@ describe("ha-toast", () => {
 
   // A toast moves with the notification manager into an open dialog. The
   // move disconnects it, which stops its timer.
-  it("still closes on timeout after a move in the DOM", async () => {
+  it("keeps its timeout after a move in the DOM", async () => {
     const element = await mountToast({ timeoutMs: 1000 });
     const listener = vi.fn();
     element.addEventListener("toast-closed", listener);
     await showToast(element);
 
+    await vi.advanceTimersByTimeAsync(900);
     const parent = document.createElement("div");
     document.body.append(parent);
     parent.append(element);
-    await vi.advanceTimersByTimeAsync(1000);
+    await vi.advanceTimersByTimeAsync(50);
+    expect(listener).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(50);
     parent.remove();
 
     expect(listener.mock.calls[0][0].detail).toEqual({ reason: "timeout" });
