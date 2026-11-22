@@ -18,6 +18,10 @@ const ICONS = {
               default: "mdi:member-default",
               state: { candle: "mdi:candle" },
             },
+            level: {
+              default: "mdi:member-default",
+              range: { "0": "mdi:level-low", "50": "mdi:level-high" },
+            },
           },
         },
       },
@@ -84,5 +88,18 @@ describe("attributeIcon", () => {
         "fire"
       )
     ).toBe("mdi:circle-medium");
+  });
+
+  it("uses the range icon of a group member for a numeric value", async () => {
+    expect(
+      await attributeIcon(
+        config,
+        connection,
+        entities,
+        groupState,
+        "level",
+        "60"
+      )
+    ).toBe("mdi:level-high");
   });
 });

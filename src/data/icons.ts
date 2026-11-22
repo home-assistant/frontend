@@ -597,10 +597,17 @@ export const attributeIcon = async (
         hassConnection,
         member.platform
       );
-      icon =
+      const memberTranslations =
         memberIcons?.[domain]?.[member.translation_key]?.state_attributes?.[
           attribute
-        ]?.state?.[value];
+        ];
+      // The default icon of a member is not an icon for this value
+      icon =
+        memberTranslations &&
+        getIconFromTranslations(value, {
+          ...memberTranslations,
+          default: undefined,
+        });
       if (icon) {
         break;
       }
