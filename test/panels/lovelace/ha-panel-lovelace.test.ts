@@ -6,6 +6,7 @@ import "../../../src/panels/lovelace/ha-panel-lovelace";
 type LovelacePanel = HTMLElement & {
   hass: unknown;
   panel: unknown;
+  lovelace?: { config: unknown };
   updateComplete: Promise<boolean>;
 };
 
@@ -98,5 +99,56 @@ describe("ha-panel-lovelace config updates", () => {
     panel.remove();
     await flush();
     expect(unsub).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("ha-panel-lovelace reconnect", () => {
+  const reconnect = async () => {
+    window.dispatchEvent(
+      new CustomEvent("connection-status", { detail: "connected" })
+    );
+    await flush();
+  };
+
+  it("keeps the dashboard when the config is unchanged", async () => {
+    const { panel } = await openPanel("dashboard-test");
+    const lovelace = panel.lovelace;
+    expect(lovelace).toBeDefined();
+
+    vi.mocked(fetchConfig).mockResolvedValueOnce({ views: [{ cards: [] }] });
+    await reconnect();
+
+    expect(fetchConfig).toHaveBeenCalledTimes(2);
+    expect(panel.lovelace).toBe(lovelace);
+  });
+
+  it("rebuilds the dashboard when the config changed", async () => {
+    const { panel } = await openPanel("dashboard-test");
+    const lovelace = panel.lovelace;
+
+    const changed = { views: [{ cards: [{ type: "markdown" }] }] };
+    vi.mocked(fetchConfig).mockResolvedValueOnce(changed);
+    await reconnect();
+
+    expect(panel.lovelace).not.toBe(lovelace);
+    expect(panel.lovelace!.config).toEqual(changed);
+  });
+
+  it("rebuilds the dashboard on a manual refresh", async () => {
+    const { panel } = await openPanel("dashboard-test");
+    const lovelace = panel.lovelace;
+
+    vi.mocked(fetchConfig).mockResolvedValueOnce({ views: [{ cards: [] }] });
+    panel
+      .shadowRoot!.querySelector("hui-root")!
+      .dispatchEvent(new CustomEvent("config-refresh"));
+    await flush();
+
+    expect(fetchConfig).toHaveBeenLastCalledWith(
+      expect.anything(),
+      "dashboard-test",
+      true
+    );
+    expect(panel.lovelace).not.toBe(lovelace);
   });
 });

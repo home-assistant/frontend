@@ -12,6 +12,7 @@ import {
   removeSearchParam,
 } from "../../common/url/search-params";
 import { debounce } from "../../common/util/debounce";
+import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/ha-button";
 import { domainToName } from "../../data/integration";
 import { subscribeLovelaceUpdates } from "../../data/lovelace";
@@ -386,7 +387,27 @@ export class LovelacePanel extends LitElement {
 
     this._panelState =
       this._panelState === "yaml-editor" ? this._panelState : "loaded";
+    // A refetch, e.g. on reconnect, often returns the config already shown.
+    // Rebuilding would recreate every card. A manual refresh still rebuilds.
+    if (!forceDiskRefresh && this._isCurrentConfig(conf, rawConf, confMode)) {
+      return;
+    }
     this._setLovelaceConfig(conf, rawConf, confMode);
+  }
+
+  private _isCurrentConfig(
+    config: LovelaceConfig,
+    rawConfig: LovelaceRawConfig,
+    mode: Lovelace["mode"]
+  ): boolean {
+    const current = this.lovelace;
+    return (
+      !!current &&
+      current.mode === mode &&
+      current.locale === this.hass!.locale &&
+      deepEqual(current.rawConfig, rawConfig) &&
+      deepEqual(current.config, normalizeLovelaceConfig(config))
+    );
   }
 
   private _normalizeLovelaceConfig(config: LovelaceRawConfig) {
