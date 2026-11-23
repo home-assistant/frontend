@@ -88,6 +88,20 @@ export const timerListTimerRemaining = (
   return 0;
 };
 
+const FINISHED_VISIBLE_MS = 5 * 60 * 1000;
+
+// Active and paused timers, and timers that finished in the last 5 minutes.
+// The backend keeps ended timers much longer than is useful to show.
+export const timerListTimerVisible = (
+  timer: TimerListTimer,
+  now = Date.now()
+): boolean =>
+  timer.status === "active" ||
+  timer.status === "paused" ||
+  (timer.status === "finished" &&
+    timer.ended_at !== null &&
+    now - new Date(timer.ended_at).getTime() < FINISHED_VISIBLE_MS);
+
 export const createTimerListTimer = (
   callService: HomeAssistant["callService"],
   entity_id: string,
@@ -112,7 +126,7 @@ export const addTimerListTimerTime = (
 export const callTimerListTimerAction = (
   callService: HomeAssistant["callService"],
   entity_id: string,
-  action: "pause_timer" | "unpause_timer" | "cancel_timer",
+  action: "pause_timer" | "unpause_timer" | "cancel_timer" | "remove_timer",
   timer_id: string
 ): Promise<ServiceCallResponse> =>
   callService("timer_list", action, { timer_id }, { entity_id });

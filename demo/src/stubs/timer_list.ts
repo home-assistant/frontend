@@ -12,6 +12,7 @@ export interface MockTimerListTimer {
   duration: number;
   remaining?: number;
   paused?: boolean;
+  finished?: boolean;
 }
 
 type ChangeEventType = Extract<
@@ -53,9 +54,23 @@ export const mockTimerList = (
   const timers: Record<string, TimerListTimer[]> = Object.fromEntries(
     Object.entries(lists).map(([entityId, seeds]) => [
       entityId,
-      seeds.map((seed) =>
-        createTimer(seed.duration, seed.name, seed.remaining, seed.paused)
-      ),
+      seeds.map((seed) => {
+        const timer = createTimer(
+          seed.duration,
+          seed.name,
+          seed.remaining,
+          seed.paused
+        );
+        return seed.finished
+          ? {
+              ...timer,
+              status: "finished" as const,
+              finishes_at: null,
+              ended_at: timer.created_at,
+              remaining: 0,
+            }
+          : timer;
+      }),
     ])
   );
 
@@ -64,10 +79,12 @@ export const mockTimerList = (
     timer: TimerListTimer,
     eventType: ChangeEventType
   ) => {
-    timers[entityId] = [
-      ...timers[entityId].filter((item) => item.timer_id !== timer.timer_id),
-      timer,
-    ];
+    timers[entityId] = timers[entityId].filter(
+      (item) => item.timer_id !== timer.timer_id
+    );
+    if (eventType !== "removed") {
+      timers[entityId].push(timer);
+    }
     listeners[entityId]?.forEach((listener) =>
       listener({ type: "change", event_type: eventType, timer })
     );
@@ -163,6 +180,9 @@ export const mockTimerList = (
   );
   mockTimerService("cancel_timer", (entityId, timer) =>
     end(entityId, timer, "cancelled")
+  );
+  mockTimerService("remove_timer", (entityId, timer) =>
+    change(entityId, timer, "removed")
   );
   mockTimerService("add_time", (entityId, timer, data) =>
     setRemaining(

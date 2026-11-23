@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import type { TimerListTimer } from "../../src/data/timer_list";
-import { applyTimerListMessage } from "../../src/data/timer_list";
+import {
+  applyTimerListMessage,
+  timerListTimerVisible,
+} from "../../src/data/timer_list";
 
 const timer = (
   timer_id: string,
@@ -57,5 +60,36 @@ describe("applyTimerListMessage", () => {
         timer: timer("a"),
       })
     ).toEqual([timer("b")]);
+  });
+});
+
+// Ended timers stay in the backend list, so this decides what the UI shows.
+describe("timerListTimerVisible", () => {
+  const now = new Date("2026-01-01T00:10:00+00:00").getTime();
+  const ended = (status: TimerListTimer["status"], ended_at: string) => ({
+    ...timer("a", status),
+    ended_at,
+  });
+
+  it.each([
+    ["active", timer("a"), true],
+    ["paused", timer("a", "paused"), true],
+    [
+      "finished 4 minutes ago",
+      ended("finished", "2026-01-01T00:06:00+00:00"),
+      true,
+    ],
+    [
+      "finished 5 minutes ago",
+      ended("finished", "2026-01-01T00:05:00+00:00"),
+      false,
+    ],
+    [
+      "cancelled just now",
+      ended("cancelled", "2026-01-01T00:10:00+00:00"),
+      false,
+    ],
+  ])("%s", (_name, item, visible) => {
+    expect(timerListTimerVisible(item, now)).toBe(visible);
   });
 });

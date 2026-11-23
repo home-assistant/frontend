@@ -37,6 +37,7 @@ export const TIMER_LIST_ENTITIES = [
 
 export const TIMER_LIST_TIMERS: Record<string, MockTimerListTimer[]> = {
   "timer_list.kitchen": [
+    { name: "Eggs", duration: 360, finished: true },
     { name: "Pasta", duration: 600, remaining: 425 },
     { duration: 300, remaining: 40 },
     { name: "Bread", duration: 2700, remaining: 1310, paused: true },

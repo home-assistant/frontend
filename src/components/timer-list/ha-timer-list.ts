@@ -33,6 +33,7 @@ import {
   subscribeTimerListTimers,
   TimerListEntityFeature,
   timerListTimerRemaining,
+  timerListTimerVisible,
 } from "../../data/timer_list";
 import type {
   HomeAssistantApi,
@@ -128,7 +129,10 @@ export class HaTimerList extends LitElement {
   }
 
   protected updated(): void {
-    const ticking = this._timers?.some((timer) => timer.status === "active");
+    // Finished timers need the tick too, to hide them when their time is up.
+    const ticking = this._timers?.some(
+      (timer) => timer.status !== "paused" && timerListTimerVisible(timer)
+    );
     if (ticking && !this._interval) {
       this._interval = window.setInterval(() => this.requestUpdate(), 1000);
     } else if (!ticking) {
@@ -152,8 +156,8 @@ export class HaTimerList extends LitElement {
     }
     const stateObj = this._stateObj;
     const unavailable = stateObj.state === UNAVAILABLE;
-    const timers = this._timers?.filter(
-      (timer) => timer.status === "active" || timer.status === "paused"
+    const timers = this._timers?.filter((timer) =>
+      timerListTimerVisible(timer)
     );
     const canPause = supportsFeature(
       stateObj,
@@ -166,6 +170,10 @@ export class HaTimerList extends LitElement {
     const canAddTime = supportsFeature(
       stateObj,
       TimerListEntityFeature.ADD_TIME
+    );
+    const canRemove = supportsFeature(
+      stateObj,
+      TimerListEntityFeature.REMOVE_TIMER
     );
 
     return html`
@@ -212,6 +220,7 @@ export class HaTimerList extends LitElement {
                     (timer) => timer.timer_id,
                     (timer) => {
                       const paused = timer.status === "paused";
+                      const finished = timer.status === "finished";
                       const remaining = timerListTimerRemaining(timer);
                       const name =
                         timer.name ||
@@ -222,7 +231,7 @@ export class HaTimerList extends LitElement {
                           })
                         );
                       return html`
-                        <li class=${classMap({ paused })}>
+                        <li class=${classMap({ paused, finished })}>
                           <div class="row">
                             <div class="info">
                               <span class="remaining">
@@ -235,9 +244,11 @@ export class HaTimerList extends LitElement {
                               </span>
                               <span class="name">
                                 ${
-                                  paused
+                                  paused || finished
                                     ? this._i18n.localize(
-                                        "ui.components.timer-list.paused_name",
+                                        finished
+                                          ? "ui.components.timer-list.finished_name"
+                                          : "ui.components.timer-list.paused_name",
                                         { name }
                                       )
                                     : name
@@ -245,7 +256,7 @@ export class HaTimerList extends LitElement {
                               </span>
                             </div>
                             ${
-                              canAddTime
+                              canAddTime && !finished
                                 ? html`<ha-icon-button
                                     .timer=${timer}
                                     .path=${mdiTimerPlusOutline}
@@ -257,7 +268,7 @@ export class HaTimerList extends LitElement {
                                 : nothing
                             }
                             ${
-                              canPause
+                              canPause && !finished
                                 ? html`<ha-icon-button
                                     .timer=${timer}
                                     .path=${paused ? mdiPlay : mdiPause}
@@ -271,14 +282,16 @@ export class HaTimerList extends LitElement {
                                 : nothing
                             }
                             ${
-                              canCancel
+                              (finished ? canRemove : canCancel)
                                 ? html`<ha-icon-button
                                     .timer=${timer}
                                     .path=${mdiClose}
                                     .label=${this._i18n.localize(
-                                      "ui.components.timer-list.cancel"
+                                      finished
+                                        ? "ui.components.timer-list.remove"
+                                        : "ui.components.timer-list.cancel"
                                     )}
-                                    @click=${this._cancel}
+                                    @click=${this._cancelOrRemove}
                                   ></ha-icon-button>`
                                 : nothing
                             }
@@ -349,12 +362,13 @@ export class HaTimerList extends LitElement {
     );
   }
 
-  private _cancel(ev: TimerButtonEvent): void {
+  private _cancelOrRemove(ev: TimerButtonEvent): void {
+    const { timer } = ev.currentTarget;
     callTimerListTimerAction(
       this._api.callService,
       this.entityId!,
-      "cancel_timer",
-      ev.currentTarget.timer.timer_id
+      timer.status === "finished" ? "remove_timer" : "cancel_timer",
+      timer.timer_id
     );
   }
 
@@ -403,6 +417,9 @@ export class HaTimerList extends LitElement {
     }
     .paused .remaining {
       color: var(--secondary-text-color);
+    }
+    .finished .remaining {
+      color: var(--error-color);
     }
     ha-progress-bar {
       --ha-progress-bar-track-height: 4px;

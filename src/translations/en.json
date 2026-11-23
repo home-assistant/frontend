@@ -1501,7 +1501,9 @@
         "resume": "Resume",
         "cancel": "Cancel",
         "add_minute": "Add 1 minute",
+        "remove": "Remove",
         "paused_name": "{name} (paused)",
+        "finished_name": "{name} (finished)",
         "no_timers": "No active timers"
       },
       "todo": {
