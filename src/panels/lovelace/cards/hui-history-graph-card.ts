@@ -68,7 +68,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   private _stateHistory?: HistoryResult;
 
   public getCardSize(): number {
-    return this._config?.title ? 2 : 0 + 2 * (this._entityIds?.length || 1);
+    return (this._config?.title ? 2 : 0) + 2 * (this._entityIds?.length || 1);
   }
 
   getGridOptions(): LovelaceGridOptions {
