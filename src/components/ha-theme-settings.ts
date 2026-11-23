@@ -1,13 +1,15 @@
 import type { ContextType } from "@lit/context";
 import type { TemplateResult } from "lit";
-import { formatHex } from "culori";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { cssColorToHex } from "../common/color/hex";
 import { normalizeLuminance } from "../common/color/palette";
 import { consume } from "../common/decorators/consume";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
-import { internationalizationContext, uiContext } from "../data/context";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { uiContext } from "../data/context";
 import {
   getThemeModeSupport,
   getThemeVariables,
@@ -51,8 +53,8 @@ export class HaThemeSettings extends LitElement {
   private _ui!: ContextType<typeof uiContext>;
 
   @state()
-  @consume({ context: internationalizationContext, subscribe: true })
-  private _i18n!: ContextType<typeof internationalizationContext>;
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) public selectedTheme?: ThemeSettings | null;
 
@@ -88,8 +90,7 @@ export class HaThemeSettings extends LitElement {
         : undefined;
     const showThemeOptions = curTheme === HOME_ASSISTANT_THEME || !!customTheme;
 
-    // With "use default theme" and both a default light and dark theme set,
-    // the mode picks which of the two themes is used.
+    // With "use default theme", the mode picks the default light or dark theme.
     const modeSupport: ThemeModeSupport =
       !customTheme ||
       (curThemeIsUseDefault &&
@@ -147,7 +148,7 @@ export class HaThemeSettings extends LitElement {
                   wrap-supporting-text
                   .supportingText=${
                     modeSupport !== "both"
-                      ? this._i18n.localize(
+                      ? this._localize(
                           `ui.panel.profile.themes.mode_set_by_theme.${modeSupport}`,
                           { theme: curTheme }
                         )
@@ -187,7 +188,7 @@ export class HaThemeSettings extends LitElement {
                   wrap-supporting-text
                   .supportingText=${
                     primaryColorLocked || accentColorLocked
-                      ? this._i18n.localize(
+                      ? this._localize(
                           `ui.panel.profile.themes.colors_set_by_theme.${
                             primaryColorLocked && accentColorLocked
                               ? "both"
@@ -286,10 +287,7 @@ export class HaThemeSettings extends LitElement {
     }
   }
 
-  /**
-   * The primary and accent colors the current theme sets itself, as hex for
-   * the color pickers. `undefined` when the user can pick that color.
-   */
+  /** Colors the theme sets itself, `undefined` when the user can pick them. */
   private _themeColors = memoizeOne(
     (
       theme: Theme | undefined,
@@ -300,7 +298,7 @@ export class HaThemeSettings extends LitElement {
       }
       const variables = getThemeVariables(theme, darkMode);
       const toHex = (value: string | undefined, fallback: string) =>
-        (value && formatHex(value)) || fallback;
+        (value && cssColorToHex(value)) || fallback;
       return {
         primary: themeDefinesColor(variables, "primary")
           ? toHex(

@@ -51,12 +51,7 @@ export const subscribeThemes = (
     onChange
   );
 
-/**
- * Which light/dark modes a theme can be shown in.
- * - `both`: the user can pick light, dark or auto.
- * - `light` / `dark`: the theme only defines that mode and always uses it.
- * - `none`: the theme has no modes and fixed colors. It is applied on the light base.
- */
+/** `none`: the theme has no modes and fixed colors, applied on the light base. */
 export type ThemeModeSupport = "both" | "light" | "dark" | "none";
 
 export const getThemeModeSupport = (theme: Theme): ThemeModeSupport => {
@@ -75,10 +70,6 @@ export const getThemeModeSupport = (theme: Theme): ThemeModeSupport => {
   return "none";
 };
 
-/**
- * The variables a theme sets for the given mode, with the mode specific
- * variables taking precedence over the base ones.
- */
 export const getThemeVariables = (
   theme: Theme,
   darkMode: boolean
@@ -90,11 +81,7 @@ export const getThemeVariables = (
   };
 };
 
-/**
- * Whether the theme sets a color itself, so a color picked by the user must
- * not override it. A theme that sets any key of the generated primary palette
- * also counts as setting the primary color.
- */
+/** Setting any primary palette key counts as setting the primary color. */
 export const themeDefinesColor = (
   themeVariables: Partial<ThemeVars>,
   color: "primary" | "accent"
@@ -108,7 +95,6 @@ export const themeDefinesColor = (
   );
 };
 
-/** Whether the theme sets any key of the generated primary palette. */
 export const themeDefinesPrimaryPalette = (
   themeVariables: Partial<ThemeVars>
 ): boolean =>

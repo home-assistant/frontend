@@ -36,9 +36,6 @@ const apply = (
   return element.style;
 };
 
-// Colors picked in the profile used to apply to the default theme only. A
-// custom theme that leaves a color unset now gets the picked one, while a
-// color the theme sets itself always wins.
 describe("applyThemesOnElement user colors", () => {
   beforeEach(() => {
     invalidateThemeCache();
@@ -110,8 +107,6 @@ describe("applyThemesOnElement user colors", () => {
   });
 });
 
-// A custom theme that sets a primary color without the palette used to keep
-// the default blue palette, so switches and buttons ignored the theme color.
 describe("applyThemesOnElement theme palette", () => {
   beforeEach(() => {
     invalidateThemeCache();

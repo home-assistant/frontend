@@ -1,4 +1,3 @@
-import { formatHex } from "culori";
 import type { ThemeVars } from "../../data/ws-themes";
 import {
   getThemeVariables,
@@ -16,7 +15,7 @@ import {
   rgb2hex,
   rgb2lab,
 } from "../color/convert-color";
-import { hexBlend } from "../color/hex";
+import { cssColorToHex, hexBlend } from "../color/hex";
 import { labBrighten, labDarken } from "../color/lab";
 import { generateColorPalette, normalizeLuminance } from "../color/palette";
 import { rgbContrast } from "../color/rgb";
@@ -69,8 +68,6 @@ export const applyThemesOnElement = (
     ? getThemeVariables(customTheme, darkMode)
     : undefined;
 
-  // Colors picked by the user apply to the default theme, and to custom
-  // themes that don't set that color themselves.
   const primaryColor =
     isDefaultTheme ||
     (customThemeRules && !themeDefinesColor(customThemeRules, "primary"))
@@ -98,27 +95,20 @@ export const applyThemesOnElement = (
     return;
   }
 
-  // A custom theme that sets a primary color but not the palette gets the
-  // palette generated from that color, so components using the palette
-  // follow the theme. Colors that can't be parsed, like `var(--x)`, are
-  // left as they are.
+  // Unparseable colors like `var(--x)` are skipped.
   const themePrimaryColor =
-    customThemeRules && !themeDefinesPrimaryPalette(customThemeRules)
-      ? toHexColor(customThemeRules["primary-color"])
+    customThemeRules?.["primary-color"] &&
+    !themeDefinesPrimaryPalette(customThemeRules)
+      ? cssColorToHex(customThemeRules["primary-color"])
       : undefined;
   if (themePrimaryColor) {
-    // Like colors picked by the user, keep the palette readable. Older themes
-    // often set a near black primary color for the header, which would
-    // otherwise give near black switches and buttons. The theme's own
-    // primary-color is kept as it is.
+    // Older themes often use a near black primary color for the header.
     themeRules = {
       ...themeRules,
       ...getPrimaryPaletteRules(normalizeLuminance(themePrimaryColor)),
     };
   }
 
-  // Custom theme variables go last, so they win over the defaults and over
-  // anything derived from the colors picked by the user.
   if (customThemeRules) {
     themeRules = { ...themeRules, ...customThemeRules };
   }
@@ -147,14 +137,6 @@ export const applyThemesOnElement = (
   }
 };
 
-const toHexColor = (value: string | undefined): string | undefined =>
-  value ? formatHex(value) : undefined;
-
-/**
- * The generated primary palette and primary color shades for a hex color.
- * Used for colors picked by the user and for custom themes that set a primary
- * color without a palette.
- */
 const getPrimaryPaletteRules = (primaryColor: string): Partial<ThemeVars> => {
   const rules: Partial<ThemeVars> = {};
   const labPrimaryColor = rgb2lab(hex2rgb(primaryColor));
@@ -169,10 +151,6 @@ const getPrimaryPaletteRules = (primaryColor: string): Partial<ThemeVars> => {
   return rules;
 };
 
-/**
- * Derive the theme variables for the primary and accent colors picked by the
- * user, including the generated primary palette.
- */
 const getUserColorRules = (
   primaryColor: string | undefined,
   accentColor: string | undefined,
