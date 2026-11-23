@@ -12786,7 +12786,17 @@
           "migrate_success": "Theme settings migrated.",
           "migrate_failed": "Failed to migrate theme settings.",
           "theme_mode": "Theme mode",
+          "mode_set_by_theme": {
+            "light": "\"{theme}\" only has a light mode.",
+            "dark": "\"{theme}\" only has a dark mode.",
+            "none": "\"{theme}\" has fixed colors and doesn't switch between light and dark mode."
+          },
           "colors": "Custom colors",
+          "colors_set_by_theme": {
+            "both": "Both colors are set by \"{theme}\".",
+            "primary": "The primary color is set by \"{theme}\".",
+            "accent": "The accent color is set by \"{theme}\"."
+          },
           "dark_mode": {
             "auto": "Auto",
             "light": "Light",
