@@ -635,7 +635,17 @@ export class HaConfigLogs extends LitElement {
     this._providersLoaded = true;
     // What was stored is already applied, and an empty URL now is a link like
     // `?provider=core` that was tidied up
+    const levelsExclude = this._levelsExclude;
+    const integrationsExclude = this._integrationsExclude;
     this._applyUrl(false);
+    // The URL leaves out the mode of a filter without a selection, so keep the
+    // one that's already applied
+    if (!this._levels.length) {
+      this._levelsExclude = levelsExclude;
+    }
+    if (!this._integrations.length) {
+      this._integrationsExclude = integrationsExclude;
+    }
   }
 
   private _applyUrl(restoreStored = true) {
