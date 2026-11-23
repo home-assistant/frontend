@@ -1,4 +1,5 @@
-import { mdiStarFourPoints } from "@mdi/js";
+import { mdiArrowRight, mdiStarFourPoints } from "@mdi/js";
+import type { HassEntities, HassServices } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
@@ -7,25 +8,30 @@ import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { stringifyPath } from "../../../../common/util/config-path";
 import "../../../../components/ha-svg-icon";
 import {
+  areasContext,
+  devicesContext,
+  floorsContext,
+  labelsContext,
+  localeContext,
+  servicesContext,
+  statesContext,
+} from "../../../../data/context";
+import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
+import type { HomeAssistant } from "../../../../types";
+import {
   automationRowRegistryContext,
   type AutomationRowRegistry,
 } from "../automation-path";
+import { describeFieldChanges } from "./automation-ai-change-text";
 import {
   automationDiffContext,
   diffMarkAt,
   type AutomationDiff,
-  type FieldChange,
 } from "./automation-ai-diff";
 
-const formatValue = (value: unknown): string =>
-  value === undefined
-    ? "—"
-    : typeof value === "string"
-      ? value
-      : JSON.stringify(value);
-
 /**
- * @summary What the AI changed in the row open in the sidebar.
+ * @summary What the AI changed in the row open in the sidebar, in the words
+ * of the editor.
  */
 @customElement("ha-automation-ai-changes")
 export class HaAutomationAiChanges extends LitElement {
@@ -44,59 +50,101 @@ export class HaAutomationAiChanges extends LitElement {
   @consumeLocalize()
   private _localize!: LocalizeFunc;
 
+  // Names for ids, read when the changes render, which they rarely do
+  @consume({ context: statesContext }) private _states?: HassEntities;
+
+  @consume({ context: servicesContext }) private _services?: HassServices;
+
+  @consume({ context: devicesContext })
+  private _devices?: HomeAssistant["devices"];
+
+  @consume({ context: areasContext }) private _areas?: HomeAssistant["areas"];
+
+  @consume({ context: floorsContext })
+  private _floors?: HomeAssistant["floors"];
+
+  @consume({ context: labelsContext }) private _labels?: LabelRegistryEntry[];
+
+  @consume({ context: localeContext })
+  private _locale?: HomeAssistant["locale"];
+
   protected render() {
     const path = this._diff && this._registry?.selectedPath();
     const mark = path && diffMarkAt(this._diff, path);
     if (!path || !mark || this.yamlMode) {
       return nothing;
     }
-    const changes: FieldChange[] =
+    const key = stringifyPath(path);
+    // A whole added or removed row needs no list of its fields
+    const lines =
       mark === "changed"
-        ? (this._diff!.fields.get(stringifyPath(path)) ?? [])
-        : [{ path: [], mark }];
+        ? describeFieldChanges(
+            this._diff!.fields.get(key) ?? [],
+            this._diff!.items.get(key)?.after ??
+              this._diff!.items.get(key)?.before,
+            {
+              localize: this._localize,
+              locale: this._locale,
+              states: this._states,
+              services: this._services,
+              devices: this._devices,
+              areas: this._areas,
+              floors: this._floors,
+              labels: this._labels,
+            }
+          )
+        : [];
 
     return html`
       <div class="changes ${mark}">
         <div class="title">
           <ha-svg-icon .path=${mdiStarFourPoints}></ha-svg-icon>
-          ${this._localize("ui.panel.config.automation.editor.ai.changes.title")}
+          ${this._localize(`ui.panel.config.automation.editor.ai.changes.title_${mark}`)}
         </div>
-        <ul>
-          ${changes.map(
-            (change) => html`
-              <li class=${change.mark}>
-                <span class="field">
-                  ${
-                    change.path.length
-                      ? change.path.join(".")
-                      : this._localize(
-                          "ui.panel.config.automation.editor.ai.changes.whole_item"
-                        )
-                  }:
-                  ${this._localize(
-                    `ui.panel.config.automation.editor.ai.changes.${change.mark}`
-                  )}
-                </span>
-                ${
-                  change.mark === "changed"
-                    ? html`<span class="values">
-                        <del>${formatValue(change.oldValue)}</del>
-                        <ins>${formatValue(change.newValue)}</ins>
-                      </span>`
-                    : change.path.length
-                      ? html`<span class="values">
-                          ${
-                            change.mark === "removed"
-                              ? html`<del>${formatValue(change.oldValue)}</del>`
-                              : html`<ins>${formatValue(change.newValue)}</ins>`
-                          }
-                        </span>`
-                      : nothing
-                }
-              </li>
-            `
-          )}
-        </ul>
+        ${
+          lines.length
+            ? html`<ul>
+                ${lines.map(
+                  (line) => html`
+                    <li>
+                      <span class="label">
+                        ${line.label}
+                        ${
+                          line.mark === "changed"
+                            ? nothing
+                            : html`<span class="mark ${line.mark}"
+                                >${this._localize(
+                                  `ui.panel.config.automation.editor.ai.changes.${line.mark}`
+                                )}</span
+                              >`
+                        }
+                      </span>
+                      <span class="values">
+                        ${
+                          line.oldValue !== undefined
+                            ? html`<del>${line.oldValue}</del>`
+                            : nothing
+                        }
+                        ${
+                          line.mark === "changed"
+                            ? html`<ha-svg-icon
+                                class="arrow"
+                                .path=${mdiArrowRight}
+                              ></ha-svg-icon>`
+                            : nothing
+                        }
+                        ${
+                          line.newValue !== undefined
+                            ? html`<ins>${line.newValue}</ins>`
+                            : nothing
+                        }
+                      </span>
+                    </li>
+                  `
+                )}
+              </ul>`
+            : nothing
+        }
       </div>
     `;
   }
@@ -130,36 +178,54 @@ export class HaAutomationAiChanges extends LitElement {
       --mdc-icon-size: 18px;
     }
     ul {
-      margin: var(--ha-space-2) 0 0;
+      margin: var(--ha-space-3) 0 0;
       padding: 0;
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: var(--ha-space-2);
+      gap: var(--ha-space-3);
     }
     li {
       display: flex;
       flex-direction: column;
       gap: var(--ha-space-1);
     }
-    .field {
-      font-family: var(--ha-font-family-code);
+    .label {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-2);
       font-size: var(--ha-font-size-s);
+      color: var(--secondary-text-color);
+    }
+    .mark {
+      padding: 0 var(--ha-space-2);
+      border-radius: var(--ha-border-radius-pill);
+      font-size: var(--ha-font-size-xs);
+      font-weight: var(--ha-font-weight-medium);
+      background-color: var(--ha-color-fill-success-normal-resting);
+      color: var(--ha-color-on-success-normal);
+    }
+    .mark.removed {
+      background-color: var(--ha-color-fill-danger-normal-resting);
+      color: var(--ha-color-on-danger-normal);
     }
     .values {
       display: flex;
       flex-wrap: wrap;
-      gap: var(--ha-space-2);
-      font-family: var(--ha-font-family-code);
-      font-size: var(--ha-font-size-s);
+      align-items: center;
+      gap: var(--ha-space-1) var(--ha-space-2);
       word-break: break-word;
     }
+    .arrow {
+      --mdc-icon-size: 16px;
+      color: var(--secondary-text-color);
+    }
     del {
-      color: var(--ha-color-on-danger-quiet);
+      color: var(--secondary-text-color);
     }
     ins {
-      color: var(--ha-color-on-success-quiet);
       text-decoration: none;
+      font-weight: var(--ha-font-weight-medium);
     }
   `;
 }

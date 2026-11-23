@@ -15,13 +15,13 @@ import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../components/ha-alert";
+import "../../../../components/ha-action-bar";
 import "../../../../components/ha-button";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-markdown";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-tooltip";
 import type { AutomationConfig } from "../../../../data/automation";
 import { labelsContext } from "../../../../data/context";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
@@ -300,23 +300,20 @@ export class HaAutomationAiPanel extends LitElement {
     if (!this.changes || this._running) {
       return nothing;
     }
-    const label = this.hass.localize(
-      `ui.panel.config.automation.editor.ai.${this.showingChanges ? "hide_changes" : "show_changes"}`
-    );
-    return html`<div class="actions">
+    return html`<ha-action-bar>
       <ha-button
-        id="changes-button"
         size="s"
         variant=${this.showingChanges ? "brand" : "neutral"}
         appearance=${this.showingChanges ? "filled" : "outlined"}
-        aria-label=${label}
         aria-pressed=${this.showingChanges ? "true" : "false"}
         @click=${this._toggleChanges}
       >
-        <ha-svg-icon .path=${mdiPlusMinusVariant}></ha-svg-icon>
+        <ha-svg-icon slot="start" .path=${mdiPlusMinusVariant}></ha-svg-icon>
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.ai.changes_button"
+        )}
       </ha-button>
-      <ha-tooltip for="changes-button" placement="top">${label}</ha-tooltip>
-    </div>`;
+    </ha-action-bar>`;
   }
 
   private _renderPrompt() {
@@ -580,11 +577,7 @@ export class HaAutomationAiPanel extends LitElement {
       max-height: 320px;
       overflow-y: auto;
     }
-    .actions {
-      display: flex;
-      gap: var(--ha-space-2);
-      padding: var(--ha-space-2) var(--ha-space-4) 0;
-      border-top: 1px solid var(--divider-color);
+    ha-action-bar {
       flex-shrink: 0;
     }
     .prompt {
@@ -598,10 +591,6 @@ export class HaAutomationAiPanel extends LitElement {
       );
       border-top: 1px solid var(--divider-color);
       flex-shrink: 0;
-    }
-    /* One bar with the actions above it */
-    .actions + .prompt {
-      border-top: none;
     }
     .prompt ha-target-picker {
       flex-shrink: 0;

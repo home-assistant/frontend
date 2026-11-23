@@ -1,9 +1,4 @@
-import {
-  mdiChevronUp,
-  mdiClose,
-  mdiPlusMinusVariant,
-  mdiStarFourPoints,
-} from "@mdi/js";
+import { mdiChevronUp, mdiClose, mdiPlusMinusVariant } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -45,9 +40,6 @@ export class HaAutomationAiSidebar extends LitElement {
 
   /** Hides the sheet for a while, e.g. for the sheet of a row. */
   @property({ type: Boolean }) public suspended = false;
-
-  /** Whether the AI works on a request. */
-  @property({ type: Boolean }) public working = false;
 
   /** Only the header shows, below the sidebar of a row. */
   @property({ type: Boolean, reflect: true }) public collapsed = false;
@@ -129,8 +121,7 @@ export class HaAutomationAiSidebar extends LitElement {
       ? this._position === "collapsed"
       : this.collapsed;
     // Expanded, the actions above the prompt have it
-    const changesButton =
-      collapsed && (this.changes || this.showingChanges) && !this.working;
+    const changesButton = collapsed && (this.changes || this.showingChanges);
     return html`<div class="header">
       <ha-dialog-header>
         ${
@@ -153,25 +144,20 @@ export class HaAutomationAiSidebar extends LitElement {
         <span slot="title"
           >${this._localize("ui.panel.config.automation.editor.ai.title")}</span
         >
-        <div slot="actionItems" class="actions">
-          ${
-            changesButton
-              ? html`<ha-icon-button
-                  class=${classMap({ active: this.showingChanges })}
-                  .label=${this._localize(
-                    `ui.panel.config.automation.editor.ai.${this.showingChanges ? "hide_changes" : "show_changes"}`
-                  )}
-                  aria-pressed=${this.showingChanges ? "true" : "false"}
-                  .path=${mdiPlusMinusVariant}
-                  @click=${this._toggleChanges}
-                ></ha-icon-button>`
-              : nothing
-          }
-          <ha-svg-icon
-            class=${classMap({ "ai-icon": true, working: this.working })}
-            .path=${mdiStarFourPoints}
-          ></ha-svg-icon>
-        </div>
+        ${
+          changesButton
+            ? html`<ha-icon-button
+                slot="actionItems"
+                class=${classMap({ active: this.showingChanges })}
+                .label=${this._localize(
+                  `ui.panel.config.automation.editor.ai.${this.showingChanges ? "hide_changes" : "show_changes"}`
+                )}
+                aria-pressed=${this.showingChanges ? "true" : "false"}
+                .path=${mdiPlusMinusVariant}
+                @click=${this._toggleChanges}
+              ></ha-icon-button>`
+            : nothing
+        }
       </ha-dialog-header>
     </div>`;
   }
@@ -253,12 +239,8 @@ export class HaAutomationAiSidebar extends LitElement {
     :host([collapsed]:not([narrow])) .header {
       border-bottom: none;
     }
-    .actions {
-      display: flex;
-      align-items: center;
-    }
     /* Like the button above the prompt while the changes show */
-    .actions ha-icon-button.active {
+    ha-icon-button.active {
       color: var(--primary-color);
       background-color: var(--ha-color-fill-primary-normal-resting);
       border-radius: var(--ha-border-radius-circle);
@@ -270,33 +252,6 @@ export class HaAutomationAiSidebar extends LitElement {
     /* Room for the handle of the sheet */
     :host([narrow]) .header {
       padding-top: var(--ha-space-3);
-    }
-    .ai-icon {
-      --mdc-icon-size: 24px;
-      padding: var(--ha-space-3);
-      color: var(--primary-color);
-    }
-    /* Shines while the AI works on the request */
-    .ai-icon.working {
-      animation: ai-shine 1.8s ease-in-out infinite;
-    }
-    @keyframes ai-shine {
-      0%,
-      55%,
-      100% {
-        filter: drop-shadow(0 0 0 rgba(var(--rgb-primary-color), 0));
-        transform: scale(1) rotate(0deg);
-      }
-      80% {
-        filter: drop-shadow(0 0 8px rgba(var(--rgb-primary-color), 0.9));
-        transform: scale(1.2) rotate(45deg);
-      }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .ai-icon.working {
-        animation: none;
-        filter: drop-shadow(0 0 6px rgba(var(--rgb-primary-color), 0.9));
-      }
     }
   `;
 }

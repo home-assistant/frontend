@@ -885,7 +885,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                 .narrow=${this.narrow}
                 .open=${this._aiSidebarOpen}
                 .suspended=${aiSheetHidden}
-                .working=${this._aiBusy}
                 .collapsed=${aiSidebar && this._sidebarOpen}
                 .changes=${aiChanges}
                 .showingChanges=${this._aiShowChanges}
@@ -1746,8 +1745,11 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         ha-automation-ai-sidebar[hidden] {
           display: none;
         }
+        /* The AI button while the AI sidebar is open */
         ha-icon-button.active {
           color: var(--primary-color);
+          background-color: var(--ha-color-fill-primary-normal-resting);
+          border-radius: var(--ha-border-radius-circle);
         }
         /* Shines while the AI works, also when its sidebar is closed */
         ha-icon-button.working {

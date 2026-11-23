@@ -5926,6 +5926,7 @@
                 "label": "Pick a label"
               },
               "expand": "Expand",
+              "changes_button": "Changes",
               "show_changes": "Show changes",
               "hide_changes": "Hide changes",
               "stop": {
@@ -5954,11 +5955,12 @@
                 "fix_running": "Fixing {count} {count, plural,\n one {problem}\n other {problems}\n}"
               },
               "changes": {
-                "title": "Changed by AI",
+                "title_added": "Added by AI",
+                "title_changed": "Changed by AI",
+                "title_removed": "Removed by AI",
                 "added": "Added",
                 "removed": "Removed",
                 "changed": "Changed",
-                "whole_item": "Whole item",
                 "value_changed": "{name}: {old} → {new}"
               },
               "create": "Create with AI",
