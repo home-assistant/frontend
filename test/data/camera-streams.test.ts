@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  computeCameraStreamStatus,
   selectCameraStreams,
   type CameraStreamSelectionOptions,
 } from "../../src/data/camera-streams";
@@ -41,5 +42,59 @@ describe("selectCameraStreams", () => {
     expect(select({ webRtcStreams: failed })).toBe("hls");
     expect(select({ webRtcStreams: failed, hlsStreams: ok })).toBe("hls");
     expect(select({ webRtcStreams: failed, hlsStreams: failed })).toBe("mjpeg");
+  });
+});
+
+// The badge over the player tells the user how the stream is connected
+describe("computeCameraStreamStatus", () => {
+  const hlsLoading = [
+    { type: "hls" as const, visible: true },
+    { type: "web_rtc" as const, visible: false },
+  ];
+
+  it("connects until the shown stream plays", () => {
+    expect(computeCameraStreamStatus([], new Set())).toEqual({
+      connecting: true,
+      hasAudio: false,
+    });
+    expect(computeCameraStreamStatus(hlsLoading, new Set(), ok)).toEqual({
+      type: "hls",
+      connecting: true,
+      upgrading: undefined,
+      hasAudio: false,
+    });
+  });
+
+  it("shows WebRTC connecting in the background while HLS plays", () => {
+    expect(computeCameraStreamStatus(hlsLoading, new Set(["hls"]), ok)).toEqual(
+      {
+        type: "hls",
+        connecting: false,
+        upgrading: "web_rtc",
+        hasAudio: true,
+      }
+    );
+  });
+
+  it("takes the sound of the shown stream", () => {
+    expect(
+      computeCameraStreamStatus(
+        [{ type: "web_rtc", visible: true }],
+        new Set(["web_rtc"]),
+        ok,
+        silent
+      )
+    ).toEqual({
+      type: "web_rtc",
+      connecting: false,
+      upgrading: undefined,
+      hasAudio: false,
+    });
+    expect(
+      computeCameraStreamStatus(
+        [{ type: "mjpeg", visible: true }],
+        new Set(["mjpeg"])
+      ).hasAudio
+    ).toBe(false);
   });
 });
