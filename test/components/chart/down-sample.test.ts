@@ -216,7 +216,11 @@ describe("downSampleLineData", () => {
     result.forEach(([x, y]) => {
       const values = framed.get(Math.floor(x / FRAME));
       expect(values).toBeDefined();
-      expect([Math.min(...values!), Math.max(...values!)]).toContain(y);
+      expect([
+        Math.min(...values!),
+        Math.max(...values!),
+        values!.at(-1),
+      ]).toContain(y);
     });
   });
 
@@ -259,6 +263,7 @@ describe("downSampleLineData", () => {
     expect(downSampleLineData(points, 3)).toEqual([
       [FIXED_EPOCH_MS + 1_000, 10],
       [FIXED_EPOCH_MS + 2_000, 90],
+      [FIXED_EPOCH_MS + 3_000, 60],
       [FIXED_EPOCH_MS + 30_000, 55],
       [FIXED_EPOCH_MS + 31_000, 45],
     ]);
@@ -295,6 +300,43 @@ describe("downSampleLineData", () => {
       [FIXED_EPOCH_MS + 1_000, 90],
       [FIXED_EPOCH_MS + 2_000, 10],
       [FIXED_EPOCH_MS + 2_000, null],
+      [FIXED_EPOCH_MS + 30_000, 55],
+      [FIXED_EPOCH_MS + 31_000, 45],
+    ]);
+  });
+
+  it("keeps a frame's last value when the next point is frames away", () => {
+    // Step lines hold the last value until the next point. Dropping the
+    // final 0 held the 5.9 peak for an hour (#56062).
+    const start = FIXED_EPOCH_MS - (FIXED_EPOCH_MS % 300_000);
+    const points: GappedPoint[] = [
+      [start + 2_000, 0],
+      [start + 7_000, 5.9],
+      [start + 10_000, 0],
+      [start + 16_000, 3.2],
+      [start + 46_000, 3.7],
+      [start + 76_000, 3.3],
+      [start + 106_000, 0],
+      [start + 3_600_000, null],
+      [start + 3_600_400, 0],
+    ];
+    expect(downSampleLineData(points, 8)).toEqual([
+      [start + 2_000, 0],
+      [start + 7_000, 5.9],
+      [start + 106_000, 0],
+      [start + 3_600_400, 0],
+    ]);
+  });
+
+  it("does not repeat a frame's minimum when it shares its x with the max", () => {
+    const points: GappedPoint[] = [
+      [FIXED_EPOCH_MS, 90],
+      [FIXED_EPOCH_MS, 10],
+      [FIXED_EPOCH_MS + 30_000, 55],
+      [FIXED_EPOCH_MS + 31_000, 45],
+    ];
+    expect(downSampleLineData(points, 3)).toEqual([
+      [FIXED_EPOCH_MS, 10],
       [FIXED_EPOCH_MS + 30_000, 55],
       [FIXED_EPOCH_MS + 31_000, 45],
     ]);

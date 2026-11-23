@@ -412,12 +412,12 @@ exports[`downSampleLineData > large scale digest is stable 1`] = `
     96.917,
   ],
   "last": [
-    1707066870000,
-    220.635,
+    1707067170000,
+    203.318,
   ],
-  "numberCount": 3336,
-  "numberSum": "2.84488807401e+15",
-  "size": 1668,
+  "numberCount": 3338,
+  "numberSum": "2.84659514118e+15",
+  "size": 1669,
   "type": "array",
 }
 `;
@@ -1045,6 +1045,10 @@ exports[`downSampleLineData > min/max mode matches characterization snapshot 1`]
   [
     1704076140000,
     43.606,
+  ],
+  [
+    1704076170000,
+    46.641,
   ],
 ]
 `;
