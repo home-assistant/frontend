@@ -62,7 +62,7 @@ html`
 - Give the overlay a `skeleton-key` and it remembers how tall the content was once loaded, then holds that height next time. For content other than cards and badges, make one with `skeletonKey()` from `src/components/skeleton/skeleton-sizes.ts`.
 - Mark parts that shouldn't be read with `data-skeleton`: `none` leaves an element out and showing, `keep` leaves it showing but reads what's inside, and `text`, `round` or `block` force one piece of that kind. Skeletons the content draws itself are left alone.
 - Put your own skeleton in the `skeleton` slot to replace the reading altogether.
-- Call `refresh()` when the content changes without changing size.
+- Call `refresh()` when the content changes without changing size. From inside the content, call `refresh()` on its `SkeletonLoadingController` instead, such as after a calendar draws its month by itself.
 - It gives the skeleton the `progressbar` role and the translated label itself.
 
 ## Cards And Badges

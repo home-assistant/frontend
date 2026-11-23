@@ -32,6 +32,17 @@ export class SkeletonLoadingController implements ReactiveController {
     }
   }
 
+  /**
+   * Have the overlay read the skeleton again while loading, for content that
+   * redraws itself without changing size, such as a calendar drawing its
+   * month after the host has updated.
+   */
+  public refresh() {
+    if (this._loading) {
+      fireEvent(this._host, "skeleton-loading", { loading: true });
+    }
+  }
+
   public hostUpdated() {
     const loading = this._isLoading();
 

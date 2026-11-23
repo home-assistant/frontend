@@ -2,7 +2,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { classMap } from "lit/directives/class-map";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
@@ -20,6 +20,7 @@ import type {
   HomeAssistant,
 } from "../../../types";
 import "../../calendar/ha-full-calendar";
+import type { HAFullCalendar } from "../../calendar/ha-full-calendar";
 import { findEntities } from "../common/find-entities";
 import "../components/hui-warning";
 import type {
@@ -72,6 +73,8 @@ export class HuiCalendarCard
   @state() private _entityRegistry?: EntityRegistryEntry[];
 
   @state() private _eventsLoaded = false;
+
+  @query("ha-full-calendar") private _fullCalendar?: HAFullCalendar;
 
   private _startDate?: Date;
 
@@ -233,6 +236,12 @@ export class HuiCalendarCard
       return;
     }
 
+    // The calendar draws its month and title by itself after this update,
+    // so the skeleton is read again once it has
+    this._fullCalendar?.updateComplete.then(() =>
+      this._skeletonLoading.refresh()
+    );
+
     // Resubscribe when entity registry changes (to update colors)
     if (changedProps.has("_entityRegistry") && this._entityRegistry) {
       this._events.unsubscribeAll().then(() => {
@@ -276,6 +285,10 @@ export class HuiCalendarCard
     this._startDate = ev.detail.start;
     this._endDate = ev.detail.end;
     this._eventsLoaded = false;
+    // The calendar has drawn a new view, and draws its title next
+    this._fullCalendar?.updateComplete.then(() =>
+      this._skeletonLoading.refresh()
+    );
     await this._events.unsubscribeAll();
     this._subscribeCalendarEvents();
   }
