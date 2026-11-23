@@ -79,7 +79,7 @@ export const mockTimerList = (
     timer: TimerListTimer,
     eventType: ChangeEventType
   ) => {
-    timers[entityId] = timers[entityId].filter(
+    timers[entityId] = (timers[entityId] ?? []).filter(
       (item) => item.timer_id !== timer.timer_id
     );
     if (eventType !== "removed") {
