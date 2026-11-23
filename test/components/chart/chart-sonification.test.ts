@@ -18,7 +18,13 @@ vi.mock("echarts-extension-chart2music", () => ({
 }));
 
 const series = (
-  items: { type: string; id?: string; name?: string; data?: unknown[] }[]
+  items: {
+    type: string;
+    id?: string;
+    name?: string;
+    silent?: boolean;
+    data?: unknown[];
+  }[]
 ) => items as unknown as HaECSeries;
 
 describe("canSonifyChart", () => {
@@ -210,6 +216,24 @@ describe("canSonifyChart", () => {
     expect(canSonifyChart(chart, new Set())).toBe(true);
     expect(canSonifyChart(chart, new Set(["b"]))).toBe(false);
     expect(canSonifyChart(chart, new Set(["a", "b"]))).toBe(false);
+  });
+
+  it("ignores the points of silent decoration series", () => {
+    const zeroLine = {
+      type: "line",
+      silent: true,
+      data: [
+        [0, 0],
+        [1, 0],
+      ],
+    };
+    expect(canSonifyChart(series([zeroLine]))).toBe(false);
+    expect(
+      canSonifyChart(
+        series([{ type: "line", id: "a", data: [[0, 1]] }, zeroLine]),
+        new Set(["a"])
+      )
+    ).toBe(false);
   });
 
   it("rejects a series whose points are all gaps", () => {
@@ -422,5 +446,31 @@ describe("sonifyChart", () => {
       y: { label: "°C" },
     });
     expect(connectedAxes().x.valueLabels).toBeUndefined();
+  });
+
+  it("leaves silent decoration series out of the readable series", async () => {
+    await sonify({
+      xAxis: [{ type: "time" }],
+      yAxis: [{ type: "value" }],
+      series: [
+        {
+          type: "line",
+          silent: true,
+          data: [
+            [1700000000000, 0],
+            [1700003600000, 0],
+          ],
+        },
+        {
+          type: "line",
+          data: [
+            [1700000000000, 1.2],
+            [1700003600000, 0.8],
+          ],
+        },
+      ],
+    });
+
+    expect(mockedConnect.mock.lastCall![1]!.seriesIndex).toEqual([1]);
   });
 });
