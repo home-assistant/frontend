@@ -435,8 +435,10 @@ class HaDomainIntegrations extends LitElement {
         /* No rubber band: it would bounce the footer away from the bottom */
         overscroll-behavior: none;
       }
+      /* Room after the last card, as much as the browse pane has below it */
       :host([boxed]) ha-list-base {
         flex-shrink: 0;
+        padding-block-end: var(--ha-space-2);
       }
       /* Clip instead of hide: hidden makes the list its own scroll
          container, which would hold the title to the list, not the box */
