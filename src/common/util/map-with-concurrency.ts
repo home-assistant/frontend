@@ -35,5 +35,10 @@ export const mapWithConcurrency = async <T, R>(
   await Promise.all(
     Array.from({ length: Math.min(Math.max(1, limit), items.length) }, worker)
   );
+  // The workers only check the signal before a new call, so an abort during
+  // the last calls still has to reject
+  if (signal?.aborted) {
+    throw signal.reason;
+  }
   return results;
 };

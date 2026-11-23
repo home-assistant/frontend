@@ -92,6 +92,23 @@ describe("mapWithConcurrency", () => {
     expect(started).toEqual([0, 1]);
   });
 
+  it("rejects when the signal aborts during the last calls", async () => {
+    const call = deferred<number>();
+    const controller = new AbortController();
+
+    const result = mapWithConcurrency(
+      [0],
+      10,
+      () => call.promise,
+      controller.signal
+    );
+    const rejected = expect(result).rejects.toThrow();
+
+    controller.abort();
+    call.resolve(0);
+    await rejected;
+  });
+
   it("handles no items", async () => {
     expect(await mapWithConcurrency([], 3, async () => 1)).toEqual([]);
   });
