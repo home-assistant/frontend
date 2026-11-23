@@ -22,7 +22,7 @@ export class HaIconButton extends LitElement {
   @property({ type: String, attribute: "aria-haspopup" })
   ariaHasPopup!: "false" | "true" | "menu" | "listbox" | "tree" | "grid";
 
-  @property({ type: String, attribute: "aria-pressed" })
+  @property({ attribute: false })
   ariaPressed!: "false" | "true" | "mixed";
 
   @property({ attribute: "hide-title", type: Boolean }) hideTitle = false;
