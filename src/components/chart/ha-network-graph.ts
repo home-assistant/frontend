@@ -846,6 +846,10 @@ export class HaNetworkGraph extends LitElement {
     ::slotted(ha-icon-button) {
       margin-inline-end: var(--ha-space-3);
     }
+    ha-icon-button.inactive,
+    ::slotted(ha-icon-button.inactive) {
+      color: var(--state-inactive-color);
+    }
   `;
 }
 
