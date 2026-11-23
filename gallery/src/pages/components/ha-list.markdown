@@ -250,6 +250,9 @@ sit inside `<ha-list-selectable>`, which owns selection state and toggles
 
 - `selected` (Boolean, default `false`, reflected) — set by the parent
   `ha-list-selectable`.
+- `indeterminate` (Boolean, default `false`, reflected) — draws the checkbox
+  as mixed, for a row that stands for a partly selected set. Screen readers
+  hear it as "Partly selected" through `aria-description`.
 - `value` (String) — value identifying the option.
 - `appearance` (`"line"` | `"checkbox"`, default `"line"`) — `"line"`
   highlights the row; `"checkbox"` renders a decorative `<ha-checkbox>`.
