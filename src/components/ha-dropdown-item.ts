@@ -1,7 +1,11 @@
 import DropdownItem from "@home-assistant/webawesome/dist/components/dropdown-item/dropdown-item";
 import "@home-assistant/webawesome/dist/components/icon/icon";
-import { mdiCheckboxBlankOutline, mdiCheckboxMarked } from "@mdi/js";
-import { css, type CSSResultGroup, html } from "lit";
+import {
+  mdiCheckboxBlankOutline,
+  mdiCheckboxMarked,
+  mdiMinusBox,
+} from "@mdi/js";
+import { css, type CSSResultGroup, html, type PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import "./ha-svg-icon";
 
@@ -19,12 +23,36 @@ import "./ha-svg-icon";
 export class HaDropdownItem extends DropdownItem {
   @property({ type: Boolean, reflect: true }) selected = false;
 
+  @property({ type: Boolean }) indeterminate = false;
+
+  public updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (
+      this.type === "checkbox" &&
+      (changedProperties.has("checked") ||
+        changedProperties.has("indeterminate") ||
+        changedProperties.has("type"))
+    ) {
+      this.setAttribute(
+        "aria-checked",
+        this.indeterminate ? "mixed" : this.checked ? "true" : "false"
+      );
+    }
+  }
+
   protected renderCheckboxIcon() {
     return html`
       <ha-svg-icon
         id="check"
         part="checkmark"
-        .path=${this.checked ? mdiCheckboxMarked : mdiCheckboxBlankOutline}
+        class=${this.checked || this.indeterminate ? "checked" : ""}
+        .path=${
+          this.indeterminate
+            ? mdiMinusBox
+            : this.checked
+              ? mdiCheckboxMarked
+              : mdiCheckboxBlankOutline
+        }
       ></ha-svg-icon>
     `;
   }
@@ -41,6 +69,11 @@ export class HaDropdownItem extends DropdownItem {
         #check {
           visibility: visible;
           flex-shrink: 0;
+          color: var(--ha-color-border-neutral-normal);
+        }
+
+        #check.checked {
+          color: var(--ha-color-fill-primary-loud-resting);
         }
 
         #icon ::slotted(*) {

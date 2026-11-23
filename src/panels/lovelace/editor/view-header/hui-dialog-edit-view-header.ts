@@ -24,10 +24,11 @@ import type { HomeAssistant } from "../../../../types";
 import "./hui-view-header-settings-editor";
 import type { EditViewHeaderDialogParams } from "./show-edit-view-header-dialog";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
+import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 
 @customElement("hui-dialog-edit-view-header")
 export class HuiDialogEditViewHeader extends DirtyStateProviderMixin<LovelaceViewHeaderConfig>()(
-  LitElement
+  KeyboardShortcutMixin(LitElement)
 ) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -83,7 +84,6 @@ export class HuiDialogEditViewHeader extends DirtyStateProviderMixin<LovelaceVie
     if (this._yamlMode) {
       content = html`
         <ha-yaml-editor
-          autofocus
           in-dialog
           @value-changed=${this._viewYamlChanged}
         ></ha-yaml-editor>
@@ -149,8 +149,20 @@ export class HuiDialogEditViewHeader extends DirtyStateProviderMixin<LovelaceVie
     const action = ev.detail.item.value;
 
     if (action === "toggle-mode") {
-      this._yamlMode = !this._yamlMode;
+      this._toggleMode();
     }
+  }
+
+  private async _toggleMode() {
+    this._yamlMode = !this._yamlMode;
+    if (this._yamlMode) {
+      await this.updateComplete;
+      this._editor?.focus();
+    }
+  }
+
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    return this._params ? { Y: () => this._toggleMode() } : {};
   }
 
   private _configChanged(ev: CustomEvent): void {

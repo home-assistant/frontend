@@ -30,7 +30,7 @@ export async function goToPanel(page: Page, path: string) {
 export async function openSystemLogDetail(page: Page, message: string) {
   await goToPanel(page, "/?scenario=system-log-reporting#/config/logs");
   await page
-    .locator("system-log-card ha-list-item")
+    .locator("system-log-card ha-list-item-button")
     .filter({ hasText: message })
     .click();
   const dialog = page.locator("dialog-system-log-detail");

@@ -68,7 +68,7 @@ class ZHAConfigDashboardRouter extends HassRouterPage {
     } else if (this._currentPage === "device") {
       el.ieee = this.routeTail.path.split("/")[1];
     } else if (this._currentPage === "visualization") {
-      el.zoomedDeviceIdFromURL = this.routeTail.path.substr(1);
+      el.deviceId = this.routeTail.path.substr(1);
     } else if (this._currentPage === "section") {
       el.sectionId = this.routeTail.path.substr(1);
     }

@@ -40,7 +40,7 @@ Never run `tsc` or `pnpm lint:types` with file arguments. When `tsc` receives fi
 Detailed guidance lives in `.agents/skills/<name>/SKILL.md`. Load every matching skill before detailed implementation or review. For reviews, load `ha-frontend-review` alongside all companions that apply to the changed code or behavior:
 
 - `ha-frontend-contexts`: Lit contexts, `hass` migration, and rerender-sensitive state access.
-- `ha-frontend-components`: dialogs, forms, alerts, shortcuts, tooltips, panels, and Lovelace cards.
+- `ha-frontend-components`: dialogs, forms, alerts, loading states, shortcuts, tooltips, panels, and Lovelace cards.
 - `ha-frontend-events`: event handler typing, custom event dispatch, and event-map declarations.
 - `ha-frontend-types`: backend data contracts, optional schemas, shared types, assertions, and lifecycle types.
 - `ha-frontend-lit`: reactive fields, DOM queries, lifecycle behavior, and render-derived state.

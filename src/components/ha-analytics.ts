@@ -3,13 +3,13 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { Analytics, AnalyticsPreferences } from "../data/analytics";
 import { haStyle } from "../resources/styles";
-import "./ha-switch";
-import type { HaSwitch } from "./ha-switch";
 import "./ha-tooltip";
-import "./item/ha-row-item";
+import "./item/ha-list-item-switch";
+import type { HaListItemSwitch } from "./item/ha-list-item-switch";
 
 const ADDITIONAL_PREFERENCES = ["usage", "statistics"] as const;
 
@@ -35,7 +35,12 @@ export class HaAnalytics extends LitElement {
     const baseEnabled = !loading && this.analytics!.preferences.base;
 
     return html`
-      <ha-row-item>
+      <ha-list-item-switch
+        @change=${this._handleRowClick}
+        .checked=${!!baseEnabled}
+        .preference=${"base"}
+        .disabled=${loading}
+      >
         <span slot="headline"
           >${this._localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.title`
@@ -46,22 +51,15 @@ export class HaAnalytics extends LitElement {
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.description`
           )}</span
         >
-        <ha-switch
-          slot="end"
-          @change=${this._handleRowClick}
-          .checked=${!!baseEnabled}
-          .preference=${"base"}
-          .disabled=${loading}
-          name="base"
-        >
-          ${this._localize(
-            `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.title`
-          )}
-        </ha-switch>
-      </ha-row-item>
+      </ha-list-item-switch>
       ${ADDITIONAL_PREFERENCES.map(
         (preference) => html`
-          <ha-row-item>
+          <ha-list-item-switch
+            .id="switch-${preference}"
+            @change=${this._handleRowClick}
+            .checked=${!!this.analytics?.preferences[preference]}
+            .preference=${preference}
+          >
             <span slot="headline"
               >${this._localize(
                 `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.title`
@@ -72,18 +70,6 @@ export class HaAnalytics extends LitElement {
                 `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.description`
               )}</span
             >
-            <ha-switch
-              slot="end"
-              .id="switch-${preference}"
-              @change=${this._handleRowClick}
-              .checked=${!!this.analytics?.preferences[preference]}
-              .preference=${preference}
-              name=${preference}
-            >
-              ${this._localize(
-                `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.title`
-              )}
-            </ha-switch>
             ${
               baseEnabled
                 ? nothing
@@ -96,10 +82,15 @@ export class HaAnalytics extends LitElement {
                     )}
                   </ha-tooltip>`
             }
-          </ha-row-item>
+          </ha-list-item-switch>
         `
       )}
-      <ha-row-item>
+      <ha-list-item-switch
+        @change=${this._handleRowClick}
+        .checked=${!!this.analytics?.preferences.diagnostics}
+        .preference=${"diagnostics"}
+        .disabled=${loading}
+      >
         <span slot="headline"
           >${this._localize(
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.title`
@@ -110,25 +101,17 @@ export class HaAnalytics extends LitElement {
             `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.description`
           )}</span
         >
-        <ha-switch
-          slot="end"
-          @change=${this._handleRowClick}
-          .checked=${!!this.analytics?.preferences.diagnostics}
-          .preference=${"diagnostics"}
-          .disabled=${loading}
-          name="diagnostics"
-        >
-          ${this._localize(
-            `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.title`
-          )}
-        </ha-switch>
-      </ha-row-item>
+      </ha-list-item-switch>
     `;
   }
 
-  private _handleRowClick(ev: Event) {
-    const target = ev.currentTarget as HaSwitch;
-    const preference = (target as any).preference;
+  private _handleRowClick(
+    ev: HASSDomCurrentTargetEvent<
+      HaListItemSwitch & { preference: keyof AnalyticsPreferences }
+    >
+  ) {
+    const target = ev.currentTarget;
+    const preference = target.preference;
     const preferences = this.analytics ? { ...this.analytics.preferences } : {};
 
     if (preferences[preference] === target.checked) {
@@ -158,20 +141,7 @@ export class HaAnalytics extends LitElement {
           color: var(--error-color);
         }
 
-        /* The visible headline already names the row. Keep the switch's
-           slotted label available to assistive technology without repeating it. */
-        ha-switch::part(label) {
-          position: absolute;
-          overflow: hidden;
-          clip: rect(0 0 0 0);
-          height: 1px;
-          width: 1px;
-          margin: -1px;
-          padding: 0;
-          border: 0;
-        }
-
-        ha-row-item {
+        ha-list-item-switch {
           --ha-row-item-padding-inline: 0;
         }
       `,

@@ -66,7 +66,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .narrow=${this.narrow}
         back-path="/config"
-        header="Home Assistant Cloud"
+        header="Home Assistant Link"
       >
         <ha-dropdown slot="toolbar-icon" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
@@ -306,11 +306,11 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
       haStyle,
       css`
         .content {
-          padding: var(--ha-space-7) var(--ha-space-5) 0;
+          padding: var(--ha-space-7) var(--ha-content-gutter) 0;
           padding-bottom: calc(
             var(--safe-area-inset-bottom) + var(--ha-space-6)
           );
-          max-width: 860px;
+          max-width: var(--ha-content-width-narrow);
           margin: 0 auto;
           gap: var(--ha-space-6);
           display: flex;

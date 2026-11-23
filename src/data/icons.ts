@@ -75,6 +75,7 @@ import type {
 import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
 import { callWS } from "../util/websocket";
 import { getConditionDomain, getConditionObjectId } from "./condition";
+import { computeGroupMemberEntries } from "./group";
 import { getTriggerDomain, getTriggerObjectId } from "./trigger";
 
 /** Icon to use when no icon specified for service. */
@@ -588,6 +589,38 @@ export const attributeIcon = async (
         value,
         platformIcons[domain]?.[translation_key]?.state_attributes?.[attribute]
       );
+    }
+  }
+  // A group has no icons for the values of its members, for example the
+  // effects of a light group, so use the icon of a member for that value.
+  if (!icon && value !== undefined) {
+    for (const member of computeGroupMemberEntries(state, entities)) {
+      let memberIcons: PlatformIcons | undefined;
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        memberIcons = await getPlatformIcons(
+          hassConfig,
+          hassConnection,
+          member.platform
+        );
+      } catch {
+        // The icons of a member are optional, so try the other fallbacks
+        continue;
+      }
+      const memberTranslations =
+        memberIcons?.[domain]?.[member.translation_key]?.state_attributes?.[
+          attribute
+        ];
+      // The default icon of a member is not an icon for this value
+      icon =
+        memberTranslations &&
+        getIconFromTranslations(value, {
+          ...memberTranslations,
+          default: undefined,
+        });
+      if (icon) {
+        break;
+      }
     }
   }
   if (!icon) {

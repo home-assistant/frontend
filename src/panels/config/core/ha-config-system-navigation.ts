@@ -215,7 +215,7 @@ class HaConfigSystemNavigation extends LitElement {
 
   private async _fetchNetworkStatus() {
     if (isComponentLoaded(this.hass.config, "cloud")) {
-      const cloudStatus = await fetchCloudStatus(this.hass);
+      const cloudStatus = await fetchCloudStatus(this.hass.callWS);
       if (cloudStatus.logged_in) {
         this._externalAccess = true;
         return;
@@ -245,7 +245,8 @@ class HaConfigSystemNavigation extends LitElement {
         ha-config-section {
           margin: auto;
           margin-top: -32px;
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
+          padding-inline: var(--ha-content-gutter);
         }
 
         ha-card {
@@ -281,6 +282,7 @@ class HaConfigSystemNavigation extends LitElement {
           }
           ha-config-section {
             margin-top: -42px;
+            padding-inline: 0;
           }
         }
       `,

@@ -2,6 +2,7 @@ import { mdiPlus } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { ConfigPath } from "../../../common/util/config-path";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
@@ -13,7 +14,6 @@ import type { HuiBadge } from "../badges/hui-badge";
 import "../badges/hui-view-badges";
 import type { HuiCard } from "../cards/hui-card";
 import { computeCardSize } from "../common/compute-card-size";
-import type { LovelacePath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 
 // Find column with < 5 size, else smallest column
@@ -42,7 +42,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: false }) public path?: LovelacePath;
+  @property({ attribute: false }) public path?: ConfigPath;
 
   @property({ attribute: false }) public isStrategy = false;
 
@@ -53,6 +53,8 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
   @state() private _columns?: number;
 
   private _createColumnsIteration = 0;
+
+  private _renderedColumns?: number;
 
   private _mqls?: MediaQueryList[];
 
@@ -164,23 +166,6 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     fireEvent(this, "ll-create-card", { path: [...this.path!, "cards"] });
   }
 
-  private _createRootElement(columns: HTMLDivElement[]) {
-    const root = this.shadowRoot!.getElementById("columns") as HTMLDivElement;
-
-    // Remove old columns
-    while (root.lastChild) {
-      root.removeChild(root.lastChild);
-    }
-
-    columns.forEach((column) => {
-      root.appendChild(column);
-    });
-    if (this.cards.length === 0 || columns.some((column) => column.lastChild)) {
-      this._resolveInitialRender?.();
-      this._resolveInitialRender = undefined;
-    }
-  }
-
   private async _createColumns() {
     if (!this._columns) {
       return;
@@ -189,23 +174,56 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     this._createColumnsIteration++;
     const iteration = this._createColumnsIteration;
 
+    await this.updateComplete;
+    if (iteration !== this._createColumnsIteration) {
+      return;
+    }
+
+    const root = this.shadowRoot!.getElementById("columns") as HTMLDivElement;
+
+    // Remove old columns, unless only card sizes changed. Then the columns are
+    // reused, so cards that keep their place are not removed from the DOM.
+    if (this.lovelace!.editMode || this._columns !== this._renderedColumns) {
+      while (root.lastChild) {
+        root.removeChild(root.lastChild);
+      }
+    }
+    this._renderedColumns = this._columns;
+
+    // Remove cards that are no longer in the view, and edit mode wrappers
+    const cards = new Set<Element>(this.cards);
+    for (const column of root.children) {
+      for (const child of Array.from(column.children)) {
+        if (!cards.has(child)) {
+          child.remove();
+        }
+      }
+    }
+
     // Track the total height of cards in a columns
     const columnSizes: number[] = [];
     const columnElements: HTMLDivElement[] = [];
+    // Track the number of cards placed in a column
+    const columnCardCounts: number[] = [];
     // Add columns to DOM, limit number of columns to the number of cards
     for (let i = 0; i < Math.min(this._columns, this.cards.length); i++) {
-      const columnEl = document.createElement("div");
-      columnEl.classList.add("column");
+      let columnEl = root.children[i] as HTMLDivElement | undefined;
+      if (!columnEl) {
+        columnEl = document.createElement("div");
+        columnEl.classList.add("column");
+        root.appendChild(columnEl);
+      }
       columnSizes.push(0);
       columnElements.push(columnEl);
+      columnCardCounts.push(0);
     }
 
-    if (!this.hasUpdated) {
-      this.updateComplete.then(() => {
-        this._createRootElement(columnElements);
-      });
-    } else {
-      this._createRootElement(columnElements);
+    if (
+      this.cards.length === 0 ||
+      columnElements.some((column) => column.lastChild)
+    ) {
+      this._resolveInitialRender?.();
+      this._resolveInitialRender = undefined;
     }
 
     let tillNextRender: Promise<unknown> | undefined;
@@ -241,10 +259,12 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         return;
       }
       // Calculate in which column the card should go based on the size and the cards already in there
+      const columnIndex = getColumnIndex(columnSizes, cardSize as number);
       this._addCardToColumn(
-        columnElements[getColumnIndex(columnSizes, cardSize as number)],
+        columnElements[columnIndex],
         index,
-        this.lovelace!.editMode
+        this.lovelace!.editMode,
+        columnCardCounts[columnIndex]++
       );
       if (columnElements.some((column) => column.isConnected)) {
         this._resolveInitialRender?.();
@@ -253,18 +273,22 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     }
 
     // Remove empty columns
-    columnElements.forEach((column) => {
+    Array.from(root.children).forEach((column) => {
       if (!column.lastChild) {
-        column.parentElement!.removeChild(column);
+        root.removeChild(column);
       }
     });
   }
 
-  private _addCardToColumn(columnEl, index, preview) {
+  private _addCardToColumn(columnEl, index, preview, position) {
     const card: HuiCard = this.cards[index];
     if (!preview || this.isStrategy) {
       card.preview = false;
-      columnEl.appendChild(card);
+      // Only move the card when it is not already in place
+      const before = columnEl.children[position] ?? null;
+      if (before !== card) {
+        columnEl.insertBefore(card, before);
+      }
     } else {
       const wrapper = document.createElement("hui-card-options");
       wrapper.hass = this.hass;

@@ -17,7 +17,6 @@ import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
-import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import "../../../components/ha-switch";
 import type { ClimateEntity } from "../../../data/climate";

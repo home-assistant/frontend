@@ -46,6 +46,7 @@ export class CloudStepSignup extends LitElement {
   render() {
     return html`<div class="content">
       <img
+        class="nabu-casa-logo"
         src=${`/static/images/logo_nabu_casa${this.hass.themes?.darkMode ? "_dark" : ""}.png`}
         alt="Nabu Casa logo"
       />
@@ -101,7 +102,7 @@ export class CloudStepSignup extends LitElement {
   private async _readCloudStatus(): Promise<void> {
     let status: CloudStatus;
     try {
-      status = await fetchCloudStatus(this.hass);
+      status = await fetchCloudStatus(this.hass.callWS);
     } catch (_err) {
       // Nothing to reconcile against. The registration form is the right place
       // to be, and the next event tries again.

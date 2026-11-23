@@ -1,6 +1,6 @@
 import {
-  mdiCloudLock,
   mdiDotsVertical,
+  mdiLinkVariant,
   mdiMagnify,
   mdiPower,
   mdiRefresh,
@@ -185,9 +185,9 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
               {
                 component: "cloud",
                 path: "/config/cloud",
-                name: "Home Assistant Cloud",
+                name: "Home Assistant Link",
                 info: cloudStatus,
-                iconPath: mdiCloudLock,
+                iconPath: mdiLinkVariant,
                 iconColor: "#3B808E",
                 translationKey: "cloud",
               },
@@ -425,7 +425,8 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
         ha-config-section {
           margin: auto;
           margin-top: -32px;
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
+          padding-inline: var(--ha-content-gutter);
         }
 
         ha-card {
@@ -477,6 +478,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           }
           ha-config-section {
             margin-top: -42px;
+            padding-inline: 0;
           }
         }
 

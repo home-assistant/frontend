@@ -1,5 +1,6 @@
 import type { AlarmMode } from "../../../data/alarm_control_panel";
 import type { HvacMode } from "../../../data/climate";
+import type { FanSpeedStyle } from "../../../data/fan";
 import type { OperationMode } from "../../../data/water_heater";
 import type { ForecastPrecipitationType } from "../../../data/weather";
 
@@ -140,6 +141,7 @@ export interface FanPresetModesCardFeatureConfig {
 
 export interface FanSpeedCardFeatureConfig {
   type: "fan-speed";
+  style?: FanSpeedStyle;
 }
 
 export interface AlarmModesCardFeatureConfig {
@@ -353,6 +355,8 @@ export interface BarGaugeCardFeatureConfig {
   type: "bar-gauge";
   min?: number;
   max?: number;
+  severity?: Partial<Record<"green" | "yellow" | "red", number>>;
+  segments?: { from: number; color: string }[];
 }
 
 export type LovelaceCardFeaturePosition = "bottom" | "inline";

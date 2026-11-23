@@ -27,9 +27,14 @@ import {
   internationalizationContext,
 } from "../../../../../../data/context";
 import type { ZHADevice } from "../../../../../../data/zha";
+import { ZHADeviceType } from "../../../../../../data/zha";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../../resources/styles";
-import { formatAsPaddedHex } from "../functions";
+import {
+  computeZHADeviceType,
+  formatAsPaddedHex,
+  formatGreenPowerSrcId,
+} from "../functions";
 import { showZHAReconfigureDeviceDialog } from "../show-dialog-zha-reconfigure-device";
 
 type ZHADeviceAction = "add-via" | "view-network" | "remove";
@@ -58,6 +63,7 @@ export class ZHADeviceSummaryCard extends LitElement {
     }
 
     const name = this.device.user_given_name || this.device.name;
+    const srcId = formatGreenPowerSrcId(this.device);
 
     return html`
       <ha-card>
@@ -77,15 +83,26 @@ export class ZHADeviceSummaryCard extends LitElement {
             this._i18n.localize("ui.panel.config.zha.device_page.ieee"),
             this.device.ieee
           )}
-          ${this._renderSummaryItem(
-            this._i18n.localize("ui.panel.config.zha.device_page.nwk"),
-            formatAsPaddedHex(this.device.nwk)
-          )}
+          ${
+            this.device.device_type !== ZHADeviceType.GreenPower
+              ? this._renderSummaryItem(
+                  this._i18n.localize("ui.panel.config.zha.device_page.nwk"),
+                  formatAsPaddedHex(this.device.nwk)
+                )
+              : srcId
+                ? this._renderSummaryItem(
+                    this._i18n.localize(
+                      "ui.panel.config.zha.device_page.src_id"
+                    ),
+                    srcId
+                  )
+                : nothing
+          }
           ${this._renderSummaryItem(
             this._i18n.localize(
               "ui.panel.config.zha.visualization.device_type"
             ),
-            this.device.device_type
+            computeZHADeviceType(this.device, this._i18n.localize)
           )}
           ${this._renderSummaryItem(
             this._i18n.localize("ui.dialogs.zha_device_info.power_source"),
@@ -96,32 +113,34 @@ export class ZHADeviceSummaryCard extends LitElement {
         </div>
         <div class="card-actions">
           ${
-            !this.device.active_coordinator
-              ? html`
-                  <ha-button
-                    appearance="plain"
-                    @click=${this._reconfigureDevice}
-                  >
-                    <ha-svg-icon
-                      slot="start"
-                      .path=${mdiCogRefresh}
-                    ></ha-svg-icon>
-                    ${this._i18n.localize(
-                      "ui.dialogs.zha_device_info.buttons.reconfigure"
-                    )}
-                  </ha-button>
-                `
-              : html`
-                  <ha-button appearance="plain" @click=${this._viewNetwork}>
-                    <ha-svg-icon
-                      slot="start"
-                      .path=${mdiFamilyTree}
-                    ></ha-svg-icon>
-                    ${this._i18n.localize(
-                      "ui.dialogs.zha_device_info.buttons.view_network"
-                    )}
-                  </ha-button>
-                `
+            this.device.device_type === ZHADeviceType.GreenPower
+              ? nothing
+              : !this.device.active_coordinator
+                ? html`
+                    <ha-button
+                      appearance="plain"
+                      @click=${this._reconfigureDevice}
+                    >
+                      <ha-svg-icon
+                        slot="start"
+                        .path=${mdiCogRefresh}
+                      ></ha-svg-icon>
+                      ${this._i18n.localize(
+                        "ui.dialogs.zha_device_info.buttons.reconfigure"
+                      )}
+                    </ha-button>
+                  `
+                : html`
+                    <ha-button appearance="plain" @click=${this._viewNetwork}>
+                      <ha-svg-icon
+                        slot="start"
+                        .path=${mdiFamilyTree}
+                      ></ha-svg-icon>
+                      ${this._i18n.localize(
+                        "ui.dialogs.zha_device_info.buttons.view_network"
+                      )}
+                    </ha-button>
+                  `
           }
           ${this._renderDeviceActionMenu()}
         </div>
@@ -132,8 +151,8 @@ export class ZHADeviceSummaryCard extends LitElement {
   private _renderDeviceActionMenu(): TemplateResult | typeof nothing {
     const canAddViaDevice =
       this.device!.power_source === "Mains" &&
-      (this.device!.device_type === "Router" ||
-        this.device!.device_type === "Coordinator");
+      (this.device!.device_type === ZHADeviceType.Router ||
+        this.device!.device_type === ZHADeviceType.Coordinator);
     const canManageDevice = !this.device!.active_coordinator;
 
     if (!canAddViaDevice && !canManageDevice) {
@@ -163,12 +182,21 @@ export class ZHADeviceSummaryCard extends LitElement {
         ${
           canManageDevice
             ? html`
-                <ha-dropdown-item value="view-network">
-                  <ha-svg-icon slot="icon" .path=${mdiFamilyTree}></ha-svg-icon>
-                  ${this._i18n.localize(
-                    "ui.dialogs.zha_device_info.buttons.view_network"
-                  )}
-                </ha-dropdown-item>
+                ${
+                  this.device!.device_type !== ZHADeviceType.GreenPower
+                    ? html`
+                        <ha-dropdown-item value="view-network">
+                          <ha-svg-icon
+                            slot="icon"
+                            .path=${mdiFamilyTree}
+                          ></ha-svg-icon>
+                          ${this._i18n.localize(
+                            "ui.dialogs.zha_device_info.buttons.view_network"
+                          )}
+                        </ha-dropdown-item>
+                      `
+                    : nothing
+                }
                 <ha-dropdown-item
                   value="remove"
                   variant="danger"

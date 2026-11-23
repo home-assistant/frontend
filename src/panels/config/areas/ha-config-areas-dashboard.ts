@@ -359,6 +359,9 @@ export class HaConfigAreasDashboard extends LitElement {
             <ha-icon-button
               .area=${area}
               .path=${mdiPencil}
+              .label=${this.hass.localize(
+                "ui.panel.config.areas.edit_settings"
+              )}
               @click=${this._openAreaDetails}
             ></ha-icon-button>
           </div>
@@ -402,7 +405,7 @@ export class HaConfigAreasDashboard extends LitElement {
     showAreaRegistryDetailDialog(this, {
       entry: area,
       updateEntry: async (values) =>
-        updateAreaRegistryEntry(this.hass!, area.area_id, values),
+        updateAreaRegistryEntry(this.hass!.callWS, area.area_id, values),
     });
   }
 
@@ -503,7 +506,7 @@ export class HaConfigAreasDashboard extends LitElement {
 
     try {
       await reorderAreaRegistryEntries(this.hass, areaOrder);
-      await updateAreaRegistryEntry(this.hass, area.area_id, {
+      await updateAreaRegistryEntry(this.hass.callWS, area.area_id, {
         floor_id: newFloorId,
       });
     } catch {
@@ -621,9 +624,9 @@ export class HaConfigAreasDashboard extends LitElement {
     showFloorRegistryDetailDialog(this, {
       entry,
       createEntry: async (values, addedAreas) => {
-        const floor = await createFloorRegistryEntry(this.hass!, values);
+        const floor = await createFloorRegistryEntry(this.hass!.callWS, values);
         addedAreas.forEach((areaId) => {
-          updateAreaRegistryEntry(this.hass, areaId, {
+          updateAreaRegistryEntry(this.hass.callWS, areaId, {
             floor_id: floor.floor_id,
           });
         });
@@ -635,12 +638,12 @@ export class HaConfigAreasDashboard extends LitElement {
           values
         );
         addedAreas.forEach((areaId) => {
-          updateAreaRegistryEntry(this.hass, areaId, {
+          updateAreaRegistryEntry(this.hass.callWS, areaId, {
             floor_id: floor.floor_id,
           });
         });
         removedAreas.forEach((areaId) => {
-          updateAreaRegistryEntry(this.hass, areaId, {
+          updateAreaRegistryEntry(this.hass.callWS, areaId, {
             floor_id: null,
           });
         });
@@ -676,7 +679,6 @@ export class HaConfigAreasDashboard extends LitElement {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       grid-gap: 16px 16px;
-      max-width: 2000px;
       margin-bottom: 16px;
     }
     .areas > * {

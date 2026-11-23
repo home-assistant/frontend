@@ -212,6 +212,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
+    const headerIcon = this._config.icon
+      ? html`<ha-icon class="icon" .icon=${this._config.icon}></ha-icon>`
+      : nothing;
+
     return html`
       <ha-card>
         ${
@@ -225,20 +229,14 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
           !this._config.title && !this._showHeaderToggle && !this._config.icon
             ? ""
             : html`
-                <h1 class="card-header">
-                  <div class="name">
-                    ${
-                      this._config.icon
-                        ? html`
-                            <ha-icon
-                              class="icon"
-                              .icon=${this._config.icon}
-                            ></ha-icon>
-                          `
-                        : ""
-                    }
-                    ${this._config.title}
-                  </div>
+                <div class="card-header">
+                  ${
+                    this._config.title
+                      ? html`<h1 class="name">
+                          ${headerIcon} ${this._config.title}
+                        </h1>`
+                      : html`<div class="name">${headerIcon}</div>`
+                  }
                   ${
                     !this._showHeaderToggle
                       ? nothing
@@ -253,7 +251,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
                           ></hui-entities-toggle>
                         `
                   }
-                </h1>
+                </div>
               `
         }
         <div id="states" class="card-content ha-scrollbar">
@@ -288,6 +286,8 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       }
 
       .card-header .name {
+        margin: 0;
+        font: inherit;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -310,11 +310,11 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         position: relative;
       }
 
-      #states > div:first-child > hui-section-row::part(divider) {
+      #states:first-child > div:first-child > hui-section-row::part(divider) {
         display: none;
       }
 
-      #states > div:first-child > hui-section-row::part(label) {
+      #states:first-child > div:first-child > hui-section-row::part(label) {
         margin-top: 0;
       }
 

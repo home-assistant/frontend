@@ -293,13 +293,14 @@ export const getWeatherUnit = (
 };
 
 export const getSecondaryWeatherAttribute = (
-  hass: Pick<HomeAssistant, "formatEntityAttributeValue" | "localize">,
+  formatEntityAttributeValue: HomeAssistantFormatters["formatEntityAttributeValue"],
+  localize: LocalizeFunc,
   stateObj: WeatherEntity,
   forecast: ForecastAttribute[],
   temperatureFractionDigits?: number
 ): TemplateResult | undefined => {
   const extrema = getWeatherExtrema(
-    hass.formatEntityAttributeValue,
+    formatEntityAttributeValue,
     stateObj,
     forecast,
     temperatureFractionDigits
@@ -339,9 +340,9 @@ export const getSecondaryWeatherAttribute = (
               .path=${weatherAttrIcon}
             ></ha-svg-icon>
           `
-        : hass.localize(`ui.card.weather.attributes.${attribute}`)
+        : localize(`ui.card.weather.attributes.${attribute}`)
     }
-    ${hass.formatEntityAttributeValue(stateObj, attribute, roundedValue)}
+    ${formatEntityAttributeValue(stateObj, attribute, roundedValue)}
   `;
 };
 
@@ -363,19 +364,25 @@ const getWeatherExtrema = (
     if (new Date(fc.datetime).getDate() !== today) {
       break;
     }
-    if (!tempHigh || fc.temperature > tempHigh) {
+    if (fc.temperature == null) {
+      continue;
+    }
+    if (tempHigh === undefined || fc.temperature > tempHigh) {
       tempHigh =
         temperatureFractionDigits === undefined
           ? fc.temperature
           : round(fc.temperature, temperatureFractionDigits);
     }
-    if (fc.templow !== undefined && (!tempLow || fc.templow < tempLow)) {
+    if (fc.templow != null && (tempLow === undefined || fc.templow < tempLow)) {
       tempLow =
         temperatureFractionDigits === undefined
           ? fc.templow
           : round(fc.templow, temperatureFractionDigits);
     }
-    if (!fc.templow && (!tempLow || fc.temperature < tempLow)) {
+    if (
+      fc.templow == null &&
+      (tempLow === undefined || fc.temperature < tempLow)
+    ) {
       tempLow =
         temperatureFractionDigits === undefined
           ? fc.temperature
@@ -383,19 +390,19 @@ const getWeatherExtrema = (
     }
   }
 
-  if (!tempLow && !tempHigh) {
+  if (tempLow === undefined && tempHigh === undefined) {
     return undefined;
   }
 
   return html`
     ${
-      tempHigh
+      tempHigh !== undefined
         ? formatEntityAttributeValue(stateObj, "temperature", tempHigh)
         : ""
     }
-    ${tempLow && tempHigh ? " / " : ""}
+    ${tempLow !== undefined && tempHigh !== undefined ? " / " : ""}
     ${
-      tempLow
+      tempLow !== undefined
         ? formatEntityAttributeValue(stateObj, "temperature", tempLow)
         : ""
     }

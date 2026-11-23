@@ -92,6 +92,7 @@ export class HomeShortcutsEditor extends LitElement {
                       ></ha-icon>
                       <span slot="heading">${label}</span>
                       <ha-switch
+                        .accessibleLabel=${label}
                         .checked=${!item.hidden}
                         .summaryKey=${item.key}
                         @change=${this._summaryToggleChanged}
@@ -122,7 +123,6 @@ export class HomeShortcutsEditor extends LitElement {
         </div>
       </ha-sortable>
       <ha-navigation-picker
-        .hass=${this.hass}
         .addButtonLabel=${this.hass.localize(
           "ui.panel.home.editor.add_custom_shortcut"
         )}

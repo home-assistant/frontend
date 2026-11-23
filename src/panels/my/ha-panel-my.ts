@@ -172,6 +172,7 @@ const entitiesTableParams = {
   floor: "string?",
   area: "string?",
   device: "string?",
+  device_class: "string?",
   domain: "string?",
   entity_domain: "string?",
   label: "string?",
@@ -209,6 +210,10 @@ export const getMyRedirects = (): Redirects => ({
   },
   tools_states: {
     redirect: "/config/tools/state",
+  },
+  tools_action_history: {
+    component: "logbook",
+    redirect: "/config/tools/action-history",
   },
   tools_actions: {
     redirect: "/config/tools/action",
@@ -272,7 +277,12 @@ export const getMyRedirects = (): Redirects => ({
   config: {
     redirect: "/config/dashboard",
   },
+  link: {
+    component: "cloud",
+    redirect: "/config/cloud",
+  },
   cloud: {
+    // Old key of link, still used by existing links and my.home-assistant.io
     component: "cloud",
     redirect: "/config/cloud",
   },
@@ -509,6 +519,7 @@ export const getMyRedirects = (): Redirects => ({
       provider: "string?",
       search: "string?",
       integration: "string?",
+      level: "string?",
       raw: "string?",
     },
   },

@@ -26,6 +26,7 @@ import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { isNavigationClick } from "../../../common/dom/is-navigation-click";
 import { goBack, navigate } from "../../../common/navigate";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
 import "../../../components/ha-button";
@@ -108,6 +109,9 @@ declare global {
     "insert-after": {
       value: Trigger | Condition | Action | Trigger[] | Condition[] | Action[];
     };
+    "replace-item": {
+      value: Trigger | Condition | Action;
+    };
     "save-automation": undefined;
     paste: {
       item: Trigger | Condition | Action;
@@ -141,6 +145,15 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     commit: (config) => {
       this._manualEditor?.resetPastedConfig();
       this._updateConfig(config);
+    },
+    fetchBlueprintTriggers: async ({ path, input }) => {
+      const result = await substituteBlueprint(
+        this.hass,
+        "automation",
+        path,
+        input || {}
+      );
+      return normalizeAutomationConfig(result.substituted_config).triggers;
     },
   });
 
@@ -290,7 +303,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                 <ha-button
                   appearance="plain"
                   size="s"
-                  @click=${this._showTrace}
+                  href="/config/automation/trace/${encodeURIComponent(
+                    this.config.id
+                  )}"
+                  @click=${this._traceClicked}
                   slot="toolbar-icon"
                 >
                   ${this.hass.localize(
@@ -851,6 +867,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     });
   }
 
+  private async _traceClicked(ev: MouseEvent) {
+    if (isNavigationClick(ev)) {
+      await this._showTrace();
+    }
+  }
+
   private async _showTrace() {
     if (this.config?.id) {
       const result = await this.confirmUnsavedChanged();
@@ -1149,7 +1171,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         }
 
         if (entityId) {
-          await updateEntityRegistryEntry(this.hass, entityId, {
+          await updateEntityRegistryEntry(this.hass.callWS, entityId, {
             categories: {
               automation: this.entityRegistryUpdate.category || null,
             },
@@ -1192,6 +1214,27 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       Z: () => this._redo(),
       y: () => this._redo(),
     };
+  }
+
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    if (this._manualEditor?.sidebarOpen) {
+      return this._manualEditor.canToggleSidebarYamlMode
+        ? { Y: () => this._manualEditor?.toggleSidebarYamlMode() }
+        : {};
+    }
+    return {
+      Y: () => this._toggleYamlMode(),
+    };
+  }
+
+  private async _toggleYamlMode() {
+    if (this.mode === "gui") {
+      this.switchYamlMode();
+      await this.updateComplete;
+      this._yamlEditor?.focus();
+    } else {
+      this.switchUiMode();
+    }
   }
 
   protected supportedSingleKeyShortcuts(): SupportedShortcuts {
@@ -1281,11 +1324,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         this._takeControl();
         break;
       case "toggle_yaml_mode":
-        if (this.mode === "gui") {
-          this.switchYamlMode();
-          break;
-        }
-        this.switchUiMode();
+        this._toggleYamlMode();
         break;
       case "disable":
         this._toggle();

@@ -265,7 +265,7 @@ export class QuickBar extends LitElement {
       <ha-adaptive-dialog
         without-header
         flexcontent
-        aria-label=${this.hass.localize("ui.dialogs.quick-bar.title")}
+        .accessibleLabel=${this.hass.localize("ui.dialogs.quick-bar.title")}
         .open=${this._open}
         hideActions
         @wa-show=${this._showTriggered}
@@ -282,6 +282,7 @@ export class QuickBar extends LitElement {
                 )}
                 .label=${this.hass.localize("ui.dialogs.quick-bar.title")}
                 .getItems=${this._getItems}
+                .isSearchResult=${this._isSearchResult}
                 .rowRenderer=${this._getRowRenderer(this._runningCommandId)}
                 mode="dialog"
                 .sections=${sections}
@@ -445,6 +446,10 @@ export class QuickBar extends LitElement {
   // #endregion render
 
   // #region data
+
+  // "Ask Assist" is offered for any search, so it isn't a search result.
+  private _isSearchResult = (item: PickerComboBoxItem) =>
+    !("assistPrompt" in item);
 
   private _getItems = (searchString: string, section: string) => {
     this._selectedSection = section as QuickBarSection | undefined;
@@ -637,12 +642,32 @@ export class QuickBar extends LitElement {
   );
 
   private _getEntitiesMemoized = memoizeOne((hass: HomeAssistant) =>
-    getEntities(hass, { idPrefix: `entity${SEPARATOR}` })
+    getEntities({
+      states: hass.states,
+      entities: hass.entities,
+      devices: hass.devices,
+      areas: hass.areas,
+      floors: hass.floors,
+      localize: hass.localize,
+      language: hass.language,
+      translationMetadata: hass.translationMetadata,
+      idPrefix: `entity${SEPARATOR}`,
+    })
   );
 
   private _getDevicesMemoized = memoizeOne(
     (hass: HomeAssistant, configEntryLookup: Record<string, ConfigEntry>) =>
-      getDevices(hass, configEntryLookup, { idPrefix: `device${SEPARATOR}` })
+      getDevices({
+        states: hass.states,
+        areas: hass.areas,
+        devices: hass.devices,
+        entities: hass.entities,
+        localize: hass.localize,
+        language: hass.locale.language,
+        translationMetadata: hass.translationMetadata,
+        configEntryLookup,
+        idPrefix: `device${SEPARATOR}`,
+      })
   );
 
   private _getAreasMemoized = memoizeOne((hass: HomeAssistant) =>

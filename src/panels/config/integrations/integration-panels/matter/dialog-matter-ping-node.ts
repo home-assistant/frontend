@@ -1,15 +1,21 @@
-import { mdiAlertCircle, mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
+import {
+  mdiAlertCircle,
+  mdiCheckCircle,
+  mdiCloseCircle,
+  mdiContentCopy,
+} from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
-import "../../../../../components/ha-list";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
-import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-dialog";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/list/ha-list-base";
 import { pingMatterNode } from "../../../../../data/matter";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
@@ -83,22 +89,29 @@ class DialogMatterPingNode extends LitElement {
                       "ui.panel.config.matter.ping_node.ping_complete"
                     )}
                   </h2>
-                  <ha-list>
+                  <ha-list-base
+                    aria-label=${this.hass.localize(
+                      "ui.panel.config.matter.ping_node.ping_complete"
+                    )}
+                  >
                     ${this._pingResultEntries.map(
                       ([ip, success]) =>
-                        html`<ha-list-item
-                          hasMeta
-                          .ip=${ip}
-                          @click=${this._copyIpToClipboard}
-                          >${ip}
+                        html`<ha-list-item-base .headline=${ip}>
                           <ha-svg-icon
-                            slot="meta"
+                            slot="end"
                             .path=${success ? mdiCheckCircle : mdiAlertCircle}
                             class=${success ? "success" : "failed"}
                           ></ha-svg-icon>
-                        </ha-list-item>`
+                          <ha-icon-button
+                            slot="end"
+                            .label=${this.hass.localize("ui.common.copy")}
+                            .path=${mdiContentCopy}
+                            .ip=${ip}
+                            @click=${this._copyIpToClipboard}
+                          ></ha-icon-button>
+                        </ha-list-item-base>`
                     )}
-                  </ha-list>
+                  </ha-list-base>
                 `
               : this._status === "started"
                 ? html`
@@ -208,8 +221,14 @@ class DialogMatterPingNode extends LitElement {
           padding: 8px;
         }
 
-        ha-list {
-          --mdc-list-side-padding: 0;
+        ha-list-base {
+          --ha-list-padding: var(--ha-space-2) 0;
+        }
+
+        ha-list-item-base {
+          --ha-row-item-padding-inline: 0;
+          --ha-row-item-padding-block: 0;
+          --ha-row-item-gap: var(--ha-space-2);
         }
 
         .flex-container ha-spinner,

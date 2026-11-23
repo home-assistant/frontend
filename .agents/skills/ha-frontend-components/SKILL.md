@@ -1,6 +1,6 @@
 ---
 name: ha-frontend-components
-description: Home Assistant frontend component patterns. Use when implementing or reviewing dialogs, ha-form, ha-alert, keyboard shortcuts, tooltips, panels, Lovelace cards, or ha-button usage.
+description: Home Assistant frontend component patterns. Use when implementing or reviewing dialogs, ha-form, ha-alert, loading states, keyboard shortcuts, tooltips, panels, Lovelace cards, or ha-button usage.
 ---
 
 # HA Frontend Components
@@ -88,6 +88,36 @@ html`
   <ha-alert alert-type="success" dismissable>
     ${this._localize("ui.example.success")}
   </ha-alert>
+`;
+```
+
+## Loading States
+
+Pick the indicator by what is loading, following the [Loading pattern](https://contributors.home-assistant.io/design/patterns/loading/):
+
+- Use a skeleton from `src/components/skeleton/` (`ha-skeleton`, `ha-skeleton-text`, `ha-skeleton-icon`) when content loads into a layout you already know, such as table rows, tile text, or a log. It holds the layout, so nothing jumps when the content arrives.
+- Use `ha-spinner` only when a whole area loads and its shape is unknown.
+- Use `ha-button` with `loading`, or `ha-progress-button`, for an action started from a button. Don't put a separate spinner next to it.
+
+Wrap the indicator in `ha-fade-in` from `src/components/animation/ha-fade-in.ts`:
+
+- Fade a skeleton in straight away over about 300ms (`.duration=${300}`), as the data table does. It stands in for the content, so a delay would leave an empty gap.
+- Delay a spinner or progress bar, usually by `.delay=${500}`, so a load that finishes within that time never flashes it. Some slower areas, such as backups and updates, use `${1000}`.
+- Don't fade in the loaded content itself.
+
+Give a skeleton group the `progressbar` role and a translated label, as `ha-spinner` has, rather than visible "Loading" text. A loading state always ends in the content, an empty state, or an error.
+
+```ts
+html`
+  <ha-fade-in .duration=${300} easing="ease-in">
+    <div
+      role="progressbar"
+      aria-label=${this._i18n.localize("ui.common.loading")}
+    >
+      <ha-skeleton-text></ha-skeleton-text>
+    </div>
+  </ha-fade-in>
+  <ha-fade-in .delay=${500}><ha-spinner></ha-spinner></ha-fade-in>
 `;
 ```
 

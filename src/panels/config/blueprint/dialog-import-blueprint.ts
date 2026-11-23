@@ -87,6 +87,7 @@ class DialogImportBlueprint extends DirtyStateProviderMixin<BlueprintImportState
     return html`
       <ha-dialog
         .open=${this._open}
+        .accessibleLabel=${heading}
         width=${this.large ? "full" : "medium"}
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}

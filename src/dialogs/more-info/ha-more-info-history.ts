@@ -102,7 +102,6 @@ export class MoreInfoHistory extends LitElement {
                     ></statistics-chart>`
                   : html`<state-history-charts
                       up-to-now
-                      .hass=${this.hass}
                       .historyData=${this._stateHistory}
                       .isLoadingData=${!this._stateHistory}
                       .showNames=${false}

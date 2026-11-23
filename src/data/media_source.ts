@@ -1,3 +1,4 @@
+import type { LocalizeFunc } from "../common/translations/localize";
 import { timeCacheEntityPromiseFunc } from "../common/util/time-cache-entity-promise-func";
 import type { HomeAssistant } from "../types";
 import type { MediaPlayerItem, SearchMediaResult } from "./media-player";
@@ -34,21 +35,21 @@ export const resolveMediaSourceWithCache = (
   );
 
 export const browseLocalMediaPlayer = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   mediaContentId?: string
 ): Promise<MediaPlayerItem> =>
-  hass.callWS<MediaPlayerItem>({
+  callWS<MediaPlayerItem>({
     type: "media_source/browse_media",
     media_content_id: mediaContentId,
   });
 
 export const searchMedia = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   mediaContentId: string | undefined,
   searchQuery: string,
   mediaFilterClasses?: string[]
 ): Promise<SearchMediaResult> =>
-  hass.callWS<SearchMediaResult>({
+  callWS<SearchMediaResult>({
     type: "media_source/search_media",
     media_content_id: mediaContentId,
     search_query: searchQuery,
@@ -77,37 +78,35 @@ export const getImageEntityIdFromMediaSourceContentId = (
     : undefined;
 
 export const uploadLocalMedia = async (
-  hass: HomeAssistant,
+  fetchWithAuth: HomeAssistant["fetchWithAuth"],
+  localize: LocalizeFunc,
   media_content_id: string,
   file: File
 ) => {
   const fd = new FormData();
   fd.append("media_content_id", media_content_id);
   fd.append("file", file);
-  const resp = await hass.fetchWithAuth(
-    "/api/media_source/local_source/upload",
-    {
-      method: "POST",
-      body: fd,
-    }
-  );
+  const resp = await fetchWithAuth("/api/media_source/local_source/upload", {
+    method: "POST",
+    body: fd,
+  });
   if (resp.status === 413) {
     throw new Error(
-      hass.localize("ui.common.upload_file_too_large", {
+      localize("ui.common.upload_file_too_large", {
         name: file.name,
       })
     );
   } else if (resp.status !== 200) {
-    throw new Error(hass.localize("ui.common.unknown_error"));
+    throw new Error(localize("ui.common.unknown_error"));
   }
   return resp.json();
 };
 
 export const removeLocalMedia = async (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   media_content_id: string
 ) =>
-  hass.callWS({
+  callWS({
     type: "media_source/local_source/remove",
     media_content_id,
   });

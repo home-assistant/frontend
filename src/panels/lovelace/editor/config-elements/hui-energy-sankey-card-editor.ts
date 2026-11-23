@@ -20,6 +20,11 @@ import type { HomeAssistant } from "../../../../types";
 import type { SankeyCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import {
+  collectionKeyFromFormData,
+  collectionKeyToFormData,
+  energyCollectionKeySchema,
+} from "./energy-collection-key-schema";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -27,8 +32,10 @@ const cardConfigStruct = assign(
     type: union([
       literal("power-sankey"),
       literal("water-sankey"),
+      literal("gas-sankey"),
       literal("energy-sankey"),
       literal("water-flow-sankey"),
+      literal("gas-flow-sankey"),
     ]),
     title: optional(string()),
     collection_key: optional(string()),
@@ -39,6 +46,7 @@ const cardConfigStruct = assign(
     group_by_area: optional(boolean()),
     max_devices: optional(number()),
     show_values: optional(boolean()),
+    combine_sources: optional(boolean()),
   })
 );
 
@@ -58,7 +66,7 @@ export class HuiEnergySankeyCardEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne((localize: LocalizeFunc) => {
+  private _schema = memoizeOne((localize: LocalizeFunc, type: string) => {
     const schema: HaFormSchema[] = [
       { name: "title", selector: { text: {} } },
       {
@@ -98,6 +106,12 @@ export class HuiEnergySankeyCardEditor
                 required: false,
                 selector: { boolean: {} },
               },
+              {
+                name: "combine_sources",
+                required: false,
+                default: type === "energy-sankey" || type === "power-sankey",
+                selector: { boolean: {} },
+              },
             ],
           },
           {
@@ -105,11 +119,7 @@ export class HuiEnergySankeyCardEditor
             required: false,
             selector: { number: { min: 1, mode: "box" } },
           },
-          {
-            type: "string",
-            name: "collection_key",
-            required: false,
-          },
+          energyCollectionKeySchema,
         ],
       },
     ];
@@ -121,11 +131,9 @@ export class HuiEnergySankeyCardEditor
       return nothing;
     }
 
-    const schema = this._schema(this.hass.localize);
+    const schema = this._schema(this.hass.localize, this._config.type);
 
-    const data = {
-      ...this._config,
-    };
+    const data = collectionKeyToFormData(this._config);
 
     return html` <ha-form
       .hass=${this.hass}
@@ -138,7 +146,9 @@ export class HuiEnergySankeyCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    fireEvent(this, "config-changed", {
+      config: collectionKeyFromFormData(ev.detail.value),
+    });
   }
 
   private _computeHelperCallback = (schema) => {

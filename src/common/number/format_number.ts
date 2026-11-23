@@ -5,6 +5,7 @@ import type {
 import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import type { FrontendLocaleData } from "../../data/translation";
 import { NumberFormat } from "../../data/translation";
+import { blankBeforeUnit } from "../translations/blank_before_unit";
 
 /**
  * Returns true if the entity is considered numeric based on the attributes it has
@@ -70,6 +71,27 @@ export const formatNumber = (
   formatNumberToParts(num, localeOptions, options)
     .map((part) => part.value)
     .join("");
+
+/**
+ * Formats a number like `formatNumber` and appends the unit, separated by the spacing the unit and locale expect.
+ *
+ * @param num The number to format
+ * @param unit The unit to append, nothing is appended when empty
+ * @param localeOptions The user-selected language and formatting, from `hass.locale`
+ * @param options Intl.NumberFormatOptions to use
+ */
+export const formatNumberWithUnit = (
+  num: string | number,
+  unit: string | null | undefined,
+  localeOptions?: FrontendLocaleData,
+  options?: Intl.NumberFormatOptions
+): string => {
+  const formatted = formatNumber(num, localeOptions, options);
+  if (!unit) {
+    return formatted;
+  }
+  return `${formatted}${blankBeforeUnit(unit, localeOptions)}${unit}`;
+};
 
 /**
  * Returns an array of objects containing the formatted number in parts
@@ -139,6 +161,9 @@ export const getNumberFormatOptions = (
   return undefined;
 };
 
+// Intl.NumberFormat throws a RangeError for more fraction digits than this.
+const MAX_FRACTION_DIGITS = 100;
+
 /**
  * Generates default options for Intl.NumberFormat
  * @param num The number to be formatted
@@ -163,7 +188,10 @@ export const getDefaultFormatOptions = (
     (options.minimumFractionDigits === undefined &&
       options.maximumFractionDigits === undefined)
   ) {
-    const digits = num.indexOf(".") > -1 ? num.split(".")[1].length : 0;
+    const digits = Math.min(
+      num.indexOf(".") > -1 ? num.split(".")[1].length : 0,
+      MAX_FRACTION_DIGITS
+    );
     defaultOptions.minimumFractionDigits = digits;
     defaultOptions.maximumFractionDigits = digits;
   }

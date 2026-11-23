@@ -1,20 +1,43 @@
+import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { live } from "lit/directives/live";
+import { consume } from "../../../common/decorators/consume";
+import {
+  consumeEntityRegistryEntry,
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-card";
+import {
+  apiContext,
+  configContext,
+  connectionContext,
+  formattersContext,
+  uiContext,
+} from "../../../data/context";
+import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import type { HomeAssistant } from "../../../types";
+import type { Themes } from "../../../data/ws-themes";
+import type {
+  HomeAssistantApi,
+  HomeAssistantConfig,
+  HomeAssistantConnection,
+  HomeAssistantFormatters,
+  HomeAssistantUI,
+} from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
-import { hasConfigChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { PictureCardConfig } from "./types";
@@ -39,11 +62,52 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @state() private _config?: PictureCardConfig;
 
   @state() private _resolvedImage?: string;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["_config", "image_entity"] })
+  private _stateObj?: ImageEntity | PersonEntity;
+
+  @state()
+  @consumeEntityRegistryEntry({ entityIdPath: ["_config", "image_entity"] })
+  _entity?: EntityRegistryDisplayEntry;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<HomeAssistantConnection, HomeAssistantConnection["hassUrl"]>({
+    transformer: ({ hassUrl }) => hassUrl,
+  })
+  private _hassUrl!: HomeAssistantConnection["hassUrl"];
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, Themes>({
+    transformer: ({ themes }) => themes,
+  })
+  private _themes!: Themes;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api?: HomeAssistantApi;
+
+  private _resolvingImage?: string;
 
   private _reconnectImg = false;
 
@@ -86,41 +150,16 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (
-      !this._config ||
-      hasConfigChanged(this, changedProps) ||
-      changedProps.has("_resolvedImage") ||
-      this._reconnectImg
-    ) {
-      return true;
-    }
-    if (this._config.image_entity && changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (
-        !oldHass ||
-        oldHass.states[this._config.image_entity] !==
-          this.hass!.states[this._config.image_entity]
-      ) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
-    if (!this._config || !this.hass) {
+    if (!this._config) {
       return;
     }
     if (this.isConnected) {
       this._reconnectImg = false;
     }
 
-    const firstHass =
-      changedProps.has("hass") && changedProps.get("hass") === undefined;
     const imageChanged =
       changedProps.has("_config") &&
       changedProps.get("_config")?.image !== this._config?.image;
@@ -129,53 +168,60 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       (typeof this._config?.image === "object" &&
         this._config.image.media_content_id) ||
       (this._config.image as string | undefined);
-    if (
-      (firstHass || imageChanged) &&
-      typeof image === "string" &&
-      isMediaSourceContentId(image)
-    ) {
-      this._resolvedImage = undefined;
-      resolveMediaSource(this.hass, image).then((result) => {
-        this._resolvedImage = result.url;
-      });
+    if (typeof image === "string" && isMediaSourceContentId(image)) {
+      if (this._api && this._resolvingImage !== image) {
+        this._resolvingImage = image;
+        this._resolvedImage = undefined;
+        resolveMediaSource(this._api, image).then(
+          (result) => {
+            if (this._resolvingImage === image) {
+              this._resolvedImage = result.url;
+            }
+          },
+          () => {
+            // Let a later update retry the same image
+            if (this._resolvingImage === image) {
+              this._resolvingImage = undefined;
+            }
+          }
+        );
+      }
     } else if (imageChanged) {
+      this._resolvingImage = undefined;
       this._resolvedImage = image;
     }
   }
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (!this._config || !this.hass) {
+    if (!this._config || !this._themes) {
       return;
     }
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldThemes = changedProps.get("_themes") as Themes | undefined;
     const oldConfig = changedProps.get("_config") as
       PictureCardConfig | undefined;
 
     if (
-      !oldHass ||
+      !oldThemes ||
       !oldConfig ||
-      oldHass.themes !== this.hass.themes ||
+      oldThemes !== this._themes ||
       oldConfig.theme !== this._config.theme
     ) {
-      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+      applyThemesOnElement(this, this._themes, this._config.theme);
     }
   }
 
   protected render() {
-    if (!this._config || !this.hass) {
+    if (!this._config) {
       return nothing;
     }
 
-    let stateObj: ImageEntity | PersonEntity | undefined;
+    const stateObj = this._stateObj;
 
-    if (this._config.image_entity) {
-      stateObj = this.hass.states[this._config.image_entity];
-      if (!stateObj) {
-        return html`<hui-warning>
-          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
-        </hui-warning>`;
-      }
+    if (this._config.image_entity && !stateObj) {
+      return html`<hui-warning>
+        ${createEntityNotFoundWarning(this._localize, this._hassConfig)}
+      </hui-warning>`;
     }
 
     let image: string | undefined = this._resolvedImage;
@@ -222,9 +268,11 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
         <img
           alt=${ifDefined(
             this._config.alt_text ||
-              (stateObj ? this.hass.formatEntityName(stateObj) : undefined)
+              (stateObj
+                ? this._formatters.formatEntityName(stateObj)
+                : undefined)
           )}
-          src=${this._reconnectImg ? nothing : live(this.hass.hassUrl(image))}
+          src=${this._reconnectImg ? nothing : live(this._hassUrl(image))}
         />
       </ha-card>
     `;
@@ -247,7 +295,10 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
   `;
 
   private _handleAction(ev: ActionHandlerEvent) {
-    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+    fireEvent(this, "hass-action", {
+      config: this._config!,
+      action: ev.detail.action,
+    });
   }
 }
 

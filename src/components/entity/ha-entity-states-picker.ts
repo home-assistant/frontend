@@ -6,13 +6,10 @@ import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../common/dom/fire_event";
 import { ANY_STATE_VALUE } from "./const";
 import { ensureArray } from "../../common/array/ensure-array";
-import type { HomeAssistant } from "../../types";
 import "./ha-entity-state-picker";
 
 @customElement("ha-entity-states-picker")
 export class HaEntityStatesPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public entityId?: string;
 
   @property() public attribute?: string;
@@ -52,10 +49,6 @@ export class HaEntityStatesPicker extends LitElement {
   }
 
   protected render() {
-    if (!this.hass) {
-      return nothing;
-    }
-
     const value = this.value || [];
     const hide = [...(this.hideStates || []), ...value];
     const hideValue = value.includes(ANY_STATE_VALUE);
@@ -68,7 +61,6 @@ export class HaEntityStatesPicker extends LitElement {
           <div>
             <ha-entity-state-picker
               .index=${index}
-              .hass=${this.hass}
               .entityId=${this.entityId}
               .attribute=${this.attribute}
               .extraOptions=${this.extraOptions}
@@ -94,7 +86,6 @@ export class HaEntityStatesPicker extends LitElement {
             : keyed(
                 value.length,
                 html`<ha-entity-state-picker
-                  .hass=${this.hass}
                   .entityId=${this.entityId}
                   .attribute=${this.attribute}
                   .extraOptions=${this.extraOptions}

@@ -15,5 +15,8 @@ export interface TextEntity extends HassEntityBase {
   attributes: TextEntityAttributes;
 }
 
-export const setValue = (hass: HomeAssistant, entity: string, value: string) =>
-  hass.callService("text", "set_value", { value }, { entity_id: entity });
+export const setValue = (
+  callService: HomeAssistant["callService"],
+  entity: string,
+  value: string
+) => callService("text", "set_value", { value }, { entity_id: entity });

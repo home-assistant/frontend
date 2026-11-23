@@ -57,6 +57,7 @@ import {
   handleMediaControlClick,
   MediaPlayerEntityFeature,
   mediaPlayerPlayMedia,
+  removeSecondaryStopControl,
 } from "../../../data/media-player";
 import type {
   HomeAssistantApi,
@@ -123,7 +124,12 @@ class MoreInfoMediaPlayer extends LitElement {
   private _volumeController = new VolumeSliderController({
     getSlider: () => this._volumeSlider,
     step: this._volumeStep,
-    onSetVolume: (value) => this._setVolume(value),
+    onSetVolume: (value) => {
+      // The final value is set right away, so drop the pending update from
+      // the input events before it, or the same value is sent twice
+      this._debouncedVolumeSet.cancel();
+      this._setVolume(value);
+    },
     onSetVolumeDebounced: (value) => this._debouncedVolumeSet(value),
   });
 
@@ -159,6 +165,9 @@ class MoreInfoMediaPlayer extends LitElement {
     const secondaryTitle = computeMediaDescription(stateObj);
     const turnOn = controls?.find((c) => c.action === "turn_on");
     const turnOff = controls?.find((c) => c.action === "turn_off");
+    const mainControls = removeSecondaryStopControl(stateObj, controls);
+    const stop = controls?.find((c) => c.action === "media_stop");
+    const secondaryStop = stop && !mainControls?.includes(stop);
 
     return html`
       ${
@@ -259,7 +268,9 @@ class MoreInfoMediaPlayer extends LitElement {
                   "media_play",
                   "media_stop",
                 ].map((action) => {
-                  const control = controls.find((c) => c.action === action);
+                  const control = mainControls?.find(
+                    (c) => c.action === action
+                  );
                   return control
                     ? html`<ha-button
                         variant="brand"
@@ -297,6 +308,17 @@ class MoreInfoMediaPlayer extends LitElement {
         }
         ${this._renderVolumeControl()}
         <div class="controls-row">
+          ${
+            secondaryStop
+              ? this._renderControlButton(
+                  "media_stop",
+                  this._localize("ui.card.media_player.media_stop"),
+                  stop.icon,
+                  this._handleClick,
+                  stop.action
+                )
+              : nothing
+          }
           ${
             supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
               ? this._renderControlButton(
@@ -463,7 +485,8 @@ class MoreInfoMediaPlayer extends LitElement {
 
     return html`<ha-icon-button
         @click=${this._showGroupMediaPlayers}
-        .title=${this._localize("ui.card.media_player.join")}
+        .label=${this._localize("ui.card.media_player.join")}
+        hide-title
         id="grouping-button"
       >
         <div class="grouping">

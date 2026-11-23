@@ -29,6 +29,8 @@ export class HaDrawer extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public open = false;
 
+  @property({ attribute: false }) public accessibleLabel?: string;
+
   @query("wa-drawer") private _modalDrawer?: HTMLElement;
 
   @query(".sidebar-shell") private _sidebarShell?: HTMLElement;
@@ -56,6 +58,7 @@ export class HaDrawer extends LitElement {
           <wa-drawer
             placement="start"
             .open=${this.open}
+            .label=${this.accessibleLabel ?? ""}
             light-dismiss
             without-header
             @touchstart=${this._handleTouchStart}

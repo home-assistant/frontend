@@ -368,7 +368,6 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                 `
               : html`
                   <state-history-charts
-                    .hass=${this.hass}
                     .isLoadingData=${!this._history}
                     .historyData=${this._history}
                     .names=${this._names}

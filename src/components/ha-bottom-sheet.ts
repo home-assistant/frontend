@@ -44,6 +44,9 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: "aria-describedby" })
   public ariaDescribedBy?: string;
 
+  @property({ attribute: false })
+  public accessibleLabel?: string;
+
   @property({ type: Boolean }) public open = false;
 
   @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
@@ -212,6 +215,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
         placement="bottom"
         .open=${this._drawerOpen}
         .lightDismiss=${!this.preventScrimClose}
+        .label=${this.accessibleLabel ?? ""}
         .ariaLabelledby=${this.ariaLabelledBy}
         .ariaDescribedby=${this.ariaDescribedBy}
         @keydown=${this._handleKeyDown}

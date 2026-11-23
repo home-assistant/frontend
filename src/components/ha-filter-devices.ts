@@ -74,6 +74,15 @@ export class HaFilterDevices extends LitElement {
 
   private _relatedRequestId = 0;
 
+  public connectedCallback() {
+    super.connectedCallback();
+    // The config pages are cached, so an item may have been edited while this
+    // filter was not on screen
+    if (this.hasUpdated && this.value?.length) {
+      this._findRelated();
+    }
+  }
+
   public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
 
@@ -82,6 +91,15 @@ export class HaFilterDevices extends LitElement {
       !deepEqual(this.value, properties.get("value"))
     ) {
       this._findRelated();
+    }
+  }
+
+  protected updated(properties: PropertyValues<this>) {
+    super.updated(properties);
+
+    // The rows don't change with the value, so render the selection again
+    if (properties.has("value")) {
+      this._listElement?.requestRowsUpdate();
     }
   }
 
@@ -99,6 +117,9 @@ export class HaFilterDevices extends LitElement {
               ? html`<div class="badge">${this.value?.length}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
+                    .label=${this._localize(
+                      "ui.components.subpage-data-table.clear_filter"
+                    )}
                     @click=${this._clearFilter}
                     @keydown=${this._handleClearFilterKeydown}
                   ></ha-icon-button>`
@@ -269,7 +290,6 @@ export class HaFilterDevices extends LitElement {
       value: undefined,
       items: undefined,
     });
-    this._listElement?.clearSelection();
   }
 
   static styles = [

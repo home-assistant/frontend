@@ -102,11 +102,11 @@ export const processConversationInput = (
   });
 
 export const listAgents = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   language?: string,
   country?: string
 ): Promise<{ agents: Agent[] }> =>
-  hass.callWS({
+  callWS({
     type: "conversation/agent/list",
     language,
     country,

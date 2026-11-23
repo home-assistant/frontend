@@ -281,7 +281,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
     showAreaRegistryDetailDialog(this, {
       entry: area,
       updateEntry: (values) =>
-        updateAreaRegistryEntry(this.hass, areaId, values),
+        updateAreaRegistryEntry(this.hass.callWS, areaId, values),
     });
   };
 
@@ -316,7 +316,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
     showDeviceRegistryDetailDialog(this, {
       device,
       updateEntry: async (updates) => {
-        await updateDeviceRegistryEntry(this.hass, deviceId, updates);
+        await updateDeviceRegistryEntry(this.hass.callWS, deviceId, updates);
       },
     });
   }

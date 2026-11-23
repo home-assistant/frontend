@@ -121,7 +121,7 @@ class HaBackupConfigSchedule extends LitElement {
 
     return html`
       <ha-list-base>
-        <ha-list-item-base>
+        <ha-list-item-base wrap-headline wrap-supporting-text>
           <span slot="headline">
             ${this.hass.localize(
               "ui.panel.config.backup.schedule.schedule"
@@ -154,7 +154,7 @@ class HaBackupConfigSchedule extends LitElement {
                 )}
                 outlined
               >
-                <ha-row-item class="days">
+                <ha-row-item wrap-headline class="days">
                   <span slot="headline">
                     ${this.hass.localize(
                       "ui.panel.config.backup.schedule.backup_every"
@@ -186,7 +186,7 @@ class HaBackupConfigSchedule extends LitElement {
           (data.recurrence === BackupScheduleRecurrence.CUSTOM_DAYS &&
             data.days.length > 0)
             ? html`
-                <ha-list-item-base>
+                <ha-list-item-base wrap-headline wrap-supporting-text>
                   <span slot="headline">
                     ${this.hass.localize(
                       "ui.panel.config.backup.schedule.time"
@@ -231,7 +231,7 @@ class HaBackupConfigSchedule extends LitElement {
                         )}
                         outlined
                       >
-                        <ha-row-item>
+                        <ha-row-item wrap-headline wrap-supporting-text>
                           <span slot="headline">
                             ${this.hass.localize(
                               "ui.panel.config.backup.schedule.custom_time_label"
@@ -266,7 +266,7 @@ class HaBackupConfigSchedule extends LitElement {
         ${
           this.supervisor
             ? html`
-                <ha-list-item-base>
+                <ha-list-item-base wrap-headline wrap-supporting-text>
                   <span slot="headline">
                     ${this.hass.localize(
                       `ui.panel.config.backup.schedule.update_preference.label`
@@ -414,12 +414,6 @@ class HaBackupConfigSchedule extends LitElement {
   static styles = css`
     ha-list-base {
       --ha-row-item-padding-inline: 0;
-    }
-    ha-row-item::part(headline),
-    ha-row-item::part(supporting-text),
-    ha-list-item-base::part(headline),
-    ha-list-item-base::part(supporting-text) {
-      white-space: wrap;
     }
     ha-select {
       min-width: 210px;

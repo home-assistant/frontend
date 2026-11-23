@@ -1,3 +1,4 @@
+import { provide } from "@lit/context";
 import { mdiContentSave } from "@mdi/js";
 import {
   html,
@@ -33,6 +34,10 @@ import type {
   ValueChangedEvent,
 } from "../../../types";
 import { showToast } from "../../../util/toast";
+import {
+  AutomationRowRegistry,
+  automationRowRegistryContext,
+} from "./automation-path";
 import "./ha-automation-sidebar";
 import type HaAutomationSidebar from "./ha-automation-sidebar";
 
@@ -81,6 +86,9 @@ export const ManualEditorMixin = <TConfig>(
 
     @query("ha-automation-sidebar")
     protected sidebarElement?: HaAutomationSidebar;
+
+    @provide({ context: automationRowRegistryContext })
+    protected rowRegistry = new AutomationRowRegistry();
 
     declare protected collapsableElements?: NodeListOf<
       Element & {
@@ -241,6 +249,14 @@ export const ManualEditorMixin = <TConfig>(
         this.sidebarConfig?.close();
         this.sidebarKey = 0;
       }
+    }
+
+    public get canToggleSidebarYamlMode(): boolean {
+      return !!this.sidebarElement?.canToggleYamlMode;
+    }
+
+    public toggleSidebarYamlMode() {
+      this.sidebarElement?.toggleYamlMode();
     }
 
     private _handleBottomSheetResized(

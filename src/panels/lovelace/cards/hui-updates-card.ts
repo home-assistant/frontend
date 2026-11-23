@@ -1,21 +1,30 @@
 import { mdiPackageUp } from "@mdi/js";
+import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
+import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-card";
 import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import {
-  filterUpdateEntities,
-  updateCanInstall,
-  type UpdateEntity,
-} from "../../../data/update";
-import type { HomeAssistant } from "../../../types";
-import { handleAction } from "../common/handle-action";
+  configContext,
+  formattersContext,
+  internationalizationContext,
+  statesContext,
+} from "../../../data/context";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import { filterUpdateEntities, updateCanInstall } from "../../../data/update";
+import type {
+  CurrentUser,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+} from "../../../types";
 import { hasAction } from "../common/has-action";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import { tileCardStyle } from "./tile/tile-card-style";
@@ -25,11 +34,39 @@ import type { UpdatesCardConfig } from "./types";
 export class HuiUpdatesCard extends LitElement implements LovelaceCard {
   public connectedWhileHidden = true;
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @state() private _config?: UpdatesCardConfig;
 
-  private _updateCount = 0;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, CurrentUser | undefined>({
+    transformer: ({ user }) => user,
+  })
+  private _user?: CurrentUser;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<HassEntities, number>({
+    transformer: function (this: HuiUpdatesCard, states) {
+      if (!this._formatters) {
+        return undefined;
+      }
+      return filterUpdateEntities(
+        states,
+        this._formatters.formatEntityName,
+        this._i18n?.locale.language
+      ).filter((entity) => updateCanInstall(entity, false)).length;
+    },
+    watch: ["_i18n", "_formatters"],
+  })
+  private _updateCount?: number;
 
   public setConfig(config: UpdatesCardConfig): void {
     this._config = config;
@@ -56,23 +93,15 @@ export class HuiUpdatesCard extends LitElement implements LovelaceCard {
     };
   }
 
-  private _getUpdateEntities(): UpdateEntity[] {
-    if (!this.hass) {
-      return [];
-    }
-    return filterUpdateEntities(
-      this.hass.states,
-      this.hass.formatEntityName,
-      this.hass.locale.language
-    ).filter((entity) => updateCanInstall(entity, false));
-  }
-
   private async _handleAction(ev: ActionHandlerEvent) {
     if (ev.detail.action === "tap" && !hasAction(this._config?.tap_action)) {
       navigate("/config/updates");
       return;
     }
-    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+    fireEvent(this, "hass-action", {
+      config: this._config!,
+      action: ev.detail.action,
+    });
   }
 
   private get _hasCardAction() {
@@ -84,19 +113,19 @@ export class HuiUpdatesCard extends LitElement implements LovelaceCard {
     );
   }
 
-  protected willUpdate(changedProps: PropertyValues<this>): void {
-    super.willUpdate(changedProps);
-
-    if (!this._config || !this.hass) {
-      return;
+  // Runs after @transform has refreshed _updateCount, which happens after
+  // willUpdate.
+  protected update(changedProps: PropertyValues): void {
+    if (this._config) {
+      this._updateVisibility();
     }
+    super.update(changedProps);
+  }
 
-    this._updateCount = this._getUpdateEntities().length;
-
+  private _updateVisibility(): void {
     // Update visibility based on admin status and updates count
     const shouldBeHidden = Boolean(
-      !this.hass.user?.is_admin ||
-      (this._config.hide_empty && this._updateCount === 0)
+      !this._user?.is_admin || (this._config!.hide_empty && !this._updateCount)
     );
 
     if (shouldBeHidden !== this.hidden) {
@@ -107,19 +136,19 @@ export class HuiUpdatesCard extends LitElement implements LovelaceCard {
   }
 
   protected render(): TemplateResult | typeof nothing {
-    if (!this._config || !this.hass) {
+    if (!this._config || !this._i18n) {
       return nothing;
     }
 
-    const count = this._updateCount;
+    const count = this._updateCount ?? 0;
 
-    const label = this.hass.localize("ui.card.updates.title");
+    const label = this._i18n.localize("ui.card.updates.title");
     const secondary =
       count > 0
-        ? this.hass.localize("ui.card.updates.count_updates", {
+        ? this._i18n.localize("ui.card.updates.count_updates", {
             count,
           })
-        : this.hass.localize("ui.card.updates.no_updates");
+        : this._i18n.localize("ui.card.updates.no_updates");
 
     return html`
       <ha-card>

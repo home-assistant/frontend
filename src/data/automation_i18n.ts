@@ -175,11 +175,10 @@ export const describeTrigger = (
     // eslint-disable-next-line no-console
     console.error(error);
 
-    let msg = "Error in describing trigger";
-    if (error.message) {
-      msg += ": " + error.message;
-    }
-    return msg;
+    return hass.localize(
+      "ui.panel.config.automation.editor.triggers.describe_error",
+      { error: error?.message || String(error) }
+    );
   }
 };
 
@@ -912,11 +911,10 @@ export const describeCondition = (
     // eslint-disable-next-line no-console
     console.error(error);
 
-    let msg = "Error in describing condition";
-    if (error.message) {
-      msg += ": " + error.message;
-    }
-    return msg;
+    return hass.localize(
+      "ui.panel.config.automation.editor.conditions.describe_error",
+      { error: error?.message || String(error) }
+    );
   }
 };
 

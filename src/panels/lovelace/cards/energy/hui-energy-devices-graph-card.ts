@@ -11,7 +11,7 @@ import type { ECElementEvent } from "echarts/types/dist/shared";
 import type { PieDataItemOption } from "echarts/types/src/chart/pie/PieSeries";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { consume } from "../../../../common/decorators/consume";
-import { formatNumber } from "../../../../common/number/format_number";
+import { formatNumberWithUnit } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/chart/ha-chart-tooltip-marker";
 import {
@@ -219,11 +219,21 @@ export class HuiEnergyDevicesGraphCard
   private _renderTooltip = (params: any) => {
     const deviceName = this._getDeviceName(params.name);
     const area = computeEnergyStatisticArea(this._registries, params.name);
-    const value = `${formatNumber(
-      params.value[0] as number,
+    const energy = params.value[0] as number;
+    const formatOptions =
+      energy < 0.1 ? { maximumFractionDigits: 3 } : undefined;
+    const formattedEnergy = formatNumberWithUnit(
+      energy,
+      "kWh",
       this._i18n.locale,
-      params.value < 0.1 ? { maximumFractionDigits: 3 } : undefined
-    )} kWh ${params.percent ? `(${params.percent} %)` : ""}`;
+      formatOptions
+    );
+    const formattedPercent = params.percent
+      ? formatNumberWithUnit(params.percent, "%", this._i18n.locale)
+      : undefined;
+    const value = formattedPercent
+      ? `${formattedEnergy} (${formattedPercent})`
+      : formattedEnergy;
     return html`<h4 style="text-align: center; margin: 0;">${deviceName}</h4>
       ${
         area
@@ -496,7 +506,8 @@ export class HuiEnergyDevicesGraphCard
       const showUntracked =
         "from_grid" in summedData ||
         "solar" in summedData ||
-        "from_battery" in summedData;
+        "from_battery" in summedData ||
+        "home" in summedData;
       const untracked = showUntracked
         ? totalUsed -
           pieChartData.reduce(
@@ -566,7 +577,7 @@ export class HuiEnergyDevicesGraphCard
           fontSize: computedStyle.getPropertyValue("--ha-font-size-m"),
           lineHeight: 24,
           fontWeight: "bold",
-          formatter: `{a}\n${formatNumber(totalChart, this._i18n.locale)} kWh`,
+          formatter: `{a}\n${formatNumberWithUnit(totalChart, "kWh", this._i18n.locale)}`,
         },
         cursor: "default",
         itemStyle: {
@@ -591,7 +602,7 @@ export class HuiEnergyDevicesGraphCard
       return {
         ...d,
         name: this._getDeviceName(d.name),
-        value: `${formatNumber(d.value[0], this._i18n.locale)} kWh`,
+        value: formatNumberWithUnit(d.value[0], "kWh", this._i18n.locale),
         // Untracked is synthetic and external statistics aren't real entities,
         // so their labels can't open more-info; fall back to toggling visibility.
         noLabelClick:

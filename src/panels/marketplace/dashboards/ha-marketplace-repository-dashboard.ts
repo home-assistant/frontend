@@ -11,6 +11,7 @@ import {
   mdiGithub,
   mdiRestart,
   mdiStar,
+  mdiTestTube,
   mdiUpdate,
 } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -38,6 +39,7 @@ import "../../../components/ha-svg-icon";
 import { getConfigEntries } from "../../../data/config_entries";
 import {
   apiContext,
+  brandsAccessTokenContext,
   configContext,
   internationalizationContext,
   uiContext,
@@ -71,6 +73,7 @@ import {
   addMarketplaceRepository,
   fetchMarketplaceRepositories,
   fetchMarketplaceRepository,
+  setMarketplaceRepositoryBeta,
 } from "../../../data/marketplace/repository";
 import {
   ERROR_GITHUB_RATE_LIMITED,
@@ -94,6 +97,7 @@ import {
   markdownWithRepositoryContext,
   repositoryUrl,
 } from "../tools/markdown";
+import { MARKETPLACE_NAME } from "../../../common/translations/name-placeholders";
 
 // Repository pages live at /<id> below /repository, my links at /repository itself.
 const repositoryIdFromRoute = (route: Route): string => route.path.substring(1);
@@ -146,6 +150,11 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   })
   private _hassUrl!: string;
 
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  // @ts-ignore re-render trigger only, its value is never read
+  private _brandsAccessToken?: string;
+
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
@@ -166,6 +175,8 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
   // Only the newest request counts, also one for the same repository
   private _request = 0;
+
+  private _settingPreReleases = new Set<string>();
 
   protected async firstUpdated(
     changedProperties: PropertyValues<this>
@@ -338,6 +349,31 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     this._fetchRepository();
   }
 
+  // Core fetches the repository from GitHub again before answering
+  public async includePreReleases(include: boolean): Promise<void> {
+    const repositoryId = this._repository!.id;
+    if (this._settingPreReleases.has(repositoryId)) {
+      return;
+    }
+    this._repository = { ...this._repository!, beta: include };
+    this._settingPreReleases.add(repositoryId);
+
+    try {
+      await setMarketplaceRepositoryBeta(this._api, repositoryId, include);
+    } catch (err: unknown) {
+      if (this._repository?.id === repositoryId) {
+        this._repository = { ...this._repository, beta: !include };
+      }
+      throw err;
+    } finally {
+      this._settingPreReleases.delete(repositoryId);
+    }
+
+    if (this._repository?.id === repositoryId) {
+      this._fetchRepository();
+    }
+  }
+
   private _loadRepositoryFromRoute(): void {
     const repositoryId = repositoryIdFromRoute(this.route);
     if (!repositoryId) {
@@ -460,7 +496,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
       <hass-subpage
         .narrow=${this.narrow}
         back-path="/marketplace"
-        .header=${this._i18n.localize("ui.panel.marketplace.title")}
+        .header=${MARKETPLACE_NAME}
       >
         <ha-dropdown
           slot="toolbar-icon"
@@ -890,6 +926,14 @@ type: module</pre>`,
         }),
       });
     }
+    if (repository.beta) {
+      signals.push({
+        icon: mdiTestTube,
+        text: localize(
+          "ui.panel.marketplace.repository.details.pre_releases_included"
+        ),
+      });
+    }
     const lastChange = this._relativeTime(repository.last_updated);
     if (lastChange) {
       signals.push({
@@ -925,7 +969,7 @@ type: module</pre>`,
         ? {
             icon: mdiAlertCircleOutline,
             text: localize(
-              "ui.panel.marketplace.repository.community.open_issues",
+              "ui.panel.marketplace.repository.community.open_issues_and_prs",
               {
                 number: repository.issues,
                 count: html`<strong
@@ -937,7 +981,7 @@ type: module</pre>`,
         : {
             icon: mdiCheckCircleOutline,
             text: localize(
-              "ui.panel.marketplace.repository.community.no_open_issues"
+              "ui.panel.marketplace.repository.community.no_open_issues_and_prs"
             ),
           }
     );
@@ -1010,8 +1054,8 @@ type: module</pre>`,
           flex-direction: column;
           gap: var(--ha-space-4);
           margin: auto;
-          padding: var(--ha-space-4);
-          max-width: 1200px;
+          padding: var(--ha-space-4) var(--ha-content-gutter);
+          max-width: var(--ha-content-width-wide);
         }
         .header {
           display: flex;

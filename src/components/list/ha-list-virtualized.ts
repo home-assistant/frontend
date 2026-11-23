@@ -14,6 +14,7 @@ import {
   query,
   state,
 } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import { HaListItemBase } from "../item/ha-list-item-base";
@@ -84,23 +85,49 @@ export class HaListVirtualized extends HaListBase {
 
   protected rangeStart = -1;
   protected rangeEnd = -1;
+  private _visibleStart = -1;
+  private _visibleEnd = -1;
   private _activeItemFocus = false;
   private _scrollToActiveItem = false;
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     if (!this.hasUpdated) {
       this._loadVirtualizer();
     }
 
     if (changedProps.has("rows")) {
       this.recomputeFocusableIndexes();
-      this.activeItemIndex = this.virtualFocus ? -1 : this.firstFocusableIndex;
+      this.activeItemIndex = this.virtualFocus
+        ? -1
+        : this._followActiveRow(changedProps.get("rows"));
     }
   }
 
   /** The element that scrolls the rows, once the virtualizer has rendered. */
   public get scrollElement(): HTMLElement | undefined {
     return this.virtualizerElement ?? undefined;
+  }
+
+  /**
+   * Render the rows in view again. Call it when `rowRenderer` reads state
+   * that is not part of `rows`, like the selection.
+   */
+  public requestRowsUpdate() {
+    this.virtualizerElement?.requestUpdate();
+  }
+
+  // Keep the active row if the list has focus, else reset to the first row
+  private _followActiveRow(previousRows?: HaListVirtualizedItem[]): number {
+    const activeId = this.matches(":focus-within")
+      ? previousRows?.[this.activeItemIndex]?.id
+      : undefined;
+    const index =
+      activeId === undefined
+        ? -1
+        : this.rows.findIndex((row) => row.id === activeId);
+    return index !== -1 && this.isFocusable(index)
+      ? index
+      : this.firstFocusableIndex;
   }
 
   /** Scroll the row at `index` into view. */
@@ -128,7 +155,7 @@ export class HaListVirtualized extends HaListBase {
         tabindex="-1"
         scroller
         .items=${this.rows}
-        .renderItem=${this.rowRenderer}
+        .renderItem=${this._getRenderItem(this.rowRenderer)}
         style="min-height: 36px; height: 100%;"
         .layout=${
           !this._unpinned && this.pinIndex !== undefined
@@ -195,18 +222,39 @@ export class HaListVirtualized extends HaListBase {
       return;
     }
     if (this.virtualizerElement && this.rangeStart > -1) {
+      const tabStopIndex = this._tabStopIndex();
       Array.from(this.virtualizerElement.children).forEach((child, index) => {
         const el = child as HTMLElement;
-        if (index + this.rangeStart === this.activeItemIndex) {
-          el.tabIndex = 0;
-          if (focusItem) {
-            el.focus();
-          }
-        } else {
+        const rowIndex = index + this.rangeStart;
+        // Like the base list, keep other rows focusable by click
+        if (!this.isFocusable(rowIndex)) {
           el.removeAttribute("tabindex");
+          return;
+        }
+        el.tabIndex = rowIndex === tabStopIndex ? 0 : -1;
+        if (focusItem && rowIndex === this.activeItemIndex) {
+          el.focus();
         }
       });
     }
+  }
+
+  // The row that takes Tab: the active row while it is visible, else the
+  // first visible row, so Tab never lands on a row out of view
+  private _tabStopIndex(): number {
+    const [start, end] =
+      this._visibleStart > -1
+        ? [this._visibleStart, this._visibleEnd]
+        : [this.rangeStart, this.rangeEnd];
+    if (this.activeItemIndex >= start && this.activeItemIndex <= end) {
+      return this.activeItemIndex;
+    }
+    for (let i = start; i <= end; i++) {
+      if (this.isFocusable(i)) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   private _applyVirtualActive(reveal: boolean) {
@@ -226,6 +274,12 @@ export class HaListVirtualized extends HaListBase {
 
   @eventOptions({ passive: true })
   private _handleVisibilityChanged(ev: { first: number; last: number }) {
+    this._visibleStart = ev.first;
+    this._visibleEnd = ev.last;
+
+    if (!this.virtualFocus) {
+      this.applyActive(false);
+    }
     fireEvent(this, "ha-list-visibility-changed", {
       first: ev.first,
       last: ev.last,
@@ -363,7 +417,19 @@ export class HaListVirtualized extends HaListBase {
     return Math.max(1, this.rangeEnd - this.rangeStart + 1);
   }
 
-  private _keyFunction = (item: HaListVirtualizedItem) => item.id;
+  // The virtualizer renders its last range again when it re-renders before it
+  // lays out shorter rows, so rows past the end arrive as undefined.
+  private _keyFunction = (
+    item: HaListVirtualizedItem | undefined,
+    index: number
+  ) => item?.id ?? index;
+
+  private _getRenderItem = memoizeOne(
+    (rowRenderer?: RenderItemFunction<HaListVirtualizedItem>) =>
+      rowRenderer &&
+      ((item: HaListVirtualizedItem | undefined, index: number) =>
+        item ? rowRenderer(item, index) : nothing)
+  );
 
   @eventOptions({ passive: true })
   private _handleUnpinned() {

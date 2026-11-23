@@ -679,7 +679,7 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   private async _runScript() {
-    if (hasScriptFields(this.hass, this.currentEntityId!)) {
+    if (hasScriptFields(this.hass.services, this.currentEntityId!)) {
       showMoreInfoDialog(this, {
         entityId: this.currentEntityId!,
       });
@@ -1032,7 +1032,7 @@ export class HaScriptEditor extends SubscribeMixin(
         }
 
         if (entityId) {
-          await updateEntityRegistryEntry(this.hass, entityId, {
+          await updateEntityRegistryEntry(this.hass.callWS, entityId, {
             categories: {
               script: this.entityRegistryUpdate.category || null,
             },
@@ -1066,6 +1066,27 @@ export class HaScriptEditor extends SubscribeMixin(
       Z: () => this._redo(),
       y: () => this._redo(),
     };
+  }
+
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    if (this._manualEditor?.sidebarOpen) {
+      return this._manualEditor.canToggleSidebarYamlMode
+        ? { Y: () => this._manualEditor?.toggleSidebarYamlMode() }
+        : {};
+    }
+    return {
+      Y: () => this._toggleYamlMode(),
+    };
+  }
+
+  private async _toggleYamlMode() {
+    if (this.mode === "gui") {
+      this.switchYamlMode();
+      await this.updateComplete;
+      this._yamlEditor?.focus();
+    } else {
+      this.switchUiMode();
+    }
   }
 
   protected supportedSingleKeyShortcuts(): SupportedShortcuts {
@@ -1158,11 +1179,7 @@ export class HaScriptEditor extends SubscribeMixin(
         this._takeControl();
         break;
       case "toggle_yaml_mode":
-        if (this.mode === "gui") {
-          this.switchYamlMode();
-          break;
-        }
-        this.switchUiMode();
+        this._toggleYamlMode();
         break;
       case "delete":
         this._deleteConfirm();

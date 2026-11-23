@@ -4,8 +4,8 @@ import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-icon-next";
-import "../components/ha-list";
-import "../components/ha-list-item";
+import "../components/item/ha-list-item-button";
+import "../components/list/ha-list-base";
 import type { AuthProvider } from "../data/auth";
 
 declare global {
@@ -32,21 +32,19 @@ export class HaPickAuthProvider extends LitElement {
           >${this._localize("ui.panel.page-authorize.pick_auth_provider")}</span
         >
       </h3>
-      <ha-list>
+      <ha-list-base>
         ${this.authProviders.map(
           (provider) => html`
-            <ha-list-item
-              hasMeta
-              role="button"
+            <ha-list-item-button
               .auth_provider=${provider}
               @click=${this._handlePick}
             >
-              ${provider.name}
-              <ha-icon-next slot="meta"></ha-icon-next>
-            </ha-list-item>
+              <span slot="headline">${provider.name}</span>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-list-item-button>
           `
         )}
-      </ha-list>
+      </ha-list-base>
     `;
   }
 
@@ -80,9 +78,9 @@ export class HaPickAuthProvider extends LitElement {
       background: var(--card-background-color);
       padding: 0 15px;
     }
-    ha-list {
+    ha-list-base {
       margin: 16px -16px 0;
-      --mdc-list-side-padding: 24px;
+      --ha-row-item-padding-inline: 24px;
     }
   `;
 }

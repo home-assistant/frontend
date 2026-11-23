@@ -9,11 +9,13 @@ import {
   mdiDragHorizontalVariant,
   mdiPencil,
   mdiPlusCircleMultipleOutline,
+  mdiViewGridOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { ConfigPath } from "../../../common/util/config-path";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dropdown";
@@ -28,14 +30,15 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { duplicateSection } from "../editor/config-util";
-import type { LovelacePath } from "../editor/lovelace-path";
 import {
   deleteAtPath,
   getAtPath,
   getParentPath,
   insertAtPath,
+  setAtPath,
 } from "../editor/lovelace-path";
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
+import { expandLovelaceSectionStrategies } from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
 import { LOVELACE_EDIT_TOAST_ID } from "../types";
 
@@ -45,7 +48,7 @@ export class HuiSectionEditMode extends LitElement {
 
   @property({ attribute: false }) public lovelace!: Lovelace;
 
-  @property({ attribute: false }) public path!: LovelacePath;
+  @property({ attribute: false }) public path!: ConfigPath;
 
   @property({ type: Boolean, attribute: "is-strategy", reflect: true })
   public isStrategy = false;
@@ -102,6 +105,21 @@ export class HuiSectionEditMode extends LitElement {
               <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
               ${this.hass.localize("ui.common.edit")}
             </ha-dropdown-item>
+            ${
+              this.isStrategy
+                ? html`
+                    <ha-dropdown-item value="convert_to_manual">
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiViewGridOutline}
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.editor.section.convert_to_manual"
+                      )}
+                    </ha-dropdown-item>
+                  `
+                : nothing
+            }
             <ha-dropdown-item value="duplicate">
               <ha-svg-icon
                 slot="icon"
@@ -171,6 +189,9 @@ export class HuiSectionEditMode extends LitElement {
       case "edit":
         this._editSection();
         break;
+      case "convert_to_manual":
+        this._convertToManual();
+        break;
       case "duplicate":
         this._duplicateSection();
         break;
@@ -198,6 +219,43 @@ export class HuiSectionEditMode extends LitElement {
       },
       path: this.path,
     });
+  }
+
+  private async _convertToManual(): Promise<void> {
+    const section = this._getSection();
+    if (!section || !isStrategySection(section)) return;
+
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.lovelace.editor.section.convert_to_manual"
+      ),
+      text: this.hass.localize(
+        "ui.panel.lovelace.editor.section.convert_to_manual_text"
+      ),
+      confirmText: this.hass.localize(
+        "ui.panel.lovelace.editor.section.convert_to_manual_confirm"
+      ),
+    });
+    if (!confirm) return;
+
+    try {
+      const manualSection = await expandLovelaceSectionStrategies(
+        section,
+        this.hass,
+        true
+      );
+      if (!this.isConnected || this._getSection() !== section) return;
+      await this.lovelace!.saveConfig(
+        setAtPath(this.lovelace!.config, this.path, manualSection)
+      );
+    } catch (_err: unknown) {
+      this.lovelace!.showToast({
+        id: LOVELACE_EDIT_TOAST_ID,
+        message: this.hass.localize(
+          "ui.panel.lovelace.editor.section.convert_to_manual_error"
+        ),
+      });
+    }
   }
 
   private _duplicateSection(): void {

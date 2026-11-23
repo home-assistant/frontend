@@ -140,10 +140,10 @@ export const sceneEntityStateObj = (
 };
 
 export const activateScene = (
-  hass: HomeAssistant,
+  callService: HomeAssistant["callService"],
   entityId: string
 ): Promise<ServiceCallResponse> =>
-  hass.callService("scene", "turn_on", { entity_id: entityId });
+  callService("scene", "turn_on", { entity_id: entityId });
 
 export const applyScene = (
   hass: HomeAssistant,

@@ -9,6 +9,7 @@ import {
   computeAttributeNameDisplay,
 } from "../../../src/common/entity/compute_attribute_display";
 import type { FrontendLocaleData } from "../../../src/data/translation";
+import { TimeZone } from "../../../src/data/translation";
 import type { HomeAssistant } from "../../../src/types";
 
 export const localizeMock = (key: string) => {
@@ -112,6 +113,19 @@ describe("computeAttributeValueDisplay", () => {
     expect(result).toBe("October 10, 2023");
   });
 
+  it("should not shift date string to another day in a server time zone", () => {
+    const result = computeAttributeValueDisplay(
+      localizeMock,
+      stateObjMock,
+      { ...localeMock, time_zone: TimeZone.server },
+      { ...configMock, time_zone: "America/New_York" },
+      entitiesMock,
+      "attribute",
+      "2023-10-10"
+    );
+    expect(result).toBe("October 10, 2023");
+  });
+
   it("should return formatted datetime for timestamp", () => {
     const result = computeAttributeValueDisplay(
       localizeMock,
@@ -166,7 +180,7 @@ describe("computeAttributeValueDisplay", () => {
       entitiesMock,
       "temperature"
     );
-    expect(result).toBe("42 °C");
+    expect(result).toBe("42\u00A0°C");
   });
 
   it("should set temperature unit for temperature attribute", () => {
@@ -184,7 +198,7 @@ describe("computeAttributeValueDisplay", () => {
       entitiesMock,
       "temperature"
     );
-    expect(result).toBe("42 °C");
+    expect(result).toBe("42\u00A0°C");
   });
 
   it("should return translation from translation key", () => {
@@ -237,6 +251,90 @@ describe("computeAttributeValueDisplay", () => {
       "attributeValue"
     );
     expect(result).toBe("Media Player Attribute Name");
+  });
+
+  it("should return the translation of a group member", () => {
+    const localize = (key: string) =>
+      ({
+        "component.member_platform.entity.light.member_key.state_attributes.effect.state.candle":
+          "Candle",
+        "component.switch_platform.entity.switch.switch_key.state_attributes.effect.state.candle":
+          "Switch candle",
+      })[key] || "";
+    const entities = {
+      "light.group": { platform: "group" },
+      "light.plain": { platform: "plain_platform" },
+      "switch.member": {
+        platform: "switch_platform",
+        translation_key: "switch_key",
+      },
+      "light.member": {
+        platform: "member_platform",
+        translation_key: "member_key",
+      },
+    } as unknown as HomeAssistant["entities"];
+    const stateObj = {
+      entity_id: "light.group",
+      attributes: {
+        entity_id: ["light.plain", "switch.member", "light.member"],
+      },
+    } as unknown as HassEntityBase;
+
+    expect(
+      computeAttributeValueDisplay(
+        localize,
+        stateObj,
+        localeMock,
+        configMock,
+        entities,
+        "effect",
+        "candle"
+      )
+    ).toBe("Candle");
+    expect(
+      computeAttributeValueDisplay(
+        localize,
+        stateObj,
+        localeMock,
+        configMock,
+        entities,
+        "effect",
+        "fire"
+      )
+    ).toBe("fire");
+  });
+
+  it("should return the translation of a member in group_entities", () => {
+    const localize = (key: string) =>
+      ({
+        "component.member_platform.entity.light.member_key.state_attributes.effect.state.candle":
+          "Candle",
+      })[key] || "";
+    const entities = {
+      "light.integration_group": { platform: "integration_platform" },
+      "light.member": {
+        platform: "member_platform",
+        translation_key: "member_key",
+      },
+    } as unknown as HomeAssistant["entities"];
+    const stateObj = {
+      entity_id: "light.integration_group",
+      attributes: {
+        group_entities: ["light.member"],
+      },
+    } as unknown as HassEntityBase;
+
+    expect(
+      computeAttributeValueDisplay(
+        localize,
+        stateObj,
+        localeMock,
+        configMock,
+        entities,
+        "effect",
+        "candle"
+      )
+    ).toBe("Candle");
   });
 
   it("should return attribute value", () => {

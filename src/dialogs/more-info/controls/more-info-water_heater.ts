@@ -10,7 +10,6 @@ import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
-import "../../../components/ha-list-item";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { WaterHeaterEntity } from "../../../data/water_heater";
 import {

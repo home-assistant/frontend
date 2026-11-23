@@ -1,11 +1,18 @@
+import type { ContextType } from "@lit/context";
 import { mdiBackupRestore, mdiFolder, mdiHarddisk, mdiPlayBox } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
+import {
+  apiContext,
+  configContext,
+  internationalizationContext,
+} from "../data/context";
 import type { SupervisorMounts } from "../data/supervisor/mounts";
 import {
   fetchSupervisorMounts,
@@ -13,9 +20,7 @@ import {
   SupervisorMountUsage,
   supervisorMountDescription,
 } from "../data/supervisor/mounts";
-import type { HomeAssistant } from "../types";
 import "./ha-alert";
-import "./ha-list-item";
 import "./ha-select";
 import type { HaSelectOption, HaSelectSelectEvent } from "./ha-select";
 
@@ -23,8 +28,6 @@ const _BACKUP_DATA_DISK_ = "/backup";
 
 @customElement("ha-mount-picker")
 class HaMountPicker extends LitElement {
-  public hass!: HomeAssistant;
-
   @property() public label?: string;
 
   @property() public value?: string;
@@ -41,6 +44,16 @@ class HaMountPicker extends LitElement {
 
   @state() private _error?: string;
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
   protected firstUpdated() {
     this._getMounts();
   }
@@ -55,7 +68,8 @@ class HaMountPicker extends LitElement {
 
     const options: HaSelectOption[] = this._filterMounts(
       this._mounts,
-      this.usage
+      this.usage,
+      this._i18n.locale.language
     ).map((mount) => ({
       value: mount.name,
       label: mount.name,
@@ -73,7 +87,7 @@ class HaMountPicker extends LitElement {
         value: _BACKUP_DATA_DISK_,
         iconPath: mdiHarddisk,
         label:
-          this.hass.localize("ui.components.mount-picker.use_datadisk") ||
+          this._i18n.localize("ui.components.mount-picker.use_datadisk") ||
           "Use data disk for backup",
       };
       if (
@@ -89,8 +103,8 @@ class HaMountPicker extends LitElement {
     return html`
       <ha-select
         .label=${
-          this.label === undefined && this.hass
-            ? this.hass.localize("ui.components.mount-picker.mount")
+          this.label === undefined
+            ? this._i18n.localize("ui.components.mount-picker.mount")
             : this.label
         }
         .value=${this.value}
@@ -105,7 +119,7 @@ class HaMountPicker extends LitElement {
   }
 
   private _filterMounts = memoizeOne(
-    (mounts: SupervisorMounts, usage: this["usage"]) => {
+    (mounts: SupervisorMounts, usage: this["usage"], language: string) => {
       let filteredMounts = mounts.mounts.filter((mount) =>
         [
           SupervisorMountType.CIFS,
@@ -125,29 +139,25 @@ class HaMountPicker extends LitElement {
         if (mountB.name === mounts.default_backup_mount) {
           return 1;
         }
-        return caseInsensitiveStringCompare(
-          mountA.name,
-          mountB.name,
-          this.hass.locale.language
-        );
+        return caseInsensitiveStringCompare(mountA.name, mountB.name, language);
       });
     }
   );
 
   private async _getMounts() {
     try {
-      if (isComponentLoaded(this.hass.config, "hassio")) {
-        this._mounts = await fetchSupervisorMounts(this.hass);
+      if (isComponentLoaded(this._config.config, "hassio")) {
+        this._mounts = await fetchSupervisorMounts(this._api.callWS);
         if (this.usage === SupervisorMountUsage.BACKUP && !this.value) {
           this.value = this._mounts.default_backup_mount || _BACKUP_DATA_DISK_;
         }
       } else {
-        this._error = this.hass.localize(
+        this._error = this._i18n.localize(
           "ui.components.mount-picker.error.no_supervisor"
         );
       }
     } catch (_err: any) {
-      this._error = this.hass.localize(
+      this._error = this._i18n.localize(
         "ui.components.mount-picker.error.fetch_mounts"
       );
     }

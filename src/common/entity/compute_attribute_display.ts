@@ -5,7 +5,9 @@ import {
   TEMPERATURE_ATTRIBUTES,
 } from "../../data/entity/entity_attributes";
 import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
+import { computeGroupMemberEntries } from "../../data/group";
 import type { FrontendLocaleData } from "../../data/translation";
+import { TimeZone } from "../../data/translation";
 import type { WeatherEntity } from "../../data/weather";
 import { getWeatherUnit } from "../../data/weather";
 import type { HomeAssistant, ValuePart } from "../../types";
@@ -115,6 +117,24 @@ export const computeAttributeValueToParts = (
         }
       }
 
+      // Date only, which is timezone agnostic, so parse and format it as
+      // local time to keep the same calendar day
+      if (isDate(attributeValue)) {
+        const date = new Date(`${attributeValue}T00:00`);
+        if (checkValidDate(date)) {
+          return [
+            {
+              type: "value",
+              value: formatDate(
+                date,
+                { ...locale, time_zone: TimeZone.local },
+                config
+              ),
+            },
+          ];
+        }
+      }
+
       // Value was not a timestamp, so only do date formatting
       const date = new Date(attributeValue);
       if (checkValidDate(date)) {
@@ -163,6 +183,13 @@ export const computeAttributeValueToParts = (
       localize(
         `component.${registryEntry.platform}.entity.${domain}.${translationKey}.state_attributes.${attribute}.state.${attributeValue}`
       )) ||
+    computeMemberAttributeValueDisplay(
+      localize,
+      stateObj,
+      entities,
+      attribute,
+      attributeValue
+    ) ||
     (deviceClass &&
       localize(
         `component.${domain}.entity_component.${deviceClass}.state_attributes.${attribute}.state.${attributeValue}`
@@ -172,6 +199,27 @@ export const computeAttributeValueToParts = (
     ) ||
     attributeValue;
   return [{ type: "value", value: formattedValue }];
+};
+
+// A group has no translations for the values of its members, for example the
+// effects of a light group, so use the translation of a member.
+const computeMemberAttributeValueDisplay = (
+  localize: LocalizeFunc,
+  stateObj: HassEntity,
+  entities: HomeAssistant["entities"],
+  attribute: string,
+  attributeValue: string
+): string | undefined => {
+  const domain = computeStateDomain(stateObj);
+  for (const member of computeGroupMemberEntries(stateObj, entities)) {
+    const translation = localize(
+      `component.${member.platform}.entity.${domain}.${member.translation_key}.state_attributes.${attribute}.state.${attributeValue}`
+    );
+    if (translation) {
+      return translation;
+    }
+  }
+  return undefined;
 };
 
 export const computeAttributeNameDisplay = (

@@ -36,14 +36,18 @@ export const hasReturn = (prefs: EnergyPreferences): boolean =>
 export const hasSolar = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => source.type === "solar");
 
+export const hasHomeSource = (prefs: EnergyPreferences): boolean =>
+  prefs.energy_sources.some((source) => source.type === "home");
+
 export const hasBattery = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => source.type === "battery");
 
 /** Any electricity-relevant source: grid, solar, or battery. */
 export const hasEnergySource = (prefs: EnergyPreferences): boolean =>
-  prefs.energy_sources.some((source) =>
-    ["grid", "solar", "battery"].includes(source.type)
-  );
+  hasGridSource(prefs) ||
+  hasSolar(prefs) ||
+  hasBattery(prefs) ||
+  hasHomeSource(prefs);
 
 export const hasGasSource = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => source.type === "gas");
@@ -54,11 +58,15 @@ export const hasWaterSource = (prefs: EnergyPreferences): boolean =>
 export const hasWaterDevices = (prefs: EnergyPreferences): boolean =>
   (prefs.device_consumption_water?.length ?? 0) > 0;
 
+export const hasGasDevices = (prefs: EnergyPreferences): boolean =>
+  (prefs.device_consumption_gas?.length ?? 0) > 0;
+
 export const hasDeviceConsumption = (prefs: EnergyPreferences): boolean =>
   prefs.device_consumption.length > 0;
 
 export const hasPowerSources = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => {
+    if (source.type === "home" && !!source.stat_rate) return true;
     if (source.type === "solar" && source.stat_rate) return true;
     if (source.type === "battery" && source.stat_rate) return true;
     if (source.type === "grid") {
@@ -72,6 +80,9 @@ export const hasPowerDevices = (prefs: EnergyPreferences): boolean =>
 
 export const hasWaterRateDevices = (prefs: EnergyPreferences): boolean =>
   (prefs.device_consumption_water ?? []).some((device) => device.stat_rate);
+
+export const hasGasRateDevices = (prefs: EnergyPreferences): boolean =>
+  prefs.device_consumption_gas.some((device) => device.stat_rate);
 
 /** A water source exposing a live flow-rate statistic. */
 export const hasWaterRateSource = (prefs: EnergyPreferences): boolean =>
@@ -91,7 +102,8 @@ export const hasNowViewContent = (prefs: EnergyPreferences): boolean =>
   hasPowerDevices(prefs) ||
   hasWaterRateSource(prefs) ||
   hasWaterRateDevices(prefs) ||
-  hasGasRateSource(prefs);
+  hasGasRateSource(prefs) ||
+  hasGasRateDevices(prefs);
 
 // --- Card catalog ----------------------------------------------------------
 
@@ -144,13 +156,13 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "overview",
     "energy-usage-graph",
     "ui.panel.energy.cards.energy_usage_graph_title",
-    (p) => hasGridSource(p) || hasBattery(p)
+    (p) => hasGridSource(p) || hasBattery(p) || hasHomeSource(p)
   ),
   entry(
     "overview",
     "energy-gas-graph",
     "ui.panel.energy.cards.energy_gas_graph_title",
-    (p) => hasGasSource(p)
+    (p) => hasGasSource(p) || hasGasDevices(p)
   ),
   // One toggle gates the water row, which renders energy-water-graph (sources)
   // or, with only water devices, water-sankey.
@@ -202,7 +214,7 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "electricity",
     "energy-usage-graph",
     "ui.panel.energy.cards.energy_usage_graph_title",
-    (p) => hasGridSource(p) || hasBattery(p)
+    (p) => hasGridSource(p) || hasBattery(p) || hasHomeSource(p)
   ),
   entry(
     "electricity",
@@ -214,7 +226,7 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "electricity",
     "energy-sources-table",
     "ui.panel.energy.cards.energy_sources_table_title",
-    (p) => hasGridSource(p) || hasSolar(p) || hasBattery(p)
+    (p) => hasGridSource(p) || hasSolar(p) || hasBattery(p) || hasHomeSource(p)
   ),
   entry(
     "electricity",
@@ -247,6 +259,9 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "energy-sources-table",
     "ui.panel.energy.cards.energy_sources_table_title",
     (p) => hasGasSource(p)
+  ),
+  entry("gas", "gas-sankey", "ui.panel.energy.cards.gas_sankey_title", (p) =>
+    hasGasDevices(p)
   ),
 
   // --- Water ---
@@ -287,6 +302,12 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "water-flow-sankey",
     "ui.panel.energy.cards.water_flow_sankey_title",
     (p) => hasWaterRateDevices(p)
+  ),
+  entry(
+    "now",
+    "gas-flow-sankey",
+    "ui.panel.energy.cards.gas_flow_sankey_title",
+    (p) => hasGasRateDevices(p)
   ),
 ];
 

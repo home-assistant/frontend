@@ -627,8 +627,6 @@ export class CloudAccountOverview extends LitElement {
         ha-card {
           display: block;
           width: 100%;
-          max-width: 600px;
-          margin-inline: auto;
         }
         .card-title {
           font-size: var(--ha-font-size-xl);

@@ -109,6 +109,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { categoryGroupActions } from "../category/category-group-actions";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import {
   getAreaTableColumn,
@@ -534,6 +535,12 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         .columns=${this._columns(this.hass.localize, scenes)}
         id="entity_id"
         .initialGroupColumn=${this._tableSettings.grouping}
+        .renderGroupActions=${this._groupActions(
+          "scene",
+          this._categories,
+          this._tableSettings.grouping,
+          this._categoryDeleted
+        )}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._tableSettings.sorting}
         .columnOrder=${this._activeColumnOrder}
@@ -599,7 +606,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
         <ha-filter-categories
-          .hass=${this.hass}
           scope="scene"
           .value=${this._filters["ha-filter-categories"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -789,6 +795,23 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     });
   };
 
+  private _groupActions = memoizeOne(categoryGroupActions);
+
+  private _categoryDeleted = (categoryId: string) => {
+    const value = this._filters["ha-filter-categories"]?.value;
+
+    if (!Array.isArray(value) || !value.includes(categoryId)) {
+      return;
+    }
+
+    const remaining = value.filter((id) => id !== categoryId);
+
+    this._setFilter("ha-filter-categories", {
+      value: remaining.length ? remaining : undefined,
+      items: undefined,
+    });
+  };
+
   private _filterChanged(ev) {
     this._setFilter(ev.target.localName, ev.detail);
   }
@@ -900,7 +923,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           categories: { scene: category },
         })
       );
@@ -937,7 +960,7 @@ ${rejected
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           labels:
             action === "add"
               ? this.hass.entities[entityId].labels.concat(label)
@@ -981,7 +1004,7 @@ ${rejected
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           area_id: area,
         })
       );
@@ -1044,7 +1067,7 @@ ${rejected
   }
 
   private _activateScene = async (scene: SceneEntity) => {
-    await activateScene(this.hass, scene.entity_id);
+    await activateScene(this.hass.callService, scene.entity_id);
     showToast(this, {
       message: this.hass.localize("ui.panel.config.scene.activated", {
         name: this.hass.formatEntityName(scene),
@@ -1112,7 +1135,7 @@ ${rejected
       updateConfig: async (newConfig, entityRegistryUpdate) => {
         await saveScene(this.hass, scene.attributes.id!, newConfig);
         if (entityRegEntry) {
-          await updateEntityRegistryEntry(this.hass, scene.entity_id, {
+          await updateEntityRegistryEntry(this.hass.callWS, scene.entity_id, {
             area_id: entityRegistryUpdate.area || null,
             labels: entityRegistryUpdate.labels,
             categories: { scene: entityRegistryUpdate.category || null },
@@ -1145,7 +1168,7 @@ ${rejected
       scope: "scene",
       createEntry: async (values) => {
         const category = await createCategoryRegistryEntry(
-          this.hass,
+          this.hass.callWS,
           "scene",
           values
         );
@@ -1158,7 +1181,7 @@ ${rejected
   private _bulkCreateLabel = () => {
     showLabelDetailDialog(this, {
       createEntry: async (values) => {
-        const label = await createLabelRegistryEntry(this.hass, values);
+        const label = await createLabelRegistryEntry(this.hass.callWS, values);
         this._bulkLabel(label.label_id, "add");
       },
     });
@@ -1203,12 +1226,10 @@ ${rejected
           .slot=${slot}
           .value=${`label_${label.label_id}`}
           .action=${selected ? "remove" : "add"}
+          type="checkbox"
+          .checked=${selected}
+          .indeterminate=${partial}
         >
-          <ha-checkbox
-            slot="icon"
-            .checked=${selected}
-            .indeterminate=${partial}
-          ></ha-checkbox>
           <ha-label .color=${label.color} .description=${label.description}>
             ${
               label.icon

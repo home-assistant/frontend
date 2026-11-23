@@ -48,6 +48,7 @@ const solarPrefs = (opts: {
     energy_sources: energySources,
     device_consumption: [],
     device_consumption_water: [],
+    device_consumption_gas: [],
   };
 };
 
@@ -78,6 +79,7 @@ describe("generateEnergySolarGraphData", () => {
         energy_sources: [],
         device_consumption: [],
         device_consumption_water: [],
+        device_consumption_gas: [],
       },
     });
     const result = generateEnergySolarGraphData({
@@ -207,6 +209,64 @@ describe("generateEnergySolarGraphData", () => {
     ).toMatchSnapshot();
   });
 
+  it("combines all sources into one series and one forecast", () => {
+    const HOUR = 60 * 60 * 1000;
+    const prefs = solarPrefs({ sources: 2, forecast: true });
+    for (const source of prefs.energy_sources as SolarSourceTypeEnergyPreference[]) {
+      source.config_entry_solar_forecast = ["entry_0"];
+    }
+    const energyData = generateEnergyData(8, {
+      days: 2,
+      period: "hour",
+      compare: true,
+      prefs,
+    });
+    const params = {
+      ...baseParams,
+      energyData,
+      forecasts: buildForecasts(2 * 24, HOUR, ["entry_0"]),
+      computedStyles,
+      now,
+    };
+    const separate = generateEnergySolarGraphData(params);
+    const combined = generateEnergySolarGraphData({
+      ...params,
+      combineSources: true,
+    });
+    const sumBars = (series: (typeof combined.chartData)[number]) =>
+      (series.data as any[]).reduce(
+        (sum, item) => sum + Number(item?.value?.[1] ?? item?.[1]),
+        0
+      );
+
+    expect(combined.chartData.map((d) => d.id)).toEqual([
+      "compare-solar",
+      "solar",
+      "forecast-solar",
+    ]);
+    const [compareBars, bars, forecast] = combined.chartData;
+    expect(bars.name).toBe(
+      localize("ui.panel.lovelace.cards.energy.energy_solar_graph.production", {
+        name: localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.solar"
+        ),
+      })
+    );
+    expect(sumBars(bars)).toBeCloseTo(combined.total);
+    expect(combined.total).toBe(separate.total);
+    expect(sumBars(compareBars)).toBeCloseTo(
+      separate.chartData
+        .filter((d) => String(d.id).startsWith("compare-"))
+        .reduce((sum, d) => sum + sumBars(d), 0)
+    );
+    // Both sources share one forecast entry, which must not be counted twice.
+    expect(forecast.data).toEqual(
+      separate.chartData.find(
+        (d) => d.id === "forecast-sensor.solar_production"
+      )!.data
+    );
+  });
+
   // Regression test for #52938: a lone statistics bucket must be zero-filled
   // across the day so ECharts keeps the configured axis range, while forecast
   // line series stay untouched by the bar-bucket fill.
@@ -258,5 +318,33 @@ describe("generateEnergySolarGraphData", () => {
         startMs + index * HOUR + HOUR / 2
       );
     }
+  });
+
+  it("orders forecast points by time regardless of payload order", () => {
+    const HOUR = 60 * 60 * 1000;
+    const energyData = generateEnergyData(7, {
+      days: 1,
+      period: "hour",
+      prefs: solarPrefs({ sources: 1, forecast: true }),
+    });
+    const startMs = energyData.start.getTime();
+    const wh: Record<string, number> = {};
+    for (const hour of [8, 9, 10, 15, 7, 16]) {
+      wh[new Date(startMs + hour * HOUR).toISOString()] = hour * 100;
+    }
+    const result = generateEnergySolarGraphData({
+      ...baseParams,
+      energyData,
+      forecasts: { entry_0: { wh_hours: wh } },
+      computedStyles,
+      now,
+    });
+
+    const forecast = result.chartData.find((d) =>
+      String(d.id).startsWith("forecast-")
+    )!;
+    expect(
+      (forecast.data as any[]).map((item) => Number(item[0]) - startMs)
+    ).toEqual([7, 8, 9, 10, 15, 16].map((hour) => hour * HOUR + HOUR / 2));
   });
 });

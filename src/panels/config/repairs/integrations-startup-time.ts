@@ -2,7 +2,6 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-card";
-import "../../../components/ha-list";
 import "../../../components/item/ha-list-item-button";
 import "../../../components/list/ha-list-base";
 import type {
@@ -75,9 +74,9 @@ class IntegrationsStartupTime extends LitElement {
                 ${domainToName(this.hass.localize, setup.domain, manifest)}
               </span>
               <span slot="supporting-text">${setup.domain}</span>
-              <div slot="end">
+              <span slot="end">
                 ${setupSeconds ? html`${setupSeconds} s` : ""}
-              </div>
+              </span>
             </ha-list-item-button>
           `;
         })}
@@ -94,7 +93,7 @@ class IntegrationsStartupTime extends LitElement {
   }
 
   private async _fetchSetups() {
-    const setups = await fetchIntegrationSetups(this.hass);
+    const setups = await fetchIntegrationSetups(this.hass.callWS);
     this._setups = setups.sort((a, b) => {
       if (a.seconds === b.seconds) {
         return 0;
@@ -116,7 +115,7 @@ class IntegrationsStartupTime extends LitElement {
       max-width: 40px;
       border-radius: var(--ha-border-radius-square);
     }
-    div[slot="end"] {
+    span[slot="end"] {
       font-size: var(--ha-font-size-s);
     }
   `;

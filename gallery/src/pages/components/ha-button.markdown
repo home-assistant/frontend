@@ -66,13 +66,14 @@ Check the [webawesome documentation](https://webawesome.com/docs/components/butt
 
 **Properties/Attributes**
 
-| Name       | Type                                           | Default  | Description                                                                       |
-| ---------- | ---------------------------------------------- | -------- | --------------------------------------------------------------------------------- |
-| appearance | "accent"/"filled"/"outlined"/"plain"           | "accent" | Sets the button appearance.                                                       |
-| variants   | "brand"/"danger"/"neutral"/"warning"/"success" | "brand"  | Sets the button color variant. "brand" is default.                                |
-| size       | "xs"/"s"/"m"/"l"/"xl"                          | "m"      | Sets the button size.                                                             |
-| loading    | Boolean                                        | false    | Shows a loading indicator instead of the buttons label and disable buttons click. |
-| disabled   | Boolean                                        | false    | Disables the button and prevents user interaction.                                |
+| Name         | Type                                           | Default  | Description                                                                                                |
+| ------------ | ---------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------- |
+| appearance   | "accent"/"filled"/"outlined"/"plain"           | "accent" | Sets the button appearance.                                                                                |
+| variants     | "brand"/"danger"/"neutral"/"warning"/"success" | "brand"  | Sets the button color variant. "brand" is default.                                                         |
+| size         | "xs"/"s"/"m"/"l"/"xl"                          | "m"      | Sets the button size.                                                                                      |
+| loading      | Boolean                                        | false    | Shows a loading indicator instead of the buttons label and disable buttons click.                          |
+| disabled     | Boolean                                        | false    | Disables the button and prevents user interaction.                                                         |
+| aria-pressed | "true"/"false"                                 | -        | Makes it a toggle button and tells screen readers whether it is pressed. Leave unset for a regular button. |
 
 **CSS Custom Properties**
 

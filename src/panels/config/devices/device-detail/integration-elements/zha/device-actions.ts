@@ -7,7 +7,7 @@ import {
 } from "@mdi/js";
 import { goBack, navigate } from "../../../../../../common/navigate";
 import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
-import { fetchZHADevice } from "../../../../../../data/zha";
+import { fetchZHADevice, ZHADeviceType } from "../../../../../../data/zha";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../../../types";
 import { showZHAReconfigureDeviceDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-reconfigure-device";
@@ -33,8 +33,9 @@ export const getZHADeviceActions = async (
   }
 
   const actions: DeviceAction[] = [];
+  const isGreenPower = zhaDevice.device_type === ZHADeviceType.GreenPower;
 
-  if (!zhaDevice.active_coordinator) {
+  if (!zhaDevice.active_coordinator && !isGreenPower) {
     actions.push({
       label: hass.localize("ui.dialogs.zha_device_info.buttons.reconfigure"),
       icon: mdiCogRefresh,
@@ -44,8 +45,8 @@ export const getZHADeviceActions = async (
 
   if (
     zhaDevice.power_source === "Mains" &&
-    (zhaDevice.device_type === "Router" ||
-      zhaDevice.device_type === "Coordinator")
+    (zhaDevice.device_type === ZHADeviceType.Router ||
+      zhaDevice.device_type === ZHADeviceType.Coordinator)
   ) {
     actions.push(
       ...[
@@ -58,21 +59,26 @@ export const getZHADeviceActions = async (
     );
   }
 
-  actions.push(
-    ...[
-      {
-        label: hass.localize("ui.dialogs.zha_device_info.buttons.manage"),
-        icon: mdiGroup,
-        action: () => navigate(`/config/zha/device/${zhaDevice.ieee}/clusters`),
-      },
-      {
-        label: hass.localize("ui.dialogs.zha_device_info.buttons.view_network"),
-        icon: mdiFamilyTree,
-        action: () =>
-          navigate(`/config/zha/visualization/${zhaDevice!.device_reg_id}`),
-      },
-    ]
-  );
+  if (!isGreenPower) {
+    actions.push(
+      ...[
+        {
+          label: hass.localize("ui.dialogs.zha_device_info.buttons.manage"),
+          icon: mdiGroup,
+          action: () =>
+            navigate(`/config/zha/device/${zhaDevice.ieee}/clusters`),
+        },
+        {
+          label: hass.localize(
+            "ui.dialogs.zha_device_info.buttons.view_network"
+          ),
+          icon: mdiFamilyTree,
+          action: () =>
+            navigate(`/config/zha/visualization/${zhaDevice!.device_reg_id}`),
+        },
+      ]
+    );
+  }
 
   if (!zhaDevice.active_coordinator) {
     actions.push({

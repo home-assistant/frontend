@@ -243,6 +243,14 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     ] => {
       const entryDomains = new Set(configEntries.map((entry) => entry.domain));
 
+      // An integration loaded as a dependency of another is not set up in YAML.
+      const dependencies = new Set<string>();
+      for (const component of components) {
+        manifests[component.split(".")[0]]?.dependencies?.forEach((domain) =>
+          dependencies.add(domain)
+        );
+      }
+
       const domains = new Set<string>();
 
       for (const component of components) {
@@ -250,6 +258,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         const manifest = manifests[componentDomain];
         if (
           !entryDomains.has(componentDomain) &&
+          !dependencies.has(componentDomain) &&
           manifest &&
           !manifest.config_flow &&
           (!manifest.integration_type ||
@@ -857,7 +866,10 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   };
 
   private async _fetchEntitySources() {
-    const entitySources = await fetchEntitySourcesWithCache(this.hass);
+    const entitySources = await fetchEntitySourcesWithCache(
+      this.hass.callWS,
+      this.hass.states
+    );
 
     const entitiesByDomain = {};
 

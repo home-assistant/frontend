@@ -253,7 +253,10 @@ export class HaEntityPicker extends LitElement {
 
     const { primary, secondary } = computeEntityPickerDisplay(
       {
-        ...this._registries,
+        entities: this._registries.entities,
+        devices: this._registries.devices,
+        areas: this._registries.areas,
+        floors: this._registries.floors,
         language: this._i18n.language,
         translationMetadata: this._i18n.translationMetadata,
       },
@@ -368,25 +371,24 @@ export class HaEntityPicker extends LitElement {
       excludeEntities?: string[],
       value?: string
     ) =>
-      getEntities(
-        {
-          states,
-          ...registries,
-          language: i18n.language,
-          translationMetadata: i18n.translationMetadata,
-          localize: i18n.localize,
-        },
-        {
-          includeDomains,
-          excludeDomains,
-          entityFilter,
-          includeDeviceClasses,
-          includeUnitOfMeasurement,
-          includeEntities,
-          excludeEntities,
-          value,
-        }
-      )
+      getEntities({
+        states,
+        entities: registries.entities,
+        devices: registries.devices,
+        areas: registries.areas,
+        floors: registries.floors,
+        localize: i18n.localize,
+        language: i18n.language,
+        translationMetadata: i18n.translationMetadata,
+        includeDomains,
+        excludeDomains,
+        entityFilter,
+        includeDeviceClasses,
+        includeUnitOfMeasurement,
+        includeEntities,
+        excludeEntities,
+        value,
+      })
   );
 
   private _sortByRelatedContext = memoizeOne(

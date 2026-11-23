@@ -310,7 +310,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
     if (configFlow) {
       const step = await handleConfigFlowStep(
-        this.hass,
+        this.hass.callApi,
         configFlow.flow_id,
         {}
       );
@@ -343,11 +343,15 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
   }
 
   private async _createConfigEntry(type: "tts" | "stt") {
-    const configFlow = await createConfigFlow(this.hass, "wyoming");
-    const step = await handleConfigFlowStep(this.hass, configFlow.flow_id, {
-      host: type === "tts" ? this._ttsHostName : this._sttHostName,
-      port: type === "tts" ? this._ttsPort : this._sttPort,
-    });
+    const configFlow = await createConfigFlow(this.hass.callApi, "wyoming");
+    const step = await handleConfigFlowStep(
+      this.hass.callApi,
+      configFlow.flow_id,
+      {
+        host: type === "tts" ? this._ttsHostName : this._sttHostName,
+        port: type === "tts" ? this._ttsPort : this._sttPort,
+      }
+    );
     if (step.type !== "create_entry") {
       throw new Error(
         `${this.hass.localize("ui.panel.config.voice_assistants.satellite_wizard.local.errors.failed_create_entry", { app: type === "tts" ? this._ttsProviderName : this._sttProviderName })}${"errors" in step ? `: ${step.errors?.base}` : ""}`
@@ -362,7 +366,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       return;
     }
 
-    const pipelines = await listAssistPipelines(this.hass);
+    const pipelines = await listAssistPipelines(this.hass.callWS);
 
     if (pipelines.preferred_pipeline) {
       pipelines.pipelines.sort((a) =>
@@ -402,11 +406,11 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
   private async _createPipeline(ttsEntityId: string, sttEntityId: string) {
     // Create a pipeline with local TTS and STT
 
-    const pipelines = await listAssistPipelines(this.hass);
+    const pipelines = await listAssistPipelines(this.hass.callWS);
 
     const agent = (
       await listAgents(
-        this.hass,
+        this.hass.callWS,
         this.language || this.hass.config.language,
         this.hass.config.country || undefined
       )
@@ -420,7 +424,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
     const ttsEngine = (
       await listTTSEngines(
-        this.hass,
+        this.hass.callWS,
         this.language,
         this.hass.config.country || undefined
       )
@@ -431,7 +435,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     }
 
     const ttsVoices = await listTTSVoices(
-      this.hass,
+      this.hass.callWS,
       ttsEntityId,
       ttsEngine.supported_languages[0]
     );
@@ -442,7 +446,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
     const sttEngine = (
       await listSTTEngines(
-        this.hass,
+        this.hass.callWS,
         this.language,
         this.hass.config.country || undefined
       )

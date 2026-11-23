@@ -94,7 +94,6 @@ export class AssistPipelineRunDebug extends LitElement {
               this._pipelineRuns.length === 0
                 ? html`
                     <ha-assist-pipeline-picker
-                      .hass=${this.hass}
                       .value=${this._pipelineId}
                       @value-changed=${this._pipelinePicked}
                     ></ha-assist-pipeline-picker>
@@ -539,7 +538,7 @@ export class AssistPipelineRunDebug extends LitElement {
     css`
       .content {
         padding: 24px 0 32px;
-        max-width: 600px;
+        max-width: var(--ha-content-width-narrow);
         margin: 0 auto;
         direction: ltr;
       }

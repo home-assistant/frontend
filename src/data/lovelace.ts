@@ -1,9 +1,9 @@
 import type { Connection, HassEventBase } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
+import type { ConfigPath } from "../common/util/config-path";
 import type { HuiBadge } from "../panels/lovelace/badges/hui-badge";
 import type { HuiCard } from "../panels/lovelace/cards/hui-card";
 import type { HuiSection } from "../panels/lovelace/sections/hui-section";
-import type { LovelacePath } from "../panels/lovelace/editor/lovelace-path";
 import type { Lovelace } from "../panels/lovelace/types";
 import type { HomeAssistant } from "../types";
 import type { LovelaceSectionConfig } from "./lovelace/config/section";
@@ -21,7 +21,7 @@ export interface LovelaceViewElement extends HTMLElement {
   narrow?: boolean;
   // Temporary compatibility: custom view layouts still read the view index
   index?: number;
-  path?: LovelacePath;
+  path?: ConfigPath;
   cards?: HuiCard[];
   badges?: HuiBadge[];
   sections?: HuiSection[];
@@ -34,7 +34,7 @@ export interface LovelaceSectionElement extends HTMLElement {
   hass?: HomeAssistant;
   lovelace?: Lovelace;
   preview?: boolean;
-  path?: LovelacePath;
+  path?: ConfigPath;
   cards?: HuiCard[];
   badges?: HuiBadge[];
   sections?: HuiSection[];

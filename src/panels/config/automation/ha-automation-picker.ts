@@ -55,7 +55,6 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-button";
-import "../../../components/ha-checkbox";
 import "../../../components/ha-dropdown";
 import type {
   HaDropdown,
@@ -122,6 +121,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { turnOnOffEntity } from "../../lovelace/common/entity/turn-on-off-entity";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { categoryGroupActions } from "../category/category-group-actions";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import {
   getAreaTableColumn,
@@ -421,6 +421,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                 : nothing
               : html`
                   <ha-switch
+                    .accessibleLabel=${automation.name}
                     @click=${stopPropagation}
                     @change=${this._handleSwitchToggle}
                     .automation=${automation}
@@ -536,6 +537,12 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         }
         .columns=${this._columns(this.narrow, this.hass.localize, automations)}
         .initialGroupColumn=${this._tableSettings.grouping}
+        .renderGroupActions=${this._groupActions(
+          "automation",
+          this._categories,
+          this._tableSettings.grouping,
+          this._categoryDeleted
+        )}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._tableSettings.sorting}
         .columnOrder=${this._activeColumnOrder}
@@ -600,7 +607,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
         <ha-filter-categories
-          .hass=${this.hass}
           scope="automation"
           .value=${this._filters["ha-filter-categories"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -618,7 +624,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-voice-assistants>
         <ha-filter-blueprints
-          .hass=${this.hass}
           .type=${"automation"}
           .value=${this._filters["ha-filter-blueprints"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -936,6 +941,23 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     });
   };
 
+  private _groupActions = memoizeOne(categoryGroupActions);
+
+  private _categoryDeleted = (categoryId: string) => {
+    const value = this._filters["ha-filter-categories"]?.value;
+
+    if (!Array.isArray(value) || !value.includes(categoryId)) {
+      return;
+    }
+
+    const remaining = value.filter((id) => id !== categoryId);
+
+    this._setFilter("ha-filter-categories", {
+      value: remaining.length ? remaining : undefined,
+      items: undefined,
+    });
+  };
+
   private _filterChanged(ev) {
     this._setFilter(ev.target.localName, ev.detail);
   }
@@ -1245,7 +1267,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           categories: { automation: category },
         })
       );
@@ -1284,7 +1306,7 @@ ${rejected
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           labels:
             action === "add"
               ? this.hass.entities[entityId].labels.concat(label)
@@ -1329,7 +1351,7 @@ ${rejected
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           area_id: area,
         })
       );
@@ -1404,7 +1426,7 @@ ${rejected
       scope: "automation",
       createEntry: async (values) => {
         const category = await createCategoryRegistryEntry(
-          this.hass,
+          this.hass.callWS,
           "automation",
           values
         );
@@ -1417,7 +1439,7 @@ ${rejected
   private _bulkCreateLabel = () => {
     showLabelDetailDialog(this, {
       createEntry: async (values) => {
-        const label = await createLabelRegistryEntry(this.hass, values);
+        const label = await createLabelRegistryEntry(this.hass.callWS, values);
         this._bulkLabel(label.label_id, "add");
       },
     });
@@ -1462,12 +1484,10 @@ ${rejected
           .slot=${slot}
           .value=${`label_${label.label_id}`}
           .action=${selected ? "remove" : "add"}
+          type="checkbox"
+          .checked=${selected}
+          .indeterminate=${partial}
         >
-          <ha-checkbox
-            slot="icon"
-            .checked=${selected}
-            .indeterminate=${partial}
-          ></ha-checkbox>
           <ha-label .color=${label.color} .description=${label.description}>
             ${
               label.icon

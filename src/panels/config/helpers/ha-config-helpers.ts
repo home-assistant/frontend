@@ -4,6 +4,7 @@ import {
   mdiAlertCircle,
   mdiCancel,
   mdiCog,
+  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiDownload,
@@ -81,8 +82,10 @@ import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { fullEntitiesContext, labelsContext } from "../../../data/context";
 import type {
   DataTableFiltersItems,
+  DataTableFiltersValue,
   DataTableFiltersValues,
 } from "../../../data/data_table_filters";
+import { filtersMatchUnassignedItem } from "../../../data/data_table_filters";
 import {
   fetchDiagnosticHandlers,
   getConfigEntryDiagnosticsDownloadUrl,
@@ -121,6 +124,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { categoryGroupActions } from "../category/category-group-actions";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import {
   getAreaTableColumn,
@@ -473,6 +477,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                     {
                       divider: true,
                     },
+                    ...(isHelperDomain(helper.type)
+                      ? [
+                          {
+                            path: mdiContentDuplicate,
+                            label: this.hass.localize("ui.common.duplicate"),
+                            action: () => this._duplicateHelper(helper),
+                          },
+                        ]
+                      : []),
                     {
                       path: mdiDelete,
                       label: this.hass.localize("ui.common.delete"),
@@ -528,7 +541,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       entityReg: EntityRegistryEntry[],
       categoryReg?: CategoryRegistryEntry[],
       labelReg?: LabelRegistryEntry[],
-      filteredStateItems?: string[] | null
+      filteredStateItems?: string[] | null,
+      includeUnassigned = true
     ): HelperItem[] => {
       if (filteredStateItems === null) {
         return [];
@@ -601,11 +615,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       }));
 
       return [...states, ...entries, ...disabledItems]
-        .filter((item) =>
-          filteredStateItems
-            ? filteredStateItems?.includes(item.entity_id)
-            : true
-        )
+        .filter((item) => {
+          if (!filteredStateItems) {
+            return true;
+          }
+          // A config entry that has no entity yet has nothing assigned
+          return item.entity_id
+            ? filteredStateItems.includes(item.entity_id)
+            : includeUnassigned;
+        })
         .map((item) => {
           const entityRegEntry =
             entityRegistryByEntityId(entityReg)[item.entity_id];
@@ -676,7 +694,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       this._entityReg,
       this._categories,
       this._labels,
-      this._filteredHelperEntityIds
+      this._filteredHelperEntityIds,
+      filtersMatchUnassignedItem(this._filters)
     );
     return html`
       <hass-tabs-subpage-data-table
@@ -706,6 +725,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         .columns=${this._columns(this.hass.localize, helpers)}
         .data=${helpers}
         .initialGroupColumn=${this._tableSettings.grouping}
+        .renderGroupActions=${this._groupActions(
+          "helpers",
+          this._categories,
+          this._tableSettings.grouping,
+          this._categoryDeleted
+        )}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._tableSettings.sorting}
         .columnOrder=${this._activeColumnOrder}
@@ -729,6 +754,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       >
         <ha-filter-floor-areas
           .type=${"entity"}
+          include-disabled-entities
           .value=${this._filters["ha-filter-floor-areas"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -754,7 +780,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
         <ha-filter-categories
-          .hass=${this.hass}
           scope="helpers"
           .value=${this._filters["ha-filter-categories"]}
           @data-table-filter-changed=${this._filterChanged}
@@ -886,8 +911,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   }
 
   private _filterChanged(ev) {
-    const type = ev.target.localName;
-    const filters = { ...this._filters, [type]: ev.detail.value };
+    this._setFilter(ev.target.localName, ev.detail.value, ev.detail.items);
+  }
+
+  private _setFilter(
+    type: string,
+    value: DataTableFiltersValue,
+    items: Set<string> | undefined
+  ) {
+    const filters = { ...this._filters, [type]: value };
 
     // A filter also sends the value it was given, once it has found its items.
     // Only a change to what the URL holds is the user's, so a link isn't stored.
@@ -897,15 +929,33 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     ) {
       this._storageFilters = {
         ...this._storageFilters,
-        [type]: ev.detail.value,
+        [type]: value,
       };
     }
 
     this._filters = filters;
-    this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
+    this._filteredItems = { ...this._filteredItems, [type]: items };
     this._writeFilters();
     this._applyFilters();
   }
+
+  private _groupActions = memoizeOne(categoryGroupActions);
+
+  private _categoryDeleted = (categoryId: string) => {
+    const value = this._filters["ha-filter-categories"];
+
+    if (!Array.isArray(value) || !value.includes(categoryId)) {
+      return;
+    }
+
+    const remaining = value.filter((id) => id !== categoryId);
+
+    this._setFilter(
+      "ha-filter-categories",
+      remaining.length ? remaining : undefined,
+      undefined
+    );
+  };
 
   private _applyFilters() {
     if (!this._helperEntities) {
@@ -1120,7 +1170,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           categories: { helpers: category },
         })
       );
@@ -1158,7 +1208,7 @@ ${rejected
     this._selected.forEach((entityId) => {
       const labels = this._labelsForEntity(entityId);
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           labels:
             action === "add"
               ? labels.concat(label)
@@ -1212,7 +1262,7 @@ ${rejected
 
   private async _fetchEntitySources() {
     const [entitySources, fetchedManifests] = await Promise.all([
-      fetchEntitySourcesWithCache(this.hass),
+      fetchEntitySourcesWithCache(this.hass.callWS, this.hass.states),
       fetchIntegrationManifests(this.hass),
     ]);
 
@@ -1260,14 +1310,15 @@ ${rejected
     if (isHelperDomain(domain)) {
       showHelperDetailDialog(this, {
         domain,
+        navigateToResult: true,
       });
       return;
     }
-    const handlers = await getConfigFlowHandlers(this.hass, "helper");
+    const handlers = await getConfigFlowHandlers(this.hass.callApi, "helper");
 
     if (!handlers.includes(domain)) {
       const integrations = await getConfigFlowHandlers(
-        this.hass,
+        this.hass.callApi,
         "integration"
       );
       if (integrations.includes(domain)) {
@@ -1303,6 +1354,7 @@ ${rejected
     showConfigFlowDialog(this, {
       startFlowHandler: domain,
       manifest: await fetchIntegrationManifest(this.hass, domain),
+      navigateToResult: true,
     });
   }
 
@@ -1489,8 +1541,51 @@ ${rejected
     }
   }
 
+  private async _duplicateHelper(helper: HelperItem) {
+    if (!isHelperDomain(helper.type)) {
+      return;
+    }
+
+    const entityReg = this._entityReg?.find(
+      (entry) => entry.entity_id === helper.entity_id
+    );
+    if (!entityReg?.unique_id) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.helpers.picker.duplicate_failed"
+        ),
+      });
+      return;
+    }
+
+    const config = (
+      await HELPERS_CRUD[helper.type].fetch(this.hass).catch(() => [])
+    ).find((item) => item.id === entityReg.unique_id);
+    if (!config) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.helpers.picker.duplicate_failed"
+        ),
+      });
+      return;
+    }
+
+    const { id: _id, ...item } = config;
+    showHelperDetailDialog(this, {
+      domain: helper.type,
+      item: {
+        ...item,
+        name: this.hass.localize(
+          "ui.panel.config.helpers.picker.duplicate_name",
+          { name: config.name }
+        ),
+      },
+      navigateToResult: true,
+    });
+  }
+
   private _createHelper() {
-    showHelperDetailDialog(this, {});
+    showHelperDetailDialog(this, { navigateToResult: true });
   }
 
   private _bulkCreateCategory = () => {
@@ -1498,7 +1593,7 @@ ${rejected
       scope: "helpers",
       createEntry: async (values) => {
         const category = await createCategoryRegistryEntry(
-          this.hass,
+          this.hass.callWS,
           "helpers",
           values
         );
@@ -1511,7 +1606,7 @@ ${rejected
   private _bulkCreateLabel = () => {
     showLabelDetailDialog(this, {
       createEntry: async (values) => {
-        const label = await createLabelRegistryEntry(this.hass, values);
+        const label = await createLabelRegistryEntry(this.hass.callWS, values);
         this._bulkLabel(label.label_id, "add");
       },
     });
@@ -1556,12 +1651,10 @@ ${rejected
           .slot=${slot}
           .value=${`label_${label.label_id}`}
           .action=${selected ? "remove" : "add"}
+          type="checkbox"
+          .checked=${selected}
+          .indeterminate=${partial}
         >
-          <ha-checkbox
-            slot="icon"
-            .checked=${selected}
-            .indeterminate=${partial}
-          ></ha-checkbox>
           <ha-label .color=${label.color} .description=${label.description}>
             ${
               label.icon

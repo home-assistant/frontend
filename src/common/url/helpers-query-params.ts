@@ -1,6 +1,7 @@
 import type {
   DataTableFiltersValue,
   DataTableFiltersValues,
+  FloorAreasFilterValue,
 } from "../../data/data_table_filters";
 import { dataTableQueryParamConfig } from "./data-table-query-params";
 import {
@@ -25,6 +26,7 @@ export const helpersFilterQueryParamConfig = {
     // Read until 2027.5, replaced with `assistants` on the next write
     "voice_assistant",
   ],
+  boolean: [{ key: "no_area", trueValue: "1" }],
 } as const satisfies QueryParamConfig;
 
 export type HelpersFilterQueryParams = QueryParamValues<
@@ -36,7 +38,7 @@ const list = (value: DataTableFiltersValue): string[] | undefined =>
 
 const floorAreas = (
   value: DataTableFiltersValue
-): Record<string, string[]> | undefined =>
+): FloorAreasFilterValue | undefined =>
   value && !Array.isArray(value) ? value : undefined;
 
 export const helpersFilterQueryParams = (
@@ -44,6 +46,7 @@ export const helpersFilterQueryParams = (
 ): HelpersFilterQueryParams => ({
   floor: floorAreas(filters["ha-filter-floor-areas"])?.floors,
   area: floorAreas(filters["ha-filter-floor-areas"])?.areas,
+  no_area: floorAreas(filters["ha-filter-floor-areas"])?.no_area,
   device: list(filters["ha-filter-devices"]),
   label: list(filters["ha-filter-labels"]),
   category: list(filters["ha-filter-categories"]),
@@ -57,7 +60,7 @@ export const helpersFilterQueryString = (
   filters: DataTableFiltersValues
 ): string => {
   const params = helpersFilterQueryParams(filters);
-  const sorted: HelpersFilterQueryParams = {};
+  const sorted: HelpersFilterQueryParams = { ...params };
 
   for (const key of helpersFilterQueryParamConfig.list) {
     sorted[key] = params[key] && [...params[key]].sort();
@@ -89,8 +92,9 @@ export const helpersLinkFromUrl = (
 
   const { search } = decodeQueryParams(searchParams, dataTableQueryParamConfig);
 
-  const values = (key: keyof HelpersFilterQueryParams): string[] =>
-    params[key]?.filter(Boolean) ?? [];
+  const values = (
+    key: (typeof helpersFilterQueryParamConfig.list)[number]
+  ): string[] => params[key]?.filter(Boolean) ?? [];
 
   const floors = values("floor");
   const areas = values("area");
@@ -100,7 +104,9 @@ export const helpersLinkFromUrl = (
     search: search ?? "",
     filters: {
       "ha-filter-floor-areas":
-        floors.length || areas.length ? { floors, areas } : undefined,
+        floors.length || areas.length || params.no_area
+          ? { floors, areas, no_area: params.no_area }
+          : undefined,
       "ha-filter-devices": values("device"),
       "ha-filter-labels": values("label"),
       "ha-filter-categories": values("category"),

@@ -17,7 +17,7 @@ import {
 import type { HassEntity, HassEvent } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
@@ -38,8 +38,11 @@ import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list";
 import "../../../components/ha-svg-icon";
+import "../../../components/item/ha-list-item-base";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-base";
+import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import {
   fireRelatedContext,
   fullEntitiesContext,
@@ -146,6 +149,8 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   @state() private _scene?: SceneEntity;
 
   @state() private _mode: "review" | "live" | "yaml" = "review";
+
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   private _storedStates: SceneEntities = {};
 
@@ -427,8 +432,8 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                 ${devices.map(
                   (device) => html`
                     <ha-card outlined>
-                      <h1 class="card-header">
-                        ${device.name}
+                      <div class="card-header">
+                        <h1>${device.name}</h1>
                         <ha-icon-button
                           .path=${mdiDelete}
                           .label=${this.hass.localize(
@@ -437,8 +442,8 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                           .device=${device.id}
                           @click=${this._deleteDevice}
                         ></ha-icon-button>
-                      </h1>
-                      <ha-list>
+                      </div>
+                      <ha-list-base>
                         ${device.entities.map((entityId) => {
                           const entityStateObj = this.hass.states[entityId];
                           if (!entityStateObj) {
@@ -446,7 +451,15 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                           }
                           const { primary, secondary } =
                             computeEntityPickerDisplay(
-                              this.hass,
+                              {
+                                entities: this.hass.entities,
+                                devices: this.hass.devices,
+                                areas: this.hass.areas,
+                                floors: this.hass.floors,
+                                language: this.hass.language,
+                                translationMetadata:
+                                  this.hass.translationMetadata,
+                              },
                               entityStateObj
                             );
                           const platform =
@@ -458,48 +471,46 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                             entityId,
                             entityStateObj
                           );
-                          return html`
-                            <ha-list-item
-                              hasMeta
-                              ?twoline=${!!secondary}
-                              graphic="icon"
-                              .entityId=${entityId}
-                              @click=${
-                                this._mode === "live"
-                                  ? this._showMoreInfo
-                                  : undefined
-                              }
-                              .noninteractive=${this._mode === "review"}
-                            >
-                              ${
-                                badgeStateObj
-                                  ? html`
-                                      <state-badge
-                                        .stateObj=${badgeStateObj}
-                                        slot="graphic"
-                                      ></state-badge>
-                                    `
-                                  : nothing
-                              }
-                              ${primary}
-                              ${
-                                secondary
-                                  ? html`<span slot="secondary"
-                                      >${secondary}</span
-                                    >`
-                                  : nothing
-                              }
-                              ${
-                                integrationName
-                                  ? html`<span slot="meta" class="domain"
-                                      >${integrationName}</span
-                                    >`
-                                  : nothing
-                              }
-                            </ha-list-item>
+                          const rowContent = html`
+                            ${
+                              badgeStateObj
+                                ? html`
+                                    <state-badge
+                                      .stateObj=${badgeStateObj}
+                                      slot="start"
+                                    ></state-badge>
+                                  `
+                                : nothing
+                            }
+                            <span slot="headline">${primary}</span>
+                            ${
+                              secondary
+                                ? html`<span slot="supporting-text"
+                                    >${secondary}</span
+                                  >`
+                                : nothing
+                            }
+                            ${
+                              integrationName
+                                ? html`<span slot="end" class="domain"
+                                    >${integrationName}</span
+                                  >`
+                                : nothing
+                            }
                           `;
+                          return this._mode === "live"
+                            ? html`<ha-list-item-button
+                                class="entity"
+                                .entityId=${entityId}
+                                @click=${this._showMoreInfo}
+                              >
+                                ${rowContent}
+                              </ha-list-item-button>`
+                            : html`<ha-list-item-base class="entity">
+                                ${rowContent}
+                              </ha-list-item-base>`;
                         })}
-                      </ha-list>
+                      </ha-list-base>
                     </ha-card>
                   `
                 )}
@@ -515,7 +526,6 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                           <div class="card-content">
                             <ha-device-picker
                               @value-changed=${this._devicePicked}
-                              .hass=${this.hass}
                               .label=${this.hass.localize(
                                 "ui.panel.config.scene.editor.devices.add"
                               )}
@@ -546,7 +556,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                   entities.length
                     ? html`
                         <ha-card outlined class="entities">
-                          <ha-list>
+                          <ha-list-base>
                             ${entities.map((entityId) => {
                               const entityStateObj = this.hass.states[entityId];
                               if (!entityStateObj) {
@@ -554,7 +564,15 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                               }
                               const { primary, secondary } =
                                 computeEntityPickerDisplay(
-                                  this.hass,
+                                  {
+                                    entities: this.hass.entities,
+                                    devices: this.hass.devices,
+                                    areas: this.hass.areas,
+                                    floors: this.hass.floors,
+                                    language: this.hass.language,
+                                    translationMetadata:
+                                      this.hass.translationMetadata,
+                                  },
                                   entityStateObj
                                 );
                               const domainName = domainToName(
@@ -565,53 +583,50 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                                 entityId,
                                 entityStateObj
                               );
-                              return html`
-                                <ha-list-item
-                                  class="entity"
-                                  hasMeta
-                                  ?twoline=${!!secondary}
-                                  graphic="icon"
-                                  .entityId=${entityId}
-                                  @click=${
-                                    this._mode === "live"
-                                      ? this._showMoreInfo
-                                      : undefined
-                                  }
-                                  .noninteractive=${this._mode === "review"}
-                                >
-                                  ${
-                                    badgeStateObj
-                                      ? html`
-                                          <state-badge
-                                            .stateObj=${badgeStateObj}
-                                            slot="graphic"
-                                          ></state-badge>
-                                        `
-                                      : nothing
-                                  }
-                                  ${primary}
-                                  ${
-                                    secondary
-                                      ? html`<span slot="secondary"
-                                          >${secondary}</span
-                                        >`
-                                      : nothing
-                                  }
-                                  <div slot="meta">
-                                    <span class="domain">${domainName}</span>
-                                    <ha-icon-button
-                                      .path=${mdiDelete}
-                                      .entityId=${entityId}
-                                      .label=${this.hass.localize(
-                                        "ui.panel.config.scene.editor.entities.delete"
-                                      )}
-                                      @click=${this._deleteEntity}
-                                    ></ha-icon-button>
-                                  </div>
-                                </ha-list-item>
+                              const rowContent = html`
+                                ${
+                                  badgeStateObj
+                                    ? html`
+                                        <state-badge
+                                          .stateObj=${badgeStateObj}
+                                          slot="start"
+                                        ></state-badge>
+                                      `
+                                    : nothing
+                                }
+                                <span slot="headline">${primary}</span>
+                                ${
+                                  secondary
+                                    ? html`<span slot="supporting-text"
+                                        >${secondary}</span
+                                      >`
+                                    : nothing
+                                }
+                                <div slot="end">
+                                  <span class="domain">${domainName}</span>
+                                  <ha-icon-button
+                                    .path=${mdiDelete}
+                                    .entityId=${entityId}
+                                    .label=${this.hass.localize(
+                                      "ui.panel.config.scene.editor.entities.delete"
+                                    )}
+                                    @click=${this._deleteEntity}
+                                  ></ha-icon-button>
+                                </div>
                               `;
+                              return this._mode === "live"
+                                ? html`<ha-list-item-button
+                                    class="entity"
+                                    .entityId=${entityId}
+                                    @click=${this._showMoreInfo}
+                                  >
+                                    ${rowContent}
+                                  </ha-list-item-button>`
+                                : html`<ha-list-item-base class="entity">
+                                    ${rowContent}
+                                  </ha-list-item-base>`;
                             })}
-                          </ha-list>
+                          </ha-list-base>
                         </ha-card>
                       `
                     : ""
@@ -790,7 +805,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
 
     switch (action) {
       case "apply":
-        activateScene(this.hass, this._scene!.entity_id);
+        activateScene(this.hass.callService, this._scene!.entity_id);
         break;
       case "show-info":
         fireEvent(this, "hass-more-info", { entityId: this._scene!.entity_id });
@@ -808,12 +823,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
         this._promptSceneRename();
         break;
       case "toggle-yaml":
-        if (this._mode === "yaml") {
-          this._initEntities(this._config!);
-          this._exitYamlMode();
-        } else {
-          this._enterYamlMode();
-        }
+        this._toggleYamlMode();
         break;
       case "duplicate":
         this._duplicate();
@@ -821,6 +831,17 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
       case "delete":
         this._deleteTapped();
         break;
+    }
+  }
+
+  private async _toggleYamlMode() {
+    if (this._mode === "yaml") {
+      this._initEntities(this._config!);
+      this._exitYamlMode();
+    } else {
+      this._enterYamlMode();
+      await this.updateComplete;
+      this._yamlEditor?.focus();
     }
   }
 
@@ -912,7 +933,10 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     if (!this._scene) {
       return;
     }
-    const { context } = await activateScene(this.hass, this._scene.entity_id);
+    const { context } = await activateScene(
+      this.hass.callService,
+      this._scene.entity_id
+    );
     this._activateContextId = context.id;
   }
 
@@ -1318,7 +1342,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
         }
 
         if (entityId) {
-          await updateEntityRegistryEntry(this.hass, entityId, {
+          await updateEntityRegistryEntry(this.hass.callWS, entityId, {
             area_id: this._entityRegistryUpdate.area || null,
             labels: this._entityRegistryUpdate.labels || [],
             categories: {
@@ -1348,6 +1372,12 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   protected supportedShortcuts(): SupportedShortcuts {
     return {
       s: () => this._saveScene(),
+    };
+  }
+
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    return {
+      Y: () => this._toggleYamlMode(),
     };
   }
 
@@ -1424,12 +1454,12 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
           margin-top: 8px;
         }
         .container {
-          padding: 28px 20px 0;
-          max-width: 1040px;
+          padding: 28px var(--ha-content-gutter) 0;
+          max-width: var(--ha-content-width-wide);
           margin: 0 auto;
         }
         .narrow.container {
-          max-width: 640px;
+          max-width: var(--ha-content-width-narrow);
         }
         .errors {
           padding: 20px;
@@ -1445,10 +1475,21 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
         ha-card ha-icon-button {
           color: var(--secondary-text-color);
         }
-        .card-header > ha-icon-button {
-          float: right;
-          position: relative;
-          top: -8px;
+        .card-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-top: var(--ha-space-3);
+          padding-bottom: var(--ha-space-3);
+        }
+        .card-header h1 {
+          margin: 0;
+          min-width: 0;
+          font: inherit;
+          overflow-wrap: anywhere;
+        }
+        .card-header ha-icon-button {
+          flex: none;
         }
         span[slot="introduction"] a {
           color: var(--primary-color);
@@ -1477,19 +1518,17 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
           display: block;
           margin-top: 8px;
         }
-        div[slot="meta"] {
+        div[slot="end"] {
           display: flex;
           justify-content: center;
           align-items: center;
           gap: 8px;
         }
-        ha-list-item {
+        ha-list-item-button,
+        ha-list-item-base {
           /* let the trailing label size to its content instead of the default
              fixed meta width, which would clip it */
-          --mdc-list-item-meta-size: auto;
-        }
-        ha-list-item.entity {
-          padding-right: 28px;
+          --ha-row-item-gap: var(--ha-space-2);
         }
         .domain {
           font-size: var(--ha-font-size-s);

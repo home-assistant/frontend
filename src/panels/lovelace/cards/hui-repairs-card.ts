@@ -1,50 +1,58 @@
 import { mdiWrench } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-card";
 import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
+import { ConnectionSubscriptionController } from "../../../data/connection-subscription-controller";
+import { configContext } from "../../../data/context";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { RepairsIssue } from "../../../data/repairs";
 import { subscribeRepairsIssueRegistry } from "../../../data/repairs";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../types";
-import { handleAction } from "../common/handle-action";
+import type { CurrentUser, HomeAssistantConfig } from "../../../types";
 import { hasAction } from "../common/has-action";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import { tileCardStyle } from "./tile/tile-card-style";
 import type { RepairsCardConfig } from "./types";
 
 @customElement("hui-repairs-card")
-export class HuiRepairsCard
-  extends SubscribeMixin(LitElement)
-  implements LovelaceCard
-{
+export class HuiRepairsCard extends LitElement implements LovelaceCard {
   public connectedWhileHidden = true;
-
-  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: RepairsCardConfig;
 
   @state() private _repairsIssues?: RepairsIssue[];
 
-  public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeRepairsIssueRegistry(
-        this.hass!.connection,
-        (repairs: { issues: RepairsIssue[] }) => {
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, CurrentUser | undefined>({
+    transformer: ({ user }) => user,
+  })
+  private _user?: CurrentUser;
+
+  constructor() {
+    super();
+    new ConnectionSubscriptionController(this, {
+      subscribe: (connection) =>
+        subscribeRepairsIssueRegistry(connection, (repairs) => {
           // Filter to only non-ignored issues
           this._repairsIssues = repairs.issues.filter(
             (issue) => !issue.ignored
           );
-        }
-      ),
-    ];
+        }),
+    });
   }
 
   public setConfig(config: RepairsCardConfig): void {
@@ -77,7 +85,10 @@ export class HuiRepairsCard
       navigate("/config/repairs");
       return;
     }
-    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+    fireEvent(this, "hass-action", {
+      config: this._config!,
+      action: ev.detail.action,
+    });
   }
 
   private get _hasCardAction() {
@@ -89,16 +100,16 @@ export class HuiRepairsCard
     );
   }
 
-  protected willUpdate(changedProps: PropertyValues<this>): void {
+  protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
 
-    if (!this._config || !this.hass) {
+    if (!this._config) {
       return;
     }
 
     // Update visibility based on admin status and repairs count
     const shouldBeHidden = Boolean(
-      !this.hass.user?.is_admin ||
+      !this._user?.is_admin ||
       (this._config.hide_empty &&
         this._repairsIssues &&
         this._repairsIssues.length === 0)
@@ -112,7 +123,7 @@ export class HuiRepairsCard
   }
 
   protected render(): TemplateResult | typeof nothing {
-    if (!this._config || !this.hass || this.hidden) {
+    if (!this._config || this.hidden) {
       return nothing;
     }
 
@@ -120,13 +131,13 @@ export class HuiRepairsCard
       ? this._repairsIssues.length
       : 0;
 
-    const label = this.hass.localize("ui.card.repairs.title");
+    const label = this._localize("ui.card.repairs.title");
     const secondary =
       count > 0
-        ? this.hass.localize("ui.card.repairs.count_issues", {
+        ? this._localize("ui.card.repairs.count_issues", {
             count,
           })
-        : this.hass.localize("ui.card.repairs.no_issues");
+        : this._localize("ui.card.repairs.no_issues");
     const secondaryLoading = !this._repairsIssues;
 
     return html`

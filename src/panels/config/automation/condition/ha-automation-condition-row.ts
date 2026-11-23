@@ -14,6 +14,7 @@ import {
   mdiPlusCircleMultipleOutline,
   mdiRenameBox,
   mdiStopCircleOutline,
+  mdiSwapHorizontal,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import { dump } from "js-yaml";
@@ -54,6 +55,7 @@ import type {
 } from "../../../../data/automation";
 import { isCondition, testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
+import { portCondition } from "../../../../data/automation_replace";
 import type { ConditionDescriptions } from "../../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import {
@@ -69,9 +71,15 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
-import { showEditorToast } from "../editor-toast";
+import {
+  createCondition,
+  getConditionPickerKey,
+  isConditionReplaceable,
+} from "../automation-element-config";
+import { showEditorToast, showReplacedToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
+import { showAddAutomationElementDialog } from "../show-add-automation-element-dialog";
 import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 import "./ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "./ha-automation-condition-editor";
@@ -88,6 +96,7 @@ import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 import { scrollRowIntoView } from "../scroll-row-into-view";
+import { AutomationPathController } from "../automation-path";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -105,6 +114,8 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @property({ type: Boolean }) public root = false;
 
+  @property({ attribute: false }) public index!: number;
+
   @property({ type: Boolean }) public first?: boolean;
 
   @property({ type: Boolean }) public last?: boolean;
@@ -115,6 +126,11 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @property({ type: Boolean, attribute: "sort-selected" })
   public sortSelected = false;
+
+  protected readonly pathController = new AutomationPathController(this, {
+    segment: () => [this.index],
+    row: () => (this.optionsInSidebar ? this : undefined),
+  });
 
   @state() private _collapsed = true;
 
@@ -270,6 +286,21 @@ export default class HaAutomationConditionRow extends LitElement {
             )
           )}
         </ha-dropdown-item>
+        ${
+          isConditionReplaceable(this.condition)
+            ? html`<ha-dropdown-item value="replace" .disabled=${this.disabled}>
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${mdiSwapHorizontal}
+                ></ha-svg-icon>
+                ${this._renderOverflowLabel(
+                  this.hass.localize(
+                    "ui.panel.config.automation.editor.conditions.replace"
+                  )
+                )}
+              </ha-dropdown-item>`
+            : nothing
+        }
         <ha-dropdown-item value="rename" .disabled=${this.disabled}>
           <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
           ${this._renderOverflowLabel(
@@ -381,7 +412,16 @@ export default class HaAutomationConditionRow extends LitElement {
           ${this._renderOverflowLabel(
             this.hass.localize(
               `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
-            )
+            ),
+            this._selected
+              ? html`<span class="shortcut">
+                  <span>${renderCtrlOrCmd(this.hass.localize)}</span>
+                  <span>+</span>
+                  <span>Shift</span>
+                  <span>+</span>
+                  <span>Y</span>
+                </span>`
+              : undefined
           )}
         </ha-dropdown-item>
 
@@ -603,6 +643,37 @@ export default class HaAutomationConditionRow extends LitElement {
     if (this._yamlMode && !this.optionsInSidebar) {
       this.conditionEditor?.yamlEditor?.setValue(value);
     }
+  };
+
+  private _replaceCondition = () => {
+    // The sidebar keeps its callback when YAML turns the condition into a group.
+    if (!isConditionReplaceable(this.condition)) {
+      return;
+    }
+    if (this.narrow) {
+      fireEvent(this, "request-close-sidebar");
+    }
+    const condition = this.condition;
+    const key = getConditionPickerKey(condition, this.conditionDescriptions);
+    showAddAutomationElementDialog(this, {
+      type: "condition",
+      clipboardItem: undefined,
+      replacingItemKey: key,
+      add: (value, target) => {
+        if (value === key && !target) {
+          return;
+        }
+        fireEvent(this, "replace-item", {
+          value: portCondition(
+            condition,
+            createCondition(value, target),
+            this.hass,
+            this.conditionDescriptions
+          ),
+        });
+        showReplacedToast(this, this.hass.localize);
+      },
+    });
   };
 
   private _onDelete = () => {
@@ -921,6 +992,9 @@ export default class HaAutomationConditionRow extends LitElement {
           this.focus();
         }
       },
+      replace: isConditionReplaceable(sidebarCondition)
+        ? this._replaceCondition
+        : undefined,
       rename: () => {
         this._renameCondition();
       },
@@ -991,6 +1065,9 @@ export default class HaAutomationConditionRow extends LitElement {
     switch (action) {
       case "test":
         this._testCondition();
+        break;
+      case "replace":
+        this._replaceCondition();
         break;
       case "rename":
         this._renameCondition();

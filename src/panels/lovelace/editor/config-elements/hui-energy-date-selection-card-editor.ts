@@ -19,11 +19,17 @@ import type { HomeAssistant } from "../../../../types";
 import type { EnergyDateSelectorCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import {
+  collectionKeyFromFormData,
+  collectionKeyToFormData,
+  energyCollectionKeySchema,
+} from "./energy-collection-key-schema";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     disable_compare: optional(boolean()),
+    show_combine_sources: optional(boolean()),
     collection_key: optional(string()),
     vertical_opening_direction: optional(
       union([literal("auto"), literal("up"), literal("down")])
@@ -96,10 +102,11 @@ export class HuiEnergyDateSelectionCardEditor
             selector: { boolean: {} },
           },
           {
-            type: "string",
-            name: "collection_key",
+            name: "show_combine_sources",
             required: false,
+            selector: { boolean: {} },
           },
+          energyCollectionKeySchema,
         ],
       },
     ];
@@ -111,9 +118,7 @@ export class HuiEnergyDateSelectionCardEditor
       return nothing;
     }
 
-    const data = {
-      ...this._config,
-    };
+    const data = collectionKeyToFormData(this._config);
 
     const schema = this._schema(this.hass.localize);
 
@@ -128,7 +133,9 @@ export class HuiEnergyDateSelectionCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    fireEvent(this, "config-changed", {
+      config: collectionKeyFromFormData(ev.detail.value),
+    });
   }
 
   private _computeHelperCallback = (schema) => {
@@ -147,6 +154,7 @@ export class HuiEnergyDateSelectionCardEditor
       case "vertical_opening_direction":
       case "opening_direction":
       case "disable_compare":
+      case "show_combine_sources":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.energy-date-selection.${schema.name}`
         );

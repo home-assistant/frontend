@@ -20,6 +20,11 @@ import type { HomeAssistant } from "../../../../types";
 import type { EnergySourcesTableCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import {
+  collectionKeyFromFormData,
+  collectionKeyToFormData,
+  energyCollectionKeySchema,
+} from "./energy-collection-key-schema";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -33,16 +38,25 @@ const cardConfigStruct = assign(
           literal("grid"),
           literal("solar"),
           literal("battery"),
+          literal("home"),
           literal("gas"),
           literal("water"),
         ])
       )
     ),
     show_only_totals: optional(boolean()),
+    combine_sources: optional(boolean()),
   })
 );
 
-const sourceTypeOpts = ["grid", "solar", "battery", "gas", "water"] as const;
+const sourceTypeOpts = [
+  "grid",
+  "solar",
+  "battery",
+  "home",
+  "gas",
+  "water",
+] as const;
 
 @customElement("hui-energy-sources-table-card-editor")
 export class HuiEnergySourcesTableCardEditor
@@ -87,10 +101,11 @@ export class HuiEnergySourcesTableCardEditor
             selector: { boolean: {} },
           },
           {
-            type: "string",
-            name: "collection_key",
+            name: "combine_sources",
             required: false,
+            selector: { boolean: {} },
           },
+          energyCollectionKeySchema,
         ],
       },
     ];
@@ -104,9 +119,7 @@ export class HuiEnergySourcesTableCardEditor
 
     const schema = this._schema(this.hass.localize);
 
-    const data = {
-      ...this._config,
-    };
+    const data = collectionKeyToFormData(this._config);
 
     return html` <ha-form
       .hass=${this.hass}
@@ -119,7 +132,9 @@ export class HuiEnergySourcesTableCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    fireEvent(this, "config-changed", {
+      config: collectionKeyFromFormData(ev.detail.value),
+    });
   }
 
   private _computeHelperCallback = (schema) => {

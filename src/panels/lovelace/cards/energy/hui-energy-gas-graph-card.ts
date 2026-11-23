@@ -1,5 +1,6 @@
 import { endOfToday, isToday, startOfToday } from "date-fns";
 import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -7,7 +8,10 @@ import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
 import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
-import { formatNumber } from "../../../../common/number/format_number";
+import {
+  formatNumber,
+  formatNumberWithUnit,
+} from "../../../../common/number/format_number";
 import { preserveUnchangedRecord } from "../../../../common/util/preserve-unchanged-record";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
@@ -78,6 +82,8 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
 
   @state() private _gasStatIds?: string[];
 
+  private _data?: EnergyData;
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: HomeAssistantInternationalization;
@@ -140,7 +146,10 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
     super();
     new EnergyCollectionController(this, {
       config: () => this._config,
-      onData: (data) => this._getStatistics(data),
+      onData: (data) => {
+        this._data = data;
+        this._getStatistics(data);
+      },
     });
   }
 
@@ -153,6 +162,12 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
       validateEnergyCollectionKey(config.collection_key);
     }
     this._config = config;
+  }
+
+  protected willUpdate(changedProps: PropertyValues) {
+    if (changedProps.has("_config") && this._data) {
+      this._getStatistics(this._data);
+    }
   }
 
   private get _displayPrecision(): number | undefined {
@@ -182,6 +197,15 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
+    const formattedTotal = this._total
+      ? formatNumberWithUnit(
+          this._total,
+          this._unit,
+          this._i18n.locale,
+          this._gasFormatOptions
+        )
+      : undefined;
+
     return html`
       <ha-card>
         ${
@@ -193,12 +217,7 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
                     ? html`<hui-energy-graph-chip
                         .tooltip=${this._formatTotal(this._total)}
                       >
-                        ${formatNumber(
-                          this._total,
-                          this._i18n.locale,
-                          this._gasFormatOptions
-                        )}
-                        ${this._unit}
+                        ${formattedTotal}
                       </hui-energy-graph-chip>`
                     : nothing
                 }
@@ -278,7 +297,7 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
       )
   );
 
-  private async _getStatistics(energyData: EnergyData): Promise<void> {
+  private _getStatistics(energyData: EnergyData): void {
     this._gasStatIds = energySourcesByType(energyData.prefs).gas?.map(
       (source) => source.stat_energy_from
     );
@@ -290,6 +309,12 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
       energyData,
       computedStyles: getComputedStyle(this),
       now: endOfToday(),
+      combinedName:
+        (this._config!.combine_sources ?? energyData.combineSources)
+          ? this._i18n.localize(
+              "ui.panel.lovelace.cards.energy.energy_distribution.gas"
+            )
+          : undefined,
     });
 
     this._start = result.start;

@@ -155,7 +155,6 @@ export class HaTwoPaneTopAppBarFixed extends HaTopAppBarFixed {
       }
 
       .pane .footer {
-        border-top: 1px solid var(--divider-color);
         padding-bottom: 8px;
       }
 

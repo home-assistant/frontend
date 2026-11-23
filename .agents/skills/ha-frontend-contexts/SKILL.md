@@ -38,6 +38,7 @@ Container components may keep `hass` when they own it and feed providers. Leaf c
 | `uiContext`                                                          | themes, selected theme, panels, sidebar, and UI state                                                     |
 | `narrowViewportContext`                                              | narrow-layout boolean                                                                                     |
 | `reducedMotionContext`                                               | `prefers-reduced-motion` media query                                                                      |
+| `brandsAccessTokenContext`                                           | the `hass` rerender that brand images wait for to get their token                                         |
 
 Lazy contexts subscribe on first consumer and tear down after the last consumer: `labelsContext`, `fullEntitiesContext`, `configEntriesContext`, `manifestsContext`, `triggerDescriptionsContext`, and `conditionDescriptionsContext`.
 
@@ -93,5 +94,6 @@ To consume a whole group untransformed, omit `@transform` and type the field as 
 - The component consumes the narrowest context needed for the data it reads.
 - A broad `hass` property is kept only when the component is a container or external API requires it.
 - Entity-scoped reads use the consume helpers rather than ad hoc context transforms.
+- A component that renders brand images consumes `brandsAccessTokenContext` with `@state()`, so the images fill in once the token arrives or rotates.
 - Context fields read during render or `willUpdate` are marked `@state()` so updates trigger rendering. Fields only read outside the render cycle are left without `@state()`.
 - Tests and mocks only provide the data the component actually consumes.

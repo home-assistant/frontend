@@ -1,4 +1,3 @@
-/* global module, require */
 // rspack/webpack loader that minifies the HTML, SVG, and CSS inside lit
 // tagged template literals using `minify-literals` (html-minifier-next +
 // lightningcss). Replaces the unmaintained babel-plugin-template-html-minifier.
@@ -36,6 +35,14 @@ const initLoader = (browserslistEnv) => {
         return {
           minifyHTMLLiterals: minifyModule.minifyHTMLLiterals,
           lightningcssTargets,
+          // With the legacy floor at Chrome 67, lightningcss rewrites rgba()
+          // to 8-digit hex (#rrggbbaa). Some kiosk webviews served the legacy
+          // build (e.g. Shelly Wall Display) can't parse that, so any
+          // var(--divider-color) border falls back to currentColor. Always
+          // compile hex alpha colors to rgba() in legacy builds.
+          lightningcssInclude: browserslistEnv.startsWith("legacy")
+            ? lightningcssModule.Features.HexAlphaColors
+            : 0,
         };
       })
     );
@@ -67,12 +74,13 @@ module.exports = function minifyTemplateLiteralsLoader(source, map, meta) {
   const { browserslistEnv } = this.getOptions();
 
   initLoader(browserslistEnv)
-    .then(({ minifyHTMLLiterals, lightningcssTargets }) =>
+    .then(({ minifyHTMLLiterals, lightningcssTargets, lightningcssInclude }) =>
       minifyHTMLLiterals(source, {
         fileName: this.resourcePath,
         html: htmlOptions,
         css: {
           targets: lightningcssTargets,
+          include: lightningcssInclude,
         },
       })
     )

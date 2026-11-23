@@ -1,14 +1,10 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { UiStateContentSelector } from "../../data/selector";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../types";
 import "../entity/ha-entity-state-content-picker";
 
 @customElement("ha-selector-ui_state_content")
-export class HaSelectorUiStateContent extends SubscribeMixin(LitElement) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
+export class HaSelectorUiStateContent extends LitElement {
   @property({ attribute: false }) public selector!: UiStateContentSelector;
 
   @property() public value?: string | string[];
@@ -28,7 +24,6 @@ export class HaSelectorUiStateContent extends SubscribeMixin(LitElement) {
   protected render() {
     return html`
       <ha-entity-state-content-picker
-        .hass=${this.hass}
         .entityId=${
           this.selector.ui_state_content?.entity_id ||
           this.context?.filter_entity

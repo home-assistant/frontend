@@ -43,9 +43,14 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
 
   private _closeResolve?: () => void;
 
+  // Set while a new opening waits for the previous one to finish closing
+  private _reopening = false;
+
   public async showDialog(params: DialogBoxParams): Promise<void> {
     if (this._closePromise) {
+      this._reopening = true;
       await this._closePromise;
+      this._reopening = false;
     }
     this._params = params;
     this._validInput = true;
@@ -144,16 +149,9 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
                     .min=${this._params.inputMin}
                     .max=${this._params.inputMax}
                     .disabled=${this._loading}
+                    .inputSuffix=${this._params.inputSuffix}
                     @input=${this._validateInput}
-                  >
-                    ${
-                      this._params.inputSuffix
-                        ? html`<span slot="end"
-                            >${this._params.inputSuffix}</span
-                          >`
-                        : nothing
-                    }
-                  </ha-input>
+                  ></ha-input>
                 `
               : this._params.prompt && this._params.multiline
                 ? html`
@@ -281,7 +279,11 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
   }
 
   private _dialogClosed() {
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+    // The dialog manager already tracks the new opening, which this close
+    // must not end
+    if (!this._reopening) {
+      fireEvent(this, "dialog-closed", { dialog: this.localName });
+    }
     if (!this._closeState) {
       this._cancel();
     }

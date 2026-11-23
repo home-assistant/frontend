@@ -182,6 +182,7 @@ class AddIntegrationDialog extends LitElement {
   private _fullscreenQuery?: MediaQueryList;
 
   public async showDialog(params?: AddIntegrationDialogParams): Promise<void> {
+    this._navigateToResult = params?.navigateToResult ?? false;
     if (params?.category) {
       const [category, subcategory] = params.category.split(".");
       this._category = category;
@@ -201,6 +202,8 @@ class AddIntegrationDialog extends LitElement {
       ]);
 
       if (!flowsInProgress.length) {
+        // This dialog never opens, the config flow dialog is shown instead
+        fireEvent(this, "dialog-closed", { dialog: this.localName });
         await this._createFlow(params.domain);
         return;
       }
@@ -221,7 +224,6 @@ class AddIntegrationDialog extends LitElement {
     this._openedDirectly = !!(params?.brand || params?.domain);
     this._initialFilter = params?.initialFilter;
     this._integrationFilter = params?.integrationFilter;
-    this._navigateToResult = params?.navigateToResult ?? false;
     this._removeMediaListeners();
     // Below this, the tree leaves too little room for the integrations
     this._narrowQuery = matchMedia(

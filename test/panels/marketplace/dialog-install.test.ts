@@ -48,7 +48,16 @@ vi.mock("../../../src/components/ha-dialog", async () => {
 vi.mock("../../../src/components/ha-dialog-footer", () =>
   stubElement("ha-dialog-footer")
 );
-vi.mock("../../../src/components/ha-select", () => stubElement("ha-select"));
+vi.mock("../../../src/components/ha-combo-box-item", () =>
+  stubElement("ha-combo-box-item")
+);
+vi.mock("../../../src/components/ha-generic-picker", () =>
+  stubElement("ha-generic-picker")
+);
+vi.mock("../../../src/components/ha-label", () => stubElement("ha-label"));
+vi.mock("../../../src/components/ha-picker-combo-box", () => ({
+  DEFAULT_ROW_RENDERER_CONTENT: () => "",
+}));
 vi.mock("../../../src/components/ha-spinner", () => stubElement("ha-spinner"));
 vi.mock("../../../src/components/progress/ha-progress-bar", () =>
   stubElement("ha-progress-bar")
@@ -260,7 +269,7 @@ describe("dialog-marketplace-install", () => {
     // Where the files land is not something to decide an installation on
     expect(root.textContent).not.toContain("/config/custom_components");
     // Choosing another version is a menu entry of its own
-    expect(root.querySelector("ha-select")).toBeNull();
+    expect(root.querySelector("ha-generic-picker")).toBeNull();
   });
 
   it("reinstalls the installed version, not the newest", async () => {
@@ -431,8 +440,10 @@ describe("dialog-marketplace-install", () => {
     await settle(dialog);
 
     expect(
-      getInternals(dialog.shadowRoot!.querySelector("ha-select")!).options
-    ).toEqual([expect.objectContaining({ value: "v2" })]);
+      getInternals(
+        dialog.shadowRoot!.querySelector("ha-generic-picker")!
+      ).getItems()
+    ).toEqual([expect.objectContaining({ id: "v2" })]);
   });
 
   it("tells a failed release list once, next to the versions with a retry", async () => {
@@ -514,9 +525,9 @@ describe("dialog-marketplace-install", () => {
     await settle(dialog);
 
     dialog
-      .shadowRoot!.querySelector("ha-select")!
+      .shadowRoot!.querySelector("ha-generic-picker")!
       .dispatchEvent(
-        new CustomEvent("selected", { detail: { value: "1.0.0" } })
+        new CustomEvent("value-changed", { detail: { value: "1.0.0" } })
       );
     await settle(dialog);
 

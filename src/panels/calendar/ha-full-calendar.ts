@@ -694,6 +694,7 @@ export class HAFullCalendar extends LitElement {
         :host {
           display: flex;
           flex-direction: column;
+          position: relative;
           --fc-classic-today: transparent;
         }
 

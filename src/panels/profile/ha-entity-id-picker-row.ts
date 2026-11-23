@@ -3,8 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-alert";
 import "../../components/ha-card";
-import "../../components/ha-switch";
-import "../../components/item/ha-row-item";
+import "../../components/item/ha-list-item-switch";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { saveFrontendUserData } from "../../data/frontend";
 import type { HomeAssistant } from "../../types";
@@ -23,27 +22,23 @@ class EntityIdPickerRow extends LitElement {
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : nothing
       }
-      <ha-row-item>
+      <ha-list-item-switch
+        haptic
+        .checked=${
+          !!this.coreUserData && !!this.coreUserData.showEntityIdPicker
+        }
+        .disabled=${this.coreUserData === undefined}
+        @change=${this._toggled}
+      >
         <span slot="headline"
-          >${this.hass.localize(
-            "ui.panel.profile.entity_id_picker.title"
-          )}</span
+          >${this.hass.localize("ui.panel.profile.entity_id_picker.title")}</span
         >
         <span slot="supporting-text"
           >${this.hass.localize(
             "ui.panel.profile.entity_id_picker.description"
           )}</span
         >
-        <ha-switch
-          slot="end"
-          haptic
-          .checked=${
-            !!this.coreUserData && !!this.coreUserData.showEntityIdPicker
-          }
-          .disabled=${this.coreUserData === undefined}
-          @change=${this._toggled}
-        ></ha-switch>
-      </ha-row-item>`;
+      </ha-list-item-switch>`;
   }
 
   private async _toggled(ev) {

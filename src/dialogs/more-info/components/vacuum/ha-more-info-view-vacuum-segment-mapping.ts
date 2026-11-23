@@ -50,7 +50,7 @@ export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
     if (!this.params.entityId) return;
 
     this._entry = await getExtendedEntityRegistryEntry(
-      this.hass,
+      this.hass.callWS,
       this.params.entityId
     );
 
@@ -82,7 +82,7 @@ export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
     };
 
     try {
-      await updateEntityRegistryEntry(this.hass, this.params.entityId, {
+      await updateEntityRegistryEntry(this.hass.callWS, this.params.entityId, {
         options_domain: "vacuum",
         options: options,
       });
@@ -109,7 +109,6 @@ export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
         }
 
         <ha-vacuum-segment-area-mapper
-          .hass=${this.hass}
           .entityId=${this.params.entityId}
           .value=${this._areaMapping}
           @value-changed=${this._valueChanged}
