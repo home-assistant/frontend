@@ -174,7 +174,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   @property({ type: String }) public height?: string;
 
   // While the data loads, the chart is read as one block and its legend as
-  // one line, so a skeleton drawn over it takes the size it will have
+  // one line, or as its items when the legend has them already, so a
+  // skeleton drawn over it takes the size it will have
   @property({ type: Boolean }) public loading = false;
 
   // Lets cards that key their data on ids have display names announced
@@ -713,7 +714,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       return nothing;
     }
 
-    if (this.loading) {
+    // A card that knows its legend before its data shows it under the
+    // skeleton, so the skeleton has as many legend rows as it will
+    if (this.loading && !items.length) {
       return html`<div class="chart-legend">
         <ul>
           <li>

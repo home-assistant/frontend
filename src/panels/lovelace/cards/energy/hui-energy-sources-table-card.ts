@@ -152,15 +152,12 @@ export class HuiEnergySourcesTableCard
   })
   private _gasDisplayPrecisions?: Record<string, number | undefined>;
 
-  constructor() {
-    super();
-    new EnergyCollectionController(this, {
-      config: () => this._config,
-      onData: (data) => {
-        this._data = data;
-      },
-    });
-  }
+  private _energy = new EnergyCollectionController(this, {
+    config: () => this._config,
+    onData: (data) => {
+      this._data = data;
+    },
+  });
 
   public getCardSize(): Promise<number> | number {
     return 3;
@@ -358,7 +355,12 @@ export class HuiEnergySourcesTableCard
       return nothing;
     }
 
-    if (!this._data) {
+    // Until the data comes, the table has a row for every configured source,
+    // so the skeleton has as many rows as the table will
+    const data = this._data ?? this._energy.placeholderData;
+    const placeholder = !this._data;
+
+    if (!data) {
       return html`<ha-card>
         ${
           this._config.title
@@ -402,7 +404,7 @@ export class HuiEnergySourcesTableCard
       water: false,
     };
 
-    const allTypes = energySourcesByType(this._data.prefs);
+    const allTypes = energySourcesByType(data.prefs);
     const pickedTypes = this._config?.types;
     const types = pickedTypes
       ? Object.fromEntries(
@@ -458,8 +460,8 @@ export class HuiEnergySourcesTableCard
 
     const units = {
       solar: "kWh",
-      gas: this._data.gasUnit,
-      water: this._data.waterUnit,
+      gas: data.gasUnit,
+      water: data.waterUnit,
     };
 
     const gasDisplayPrecisions = types.gas
@@ -481,7 +483,7 @@ export class HuiEnergySourcesTableCard
           }
         : undefined;
 
-    const compare = this._data.statsCompare !== undefined;
+    const compare = data.statsCompare !== undefined;
 
     const gridCost = types.grid
       ? calculateGridNetCost(types.grid, this._data.info, this._data.stats)
@@ -508,24 +510,26 @@ export class HuiEnergySourcesTableCard
       cost: number;
       costCompare: number;
     } => {
-      const energy = calculateStatisticSumGrowth(this._data!.stats[statId]);
+      const energy = calculateStatisticSumGrowth(data.stats[statId]);
 
       const compareEnergy =
-        compare &&
-        calculateStatisticSumGrowth(this._data!.statsCompare[statId]);
+        compare && calculateStatisticSumGrowth(data.statsCompare?.[statId]);
 
       const cost =
-        (costStatId &&
-          calculateStatisticSumGrowth(this._data!.stats[costStatId])) ||
+        (costStatId && calculateStatisticSumGrowth(data.stats[costStatId])) ||
         0;
 
       const costCompare =
         (compare &&
           costStatId &&
-          calculateStatisticSumGrowth(this._data!.statsCompare[costStatId])) ||
+          calculateStatisticSumGrowth(data.statsCompare?.[costStatId])) ||
         0;
 
-      if (energy === null && (!compare || compareEnergy === null)) {
+      if (
+        !placeholder &&
+        energy === null &&
+        (!compare || compareEnergy === null)
+      ) {
         return {
           hasData: false,
           energy: energy || 0,
@@ -547,11 +551,11 @@ export class HuiEnergySourcesTableCard
     const _sumStatData = (statIds: string[]) =>
       statIds.reduce(
         (sum, statId) => {
-          const data = _extractStatData(statId, null);
+          const statData = _extractStatData(statId, null);
           return {
-            hasData: sum.hasData || data.hasData,
-            energy: sum.energy + data.energy,
-            energyCompare: sum.energyCompare + data.energyCompare,
+            hasData: sum.hasData || statData.hasData,
+            energy: sum.energy + statData.energy,
+            energyCompare: sum.energyCompare + statData.energyCompare,
           };
         },
         { hasData: false, energy: 0, energyCompare: 0 }
@@ -560,7 +564,7 @@ export class HuiEnergySourcesTableCard
     const showOnlyTotals = this._config.show_only_totals;
     const combine =
       !showOnlyTotals &&
-      (this._config.combine_sources ?? this._data.combineSources ?? false);
+      (this._config.combine_sources ?? data.combineSources ?? false);
     const combineType = (type: keyof EnergySourceByType) =>
       combine && (types[type]?.length ?? 0) > 1;
 
@@ -630,8 +634,7 @@ export class HuiEnergySourcesTableCard
       html` ${types[type]?.map((source, idx) => {
         const cost_stat =
           type in hasCosts &&
-          (source.stat_cost ||
-            this._data!.info.cost_sensors[source.stat_energy_from]);
+          (source.stat_cost || data.info.cost_sensors[source.stat_energy_from]);
 
         const { hasData, energy, energyCompare, cost, costCompare } =
           _extractStatData(source.stat_energy_from, cost_stat || null);
@@ -814,7 +817,7 @@ export class HuiEnergySourcesTableCard
                   this._states,
                   this._formatEntityName,
                   source,
-                  this._data!.statsMetadata
+                  data.statsMetadata
                 );
                 return html` ${this._renderRow(
                   computedStyles,
@@ -896,7 +899,7 @@ export class HuiEnergySourcesTableCard
 
                   const cost_stat =
                     source.stat_cost ||
-                    this._data!.info.cost_sensors[source.stat_energy_from];
+                    data.info.cost_sensors[source.stat_energy_from];
                   const { hasData, energy, energyCompare, cost, costCompare } =
                     _extractStatData(
                       source.stat_energy_from,
@@ -956,7 +959,7 @@ export class HuiEnergySourcesTableCard
 
                   const cost_stat =
                     source.stat_compensation ||
-                    this._data!.info.cost_sensors[source.stat_energy_to];
+                    data.info.cost_sensors[source.stat_energy_to];
                   const { hasData, energy, energyCompare, cost, costCompare } =
                     _extractStatData(source.stat_energy_to, cost_stat || null);
 
@@ -1180,8 +1183,8 @@ export class HuiEnergySourcesTableCard
     .card-header {
       padding-bottom: 0;
     }
-    /* As tall as the header row and three sources (212px). Others are
-       remembered once seen. */
+    /* Before the energy preferences are known: as tall as the header row
+       and three sources (212px). Others are remembered once seen. */
     .loading {
       height: 180px;
       margin: 16px;

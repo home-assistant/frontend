@@ -20,7 +20,7 @@ import {
   uiContext,
 } from "./context";
 import type { EnergyCollection, EnergyData } from "./energy";
-import { getEnergyDataCollection } from "./energy";
+import { getEnergyDataCollection, hasCombinableEnergySources } from "./energy";
 import type { FrontendLocaleData } from "./translation";
 import type { HomeAssistant } from "../types";
 
@@ -95,6 +95,8 @@ export class EnergyCollectionController extends ContextController {
      skeleton until it does */
   private _hasData = false;
 
+  private _placeholderData?: EnergyData;
+
   constructor(
     host: ReactiveControllerHost & HTMLElement,
     options: EnergyCollectionControllerOptions
@@ -111,6 +113,49 @@ export class EnergyCollectionController extends ContextController {
 
   get collection(): EnergyCollection | undefined {
     return this._collection;
+  }
+
+  /**
+   * The data the host is about to get, without its statistics, once the
+   * collection knows the energy preferences. A host can draw its real layout
+   * from it under its skeleton, so the skeleton has the size of what comes.
+   * The energy dashboard builds its cards from the preferences, so they are
+   * known there before the first card renders.
+   */
+  get placeholderData(): EnergyData | undefined {
+    const collection = this._collection;
+    const prefs = collection?.prefs;
+
+    if (!collection || !prefs || this._hasData) {
+      return undefined;
+    }
+
+    // The same object each time, so hosts don't redraw for nothing
+    const cached = this._placeholderData;
+
+    if (
+      cached?.prefs === prefs &&
+      cached.start === collection.start &&
+      cached.end === collection.end
+    ) {
+      return cached;
+    }
+
+    this._placeholderData = {
+      start: collection.start,
+      end: collection.end,
+      prefs,
+      combineSources: hasCombinableEnergySources(prefs)
+        ? collection.combineSources
+        : undefined,
+      info: { cost_sensors: {}, solar_forecast_domains: [] },
+      stats: {},
+      statsMetadata: {},
+      waterUnit: "",
+      gasUnit: "",
+    };
+
+    return this._placeholderData;
   }
 
   hostConnected(): void {

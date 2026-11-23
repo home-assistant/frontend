@@ -73,9 +73,10 @@ html`
 
 Remembered heights only help from the second visit. For the first, render placeholders as big as the content will be, so it doesn't jump when the data arrives:
 
-- Set `loading` on `ha-chart-base` to have the chart read as one block and its legend as one line.
+- Set `loading` on `ha-chart-base` to have the chart read as one block and its legend as one line, or as its items when the legend has them already.
 - Before a chart exists, use `chartPlaceholderStyles` from `src/components/chart/chart-placeholder.ts`.
-- Lists of a known length, such as the to-do list from its entity's state, draw that many hidden rows.
+- Lists of a known length, such as the to-do list from its entity's state, draw that many hidden rows. Lists of an unknown length draw a typical few, as `ha-logbook` does with `placeholder-rows`.
+- Energy cards whose layout follows the energy preferences, such as the sources table and the devices detail graph, draw it from `EnergyCollectionController.placeholderData` until their data comes. The controller updates the card when the preferences arrive. The energy dashboard itself waits for the data before it builds its cards, so check these on a regular dashboard.
 
 While a card's code loads, its wave holds the card's remembered height, else the latest height of a card of the same type (`skeleton-type-key`), else a typical height for its type from `LAZY_LOAD_HEIGHTS` in `src/panels/lovelace/create-element/create-card-element.ts`. When you add a card type that loads its own code and is taller than one row, add its height there, measured in a section column with a short config.
 
@@ -106,7 +107,8 @@ Check a loading state in the browser, not only by reading the code. These work o
   ```
 
 - **Cards and badges in the gallery.** The gallery's Card skeletons page (`gallery/src/pages/lovelace/card-skeletons.ts`) shows cards and badges with their skeletons, and "Simulate loading" replays the arrival. Add a card there when you change how it loads.
-- **Clear remembered heights** with `localStorage.removeItem("skeletonHeights")` and reload, to see a first visit again.
+- **Clear remembered heights** with `localStorage.removeItem("skeletonHeights")` and reload, to see a first visit again. They're read when the page loads, so clear them before reloading, not after.
+- **Check a first visit.** Clear remembered heights, reload on a screen without the content, hold the data back, then open the content from inside the app. Measure each card's height while it loads and once it has loaded: they should match. Do it at a phone width and a desktop width, as rows and legends wrap differently.
 - **Compare the skeleton with the content.** It should take the same space, so nothing moves when the content arrives. Measure the wrapper's height while loading and once loaded (`element.getBoundingClientRect().height` in the console), or take a screenshot of each at the same size and flick between them. Look for pieces that are missing, extra or in the wrong place, and fix those with `data-skeleton`.
 - **Compare before and after.** Take screenshots of the same screen on `dev` and on your branch, at the same viewport size, both loading and loaded, and put them side by side. In a pull request, show both.
 - **Check every look.** Light and dark themes, a right-to-left language (the wave starts from the right), reduced motion (DevTools, Rendering, "Emulate CSS media feature prefers-reduced-motion": the wave stops), and a phone width (DevTools device toolbar).

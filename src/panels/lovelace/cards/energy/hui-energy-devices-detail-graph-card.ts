@@ -122,15 +122,12 @@ export class HuiEnergyDevicesDetailGraphCard
   @consume({ context: uiContext, subscribe: true })
   private _ui!: HomeAssistantUI;
 
-  constructor() {
-    super();
-    new EnergyCollectionController(this, {
-      config: () => this._config,
-      onData: (data) => {
-        this._data = data;
-      },
-    });
-  }
+  private _energy = new EnergyCollectionController(this, {
+    config: () => this._config,
+    onData: (data) => {
+      this._data = data;
+    },
+  });
 
   public getCardSize(): Promise<number> | number {
     return 3;
@@ -312,10 +309,13 @@ export class HuiEnergyDevicesDetailGraphCard
   );
 
   private _processStatistics() {
-    if (!this._data) {
+    // Until the data comes, the legend lists the configured devices so the
+    // skeleton has as many legend rows as the chart will
+    const energyData = this._data ?? this._energy.placeholderData;
+
+    if (!energyData) {
       return;
     }
-    const energyData = this._data;
 
     const {
       chartData,

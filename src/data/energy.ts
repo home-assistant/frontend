@@ -665,7 +665,8 @@ export interface EnergyData {
   info: EnergyInfo;
   stats: Statistics;
   statsMetadata: Record<string, StatisticsMetaData>;
-  statsCompare: Statistics;
+  // Only while comparing with an earlier period
+  statsCompare?: Statistics;
   co2SignalEntity?: string;
   fossilEnergyConsumption?: FossilEnergyConsumption;
   fossilEnergyConsumptionCompare?: FossilEnergyConsumption;
@@ -2007,7 +2008,7 @@ const getSummedDataPartial = (
     const totalStats: Record<number, number> = {};
     let sum = 0;
     subStatIds!.forEach((id) => {
-      const stats = compare ? data.statsCompare[id] : data.stats[id];
+      const stats = compare ? data.statsCompare?.[id] : data.stats[id];
       if (!stats) {
         return;
       }
