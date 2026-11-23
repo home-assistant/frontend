@@ -118,11 +118,6 @@ export class HaFilterStates extends LitElement {
                   @ha-list-item-selected=${this._handleItemToggled}
                   @ha-list-item-deselected=${this._handleItemToggled}
                 >
-                  ${this.states.map((item) =>
-                    isPair(item)
-                      ? this._renderPair(item)
-                      : this._renderOption(item)
-                  )}
                   ${
                     this.noneLabel
                       ? html`<ha-list-item-option
@@ -131,12 +126,15 @@ export class HaFilterStates extends LitElement {
                           .value=${NO_VALUE_ID}
                           .selected=${this._listValue?.none ?? false}
                         >
-                          <span slot="headline" class="no-value"
-                            >${this.noneLabel}</span
-                          >
+                          <span slot="headline">${this.noneLabel}</span>
                         </ha-list-item-option>`
                       : nothing
                   }
+                  ${this.states.map((item) =>
+                    isPair(item)
+                      ? this._renderPair(item)
+                      : this._renderOption(item)
+                  )}
                 </ha-list-selectable>
               </div>
             `

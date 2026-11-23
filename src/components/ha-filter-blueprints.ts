@@ -173,6 +173,18 @@ export class HaFilterBlueprints extends LitElement {
                           @ha-list-item-selected=${this._handleItemToggled}
                           @ha-list-item-deselected=${this._handleItemToggled}
                         >
+                          <ha-list-item-option
+                            appearance="checkbox"
+                            selection-position="end"
+                            .value=${NO_VALUE_ID}
+                            .selected=${listFilterValue(this.value)?.none ?? false}
+                          >
+                            <span slot="headline"
+                              >${this._localize(
+                                "ui.components.subpage-data-table.no_blueprint"
+                              )}</span
+                            >
+                          </ha-list-item-option>
                           ${Object.entries(this._blueprints).map(
                             ([id, blueprint]) =>
                               "error" in blueprint
@@ -188,18 +200,6 @@ export class HaFilterBlueprints extends LitElement {
                                     >
                                   </ha-list-item-option>`
                           )}
-                          <ha-list-item-option
-                            appearance="checkbox"
-                            selection-position="end"
-                            .value=${NO_VALUE_ID}
-                            .selected=${listFilterValue(this.value)?.none ?? false}
-                          >
-                            <span slot="headline" class="no-value"
-                              >${this._localize(
-                                "ui.components.subpage-data-table.no_blueprint"
-                              )}</span
-                            >
-                          </ha-list-item-option>
                         </ha-list-selectable>
                       `
                     : nothing

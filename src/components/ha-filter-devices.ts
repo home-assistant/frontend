@@ -248,15 +248,7 @@ export class HaFilterDevices extends LitElement {
           .value=${item.id}
           .selected=${this._isSelected(item.id)}
         >
-          <span
-            slot="headline"
-            style=${
-              // The rows render in the list's own shadow root, which the
-              // filter's styles don't reach
-              item.id === HaFilterDevices._noneId ? "font-style: italic" : ""
-            }
-            >${item.name}</span
-          >
+          <span slot="headline">${item.name}</span>
         </ha-list-item-option>`;
 
   private _isSelected(id: string): boolean {
@@ -323,6 +315,7 @@ export class HaFilterDevices extends LitElement {
         name: localize("ui.components.subpage-data-table.no_device"),
       };
       return [
+        noDevice,
         ...values
           .map((device) => ({
             id: device.id,
@@ -330,7 +323,6 @@ export class HaFilterDevices extends LitElement {
             name: computeDeviceNameDisplay(device, localize),
           }))
           .sort((a, b) => stringCompare(a.name, b.name, language)),
-        noDevice,
       ].filter(
         ({ name }) =>
           !filter || name.toLowerCase().includes(filter.toLowerCase())

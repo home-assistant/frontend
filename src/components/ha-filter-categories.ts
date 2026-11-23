@@ -185,6 +185,18 @@ export class HaFilterCategories extends LitElement {
                   @ha-list-item-selected=${this._categoryAdded}
                   @ha-list-item-deselected=${this._categoryRemoved}
                 >
+                  <ha-list-item-option
+                    appearance="checkbox"
+                    selection-position="end"
+                    .value=${HaFilterCategories._noneId}
+                    .selected=${value?.none ?? false}
+                  >
+                    <span slot="headline">
+                      ${this._localize(
+                        "ui.components.subpage-data-table.no_category"
+                      )}
+                    </span>
+                  </ha-list-item-option>
                   ${repeat(
                     this._categories,
                     (category) => category.category_id,
@@ -242,18 +254,6 @@ export class HaFilterCategories extends LitElement {
                         </ha-dropdown>
                       </ha-list-item-option>`
                   )}
-                  <ha-list-item-option
-                    appearance="checkbox"
-                    selection-position="end"
-                    .value=${HaFilterCategories._noneId}
-                    .selected=${value?.none ?? false}
-                  >
-                    <span slot="headline" class="no-value">
-                      ${this._localize(
-                        "ui.components.subpage-data-table.no_category"
-                      )}
-                    </span>
-                  </ha-list-item-option>
                 </ha-list-selectable>
                 <ha-button
                   appearance="filled"
