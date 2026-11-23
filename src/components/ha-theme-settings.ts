@@ -368,7 +368,7 @@ export class HaThemeSettings extends LitElement {
       min-width: 150px;
     }
     .set-by-theme::part(supporting-text) {
-      color: var(--ha-color-on-warning-normal);
+      color: var(--ha-color-text-secondary);
     }
     .color-pickers {
       display: flex;
