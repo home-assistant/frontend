@@ -328,6 +328,11 @@ export function generateStatisticsChartData(
               : undefined,
           color: chartType === "bar" ? backgroundColor : borderColor,
         };
+        if (chartType === "bar") {
+          // Cap the width like the energy cards do: echarts otherwise sizes a
+          // bar that is alone on the axis (one point in the range) to the axis
+          (series as BarSeriesOption).barMaxWidth = 50;
+        }
         if (chartStacked) {
           series.stack = `band-stacked`;
           series.stackStrategy = "samesign";

@@ -3,10 +3,14 @@
  * data transform. Do NOT update these snapshots to make an optimization
  * pass — see test/benchmarks/README.md.
  */
+import type { BarSeriesOption } from "echarts/charts";
 import { describe, expect, it } from "vitest";
 import { generateStatisticsChartData } from "../../../src/components/chart/statistics-chart-data";
 import { StatisticMeanType } from "../../../src/data/recorder";
-import type { StatisticsMetaData } from "../../../src/data/recorder";
+import type {
+  StatisticsMetaData,
+  StatisticType,
+} from "../../../src/data/recorder";
 import { createMockComputedStyle } from "../../fixtures/computed-style";
 import { digestResult } from "../../fixtures/digest";
 import { createMockEntityState, createMockHass } from "../../fixtures/hass";
@@ -117,6 +121,38 @@ describe("generateStatisticsChartData", () => {
         period: "day",
       })
     ).toMatchSnapshot();
+  });
+
+  it("caps the bar width when there is a single bar on the axis", () => {
+    const start = FIXED_EPOCH_MS;
+    const statisticsData = Object.fromEntries(
+      sumIds.map((id, i) => [
+        id,
+        [{ start, end: start + dayMs, change: i + 1, sum: i + 1 }],
+      ])
+    );
+    const params = {
+      ...baseParams,
+      statisticsData,
+      statisticsMetaData: buildMetadata(sumIds, "kWh", true),
+      statTypes: ["change"] as StatisticType[],
+      period: "day",
+    };
+    for (const chartType of ["bar", "bar-stack"] as const) {
+      const bars = generateStatisticsChartData({
+        ...params,
+        chartType,
+      })!.datasets.filter((dataset) => dataset.data?.length);
+      expect(bars).toHaveLength(sumIds.length);
+      expect(
+        bars.map((dataset) => (dataset as BarSeriesOption).barMaxWidth)
+      ).toEqual([50, 50]);
+    }
+    const lines = generateStatisticsChartData({
+      ...params,
+      chartType: "line",
+    })!.datasets;
+    expect(lines.every((dataset) => !("barMaxWidth" in dataset))).toBe(true);
   });
 
   it("matches snapshot with a hidden statistic", () => {
