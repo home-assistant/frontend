@@ -64,7 +64,7 @@ workflows:
     '.github/workflows/relative-ci.yaml':
         - 'relative-ci/agent-action@711f3a8fa1b928e6afde280011110c9b0a224a60'
     '.github/workflows/release-drafter.yaml':
-        - 'release-drafter/release-drafter@978bb0b30c5ee8cdd332ced253758157150d43f0'
+        - 'release-drafter/release-drafter@d1a19e60e81a7e650d00a7de9277f87e439117ea'
     '.github/workflows/release.yaml':
         - 'actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9'
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
@@ -183,8 +183,8 @@ dependencies:
         commit: 'sha1-711f3a8fa1b928e6afde280011110c9b0a224a60'
         owner_id: 43522883
         repo_id: 398376354
-    'release-drafter/release-drafter@978bb0b30c5ee8cdd332ced253758157150d43f0':
-        ref: 'v7.10.0'
-        commit: 'sha1-978bb0b30c5ee8cdd332ced253758157150d43f0'
+    'release-drafter/release-drafter@d1a19e60e81a7e650d00a7de9277f87e439117ea':
+        ref: 'v7.11.0'
+        commit: 'sha1-d1a19e60e81a7e650d00a7de9277f87e439117ea'
         owner_id: 58292376
         repo_id: 139022359
