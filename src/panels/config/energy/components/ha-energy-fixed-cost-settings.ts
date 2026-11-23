@@ -119,7 +119,7 @@ export class EnergyFixedCostSettings extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .backPath=${this.listPath}
-        .config=${this._editorPage(this.editKey)}
+        .config=${this._editorPage(this.editKey, this.type)}
       ></ha-energy-editor-page>`;
     }
 
@@ -246,7 +246,9 @@ export class EnergyFixedCostSettings extends LitElement {
   }
 
   private _openEditor(cost?: FixedCostEnergyPreference) {
-    showEnergySettingsDialog(this, { editor: this._editorConfig(cost) });
+    showEnergySettingsDialog(this, {
+      editor: this._editorConfig(this.type, cost),
+    });
   }
 
   private _editorHref(cost?: FixedCostEnergyPreference) {
@@ -255,12 +257,15 @@ export class EnergyFixedCostSettings extends LitElement {
       : undefined;
   }
 
-  private _editorConfig(cost?: FixedCostEnergyPreference): EnergyEditorConfig {
+  private _editorConfig(
+    type: FixedCostType,
+    cost?: FixedCostEnergyPreference
+  ): EnergyEditorConfig {
     return {
       kind: "fixed_cost",
       params: {
         cost: cost ? { ...cost } : undefined,
-        type: this.type,
+        type,
         saveCallback: (newCost) => this._saveCost(newCost),
       },
     };
@@ -274,12 +279,12 @@ export class EnergyFixedCostSettings extends LitElement {
 
   // Kept per item: a save replaces the preferences right before the page leaves
   private _editorPage = memoizeOne(
-    (key: string): EnergyEditorPageConfig | undefined => {
+    (key: string, type: FixedCostType): EnergyEditorPageConfig | undefined => {
       if (key === "new") {
-        return this._pageConfig(this._editorConfig());
+        return this._pageConfig(this._editorConfig(type));
       }
       const cost = this._costs().find((item) => item.id === key);
-      return cost && this._pageConfig(this._editorConfig(cost), cost);
+      return cost && this._pageConfig(this._editorConfig(type, cost), cost);
     }
   );
 

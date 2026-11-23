@@ -632,16 +632,20 @@ export class HuiEnergyUsageGraphCard
     this._chartData = datasets;
     this._legendData = this._getLegendData(datasets);
     this._total = this._processTotal(consumption);
+    const gridSources = energySourcesByType(energyData.prefs).grid ?? [];
     const gridCost = calculateGridNetCost(
-      energySourcesByType(energyData.prefs).grid ?? [],
+      gridSources,
       energyData.info,
       energyData.stats
     );
-    const fixedCost = calculateFixedCostTotal(
-      fixedCostsByType(energyData.prefs).grid ?? [],
-      energyData.info,
-      energyData.stats
-    );
+    // Like the sources table, fixed costs only count next to a grid source
+    const fixedCost = gridSources.length
+      ? calculateFixedCostTotal(
+          fixedCostsByType(energyData.prefs).grid ?? [],
+          energyData.info,
+          energyData.stats
+        )
+      : undefined;
     this._totalCost =
       gridCost === undefined && fixedCost === undefined
         ? undefined
