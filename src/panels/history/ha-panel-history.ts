@@ -205,11 +205,8 @@ class HaPanelHistory extends LitElement {
       !!this._mungedStateHistory &&
       (this._mungedStateHistory.line.length > 0 ||
         this._mungedStateHistory.timeline.length > 0);
-    const showZoomBar =
-      !loading &&
-      hasTargets &&
-      hasResults &&
-      (this._isZoomed() || this._zoomBarHeld);
+    const hasCharts = !loading && hasTargets && hasResults;
+    const showZoomBar = hasCharts && (this._isZoomed() || this._zoomBarHeld);
     const sourcesLabel = sourceCount
       ? this.hass.localize("ui.panel.history.sources_count", {
           count: entityIds.length,
@@ -342,8 +339,13 @@ class HaPanelHistory extends LitElement {
                 }
               </div>
               ${
-                showZoomBar
-                  ? html`<ha-card class="zoom-bar">
+                hasCharts
+                  ? html`<ha-card
+                      class=${classMap({
+                        "zoom-bar": true,
+                        "keyboard-only": !showZoomBar,
+                      })}
+                    >
                       <ha-icon-button
                         .disabled=${!this._isZoomed()}
                         .label=${this.hass.localize(
@@ -1066,6 +1068,11 @@ class HaPanelHistory extends LitElement {
           padding-bottom: calc(
             56px + var(--zoom-bar-bottom) + var(--ha-space-4)
           );
+        }
+
+        /* Kept in the tab order, as zooming from the keyboard starts here */
+        .zoom-bar.keyboard-only {
+          clip-path: inset(50%);
         }
 
         /* Floats like the energy dashboard's date bar */
