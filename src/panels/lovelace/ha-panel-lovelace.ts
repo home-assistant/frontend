@@ -401,12 +401,14 @@ export class LovelacePanel extends LitElement {
     mode: Lovelace["mode"]
   ): boolean {
     const current = this.lovelace;
+    // Key order matters, e.g. picture-elements apply style keys in order.
+    const options = { compareKeyOrder: true };
     return (
       !!current &&
       current.mode === mode &&
       current.locale === this.hass!.locale &&
-      deepEqual(current.rawConfig, rawConfig) &&
-      deepEqual(current.config, normalizeLovelaceConfig(config))
+      deepEqual(current.rawConfig, rawConfig, options) &&
+      deepEqual(current.config, normalizeLovelaceConfig(config), options)
     );
   }
 
