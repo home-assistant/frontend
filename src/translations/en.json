@@ -1735,6 +1735,9 @@
         "show": "Show {label}",
         "hide": "Hide {label}"
       },
+      "list-item-option": {
+        "partly_selected": "Partly selected"
+      },
       "form-optional-actions": {
         "add": "Add interaction"
       },
