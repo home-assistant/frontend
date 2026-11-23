@@ -9,6 +9,11 @@ const listeners = new Set<() => void>();
  * the topmost container.
  */
 export const setModalOpen = (container: HTMLElement, open: boolean) => {
+  // A dialog removed right after it was opened still finishes opening
+  // afterwards, which would move the toasts off the page.
+  if (open && !container.isConnected) {
+    return;
+  }
   const index = OPEN_MODALS.indexOf(container);
   if (index === -1 && !open) {
     return;
