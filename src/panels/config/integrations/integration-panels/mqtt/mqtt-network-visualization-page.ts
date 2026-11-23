@@ -1182,14 +1182,8 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
         .layout-toggle {
           order: -1;
         }
-        /* The chart only styles its direct buttons, so match the filter button */
         ha-dropdown ha-icon-button {
           margin-inline-end: var(--ha-space-3);
-          background: var(--card-background-color);
-          border-radius: var(--ha-border-radius-sm);
-          --ha-icon-button-size: 32px;
-          color: var(--primary-color);
-          border: 1px solid var(--divider-color);
         }
         ha-dropdown ha-icon-button.active {
           border-color: var(--primary-color);
