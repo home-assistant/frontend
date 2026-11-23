@@ -15,8 +15,8 @@ export const NO_VALUE_ID = "__none__";
 /**
  * The number of picked options in a filter's header. A filter that shows the
  * items that don't match its selection gets a "not equal" sign in front, so
- * this is clear while the filter is collapsed. Style it, and a filter's
- * "No …" option (`class="no-value"`), with `filterBadgeStyles`.
+ * this is clear while the filter is collapsed. Style it with
+ * `filterBadgeStyles`.
  */
 export const renderFilterBadge = (
   localize: LocalizeFunc,
@@ -40,10 +40,6 @@ export const filterBadgeStyles = css`
   /* The mode toggle already spaces the search from the header */
   ha-filter-mode + ha-input-search {
     padding-top: 0;
-  }
-  /* The "No …" option, which isn't a value of its own */
-  .no-value {
-    font-style: italic;
   }
   .badge.exclude {
     display: inline-flex;
