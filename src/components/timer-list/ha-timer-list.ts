@@ -200,104 +200,108 @@ export class HaTimerList extends LitElement {
     return html`
       ${this.createAtEnd ? nothing : createButton}
       ${
-        !timers
-          ? nothing
-          : !timers.length
-            ? html`<p class="empty">
-                ${this._i18n.localize("ui.components.timer-list.no_timers")}
-              </p>`
-            : html`
-                <ul>
-                  ${repeat(
-                    timers,
-                    (timer) => timer.timer_id,
-                    (timer) => {
-                      const paused = timer.status === "paused";
-                      const finished = timer.status === "finished";
-                      const remaining = timerListTimerRemaining(timer);
-                      const name =
-                        timer.name ||
-                        formatDurationLong(
-                          this._i18n.locale,
-                          normalizeTimerDuration({
-                            seconds: timer.created_duration,
-                          })
-                        );
-                      return html`
-                        <li class=${classMap({ paused, finished })}>
-                          <div class="row">
-                            <div class="info">
-                              <span class="remaining">
-                                ${formatTimerListRemaining(remaining)}
-                              </span>
-                              <span class="name">
-                                ${
-                                  paused || finished
-                                    ? this._i18n.localize(
+        unavailable
+          ? html`<p class="empty">
+              ${this._i18n.localize("state.default.unavailable")}
+            </p>`
+          : !timers
+            ? nothing
+            : !timers.length
+              ? html`<p class="empty">
+                  ${this._i18n.localize("ui.components.timer-list.no_timers")}
+                </p>`
+              : html`
+                  <ul>
+                    ${repeat(
+                      timers,
+                      (timer) => timer.timer_id,
+                      (timer) => {
+                        const paused = timer.status === "paused";
+                        const finished = timer.status === "finished";
+                        const remaining = timerListTimerRemaining(timer);
+                        const name =
+                          timer.name ||
+                          formatDurationLong(
+                            this._i18n.locale,
+                            normalizeTimerDuration({
+                              seconds: timer.created_duration,
+                            })
+                          );
+                        return html`
+                          <li class=${classMap({ paused, finished })}>
+                            <div class="row">
+                              <div class="info">
+                                <span class="remaining">
+                                  ${formatTimerListRemaining(remaining)}
+                                </span>
+                                <span class="name">
+                                  ${
+                                    paused || finished
+                                      ? this._i18n.localize(
+                                          finished
+                                            ? "ui.components.timer-list.finished_name"
+                                            : "ui.components.timer-list.paused_name",
+                                          { name }
+                                        )
+                                      : name
+                                  }
+                                </span>
+                              </div>
+                              ${
+                                canAddTime && !finished
+                                  ? html`<ha-icon-button
+                                      .timer=${timer}
+                                      .path=${mdiTimerPlusOutline}
+                                      .label=${this._i18n.localize(
+                                        "ui.components.timer-list.add_minute"
+                                      )}
+                                      @click=${this._addMinute}
+                                    ></ha-icon-button>`
+                                  : nothing
+                              }
+                              ${
+                                canPause && !finished
+                                  ? html`<ha-icon-button
+                                      .timer=${timer}
+                                      .path=${paused ? mdiPlay : mdiPause}
+                                      .label=${this._i18n.localize(
+                                        paused
+                                          ? "ui.components.timer-list.resume"
+                                          : "ui.components.timer-list.pause"
+                                      )}
+                                      @click=${this._togglePause}
+                                    ></ha-icon-button>`
+                                  : nothing
+                              }
+                              ${
+                                (finished ? canRemove : canCancel)
+                                  ? html`<ha-icon-button
+                                      .timer=${timer}
+                                      .path=${mdiClose}
+                                      .label=${this._i18n.localize(
                                         finished
-                                          ? "ui.components.timer-list.finished_name"
-                                          : "ui.components.timer-list.paused_name",
-                                        { name }
-                                      )
-                                    : name
-                                }
-                              </span>
+                                          ? "ui.components.timer-list.remove"
+                                          : "ui.components.timer-list.cancel"
+                                      )}
+                                      @click=${this._cancelOrRemove}
+                                    ></ha-icon-button>`
+                                  : nothing
+                              }
                             </div>
-                            ${
-                              canAddTime && !finished
-                                ? html`<ha-icon-button
-                                    .timer=${timer}
-                                    .path=${mdiTimerPlusOutline}
-                                    .label=${this._i18n.localize(
-                                      "ui.components.timer-list.add_minute"
-                                    )}
-                                    @click=${this._addMinute}
-                                  ></ha-icon-button>`
-                                : nothing
-                            }
-                            ${
-                              canPause && !finished
-                                ? html`<ha-icon-button
-                                    .timer=${timer}
-                                    .path=${paused ? mdiPlay : mdiPause}
-                                    .label=${this._i18n.localize(
-                                      paused
-                                        ? "ui.components.timer-list.resume"
-                                        : "ui.components.timer-list.pause"
-                                    )}
-                                    @click=${this._togglePause}
-                                  ></ha-icon-button>`
-                                : nothing
-                            }
-                            ${
-                              (finished ? canRemove : canCancel)
-                                ? html`<ha-icon-button
-                                    .timer=${timer}
-                                    .path=${mdiClose}
-                                    .label=${this._i18n.localize(
-                                      finished
-                                        ? "ui.components.timer-list.remove"
-                                        : "ui.components.timer-list.cancel"
-                                    )}
-                                    @click=${this._cancelOrRemove}
-                                  ></ha-icon-button>`
-                                : nothing
-                            }
-                          </div>
-                          <ha-progress-bar
-                            .label=${name}
-                            .value=${
-                              timer.total_duration
-                                ? (remaining / timer.total_duration) * 100
-                                : 0
-                            }
-                          ></ha-progress-bar>
-                        </li>
-                      `;
-                    }
-                  )}
-                </ul>
-              `
+                            <ha-progress-bar
+                              .label=${name}
+                              .value=${
+                                timer.total_duration
+                                  ? (remaining / timer.total_duration) * 100
+                                  : 0
+                              }
+                            ></ha-progress-bar>
+                          </li>
+                        `;
+                      }
+                    )}
+                  </ul>
+                `
       }
       ${this.createAtEnd ? createButton : nothing}
     `;

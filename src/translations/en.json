@@ -1498,6 +1498,7 @@
         "name": "Name",
         "start": "Start",
         "start_timer": "Start timer",
+        "duration": "[%key:ui::dialogs::helper_settings::timer::duration%]",
         "pause": "Pause",
         "resume": "Resume",
         "cancel": "Cancel",

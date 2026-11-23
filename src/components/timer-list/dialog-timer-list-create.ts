@@ -58,6 +58,7 @@ class DialogTimerListCreate extends DialogMixin<TimerListCreateDialogParams>(
           <ha-duration-input
             autofocus
             required
+            .label=${this._localize("ui.components.timer-list.duration")}
             .data=${this._duration}
             @value-changed=${this._durationChanged}
           ></ha-duration-input>
