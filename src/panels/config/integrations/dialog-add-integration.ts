@@ -1584,7 +1584,8 @@ class AddIntegrationDialog extends LitElement {
     this._focusAfterDrill = "out";
   }
 
-  // Room after the last card, so the list doesn't end on the edge
+  // Room after the last card, with the card's own padding as much as the
+  // browse pane has below it
   private _withEndSpace = memoizeOne(
     (rows: IntegrationListItem[]): IntegrationListItem[] => [
       ...rows,
@@ -2403,12 +2404,12 @@ class AddIntegrationDialog extends LitElement {
         color: var(--ha-color-text-secondary);
       }
       /* The panes and lists fill what the header and search leave of the
-         dialog's or sheet's fixed height, and all end on one line */
+         dialog's or sheet's fixed height. The lists scroll to its edge, the
+         boxes end where the last card does. */
       .content {
         display: flex;
         flex: 1;
         min-height: 0;
-        padding-block-end: var(--ha-space-4);
       }
       .items,
       .list {
@@ -2428,6 +2429,7 @@ class AddIntegrationDialog extends LitElement {
         flex-direction: column;
         gap: var(--ha-space-3);
         min-height: 0;
+        margin-block-end: var(--ha-space-4);
         margin-inline-start: var(--ha-space-4);
       }
       .single .pane {
@@ -2521,7 +2523,7 @@ class AddIntegrationDialog extends LitElement {
         z-index: 2;
       }
       .list.boxed {
-        margin: 0 var(--ha-space-4);
+        margin: 0 var(--ha-space-4) var(--ha-space-4);
         border: 1px solid var(--ha-color-border-neutral-quiet);
         border-radius: var(--ha-border-radius-xl);
         overflow: hidden;
