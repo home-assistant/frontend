@@ -3973,7 +3973,8 @@
             "location_settings": "Location settings",
             "retention_all": "Keep all backups",
             "retention_backups": "Keep {count} {count, plural,\n one {backup}\n other {backups}\n}",
-            "retention_days": "Keep {count} {count, plural,\n one {day}\n other {days}\n}"
+            "retention_days": "Keep {count} {count, plural,\n one {day}\n other {days}\n}",
+            "retention_inactive": "Retention paused"
           },
           "data": {
             "ha_settings": "Home Assistant settings",
@@ -4029,7 +4030,7 @@
             "retention": "Retention",
             "custom_retention": "Custom retention",
             "custom_retention_label": "Keep only",
-            "retention_description": "Based on the maximum number of backups or how many days they should be kept.",
+            "retention_description": "Based on the maximum number of backups or how many days they should be kept. Only applies to automatic backups, in the locations they are stored in.",
             "retention_presets": {
               "global": "Use global settings",
               "copies_3": "3 backups",
@@ -4304,6 +4305,7 @@
             "save_error": "Error saving configuration: {error}",
             "retention_for_this_system": "Retention for this system",
             "retention_for_location": "Retention for {location}",
+            "retention_inactive": "Automatic backups aren't stored in this location, so its retention settings are paused. Backups already in this location are kept until you delete them. Retention applies again when you turn the location back on for automatic backups.",
             "not_found": "Not found",
             "not_found_description": "Location matching ''{backupId}'' not found",
             "error": "Could not fetch location details",
