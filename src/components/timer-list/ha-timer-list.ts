@@ -62,6 +62,9 @@ export class HaTimerList extends LitElement {
   @property({ attribute: "hide-create", type: Boolean })
   public hideCreate = false;
 
+  @property({ attribute: "create-at-end", type: Boolean, reflect: true })
+  public createAtEnd = false;
+
   @state()
   @consumeEntityState({ entityIdPath: ["entityId"] })
   private _stateObj?: HassEntity;
@@ -173,23 +176,24 @@ export class HaTimerList extends LitElement {
       TimerListEntityFeature.REMOVE_TIMER
     );
 
+    const createButton =
+      !this.hideCreate &&
+      supportsFeature(stateObj, TimerListEntityFeature.CREATE_TIMER)
+        ? html`
+            <ha-button
+              class="create"
+              appearance="filled"
+              .disabled=${unavailable}
+              @click=${this._showCreateDialog}
+            >
+              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+              ${this._i18n.localize("ui.components.timer-list.start_timer")}
+            </ha-button>
+          `
+        : nothing;
+
     return html`
-      ${
-        !this.hideCreate &&
-        supportsFeature(stateObj, TimerListEntityFeature.CREATE_TIMER)
-          ? html`
-              <ha-button
-                class="create"
-                appearance="filled"
-                .disabled=${unavailable}
-                @click=${this._showCreateDialog}
-              >
-                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-                ${this._i18n.localize("ui.components.timer-list.start_timer")}
-              </ha-button>
-            `
-          : nothing
-      }
+      ${this.createAtEnd ? nothing : createButton}
       ${
         !timers
           ? nothing
@@ -295,6 +299,7 @@ export class HaTimerList extends LitElement {
                 </ul>
               `
       }
+      ${this.createAtEnd ? createButton : nothing}
     `;
   }
 
@@ -338,6 +343,10 @@ export class HaTimerList extends LitElement {
     .create {
       width: 100%;
       margin-bottom: var(--ha-space-4);
+    }
+    :host([create-at-end]) .create {
+      margin-top: var(--ha-space-4);
+      margin-bottom: 0;
     }
     ul {
       list-style: none;

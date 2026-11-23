@@ -12,7 +12,10 @@ class MoreInfoTimerList extends LitElement {
       return nothing;
     }
     return html`
-      <ha-timer-list .entityId=${this.stateObj.entity_id}></ha-timer-list>
+      <ha-timer-list
+        create-at-end
+        .entityId=${this.stateObj.entity_id}
+      ></ha-timer-list>
     `;
   }
 }
