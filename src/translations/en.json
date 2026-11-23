@@ -8047,8 +8047,6 @@
             "category": "Category"
           },
           "all_brands": "All brands",
-          "featured": "Featured",
-          "works_with": "Works with Home Assistant",
           "search_brand": "Search all brands and integrations",
           "search_section": {
             "brand": "Brands",

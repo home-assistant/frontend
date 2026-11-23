@@ -1,11 +1,4 @@
-import {
-  mdiRadar,
-  mdiMenuDown,
-  mdiCheckDecagram,
-  mdiStar,
-  mdiViewGridOutline,
-  mdiWeb,
-} from "@mdi/js";
+import { mdiRadar, mdiMenuDown, mdiViewGridOutline, mdiWeb } from "@mdi/js";
 import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -150,69 +143,6 @@ const SEARCH_SECTIONS: SearchSection[] = [
 // Like the automation editor's search, a section shows this many until it
 // is picked
 const MAX_SEARCH_ITEMS_PER_SECTION = 5;
-
-// Temporary copies of what home-assistant.io/integrations marks
-// `featured: true` and `works_with` (Works with Home Assistant). Core should
-// send these, so they stay in step with the website.
-// Picked like a brand, by its key, but lists these from every brand
-const COLLECTIONS: Record<string, { icon: string; domains: string[] }> = {
-  _featured: {
-    icon: mdiStar,
-    domains: [
-      "alexa",
-      "cast",
-      "esphome",
-      "google_assistant",
-      "homekit",
-      "hue",
-      "knx",
-      "lutron_caseta",
-      "matter",
-      "mqtt",
-      "music_assistant",
-      "plex",
-      "shelly",
-      "smartthings",
-      "sonos",
-      "tradfri",
-      "zha",
-      "zwave_js",
-    ],
-  },
-  _works_with: {
-    icon: mdiCheckDecagram,
-    domains: [
-      "airgradient",
-      "apollo_automation",
-      "aqara",
-      "bega",
-      "eltako",
-      "eve",
-      "fireavert",
-      "frient",
-      "heatit",
-      "heiman",
-      "homeseer",
-      "homewizard",
-      "iotorero",
-      "jasco",
-      "konnected_esphome",
-      "ledvance",
-      "leviton_z_wave",
-      "motionblinds_matter",
-      "nuki_matter",
-      "reolink",
-      "sensereo",
-      "shelly",
-      "switchbot",
-      "third_reality",
-      "ubisys",
-      "ultraloq",
-      "zooz",
-      "zunzunbee",
-    ],
-  },
-};
 
 const searchOptions = (filter: string): IFuseOptions<IntegrationListItem> => ({
   keys: [
@@ -684,28 +614,6 @@ class AddIntegrationDialog extends LitElement {
       const ofCategory = (item: IntegrationListItem) =>
         inCategory(item.categories, category, subcategory);
 
-      // Wherever they are in a brand, without the brands
-      // A brand in it as the brand, otherwise the brand's integrations in it
-      const collection = brand && COLLECTIONS[brand];
-      if (collection) {
-        return [...integrations]
-          .sort(byName)
-          .flatMap((item) =>
-            collection.domains.includes(item.domain)
-              ? [item]
-              : this._brandRows(item).filter(
-                  (row) =>
-                    !row.is_header &&
-                    !row.is_add &&
-                    collection.domains.includes(row.domain)
-                )
-          )
-          .filter(
-            (row, index, rows) =>
-              rows.findIndex((other) => other.domain === row.domain) === index
-          );
-      }
-
       if (byBrand) {
         return [...integrations]
           .filter((item) => !brand || item.domain === brand)
@@ -1174,11 +1082,6 @@ class AddIntegrationDialog extends LitElement {
     if (this._showDiscoveredView) {
       return this.hass.localize("ui.panel.config.integrations.discovered");
     }
-    if (this._brand && this._brand in COLLECTIONS) {
-      return this.hass.localize(
-        `ui.panel.config.integrations.${this._brand.slice(1) as "featured" | "works_with"}`
-      );
-    }
     if (this._brand) {
       return (
         this._integrations?.[this._brand]?.name ||
@@ -1561,7 +1464,6 @@ class AddIntegrationDialog extends LitElement {
     }
     if (
       this._brand &&
-      !(this._brand in COLLECTIONS) &&
       !this._getBrands(
         this._integrations,
         this._helpers,
@@ -1787,29 +1689,6 @@ class AddIntegrationDialog extends LitElement {
         <ha-section-title>
           ${this.hass.localize("ui.panel.config.integrations.browse")}
         </ha-section-title>
-        <ha-list-base>
-          ${Object.entries(COLLECTIONS).map(
-            ([key, { icon }]) =>
-              html`<ha-list-item-button
-                class=${classMap({
-                  selected:
-                    !this._filter &&
-                    !this._showDiscoveredView &&
-                    this._brand === key,
-                })}
-                .brand=${key}
-                @click=${this._brandPicked}
-              >
-                <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
-                <span slot="headline">
-                  ${this.hass.localize(
-                    `ui.panel.config.integrations.${key.slice(1) as "featured" | "works_with"}`
-                  )}
-                </span>
-                ${this._narrow ? html`<ha-icon-next slot="end"></ha-icon-next>` : nothing}
-              </ha-list-item-button>`
-          )}
-        </ha-list-base>
         ${
           this._browseBy === "brand"
             ? this._renderBrandList()
