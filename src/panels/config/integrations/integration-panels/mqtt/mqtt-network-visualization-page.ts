@@ -28,7 +28,7 @@ import "../../../../../components/ha-adaptive-dialog";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-dropdown";
 import "../../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../../components/ha-dropdown-item";
+import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/input/ha-input-search";
@@ -573,7 +573,11 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
           )}
           @click=${this._toggleTreeLayout}
         ></ha-icon-button>
-        <ha-dropdown slot="button" placement="bottom-end">
+        <ha-dropdown
+          slot="button"
+          placement="bottom-end"
+          @wa-select=${this._toggleSource}
+        >
           <ha-icon-button
             slot="trigger"
             class=${this._hiddenSources.length ? "active" : ""}
@@ -588,7 +592,6 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
                 type="checkbox"
                 .value=${source.id}
                 .checked=${!this._hiddenSources.includes(source.id)}
-                @click=${this._toggleSource}
               >
                 ${sourceName(source, this.hass.localize)}
               </ha-dropdown-item>
@@ -730,14 +733,14 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
     }
   };
 
-  private _toggleSource(ev: Event): void {
-    ev.stopPropagation();
-    const item = ev.currentTarget as HaDropdownItem;
-    const sourceId = item.value as string;
-    // The item is not toggled yet when the click is handled
-    this._hiddenSources = item.checked
-      ? [...this._hiddenSources, sourceId]
-      : this._hiddenSources.filter((id) => id !== sourceId);
+  private _toggleSource(ev: HaDropdownSelectEvent): void {
+    // Keeps the menu open for the next source
+    ev.preventDefault();
+    const { value, checked } = ev.detail.item;
+    // The dropdown toggled the item already
+    this._hiddenSources = checked
+      ? this._hiddenSources.filter((id) => id !== value)
+      : [...this._hiddenSources, value];
   }
 
   private _topicMessages = memoizeOne(
