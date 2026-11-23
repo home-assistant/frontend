@@ -39,7 +39,12 @@ export interface CloudPreferences {
 }
 
 export type RemoteCertificateStatus =
-  "error" | "generating" | "loading" | "loaded" | "ready";
+  | "error"
+  | "generating"
+  | "loading"
+  | "loaded"
+  | "ready"
+  | "ssl_client_context_error";
 
 export interface CloudStatusLoggedIn {
   logged_in: true;

@@ -7547,8 +7547,9 @@
               "external_activation": "Allow external activation of remote access",
               "external_activation_secondary": "If you disable remote access on this page, having this setting enabled allows you to reactivate it remotely via your Nabu Casa account.",
               "require_client_certificate": "Require client certificates",
-              "require_client_certificate_secondary": "Require the client certificate configured in network settings for remote connections.",
-              "require_client_certificate_not_configured": "To require client certificates for remote connections, configure a client certificate in network settings.",
+              "require_client_certificate_secondary": "Only allow remote connections from devices with a client certificate signed by the SSL peer certificate in network settings.",
+              "require_client_certificate_not_configured": "To use this, set an SSL peer certificate in network settings.",
+              "client_certificate_error": "Remote access is not available because the SSL peer certificate could not be loaded. Fix the file in network settings, or turn off \"Require client certificates\".",
               "require_client_certificate_confirm": {
                 "title": "Restart remote access",
                 "text": "Remote access will restart to apply this change. Open remote sessions will be disconnected briefly.",

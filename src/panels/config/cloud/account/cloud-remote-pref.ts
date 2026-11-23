@@ -70,7 +70,9 @@ export class CloudRemotePref extends LitElement {
       >
         <div class="content">
           ${
-            !remote_certificate || remote_certificate_status !== "ready"
+            !remote_certificate ||
+            (remote_certificate_status !== "ready" &&
+              remote_certificate_status !== "ssl_client_context_error")
               ? html`
                   <ha-card outlined>
                     <div class="preparing">
@@ -180,6 +182,17 @@ export class CloudRemotePref extends LitElement {
                     )}
                   >
                     <div class="card-content">
+                      ${
+                        remote_certificate_status === "ssl_client_context_error"
+                          ? html`
+                              <ha-alert alert-type="error">
+                                ${this.hass.localize(
+                                  "ui.panel.config.cloud.account.remote.client_certificate_error"
+                                )}
+                              </ha-alert>
+                            `
+                          : nothing
+                      }
                       <ha-list-base>
                         <ha-list-item-switch
                           wrap-supporting-text
@@ -197,7 +210,12 @@ export class CloudRemotePref extends LitElement {
                             )}</span
                           >
                         </ha-list-item-switch>
-                        <ha-list-item-base wrap-supporting-text>
+                        <ha-list-item-switch
+                          wrap-supporting-text
+                          .checked=${remote_require_client_certificate}
+                          .disabled=${!http_ssl_peer_certificate}
+                          @change=${this._toggleRequireClientCertificateChanged}
+                        >
                           <span slot="headline"
                             >${this.hass.localize(
                               "ui.panel.config.cloud.account.remote.require_client_certificate"
@@ -214,14 +232,8 @@ export class CloudRemotePref extends LitElement {
                                   )
                             }</span
                           >
-                          <ha-switch
-                            slot="end"
-                            .checked=${remote_require_client_certificate}
-                            .disabled=${!http_ssl_peer_certificate}
-                            @change=${this._toggleRequireClientCertificateChanged}
-                          ></ha-switch>
-                        </ha-list-item-base>
-                        <ha-list-item-base>
+                        </ha-list-item-switch>
+                        <ha-list-item-base wrap-supporting-text>
                           <span slot="headline"
                             >${this.hass.localize(
                               "ui.panel.config.cloud.account.remote.certificate_info"
@@ -318,8 +330,10 @@ export class CloudRemotePref extends LitElement {
     }
   }
 
-  private async _toggleRequireClientCertificateChanged(ev) {
-    const toggle = ev.target as HaSwitch;
+  private async _toggleRequireClientCertificateChanged(
+    ev: HASSDomTargetEvent<HaListItemSwitch>
+  ) {
+    const toggle = ev.target;
 
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(
