@@ -11,14 +11,15 @@ import type { HomeAssistant } from "../../../types";
 import "../../config/energy/components/ha-energy-battery-settings";
 import "../../config/energy/components/ha-energy-device-settings";
 import "../../config/energy/components/ha-energy-gas-settings";
+import "../../config/energy/components/ha-energy-heat-settings";
 import "../../config/energy/components/ha-energy-grid-settings";
 import "../../config/energy/components/ha-energy-solar-settings";
 import "../../config/energy/components/ha-energy-water-settings";
 import "../../../components/ha-button";
 import type { Lovelace, LovelaceCard } from "../../lovelace/types";
 
-// Grid, solar, battery, gas, water, and individual devices
-const STEPS = 6;
+// Grid, solar, battery, gas, water, heat, and individual devices
+const STEPS = 7;
 
 @customElement("energy-setup-wizard-card")
 export class EnergySetupWizard extends LitElement implements LovelaceCard {
@@ -92,11 +93,17 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
                       .preferences=${this._preferences}
                       @value-changed=${this._prefsChanged}
                     ></ha-energy-water-settings>`
-                  : html`<ha-energy-device-settings
-                      .hass=${this.hass}
-                      .preferences=${this._preferences}
-                      @value-changed=${this._prefsChanged}
-                    ></ha-energy-device-settings>`
+                  : this._step === 5
+                    ? html`<ha-energy-heat-settings
+                        .hass=${this.hass}
+                        .preferences=${this._preferences}
+                        @value-changed=${this._prefsChanged}
+                      ></ha-energy-heat-settings>`
+                    : html`<ha-energy-device-settings
+                        .hass=${this.hass}
+                        .preferences=${this._preferences}
+                        @value-changed=${this._prefsChanged}
+                      ></ha-energy-device-settings>`
       }
       <div class="buttons">
         ${

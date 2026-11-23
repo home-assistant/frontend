@@ -2,6 +2,7 @@ import "../../../layouts/hass-error-screen";
 import {
   mdiDownload,
   mdiFire,
+  mdiRadiator,
   mdiLightningBolt,
   mdiViewDashboardEdit,
   mdiWater,
@@ -36,6 +37,7 @@ import "./components/ha-energy-solar-settings";
 import "./components/ha-energy-home-settings";
 import "./components/ha-energy-battery-settings";
 import "./components/ha-energy-gas-settings";
+import "./components/ha-energy-heat-settings";
 import "./components/ha-energy-water-settings";
 import "./components/ha-energy-suggestions";
 import { fileDownload } from "../../../util/file_download";
@@ -69,12 +71,19 @@ const TABS: PageNavigation[] = [
     iconPath: mdiWater,
     iconColor: "#F1C447",
   },
+  {
+    path: "/config/energy/heat",
+    translationKey: "ui.panel.config.energy.tabs.heat",
+    iconPath: mdiRadiator,
+    iconColor: "var(--energy-heat-color)",
+  },
 ];
 
 // Editor pages are at <tab>/<kind>/<key>, with `new` as the key of a new item
 const EDITOR_KINDS: Record<string, string[]> = {
   electricity: ["grid", "solar", "home", "battery", "device"],
   gas: ["gas", "device"],
+  heat: ["heat"],
   water: ["water", "device"],
 };
 
@@ -180,11 +189,15 @@ class HaConfigEnergy extends LitElement {
           ${this.hass.localize("ui.panel.config.energy.new_device_info")}
         </ha-alert>
         <div class="content">
-          <ha-energy-suggestions
-            .preferences=${this._preferences!}
-            .listPath=${`${this.route.prefix}/${this._currTab}`}
-            .tab=${this._currTab}
-          ></ha-energy-suggestions>
+          ${
+            this._currTab === "heat"
+              ? nothing
+              : html`<ha-energy-suggestions
+                  .preferences=${this._preferences!}
+                  .listPath=${`${this.route.prefix}/${this._currTab}`}
+                  .tab=${this._currTab}
+                ></ha-energy-suggestions>`
+          }
           ${cache(this._renderTabContent())}
         </div>
       </hass-tabs-subpage>
@@ -236,6 +249,17 @@ class HaConfigEnergy extends LitElement {
             .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-device-settings>
+        `;
+      case "heat":
+        return html`
+          <ha-energy-heat-settings
+            .hass=${this.hass}
+            .preferences=${this._preferences!}
+            .listPath=${listPath}
+            .statsMetadata=${this._statsMetadata}
+            .validationResult=${this._validationResult}
+            @value-changed=${this._prefsChanged}
+          ></ha-energy-heat-settings>
         `;
       case "gas":
         return html`
@@ -340,6 +364,17 @@ class HaConfigEnergy extends LitElement {
           .editKey=${key}
           @value-changed=${this._prefsChanged}
         ></ha-energy-device-settings>`;
+      case "heat/heat":
+        return html`<ha-energy-heat-settings
+          class="editor-page"
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .preferences=${this._preferences!}
+          .statsMetadata=${this._statsMetadata}
+          .listPath=${listPath}
+          .editKey=${key}
+          @value-changed=${this._prefsChanged}
+        ></ha-energy-heat-settings>`;
       case "gas/gas":
         return html`<ha-energy-gas-settings
           class="editor-page"
@@ -512,6 +547,7 @@ class HaConfigEnergy extends LitElement {
         ha-energy-home-settings,
         ha-energy-battery-settings,
         ha-energy-gas-settings,
+        ha-energy-heat-settings,
         ha-energy-water-settings,
         ha-energy-device-settings,
         ha-energy-device-settings-water-gas {

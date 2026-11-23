@@ -104,6 +104,15 @@ export const emptyGasEnergyPreference = (): GasSourceTypeEnergyPreference => ({
   number_energy_price: null,
 });
 
+export const emptyHeatEnergyPreference =
+  (): HeatSourceTypeEnergyPreference => ({
+    type: "heat",
+    stat_energy_from: "",
+    stat_cost: null,
+    entity_energy_price: null,
+    number_energy_price: null,
+  });
+
 export const emptyWaterEnergyPreference =
   (): WaterSourceTypeEnergyPreference => ({
     type: "water",
@@ -322,6 +331,16 @@ export interface GasSourceTypeEnergyPreference {
   name?: string;
 }
 
+export interface HeatSourceTypeEnergyPreference {
+  type: "heat";
+  stat_energy_from: string;
+  stat_rate?: string;
+  stat_cost?: string | null;
+  entity_energy_price?: string | null;
+  number_energy_price?: number | null;
+  name?: string;
+}
+
 export interface WaterSourceTypeEnergyPreference {
   type: "water";
 
@@ -348,7 +367,8 @@ export type EnergySource =
   | GridSourceTypeEnergyPreference
   | BatterySourceTypeEnergyPreference
   | GasSourceTypeEnergyPreference
-  | WaterSourceTypeEnergyPreference;
+  | WaterSourceTypeEnergyPreference
+  | HeatSourceTypeEnergyPreference;
 
 export interface EnergyPreferences {
   energy_sources: EnergySource[];
@@ -437,6 +457,7 @@ export interface EnergySourceByType {
   battery?: BatterySourceTypeEnergyPreference[];
   gas?: GasSourceTypeEnergyPreference[];
   water?: WaterSourceTypeEnergyPreference[];
+  heat?: HeatSourceTypeEnergyPreference[];
 }
 
 export const energySourcesByType = (prefs: EnergyPreferences) =>
@@ -662,7 +683,11 @@ export const getReferencedStatisticIds = (
       continue;
     }
 
-    if (source.type === "gas" || source.type === "water") {
+    if (
+      source.type === "gas" ||
+      source.type === "water" ||
+      source.type === "heat"
+    ) {
       statIDs.push(source.stat_energy_from);
 
       if (source.stat_cost) {
@@ -727,7 +752,11 @@ export const getReferencedStatisticIdsPower = (
   const statIDs: (string | undefined)[] = [];
 
   for (const source of prefs.energy_sources) {
-    if (source.type === "gas" || source.type === "water") {
+    if (
+      source.type === "gas" ||
+      source.type === "water" ||
+      source.type === "heat"
+    ) {
       if (source.stat_rate) {
         statIDs.push(source.stat_rate);
       }
@@ -818,6 +847,7 @@ const getEnergyData = async (
     "home",
     "battery",
     "gas",
+    "heat",
     "device",
   ]);
   const powerStatIds = getReferencedStatisticIdsPower(prefs);
@@ -1754,7 +1784,7 @@ const getEnergyGasUnit = (
     const kWhStatIds = new Set([
       ...prefs.device_consumption.map((device) => device.stat_consumption),
       ...prefs.energy_sources.flatMap((source) => {
-        if (source.type === "solar") {
+        if (source.type === "solar" || source.type === "heat") {
           return [source.stat_energy_from];
         }
         if (source.type === "home") {
@@ -2845,6 +2875,28 @@ export const downloadEnergyData = (
     gasUnit,
     "gas_consumption_cost",
     gas_consumptions_cost
+  );
+
+  const heat_consumptions: string[] = [];
+  const heat_consumptions_cost: string[] = [];
+  energy_sources
+    .filter((s) => s.type === "heat")
+    .forEach((source) => {
+      source = source as HeatSourceTypeEnergyPreference;
+      const statId = source.stat_energy_from;
+      heat_consumptions.push(statId);
+      const costId = source.stat_cost || state.info.cost_sensors[statId];
+      if (costId) {
+        heat_consumptions_cost.push(costId);
+      }
+    });
+
+  printCategory(
+    "heat_consumption",
+    heat_consumptions,
+    "kWh",
+    "heat_consumption_cost",
+    heat_consumptions_cost
   );
 
   const water_consumptions: string[] = [];
