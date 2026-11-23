@@ -10,6 +10,7 @@ class TestRouter extends HassRouterPage {
     routes: {
       immediate: { tag: "test-immediate-panel" },
       deferred: { tag: "test-deferred-panel", waitForReady: true },
+      redirected: { tag: "test-redirected-panel", waitForReady: true },
       loaded: {
         tag: "test-loaded-panel",
         load: () => loadedPanelImport,
@@ -28,6 +29,10 @@ class ImmediatePanel extends HTMLElement {}
 class DeferredPanel extends ReactiveElement {
   @state() public loaded = false;
 }
+
+class RedirectedPanel extends HTMLElement {}
+
+customElements.define("test-redirected-panel", RedirectedPanel);
 
 let resolveLoadedPanelImport: () => void;
 const loadedPanelImport = new Promise<void>((resolve) => {
@@ -236,6 +241,34 @@ describe("HassRouterPage panel readiness", () => {
 
     panelIsReady(element.lastElementChild as HTMLElement);
     await expect(element.rendered).resolves.toBeUndefined();
+  });
+
+  it("waits for the panel that replaces one before it was ready", async () => {
+    const element = await mountRouter("/deferred");
+    let ready = false;
+    element.rendered.then(() => {
+      ready = true;
+    });
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+
+    // The panel redirects, as a dashboard can, before it is ready, so it
+    // never will be
+    element.route = { prefix: "", path: "/redirected" };
+    await element.updateComplete;
+    expect(ready).toBe(false);
+
+    const redirected = element.querySelector("test-redirected-panel");
+
+    if (!redirected) {
+      throw new Error("The redirected panel was not created");
+    }
+
+    panelIsReady(redirected);
+    await vi.waitFor(() => {
+      expect(ready).toBe(true);
+    });
   });
 });
 
@@ -492,6 +525,7 @@ declare global {
     "test-router": TestRouter;
     "test-immediate-panel": ImmediatePanel;
     "test-deferred-panel": DeferredPanel;
+    "test-redirected-panel": RedirectedPanel;
     "test-loaded-panel": LoadedPanel;
     "test-prop-router": PropRouter;
     "test-prop-panel": PropPanel;
