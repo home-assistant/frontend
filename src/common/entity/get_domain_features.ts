@@ -15,6 +15,7 @@ import { MediaPlayerEntityFeature } from "../../data/feature/media-player_entity
 import { NotifyEntityFeature } from "../../data/notify";
 import { RemoteEntityFeature } from "../../data/remote";
 import { SirenEntityFeature } from "../../data/feature/siren_entity_feature";
+import { TimerListEntityFeature } from "../../data/timer_list";
 import { TodoListEntityFeature } from "../../data/todo";
 import { UpdateEntityFeature } from "../../data/update";
 import { VacuumEntityFeature } from "../../data/vacuum";
@@ -42,6 +43,7 @@ const DOMAIN_ENUMS = {
   notify: NotifyEntityFeature,
   remote: RemoteEntityFeature,
   siren: SirenEntityFeature,
+  timer_list: TimerListEntityFeature,
   todo: TodoListEntityFeature,
   update: UpdateEntityFeature,
   vacuum: VacuumEntityFeature,

@@ -1494,6 +1494,16 @@
         "grid": "Grid",
         "list": "List"
       },
+      "timer-list": {
+        "name": "Name",
+        "start": "Start",
+        "pause": "Pause",
+        "resume": "Resume",
+        "cancel": "Cancel",
+        "add_minute": "Add 1 minute",
+        "paused_name": "{name} (paused)",
+        "no_timers": "No active timers"
+      },
       "todo": {
         "item": {
           "summary": "Task name",
@@ -11949,6 +11959,11 @@
               "description": "This card gives you a quick overview of a sensor's state with an optional graph to visualize change over time.",
               "limit_min": "Minimum value",
               "limit_max": "Maximum value"
+            },
+            "timer-list": {
+              "name": "Timer list",
+              "description": "This card allows you to start, pause, and cancel the timers in a timer list.",
+              "hide_create": "Hide the fields to start a timer"
             },
             "todo-list": {
               "name": "To-do list",

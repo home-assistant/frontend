@@ -1,0 +1,424 @@
+import { mdiClose, mdiPause, mdiPlay, mdiTimerPlusOutline } from "@mdi/js";
+import type {
+  Connection,
+  HassEntity,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { repeat } from "lit/directives/repeat";
+import { durationDataToSeconds } from "../../common/datetime/duration_to_seconds";
+import {
+  formatDurationDigital,
+  formatDurationLong,
+} from "../../common/datetime/format_duration";
+import { consume } from "../../common/decorators/consume";
+import { consumeEntityState } from "../../common/decorators/consume-context-entry";
+import { transform } from "../../common/decorators/transform";
+import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
+import { supportsFeature } from "../../common/entity/supports-feature";
+import {
+  apiContext,
+  connectionContext,
+  internationalizationContext,
+} from "../../data/context";
+import { UNAVAILABLE } from "../../data/entity/entity";
+import { normalizeTimerDuration } from "../../data/timer";
+import type { TimerListTimer } from "../../data/timer_list";
+import {
+  addTimerListTimerTime,
+  callTimerListTimerAction,
+  createTimerListTimer,
+  subscribeTimerListTimers,
+  TimerListEntityFeature,
+  timerListTimerRemaining,
+} from "../../data/timer_list";
+import type {
+  HomeAssistantApi,
+  HomeAssistantConnection,
+  HomeAssistantInternationalization,
+  ValueChangedEvent,
+} from "../../types";
+import "../ha-button";
+import "../ha-duration-input";
+import type { HaDurationData } from "../ha-duration-input";
+import "../ha-icon-button";
+import type { HaIconButton } from "../ha-icon-button";
+import "../input/ha-input";
+import type { HaInput } from "../input/ha-input";
+import "../progress/ha-progress-bar";
+
+type TimerButtonEvent = HASSDomCurrentTargetEvent<
+  HaIconButton & { timer: TimerListTimer }
+>;
+
+@customElement("ha-timer-list")
+export class HaTimerList extends LitElement {
+  @property({ attribute: false }) public entityId?: string;
+
+  @property({ attribute: "hide-create", type: Boolean })
+  public hideCreate = false;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["entityId"] })
+  private _stateObj?: HassEntity;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<HomeAssistantConnection, Connection>({
+    transformer: ({ connection }) => connection,
+  })
+  private _connection!: Connection;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state() private _timers?: TimerListTimer[];
+
+  @state() private _name = "";
+
+  @state() private _duration: HaDurationData = { minutes: 5 };
+
+  private _subscribedEntityId?: string;
+
+  private _unsubTimers?: Promise<UnsubscribeFunc>;
+
+  private _interval?: number;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this.requestUpdate();
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._unsubscribe();
+    this._subscribedEntityId = undefined;
+    this._clearInterval();
+  }
+
+  protected willUpdate(): void {
+    // The backend refuses a subscription to an unavailable entity, and drops
+    // the subscription when the entity is reloaded.
+    const entityId =
+      this._stateObj && this._stateObj.state !== UNAVAILABLE
+        ? this.entityId
+        : undefined;
+    if (entityId === this._subscribedEntityId) {
+      return;
+    }
+    this._subscribedEntityId = entityId;
+    this._unsubscribe();
+    this._timers = undefined;
+    if (entityId && this._connection) {
+      this._unsubTimers = subscribeTimerListTimers(
+        this._connection,
+        entityId,
+        (timers) => {
+          this._timers = timers;
+        }
+      );
+    }
+  }
+
+  protected updated(): void {
+    const ticking = this._timers?.some((timer) => timer.status === "active");
+    if (ticking && !this._interval) {
+      this._interval = window.setInterval(() => this.requestUpdate(), 1000);
+    } else if (!ticking) {
+      this._clearInterval();
+    }
+  }
+
+  private _unsubscribe(): void {
+    this._unsubTimers?.then((unsub) => unsub());
+    this._unsubTimers = undefined;
+  }
+
+  private _clearInterval(): void {
+    window.clearInterval(this._interval);
+    this._interval = undefined;
+  }
+
+  protected render() {
+    if (!this._stateObj || !this._i18n) {
+      return nothing;
+    }
+    const stateObj = this._stateObj;
+    const unavailable = stateObj.state === UNAVAILABLE;
+    const timers = this._timers?.filter(
+      (timer) => timer.status === "active" || timer.status === "paused"
+    );
+    const canPause = supportsFeature(
+      stateObj,
+      TimerListEntityFeature.PAUSE_TIMER
+    );
+    const canCancel = supportsFeature(
+      stateObj,
+      TimerListEntityFeature.CANCEL_TIMER
+    );
+    const canAddTime = supportsFeature(
+      stateObj,
+      TimerListEntityFeature.ADD_TIME
+    );
+
+    return html`
+      ${
+        !this.hideCreate &&
+        supportsFeature(stateObj, TimerListEntityFeature.CREATE_TIMER)
+          ? html`
+              <div class="create">
+                <ha-input
+                  .label=${this._i18n.localize("ui.components.timer-list.name")}
+                  .value=${this._name}
+                  .disabled=${unavailable}
+                  enterkeyhint="done"
+                  @input=${this._nameChanged}
+                  @keydown=${this._nameKeydown}
+                ></ha-input>
+                <ha-duration-input
+                  required
+                  .data=${this._duration}
+                  .disabled=${unavailable}
+                  @value-changed=${this._durationChanged}
+                ></ha-duration-input>
+                <ha-button
+                  .disabled=${unavailable || !durationDataToSeconds(this._duration)}
+                  @click=${this._createTimer}
+                >
+                  ${this._i18n.localize("ui.components.timer-list.start")}
+                </ha-button>
+              </div>
+            `
+          : nothing
+      }
+      ${
+        !timers
+          ? nothing
+          : !timers.length
+            ? html`<p class="empty">
+                ${this._i18n.localize("ui.components.timer-list.no_timers")}
+              </p>`
+            : html`
+                <ul>
+                  ${repeat(
+                    timers,
+                    (timer) => timer.timer_id,
+                    (timer) => {
+                      const paused = timer.status === "paused";
+                      const remaining = timerListTimerRemaining(timer);
+                      const name =
+                        timer.name ||
+                        formatDurationLong(
+                          this._i18n.locale,
+                          normalizeTimerDuration({
+                            seconds: timer.created_duration,
+                          })
+                        );
+                      return html`
+                        <li class=${classMap({ paused })}>
+                          <div class="row">
+                            <div class="info">
+                              <span class="remaining">
+                                ${formatDurationDigital(
+                                  this._i18n.locale,
+                                  normalizeTimerDuration({
+                                    seconds: Math.ceil(remaining),
+                                  })
+                                )}
+                              </span>
+                              <span class="name">
+                                ${
+                                  paused
+                                    ? this._i18n.localize(
+                                        "ui.components.timer-list.paused_name",
+                                        { name }
+                                      )
+                                    : name
+                                }
+                              </span>
+                            </div>
+                            ${
+                              canAddTime
+                                ? html`<ha-icon-button
+                                    .timer=${timer}
+                                    .path=${mdiTimerPlusOutline}
+                                    .label=${this._i18n.localize(
+                                      "ui.components.timer-list.add_minute"
+                                    )}
+                                    @click=${this._addMinute}
+                                  ></ha-icon-button>`
+                                : nothing
+                            }
+                            ${
+                              canPause
+                                ? html`<ha-icon-button
+                                    .timer=${timer}
+                                    .path=${paused ? mdiPlay : mdiPause}
+                                    .label=${this._i18n.localize(
+                                      paused
+                                        ? "ui.components.timer-list.resume"
+                                        : "ui.components.timer-list.pause"
+                                    )}
+                                    @click=${this._togglePause}
+                                  ></ha-icon-button>`
+                                : nothing
+                            }
+                            ${
+                              canCancel
+                                ? html`<ha-icon-button
+                                    .timer=${timer}
+                                    .path=${mdiClose}
+                                    .label=${this._i18n.localize(
+                                      "ui.components.timer-list.cancel"
+                                    )}
+                                    @click=${this._cancel}
+                                  ></ha-icon-button>`
+                                : nothing
+                            }
+                          </div>
+                          <ha-progress-bar
+                            .label=${name}
+                            .value=${
+                              timer.total_duration
+                                ? (remaining / timer.total_duration) * 100
+                                : 0
+                            }
+                          ></ha-progress-bar>
+                        </li>
+                      `;
+                    }
+                  )}
+                </ul>
+              `
+      }
+    `;
+  }
+
+  private _nameChanged(ev: HASSDomCurrentTargetEvent<HaInput>): void {
+    this._name = ev.currentTarget.value ?? "";
+  }
+
+  private _nameKeydown(ev: KeyboardEvent): void {
+    if (ev.key === "Enter") {
+      this._createTimer();
+    }
+  }
+
+  private _durationChanged(
+    ev: ValueChangedEvent<HaDurationData | undefined>
+  ): void {
+    this._duration = ev.detail.value ?? {};
+  }
+
+  private _createTimer(): void {
+    if (!durationDataToSeconds(this._duration)) {
+      return;
+    }
+    createTimerListTimer(
+      this._api.callService,
+      this.entityId!,
+      this._duration,
+      this._name.trim()
+    );
+    this._name = "";
+  }
+
+  private _addMinute(ev: TimerButtonEvent): void {
+    addTimerListTimerTime(
+      this._api.callService,
+      this.entityId!,
+      ev.currentTarget.timer.timer_id,
+      { minutes: 1 }
+    );
+  }
+
+  private _togglePause(ev: TimerButtonEvent): void {
+    const { timer } = ev.currentTarget;
+    callTimerListTimerAction(
+      this._api.callService,
+      this.entityId!,
+      timer.status === "paused" ? "unpause_timer" : "pause_timer",
+      timer.timer_id
+    );
+  }
+
+  private _cancel(ev: TimerButtonEvent): void {
+    callTimerListTimerAction(
+      this._api.callService,
+      this.entityId!,
+      "cancel_timer",
+      ev.currentTarget.timer.timer_id
+    );
+  }
+
+  static styles = css`
+    :host {
+      display: block;
+    }
+    .create {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--ha-space-2);
+      margin-bottom: var(--ha-space-4);
+    }
+    .create ha-input {
+      flex: 1 0 100%;
+    }
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--ha-space-4);
+    }
+    .row {
+      display: flex;
+      align-items: center;
+    }
+    .info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .remaining {
+      font-size: var(--ha-font-size-2xl);
+      line-height: var(--ha-line-height-condensed);
+      font-variant-numeric: tabular-nums;
+    }
+    .name {
+      color: var(--secondary-text-color);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .paused .remaining {
+      color: var(--secondary-text-color);
+    }
+    ha-progress-bar {
+      --ha-progress-bar-track-height: 4px;
+      margin-top: var(--ha-space-1);
+    }
+    .empty {
+      margin: 0;
+      padding: var(--ha-space-4) 0;
+      color: var(--secondary-text-color);
+      text-align: center;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-timer-list": HaTimerList;
+  }
+}
