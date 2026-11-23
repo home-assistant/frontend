@@ -30,6 +30,7 @@ import {
   coverSupportsPosition,
   coverSupportsSetValue,
   coverSupportsTiltPosition,
+  coverTiltOpenness,
   isMoving,
   isOpening,
 } from "../../data/cover";
@@ -573,12 +574,12 @@ export class HaStateControlCover extends LitElement {
     return this._formatValue(value);
   }
 
-  private _drawnTilt(): number {
+  private _drawnTiltOpenness(): number {
     if (this.mode === "tilt" && this._drag) {
-      return this._drag.value;
+      return coverTiltOpenness(this.stateObj, this._drag.value);
     }
     return coverHasTiltControls(this.stateObj)
-      ? this._coverSprings.tilt.value
+      ? coverTiltOpenness(this.stateObj, this._coverSprings.tilt.value)
       : 0;
   }
 
@@ -689,7 +690,7 @@ export class HaStateControlCover extends LitElement {
     const withTarget = changing && (unknown || Math.abs(handle - cover) > 1);
     const parts = shape.render({
       position: this._coverSprings.position.value,
-      tilt: this._drawnTilt(),
+      tiltOpenness: this._drawnTiltOpenness(),
       wave: this._wave,
     });
     const flip = isHorizontal(shape) && this._isRtl;
