@@ -219,7 +219,7 @@ describe("downSampleLineData", () => {
       expect([
         Math.min(...values!),
         Math.max(...values!),
-        values!.at(-1),
+        values![values!.length - 1],
       ]).toContain(y);
     });
   });
