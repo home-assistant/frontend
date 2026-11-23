@@ -164,7 +164,7 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
               @click=${this._copyOldKeyToClipboard}
             ></ha-icon-button>
           </div>
-          <ha-row-item>
+          <ha-row-item wrap-supporting-text>
             <span slot="headline">
               ${this.hass.localize(
                 "ui.panel.config.backup.encryption_key.download_old_emergency_kit"
@@ -202,7 +202,7 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
               @click=${this._copyKeyToClipboard}
             ></ha-icon-button>
           </div>
-          <ha-row-item>
+          <ha-row-item wrap-supporting-text>
             <span slot="headline">
               ${this.hass.localize(
                 "ui.panel.config.backup.encryption_key.download_emergency_kit"
