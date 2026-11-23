@@ -82,12 +82,12 @@ workflows:
         - 'actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9'
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         - 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1'
-        - 'peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1'
+        - 'peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1'
     '.github/workflows/sync-sensor-entity-constants.yaml':
         - 'actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9'
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         - 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1'
-        - 'peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1'
+        - 'peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1'
     '.github/workflows/translations.yaml':
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
 dependencies:
@@ -166,9 +166,9 @@ dependencies:
         commit: 'sha1-9e17ab1ed5c4c79d8b61e29fa63de25ca2710716'
         owner_id: 13844975
         repo_id: 184234812
-    'peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1':
-        ref: 'v8.1.1'
-        commit: 'sha1-5f6978faf089d4d20b00c7766989d076bb2fc7f1'
+    'peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1':
+        ref: 'v8.1.3'
+        commit: 'sha1-3ffccacd46053766916f087ce41d627c0b8cf2d1'
         owner_id: 18365890
         repo_id: 197176365
     'pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086':
