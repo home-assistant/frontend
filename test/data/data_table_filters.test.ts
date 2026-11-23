@@ -211,6 +211,30 @@ describe("countActiveFilters", () => {
   });
 });
 
+// Pages store a filter for when they're opened again only when the URL
+// changes, which leaves out the mode of a filter without a selection.
+describe("filterModeChanged", () => {
+  it("tells when the mode changes without a selection", () => {
+    expect(filterModeChanged({ exclude: true }, undefined)).toBe(true);
+    expect(filterModeChanged(undefined, { exclude: true })).toBe(true);
+  });
+
+  it("tells when the mode changes with a selection", () => {
+    expect(filterModeChanged({ ids: ["a"], exclude: true }, ["a"])).toBe(true);
+  });
+
+  it("ignores a filter sending back the value it was given", () => {
+    expect(
+      filterModeChanged(
+        { ids: ["a"], exclude: true },
+        { ids: ["a"], exclude: true }
+      )
+    ).toBe(false);
+    expect(filterModeChanged(["a"], ["a", "b"])).toBe(false);
+    expect(filterModeChanged(undefined, undefined)).toBe(false);
+  });
+});
+
 describe("filtersMatchUnassignedItem", () => {
   it("matches when no filter has a selection", () => {
     expect(filtersMatchUnassignedItem({})).toBe(true);
@@ -239,6 +263,17 @@ describe("filtersMatchUnassignedItem", () => {
     ).toBe(true);
   });
 
+  it("matches a No … selection of a list filter, also next to selected ids", () => {
+    expect(
+      filtersMatchUnassignedItem({ "ha-filter-labels": { none: true } })
+    ).toBe(true);
+    expect(
+      filtersMatchUnassignedItem({
+        "ha-filter-labels": { ids: ["energy"], none: true },
+      })
+    ).toBe(true);
+  });
+
   it("leaves the item out when an id is selected", () => {
     expect(filtersMatchUnassignedItem({ "ha-filter-labels": ["energy"] })).toBe(
       false
@@ -248,6 +283,27 @@ describe("filtersMatchUnassignedItem", () => {
         "ha-filter-floor-areas": { floors: ["ground"] },
       })
     ).toBe(false);
+  });
+
+  it("turns the match around for a Without filter", () => {
+    expect(
+      filtersMatchUnassignedItem({
+        "ha-filter-labels": { ids: ["energy"], exclude: true },
+      })
+    ).toBe(true);
+    expect(
+      filtersMatchUnassignedItem({
+        "ha-filter-labels": { none: true, exclude: true },
+      })
+    ).toBe(false);
+    expect(
+      filtersMatchUnassignedItem({
+        "ha-filter-floor-areas": { no_area: true, exclude: true },
+      })
+    ).toBe(false);
+    expect(
+      filtersMatchUnassignedItem({ "ha-filter-labels": { exclude: true } })
+    ).toBe(true);
   });
 
   it("needs every filter to match", () => {

@@ -91,7 +91,7 @@ export class HaFilterBlueprints extends LitElement {
   private _relatedRequestId = 0;
 
   // The last lookup of the items without a blueprint, reused while the items
-  // are the same, such as when only the mode changes
+  // are the same, such as when only the selection changes
   private _withoutBlueprint?: {
     type: "automation" | "script";
     stateIds?: Set<string>;
