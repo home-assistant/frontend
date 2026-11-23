@@ -1,6 +1,8 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-checkbox";
 import "../ha-ripple";
 import { HaListItemBase } from "./ha-list-item-base";
@@ -15,7 +17,8 @@ export type HaListItemOptionSelectionPosition = "start" | "end";
  *
  * @summary
  * Selectable list row (role `option`). Selection state is driven by the parent
- * `ha-list-selectable`; reflects `aria-selected`. When `appearance="checkbox"`, renders
+ * `ha-list-selectable`; reflects `aria-selected`, and describes an `indeterminate` row
+ * as partly selected through `aria-description`. When `appearance="checkbox"`, renders
  * a decorative `<ha-checkbox>` (clicks on the row are handled by the listbox).
  *
  * @csspart checkbox - Wrapper around the `<ha-checkbox>` when `appearance="checkbox"`.
@@ -47,6 +50,10 @@ export class HaListItemOption extends HaListItemBase {
 
   public override interactive = true;
 
+  @state()
+  @consumeLocalize()
+  private _localize?: LocalizeFunc;
+
   public update(changed: Map<string, unknown>) {
     super.update(changed);
     if (changed.has("selected")) {
@@ -54,6 +61,18 @@ export class HaListItemOption extends HaListItemBase {
     }
     if (changed.has("disabled")) {
       this.setAttribute("aria-disabled", this.disabled ? "true" : "false");
+    }
+    if (changed.has("indeterminate") || changed.has("_localize")) {
+      // `option` has no mixed selection state, so describe it instead of
+      // letting the row read as unselected
+      const description = this.indeterminate
+        ? this._localize?.("ui.components.list-item-option.partly_selected")
+        : undefined;
+      if (description) {
+        this.setAttribute("aria-description", description);
+      } else {
+        this.removeAttribute("aria-description");
+      }
     }
   }
 

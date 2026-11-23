@@ -14,7 +14,12 @@ const SWIPE_LOCKED_COMPONENTS = new Set([
   "notification-manager",
 ]);
 
-const SWIPE_LOCKED_CLASSES = new Set(["volume-slider-container", "forecast"]);
+const SWIPE_LOCKED_CLASSES = new Set([
+  "volume-slider-container",
+  "forecast",
+  // A zoomed in camera picture pans on touch
+  "camera-player-zoomed",
+]);
 
 /**
  * Whether a touch inside a bottom sheet belongs to its content rather than to

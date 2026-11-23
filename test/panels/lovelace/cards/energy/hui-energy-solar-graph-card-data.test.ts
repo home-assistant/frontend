@@ -319,4 +319,32 @@ describe("generateEnergySolarGraphData", () => {
       );
     }
   });
+
+  it("orders forecast points by time regardless of payload order", () => {
+    const HOUR = 60 * 60 * 1000;
+    const energyData = generateEnergyData(7, {
+      days: 1,
+      period: "hour",
+      prefs: solarPrefs({ sources: 1, forecast: true }),
+    });
+    const startMs = energyData.start.getTime();
+    const wh: Record<string, number> = {};
+    for (const hour of [8, 9, 10, 15, 7, 16]) {
+      wh[new Date(startMs + hour * HOUR).toISOString()] = hour * 100;
+    }
+    const result = generateEnergySolarGraphData({
+      ...baseParams,
+      energyData,
+      forecasts: { entry_0: { wh_hours: wh } },
+      computedStyles,
+      now,
+    });
+
+    const forecast = result.chartData.find((d) =>
+      String(d.id).startsWith("forecast-")
+    )!;
+    expect(
+      (forecast.data as any[]).map((item) => Number(item[0]) - startMs)
+    ).toEqual([7, 8, 9, 10, 15, 16].map((hour) => hour * HOUR + HOUR / 2));
+  });
 });
