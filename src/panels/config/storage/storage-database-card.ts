@@ -207,7 +207,6 @@ export class StorageDatabaseCard extends LitElement {
         <div class="card-actions">
           <ha-button
             appearance="plain"
-            .loading=${this.analyzing}
             .disabled=${this.loading || this.analyzing}
             @click=${this._analyze}
           >
