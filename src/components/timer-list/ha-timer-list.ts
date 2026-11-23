@@ -1,4 +1,10 @@
-import { mdiClose, mdiPause, mdiPlay, mdiTimerPlusOutline } from "@mdi/js";
+import {
+  mdiClose,
+  mdiPause,
+  mdiPlay,
+  mdiPlus,
+  mdiTimerPlusOutline,
+} from "@mdi/js";
 import type {
   Connection,
   HassEntity,
@@ -8,7 +14,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
-import { durationDataToSeconds } from "../../common/datetime/duration_to_seconds";
 import {
   formatDurationDigital,
   formatDurationLong,
@@ -29,7 +34,6 @@ import type { TimerListTimer } from "../../data/timer_list";
 import {
   addTimerListTimerTime,
   callTimerListTimerAction,
-  createTimerListTimer,
   subscribeTimerListTimers,
   TimerListEntityFeature,
   timerListTimerRemaining,
@@ -39,16 +43,13 @@ import type {
   HomeAssistantApi,
   HomeAssistantConnection,
   HomeAssistantInternationalization,
-  ValueChangedEvent,
 } from "../../types";
 import "../ha-button";
-import "../ha-duration-input";
-import type { HaDurationData } from "../ha-duration-input";
 import "../ha-icon-button";
+import "../ha-svg-icon";
 import type { HaIconButton } from "../ha-icon-button";
-import "../input/ha-input";
-import type { HaInput } from "../input/ha-input";
 import "../progress/ha-progress-bar";
+import { showTimerListCreateDialog } from "./show-dialog-timer-list-create";
 
 type TimerButtonEvent = HASSDomCurrentTargetEvent<
   HaIconButton & { timer: TimerListTimer }
@@ -79,10 +80,6 @@ export class HaTimerList extends LitElement {
   private _api!: HomeAssistantApi;
 
   @state() private _timers?: TimerListTimer[];
-
-  @state() private _name = "";
-
-  @state() private _duration: HaDurationData = { minutes: 5 };
 
   private _subscribedEntityId?: string;
 
@@ -181,28 +178,15 @@ export class HaTimerList extends LitElement {
         !this.hideCreate &&
         supportsFeature(stateObj, TimerListEntityFeature.CREATE_TIMER)
           ? html`
-              <div class="create">
-                <ha-input
-                  .label=${this._i18n.localize("ui.components.timer-list.name")}
-                  .value=${this._name}
-                  .disabled=${unavailable}
-                  enterkeyhint="done"
-                  @input=${this._nameChanged}
-                  @keydown=${this._nameKeydown}
-                ></ha-input>
-                <ha-duration-input
-                  required
-                  .data=${this._duration}
-                  .disabled=${unavailable}
-                  @value-changed=${this._durationChanged}
-                ></ha-duration-input>
-                <ha-button
-                  .disabled=${unavailable || !durationDataToSeconds(this._duration)}
-                  @click=${this._createTimer}
-                >
-                  ${this._i18n.localize("ui.components.timer-list.start")}
-                </ha-button>
-              </div>
+              <ha-button
+                class="create"
+                appearance="filled"
+                .disabled=${unavailable}
+                @click=${this._showCreateDialog}
+              >
+                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                ${this._i18n.localize("ui.components.timer-list.start_timer")}
+              </ha-button>
             `
           : nothing
       }
@@ -314,33 +298,8 @@ export class HaTimerList extends LitElement {
     `;
   }
 
-  private _nameChanged(ev: HASSDomCurrentTargetEvent<HaInput>): void {
-    this._name = ev.currentTarget.value ?? "";
-  }
-
-  private _nameKeydown(ev: KeyboardEvent): void {
-    if (ev.key === "Enter") {
-      this._createTimer();
-    }
-  }
-
-  private _durationChanged(
-    ev: ValueChangedEvent<HaDurationData | undefined>
-  ): void {
-    this._duration = ev.detail.value ?? {};
-  }
-
-  private _createTimer(): void {
-    if (!durationDataToSeconds(this._duration)) {
-      return;
-    }
-    createTimerListTimer(
-      this._api.callService,
-      this.entityId!,
-      this._duration,
-      this._name.trim()
-    );
-    this._name = "";
+  private _showCreateDialog(): void {
+    showTimerListCreateDialog(this, { entityId: this.entityId! });
   }
 
   private _addMinute(ev: TimerButtonEvent): void {
@@ -377,14 +336,8 @@ export class HaTimerList extends LitElement {
       display: block;
     }
     .create {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: var(--ha-space-2);
+      width: 100%;
       margin-bottom: var(--ha-space-4);
-    }
-    .create ha-input {
-      flex: 1 0 100%;
     }
     ul {
       list-style: none;

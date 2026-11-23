@@ -1497,6 +1497,7 @@
       "timer-list": {
         "name": "Name",
         "start": "Start",
+        "start_timer": "Start timer",
         "pause": "Pause",
         "resume": "Resume",
         "cancel": "Cancel",
@@ -11965,7 +11966,7 @@
             "timer-list": {
               "name": "Timer list",
               "description": "This card allows you to start, pause, and cancel the timers in a timer list.",
-              "hide_create": "Hide the fields to start a timer"
+              "hide_create": "Hide the button to start a timer"
             },
             "todo-list": {
               "name": "To-do list",
