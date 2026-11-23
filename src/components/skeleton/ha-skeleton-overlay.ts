@@ -15,6 +15,13 @@ import { parseAnimationDuration } from "../../common/util/parse-animation-durati
 import { internationalizationContext } from "../../data/context";
 import type { HaSkeleton } from "./ha-skeleton";
 import "./ha-skeleton";
+import {
+  rememberedSkeletonHeight,
+  rememberSkeletonHeight,
+} from "./skeleton-sizes";
+
+/* How long after loading the content can still settle into its size */
+const SETTLE_TIME = 2000;
 
 export interface SkeletonLoadingDetail {
   loading: boolean;
@@ -120,6 +127,11 @@ const leftOut = (root: Element | ShadowRoot): HTMLElement[] =>
  *   `extract-skeleton`, to change how that part is read or leave it out
  * - call `refresh()` when the content changes without changing size
  *
+ * With a `skeleton-key`, it remembers how big the content was once loaded,
+ * and next time holds that size while it loads, stretching the content to
+ * fill it. Give each piece of content its own key, such as one made with
+ * `skeletonKey()` from its config.
+ *
  * With nothing to read yet, such as before the content's code has loaded,
  * it fills itself with one plain wave. The skeleton follows the host's
  * corner radius.
@@ -132,6 +144,9 @@ export class HaSkeletonOverlay extends LitElement {
   @property({ type: Boolean }) public loading = false;
 
   @property() public effect: HaSkeleton["effect"] = "sheen";
+
+  /** Remember the loaded size under this key, and hold it next time */
+  @property({ attribute: "skeleton-key" }) public skeletonKey?: string;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -172,6 +187,13 @@ export class HaSkeletonOverlay extends LitElement {
 
   private _measureFrame?: number;
 
+  /* Whether the remembered size was looked at for this load */
+  private _reserveChecked = false;
+
+  private _settleObserver?: ResizeObserver;
+
+  private _settleTimeout?: number;
+
   private _resizeObserver = new ResizeObserver(() => this._scheduleMeasure());
 
   private _intersectionObserver = new IntersectionObserver((entries) => {
@@ -187,16 +209,17 @@ export class HaSkeletonOverlay extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    this._resizeObserver.observe(this);
-    this._intersectionObserver.observe(this);
     this._syncInert();
-    this._scheduleMeasure();
+
+    if (this._wasLoading) {
+      this._observe();
+    }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._resizeObserver.disconnect();
-    this._intersectionObserver.disconnect();
+    this._unobserve();
+    this._stopRemembering();
 
     if (this._measureFrame !== undefined) {
       cancelAnimationFrame(this._measureFrame);
@@ -228,10 +251,15 @@ export class HaSkeletonOverlay extends LitElement {
       this._customSkeleton = [...this.children].some(
         (child) => child.slot === "skeleton"
       );
+      this._reserveChecked = false;
+      this._stopRemembering();
+      this._observe();
     }
 
     if (!loading && this._wasLoading) {
+      this._unobserve();
       this._endLoading();
+      this._rememberWhenSettled();
     }
 
     this._wasLoading = loading;
@@ -326,16 +354,31 @@ export class HaSkeletonOverlay extends LitElement {
     this._scheduleMeasure();
   };
 
-  private _contentChanged() {
+  /* Sizes and visibility only matter while loading, so an overlay around
+     content that has loaded costs nothing */
+  private _observe() {
     this._resizeObserver.disconnect();
     this._resizeObserver.observe(this);
     this._contentSlot
       ?.assignedElements()
       .forEach((element) => this._resizeObserver.observe(element));
+    this._intersectionObserver.observe(this);
+    this._scheduleMeasure();
+  }
 
+  private _unobserve() {
+    this._resizeObserver.disconnect();
+    this._intersectionObserver.disconnect();
+  }
+
+  private _contentChanged() {
+    if (!this._isLoading) {
+      return;
+    }
+
+    this._observe();
     this._pruneSources();
     this._syncInert();
-    this._scheduleMeasure();
   }
 
   /* Content that went away, or moved out of this overlay, can't finish
@@ -408,9 +451,16 @@ export class HaSkeletonOverlay extends LitElement {
 
   /* Read the skeleton from the content, and hide the parts it stands in for */
   private _measure() {
+    // A part that said it was loading may have gone without saying it's done
     this._pruneSources();
 
-    if (!this._isLoading || this._customSkeleton) {
+    if (!this._isLoading) {
+      return;
+    }
+
+    this._reserve();
+
+    if (this._customSkeleton) {
       return;
     }
 
@@ -423,6 +473,67 @@ export class HaSkeletonOverlay extends LitElement {
     if (JSON.stringify(skeleton.pieces) !== JSON.stringify(this._pieces)) {
       this._pieces = skeleton.pieces;
     }
+  }
+
+  /* Hold the height the content had last time it loaded at this width */
+  private _reserve() {
+    if (this._reserveChecked || !this.skeletonKey) {
+      return;
+    }
+
+    const width = this.getBoundingClientRect().width;
+
+    // Not laid out yet
+    if (!width) {
+      return;
+    }
+
+    this._reserveChecked = true;
+    const height = rememberedSkeletonHeight(this.skeletonKey, width);
+
+    if (height === undefined) {
+      return;
+    }
+
+    this.style.setProperty(
+      "--ha-skeleton-overlay-reserved-height",
+      `${height}px`
+    );
+    this.toggleAttribute("reserved", true);
+  }
+
+  private _release() {
+    this.removeAttribute("reserved");
+    this.style.removeProperty("--ha-skeleton-overlay-reserved-height");
+  }
+
+  /* Remember the size the content settles into once it has loaded */
+  private _rememberWhenSettled() {
+    const key = this.skeletonKey;
+
+    if (!key) {
+      return;
+    }
+
+    this._settleObserver = new ResizeObserver(() => {
+      const { width, height } = this.getBoundingClientRect();
+
+      if (width && height) {
+        rememberSkeletonHeight(key, width, height);
+      }
+    });
+    this._settleObserver.observe(this);
+    this._settleTimeout = window.setTimeout(
+      () => this._stopRemembering(),
+      SETTLE_TIME
+    );
+  }
+
+  private _stopRemembering() {
+    this._settleObserver?.disconnect();
+    this._settleObserver = undefined;
+    clearTimeout(this._settleTimeout);
+    this._settleTimeout = undefined;
   }
 
   private _hideParts(skeleton: ExtractedSkeleton) {
@@ -515,9 +626,9 @@ export class HaSkeletonOverlay extends LitElement {
 
   /* Show the content again before the next paint, and note what to fade in */
   private _endLoading() {
-    // Under a skeleton of its own, or before the first reading, the whole
-    // content was hidden rather than its parts
-    const wholeContent = this._customSkeleton || this._pieces === undefined;
+    // Under a skeleton of its own, or with nothing read from it, the whole
+    // content was hidden or not there yet, rather than its parts
+    const wholeContent = this._customSkeleton || !this._pieces?.length;
 
     this._arriving = {
       content: wholeContent
@@ -534,6 +645,7 @@ export class HaSkeletonOverlay extends LitElement {
     };
 
     this._showParts();
+    this._release();
     this._pieces = undefined;
   }
 
@@ -573,6 +685,20 @@ export class HaSkeletonOverlay extends LitElement {
     :host {
       display: block;
       position: relative;
+    }
+    /* Holds the size the content had last time, and stretches the content
+       to fill it */
+    :host([reserved]) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+    }
+    :host([reserved])::before {
+      content: "";
+      grid-area: 1 / 1;
+      height: var(--ha-skeleton-overlay-reserved-height);
+    }
+    :host([reserved]) ::slotted(*) {
+      grid-area: 1 / 1;
     }
     slot.hidden::slotted(*) {
       opacity: 0;
