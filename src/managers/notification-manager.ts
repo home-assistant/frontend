@@ -15,6 +15,7 @@ import type {
   HASSDomEvent,
 } from "../common/dom/fire_event";
 import { getTopModal, subscribeOpenModals } from "../common/dom/open-modals";
+import { stopKeydownEnterSpacePropagation } from "../common/dom/stop_propagation";
 import { popoverSupported } from "../common/feature-detect/support-popover";
 import type { LocalizeKeys } from "../common/translations/localize";
 import "../components/ha-button";
@@ -162,6 +163,8 @@ class NotificationManager extends LitElement {
         ({ parameters }) => parameters.bottomOffset ?? 0
       )
     );
+    // Inside a dialog, Enter on a toast button would otherwise also reach
+    // dialogs that submit on Enter, like the one to add a user.
     return html`
       <div
         class="stack"
@@ -169,6 +172,8 @@ class NotificationManager extends LitElement {
           "--notification-stack-bottom-offset": `${bottomOffset}px`,
         })}
         popover=${ifDefined(popoverSupported ? "manual" : undefined)}
+        @keydown=${stopKeydownEnterSpacePropagation}
+        @keypress=${stopKeydownEnterSpacePropagation}
       >
         ${repeat(
           this._notifications,
