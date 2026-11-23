@@ -2358,8 +2358,12 @@ class AddIntegrationDialog extends LitElement {
         --dialog-content-padding: 0;
         /* A steady sheet, the views in it have different heights. As tall
            as the automation editor's add dialog. */
-        --add-integration-sheet-height: 90vh;
-        --add-integration-sheet-height: calc(100dvh - var(--ha-space-12));
+        --add-integration-sheet-height: calc(
+          100vh - max(var(--safe-area-inset-top), var(--ha-space-12))
+        );
+        --add-integration-sheet-height: calc(
+          100dvh - max(var(--safe-area-inset-top), var(--ha-space-12))
+        );
         --ha-bottom-sheet-height: var(--add-integration-sheet-height);
         --ha-bottom-sheet-max-height: var(--add-integration-sheet-height);
         /* A steady dialog too, as tall as the automation editor's add
