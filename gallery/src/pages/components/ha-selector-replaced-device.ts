@@ -122,6 +122,7 @@ const AREAS: AreaRegistryEntry[] = [
     labels: [],
     temperature_entity_id: null,
     humidity_entity_id: null,
+    co2_entity_id: null,
     created_at: 0,
     modified_at: 0,
   },
