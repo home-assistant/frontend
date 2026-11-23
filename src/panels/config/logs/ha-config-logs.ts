@@ -781,7 +781,13 @@ export class HaConfigLogs extends LitElement {
 
   private _integrationsValue = memoizeOne(HaConfigLogs._filterValue);
 
-  private _levelsValue = memoizeOne(HaConfigLogs._filterValue);
+  private _levelsValue = memoizeOne(
+    (
+      levels: SystemLogLevel[],
+      exclude: boolean
+    ): SystemLogLevel[] | ListFilterValue =>
+      exclude ? { ids: levels, exclude } : levels
+  );
 
   private _getIntegrationCountItems = memoizeOne(this._filterLogItems);
 
