@@ -3,16 +3,22 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html } from "lit";
 import { customElement, query } from "lit/decorators";
 
+/* How far the wave leans from upright, so it starts at the top corner of the
+   content and finishes at the opposite bottom corner */
+const WAVE_SLANT_DEG = 20;
+
+const WAVE_SLANT = Math.tan((WAVE_SLANT_DEG * Math.PI) / 180);
+
 /**
  * Placeholder shown while content loads. Sized by its container unless a
  * more specific variant such as `ha-skeleton-text` or `ha-skeleton-icon` is used.
  *
- * A soft wave sweeps across it by default. It's one wave across all the
- * skeletons on the page, from the leftmost to the rightmost: each skeleton
- * shows its own slice of it, and all of them run in step, so the wave flows
- * from one skeleton into the next, and a skeleton added later joins
- * mid-sweep instead of starting over. Each sweep starts as the last one
- * leaves the content.
+ * A soft wave sweeps across it by default. It's one slanted wave across all
+ * the skeletons on the page, from the top corner of the content on the side
+ * text starts from to the opposite bottom corner: each skeleton shows its
+ * own slice of it, and all of them run in step, so the wave flows from one
+ * skeleton into the next, and a skeleton added later joins mid-sweep instead
+ * of starting over. Each sweep starts as the last one leaves the content.
  *
  * @cssprop --ha-skeleton-color - The fill color. Defaults to `var(--ha-color-fill-neutral-normal-resting)`.
  * @cssprop --ha-skeleton-sheen-color - The sheen color when `effect="sheen"`. Defaults to `var(--ha-color-fill-neutral-normal-hover)`.
@@ -33,11 +39,12 @@ export class HaSkeleton extends WaSkeleton {
   private _resizeObserver?: ResizeObserver;
 
   /**
-   * Lay the one track the wave runs along over the content: from the left
-   * edge of the leftmost skeleton to the right edge of the rightmost, so no
-   * time goes on empty space around them. It's measured again whenever a
-   * skeleton comes, goes or changes size, and at the end of each sweep, so
-   * it follows the layout as it moves.
+   * Lay the one track the wave runs along over the content: the box around
+   * all the skeletons, so no time goes on empty space around them. The wave
+   * leans, so it enters at the box's top corner and has to travel further,
+   * by the box's height times the slant, to clear the opposite bottom
+   * corner. It's measured again whenever a skeleton comes, goes or changes
+   * size, and at the end of each sweep, so it follows the layout as it moves.
    */
   private static _scheduleTrack() {
     if (HaSkeleton._trackFrame !== undefined) {
@@ -50,8 +57,9 @@ export class HaSkeleton extends WaSkeleton {
       // Read every skeleton before writing any, so layout runs once
       const boxes = [...HaSkeleton._waving].flatMap((skeleton) => {
         const rect = skeleton.getBoundingClientRect();
+        const rtl = getComputedStyle(skeleton).direction === "rtl";
 
-        return rect.width > 0 ? [{ skeleton, rect }] : [];
+        return rect.width > 0 ? [{ skeleton, rect, rtl }] : [];
       });
 
       if (boxes.length === 0) {
@@ -60,10 +68,18 @@ export class HaSkeleton extends WaSkeleton {
 
       const left = Math.min(...boxes.map(({ rect }) => rect.left));
       const right = Math.max(...boxes.map(({ rect }) => rect.right));
+      const top = Math.min(...boxes.map(({ rect }) => rect.top));
+      const bottom = Math.max(...boxes.map(({ rect }) => rect.bottom));
+      const trackLength = right - left + (bottom - top) * WAVE_SLANT;
 
-      boxes.forEach(({ skeleton, rect }) =>
-        skeleton._placeWave(left - rect.left, right - left)
-      );
+      boxes.forEach(({ skeleton, rect, rtl }) => {
+        // Right to left, the wave is drawn mirrored, so it's placed from the
+        // right edge instead
+        const start = rtl ? rect.right - right : left - rect.left;
+
+        // Lower down, the slanted wave arrives later
+        skeleton._placeWave(start - (rect.top - top) * WAVE_SLANT, trackLength);
+      });
     });
   }
 
@@ -113,7 +129,7 @@ export class HaSkeleton extends WaSkeleton {
   }
 
   /* Put this skeleton's slice of the wave in its place on the track */
-  private _placeWave(trackStart: number, trackWidth: number) {
+  private _placeWave(trackStart: number, trackLength: number) {
     const wave = this._wave;
 
     if (!wave) {
@@ -121,7 +137,8 @@ export class HaSkeleton extends WaSkeleton {
     }
 
     wave.style.left = `${trackStart}px`;
-    wave.style.setProperty("--ha-skeleton-track-width", `${trackWidth}px`);
+    wave.style.setProperty("--ha-skeleton-track-width", `${trackLength}px`);
+    wave.style.setProperty("--ha-skeleton-slant", `${-WAVE_SLANT_DEG}deg`);
 
     // All waves count from the same moment, so they stay in step
     wave.getAnimations().forEach((animation) => {
@@ -158,8 +175,14 @@ export class HaSkeleton extends WaSkeleton {
           background: var(--color);
           animation: none;
         }
+        /* Right to left, the wave is drawn mirrored, so it starts from the
+           top right corner */
+        :host([effect="sheen"]:dir(rtl)) .indicator {
+          transform: scaleX(-1);
+        }
         /* The wave crosses the track over all the skeletons, placed from its
-           start, and moves with transform so it stays cheap */
+           start and leaning back from its top edge, and moves with transform
+           so it stays cheap */
         :host([effect="sheen"]) .wave {
           display: block;
           position: absolute;
@@ -173,21 +196,20 @@ export class HaSkeleton extends WaSkeleton {
             var(--sheen-color),
             transparent
           );
-          transform: translateX(-100%);
+          transform-origin: top left;
+          transform: translateX(-100%) skewX(var(--ha-skeleton-slant, 0deg));
           /* An even pace with no hold, so the next sweep enters as soon as
              the last one leaves */
           animation: ha-skeleton-sheen var(--ha-skeleton-duration, 3s) linear
             infinite;
         }
-        :host([effect="sheen"]:dir(rtl)) .wave {
-          animation-direction: reverse;
-        }
         @keyframes ha-skeleton-sheen {
           from {
-            transform: translateX(-100%);
+            transform: translateX(-100%) skewX(var(--ha-skeleton-slant, 0deg));
           }
           to {
-            transform: translateX(var(--ha-skeleton-track-width, 100vw));
+            transform: translateX(var(--ha-skeleton-track-width, 100vw))
+              skewX(var(--ha-skeleton-slant, 0deg));
           }
         }
         @media (forced-colors: active) {
