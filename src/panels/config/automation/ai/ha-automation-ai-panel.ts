@@ -618,8 +618,8 @@ export class HaAutomationAiPanel extends LitElement {
     ha-action-bar {
       flex-shrink: 0;
     }
+    /* Next to the button, which shows these changes */
     .line-changes {
-      margin-inline-start: auto;
       display: flex;
       align-items: center;
       gap: var(--ha-space-2);
