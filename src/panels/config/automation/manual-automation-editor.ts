@@ -600,9 +600,22 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
         :host([ai-sidebar]) .content-wrapper {
           padding-inline-end: 0;
         }
+        /* Room for the collapsed AI sidebar below it */
         :host([ai-sidebar]) ha-automation-sidebar {
           inset-inline-end: var(--ha-space-3);
           width: var(--ai-sidebar-width);
+          height: calc(
+            -81px +
+              100vh - var(--safe-area-inset-top, 0px) - var(
+                --ai-sidebar-collapsed-height
+              ) - var(--ha-space-2)
+          );
+          height: calc(
+            -81px +
+              100dvh - var(--safe-area-inset-top, 0px) - var(
+                --ai-sidebar-collapsed-height
+              ) - var(--ha-space-2)
+          );
           z-index: 2;
         }
         /* Chips, so the mode doesn't look like the description */

@@ -5925,6 +5925,7 @@
                 "area": "Pick an area",
                 "label": "Pick a label"
               },
+              "expand": "Expand",
               "show_changes": "Show changes",
               "hide_changes": "Hide changes",
               "stop": {

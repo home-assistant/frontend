@@ -1,9 +1,8 @@
 import {
   mdiAlertCircleOutline,
   mdiPlus,
+  mdiPlusMinusVariant,
   mdiCheckCircleOutline,
-  mdiEye,
-  mdiEyeOff,
   mdiSend,
   mdiStop,
 } from "@mdi/js";
@@ -22,6 +21,7 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-markdown";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import type { AutomationConfig } from "../../../../data/automation";
 import { labelsContext } from "../../../../data/context";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
@@ -111,9 +111,7 @@ export class HaAutomationAiPanel extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="content">
-        ${this._turns.map((turn, index) =>
-          this._renderTurn(turn, index === this._turns.length - 1)
-        )}
+        ${this._turns.map((turn) => this._renderTurn(turn))}
         ${this._running ? this._renderRunning(this._running) : nothing}
         ${this._renderResult()} ${this._renderConversation()}
       </div>
@@ -164,7 +162,7 @@ export class HaAutomationAiPanel extends LitElement {
     fireEvent(this, "ai-request-finished", {});
   }
 
-  private _renderTurn(turn: AutomationAiTurn, last: boolean) {
+  private _renderTurn(turn: AutomationAiTurn) {
     return html`
       <div class="message user">${this._renderPromptText(turn.prompt)}</div>
       <ha-markdown
@@ -172,24 +170,6 @@ export class HaAutomationAiPanel extends LitElement {
         breaks
         .content=${turn.summary}
       ></ha-markdown>
-      ${
-        last && this.changes && !this._running
-          ? html`<ha-button
-              class="show-changes"
-              appearance="plain"
-              size="s"
-              @click=${this._toggleChanges}
-            >
-              <ha-svg-icon
-                slot="start"
-                .path=${this.showingChanges ? mdiEyeOff : mdiEye}
-              ></ha-svg-icon>
-              ${this.hass.localize(
-                `ui.panel.config.automation.editor.ai.${this.showingChanges ? "hide_changes" : "show_changes"}`
-              )}
-            </ha-button>`
-          : nothing
-      }
     `;
   }
 
@@ -315,9 +295,34 @@ export class HaAutomationAiPanel extends LitElement {
     `;
   }
 
+  // Actions on the last result of the AI, above the prompt
+  private _renderActions() {
+    if (!this.changes || this._running) {
+      return nothing;
+    }
+    const label = this.hass.localize(
+      `ui.panel.config.automation.editor.ai.${this.showingChanges ? "hide_changes" : "show_changes"}`
+    );
+    return html`<div class="actions">
+      <ha-button
+        id="changes-button"
+        size="s"
+        variant=${this.showingChanges ? "brand" : "neutral"}
+        appearance=${this.showingChanges ? "filled" : "outlined"}
+        aria-label=${label}
+        aria-pressed=${this.showingChanges ? "true" : "false"}
+        @click=${this._toggleChanges}
+      >
+        <ha-svg-icon .path=${mdiPlusMinusVariant}></ha-svg-icon>
+      </ha-button>
+      <ha-tooltip for="changes-button" placement="top">${label}</ha-tooltip>
+    </div>`;
+  }
+
   private _renderPrompt() {
     const followUp = this._turns.length > 0;
     return html`
+      ${this._renderActions()}
       <form class="prompt" @submit=${this._submit}>
         <ha-target-picker custom-field @value-changed=${this._targetPicked}>
           <ha-icon-button
@@ -528,10 +533,6 @@ export class HaAutomationAiPanel extends LitElement {
       background-color: rgba(255, 255, 255, 0.25);
       font-weight: var(--ha-font-weight-medium);
     }
-    .show-changes {
-      align-self: flex-start;
-      margin-top: calc(var(--ha-space-2) * -1);
-    }
     .steps {
       list-style: none;
       margin: 0;
@@ -579,6 +580,13 @@ export class HaAutomationAiPanel extends LitElement {
       max-height: 320px;
       overflow-y: auto;
     }
+    .actions {
+      display: flex;
+      gap: var(--ha-space-2);
+      padding: var(--ha-space-2) var(--ha-space-4) 0;
+      border-top: 1px solid var(--divider-color);
+      flex-shrink: 0;
+    }
     .prompt {
       display: flex;
       align-items: flex-end;
@@ -590,6 +598,10 @@ export class HaAutomationAiPanel extends LitElement {
       );
       border-top: 1px solid var(--divider-color);
       flex-shrink: 0;
+    }
+    /* One bar with the actions above it */
+    .actions + .prompt {
+      border-top: none;
     }
     .prompt ha-target-picker {
       flex-shrink: 0;

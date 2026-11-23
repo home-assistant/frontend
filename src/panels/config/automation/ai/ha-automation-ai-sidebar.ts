@@ -1,4 +1,9 @@
-import { mdiClose, mdiStarFourPoints } from "@mdi/js";
+import {
+  mdiChevronUp,
+  mdiClose,
+  mdiPlusMinusVariant,
+  mdiStarFourPoints,
+} from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -21,13 +26,16 @@ import "../../../../components/ha-svg-icon";
 const COLLAPSED_HEIGHT = 85;
 
 /**
- * @summary Holds the AI: a sidebar next to the editor on wide screens, where
- * the sidebar of a row takes its place, and a bottom sheet on narrow ones,
- * which the sheet of a row hides.
+ * @summary Holds the AI: a sidebar next to the editor on wide screens, which
+ * collapses below the sidebar of a row, and a bottom sheet on narrow ones,
+ * which the sheet of a row hides. Collapsed, its header switches the changes
+ * of the AI on and off.
  *
  * @slot - The AI, which keeps its conversation while the sidebar is closed
  *
  * @fires ai-sidebar-closed - The user closed the sidebar
+ * @fires ai-sidebar-expand - The user wants the collapsed sidebar back
+ * @fires ai-toggle-changes - Show or hide the last changes of the AI
  */
 @customElement("ha-automation-ai-sidebar")
 export class HaAutomationAiSidebar extends LitElement {
@@ -40,6 +48,16 @@ export class HaAutomationAiSidebar extends LitElement {
 
   /** Whether the AI works on a request. */
   @property({ type: Boolean }) public working = false;
+
+  /** Only the header shows, below the sidebar of a row. */
+  @property({ type: Boolean, reflect: true }) public collapsed = false;
+
+  /** Whether the last request of the AI changed the automation. */
+  @property({ type: Boolean }) public changes = false;
+
+  /** Whether the editor shows the last changes of the AI. */
+  @property({ type: Boolean, attribute: "showing-changes" })
+  public showingChanges = false;
 
   @consumeLocalize()
   private _localize!: LocalizeFunc;
@@ -55,7 +73,7 @@ export class HaAutomationAiSidebar extends LitElement {
   private _positionedSheet?: HaSnapBottomSheet;
 
   // Where the sheet rests, so it comes back there after it was suspended
-  private _position: BottomSheetPosition = "half";
+  @state() private _position: BottomSheetPosition = "half";
 
   /** Shows the content of the bottom sheet, if it is collapsed. */
   public expand() {
@@ -83,7 +101,9 @@ export class HaAutomationAiSidebar extends LitElement {
       @ai-request-finished=${this._requestFinished}
     >
       ${this._renderHeader()}
-      <slot></slot>
+      <div class="body" ?hidden=${this.collapsed && !this.narrow}>
+        <slot></slot>
+      </div>
     </div>`;
     if (!this.narrow) {
       return html`<ha-card outlined>${content}</ha-card>`;
@@ -105,24 +125,63 @@ export class HaAutomationAiSidebar extends LitElement {
   }
 
   private _renderHeader() {
+    const collapsed = this.narrow
+      ? this._position === "collapsed"
+      : this.collapsed;
+    // Expanded, the actions above the prompt have it
+    const changesButton =
+      collapsed && (this.changes || this.showingChanges) && !this.working;
     return html`<div class="header">
       <ha-dialog-header>
-        <ha-icon-button
-          slot="navigationIcon"
-          .label=${this._localize("ui.common.close")}
-          .path=${mdiClose}
-          @click=${this._close}
-        ></ha-icon-button>
+        ${
+          this.collapsed && !this.narrow
+            ? html`<ha-icon-button
+                slot="navigationIcon"
+                .label=${this._localize(
+                  "ui.panel.config.automation.editor.ai.expand"
+                )}
+                .path=${mdiChevronUp}
+                @click=${this._expandRequested}
+              ></ha-icon-button>`
+            : html`<ha-icon-button
+                slot="navigationIcon"
+                .label=${this._localize("ui.common.close")}
+                .path=${mdiClose}
+                @click=${this._close}
+              ></ha-icon-button>`
+        }
         <span slot="title"
           >${this._localize("ui.panel.config.automation.editor.ai.title")}</span
         >
-        <ha-svg-icon
-          slot="actionItems"
-          class=${classMap({ "ai-icon": true, working: this.working })}
-          .path=${mdiStarFourPoints}
-        ></ha-svg-icon>
+        <div slot="actionItems" class="actions">
+          ${
+            changesButton
+              ? html`<ha-icon-button
+                  class=${classMap({ active: this.showingChanges })}
+                  .label=${this._localize(
+                    `ui.panel.config.automation.editor.ai.${this.showingChanges ? "hide_changes" : "show_changes"}`
+                  )}
+                  aria-pressed=${this.showingChanges ? "true" : "false"}
+                  .path=${mdiPlusMinusVariant}
+                  @click=${this._toggleChanges}
+                ></ha-icon-button>`
+              : nothing
+          }
+          <ha-svg-icon
+            class=${classMap({ "ai-icon": true, working: this.working })}
+            .path=${mdiStarFourPoints}
+          ></ha-svg-icon>
+        </div>
       </ha-dialog-header>
     </div>`;
+  }
+
+  private _expandRequested() {
+    fireEvent(this, "ai-sidebar-expand");
+  }
+
+  private _toggleChanges() {
+    fireEvent(this, "ai-toggle-changes");
   }
 
   private _close() {
@@ -178,9 +237,31 @@ export class HaAutomationAiSidebar extends LitElement {
       flex: 1;
       min-height: 0;
     }
+    .body {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+    .body[hidden] {
+      display: none;
+    }
     ::slotted(*) {
       flex: 1;
       min-height: 0;
+    }
+    :host([collapsed]:not([narrow])) .header {
+      border-bottom: none;
+    }
+    .actions {
+      display: flex;
+      align-items: center;
+    }
+    /* Like the button above the prompt while the changes show */
+    .actions ha-icon-button.active {
+      color: var(--primary-color);
+      background-color: var(--ha-color-fill-primary-normal-resting);
+      border-radius: var(--ha-border-radius-circle);
     }
     .header {
       border-bottom: 1px solid var(--divider-color);
@@ -227,5 +308,6 @@ declare global {
 
   interface HASSDomEvents {
     "ai-sidebar-closed": undefined;
+    "ai-sidebar-expand": undefined;
   }
 }

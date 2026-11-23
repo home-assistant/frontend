@@ -337,6 +337,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         ? `${this._aiSheetHeight}px`
         : undefined;
     const aiAction = this._aiAction();
+    const aiChanges = !!this._computeAiDiff(
+      this._aiChange?.before,
+      this._aiChange?.after
+    )?.hasChanges;
 
     return html`
       <hass-subpage
@@ -882,21 +886,22 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                 .open=${this._aiSidebarOpen}
                 .suspended=${aiSheetHidden}
                 .working=${this._aiBusy}
+                .collapsed=${aiSidebar && this._sidebarOpen}
+                .changes=${aiChanges}
+                .showingChanges=${this._aiShowChanges}
                 ?hidden=${!this.narrow && !this._aiSidebarOpen}
                 @ai-sidebar-closed=${this._closeAiSidebar}
+                @ai-sidebar-expand=${this._expandAiSidebar}
+                @ai-toggle-changes=${this._aiToggleChanges}
                 @bottom-sheet-resized=${this._aiSheetResized}
               >
                 <ha-automation-ai-panel
                   .hass=${this.hass}
                   .config=${this.config}
-                  .changes=${!!this._computeAiDiff(
-                    this._aiChange?.before,
-                    this._aiChange?.after
-                  )?.hasChanges}
+                  .changes=${aiChanges}
                   .showingChanges=${this._aiShowChanges}
                   @ai-request-started=${this._aiRequestStarted}
                   @ai-request-finished=${this._aiRequestFinished}
-                  @ai-toggle-changes=${this._aiToggleChanges}
                 ></ha-automation-ai-panel>
               </ha-automation-ai-sidebar>`
             : nothing
@@ -945,6 +950,11 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       return;
     }
     this._openAiSidebar();
+  }
+
+  // The sidebar of a row gives the place back
+  private _expandAiSidebar() {
+    this._manualEditor?.triggerCloseSidebar();
   }
 
   private _closeAiSidebar() {
@@ -1707,6 +1717,11 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         }
         :host {
           --ai-sidebar-width: 380px;
+          --ai-sidebar-collapsed-height: 64px;
+          /* Where the sidebar of a row ends, see manualEditorStyles */
+          --ai-sidebar-bottom: calc(
+            81px - var(--header-height) - 16px + var(--safe-area-inset-top, 0px)
+          );
         }
         /* Room for the AI sidebar on the right */
         .ai-sidebar,
@@ -1721,6 +1736,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           height: calc(-81px + 100vh - var(--safe-area-inset-top, 0px));
           height: calc(-81px + 100dvh - var(--safe-area-inset-top, 0px));
           z-index: 1;
+        }
+        /* Only its header, below the sidebar of a row */
+        ha-automation-ai-sidebar[collapsed]:not([narrow]) {
+          top: auto;
+          bottom: var(--ai-sidebar-bottom);
+          height: var(--ai-sidebar-collapsed-height);
         }
         ha-automation-ai-sidebar[hidden] {
           display: none;
