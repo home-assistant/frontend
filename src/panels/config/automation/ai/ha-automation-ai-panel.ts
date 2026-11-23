@@ -42,8 +42,12 @@ import {
   promptParts,
   promptText,
 } from "./automation-ai-mentions";
+import type { LineChanges } from "./automation-ai-stats";
 import "./ha-automation-ai-prompt";
 import type { HaAutomationAiPrompt } from "./ha-automation-ai-prompt";
+
+// The squares next to the numbers of changed lines, like a git diff
+const STAT_SQUARES = 5;
 
 interface RunningTurn {
   prompt: string;
@@ -74,6 +78,9 @@ export class HaAutomationAiPanel extends LitElement {
   /** Whether the editor shows the last changes of the AI. */
   @property({ type: Boolean, attribute: "showing-changes" })
   public showingChanges = false;
+
+  /** The lines of YAML the last request of the AI added and removed. */
+  @property({ attribute: false }) public lineChanges?: LineChanges;
 
   @state() private _prompt = "";
 
@@ -313,7 +320,38 @@ export class HaAutomationAiPanel extends LitElement {
           "ui.panel.config.automation.editor.ai.changes_button"
         )}
       </ha-button>
+      ${this._renderLineChanges()}
     </ha-action-bar>`;
+  }
+
+  // Like a git diff: the numbers, and five squares in their proportion
+  private _renderLineChanges() {
+    const stats = this.lineChanges;
+    const total = stats ? stats.added + stats.removed : 0;
+    if (!stats || !total) {
+      return nothing;
+    }
+    const colored = Math.min(STAT_SQUARES, total);
+    const added = Math.round((colored * stats.added) / total);
+    const squares = [
+      ...Array<string>(added).fill("added"),
+      ...Array<string>(colored - added).fill("removed"),
+      ...Array<string>(STAT_SQUARES - colored).fill("neutral"),
+    ];
+    return html`<span
+      class="line-changes"
+      role="img"
+      aria-label=${this.hass.localize(
+        "ui.panel.config.automation.editor.ai.line_changes",
+        { added: stats.added, removed: stats.removed }
+      )}
+    >
+      <span class="added" aria-hidden="true">+${stats.added}</span>
+      <span class="removed" aria-hidden="true">−${stats.removed}</span>
+      <span class="squares" aria-hidden="true">
+        ${squares.map((square) => html`<span class=${square}></span>`)}
+      </span>
+    </span>`;
   }
 
   private _renderPrompt() {
@@ -579,6 +617,37 @@ export class HaAutomationAiPanel extends LitElement {
     }
     ha-action-bar {
       flex-shrink: 0;
+    }
+    .line-changes {
+      margin-inline-start: auto;
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-2);
+      font-size: var(--ha-font-size-s);
+      font-weight: var(--ha-font-weight-medium);
+      font-variant-numeric: tabular-nums;
+    }
+    .line-changes .added {
+      color: var(--ha-color-on-success-normal);
+    }
+    .line-changes .removed {
+      color: var(--ha-color-on-danger-normal);
+    }
+    .squares {
+      display: flex;
+      gap: 2px;
+    }
+    .squares span {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      background-color: var(--ha-color-fill-neutral-normal-resting);
+    }
+    .squares .added {
+      background-color: var(--ha-color-fill-success-loud-resting);
+    }
+    .squares .removed {
+      background-color: var(--ha-color-fill-danger-loud-resting);
     }
     .prompt {
       display: flex;

@@ -5927,6 +5927,7 @@
               },
               "expand": "Expand",
               "changes_button": "Changes",
+              "line_changes": "{added} {added, plural,\n one {line}\n other {lines}\n} added, {removed} removed",
               "show_changes": "Show changes",
               "hide_changes": "Hide changes",
               "stop": {

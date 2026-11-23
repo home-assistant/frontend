@@ -91,6 +91,7 @@ import { showAutomationSaveTimeoutDialog } from "./automation-save-timeout-dialo
 import { ADD_AUTOMATION_ELEMENT_QUERY_PARAM } from "./show-add-automation-element-dialog";
 import "./blueprint-automation-editor";
 import type { HaAutomationAiPanel } from "./ai/ha-automation-ai-panel";
+import { countConfigLineChanges } from "./ai/automation-ai-stats";
 import type { HaAutomationAiSidebar } from "./ai/ha-automation-ai-sidebar";
 import type { EditorDomainHooks } from "./ha-automation-script-editor-mixin";
 import {
@@ -135,8 +136,6 @@ declare global {
     };
   }
 }
-
-// The content, the item sidebar and the AI sidebar fit next to each other
 
 const withoutId = (config?: AutomationConfig) => {
   if (!config) {
@@ -221,6 +220,13 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   @provide({ context: automationDiffContext })
   @state()
   private _aiDiff?: AutomationDiff;
+
+  private _computeAiLineChanges = memoizeOne(
+    (before?: AutomationConfig, after?: AutomationConfig) =>
+      before && after
+        ? countConfigLineChanges(withoutId(before), withoutId(after))
+        : undefined
+  );
 
   private _computeAiDiff = memoizeOne(
     (before?: AutomationConfig, after?: AutomationConfig) =>
@@ -899,6 +905,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                   .config=${this.config}
                   .changes=${aiChanges}
                   .showingChanges=${this._aiShowChanges}
+                  .lineChanges=${this._computeAiLineChanges(
+                    this._aiChange?.before,
+                    this._aiChange?.after
+                  )}
                   @ai-request-started=${this._aiRequestStarted}
                   @ai-request-finished=${this._aiRequestFinished}
                 ></ha-automation-ai-panel>
