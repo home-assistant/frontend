@@ -70,7 +70,7 @@ workflows:
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         - 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1'
         - 'actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0'
-        - 'home-assistant/actions@86d4564712fa02543c808e3a693dd04f9d3f8361'
+        - 'home-assistant/actions@07f46fd2e19967768b5fd3000f91f857452b767c'
         - 'home-assistant/wheels@9e17ab1ed5c4c79d8b61e29fa63de25ca2710716'
         - 'pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086'
     '.github/workflows/restrict-task-creation.yaml':
@@ -156,9 +156,9 @@ dependencies:
         commit: 'sha1-33d7b85da1a04171e211befe2c739303b9a4c066'
         owner_id: 9919
         repo_id: 259445878
-    'home-assistant/actions@86d4564712fa02543c808e3a693dd04f9d3f8361':
-        ref: 'master'
-        commit: 'sha1-86d4564712fa02543c808e3a693dd04f9d3f8361'
+    'home-assistant/actions@07f46fd2e19967768b5fd3000f91f857452b767c':
+        ref: '2026.11.0'
+        commit: 'sha1-07f46fd2e19967768b5fd3000f91f857452b767c'
         owner_id: 13844975
         repo_id: 173703505
     'home-assistant/wheels@9e17ab1ed5c4c79d8b61e29fa63de25ca2710716':
