@@ -106,6 +106,14 @@ export class HaFilterBlueprints extends LitElement {
     }
   }
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    // Stop a lookup that's still running, as connectedCallback starts a new
+    // one. The newer request id makes the lookup drop its result.
+    this._relatedRequestId++;
+    this._dropWithoutBlueprint();
+  }
+
   // Untyped, as it also checks private state
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
