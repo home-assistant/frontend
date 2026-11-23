@@ -58,7 +58,7 @@ html`
 `;
 ```
 
-- Turn it on with `loading`, or fire `skeleton-loading` (`{ loading: true }`, later `{ loading: false }`) from inside the content. The event stops at the nearest overlay, so content doesn't need to know what wraps it.
+- Turn it on with `loading`, or fire `skeleton-loading` (`{ loading: true }`, later `{ loading: false }`) from inside the content. The event stops at the nearest overlay, so content doesn't need to know what wraps it. In a Lit component, add a `SkeletonLoadingController` from `src/components/skeleton/skeleton-loading-controller.ts` with a function that says whether it's loading, and it fires the events for you.
 - Give the overlay a `skeleton-key` and it remembers how tall the content was once loaded, then holds that height next time. For content other than cards and badges, make one with `skeletonKey()` from `src/components/skeleton/skeleton-sizes.ts`.
 - Mark parts that shouldn't be read with `data-skeleton`: `none` leaves an element out and showing, `keep` leaves it showing but reads what's inside, and `text`, `round` or `block` force one piece of that kind. Skeletons the content draws itself are left alone.
 - Put your own skeleton in the `skeleton` slot to replace the reading altogether.
@@ -67,7 +67,15 @@ html`
 
 ## Cards And Badges
 
-`hui-card` and `hui-badge` already wrap every card and badge in an overlay, with a `skeleton-key` from the card's config, and show a plain wave while the card's code loads. Don't add another overlay or a hand-drawn skeleton inside a card. A card that fetches data only has to say when it's loading.
+`hui-card` and `hui-badge` already wrap every card and badge in an overlay, with a `skeleton-key` from the card's config, and show a plain wave while the card's code loads. Don't add another overlay or a hand-drawn skeleton inside a card. A card that fetches data only needs a `SkeletonLoadingController`, as `hui-calendar-card` and the history and statistics charts do. Energy cards pass `loading` to `EnergyCollectionController` instead, for when they fetch more after the collection's data arrives.
+
+## First Visit Sizes
+
+Remembered heights only help from the second visit. For the first, render placeholders as big as the content will be, so it doesn't jump when the data arrives:
+
+- Set `loading` on `ha-chart-base` to have the chart read as one block and its legend as one line.
+- Before a chart exists, use `chartPlaceholderStyles` from `src/components/chart/chart-placeholder.ts`.
+- Lists of a known length, such as the to-do list from its entity's state, draw that many hidden rows.
 
 While a card's code loads, its wave holds the card's remembered height, else the latest height of a card of the same type (`skeleton-type-key`), else a typical height for its type from `LAZY_LOAD_HEIGHTS` in `src/panels/lovelace/create-element/create-card-element.ts`. When you add a card type that loads its own code and is taller than one row, add its height there, measured in a section column with a short config.
 
