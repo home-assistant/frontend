@@ -22,6 +22,9 @@ export class HaIconButton extends LitElement {
   @property({ type: String, attribute: "aria-haspopup" })
   ariaHasPopup!: "false" | "true" | "menu" | "listbox" | "tree" | "grid";
 
+  @property({ type: String, attribute: "aria-pressed" })
+  ariaPressed!: "false" | "true" | "mixed";
+
   @property({ attribute: "hide-title", type: Boolean }) hideTitle = false;
 
   @property({ type: Boolean, reflect: true }) selected = false;
@@ -47,6 +50,7 @@ export class HaIconButton extends LitElement {
         .accessibleLabel=${this.label ?? ""}
         .title=${this.hideTitle ? "" : (this.label ?? "")}
         aria-haspopup=${ifDefined(this.ariaHasPopup)}
+        .ariaPressed=${this.ariaPressed ?? null}
         .disabled=${this.disabled}
         .iconTag=${this.path ? "ha-svg-icon" : "span"}
         .href=${this.href}
