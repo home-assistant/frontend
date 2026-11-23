@@ -1,4 +1,8 @@
-import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
+import {
+  mdiStop,
+  mdiUnfoldLessHorizontal,
+  mdiUnfoldMoreHorizontal,
+} from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
@@ -65,7 +69,7 @@ const BUTTONS: Record<CoverControlMode, CoverButton[]> = {
     {
       action: "open",
       feature: CoverEntityFeature.OPEN_TILT,
-      icon: () => mdiArrowTopRight,
+      icon: () => mdiUnfoldMoreHorizontal,
       label: "ui.card.cover.open_tilt_cover",
       enabled: canOpenTilt,
     },
@@ -79,7 +83,7 @@ const BUTTONS: Record<CoverControlMode, CoverButton[]> = {
     {
       action: "close",
       feature: CoverEntityFeature.CLOSE_TILT,
-      icon: () => mdiArrowBottomLeft,
+      icon: () => mdiUnfoldLessHorizontal,
       label: "ui.card.cover.close_tilt_cover",
       enabled: canCloseTilt,
     },

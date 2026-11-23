@@ -1,5 +1,9 @@
 import type { ContextType } from "@lit/context";
-import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
+import {
+  mdiStop,
+  mdiUnfoldLessHorizontal,
+  mdiUnfoldMoreHorizontal,
+} from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -39,7 +43,7 @@ class HaCoverTiltControls extends LitElement {
           ),
         })}
         .label=${this._localize("ui.card.cover.open_tilt_cover")}
-        .path=${mdiArrowTopRight}
+        .path=${mdiUnfoldMoreHorizontal}
         @click=${this._onOpenTiltTap}
         .disabled=${!canOpenTilt(this.stateObj)}
       ></ha-icon-button>
@@ -63,7 +67,7 @@ class HaCoverTiltControls extends LitElement {
           ),
         })}
         .label=${this._localize("ui.card.cover.close_tilt_cover")}
-        .path=${mdiArrowBottomLeft}
+        .path=${mdiUnfoldLessHorizontal}
         @click=${this._onCloseTiltTap}
         .disabled=${!canCloseTilt(this.stateObj)}
       ></ha-icon-button>`;

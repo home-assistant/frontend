@@ -1,4 +1,8 @@
-import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
+import {
+  mdiStop,
+  mdiUnfoldLessHorizontal,
+  mdiUnfoldMoreHorizontal,
+} from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -124,7 +128,7 @@ class HuiCoverTiltCardFeature
                   @click=${this._onOpenTap}
                   .disabled=${!canOpenTilt(this._stateObj)}
                 >
-                  <ha-svg-icon .path=${mdiArrowTopRight}></ha-svg-icon>
+                  <ha-svg-icon .path=${mdiUnfoldMoreHorizontal}></ha-svg-icon>
                 </ha-control-button>
               `
             : nothing
@@ -150,7 +154,7 @@ class HuiCoverTiltCardFeature
                   @click=${this._onCloseTap}
                   .disabled=${!canCloseTilt(this._stateObj)}
                 >
-                  <ha-svg-icon .path=${mdiArrowBottomLeft}></ha-svg-icon>
+                  <ha-svg-icon .path=${mdiUnfoldLessHorizontal}></ha-svg-icon>
                 </ha-control-button>
               `
             : nothing
