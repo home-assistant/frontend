@@ -86,6 +86,14 @@ export class HaLogbook extends LitElement {
   @property({ type: Number, attribute: "max-entries" })
   public maxEntries?: number;
 
+  /**
+   * While loading, draw a date line and this many entry rows for a skeleton
+   * overlay to read, instead of a spinner. Only for a logbook inside an
+   * overlay, such as a card's.
+   */
+  @property({ type: Number, attribute: "placeholder-rows" })
+  public placeholderRows = 0;
+
   @state() private _logbookEntries?: LogbookEntry[];
 
   @state() private _traceContexts: TraceContexts = {};
@@ -142,6 +150,25 @@ export class HaLogbook extends LitElement {
     const entries = this._shownEntries();
 
     if (entries === undefined) {
+      if (this.placeholderRows > 0) {
+        // Shaped like the list that replaces it: a date, then entries
+        return html`
+          <div class="placeholder">
+            <div class="placeholder-date" data-skeleton="text"></div>
+            ${Array.from(
+              { length: this.placeholderRows },
+              () => html`
+                <div class="placeholder-entry">
+                  <span class="placeholder-dot" data-skeleton="round"></span>
+                  <span class="placeholder-message" data-skeleton="text"></span>
+                  <span class="placeholder-time" data-skeleton="text"></span>
+                </div>
+              `
+            )}
+          </div>
+        `;
+      }
+
       return html`
         <div class="progress-wrapper" data-skeleton="block">
           <ha-spinner></ha-spinner>
@@ -599,6 +626,44 @@ export class HaLogbook extends LitElement {
           align-items: center;
           /* Inset like the entries, for the skeleton a card draws over it */
           margin: 0 var(--ha-space-4);
+        }
+
+        /* Sized like the renderer's date heading and list entries */
+        .placeholder {
+          padding: var(--ha-space-2)
+            var(--logbook-horizontal-padding, var(--ha-space-4)) 0;
+        }
+
+        .placeholder-date {
+          width: 40%;
+          height: calc(var(--ha-font-size-m) * var(--ha-line-height-normal));
+          margin-bottom: var(--ha-space-2);
+        }
+
+        .placeholder-entry {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-3);
+          height: 40px;
+        }
+
+        .placeholder-dot {
+          flex: none;
+          width: 10px;
+          height: 10px;
+        }
+
+        .placeholder-message {
+          flex: 1;
+          max-width: 50%;
+          height: var(--ha-font-size-m);
+        }
+
+        .placeholder-time {
+          flex: none;
+          width: 72px;
+          height: var(--ha-font-size-s);
+          margin-inline-start: auto;
         }
       `,
     ];

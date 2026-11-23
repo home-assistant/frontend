@@ -424,6 +424,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
                   .entityIds=${this._getEntityIds()}
                   .stateFilter=${this._stateFilter}
                   .nameDetail=${this._getNameDetail()}
+                  .placeholderRows=${3}
                   narrow
                   no-icon
                   virtualize
