@@ -129,6 +129,7 @@ describe("applyThemesOnElement theme palette", () => {
     expect(style.getPropertyValue("--ha-color-primary-50")).toBe(
       normalizeLuminance("#ff00ff")
     );
+    expect(style.getPropertyValue("--ha-color-primary-05")).not.toBe("");
     expect(style.getPropertyValue("--ha-color-primary-90")).not.toBe("");
     expect(style.getPropertyValue("--dark-primary-color")).not.toBe("");
   });
