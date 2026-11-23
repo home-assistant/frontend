@@ -7549,6 +7549,7 @@
               "require_client_certificate": "Require client certificates",
               "require_client_certificate_secondary": "Only allow remote connections from devices with a client certificate signed by the SSL peer certificate in network settings.",
               "require_client_certificate_not_configured": "To use this, set an SSL peer certificate in network settings.",
+              "require_client_certificate_not_enforced": "Not enforced: no SSL peer certificate is set in network settings, so remote access accepts devices without a client certificate. Set one, or turn this off.",
               "client_certificate_error": "Remote access is not available because the SSL peer certificate could not be loaded. Fix the file in network settings, or turn off \"Require client certificates\".",
               "require_client_certificate_confirm": {
                 "title": "Restart remote access",

@@ -213,7 +213,10 @@ export class CloudRemotePref extends LitElement {
                         <ha-list-item-switch
                           wrap-supporting-text
                           .checked=${remote_require_client_certificate}
-                          .disabled=${!http_ssl_peer_certificate}
+                          .disabled=${
+                            !http_ssl_peer_certificate &&
+                            !remote_require_client_certificate
+                          }
                           @change=${this._toggleRequireClientCertificateChanged}
                         >
                           <span slot="headline"
@@ -227,9 +230,13 @@ export class CloudRemotePref extends LitElement {
                                 ? this.hass.localize(
                                     "ui.panel.config.cloud.account.remote.require_client_certificate_secondary"
                                   )
-                                : this.hass.localize(
-                                    "ui.panel.config.cloud.account.remote.require_client_certificate_not_configured"
-                                  )
+                                : remote_require_client_certificate
+                                  ? this.hass.localize(
+                                      "ui.panel.config.cloud.account.remote.require_client_certificate_not_enforced"
+                                    )
+                                  : this.hass.localize(
+                                      "ui.panel.config.cloud.account.remote.require_client_certificate_not_configured"
+                                    )
                             }</span
                           >
                         </ha-list-item-switch>
