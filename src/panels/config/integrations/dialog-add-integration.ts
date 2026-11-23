@@ -21,7 +21,6 @@ import {
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { ADAPTIVE_DIALOG_MEDIA_QUERY } from "../../../components/ha-adaptive-dialog";
 import { storage } from "../../../common/decorators/storage";
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import "../../../components/ha-label";
@@ -104,6 +103,8 @@ export interface IntegrationListItem extends HaListVirtualizedItem {
   single_config_entry?: boolean;
   // A brand's name above its integrations, not something to pick
   is_header?: boolean;
+  // Room after the last row
+  is_end_space?: boolean;
   integration_type?: string;
   // Search results that are not integrations: a brand or a category to
   // browse, or showing more of a section
@@ -270,9 +271,6 @@ class AddIntegrationDialog extends LitElement {
   // One pane, the list with a filter button, instead of the tree next to it
   @state() private _narrow = false;
 
-  // A bottom sheet instead of a dialog, like ha-adaptive-dialog picks
-  @state() private _sheet = false;
-
   @query("ha-list-virtualized") private _listElement?: HaListVirtualized;
 
   @query("ha-icon-button-prev") private _backButton?: HTMLElement;
@@ -345,8 +343,6 @@ class AddIntegrationDialog extends LitElement {
     this._narrow = this._narrowQuery.matches;
     // A phone shows the category it opens on, not the browse pane
     this._drilled = this._narrow && !!params?.category;
-    // ha-adaptive-dialog keeps the mode it opened in, so this doesn't listen
-    this._sheet = matchMedia(ADAPTIVE_DIALOG_MEDIA_QUERY).matches;
   }
 
   private _hasProtocol(domain: string) {
@@ -1258,7 +1254,6 @@ class AddIntegrationDialog extends LitElement {
             (category) => category.slug === this._category
           )?.subcategories || []
         : [];
-    const subcategoriesHeight = this._subcategoriesHeight(subcategories.length);
 
     return html`${
         this._narrow && this._drilled
@@ -1297,23 +1292,14 @@ class AddIntegrationDialog extends LitElement {
                 )}
               </div>`
       }
-      <div
-        class=${classMap({
-          content: true,
-          single: this._narrow,
-          fill: !this._sheet,
-        })}
-      >
+      <div class=${classMap({ content: true, single: this._narrow })}>
         ${showBrowse ? this._renderCategoryTree() : nothing}
         ${
           showItems
             ? html`<div class="items">
                 ${
                   this._showDiscoveredView && !this._filter
-                    ? html`<div
-                        class="discovered"
-                        style=${styleMap({ height: this._listHeight() })}
-                      >
+                    ? html`<div class="discovered">
                         ${this._renderBrandView(undefined, this._flowsInProgress || [])}
                       </div>`
                     : rows
@@ -1365,15 +1351,9 @@ class AddIntegrationDialog extends LitElement {
                                     </div>`
                             }
                             <ha-list-virtualized
-                              .rows=${rows}
+                              .rows=${this._filter ? rows : this._withEndSpace(rows)}
                               .rowRenderer=${this._renderRow}
                               style=${styleMap({
-                                height: this._listHeight(
-                                  (listTitle ? 40 : 0) +
-                                    // The box's border and the room below it
-                                    (this._filter ? 14 : 0) +
-                                    subcategoriesHeight
-                                ),
                                 display:
                                   this._filter && !rows.length ? "none" : "",
                               })}
@@ -1515,15 +1495,12 @@ class AddIntegrationDialog extends LitElement {
   // Collapsed, the box shows its title and this many subcategories
   private static _SUBCATEGORIES_SHOWN = 4;
 
-  // The room the box takes with the space below it: a title and 40px rows
+  // A title and 40px rows, with the box's border
   private _subcategoriesHeight(count: number) {
-    if (!count) {
-      return 0;
-    }
     const rows = this._subcategoriesExpanded
       ? count
       : Math.min(count, AddIntegrationDialog._SUBCATEGORIES_SHOWN);
-    return 40 + rows * 40 + 2 + 12;
+    return 40 + rows * 40 + 2;
   }
 
   private _renderSubcategories(
@@ -1537,7 +1514,7 @@ class AddIntegrationDialog extends LitElement {
     return html`<div
       class="subcategories"
       style=${styleMap({
-        height: `${this._subcategoriesHeight(subcategories.length) - 12}px`,
+        height: `${this._subcategoriesHeight(subcategories.length)}px`,
       })}
     >
       <ha-section-title>
@@ -1607,20 +1584,13 @@ class AddIntegrationDialog extends LitElement {
     this._focusAfterDrill = "out";
   }
 
-  // Leave room for the header and search in the sheet, or in the dialog of a
-  // fixed height, so only the list scrolls. What was picked on a phone has
-  // no search.
-  // `title` is the room a heading above the list takes, so the dialog keeps
-  // its height
-  private _listHeight(title = 0) {
-    // The dialog's lists fill what is left of its fixed height, see `.fill`
-    if (!this._sheet) {
-      return undefined;
-    }
-    // The search and the connection toggle under it
-    const reserved = (this._narrow && this._drilled ? 80 : 188) + title;
-    return `calc(var(--add-integration-sheet-height) - ${reserved}px - var(--safe-area-inset-bottom, 0px))`;
-  }
+  // Room after the last card, so the list doesn't end on the edge
+  private _withEndSpace = memoizeOne(
+    (rows: IntegrationListItem[]): IntegrationListItem[] => [
+      ...rows,
+      { id: "end-space", domain: "", name: "", is_end_space: true },
+    ]
+  );
 
   // Three ways in: what Home Assistant found, adding a device to a
   // protocol you use, and browsing every integration by category.
@@ -1671,10 +1641,7 @@ class AddIntegrationDialog extends LitElement {
       `
     );
 
-    return html`<div
-      class="pane"
-      style=${styleMap({ height: this._listHeight() })}
-    >
+    return html`<div class="pane">
       <div
         class=${classMap({ groups: true, browse: true, narrow: this._narrow })}
       >
@@ -2051,6 +2018,9 @@ class AddIntegrationDialog extends LitElement {
   private _renderRow = (integration: IntegrationListItem) => {
     if (!integration) {
       return nothing;
+    }
+    if (integration.is_end_space) {
+      return html`<div style="height: var(--ha-space-2)"></div>`;
     }
     // Search results are a plain list with gray titles, like the
     // automation editor's search; browsing has cards
@@ -2432,24 +2402,23 @@ class AddIntegrationDialog extends LitElement {
         font-weight: var(--ha-font-weight-normal);
         color: var(--ha-color-text-secondary);
       }
+      /* The panes and lists fill what the header and search leave of the
+         dialog's or sheet's fixed height, and all end on one line */
       .content {
         display: flex;
-      }
-      /* In the dialog, the panes and lists fill what the header and search
-         leave of its fixed height */
-      .content.fill {
         flex: 1;
         min-height: 0;
+        padding-block-end: var(--ha-space-4);
       }
-      .fill .items,
-      .fill .list {
+      .items,
+      .list {
         display: flex;
         flex-direction: column;
         min-height: 0;
       }
-      .fill .list,
-      .fill .discovered,
-      .fill ha-list-virtualized {
+      .list,
+      .discovered,
+      ha-list-virtualized {
         flex: 1;
         min-height: 0;
       }
@@ -2459,7 +2428,6 @@ class AddIntegrationDialog extends LitElement {
         flex-direction: column;
         gap: var(--ha-space-3);
         min-height: 0;
-        margin-block-end: var(--ha-space-3);
         margin-inline-start: var(--ha-space-4);
       }
       .single .pane {
@@ -2553,7 +2521,7 @@ class AddIntegrationDialog extends LitElement {
         z-index: 2;
       }
       .list.boxed {
-        margin: 0 var(--ha-space-4) var(--ha-space-3);
+        margin: 0 var(--ha-space-4);
         border: 1px solid var(--ha-color-border-neutral-quiet);
         border-radius: var(--ha-border-radius-xl);
         overflow: hidden;
