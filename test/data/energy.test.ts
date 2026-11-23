@@ -2884,7 +2884,6 @@ describe("calculateGridNetCost", () => {
     stat_compensation: null,
     entity_energy_price_export: null,
     number_energy_price_export: null,
-    cost_adjustment_day: 0,
     ...overrides,
   });
   const series = (...changes: (number | null)[]) =>
