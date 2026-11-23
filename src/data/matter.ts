@@ -218,9 +218,10 @@ const matterNodeIdentifiers = (device: DeviceRegistryEntry) =>
 
 export const watchForNewMatterDevice = (
   hass: HomeAssistant,
-  callback: (device: DeviceRegistryEntry) => void
+  callback: (device: DeviceRegistryEntry, existing: boolean) => void
 ): UnsubscribeFunc => {
   let knownNodes: Set<string> | undefined;
+  let knownDevices: Set<string> | undefined;
   let unsubDeviceReg: UnsubscribeFunc | undefined;
   // Callers also unsubscribe after a find. The registry collection counts its
   // subscribers, so a second unsubscribe would stop its updates for everyone.
@@ -228,20 +229,23 @@ export const watchForNewMatterDevice = (
     unsubDeviceReg?.();
     unsubDeviceReg = undefined;
     knownNodes = undefined;
+    knownDevices = undefined;
   };
   // Watch for a new node rather than a new device: core merges a
   // recommissioned node into the existing device that shares its serial number.
   unsubDeviceReg = subscribeDeviceRegistry(hass.connection, (entries) => {
     if (!knownNodes) {
       knownNodes = new Set(entries.flatMap(matterNodeIdentifiers));
+      knownDevices = new Set(entries.map((entry) => entry.id));
       return;
     }
     const device = entries.find((entry) =>
       matterNodeIdentifiers(entry).some((id) => !knownNodes!.has(id))
     );
     if (device) {
+      const existing = knownDevices!.has(device.id);
       unsubscribe();
-      callback(device);
+      callback(device, existing);
     }
   });
   return unsubscribe;

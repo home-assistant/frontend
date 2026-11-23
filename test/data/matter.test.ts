@@ -82,7 +82,8 @@ describe("watchForNewMatterDevice", () => {
     await vi.advanceTimersByTimeAsync(600);
 
     expect(found).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({ id: "existing" })
+      expect.objectContaining({ id: "existing" }),
+      true
     );
   });
 
@@ -108,7 +109,8 @@ describe("watchForNewMatterDevice", () => {
     registry.addDevice("new");
     await vi.advanceTimersByTimeAsync(600);
     expect(found).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({ id: "new" })
+      expect.objectContaining({ id: "new" }),
+      false
     );
 
     // The add device dialog unsubscribes again when it closes.

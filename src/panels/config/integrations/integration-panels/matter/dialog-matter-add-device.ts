@@ -104,7 +104,7 @@ class DialogMatterAddDevice extends LitElement {
 
   // A recommissioned node joins its existing device, next to the entities of
   // its earlier nodes, so only what is new since opening belongs to it.
-  private _deviceIdsAtOpen = new Set<string>();
+  private _deviceExisted = false;
 
   private _entityIdsAtOpen = new Set<string>();
 
@@ -112,11 +112,11 @@ class DialogMatterAddDevice extends LitElement {
 
   public showDialog(): void {
     this._open = true;
-    this._deviceIdsAtOpen = new Set(Object.keys(this.hass.devices));
     this._entityIdsAtOpen = new Set(Object.keys(this.hass.entities));
-    this._unsub = watchForNewMatterDevice(this.hass, (device) => {
+    this._unsub = watchForNewMatterDevice(this.hass, (device, existing) => {
       // make sure a refresh of the page will navigate to the device page, old iOS apps will refresh the webview when commissioning is done
       setRefreshUrl(`/config/devices/device/${device.id}`);
+      this._deviceExisted = existing;
       this._newDevice = device;
       this._fetchMainEntity();
       this._maybeShowDeviceAdded();
@@ -195,16 +195,19 @@ class DialogMatterAddDevice extends LitElement {
     }
   }
 
+  private _entityIdsAddedTo(device: DeviceRegistryEntry): string[] {
+    return Object.values(this.hass.entities)
+      .filter(
+        (e) =>
+          e.device_id === device.id && !this._entityIdsAtOpen.has(e.entity_id)
+      )
+      .map((e) => e.entity_id);
+  }
+
   private async _fetchMainEntity(): Promise<void> {
     if (!this._newDevice || this._mainEntityFetched) return;
 
-    const entityIds = Object.values(this.hass.entities)
-      .filter(
-        (e) =>
-          e.device_id === this._newDevice!.id &&
-          !this._entityIdsAtOpen.has(e.entity_id)
-      )
-      .map((e) => e.entity_id);
+    const entityIds = this._entityIdsAddedTo(this._newDevice);
 
     if (!entityIds.length) return;
 
@@ -235,6 +238,7 @@ class DialogMatterAddDevice extends LitElement {
     this._step = "main";
     this._pairingCode = "";
     this._newDevice = undefined;
+    this._deviceExisted = false;
     this._mainEntity = undefined;
     this._mainEntityFetched = false;
     this._proposedDeviceName = undefined;
@@ -294,7 +298,7 @@ class DialogMatterAddDevice extends LitElement {
             device: this._newDevice,
             mainEntity: this._mainEntity,
             // The name typed in the app would rename an existing device.
-            proposedName: this._deviceIdsAtOpen.has(this._newDevice?.id ?? "")
+            proposedName: this._deviceExisted
               ? undefined
               : this._proposedDeviceName,
           }
@@ -346,10 +350,9 @@ class DialogMatterAddDevice extends LitElement {
         );
       }
 
+      // Earlier nodes' entities keep their IDs, which automations may use.
       if (nameChanged && name) {
-        const entityIds = Object.values(this.hass.entities)
-          .filter((e) => e.device_id === device.id)
-          .map((e) => e.entity_id);
+        const entityIds = this._entityIdsAddedTo(device);
 
         if (entityIds.length) {
           const mapping = await getAutomaticEntityIds(
