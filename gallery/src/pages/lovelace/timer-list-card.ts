@@ -57,6 +57,8 @@ const CONFIGS = [
 class DemoTimerListCard extends LitElement {
   @property({ attribute: false }) public hass?: MockHomeAssistant;
 
+  private _stopTimerList?: () => void;
+
   public provideHass(el) {
     el.hass = this.hass;
   }
@@ -69,6 +71,7 @@ class DemoTimerListCard extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener("show-dialog", this._dialogManager);
+    this._stopTimerList?.();
   }
 
   // Opens the dialog to start a timer
@@ -103,7 +106,7 @@ class DemoTimerListCard extends LitElement {
     hass.updateTranslations("lovelace", "en");
     hass.addEntities(TIMER_LIST_ENTITIES);
     mockIcons(hass);
-    mockTimerList(hass, TIMER_LIST_TIMERS);
+    this._stopTimerList = mockTimerList(hass, TIMER_LIST_TIMERS);
   }
 }
 

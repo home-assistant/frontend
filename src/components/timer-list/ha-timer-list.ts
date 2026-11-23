@@ -102,7 +102,9 @@ export class HaTimerList extends LitElement {
     this._clearInterval();
   }
 
-  protected willUpdate(): void {
+  // Runs from updated(), because the entity state of a new entityId is only
+  // current after willUpdate().
+  private _updateSubscription(): void {
     // The backend refuses a subscription to an unavailable entity, and drops
     // the subscription when the entity is reloaded.
     const entityId =
@@ -127,6 +129,11 @@ export class HaTimerList extends LitElement {
   }
 
   protected updated(): void {
+    // An update that was queued before the element was removed still runs
+    if (!this.isConnected) {
+      return;
+    }
+    this._updateSubscription();
     // Finished timers need the tick too, to hide them when their time is up.
     const ticking = this._timers?.some(
       (timer) => timer.status !== "paused" && timerListTimerVisible(timer)

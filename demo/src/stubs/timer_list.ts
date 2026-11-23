@@ -21,6 +21,7 @@ type ChangeEventType = Extract<
 >["event_type"];
 
 // Keeps the timers in memory, so the timer list actions work in demos.
+// Returns a function that stops the mock.
 export const mockTimerList = (
   hass: MockHomeAssistant,
   lists: Record<string, MockTimerListTimer[]>
@@ -202,7 +203,7 @@ export const mockTimerList = (
     return () => listeners[entityId].delete(onChange!);
   });
 
-  window.setInterval(() => {
+  const interval = window.setInterval(() => {
     for (const [entityId, items] of Object.entries(timers)) {
       for (const timer of items) {
         if (timer.status === "active" && !timerListTimerRemaining(timer)) {
@@ -211,4 +212,6 @@ export const mockTimerList = (
       }
     }
   }, 1000);
+
+  return () => window.clearInterval(interval);
 };

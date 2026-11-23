@@ -16,6 +16,8 @@ import { TIMER_LIST_ENTITIES, TIMER_LIST_TIMERS } from "../../data/timer_list";
 class DemoMoreInfoTimerList extends LitElement {
   @property({ attribute: false }) public hass!: MockHomeAssistant;
 
+  private _stopTimerList?: () => void;
+
   public provideHass(el) {
     el.hass = this.hass;
   }
@@ -28,6 +30,7 @@ class DemoMoreInfoTimerList extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener("show-dialog", this._dialogManager);
+    this._stopTimerList?.();
   }
 
   // Opens the dialog to start a timer
@@ -62,7 +65,7 @@ class DemoMoreInfoTimerList extends LitElement {
     const hass = provideHass(this);
     hass.updateTranslations(null, "en");
     hass.addEntities(TIMER_LIST_ENTITIES);
-    mockTimerList(hass, TIMER_LIST_TIMERS);
+    this._stopTimerList = mockTimerList(hass, TIMER_LIST_TIMERS);
   }
 }
 
