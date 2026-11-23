@@ -497,6 +497,9 @@ export class HuiEnergySourcesTableCard
             this._data.statsCompare
           )
         : undefined;
+    const gridHasEnergy = !!types.grid?.some(
+      (source) => !!source.stat_energy_from || !!source.stat_energy_to
+    );
     // Fixed costs are added to these while their rows render
     let hasGridCost = gridCost !== undefined || gridCostCompare !== undefined;
     let totalGridCost = gridCost ?? 0;
@@ -1087,16 +1090,13 @@ export class HuiEnergySourcesTableCard
               )}
               ${_renderFixedCosts("grid")}
               ${
-                types.grid &&
-                types.grid.some(
-                  (s) => !!s.stat_energy_from || !!s.stat_energy_to
-                )
+                types.grid && (gridHasEnergy || hasGridCost)
                   ? this._renderTotalRow(
                       this._i18n.localize(
                         "ui.panel.lovelace.cards.energy.energy_sources_table.grid_total"
                       ),
-                      totalGrid,
-                      totalGridCompare,
+                      gridHasEnergy ? totalGrid : null,
+                      gridHasEnergy ? totalGridCompare : null,
                       "kWh",
                       hasGridCost ? totalGridCost : null,
                       hasGridCost ? totalGridCostCompare : null,
