@@ -89,21 +89,21 @@ describe("applyThemesOnElement user colors", () => {
     ).toBe("#ff00ff");
   });
 
-  it("lets the theme header color win over the tint derived in dark mode", () => {
-    const style = apply(
-      makeThemes({
-        oled: asTheme({
-          modes: { dark: { "app-header-background-color": "#000000" } },
-        }),
-      }),
-      "oled",
-      true
-    );
+  it("only tints the dark mode header for the default theme", () => {
+    const themes = makeThemes({
+      oled: asTheme({ modes: { light: {}, dark: {} } }),
+    });
 
-    expect(style.getPropertyValue("--primary-color")).toBe(PICKED_PRIMARY);
-    expect(style.getPropertyValue("--app-header-background-color")).toBe(
-      "#000000"
-    );
+    expect(
+      apply(themes, "default", true).getPropertyValue(
+        "--app-header-background-color"
+      )
+    ).toMatch(/^#/);
+    expect(
+      apply(themes, "oled", true).getPropertyValue(
+        "--app-header-background-color"
+      )
+    ).toBe("var(--sidebar-background-color)");
   });
 });
 

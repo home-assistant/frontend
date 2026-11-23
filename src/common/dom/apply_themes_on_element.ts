@@ -87,7 +87,7 @@ export const applyThemesOnElement = (
   }
   themeRules = {
     ...themeRules,
-    ...getUserColorRules(primaryColor, accentColor, darkMode),
+    ...getUserColorRules(primaryColor, accentColor, isDefaultTheme && darkMode),
   };
 
   // Nothing was changed
@@ -154,12 +154,12 @@ const getPrimaryPaletteRules = (primaryColor: string): Partial<ThemeVars> => {
 const getUserColorRules = (
   primaryColor: string | undefined,
   accentColor: string | undefined,
-  darkMode: boolean
+  tintHeader: boolean
 ): Partial<ThemeVars> => {
   const rules: Partial<ThemeVars> = {};
 
   if (primaryColor) {
-    if (darkMode) {
+    if (tintHeader) {
       rules["app-header-background-color"] = hexBlend(
         primaryColor,
         "#121212",
