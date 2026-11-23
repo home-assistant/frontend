@@ -14,12 +14,11 @@ import {
   string,
   union,
 } from "superstruct";
-import { mdiDebugStepOver, mdiStarFourPoints } from "@mdi/js";
+import { mdiDebugStepOver } from "@mdi/js";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { consume } from "../../../common/decorators/consume";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
@@ -94,14 +93,11 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   /**
-   * The sidebar of the automation is next to the editor. The sidebar of a row
-   * covers it.
+   * The AI sidebar is open next to the editor. The sidebar of a row takes
+   * its place.
    */
-  @property({ type: Boolean, reflect: true, attribute: "general-sidebar" })
-  public generalSidebar = false;
-
-  /** Shows a button to change the automation with AI, or to create it. */
-  @property({ attribute: false }) public aiAction?: "create" | "edit";
+  @property({ type: Boolean, reflect: true, attribute: "ai-sidebar" })
+  public aiSidebar = false;
 
   @state()
   @consume({ context: automationDiffContext, subscribe: true })
@@ -113,25 +109,14 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
   >;
 
   protected renderContent() {
-    const description = this._renderDescription();
-    const hasDescription = description !== nothing;
-    // On narrow screens the button gets its own row, the heading leaves no
-    // room for it
-    const ownRow = hasDescription || this.narrow;
     return html`
-      ${this._renderModeChange()}
-      ${
-        ownRow && (hasDescription || this.aiAction)
-          ? html`<div class="top">${description}${this._renderAiButton()}</div>`
-          : nothing
-      }
+      ${this._renderModeChange()} ${this._renderDescription()}
       <div class="header">
         <h2 id="triggers-heading" class="name">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.header"
           )}
         </h2>
-        ${ownRow ? nothing : this._renderAiButton()}
       </div>
       ${
         !ensureArray(this.config.triggers)?.length
@@ -235,25 +220,6 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
         sidebar
       ></ha-automation-action>
     `;
-  }
-
-  private _renderAiButton() {
-    if (!this.aiAction) {
-      return nothing;
-    }
-    return html`<ha-assist-chip
-      class="ai-button"
-      .label=${this.hass.localize(
-        `ui.panel.config.automation.editor.ai.${this.aiAction === "create" ? "create" : "menu"}`
-      )}
-      @click=${this._requestAiEdit}
-    >
-      <ha-svg-icon slot="icon" .path=${mdiStarFourPoints}></ha-svg-icon>
-    </ha-assist-chip>`;
-  }
-
-  private _requestAiEdit() {
-    fireEvent(this, "ai-edit-requested");
   }
 
   // The mode is only in a dialog, so a change of the AI shows here
@@ -629,12 +595,14 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
         .description {
           margin-top: 16px;
         }
-        :host([general-sidebar]) .content-wrapper {
+        /* The editor already makes room for the AI sidebar, a row sidebar
+           takes its place */
+        :host([ai-sidebar]) .content-wrapper {
           padding-inline-end: 0;
         }
-        :host([general-sidebar]) ha-automation-sidebar {
+        :host([ai-sidebar]) ha-automation-sidebar {
           inset-inline-end: var(--ha-space-3);
-          width: var(--general-sidebar-width);
+          width: var(--ai-sidebar-width);
           z-index: 2;
         }
         /* Chips, so the mode doesn't look like the description */
@@ -660,20 +628,6 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
         }
         .mode-change ha-svg-icon {
           --mdc-icon-size: 18px;
-        }
-        .top {
-          display: flex;
-          align-items: flex-start;
-          gap: var(--ha-space-2);
-        }
-        .top .description {
-          flex: 1;
-          min-width: 0;
-        }
-        .top .ai-button {
-          margin-top: 16px;
-          margin-inline-start: auto;
-          flex-shrink: 0;
         }
         .description[class*="diff-"] {
           padding: var(--ha-space-1) var(--ha-space-3);
@@ -701,7 +655,6 @@ declare global {
   }
 
   interface HASSDomEvents {
-    "ai-edit-requested": undefined;
     "open-sidebar": SidebarConfig;
     "request-close-sidebar": undefined;
     "close-sidebar": undefined;
