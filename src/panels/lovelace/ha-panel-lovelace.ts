@@ -17,6 +17,7 @@ import "../../components/ha-button";
 import { domainToName } from "../../data/integration";
 import { subscribeLovelaceUpdates } from "../../data/lovelace";
 import { normalizeLovelaceConfig } from "../../data/lovelace/config/normalize";
+import { isStrategySection } from "../../data/lovelace/config/section";
 import type {
   LovelaceConfig,
   LovelaceRawConfig,
@@ -26,6 +27,7 @@ import {
   isStrategyDashboard,
   saveConfig,
 } from "../../data/lovelace/config/types";
+import { isStrategyView } from "../../data/lovelace/config/view";
 import { fetchResources } from "../../data/lovelace/resource";
 import { LOVELACE_PANEL } from "../../data/panel";
 import type { WindowWithPreloads } from "../../data/preloads";
@@ -55,6 +57,15 @@ const EXTERNALLY_UPDATED_TOAST_ID = "lovelace-externally-updated";
 
 let editorLoaded = false;
 let resourcesLoaded = false;
+
+// View and section strategies may fetch data while generating, and a rebuild
+// is what refreshes them after a reconnect.
+const hasNestedStrategy = (config: LovelaceConfig) =>
+  config.views.some(
+    (view) =>
+      isStrategyView(view) ||
+      !!view.sections?.some((section) => isStrategySection(section))
+  );
 
 @customElement("ha-panel-lovelace")
 export class LovelacePanel extends LitElement {
@@ -407,6 +418,7 @@ export class LovelacePanel extends LitElement {
       !!current &&
       current.mode === mode &&
       current.locale === this.hass!.locale &&
+      !hasNestedStrategy(config) &&
       deepEqual(current.rawConfig, rawConfig, options) &&
       deepEqual(current.config, normalizeLovelaceConfig(config), options)
     );

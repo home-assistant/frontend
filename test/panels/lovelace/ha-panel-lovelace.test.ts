@@ -42,7 +42,7 @@ const flush = () =>
 
 const openPanel = async (
   urlPath: string,
-  config: object = { views: [{ cards: [] }] }
+  config: Awaited<ReturnType<typeof fetchConfig>> = { views: [{ cards: [] }] }
 ) => {
   let notifyUpdated: () => void = () => undefined;
   const unsub = vi.fn(async () => {
@@ -178,6 +178,24 @@ describe("ha-panel-lovelace reconnect", () => {
     // Same strategy, different output: rebuilt.
     await reconnect();
     expect(generateLovelaceDashboardStrategy).toHaveBeenCalledTimes(3);
+    expect(panel.lovelace).not.toBe(lovelace);
+  });
+
+  it.each([
+    ["view", { views: [{ strategy: { type: "test" } }] }],
+    [
+      "section",
+      {
+        views: [
+          { type: "sections", sections: [{ strategy: { type: "test" } }] },
+        ],
+      },
+    ],
+  ])("rebuilds a dashboard with a %s strategy", async (_kind, config) => {
+    const { panel } = await openPanel("dashboard-test", config);
+    const lovelace = panel.lovelace;
+
+    await reconnect();
     expect(panel.lovelace).not.toBe(lovelace);
   });
 
