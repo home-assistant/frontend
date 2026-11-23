@@ -93,9 +93,15 @@ export class PanelReady {
 
     this.ready = new Promise((resolve) => {
       this._resolveReady = resolve;
-      element.addEventListener("hass-panel-ready", () => resolve(), {
-        once: true,
-      });
+      element.addEventListener(
+        "hass-panel-ready",
+        () => {
+          if (this._resolveReady === resolve) {
+            resolve();
+          }
+        },
+        { once: true }
+      );
     });
 
     if (resolveReplaced) {
