@@ -36,6 +36,7 @@ import {
 import type { RelatedResult } from "../data/search";
 import { findRelated, RELATED_SEARCH_CONCURRENCY } from "../data/search";
 import "./ha-expansion-panel";
+import { filterBadgeStyles, renderFilterBadge } from "./ha-filter-mode";
 import "./input/ha-input-search";
 import type { HaInputSearch } from "./input/ha-input-search";
 import "./item/ha-list-item-option";
@@ -188,7 +189,7 @@ export class HaFilterDevices extends LitElement {
           ${this._localize("ui.panel.config.devices.caption")}
           ${
             count
-              ? html`<div class="badge">${count}</div>
+              ? html`${renderFilterBadge(this._localize, count, value?.exclude)}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._localize(
@@ -204,6 +205,10 @@ export class HaFilterDevices extends LitElement {
       ${
         this._panel.showContent
           ? html`<div class="content" ${ref(this._content)}>
+              <ha-filter-mode
+                .exclude=${value?.exclude ?? false}
+                @filter-mode-changed=${this._modeChanged}
+              ></ha-filter-mode>
               <ha-input-search
                 appearance="outlined"
                 .value=${this._filter}
@@ -282,6 +287,10 @@ export class HaFilterDevices extends LitElement {
     }
     const ids = (value.ids ?? []).filter((deviceId) => deviceId !== id);
     this.value = { ...value, ids: selected ? [...ids, id] : ids };
+  }
+
+  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
+    this.value = { ...listFilterValue(this.value), exclude: ev.detail.exclude };
   }
 
   private _expandedChanged(ev) {
@@ -489,6 +498,7 @@ export class HaFilterDevices extends LitElement {
 
   static styles = [
     filterPanelStyles,
+    filterBadgeStyles,
     css`
       ha-list-selectable-virtualized {
         flex: 1;
@@ -520,7 +530,7 @@ export class HaFilterDevices extends LitElement {
       }
       ha-input-search {
         display: block;
-        padding: var(--ha-space-1) var(--ha-space-2) 0;
+        padding: var(--ha-space-1) var(--ha-space-2) var(--ha-space-2);
       }
     `,
   ];

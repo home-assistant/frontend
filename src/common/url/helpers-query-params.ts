@@ -1,6 +1,7 @@
 import type { DataTableFiltersValues } from "../../data/data_table_filters";
 import { dataTableQueryParamConfig } from "./data-table-query-params";
 import {
+  excludedFilters,
   floorAreasFilterFromParams,
   floorAreasFilterParams,
   listFilterFromParams,
@@ -28,6 +29,8 @@ export const helpersFilterQueryParamConfig = {
     "assistants",
     // Read until 2027.5, replaced with `assistants` on the next write
     "voice_assistant",
+    // The filters that show the items that don't match their selection
+    "exclude",
   ],
   boolean: [
     { key: "no_area", trueValue: "1" },
@@ -54,6 +57,13 @@ export const helpersFilterQueryParams = (
   no_category: listFilterNone(filters["ha-filter-categories"]),
   assistants: listFilterIds(filters["ha-filter-voice-assistants"]),
   no_assistants: listFilterNone(filters["ha-filter-voice-assistants"]),
+  exclude: excludedFilters({
+    assistants: filters["ha-filter-voice-assistants"],
+    area: filters["ha-filter-floor-areas"],
+    device: filters["ha-filter-devices"],
+    label: filters["ha-filter-labels"],
+    category: filters["ha-filter-categories"],
+  }),
 });
 
 // The filters as the URL holds them, so values that filter the same, such as
@@ -101,6 +111,7 @@ export const helpersLinkFromUrl = (
 
   const floors = values("floor");
   const areas = values("area");
+  const exclude = values("exclude");
   const assistants = values("assistants");
 
   return {
@@ -109,23 +120,28 @@ export const helpersLinkFromUrl = (
       "ha-filter-floor-areas": floorAreasFilterFromParams(
         floors,
         areas,
-        params.no_area
+        params.no_area,
+        exclude
       ),
       "ha-filter-devices": listFilterFromParams(
         values("device"),
-        params.no_device
+        params.no_device,
+        exclude.includes("device")
       ),
       "ha-filter-labels": listFilterFromParams(
         values("label"),
-        params.no_label
+        params.no_label,
+        exclude.includes("label")
       ),
       "ha-filter-categories": listFilterFromParams(
         values("category"),
-        params.no_category
+        params.no_category,
+        exclude.includes("category")
       ),
       "ha-filter-voice-assistants": listFilterFromParams(
         assistants.length ? assistants : values("voice_assistant"),
-        params.no_assistants
+        params.no_assistants,
+        exclude.includes("assistants")
       ),
     },
   };

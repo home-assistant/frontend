@@ -11,6 +11,8 @@ export interface FloorAreasFilterValue {
   floors?: string[];
   areas?: string[];
   no_area?: boolean;
+  /** Show the items that don't match the selection */
+  exclude?: boolean;
 }
 
 /**
@@ -21,10 +23,9 @@ export interface ListFilterValue {
   ids?: string[];
   /** Also match the items that have none */
   none?: boolean;
+  /** Show the items that don't match the selection */
+  exclude?: boolean;
 }
-
-/** The value of a filter's "No …" option, which no real id can have */
-export const NO_VALUE_ID = "__none__";
 
 /** Whether a floor of the floor and area filter is picked, partly or not. */
 export type FloorSelection = "all" | "some" | "none";
@@ -184,16 +185,20 @@ export const listFilterValue = (
 };
 
 /**
- * The value a list filter sends to the page. Without "No …" it sends the ids
- * as a plain list, as filters did before.
+ * The value a list filter sends to the page. Only including some ids sends
+ * them as a plain list, which pages that don't use the mode read as well.
  */
 export const listFilterEventValue = (
   value: ListFilterValue
 ): DataTableFiltersValue => {
   if (!hasFilterSelection(value)) {
-    return undefined;
+    // The mode is kept, so it stays picked when the selection is cleared
+    return value.exclude ? { exclude: true } : undefined;
   }
-  return value.none ? value : value.ids;
+  if (!value.none && !value.exclude) {
+    return value.ids;
+  }
+  return value;
 };
 
 /** Whether a filter value has anything selected, so it filters the list. */
@@ -204,10 +209,25 @@ export const hasFilterSelection = (value: DataTableFiltersValue): boolean => {
   if (Array.isArray(value)) {
     return value.length > 0;
   }
-  return Object.values(value).some((val) =>
-    Array.isArray(val) ? val.length > 0 : !!val
+  // The mode only applies to a selection, on its own it filters nothing
+  return Object.entries(value).some(([key, val]) =>
+    key === "exclude" ? false : Array.isArray(val) ? val.length > 0 : !!val
   );
 };
+
+/** Whether a filter value shows the items that don't match its selection. */
+export const isExcludeFilter = (value: DataTableFiltersValue): boolean =>
+  !!value && !Array.isArray(value) && "exclude" in value && !!value.exclude;
+
+/**
+ * Whether a filter switched between showing the items that match its
+ * selection and the ones that don't. The URL leaves out the mode of a filter
+ * without a selection, so pages can't tell this change from the URL alone.
+ */
+export const filterModeChanged = (
+  value: DataTableFiltersValue,
+  previous: DataTableFiltersValue
+): boolean => isExcludeFilter(value) !== isExcludeFilter(previous);
 
 /** The number of filters that have anything selected. */
 export const countActiveFilters = (
@@ -227,10 +247,21 @@ export const matchesListFilter = (
     return true;
   }
   const ids = itemIds?.filter((id): id is string => !!id) ?? [];
-  return (
-    (!!filter.none && !ids.length) || ids.some((id) => filter.ids?.includes(id))
-  );
+  const matches =
+    (!!filter.none && !ids.length) ||
+    ids.some((id) => filter.ids?.includes(id));
+  return filter.exclude ? !matches : matches;
 };
+
+/**
+ * Whether an item passes a filter that worked out the items matching its
+ * selection.
+ */
+export const matchesFilterItems = (
+  value: DataTableFiltersValue,
+  items: Set<string>,
+  id: string
+): boolean => items.has(id) !== isExcludeFilter(value);
 
 // returns true when this filter has *selected* options and the filter's name
 // equals the given filterName

@@ -20,9 +20,13 @@ import type { ListFilterValue } from "../data/data_table_filters";
 import {
   listFilterEventValue,
   listFilterValue,
-  NO_VALUE_ID,
 } from "../data/data_table_filters";
 import "./ha-expansion-panel";
+import {
+  filterBadgeStyles,
+  NO_VALUE_ID,
+  renderFilterBadge,
+} from "./ha-filter-mode";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./item/ha-list-item-option";
@@ -63,7 +67,11 @@ export class HaFilterVoiceAssistants extends LitElement {
           ${this._localize("ui.panel.config.dashboard.voice_assistants.main")}
           ${
             this._count
-              ? html`<div class="badge">${this._count}</div>
+              ? html`${renderFilterBadge(
+                    this._localize,
+                    this._count,
+                    this._listValue?.exclude
+                  )}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._localize(
@@ -78,6 +86,10 @@ export class HaFilterVoiceAssistants extends LitElement {
       ${
         this._panel.showContent
           ? html`<div class="content" ${ref(this._content)}>
+              <ha-filter-mode
+                .exclude=${this._listValue?.exclude ?? false}
+                @filter-mode-changed=${this._modeChanged}
+              ></ha-filter-mode>
               <ha-list-selectable
                 multi
                 aria-label=${this._localize(
@@ -147,6 +159,10 @@ export class HaFilterVoiceAssistants extends LitElement {
     });
   }
 
+  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
+    this._setValue({ ...this._listValue, exclude: ev.detail.exclude });
+  }
+
   private _expandedChanged(ev) {
     this.expanded = ev.detail.expanded;
   }
@@ -191,6 +207,7 @@ export class HaFilterVoiceAssistants extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       filterPanelStyles,
+      filterBadgeStyles,
       css`
         ha-list-selectable {
           display: flex;

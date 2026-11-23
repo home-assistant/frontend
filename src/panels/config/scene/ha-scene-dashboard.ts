@@ -76,9 +76,11 @@ import type {
 import {
   deserializeFilters,
   countActiveFilters,
+  filterModeChanged,
   isFilterUsed,
   isRelatedItemsFilterUsed,
   listFilterValue,
+  matchesFilterItems,
   matchesListFilter,
   serializeFilters,
 } from "../../../data/data_table_filters";
@@ -815,9 +817,12 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
     // A filter also sends the value it was given, once it has found its items.
     // Only a change to what the URL holds is the user's, so a link isn't stored.
+    // The URL leaves out the mode of a filter without a selection, so a change
+    // to the mode is the user's too.
     if (
       scenesFilterQueryString(filters) !==
-      scenesFilterQueryString(this._filters)
+        scenesFilterQueryString(this._filters) ||
+      filterModeChanged(filter.value, this._filters[type]?.value)
     ) {
       this._storageFilters = { ...this._storageFilters, [type]: filter };
     }
@@ -841,7 +846,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         ])
       ) {
         filteredEntityIds = filteredEntityIds.filter((entityId) =>
-          filter.items!.has(entityId)
+          matchesFilterItems(filter.value, filter.items!, entityId)
         );
 
         // the filters below only expose the selected options (as filter.value);

@@ -4,6 +4,7 @@ import type {
 } from "../../data/data_table_filters";
 import { dataTableQueryParamConfig } from "./data-table-query-params";
 import {
+  excludedFilters,
   floorAreasFilterFromParams,
   floorAreasFilterParams,
   listFilterFromParams,
@@ -30,6 +31,8 @@ export const devicesFilterQueryParamConfig = {
     "label",
     "config_entry",
     "sub_entry",
+    // The filters that show the items that don't match their selection
+    "exclude",
   ],
   boolean: [
     { key: "no_area", trueValue: "1" },
@@ -49,11 +52,16 @@ export const devicesFilterQueryParams = (
 ): DevicesFilterQueryParams => ({
   status: list(filters["ha-filter-states"]),
   ...floorAreasFilterParams(filters["ha-filter-floor-areas"]?.value),
-  domain: list(filters["ha-filter-integrations"]),
+  domain: listFilterIds(filters["ha-filter-integrations"]?.value),
   label: listFilterIds(filters["ha-filter-labels"]?.value),
   no_label: listFilterNone(filters["ha-filter-labels"]?.value),
   config_entry: list(filters.config_entry),
   sub_entry: list(filters.sub_entry),
+  exclude: excludedFilters({
+    domain: filters["ha-filter-integrations"]?.value,
+    area: filters["ha-filter-floor-areas"]?.value,
+    label: filters["ha-filter-labels"]?.value,
+  }),
 });
 
 // The filters as the URL holds them, so values that filter the same, such as
@@ -104,17 +112,28 @@ export const devicesLinkFromUrl = (
 
   const floors = values("floor");
   const areas = values("area");
+  const exclude = values("exclude");
 
   return {
     search: search ?? "",
     filters: {
       "ha-filter-states": filter(values("status")),
       "ha-filter-floor-areas": filter(
-        floorAreasFilterFromParams(floors, areas, params.no_area)
+        floorAreasFilterFromParams(floors, areas, params.no_area, exclude)
       ),
-      "ha-filter-integrations": filter(values("domain")),
+      "ha-filter-integrations": filter(
+        listFilterFromParams(
+          values("domain"),
+          false,
+          exclude.includes("domain")
+        )
+      ),
       "ha-filter-labels": filter(
-        listFilterFromParams(values("label"), params.no_label)
+        listFilterFromParams(
+          values("label"),
+          params.no_label,
+          exclude.includes("label")
+        )
       ),
       config_entry: filter(values("config_entry")),
       sub_entry: filter(values("sub_entry")),

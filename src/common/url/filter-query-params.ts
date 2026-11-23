@@ -3,10 +3,44 @@ import type {
   FloorAreasFilterValue,
   ListFilterValue,
 } from "../../data/data_table_filters";
-import { listFilterValue } from "../../data/data_table_filters";
+import {
+  hasFilterSelection,
+  isExcludeFilter,
+  listFilterValue,
+} from "../../data/data_table_filters";
 
-// Params shared by the filters of the config tables for the items without an
-// area, device, label or category, like `no_label=1`.
+// Params shared by the filters of the config tables: the items without an
+// area, device, label or category (`no_label=1`), and the filters that show
+// the items that don't match their selection (`exclude=area,label`).
+
+/**
+ * A filter that can show the items that don't match its selection, by the
+ * name of its param.
+ */
+export type ExcludableFilter =
+  | "area"
+  | "device"
+  | "label"
+  | "category"
+  | "domain"
+  | "device_class"
+  | "entity_domain"
+  | "assistants"
+  | "entity"
+  | "blueprint"
+  | "location";
+
+/**
+ * The names of the filters that show the items that don't match their
+ * selection. A filter without a selection filters nothing, so it is left out.
+ */
+export const excludedFilters = (
+  filters: Partial<Record<ExcludableFilter, DataTableFiltersValue>>
+): ExcludableFilter[] =>
+  (Object.keys(filters) as ExcludableFilter[]).filter(
+    (name) =>
+      hasFilterSelection(filters[name]) && isExcludeFilter(filters[name])
+  );
 
 const floorAreasValue = (
   value: DataTableFiltersValue
@@ -36,7 +70,8 @@ export const listFilterNone = (value: DataTableFiltersValue): boolean =>
 export const floorAreasFilterFromParams = (
   floors: string[],
   areas: string[],
-  noArea: boolean | undefined
+  noArea: boolean | undefined,
+  exclude: readonly string[]
 ): FloorAreasFilterValue | undefined => {
   if (!floors.length && !areas.length && !noArea) {
     return undefined;
@@ -45,13 +80,26 @@ export const floorAreasFilterFromParams = (
     floors,
     areas,
     ...(noArea ? { no_area: true } : {}),
+    ...(exclude.includes("area") ? { exclude: true } : {}),
   };
 };
 
 /** A list filter a link asks for. */
 export const listFilterFromParams = (
   ids: string[],
-  none: boolean | undefined
-): ListFilterValue | string[] | undefined =>
-  // Without "No …" it's a plain list, as the filters send it
-  none ? { ids, none: true } : ids;
+  none: boolean | undefined,
+  exclude: boolean
+): ListFilterValue | string[] | undefined => {
+  // Only including some ids is a plain list, as the filters send it
+  if (!none && !exclude) {
+    return ids;
+  }
+  if (!ids.length && !none) {
+    return undefined;
+  }
+  return {
+    ids,
+    ...(none ? { none: true } : {}),
+    ...(exclude ? { exclude: true } : {}),
+  };
+};

@@ -4,6 +4,11 @@ import type {
 } from "../../data/data_table_filters";
 import { dataTableQueryParamConfig } from "./data-table-query-params";
 import {
+  excludedFilters,
+  listFilterFromParams,
+  listFilterIds,
+} from "./filter-query-params";
+import {
   createQueryString,
   decodeQueryParams,
   hasQueryParams,
@@ -19,7 +24,12 @@ export const BACKUP_LOCATIONS_FILTER = "backup-locations";
 // The filters of the backups table. Search, sorting and grouping are kept by
 // the data table, see data-table-query-params.
 export const backupsFilterQueryParamConfig = {
-  list: ["type", "location"],
+  list: [
+    "type",
+    "location",
+    // The filters that show the items that don't match their selection
+    "exclude",
+  ],
 } as const satisfies QueryParamConfig;
 
 export type BackupsFilterQueryParams = QueryParamValues<
@@ -33,7 +43,8 @@ export const backupsFilterQueryParams = (
   filters: DataTableFiltersValues
 ): BackupsFilterQueryParams => ({
   type: list(filters[BACKUP_TYPE_FILTER]),
-  location: list(filters[BACKUP_LOCATIONS_FILTER]),
+  location: listFilterIds(filters[BACKUP_LOCATIONS_FILTER]),
+  exclude: excludedFilters({ location: filters[BACKUP_LOCATIONS_FILTER] }),
 });
 
 const sorted = (values?: string[]): string[] | undefined =>
@@ -45,10 +56,10 @@ const sorted = (values?: string[]): string[] | undefined =>
 export const backupsFilterQueryString = (
   filters: DataTableFiltersValues
 ): string => {
-  const { type, location } = backupsFilterQueryParams(filters);
+  const { type, location, exclude } = backupsFilterQueryParams(filters);
 
   return createQueryString(
-    { type: sorted(type), location: sorted(location) },
+    { type: sorted(type), location: sorted(location), exclude },
     backupsFilterQueryParamConfig
   );
 };
@@ -81,7 +92,11 @@ export const backupsLinkFromUrl = (
       // `type=all` asks for every type, as the backups overview links do
       [BACKUP_TYPE_FILTER]:
         params.type?.filter((type) => type && type !== "all") ?? [],
-      [BACKUP_LOCATIONS_FILTER]: params.location?.filter(Boolean) ?? [],
+      [BACKUP_LOCATIONS_FILTER]: listFilterFromParams(
+        params.location?.filter(Boolean) ?? [],
+        false,
+        !!params.exclude?.includes("location")
+      ),
     },
   };
 };

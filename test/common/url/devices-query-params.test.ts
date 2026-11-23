@@ -74,9 +74,18 @@ describe("devices query params", () => {
     ).toEqual({ floors: [], areas: [], no_area: true });
   });
 
-  // Without it in the URL, a link drops the "No label" choice
-  it("round trips no label", () => {
+  // Without them in the URL, a link drops the "No label" choice and shows the
+  // items that match the filters instead of the ones that don't
+  it("round trips no label and the filters that exclude", () => {
     const filters = {
+      "ha-filter-floor-areas": {
+        value: { floors: [], areas: ["kitchen"], exclude: true },
+        items: undefined,
+      },
+      "ha-filter-integrations": {
+        value: { ids: ["hue"], exclude: true },
+        items: undefined,
+      },
       "ha-filter-labels": {
         value: { ids: ["a"], none: true },
         items: undefined,
@@ -87,8 +96,18 @@ describe("devices query params", () => {
       devicesFilterQueryParamConfig
     );
 
-    expect(query).toBe("label=a&no_label=1");
+    expect(query).toBe(
+      "area=kitchen&domain=hue&label=a&exclude=domain%2Carea&no_label=1"
+    );
     expect(devicesLinkFromUrl(query)?.filters).toMatchObject(filters);
+  });
+
+  it("leaves out the mode of a filter without a selection", () => {
+    expect(
+      devicesFilterQueryString({
+        "ha-filter-labels": { value: { exclude: true }, items: undefined },
+      })
+    ).toBe("");
   });
 
   it("writes the values, not the items the filters found", () => {
@@ -109,6 +128,7 @@ describe("devices query params", () => {
       no_label: false,
       config_entry: undefined,
       sub_entry: undefined,
+      exclude: [],
     });
   });
 });

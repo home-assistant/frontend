@@ -67,7 +67,10 @@ import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   countActiveFilters,
   deserializeFilters,
+  filterModeChanged,
   isFilterUsed,
+  listFilterValue,
+  matchesFilterItems,
   matchesListFilter,
   serializeFilters,
 } from "../../../data/data_table_filters";
@@ -380,29 +383,28 @@ export class HaConfigDeviceDashboard extends LitElement {
           if (configEntryIds.length === 1 && !this._subEntries) {
             this._loadSubEntries(configEntryIds[0]);
           }
-        } else if (
-          key === "ha-filter-integrations" &&
-          Array.isArray(filter.value) &&
-          filter.value.length
-        ) {
+        } else if (isFilterUsed(key, filter, "ha-filter-integrations")) {
+          const { ids: domains = [], exclude } = listFilterValue(filter.value)!;
           const entryIds = (entries ?? [])
-            .filter((entry) =>
-              (filter.value as string[]).includes(entry.domain)
-            )
+            .filter((entry) => domains.includes(entry.domain))
             .map((entry) => entry.entry_id);
-          outputDevices = outputDevices.filter((device) =>
-            device.config_entries.some((entryId) => entryIds.includes(entryId))
+          outputDevices = outputDevices.filter(
+            (device) =>
+              device.config_entries.some((entryId) =>
+                entryIds.includes(entryId)
+              ) !== !!exclude
           );
-          (filter.value as string[]).forEach((domain) =>
-            filteredDomains.add(domain)
-          );
+          // Shows the integrations' own info, which only fits including them
+          if (!exclude) {
+            domains.forEach((domain) => filteredDomains.add(domain));
+          }
         } else if (isFilterUsed(key, filter, "ha-filter-labels")) {
           outputDevices = outputDevices.filter((device) =>
             matchesListFilter(filter.value, device.labels)
           );
         } else if (filter.items) {
           outputDevices = outputDevices.filter((device) =>
-            filter.items!.has(device.id)
+            matchesFilterItems(filter.value, filter.items!, device.id)
           );
         }
       });
@@ -904,6 +906,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-floor-areas>
         <ha-filter-integrations
+          excludable
           .value=${this._filters["ha-filter-integrations"]?.value}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -1057,9 +1060,12 @@ export class HaConfigDeviceDashboard extends LitElement {
 
     // A filter also sends the value it was given, once it has found its items.
     // Only a change to what the URL holds is the user's, so a link isn't stored.
+    // The URL leaves out the mode of a filter without a selection, so a change
+    // to the mode is the user's too.
     if (
       devicesFilterQueryString(filters) !==
-      devicesFilterQueryString(this._filters)
+        devicesFilterQueryString(this._filters) ||
+      filterModeChanged(ev.detail.value, this._filters[type]?.value)
     ) {
       this._storageFilters = { ...this._storageFilters, [type]: ev.detail };
     }

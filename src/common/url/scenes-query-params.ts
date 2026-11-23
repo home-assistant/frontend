@@ -4,6 +4,7 @@ import type {
 } from "../../data/data_table_filters";
 import { dataTableQueryParamConfig } from "./data-table-query-params";
 import {
+  excludedFilters,
   floorAreasFilterFromParams,
   floorAreasFilterParams,
   listFilterFromParams,
@@ -30,6 +31,8 @@ export const scenesFilterQueryParamConfig = {
     "label",
     "category",
     "assistants",
+    // The filters that show the items that don't match their selection
+    "exclude",
   ],
   boolean: [
     { key: "no_area", trueValue: "1" },
@@ -57,6 +60,14 @@ export const scenesFilterQueryParams = (
   no_category: listFilterNone(filters["ha-filter-categories"]?.value),
   assistants: listFilterIds(filters["ha-filter-voice-assistants"]?.value),
   no_assistants: listFilterNone(filters["ha-filter-voice-assistants"]?.value),
+  exclude: excludedFilters({
+    assistants: filters["ha-filter-voice-assistants"]?.value,
+    entity: filters["ha-filter-entities"]?.value,
+    area: filters["ha-filter-floor-areas"]?.value,
+    device: filters["ha-filter-devices"]?.value,
+    label: filters["ha-filter-labels"]?.value,
+    category: filters["ha-filter-categories"]?.value,
+  }),
 });
 
 // The filters as the URL holds them, so values that filter the same, such as
@@ -107,25 +118,48 @@ export const scenesLinkFromUrl = (
 
   const floors = values("floor");
   const areas = values("area");
+  const exclude = values("exclude");
 
   return {
     search: search ?? "",
     filters: {
       "ha-filter-floor-areas": filter(
-        floorAreasFilterFromParams(floors, areas, params.no_area)
+        floorAreasFilterFromParams(floors, areas, params.no_area, exclude)
       ),
       "ha-filter-devices": filter(
-        listFilterFromParams(values("device"), params.no_device)
+        listFilterFromParams(
+          values("device"),
+          params.no_device,
+          exclude.includes("device")
+        )
       ),
-      "ha-filter-entities": filter(values("entity")),
+      "ha-filter-entities": filter(
+        listFilterFromParams(
+          values("entity"),
+          false,
+          exclude.includes("entity")
+        )
+      ),
       "ha-filter-labels": filter(
-        listFilterFromParams(values("label"), params.no_label)
+        listFilterFromParams(
+          values("label"),
+          params.no_label,
+          exclude.includes("label")
+        )
       ),
       "ha-filter-categories": filter(
-        listFilterFromParams(values("category"), params.no_category)
+        listFilterFromParams(
+          values("category"),
+          params.no_category,
+          exclude.includes("category")
+        )
       ),
       "ha-filter-voice-assistants": filter(
-        listFilterFromParams(values("assistants"), params.no_assistants)
+        listFilterFromParams(
+          values("assistants"),
+          params.no_assistants,
+          exclude.includes("assistants")
+        )
       ),
     },
   };
