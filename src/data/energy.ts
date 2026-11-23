@@ -1200,6 +1200,8 @@ export interface EnergyCollection extends Omit<
   compare?: CompareMode;
   combineSources?: boolean;
   prefs?: EnergyPreferences;
+  /** Calls back each time the preferences are fetched, before their data. */
+  subscribePrefs(listener: () => void): () => void;
   clearPrefs(): void;
   setPeriod(newStart: Date, newEnd?: Date): void;
   setCompare(compare: CompareMode): void;
@@ -1468,6 +1470,7 @@ export const getEnergyDataCollection = (
   let publishedSelectionRevision: number | undefined;
   let subscriptionId = 0;
   let store = createStore<EnergyData>();
+  const prefsListeners = new Set<() => void>();
 
   const refresh = async (): Promise<void> => {
     const requestRevision = ++revision;
@@ -1483,6 +1486,7 @@ export const getEnergyDataCollection = (
           prefs = await getEnergyPreferences(callWS);
           // Preferences are independent of the selected period and comparison.
           collection.prefs = prefs;
+          prefsListeners.forEach((listener) => listener());
         } catch (err: any) {
           if (err.code !== "not_found") {
             throw err;
@@ -1667,6 +1671,13 @@ export const getEnergyDataCollection = (
     prefs: options.prefs,
     _active: 0,
     isActive: () => !!collection._active,
+    subscribePrefs(listener) {
+      prefsListeners.add(listener);
+
+      return () => {
+        prefsListeners.delete(listener);
+      };
+    },
     clearPrefs() {
       revision++;
       selectionRevision++;

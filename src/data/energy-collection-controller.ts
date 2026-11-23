@@ -89,6 +89,8 @@ export class EnergyCollectionController extends ContextController {
 
   private _unsub?: UnsubscribeFunc;
 
+  private _unsubPrefs?: () => void;
+
   private _collection?: EnergyCollection;
 
   /* Whether data has come since subscribing, so the host can show a
@@ -119,8 +121,7 @@ export class EnergyCollectionController extends ContextController {
    * The data the host is about to get, without its statistics, once the
    * collection knows the energy preferences. A host can draw its real layout
    * from it under its skeleton, so the skeleton has the size of what comes.
-   * The energy dashboard builds its cards from the preferences, so they are
-   * known there before the first card renders.
+   * The host updates when the preferences arrive.
    */
   get placeholderData(): EnergyData | undefined {
     const collection = this._collection;
@@ -213,6 +214,13 @@ export class EnergyCollectionController extends ContextController {
     });
     this._options.beforeSubscribe?.(this._collection);
 
+    // So the host can draw its layout from the preferences before its data
+    this._unsubPrefs = this._collection.subscribePrefs(() => {
+      if (!this._hasData) {
+        this.host.requestUpdate();
+      }
+    });
+
     this._unsub = this._collection.subscribe((data) => {
       this._hasData = true;
       this._options.onData(data);
@@ -227,6 +235,8 @@ export class EnergyCollectionController extends ContextController {
   }
 
   private _unsubscribe(): void {
+    this._unsubPrefs?.();
+    this._unsubPrefs = undefined;
     this._unsub?.();
     this._unsub = undefined;
   }

@@ -525,11 +525,13 @@ export class HuiEnergySourcesTableCard
           calculateStatisticSumGrowth(data.statsCompare?.[costStatId])) ||
         0;
 
-      if (
-        !placeholder &&
-        energy === null &&
-        (!compare || compareEnergy === null)
-      ) {
+      // Before the data, a source shows unless its sensor is gone, as the
+      // table leaves out sources without data
+      const noData = placeholder
+        ? !isExternalStatistic(statId) && !this._states[statId]
+        : energy === null && (!compare || compareEnergy === null);
+
+      if (noData) {
         return {
           hasData: false,
           energy: energy || 0,

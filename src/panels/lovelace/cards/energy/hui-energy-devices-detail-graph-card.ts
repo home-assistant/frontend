@@ -81,6 +81,9 @@ export class HuiEnergyDevicesDetailGraphCard
 
   @state() private _data?: EnergyData;
 
+  // The data the chart was last built from
+  private _processedData?: EnergyData;
+
   @state() private _legendData?: CustomLegendOption["data"];
 
   @state() private _start = startOfToday();
@@ -141,12 +144,17 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   protected willUpdate(changedProps: PropertyValues) {
+    // Until the data comes, the legend lists the configured devices so the
+    // skeleton has as many legend rows as the chart will
+    const energyData = this._data ?? this._energy.placeholderData;
+
     if (
       changedProps.has("_config") ||
-      changedProps.has("_data") ||
-      changedProps.has("_i18n")
+      changedProps.has("_i18n") ||
+      energyData !== this._processedData
     ) {
-      this._processStatistics();
+      this._processedData = energyData;
+      this._processStatistics(energyData);
     }
   }
 
@@ -308,11 +316,7 @@ export class HuiEnergyDevicesDetailGraphCard
     }
   );
 
-  private _processStatistics() {
-    // Until the data comes, the legend lists the configured devices so the
-    // skeleton has as many legend rows as the chart will
-    const energyData = this._data ?? this._energy.placeholderData;
-
+  private _processStatistics(energyData?: EnergyData) {
     if (!energyData) {
       return;
     }
