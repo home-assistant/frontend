@@ -455,6 +455,7 @@ describe("generatePowerSourcesGraphData with separate sources", () => {
       "battery",
       "battery-negative",
       "usage",
+      "zero-line",
     ]);
     expect(separate.legendData!.map((item) => item.id)).toEqual([
       `solar-${RATE_IDS.solar}`,
@@ -471,30 +472,6 @@ describe("generatePowerSourcesGraphData with separate sources", () => {
     );
     expect(solarSum).toEqual(ys(combined.chartData[0]));
     expect(separate.chartData.slice(2)).toEqual(combined.chartData.slice(1));
-  });
-});
-
-describe("generatePowerSourcesGraphData with idle sources", () => {
-  it("breaks the line where a source stays at 0, keeping the slope to 0", () => {
-    const result = generatePowerSourcesGraphData({
-      localize: mockLocalize,
-      formatPower: (w: number) => `${w} W`,
-      states: {} as HassEntities,
-      computedStyles,
-      energyData: buildHomeEnergyData([solarSource], {
-        [RATE_IDS.solar]: hourlyStats([0, 0, 0, 2, 0, 0]),
-      }),
-      start: new Date(FIXED_EPOCH_MS),
-      end: new Date(FIXED_EPOCH_MS + dayMs),
-      now: FIXED_EPOCH_MS + dayMs + 60 * 60 * 1000,
-    });
-    const solar = result.chartData.find((series) => series.id === "solar")!;
-
-    expect(
-      (solar.data as ({ value: number[] } | number[])[]).map(
-        (p) => ("value" in p ? p.value : p)[1]
-      )
-    ).toEqual([null, null, 0, 2, 0, null]);
   });
 });
 

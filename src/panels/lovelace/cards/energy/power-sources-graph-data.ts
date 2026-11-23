@@ -81,24 +81,6 @@ function processData(
   return { positive, negative };
 }
 
-type LineData = NonNullable<LineSeriesOption["data"]>;
-
-// A series that stays at 0 would draw its line over the x axis, so break the
-// line there and keep only the zeros next to a non-zero value.
-const hideZeroRuns = (data: LineData): LineData => {
-  const values = data.map(
-    (point) =>
-      (typeof point === "object" && "value" in point!
-        ? point.value
-        : point) as [number, number]
-  );
-  return data.map((point, i) =>
-    values[i][1] === 0 && !values[i - 1]?.[1] && !values[i + 1]?.[1]
-      ? [values[i][0], null]
-      : point
-  );
-};
-
 const sourceSeriesId = (type: PowerSourceType, statRate: string) =>
   `${type}-${statRate}`;
 
@@ -516,9 +498,6 @@ export function generatePowerSourcesGraphData(
       usageData.push([(stat.start + stat.end) / 2, Math.max(0, stat.mean!)]);
     }
   }
-  for (const series of chartData) {
-    series.data = hideZeroRuns(series.data!);
-  }
   chartData.push({
     ...commonSeriesOptions,
     id: "usage",
@@ -531,6 +510,25 @@ export function generatePowerSourcesGraphData(
     data: usageData,
     z: 5,
   });
+  if (usageData.length) {
+    // Axis line above all series, so a source at 0 doesn't draw over it
+    chartData.push({
+      type: "line",
+      id: "zero-line",
+      data: [
+        [start.getTime(), 0],
+        [end.getTime(), 0],
+      ],
+      silent: true,
+      animation: false,
+      tooltip: { show: false },
+      lineStyle: {
+        width: 1.5,
+        color: computedStyles.getPropertyValue("--secondary-text-color"),
+      },
+      z: 6,
+    });
+  }
   legendData!.push({
     id: "usage",
     name: localize("ui.panel.lovelace.cards.energy.power_graph.usage"),
