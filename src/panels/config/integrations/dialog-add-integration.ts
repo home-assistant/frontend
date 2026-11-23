@@ -105,7 +105,6 @@ export interface IntegrationListItem extends HaListVirtualizedItem {
   is_header?: boolean;
   // Room after the last row
   is_end_space?: boolean;
-  integration_type?: string;
   // Search results that are not integrations: a brand or a category to
   // browse, or showing more of a section
   result?: "brand" | "category" | "more";
@@ -125,12 +124,8 @@ type Connection = "local" | "cloud";
 
 const CONNECTIONS: Connection[] = ["local", "cloud"];
 
-interface ListFilters {
-  connection?: Connection;
-}
-
-const ofFilters = (item: IntegrationListItem, filters?: ListFilters) =>
-  !filters?.connection || (filters.connection === "cloud") === !!item.cloud;
+const ofConnection = (item: IntegrationListItem, connection?: Connection) =>
+  !connection || (connection === "cloud") === !!item.cloud;
 
 type SearchSection = "brand" | "category" | "integration" | "helper";
 
@@ -282,10 +277,6 @@ class AddIntegrationDialog extends LitElement {
   // The row that had the focus is gone after drilling, so it moves on
   private _focusAfterDrill?: "in" | "out";
 
-  private _width?: number;
-
-  private _height?: number;
-
   private _loadId = 0;
 
   private _narrowQuery?: MediaQueryList;
@@ -387,8 +378,6 @@ class AddIntegrationDialog extends LitElement {
     this._expanded = new Set();
     this._drilled = false;
     this._integrationFilter = undefined;
-    this._width = undefined;
-    this._height = undefined;
     this._loadId++;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -404,7 +393,7 @@ class AddIntegrationDialog extends LitElement {
       this._listElement?.scrollElement?.scrollTo({ top: 0 });
     }
     if (this._focusAfterDrill === "in") {
-      (this._listElement || this._backButton)?.focus();
+      this._backButton?.focus();
     } else if (this._focusAfterDrill === "out") {
       (this._selectedBrowseRow || this._searchInput)?.focus();
     }
@@ -441,20 +430,6 @@ class AddIntegrationDialog extends LitElement {
     if (this._initialFilter !== undefined && this._filter === "") {
       this._initialFilter = undefined;
       this._filter = undefined;
-      this._width = undefined;
-      this._height = undefined;
-    } else if (
-      this.hasUpdated &&
-      changedProps.has("_filter") &&
-      !changedProps.has("_open") &&
-      (!this._width || !this._height)
-    ) {
-      // Store the width and height so that when we search, box doesn't jump
-      const boundingRect = this.shadowRoot!.querySelector(
-        "ha-list-virtualized"
-      )?.getBoundingClientRect();
-      this._width = boundingRect?.width;
-      this._height = boundingRect?.height;
     }
   }
 
@@ -465,7 +440,7 @@ class AddIntegrationDialog extends LitElement {
       i: Brands,
       h: Integrations,
       localize: LocalizeFunc,
-      filters?: ListFilters
+      connection?: Connection
     ): {
       integrations: IntegrationListItem[];
       yamlIntegrations: IntegrationListItem[];
@@ -510,7 +485,6 @@ class AddIntegrationDialog extends LitElement {
             single_config_entry: integration.single_config_entry,
             categories:
               integration.categories || supportedIntegration.categories,
-            integration_type: supportedIntegration.integration_type,
           });
         } else if (
           !("integration_type" in integration) &&
@@ -552,7 +526,6 @@ class AddIntegrationDialog extends LitElement {
             overwrites_built_in: integration.overwrites_built_in,
             cloud: integration.iot_class?.startsWith("cloud_"),
             categories: integration.categories,
-            integration_type: integration.integration_type,
           });
         }
       });
@@ -564,7 +537,6 @@ class AddIntegrationDialog extends LitElement {
         name: integration.name || domainToName(localize, domain),
         config_flow: integration.config_flow,
         is_helper: true,
-        integration_type: "helper",
         is_built_in: integration.is_built_in !== false,
         cloud: integration.iot_class?.startsWith("cloud_"),
         categories: integration.categories,
@@ -574,7 +546,7 @@ class AddIntegrationDialog extends LitElement {
       const ofThisConnection = (item: IntegrationListItem) =>
         item.domains
           ? this._brandRows(item).some((row) => !row.is_header)
-          : ofFilters(item, filters);
+          : ofConnection(item, connection);
       return {
         integrations: integrations.filter(ofThisConnection),
         yamlIntegrations: yamlIntegrations.filter(ofThisConnection),
@@ -592,13 +564,13 @@ class AddIntegrationDialog extends LitElement {
       subcategory?: string,
       byBrand = false,
       brand?: string,
-      filters?: ListFilters
+      connection?: Connection
     ): IntegrationListItem[] => {
       const { integrations, helpers } = this._getListItems(
         i,
         h,
         localize,
-        filters
+        connection
       );
 
       const byName = (a: IntegrationListItem, b: IntegrationListItem) =>
@@ -694,12 +666,8 @@ class AddIntegrationDialog extends LitElement {
         cloud: integration.iot_class?.startsWith("cloud_"),
         single_config_entry: integration.single_config_entry,
         categories: integration.categories,
-        integration_type: integration.supported_by
-          ? findIntegration(this._integrations, integration.supported_by)
-              ?.integration_type
-          : integration.integration_type,
       }))
-      .filter((row) => ofFilters(row, this._getFilters(this._connection)))
+      .filter((row) => ofConnection(row, this._connection))
       .sort((a, b) =>
         caseInsensitiveStringCompare(a.name, b.name, this.hass.locale.language)
       );
@@ -722,9 +690,9 @@ class AddIntegrationDialog extends LitElement {
       i: Brands,
       h: Integrations,
       localize: LocalizeFunc,
-      filters?: ListFilters
+      connection?: Connection
     ) =>
-      this._getListItems(i, h, localize, filters)
+      this._getListItems(i, h, localize, connection)
         .integrations.filter((item) => this._isBrand(item))
         .map((item) => ({
           item,
@@ -809,7 +777,7 @@ class AddIntegrationDialog extends LitElement {
       this._integrations,
       this._helpers,
       this.hass.localize,
-      this._getFilters(this._connection)
+      this._connection
     );
     return this._getCategoryCounts(integrations, helpers);
   }
@@ -823,14 +791,9 @@ class AddIntegrationDialog extends LitElement {
       this._subcategory,
       this._byBrand(),
       this._brand,
-      this._getFilters(this._connection)
+      this._connection
     );
   }
-
-  // One object while the filters stay, so the lists built from it stay too
-  private _getFilters = memoizeOne((connection?: Connection): ListFilters => ({
-    connection,
-  }));
 
   // What the list shows: the search results, or what is browsed
   private _getRows(): IntegrationListItem[] {
@@ -854,7 +817,7 @@ class AddIntegrationDialog extends LitElement {
       this._filter!,
       this._categoryIcons,
       !this._integrationFilter,
-      this._getFilters(this._connection)
+      this._connection
     );
   }
 
@@ -868,13 +831,13 @@ class AddIntegrationDialog extends LitElement {
       filter: string,
       categoryIcons: IntegrationCategoryIcons | undefined,
       browse: boolean,
-      filters?: ListFilters
+      connection?: Connection
     ): Record<SearchSection, IntegrationListItem[]> => {
       const { integrations, yamlIntegrations, helpers } = this._getListItems(
         i,
         h,
         localize,
-        filters
+        connection
       );
       const search = (items: IntegrationListItem[]) =>
         new Fuse(items, searchOptions(filter))
@@ -899,7 +862,7 @@ class AddIntegrationDialog extends LitElement {
       });
 
       const brands: IntegrationListItem[] = browse
-        ? this._getBrands(i, h, localize, filters).map(({ item }) => ({
+        ? this._getBrands(i, h, localize, connection).map(({ item }) => ({
             ...item,
             result: "brand",
             description: item.integrations?.join(", "),
@@ -1165,11 +1128,6 @@ class AddIntegrationDialog extends LitElement {
       .navigateToResult=${this._navigateToResult}
       .showManageLink=${this._showDiscovered || this._showDiscoveredView}
       .boxed=${!integration}
-      style=${styleMap({
-        minWidth: `${this._width}px`,
-        // The discovered list fills its scroll view for its footer instead
-        minHeight: integration ? `581px` : undefined,
-      })}
       @close-dialog=${this.closeDialog}
       @supported-by=${this._handleSupportedByEvent}
       @select-brand=${this._handleSelectBrandEvent}
@@ -1427,11 +1385,16 @@ class AddIntegrationDialog extends LitElement {
   private _connectionSelected(ev: HaDropdownSelectEvent) {
     const value = ev.detail.item.value;
     this._connection = value === "all" ? undefined : (value as Connection);
+    this._dropEmptySelection();
+  }
+
+  // What is browsed may have nothing to show, like a category passed in or
+  // one without integrations of the picked connection. It is left out of the
+  // browse pane then, so browse its parent, or everything, instead.
+  private _dropEmptySelection() {
     if (!this._integrations || !this._helpers) {
       return;
     }
-    // What was browsed may have nothing of this connection, it is left out
-    // of the browse pane then, so browse everything instead
     const counts = this._getCounts();
     if (
       this._subcategory &&
@@ -1448,7 +1411,7 @@ class AddIntegrationDialog extends LitElement {
         this._integrations,
         this._helpers,
         this.hass.localize,
-        this._getFilters(this._connection)
+        this._connection
       ).some(({ item }) => item.domain === this._brand)
     ) {
       this._brand = undefined;
@@ -1467,20 +1430,32 @@ class AddIntegrationDialog extends LitElement {
       this._searchSection = row.section;
       return;
     }
-    this._filter = "";
-    this._searchSection = undefined;
-    this._showDiscoveredView = false;
     if (row.result === "brand") {
       this._browseBy = "brand";
-      this._brand = row.domain;
-      this._category = undefined;
-      this._subcategory = undefined;
+      this._browse({ brand: row.domain });
     } else {
       this._browseBy = "category";
-      this._brand = undefined;
-      this._category = row.category;
-      this._subcategory = row.subcategory;
-      this._expanded = new Set([...this._expanded, row.category!]);
+      this._browse({ category: row.category, subcategory: row.subcategory });
+    }
+  }
+
+  // Shows what was picked in the browse pane, or found by searching
+  private _browse(
+    view: {
+      brand?: string;
+      category?: string;
+      subcategory?: string;
+      discovered?: boolean;
+    } = {}
+  ) {
+    this._filter = "";
+    this._searchSection = undefined;
+    this._showDiscoveredView = !!view.discovered;
+    this._brand = view.brand;
+    this._category = view.category;
+    this._subcategory = view.subcategory;
+    if (view.category) {
+      this._expanded = new Set([...this._expanded, view.category]);
     }
     this._drillIn();
   }
@@ -1495,14 +1470,6 @@ class AddIntegrationDialog extends LitElement {
   // Collapsed, the box shows its title and this many subcategories
   private static _SUBCATEGORIES_SHOWN = 4;
 
-  // A title and 40px rows, with the box's border
-  private _subcategoriesHeight(count: number) {
-    const rows = this._subcategoriesExpanded
-      ? count
-      : Math.min(count, AddIntegrationDialog._SUBCATEGORIES_SHOWN);
-    return 40 + rows * 40 + 2;
-  }
-
   private _renderSubcategories(
     subcategories: IntegrationCategory["subcategories"]
   ) {
@@ -1511,22 +1478,20 @@ class AddIntegrationDialog extends LitElement {
     const more =
       !this._subcategoriesExpanded &&
       subcategories.length > AddIntegrationDialog._SUBCATEGORIES_SHOWN;
-    return html`<div
-      class="subcategories"
-      style=${styleMap({
-        height: `${this._subcategoriesHeight(subcategories.length)}px`,
-      })}
-    >
+    const shown = more
+      ? subcategories.slice(0, AddIntegrationDialog._SUBCATEGORIES_SHOWN)
+      : subcategories;
+    return html`<div class="subcategories">
       <ha-section-title>
         ${this.hass.localize("ui.panel.config.integrations.subcategories")}
       </ha-section-title>
       <ha-list-base>
-        ${subcategories.map(
+        ${shown.map(
           (subcategory) =>
             html`<ha-list-item-button
               .category=${this._category}
               .subcategory=${subcategory.slug}
-              @click=${this._subcategoryPicked}
+              @click=${this._categoryPicked}
             >
               ${
                 icons?.subcategory?.[subcategory.slug]?.default
@@ -1758,7 +1723,7 @@ class AddIntegrationDialog extends LitElement {
                                 )}
                                 .category=${category.slug}
                                 .subcategory=${subcategory.slug}
-                                @click=${this._subcategoryPicked}
+                                @click=${this._categoryPicked}
                                 @keydown=${this._treeKeydown}
                               >
                                 <ha-icon-next
@@ -1810,7 +1775,7 @@ class AddIntegrationDialog extends LitElement {
           this._integrations,
           this._helpers!,
           this.hass.localize,
-          this._getFilters(this._connection)
+          this._connection
         )
       : [];
     const allBrands =
@@ -1855,21 +1820,11 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private _brandPicked(ev: Event) {
-    this._filter = "";
-    this._showDiscoveredView = false;
-    this._brand = (ev.currentTarget as any).brand as string | undefined;
-    this._category = undefined;
-    this._subcategory = undefined;
-    this._drillIn();
+    this._browse({ brand: (ev.currentTarget as any).brand });
   }
 
   private _discoveredPicked() {
-    this._brand = undefined;
-    this._filter = "";
-    this._showDiscoveredView = true;
-    this._category = undefined;
-    this._subcategory = undefined;
-    this._drillIn();
+    this._browse({ discovered: true });
   }
 
   private _protocolPicked(ev: Event) {
@@ -1938,32 +1893,13 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private _allPicked() {
-    this._filter = "";
-    this._brand = undefined;
-    this._showDiscoveredView = false;
-    this._category = undefined;
-    this._subcategory = undefined;
-    this._drillIn();
+    this._browse();
   }
 
+  // A category's row, or one of its subcategories
   private _categoryPicked(ev: Event) {
-    this._filter = "";
-    const category = (ev.currentTarget as any).category as string;
-    this._showDiscoveredView = false;
-    this._brand = undefined;
-    this._category = category;
-    this._subcategory = undefined;
-    this._expanded = new Set([...this._expanded, category]);
-    this._drillIn();
-  }
-
-  private _subcategoryPicked(ev: Event) {
-    this._filter = "";
-    this._showDiscoveredView = false;
-    this._brand = undefined;
-    this._category = (ev.currentTarget as any).category as string;
-    this._subcategory = (ev.currentTarget as any).subcategory as string;
-    this._drillIn();
+    const { category, subcategory } = ev.currentTarget as any;
+    this._browse({ category, subcategory });
   }
 
   // Says why picking it first shows what was found
@@ -2134,19 +2070,7 @@ class AddIntegrationDialog extends LitElement {
       true
     );
 
-    // A category passed in that has nothing to browse falls back to its
-    // parent category, or to all integrations
-    const counts = this._getCounts();
-    if (
-      this._subcategory &&
-      !counts.has(`${this._category}.${this._subcategory}`)
-    ) {
-      this._subcategory = undefined;
-    }
-    if (this._category && !counts.has(this._category)) {
-      this._category = undefined;
-      this._expanded = new Set();
-    }
+    this._dropEmptySelection();
   }
 
   private async _filterChanged(ev: HASSDomTargetEvent<HaInputSearch>) {
