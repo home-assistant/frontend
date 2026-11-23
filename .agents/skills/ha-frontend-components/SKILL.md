@@ -99,6 +99,8 @@ Pick the indicator by what is loading, following the [Loading pattern](https://c
 - Use `ha-spinner` only when a whole area loads and its shape is unknown.
 - Use `ha-button` with `loading`, or `ha-progress-button`, for an action started from a button. Don't put a separate spinner next to it.
 
+Every skeleton uses the same soft wave (`ha-skeleton`'s default `effect="sheen"`). It's one wave across all the skeletons on the page, from the leftmost to the rightmost, which each skeleton shows its slice of, on one shared clock. It flows from one skeleton into the next, starts its next sweep as soon as it leaves the content, and a skeleton added mid-sweep joins in rather than starting over. Don't change the effect or speed (`--ha-skeleton-duration`) for one component.
+
 Wrap the indicator in `ha-fade-in` from `src/components/animation/ha-fade-in.ts`:
 
 - Fade a skeleton in straight away over about 300ms (`.duration=${300}`), as the data table does. It stands in for the content, so a delay would leave an empty gap.

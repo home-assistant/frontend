@@ -7,46 +7,93 @@ import { customElement, query } from "lit/decorators";
  * Placeholder shown while content loads. Sized by its container unless a
  * more specific variant such as `ha-skeleton-text` or `ha-skeleton-icon` is used.
  *
- * A soft wave sweeps across it by default. It's one wave across the whole
- * window: each skeleton shows its own slice of it, and all of them run in
- * step, so the wave flows from one skeleton into the next, and a skeleton
- * added later joins mid-sweep instead of starting over.
+ * A soft wave sweeps across it by default. It's one wave across all the
+ * skeletons on the page, from the leftmost to the rightmost: each skeleton
+ * shows its own slice of it, and all of them run in step, so the wave flows
+ * from one skeleton into the next, and a skeleton added later joins
+ * mid-sweep instead of starting over. Each sweep starts as the last one
+ * leaves the content.
  *
  * @cssprop --ha-skeleton-color - The fill color. Defaults to `var(--ha-color-fill-neutral-normal-resting)`.
  * @cssprop --ha-skeleton-sheen-color - The sheen color when `effect="sheen"`. Defaults to `var(--ha-color-fill-neutral-normal-hover)`.
  * @cssprop --ha-skeleton-border-radius - The corner radius. Defaults to `var(--ha-border-radius-sm)`.
- * @cssprop --ha-skeleton-duration - How long one sweep across the window and its pause take when `effect="sheen"`. Defaults to `3s`.
+ * @cssprop --ha-skeleton-duration - How long one sweep across the skeletons takes when `effect="sheen"`. Defaults to `3s`.
  */
 @customElement("ha-skeleton")
 export class HaSkeleton extends WaSkeleton {
   override effect: WaSkeleton["effect"] = "sheen";
 
-  @query(".wave") private _wave?: HTMLDivElement;
+  /* Every skeleton showing the wave, which share one track */
+  private static _waving = new Set<HaSkeleton>();
 
-  private _placeFrame?: number;
+  private static _trackFrame?: number;
+
+  @query(".wave") private _wave?: HTMLDivElement;
 
   private _resizeObserver?: ResizeObserver;
 
+  /**
+   * Lay the one track the wave runs along over the content: from the left
+   * edge of the leftmost skeleton to the right edge of the rightmost, so no
+   * time goes on empty space around them. It's measured again whenever a
+   * skeleton comes, goes or changes size, and at the end of each sweep, so
+   * it follows the layout as it moves.
+   */
+  private static _scheduleTrack() {
+    if (HaSkeleton._trackFrame !== undefined) {
+      return;
+    }
+
+    HaSkeleton._trackFrame = requestAnimationFrame(() => {
+      HaSkeleton._trackFrame = undefined;
+
+      // Read every skeleton before writing any, so layout runs once
+      const boxes = [...HaSkeleton._waving].flatMap((skeleton) => {
+        const rect = skeleton.getBoundingClientRect();
+
+        return rect.width > 0 ? [{ skeleton, rect }] : [];
+      });
+
+      if (boxes.length === 0) {
+        return;
+      }
+
+      const left = Math.min(...boxes.map(({ rect }) => rect.left));
+      const right = Math.max(...boxes.map(({ rect }) => rect.right));
+
+      boxes.forEach(({ skeleton, rect }) =>
+        skeleton._placeWave(left - rect.left, right - left)
+      );
+    });
+  }
+
   public connectedCallback() {
     super.connectedCallback();
-    this._resizeObserver ??= new ResizeObserver(() => this._placeWave());
+    this._resizeObserver ??= new ResizeObserver(() =>
+      HaSkeleton._scheduleTrack()
+    );
     this._resizeObserver.observe(this);
+
+    if (this.effect === "sheen") {
+      HaSkeleton._waving.add(this);
+      HaSkeleton._scheduleTrack();
+    }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._resizeObserver?.disconnect();
-
-    if (this._placeFrame !== undefined) {
-      cancelAnimationFrame(this._placeFrame);
-      this._placeFrame = undefined;
-    }
+    HaSkeleton._waving.delete(this);
+    HaSkeleton._scheduleTrack();
   }
 
   public override render() {
     return html`
       <div part="indicator" class="indicator">
-        <div class="wave" @animationiteration=${this._placeWave}></div>
+        <div
+          class="wave"
+          @animationiteration=${HaSkeleton._scheduleTrack}
+        ></div>
       </div>
     `;
   }
@@ -55,40 +102,32 @@ export class HaSkeleton extends WaSkeleton {
     super.updated(changedProperties);
 
     if (changedProperties.has("effect")) {
-      this._placeWave();
+      if (this.effect === "sheen") {
+        HaSkeleton._waving.add(this);
+      } else {
+        HaSkeleton._waving.delete(this);
+      }
+
+      HaSkeleton._scheduleTrack();
     }
   }
 
-  /**
-   * Line the wave up with the window and with every other skeleton. Its
-   * place is read again at the end of each sweep, while it's out of sight,
-   * so it follows the skeleton when the layout around it moves.
-   */
-  private _placeWave() {
-    if (this.effect !== "sheen" || this._placeFrame !== undefined) {
+  /* Put this skeleton's slice of the wave in its place on the track */
+  private _placeWave(trackStart: number, trackWidth: number) {
+    const wave = this._wave;
+
+    if (!wave) {
       return;
     }
 
-    // Read now, write on the next frame, so many skeletons don't force a
-    // layout each
-    const { left } = this.getBoundingClientRect();
+    wave.style.left = `${trackStart}px`;
+    wave.style.setProperty("--ha-skeleton-track-width", `${trackWidth}px`);
 
-    this._placeFrame = requestAnimationFrame(() => {
-      this._placeFrame = undefined;
-      const wave = this._wave;
-
-      if (!wave) {
-        return;
+    // All waves count from the same moment, so they stay in step
+    wave.getAnimations().forEach((animation) => {
+      if (animation.startTime !== 0) {
+        animation.startTime = 0;
       }
-
-      wave.style.left = `${-left}px`;
-
-      // All waves count from the same moment, so they stay in step
-      wave.getAnimations().forEach((animation) => {
-        if (animation.startTime !== 0) {
-          animation.startTime = 0;
-        }
-      });
     });
   }
 
@@ -119,8 +158,8 @@ export class HaSkeleton extends WaSkeleton {
           background: var(--color);
           animation: none;
         }
-        /* The wave crosses the whole window, placed from its left edge, and
-           moves with transform so it stays cheap */
+        /* The wave crosses the track over all the skeletons, placed from its
+           start, and moves with transform so it stays cheap */
         :host([effect="sheen"]) .wave {
           display: block;
           position: absolute;
@@ -135,19 +174,20 @@ export class HaSkeleton extends WaSkeleton {
             transparent
           );
           transform: translateX(-100%);
-          animation: ha-skeleton-sheen var(--ha-skeleton-duration, 3s)
-            ease-in-out infinite;
+          /* An even pace with no hold, so the next sweep enters as soon as
+             the last one leaves */
+          animation: ha-skeleton-sheen var(--ha-skeleton-duration, 3s) linear
+            infinite;
         }
         :host([effect="sheen"]:dir(rtl)) .wave {
           animation-direction: reverse;
         }
         @keyframes ha-skeleton-sheen {
-          0% {
+          from {
             transform: translateX(-100%);
           }
-          75%,
-          100% {
-            transform: translateX(100vw);
+          to {
+            transform: translateX(var(--ha-skeleton-track-width, 100vw));
           }
         }
         @media (forced-colors: active) {
