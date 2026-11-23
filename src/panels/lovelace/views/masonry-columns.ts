@@ -1,4 +1,5 @@
-// Find column with < 5 size, else smallest column
+// Find column with < 5 size, else smallest column. A negative size counts as
+// 0, so that larger sizes only ever move cards on sooner.
 const getColumnIndex = (columnSizes: number[], size: number) => {
   let minIndex = 0;
   for (let i = 0; i < columnSizes.length; i++) {
@@ -11,7 +12,7 @@ const getColumnIndex = (columnSizes: number[], size: number) => {
     }
   }
 
-  columnSizes[minIndex] += size;
+  columnSizes[minIndex] += Math.max(size, 0);
 
   return minIndex;
 };
@@ -66,7 +67,7 @@ export interface ColumnsDecision {
  * filled or removed later would change the width of the cards already shown.
  *
  * @param sizes Card sizes in card order, undefined while not known yet.
- *   Known sizes must not be negative.
+ *   A negative size counts as 0.
  * @param shown Whether each card is shown, in card order
  * @param maxColumns Number of columns that fit, at most the number of cards
  * @returns The columns, or undefined while they depend on unknown sizes

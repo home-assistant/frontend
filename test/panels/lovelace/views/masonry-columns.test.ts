@@ -103,6 +103,22 @@ describe("decideColumns", () => {
     ).toBeUndefined();
   });
 
+  it("counts a negative size as 0", () => {
+    // A markdown card can report a negative size. With 10 for the unknown
+    // size, the last card needs a second column.
+    expect(decideColumns([-5, undefined, 5], [true, true, true], 2)).toBe(
+      undefined
+    );
+    expect(decideColumns([-5, 10, 5], [true, true, true], 2)).toEqual({
+      count: 2,
+      held: [0, 1],
+    });
+    expect(decideColumns([-5, 1, 1], [true, true, true], 2)).toEqual({
+      count: 1,
+      held: [],
+    });
+  });
+
   it("treats missing sizes as unknown", () => {
     // The view starts with an empty array of sizes
     expect(decideColumns(new Array(4), [true, true, true, true], 2)).toBe(
