@@ -135,6 +135,18 @@ export class HaFilterLabels extends LitElement {
                 @ha-list-item-selected=${this._handleItemToggled}
                 @ha-list-item-deselected=${this._handleItemToggled}
               >
+                ${
+                  !this._filter || noLabel.toLowerCase().includes(this._filter)
+                    ? html`<ha-list-item-option
+                        appearance="checkbox"
+                        selection-position="end"
+                        .value=${HaFilterLabels._noneId}
+                        .selected=${value?.none ?? false}
+                      >
+                        <span slot="headline">${noLabel}</span>
+                      </ha-list-item-option>`
+                    : nothing
+                }
                 ${repeat(
                   this._filteredLabels(
                     this._labels || [],
@@ -166,18 +178,6 @@ export class HaFilterLabels extends LitElement {
                       </ha-label>
                     </ha-list-item-option>`
                 )}
-                ${
-                  !this._filter || noLabel.toLowerCase().includes(this._filter)
-                    ? html`<ha-list-item-option
-                        appearance="checkbox"
-                        selection-position="end"
-                        .value=${HaFilterLabels._noneId}
-                        .selected=${value?.none ?? false}
-                      >
-                        <span slot="headline" class="no-value">${noLabel}</span>
-                      </ha-list-item-option>`
-                    : nothing
-                }
               </ha-list-selectable>
               <ha-list-base>
                 <ha-list-item-button @click=${this._manageLabels}>

@@ -98,6 +98,18 @@ export class HaFilterVoiceAssistants extends LitElement {
                 @ha-list-item-selected=${this._handleItemToggled}
                 @ha-list-item-deselected=${this._handleItemToggled}
               >
+                <ha-list-item-option
+                  appearance="checkbox"
+                  selection-position="end"
+                  .value=${NO_VALUE_ID}
+                  .selected=${this._listValue?.none ?? false}
+                >
+                  <span slot="headline"
+                    >${this._localize(
+                      "ui.components.subpage-data-table.no_voice_assistant"
+                    )}</span
+                  >
+                </ha-list-item-option>
                 ${repeat(
                   this._voiceAssistantOptions,
                   (voiceAssistantId) => voiceAssistantId,
@@ -118,18 +130,6 @@ export class HaFilterVoiceAssistants extends LitElement {
                       >
                     </ha-list-item-option>`
                 )}
-                <ha-list-item-option
-                  appearance="checkbox"
-                  selection-position="end"
-                  .value=${NO_VALUE_ID}
-                  .selected=${this._listValue?.none ?? false}
-                >
-                  <span slot="headline" class="no-value"
-                    >${this._localize(
-                      "ui.components.subpage-data-table.no_voice_assistant"
-                    )}</span
-                  >
-                </ha-list-item-option>
               </ha-list-selectable>
             </div>`
           : nothing

@@ -110,6 +110,14 @@ export class HaFilterBlueprints extends LitElement {
     }
   }
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    // Stop a lookup that's still running, as connectedCallback starts a new
+    // one. The newer request id makes the lookup drop its result.
+    this._relatedRequestId++;
+    this._dropWithoutBlueprint();
+  }
+
   // Untyped, as it also checks private state
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
@@ -177,6 +185,18 @@ export class HaFilterBlueprints extends LitElement {
                           @ha-list-item-selected=${this._handleItemToggled}
                           @ha-list-item-deselected=${this._handleItemToggled}
                         >
+                          <ha-list-item-option
+                            appearance="checkbox"
+                            selection-position="end"
+                            .value=${NO_VALUE_ID}
+                            .selected=${listFilterValue(this.value)?.none ?? false}
+                          >
+                            <span slot="headline"
+                              >${this._localize(
+                                "ui.components.subpage-data-table.no_blueprint"
+                              )}</span
+                            >
+                          </ha-list-item-option>
                           ${Object.entries(this._blueprints).map(
                             ([id, blueprint]) =>
                               "error" in blueprint
@@ -192,18 +212,6 @@ export class HaFilterBlueprints extends LitElement {
                                     >
                                   </ha-list-item-option>`
                           )}
-                          <ha-list-item-option
-                            appearance="checkbox"
-                            selection-position="end"
-                            .value=${NO_VALUE_ID}
-                            .selected=${listFilterValue(this.value)?.none ?? false}
-                          >
-                            <span slot="headline" class="no-value"
-                              >${this._localize(
-                                "ui.components.subpage-data-table.no_blueprint"
-                              )}</span
-                            >
-                          </ha-list-item-option>
                         </ha-list-selectable>
                       `
                     : nothing

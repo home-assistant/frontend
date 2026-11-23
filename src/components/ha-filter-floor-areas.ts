@@ -191,6 +191,17 @@ export class HaFilterFloorAreas extends LitElement {
                   @ha-list-item-deselected=${this._handleRemoved}
                   aria-label=${this._localize("ui.panel.config.areas.caption")}
                 >
+                  <ha-list-item-option
+                    appearance="checkbox"
+                    selection-position="end"
+                    .value=${"no_area"}
+                    .type=${"no_area"}
+                    .selected=${this.value?.no_area || false}
+                  >
+                    <span slot="headline">
+                      ${this._localize("ui.components.area-picker.no_area")}
+                    </span>
+                  </ha-list-item-option>
                   ${repeat(
                     areas?.floors || [],
                     (floor) => floor.floor_id,
@@ -254,17 +265,6 @@ export class HaFilterFloorAreas extends LitElement {
                         groupOtherAreas
                       )
                   )}
-                  <ha-list-item-option
-                    appearance="checkbox"
-                    selection-position="end"
-                    .value=${"no_area"}
-                    .type=${"no_area"}
-                    .selected=${this.value?.no_area || false}
-                  >
-                    <span slot="headline" class="no-value">
-                      ${this._localize("ui.components.area-picker.no_area")}
-                    </span>
-                  </ha-list-item-option>
                 </ha-list-selectable>
               </div>
             `
