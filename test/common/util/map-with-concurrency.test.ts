@@ -66,6 +66,32 @@ describe("mapWithConcurrency", () => {
     expect(started).toEqual([0, 1]);
   });
 
+  it("starts no new calls after the signal aborts", async () => {
+    const calls = Array.from({ length: 4 }, () => deferred<number>());
+    const started: number[] = [];
+    const controller = new AbortController();
+
+    const result = mapWithConcurrency(
+      [0, 1, 2, 3],
+      2,
+      (index) => {
+        started.push(index);
+        return calls[index].promise;
+      },
+      controller.signal
+    );
+    const rejected = expect(result).rejects.toThrow();
+
+    await Promise.resolve();
+    expect(started).toEqual([0, 1]);
+
+    controller.abort();
+    calls[0].resolve(0);
+    calls[1].resolve(1);
+    await rejected;
+    expect(started).toEqual([0, 1]);
+  });
+
   it("handles no items", async () => {
     expect(await mapWithConcurrency([], 3, async () => 1)).toEqual([]);
   });

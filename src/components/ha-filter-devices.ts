@@ -125,16 +125,17 @@ export class HaFilterDevices extends LitElement {
   private _withoutDevice?: {
     type: keyof RelatedResult;
     includeDisabledEntities: boolean;
-    stateIds?: Set<string>;
+    itemIds: string[];
     links: DeviceLinks;
     items: Promise<string[]>;
+    controller: AbortController;
   };
 
   public connectedCallback() {
     super.connectedCallback();
     // The config pages are cached, so an item may have been edited while this
     // filter was not on screen
-    this._withoutDevice = undefined;
+    this._dropWithoutDevice();
     if (this.hasUpdated && hasFilterSelection(this.value)) {
       this._findRelated();
     }
@@ -147,7 +148,7 @@ export class HaFilterDevices extends LitElement {
     const reconnected =
       properties.get("_connected") === false && !!this._connected;
     if (reconnected) {
-      this._withoutDevice = undefined;
+      this._dropWithoutDevice();
     }
 
     if (
@@ -352,21 +353,31 @@ export class HaFilterDevices extends LitElement {
 
     const type = this.type;
 
-    const [results, withoutDevice] = await Promise.all([
-      type
-        ? Promise.all(
-            (value.ids ?? []).map((deviceId) =>
-              findRelated(
-                this._api,
-                "device",
-                deviceId,
-                this.includeDisabledEntities
+    let results: RelatedResult[];
+    let withoutDevice: string[];
+    try {
+      [results, withoutDevice] = await Promise.all([
+        type
+          ? Promise.all(
+              (value.ids ?? []).map((deviceId) =>
+                findRelated(
+                  this._api,
+                  "device",
+                  deviceId,
+                  this.includeDisabledEntities
+                )
               )
             )
-          )
-        : [],
-      type && value.none ? this._itemsWithoutDevice(type) : [],
-    ]);
+          : [],
+        type && value.none ? this._itemsWithoutDevice(type) : [],
+      ]);
+    } catch (err) {
+      // A newer lookup took over and stopped this one
+      if (requestId !== this._relatedRequestId) {
+        return;
+      }
+      throw err;
+    }
 
     // The value changed while this lookup ran
     if (requestId !== this._relatedRequestId) {
@@ -413,23 +424,34 @@ export class HaFilterDevices extends LitElement {
       this._entities,
       this.includeDisabledEntities
     );
+    // Only items of this type count, so another entity being added or removed
+    // doesn't search them all again
+    const itemIds = this._itemIds(this._stateIds, type);
     const cached = this._withoutDevice;
     if (
       cached?.type === type &&
       cached.includeDisabledEntities === this.includeDisabledEntities &&
-      cached.stateIds === this._stateIds &&
+      deepEqual(cached.itemIds, itemIds) &&
       deepEqual(cached.links, links)
     ) {
       return cached.items;
     }
 
-    const items = this._searchItemsWithoutDevice(type);
+    // Stop the lookup this one replaces from starting more searches
+    this._dropWithoutDevice();
+    const controller = new AbortController();
+    const items = this._searchItemsWithoutDevice(
+      type,
+      itemIds,
+      controller.signal
+    );
     const lookup = {
       type,
       includeDisabledEntities: this.includeDisabledEntities,
-      stateIds: this._stateIds,
+      itemIds,
       links,
       items,
+      controller,
     };
     this._withoutDevice = lookup;
     // Look them up again next time when this lookup fails
@@ -440,6 +462,19 @@ export class HaFilterDevices extends LitElement {
     });
     return items;
   }
+
+  private _dropWithoutDevice() {
+    this._withoutDevice?.controller.abort();
+    this._withoutDevice = undefined;
+  }
+
+  // The ids of the items of a type, such as the automations
+  private _itemIds = memoizeOne(
+    (stateIds: Set<string> | undefined, type: keyof RelatedResult) =>
+      [...(stateIds ?? [])]
+        .filter((entityId) => computeDomain(entityId) === type)
+        .sort()
+  );
 
   // The devices that exist and the device of each entity the search uses,
   // which is what a search for an item's devices depends on
@@ -466,16 +501,16 @@ export class HaFilterDevices extends LitElement {
   // of its entities, which only a search for each of them tells. This matches
   // the items a search for each device finds.
   private async _searchItemsWithoutDevice(
-    type: keyof RelatedResult
+    type: keyof RelatedResult,
+    itemIds: string[],
+    signal: AbortSignal
   ): Promise<string[]> {
-    const itemIds = [...(this._stateIds || [])].filter(
-      (entityId) => computeDomain(entityId) === type
-    );
     const results = await mapWithConcurrency(
       itemIds,
       RELATED_SEARCH_CONCURRENCY,
       (itemId) =>
-        findRelated(this._api, type, itemId, this.includeDisabledEntities)
+        findRelated(this._api, type, itemId, this.includeDisabledEntities),
+      signal
     );
     return itemIds.filter((_itemId, index) => !results[index].device?.length);
   }
