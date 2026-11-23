@@ -3,7 +3,6 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../common/decorators/consume";
 import type {
@@ -152,7 +151,9 @@ export class HaSkeletonOverlay extends LitElement {
 
   protected render() {
     const loading = this._isLoading;
-    const label = this._i18n?.localize("ui.common.loading");
+    // Named like ha-spinner, which falls back to English before translations
+    // have loaded
+    const label = this._i18n?.localize("ui.common.loading") || "Loading";
 
     return html`
       <slot
@@ -167,11 +168,7 @@ export class HaSkeletonOverlay extends LitElement {
       ${
         loading
           ? html`
-              <div
-                class="skeleton"
-                role="progressbar"
-                aria-label=${ifDefined(label)}
-              >
+              <div class="skeleton" role="progressbar" aria-label=${label}>
                 <slot
                   name="skeleton"
                   @slotchange=${this._skeletonSlotChanged}
