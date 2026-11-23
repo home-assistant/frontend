@@ -96,6 +96,15 @@ export class HaFilterEntities extends LitElement {
 
   private _relatedRequestId = 0;
 
+  public connectedCallback() {
+    super.connectedCallback();
+    // The config pages are cached, so an item may have been edited while this
+    // filter was not on screen
+    if (this.hasUpdated && hasFilterSelection(this.value)) {
+      this._findRelated();
+    }
+  }
+
   public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
 

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   countActiveFilters,
   filterModeChanged,
+  filtersMatchUnassignedItem,
   listFilterEventValue,
   matchesFilterItems,
   matchesListFilter,
@@ -207,5 +208,93 @@ describe("countActiveFilters", () => {
         undefined,
       ])
     ).toBe(2);
+  });
+});
+
+describe("filtersMatchUnassignedItem", () => {
+  it("matches when no filter has a selection", () => {
+    expect(filtersMatchUnassignedItem({})).toBe(true);
+    expect(
+      filtersMatchUnassignedItem({
+        "ha-filter-labels": [],
+        "ha-filter-devices": undefined,
+        "ha-filter-floor-areas": {},
+      })
+    ).toBe(true);
+    expect(
+      filtersMatchUnassignedItem({
+        "ha-filter-floor-areas": { areas: [], floors: [], no_area: false },
+      })
+    ).toBe(true);
+  });
+
+  it("matches a No area selection, also next to selected areas", () => {
+    expect(
+      filtersMatchUnassignedItem({ "ha-filter-floor-areas": { no_area: true } })
+    ).toBe(true);
+    expect(
+      filtersMatchUnassignedItem({
+        "ha-filter-floor-areas": { areas: ["kitchen"], no_area: true },
+      })
+    ).toBe(true);
+  });
+
+  it("leaves the item out when an id is selected", () => {
+    expect(filtersMatchUnassignedItem({ "ha-filter-labels": ["energy"] })).toBe(
+      false
+    );
+    expect(
+      filtersMatchUnassignedItem({
+        "ha-filter-floor-areas": { floors: ["ground"] },
+      })
+    ).toBe(false);
+  });
+
+  it("needs every filter to match", () => {
+    expect(
+      filtersMatchUnassignedItem({
+        "ha-filter-floor-areas": { no_area: true },
+        "ha-filter-categories": ["lights"],
+      })
+    ).toBe(false);
+  });
+});
+
+// Without shows exactly what With hides, also for an item with nothing
+// assigned, and matching all needs every pick to match it.
+describe("filtersMatchUnassignedItem with modes", () => {
+  it("keeps an item without labels when a label is set to Without", () => {
+    expect(
+      filtersMatchUnassignedItem({
+        "ha-filter-labels": { ids: ["energy"], exclude: true },
+      })
+    ).toBe(true);
+    expect(
+      filtersMatchUnassignedItem({
+        "ha-filter-labels": { ids: [], none: true, exclude: true },
+      })
+    ).toBe(false);
+  });
+
+  it("only matches No area when matching all with nothing else picked", () => {
+    expect(
+      filtersMatchUnassignedItem({
+        "ha-filter-floor-areas": { no_area: true, all: true },
+      })
+    ).toBe(true);
+    expect(
+      filtersMatchUnassignedItem({
+        "ha-filter-floor-areas": {
+          areas: ["kitchen"],
+          no_area: true,
+          all: true,
+        },
+      })
+    ).toBe(false);
+    expect(
+      filtersMatchUnassignedItem({
+        "ha-filter-floor-areas": { areas: ["kitchen"], exclude: true },
+      })
+    ).toBe(true);
   });
 });

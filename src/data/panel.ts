@@ -11,6 +11,7 @@ import {
 import type { LocalizeKeys } from "../common/translations/localize";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 import type { HomeAssistant, PanelInfo } from "../types";
+import { MARKETPLACE_NAME } from "../common/translations/name-placeholders";
 
 export const APP_PANEL = "app";
 export const HOME_PANEL = "home";
@@ -68,6 +69,10 @@ export const getPanelTitle = (
   hass: Pick<HomeAssistant, "localize">,
   panel: PanelInfo
 ): string | undefined => {
+  if (panel.url_path === "marketplace") {
+    return MARKETPLACE_NAME;
+  }
+
   const translationKey = getPanelNameTranslationKey(panel);
 
   return hass.localize(translationKey) || panel.title || undefined;

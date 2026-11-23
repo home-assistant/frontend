@@ -142,10 +142,10 @@ export class HaFilterDevices extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    // An item may have been edited while the cached page was hidden, so look
-    // up the items without one again
+    // The config pages are cached, so an item may have been edited while this
+    // filter was not on screen: look up what is picked again
     this._withoutDevice = undefined;
-    if (this.hasUpdated && listFilterValue(this.value)?.none) {
+    if (this.hasUpdated && hasFilterSelection(this.value)) {
       this._findRelated();
     }
   }

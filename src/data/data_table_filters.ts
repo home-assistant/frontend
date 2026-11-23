@@ -376,3 +376,35 @@ export const isRelatedItemsFilterUsed = (
     (key === filterName || filterName.includes(key)) && filter.items;
   return isUsed;
 };
+
+/**
+ * Whether an item with nothing assigned (no area, device, label, category or
+ * assistant) passes the filters: it matches only "No …" options, combined as
+ * any or all and shown or left out by With or Without.
+ */
+export const filtersMatchUnassignedItem = (
+  filters: DataTableFiltersValues
+): boolean =>
+  Object.values(filters).every((value) => {
+    if (!hasFilterSelection(value)) {
+      return true;
+    }
+    if (
+      value &&
+      !Array.isArray(value) &&
+      ("floors" in value || "areas" in value || "no_area" in value)
+    ) {
+      const floorAreas = value as FloorAreasFilterValue;
+      // No area is the only pick an item without an area matches
+      const picks = [
+        ...(floorAreas.no_area ? [true] : []),
+        ...(floorAreas.floors ?? []).map(() => false),
+        ...(floorAreas.areas ?? []).map(() => false),
+      ];
+      const matches = floorAreas.all
+        ? picks.every(Boolean)
+        : picks.some(Boolean);
+      return matches !== !!floorAreas.exclude;
+    }
+    return matchesListFilter(value, []);
+  });

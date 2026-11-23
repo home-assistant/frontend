@@ -11,6 +11,7 @@ import {
   formatDateYear,
   formatDateWeekday,
   formatDateWeekdayShort,
+  formatISODateOnly,
 } from "../../../src/common/datetime/format_date";
 import {
   NumberFormat,
@@ -23,6 +24,25 @@ import { demoConfig } from "../../../src/fake_data/demo_config";
 
 describe("formatDate", () => {
   const dateObj = new Date(2017, 10, 18, 11, 12, 13, 1400);
+
+  describe("formatISODateOnly", () => {
+    it("Formats date parts as ISO regardless of locale output order", () => {
+      expect(
+        formatISODateOnly(
+          new Date("2026-11-15T00:00:00Z"),
+          {
+            language: "en",
+            number_format: NumberFormat.language,
+            time_format: TimeFormat.language,
+            date_format: DateFormat.language,
+            time_zone: TimeZone.server,
+            first_weekday: FirstWeekday.language,
+          },
+          demoConfig
+        )
+      ).toBe("2026-11-14");
+    });
+  });
 
   describe("formatDate", () => {
     it("Formats English dates", () => {
