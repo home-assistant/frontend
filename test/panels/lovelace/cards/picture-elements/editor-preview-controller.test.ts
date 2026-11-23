@@ -7,13 +7,16 @@ import type {
 } from "../../../../../src/panels/lovelace/elements/types";
 
 // The image is 400x300 px; elements are placed by inline left/top in px, which
-// is what getComputedStyle reports for them.
+// is what getComputedStyle reports for them. jsdom has no layout, so the
+// image's computed size comes from its inline size as well.
 const setup = ({
   configs = [{ type: "icon" }] as LovelaceElementConfig[],
   active = true,
   selectedIndex = undefined as number | undefined,
 } = {}) => {
   const root = document.createElement("div");
+  root.style.width = "400px";
+  root.style.height = "300px";
   root.getBoundingClientRect = () => new DOMRect(0, 0, 400, 300);
   Object.defineProperty(root, "offsetWidth", { value: 400 });
   Object.defineProperty(root, "offsetHeight", { value: 300 });
@@ -25,6 +28,9 @@ const setup = ({
     el.style.left = "100px";
     el.style.top = "60px";
     el.getBoundingClientRect = () => new DOMRect(88, 48, 24, 24);
+    // Rendered, unlike in jsdom.
+    el.getClientRects = () =>
+      [el.getBoundingClientRect()] as unknown as DOMRectList;
     root.appendChild(el);
     return el;
   });
@@ -44,7 +50,6 @@ const setup = ({
   const handlers = {
     selectElement: vi.fn(),
     moveElement: vi.fn(),
-    clickImage: vi.fn(),
   };
   const bridge = new PictureElementsEditorBridge(handlers);
   bridge.setState(active, selectedIndex);
@@ -134,7 +139,7 @@ describe("PictureElementsEditorPreviewController", () => {
     const { elements, handlers, gesture } = setup();
     gesture(elements[0], [100, 60], [140, 90]);
     // +40px of 400px and +30px of 300px from 25%/20%.
-    expect(handlers.moveElement).toHaveBeenCalledWith(0, 35, 30);
+    expect(handlers.moveElement).toHaveBeenCalledWith(0, { left: 35, top: 30 });
     expect(elements[0].style.left).toBe("35%");
     expect(handlers.selectElement).not.toHaveBeenCalled();
   });
@@ -142,7 +147,104 @@ describe("PictureElementsEditorPreviewController", () => {
   it("keeps a dragged element on the image", () => {
     const { elements, handlers, gesture } = setup();
     gesture(elements[0], [100, 60], [-500, 900]);
-    expect(handlers.moveElement).toHaveBeenCalledWith(0, 0, 100);
+    expect(handlers.moveElement).toHaveBeenCalledWith(0, { left: 0, top: 100 });
+  });
+
+  describe("elements placed from the right or bottom", () => {
+    // 300px from the right and 240px from the bottom, where left/top put it.
+    // The card's transform centers an element on its left/top point only, so
+    // from the right or bottom its center is its own size further left or up.
+    const setupFrom = (style: Record<string, string>) => {
+      const test = setup({ configs: [{ type: "icon", style }] });
+      const element = test.elements[0];
+      element.style.right = "300px";
+      element.style.bottom = "240px";
+      element.getBoundingClientRect = () =>
+        new DOMRect(style.right ? 64 : 88, style.bottom ? 24 : 48, 24, 24);
+      return test;
+    };
+
+    it.each([
+      [
+        { right: "75%", bottom: "80%" },
+        { right: 65, bottom: 70 },
+      ],
+      [
+        { left: "25%", bottom: "80%" },
+        { left: 35, bottom: 70 },
+      ],
+      [
+        { right: "75%", top: "20%" },
+        { right: 65, top: 30 },
+      ],
+    ])("moves an element styled %j along its sides", (style, moved) => {
+      const { elements, handlers, gesture } = setupFrom(style);
+      // +40px of 400px and +30px of 300px.
+      gesture(elements[0], [100, 60], [140, 90]);
+      expect(handlers.moveElement).toHaveBeenCalledWith(0, moved);
+      for (const [prop, value] of Object.entries(moved)) {
+        expect(elements[0].style.getPropertyValue(prop)).toBe(`${value}%`);
+      }
+    });
+
+    // The center goes from 19%/12% to the top left or bottom right corner.
+    it.each([
+      [[-500, -500], { right: 94, bottom: 92 }],
+      [[900, 900], { right: -6, bottom: -8 }],
+    ])(
+      "keeps the center of an element dragged to %j on the image",
+      (to, moved) => {
+        const { elements, handlers, gesture } = setupFrom({
+          right: "75%",
+          bottom: "80%",
+        });
+        gesture(elements[0], [100, 60], to as [number, number]);
+        expect(handlers.moveElement).toHaveBeenCalledWith(0, moved);
+      }
+    );
+
+    it("moves an element placed past a side of the image", () => {
+      const { elements, handlers, gesture } = setupFrom({
+        right: "-5%",
+        top: "20%",
+      });
+      // 20px past the right side, which puts its center 4px inside.
+      elements[0].style.right = "-20px";
+      elements[0].getBoundingClientRect = () => new DOMRect(384, 48, 24, 24);
+      gesture(elements[0], [396, 60], [388, 60]);
+      expect(handlers.moveElement).toHaveBeenCalledWith(0, {
+        right: -3,
+        top: 20,
+      });
+    });
+
+    it("moves the element's center to a click on the image", () => {
+      const { root, bridge, handlers, gesture } = setupFrom({
+        right: "75%",
+        bottom: "80%",
+      });
+      bridge.setState(true, 0);
+      // From 19%/12% to 50%/25%.
+      gesture(root, [200, 75]);
+      expect(handlers.moveElement).toHaveBeenCalledWith(0, {
+        right: 44,
+        bottom: 67,
+      });
+    });
+
+    it("puts an element back when the drag is cancelled", () => {
+      const { root, elements, pointer } = setupFrom({
+        right: "75%",
+        bottom: "80%",
+      });
+      pointer("pointerdown", elements[0], 100, 60);
+      pointer("pointermove", root, 140, 90);
+      pointer("pointercancel", root, 140, 90);
+      expect(elements[0].style.right).toBe("75%");
+      expect(elements[0].style.bottom).toBe("80%");
+      expect(elements[0].style.left).toBe("100px");
+      expect(elements[0].style.top).toBe("60px");
+    });
   });
 
   it("only drags a large overlay once it is selected", () => {
@@ -154,14 +256,14 @@ describe("PictureElementsEditorPreviewController", () => {
 
     bridge.setState(true, 0);
     gesture(elements[0], [100, 60], [140, 90]);
-    expect(handlers.moveElement).toHaveBeenCalledWith(0, 35, 30);
+    expect(handlers.moveElement).toHaveBeenCalledWith(0, { left: 35, top: 30 });
   });
 
   it("never drags elements it can't write back", () => {
     const { elements, handlers, gesture } = setup({
       configs: [
         { type: "conditional" },
-        { type: "icon", style: { right: "5%" } },
+        { type: "icon", style: { left: "5%", right: "5%" } },
         { type: "icon", style: { left: "100px" } },
       ],
     });
@@ -194,6 +296,20 @@ describe("PictureElementsEditorPreviewController", () => {
     expect(elements[0].style.left).toBe("25%");
     expect(elements[0].style.top).toBe("");
     expect(handlers.moveElement).not.toHaveBeenCalled();
+  });
+
+  it("puts an element back whose sides changed during the drag", () => {
+    const configs: LovelaceElementConfig[] = [
+      { type: "icon", style: { left: "25%", top: "20%" } },
+    ];
+    const { root, elements, handlers, pointer } = setup({ configs });
+    pointer("pointerdown", elements[0], 100, 60);
+    pointer("pointermove", root, 140, 90);
+    configs[0] = { type: "icon", style: { right: "75%", top: "20%" } };
+    pointer("pointerup", root, 140, 90);
+    expect(handlers.moveElement).not.toHaveBeenCalled();
+    expect(elements[0].style.left).toBe("");
+    expect(elements[0].style.top).toBe("20%");
   });
 
   it("puts an element placed at a YAML zero back when cancelled", () => {
@@ -230,16 +346,117 @@ describe("PictureElementsEditorPreviewController", () => {
     expect(handlers.moveElement).not.toHaveBeenCalled();
   });
 
-  it("reports a click on the image in percent", () => {
-    const { root, handlers, gesture } = setup();
+  it("moves the selected element's center to a click on the image", () => {
+    const { root, bridge, handlers, gesture } = setup();
     gesture(root, [200, 75]);
-    expect(handlers.clickImage).toHaveBeenCalledWith(50, 25);
+    expect(handlers.moveElement).not.toHaveBeenCalled();
+
+    bridge.setState(true, 0);
+    gesture(root, [200, 75]);
+    expect(handlers.moveElement).toHaveBeenCalledWith(0, { left: 50, top: 25 });
+  });
+
+  describe("an image with a fractional size", () => {
+    // Its height is its width times the aspect ratio, while offsetWidth and
+    // offsetHeight stay rounded to 400x300. The element is at 25%/25%.
+    const setupFractional = (selectedIndex?: number) => {
+      const test = setup({ selectedIndex });
+      test.root.style.width = "399.5px";
+      test.root.style.height = "300.5px";
+      test.root.getBoundingClientRect = () => new DOMRect(0, 0, 399.5, 300.5);
+      const element = test.elements[0];
+      element.style.left = "99.875px";
+      element.style.top = "75.125px";
+      element.getBoundingClientRect = () => new DOMRect(87.875, 63.125, 24, 24);
+      return test;
+    };
+
+    it("moves the selected element's center exactly to a click", () => {
+      const { root, handlers, gesture } = setupFractional(0);
+      gesture(root, [99.875, 75.125]);
+      expect(handlers.moveElement).toHaveBeenCalledWith(0, {
+        left: 25,
+        top: 25,
+      });
+    });
+
+    it("stops a dragged element exactly at a side of the image", () => {
+      const { elements, handlers, gesture } = setupFractional();
+      gesture(elements[0], [99.875, 75.125], [-500, 75.125]);
+      expect(handlers.moveElement).toHaveBeenCalledWith(0, {
+        left: 0,
+        top: 25,
+      });
+    });
+  });
+
+  describe("an image scaled by an ancestor", () => {
+    // Laid out at 400x300 px but shown at 320x240 px, like under scale(0.8).
+    // The element's computed left/top stay in layout px (25%/20%), while its
+    // rect is scaled like the image's.
+    const setupScaled = (selectedIndex?: number) => {
+      const test = setup({
+        configs: [{ type: "icon", style: { left: "25%", top: "20%" } }],
+        selectedIndex,
+      });
+      test.root.getBoundingClientRect = () => new DOMRect(0, 0, 320, 240);
+      test.elements[0].getBoundingClientRect = () =>
+        new DOMRect(72, 40, 16, 16);
+      return test;
+    };
+
+    it("moves the selected element's center to a click", () => {
+      const { root, handlers, gesture } = setupScaled(0);
+      gesture(root, [160, 120]);
+      expect(handlers.moveElement).toHaveBeenCalledWith(0, {
+        left: 50,
+        top: 50,
+      });
+    });
+
+    it("moves a dragged element by the pointer delta", () => {
+      const { elements, handlers, gesture } = setupScaled();
+      // +40 of 320 visual px.
+      gesture(elements[0], [80, 48], [120, 48]);
+      expect(handlers.moveElement).toHaveBeenCalledWith(0, {
+        left: 37.5,
+        top: 20,
+      });
+      expect(elements[0].style.left).toBe("37.5%");
+    });
+  });
+
+  it("leaves elements alone while the image has no height", () => {
+    const { root, elements, handlers, gesture } = setup({ selectedIndex: 0 });
+    root.style.height = "0px";
+    root.getBoundingClientRect = () => new DOMRect(0, 0, 400, 0);
+    gesture(elements[0], [100, 60], [140, 90]);
+    gesture(root, [200, 0]);
+    expect(handlers.moveElement).not.toHaveBeenCalled();
+    expect(elements[0].style.left).toBe("100px");
+  });
+
+  it("leaves a selected element alone while it is hidden", () => {
+    const { root, elements, handlers, gesture } = setup({
+      configs: [{ type: "icon", style: { left: "50%", top: "50%" } }],
+      selectedIndex: 0,
+    });
+    // With display: none it has no layout, and its computed left/top stay in
+    // percent.
+    elements[0].style.left = "50%";
+    elements[0].style.top = "50%";
+    elements[0].getBoundingClientRect = () => new DOMRect(0, 0, 0, 0);
+    elements[0].getClientRects = () => [] as unknown as DOMRectList;
+    gesture(root, [200, 75]);
+    gesture(elements[0], [0, 0], [40, 30]);
+    expect(handlers.moveElement).not.toHaveBeenCalled();
+    expect(elements[0].style.left).toBe("50%");
   });
 
   it("ignores a drag across the image", () => {
-    const { root, handlers, gesture } = setup();
+    const { root, handlers, gesture } = setup({ selectedIndex: 0 });
     gesture(root, [200, 75], [500, -20]);
-    expect(handlers.clickImage).not.toHaveBeenCalled();
+    expect(handlers.moveElement).not.toHaveBeenCalled();
   });
 
   it("ignores ctrl-clicks, which open the context menu on macOS", () => {
