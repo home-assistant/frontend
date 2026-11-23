@@ -101,17 +101,13 @@ export interface IntegrationListItem extends HaListVirtualizedItem {
   overwrites_built_in?: boolean;
   is_add?: boolean;
   single_config_entry?: boolean;
-  // A brand's name above its integrations, not something to pick
+  // A brand title row, not pickable
   is_header?: boolean;
-  // Room after the last row
   is_end_space?: boolean;
-  // Search results that are not integrations: a brand or a category to
-  // browse, or showing more of a section
   result?: "brand" | "category" | "more";
   category?: string;
   subcategory?: string;
   section?: SearchSection;
-  // An icon like `mdi:shape`, instead of the domain's
   icon?: string;
   description?: string;
   categories?: string[];
@@ -119,7 +115,6 @@ export interface IntegrationListItem extends HaListVirtualizedItem {
 
 type BrowseBy = "category" | "brand";
 
-// Like the website's filter: what needs the cloud, and what doesn't
 type Connection = "local" | "cloud";
 
 const CONNECTIONS: Connection[] = ["local", "cloud"];
@@ -136,8 +131,6 @@ const SEARCH_SECTIONS: SearchSection[] = [
   "helper",
 ];
 
-// Like the automation editor's search, a section shows this many until it
-// is picked
 const MAX_SEARCH_ITEMS_PER_SECTION = 5;
 
 const searchOptions = (filter: string): IFuseOptions<IntegrationListItem> => ({
@@ -160,13 +153,11 @@ interface IntegrationCategory {
   subcategories: { slug: string; name: string }[];
 }
 
-// Where the icons of the cards start: the card's margin, border and padding.
-// Titles start there too.
+// Lines titles up with the cards' icons
 const TITLE_INSET =
   "calc(var(--ha-space-4) + 1px + var(--ha-row-item-padding-inline))";
 
-// A brand's name in the list, like the titles of the automation editor's
-// items. Rows render in the list's shadow root, so the style is inline.
+// Inline, rows render in the list's shadow root
 const ROW_TITLE_STYLE = {
   display: "flex",
   "align-items": "center",
@@ -178,8 +169,6 @@ const ROW_TITLE_STYLE = {
   "background-color": "var(--card-background-color)",
 };
 
-// An integration is in a category when it lists the category itself, or one
-// of its subcategories.
 const inCategory = (
   categories: string[] | undefined,
   category?: string,
@@ -210,21 +199,17 @@ class AddIntegrationDialog extends LitElement {
 
   @state() private _categoryIcons?: IntegrationCategoryIcons;
 
-  // What Home Assistant found, shown instead of the integrations
   @state() private _showDiscoveredView = false;
 
-  // Categories with their subcategories unfolded in the tree
   @state() private _expanded = new Set<string>();
 
-  // On a phone: showing what was picked in the browse pane, full width
-  // like the automation editor, instead of the browse pane
+  // Phone: showing the picked item instead of the browse pane
   @state() private _drilled = false;
 
   @state() private _integrationFilter?: IntegrationFilter;
 
   @state() private _pickedBrand?: string;
 
-  // Group the list by brand, or filter it by category; kept between opens
   @state()
   @storage({
     key: "add-integration-browse-by",
@@ -233,22 +218,16 @@ class AddIntegrationDialog extends LitElement {
   })
   private _browseBy: BrowseBy = "brand";
 
-  // The brand the top row of the list belongs to, held above the list
   @state() private _stickyBrand?: string;
 
-  // On a phone, all of a category's subcategories are shown, not the first
   @state() private _subcategoriesExpanded = false;
 
-  // Only what works without the cloud, or only what needs it
   @state() private _connection?: Connection;
 
-  // The section of the search results picked with its chip
   @state() private _searchSection?: SearchSection;
 
-  // The list is scrolled, its title casts a shadow over it
   @state() private _listScrolled = false;
 
-  // Browsing by brand: the brand the list is filtered to
   @state() private _brand?: string;
 
   @state() private _prevPickedBrand?: string;
@@ -263,7 +242,6 @@ class AddIntegrationDialog extends LitElement {
 
   @state() private _open = false;
 
-  // One pane, the list with a filter button, instead of the tree next to it
   @state() private _narrow = false;
 
   @query("ha-list-virtualized") private _listElement?: HaListVirtualized;
@@ -274,7 +252,7 @@ class AddIntegrationDialog extends LitElement {
 
   @query("ha-input-search") private _searchInput?: HaInputSearch;
 
-  // The row that had the focus is gone after drilling, so it moves on
+  // The focused row is gone after drilling
   private _focusAfterDrill?: "in" | "out";
 
   private _loadId = 0;
@@ -326,13 +304,12 @@ class AddIntegrationDialog extends LitElement {
     this._initialFilter = params?.initialFilter;
     this._integrationFilter = params?.integrationFilter;
     this._removeMediaListeners();
-    // Below this, the tree leaves too little room for the integrations
+    // Below this the tree leaves too little room for the list
     this._narrowQuery = matchMedia(
       "all and (max-width: 700px), all and (max-height: 500px)"
     );
     this._narrowQuery.addEventListener("change", this._narrowChanged);
     this._narrow = this._narrowQuery.matches;
-    // A phone shows the category it opens on, not the browse pane
     this._drilled = this._narrow && !!params?.category;
   }
 
@@ -345,11 +322,8 @@ class AddIntegrationDialog extends LitElement {
     this._narrowQuery = undefined;
   }
 
-  // Turning a tablet or resizing the window switches between the phone list
-  // and the category tree
   private _narrowChanged = (ev: MediaQueryListEvent) => {
     this._narrow = ev.matches;
-    // A phone starts again on the browse pane
     this._drilled = false;
   };
 
@@ -382,8 +356,7 @@ class AddIntegrationDialog extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  // The list element stays while what it shows changes, so it would keep
-  // where it was scrolled to
+  // The list element is reused and would keep its scroll position
   private _scrollToTop = false;
 
   protected updated(changedProps: PropertyValues): void {
@@ -407,7 +380,6 @@ class AddIntegrationDialog extends LitElement {
       loadVirtualizer();
     }
 
-    // A new list starts at its top, until it reports what is visible
     if (
       changedProps.has("_filter") ||
       changedProps.has("_category") ||
@@ -433,8 +405,6 @@ class AddIntegrationDialog extends LitElement {
     }
   }
 
-  // Every row the dialog can show, so filtering, the counts and the
-  // category list all agree on what is in a category
   private _getListItems = memoizeOne(
     (
       i: Brands,
@@ -507,7 +477,6 @@ class AddIntegrationDialog extends LitElement {
               : undefined,
             is_built_in: integration.is_built_in !== false,
             overwrites_built_in: integration.overwrites_built_in,
-            // A brand is in every category of its integrations
             categories: integration.integrations
               ? Object.values(integration.integrations).flatMap(
                   (brandIntegration) => brandIntegration.categories || []
@@ -515,7 +484,7 @@ class AddIntegrationDialog extends LitElement {
               : undefined,
           });
         } else if ("integration_type" in integration) {
-          // Integration without a config flow, only found by searching
+          // No config flow, only found by searching
           yamlIntegrations.push({
             id: domain,
             interactive: true,
@@ -542,7 +511,6 @@ class AddIntegrationDialog extends LitElement {
         categories: integration.categories,
       }));
 
-      // A brand is in it when one of its integrations is
       const ofThisConnection = (item: IntegrationListItem) =>
         item.domains
           ? this._brandRows(item).some((row) => !row.is_header)
@@ -589,9 +557,7 @@ class AddIntegrationDialog extends LitElement {
           .flatMap((item) => this._brandRows(item))
           .filter((row) => !brand || !row.is_header);
       }
-      // Browsing a category also shows the helpers in it. A brand shows its
-      // integrations in it instead of itself, like the website's categories:
-      // Google is Google Gemini in AI models.
+      // A brand shows its integrations here, not itself, like the website
       if (category) {
         return [...integrations, ...helpers]
           .filter(ofCategory)
@@ -613,8 +579,6 @@ class AddIntegrationDialog extends LitElement {
     }
   );
 
-  // A brand's name with its integrations below it, so they are picked right
-  // away. An integration without a brand is under its own name.
   private _brandRows(item: IntegrationListItem): IntegrationListItem[] {
     const header: IntegrationListItem = {
       id: `${item.domain}/header`,
@@ -637,7 +601,6 @@ class AddIntegrationDialog extends LitElement {
       .filter((domain) =>
         (PROTOCOL_INTEGRATIONS as readonly string[]).includes(domain)
       )
-      // Adding a Zigbee, Z-Wave or Matter device is local
       .filter(() => this._connection !== "cloud")
       .map((domain) => ({
         id: `${item.domain}/add_${domain}`,
@@ -677,14 +640,13 @@ class AddIntegrationDialog extends LitElement {
     return [header, ...protocols, ...integrations];
   }
 
-  // A brand with integrations, or only devices of protocols like Matter
+  // Also brands with only protocol devices, like Matter
   private _isBrand(item: IntegrationListItem) {
     const entry = this._integrations?.[item.domain];
     return Boolean(item.domains || (entry && !("integration_type" in entry)));
   }
 
-  // The brands with more than one thing to add, and how many, A to Z.
-  // An integration on its own is found under all brands.
+  // Single integrations are only under all brands
   private _getBrands = memoizeOne(
     (
       i: Brands,
@@ -708,8 +670,6 @@ class AddIntegrationDialog extends LitElement {
         )
   );
 
-  // How many integrations, brands, and helpers each category and
-  // subcategory has, like the counts in the website's sidebar
   private _getCategoryCounts = memoizeOne(
     (
       integrations: IntegrationListItem[],
@@ -718,7 +678,6 @@ class AddIntegrationDialog extends LitElement {
       const counts = new Map<string, number>();
       const add = (slug: string) =>
         counts.set(slug, (counts.get(slug) || 0) + 1);
-      // A brand counts as its integrations, as a category lists those
       const items = [...integrations, ...helpers].flatMap((item) =>
         item.domains
           ? this._brandRows(item).filter((row) => !row.is_header && !row.is_add)
@@ -733,7 +692,6 @@ class AddIntegrationDialog extends LitElement {
     }
   );
 
-  // Only the categories that have something to browse, from the counts
   private _getCategories = memoizeOne(
     (
       counts: Map<string, number>,
@@ -744,7 +702,7 @@ class AddIntegrationDialog extends LitElement {
       for (const slug of counts.keys()) {
         const [category, subcategory] = slug.split(".");
         const name = localize(`${key}.${category}.name` as any);
-        // A category this Home Assistant doesn't know, left out
+        // Unknown to this Home Assistant version
         if (!name) {
           continue;
         }
@@ -795,18 +753,12 @@ class AddIntegrationDialog extends LitElement {
     );
   }
 
-  // What the list shows: the search results, or what is browsed
   private _getRows(): IntegrationListItem[] {
     if (!this._filter) {
       return this._getIntegrations();
     }
     const found = this._getFound();
-    return this._getSearchRows(
-      found,
-      // A section with nothing found shows that, like an empty search
-      this._searchSection,
-      this.hass.localize
-    );
+    return this._getSearchRows(found, this._searchSection, this.hass.localize);
   }
 
   private _getFound() {
@@ -821,8 +773,6 @@ class AddIntegrationDialog extends LitElement {
     );
   }
 
-  // Like the automation editor's search: everything that matches, by
-  // section, instead of the browse pane and its list
   private _getSearchFound = memoizeOne(
     (
       i: Brands,
@@ -844,10 +794,8 @@ class AddIntegrationDialog extends LitElement {
           .search(filter)
           .map((result) => result.item);
 
-      // Every integration once, also the ones only listed under a brand
       const leaves = new Map<string, IntegrationListItem>();
       [...integrations, ...yamlIntegrations].forEach((item) => {
-        // A brand of only protocol devices is found as a brand
         const rows =
           item.domains || (browse && this._isBrand(item))
             ? this._brandRows(item).filter(
@@ -922,8 +870,7 @@ class AddIntegrationDialog extends LitElement {
         const items = found[type];
         const more =
           !section && items.length > MAX_SEARCH_ITEMS_PER_SECTION + 1;
-        // Ids like `section/id`, so the section title is held while
-        // scrolling like a brand's
+        // `section/id`, so the section title sticks like a brand's
         return [
           {
             id: `${type}/header`,
@@ -957,7 +904,6 @@ class AddIntegrationDialog extends LitElement {
       })
   );
 
-  // A filtered dialog has no browsing to switch
   private _byBrand() {
     return this._browseBy === "brand" && !this._integrationFilter;
   }
@@ -987,8 +933,6 @@ class AddIntegrationDialog extends LitElement {
         ? this._browsingTitle()
         : this.hass.localize("ui.panel.config.integrations.new");
 
-    // Where a phone came from, above the title, like the automation editor:
-    // the category of a subcategory, or the dialog itself
     const headerSubtitle =
       !showingBrandView && this._narrow && this._drilled
         ? this._subcategory
@@ -1187,25 +1131,18 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private _renderAll(integrations?: IntegrationListItem[]): TemplateResult {
-    // Wide screens have the browse pane next to the list. A phone has one
-    // at a time, like the automation editor: the browse pane, then what was
-    // picked in it, or what was searched.
     const browse = !this._integrationFilter;
-    // Searching shows only the results, like the automation editor
     const showBrowse =
       browse && !this._filter && (!this._narrow || !this._drilled);
     const showItems =
       !this._narrow || !browse || this._drilled || !!this._filter;
     const rows = integrations;
-    // What the list is narrowed to; a phone has it in the dialog's title
+    // A phone has it in the dialog's title
     const listTitle =
       !this._narrow && !this._filter && (this._category || this._brand)
         ? this._browsingTitle()
         : undefined;
-    // The chips to show one section of the search results
     const sections = this._filter && browse;
-    // On a phone, a category's subcategories are above its list, like an
-    // area's devices in the automation editor
     const subcategories =
       this._narrow && this._drilled && this._category && !this._subcategory
         ? this._getCategories(this._getCounts(), this.hass.localize).find(
@@ -1292,8 +1229,6 @@ class AddIntegrationDialog extends LitElement {
                           <div
                             class=${classMap({
                               list: true,
-                              // Search results are one boxed list, like the
-                              // automation editor's
                               boxed: !!this._filter,
                             })}
                           >
@@ -1343,7 +1278,6 @@ class AddIntegrationDialog extends LitElement {
     );
   }
 
-  // Like the data tables' group by: the filter's name and its value
   private _renderFilterChip(
     filter: "browse_by" | "connection",
     value: string,
@@ -1388,9 +1322,8 @@ class AddIntegrationDialog extends LitElement {
     this._dropEmptySelection();
   }
 
-  // What is browsed may have nothing to show, like a category passed in or
-  // one without integrations of the picked connection. It is left out of the
-  // browse pane then, so browse its parent, or everything, instead.
+  // A category passed in, or emptied by the connection filter, isn't in the
+  // browse pane, so fall back to its parent or everything
   private _dropEmptySelection() {
     if (!this._integrations || !this._helpers) {
       return;
@@ -1423,8 +1356,6 @@ class AddIntegrationDialog extends LitElement {
     this._searchSection = this._searchSection === section ? undefined : section;
   }
 
-  // A brand or category found by searching opens it, like picking it in
-  // the browse pane
   private _activateResult(row: IntegrationListItem) {
     if (row.result === "more") {
       this._searchSection = row.section;
@@ -1439,7 +1370,6 @@ class AddIntegrationDialog extends LitElement {
     }
   }
 
-  // Shows what was picked in the browse pane, or found by searching
   private _browse(
     view: {
       brand?: string;
@@ -1460,14 +1390,13 @@ class AddIntegrationDialog extends LitElement {
     this._drillIn();
   }
 
-  // An arrow function: the list renders the rows, not this dialog
+  // Arrow function: the list renders the rows
   private _resultPicked = (
     ev: HASSDomCurrentTargetEvent<HaIntegrationListItem>
   ) => {
     this._activateResult(ev.currentTarget.integration);
   };
 
-  // Collapsed, the box shows its title and this many subcategories
   private static _SUBCATEGORIES_SHOWN = 4;
 
   private _renderSubcategories(
@@ -1530,7 +1459,6 @@ class AddIntegrationDialog extends LitElement {
     this._subcategoriesExpanded = true;
   }
 
-  // On a phone, show what was picked in the browse pane
   private _drillIn() {
     if (!this._narrow) {
       return;
@@ -1539,7 +1467,6 @@ class AddIntegrationDialog extends LitElement {
     this._focusAfterDrill = "in";
   }
 
-  // Back one level: from a subcategory to its category, then to browsing
   private _drillOut() {
     if (this._subcategory) {
       this._subcategory = undefined;
@@ -1549,8 +1476,6 @@ class AddIntegrationDialog extends LitElement {
     this._focusAfterDrill = "out";
   }
 
-  // Room after the last card, with the card's own padding as much as the
-  // browse pane has below it
   private _withEndSpace = memoizeOne(
     (rows: IntegrationListItem[]): IntegrationListItem[] => [
       ...rows,
@@ -1558,8 +1483,6 @@ class AddIntegrationDialog extends LitElement {
     ]
   );
 
-  // Three ways in: what Home Assistant found, adding a device to a
-  // protocol you use, and browsing every integration by category.
   private _renderCategoryTree() {
     const counts = this._getCounts();
     const categories = this._getCategories(counts, this.hass.localize);
@@ -1567,7 +1490,6 @@ class AddIntegrationDialog extends LitElement {
     const protocols = PROTOCOL_INTEGRATIONS.filter((domain) =>
       this._hasProtocol(domain)
     );
-    // While searching, nothing in the pane is what the list shows
     const browsingAll =
       !this._filter &&
       !this._showDiscoveredView &&
@@ -1654,8 +1576,6 @@ class AddIntegrationDialog extends LitElement {
                     !this._showDiscoveredView &&
                     !this._brand &&
                     category.slug === this._category;
-                  // A phone opens a category instead, like the automation
-                  // editor's targets
                   const expanded =
                     !this._narrow && this._expanded.has(category.slug);
                   const icons = this._categoryIcons?.[category.slug];
@@ -1768,7 +1688,6 @@ class AddIntegrationDialog extends LitElement {
     this._brand = undefined;
   }
 
-  // Like the categories: all brands, or one brand's integrations
   private _renderBrandList() {
     const brands = this._integrations
       ? this._getBrands(
@@ -1833,7 +1752,6 @@ class AddIntegrationDialog extends LitElement {
     this.closeDialog();
   }
 
-  // The chevron only folds; picking the row also shows its integrations
   private _toggleExpanded(ev: Event) {
     ev.stopPropagation();
     const category = (ev.currentTarget as any).category as string;
@@ -1846,9 +1764,6 @@ class AddIntegrationDialog extends LitElement {
     this._expanded = expanded;
   }
 
-  // Like a tree, mirrored in RTL: right arrow unfolds a category, or moves
-  // into an open one; left arrow folds it, or moves from a subcategory to
-  // its category
   private _treeKeydown(ev: KeyboardEvent) {
     if (ev.key !== "ArrowRight" && ev.key !== "ArrowLeft") {
       return;
@@ -1875,7 +1790,6 @@ class AddIntegrationDialog extends LitElement {
       }
       return;
     }
-    // Only a category with subcategories folds
     if (!row.hasAttribute("aria-expanded")) {
       return;
     }
@@ -1896,13 +1810,11 @@ class AddIntegrationDialog extends LitElement {
     this._browse();
   }
 
-  // A category's row, or one of its subcategories
   private _categoryPicked(ev: Event) {
     const { category, subcategory } = ev.currentTarget as any;
     this._browse({ category, subcategory });
   }
 
-  // Says why picking it first shows what was found
   private _isDiscovered(integration: IntegrationListItem) {
     return Boolean(
       !integration.result &&
@@ -1913,8 +1825,7 @@ class AddIntegrationDialog extends LitElement {
     );
   }
 
-  // Picking it shows another step in this dialog, like _handleIntegrationPicked
-  // decides, instead of closing it for a flow
+  // Must match what _handleIntegrationPicked does
   private _leadsToNextStep(integration: IntegrationListItem) {
     if (integration.result) {
       return true;
@@ -1935,14 +1846,12 @@ class AddIntegrationDialog extends LitElement {
     );
   }
 
-  // Rows are positioned by the virtualizer, so CSS sticky can't hold the
-  // brand; like findSectionTitle, it gives way while a brand scrolls in
+  // The virtualizer positions rows, so CSS sticky can't hold the brand
   @eventOptions({ passive: true })
   private _visibilityChanged(ev: HASSDomEvent<HaListVisibilityChangedDetail>) {
     const rows = this._getRows();
     const row = rows[ev.detail.first];
     this._listScrolled = ev.detail.first > 0;
-    // Only a brand's rows have an id like `brand/domain`
     const brand = row?.id.includes("/")
       ? rows.find((item) => item.id === `${row.id.split("/")[0]}/header`)
       : undefined;
@@ -1959,8 +1868,6 @@ class AddIntegrationDialog extends LitElement {
     if (integration.is_end_space) {
       return html`<div style="height: var(--ha-space-2)"></div>`;
     }
-    // Search results are a plain list with gray titles, like the
-    // automation editor's search; browsing has cards
     if (integration.is_header) {
       return this._filter
         ? html`<ha-section-title>${integration.name}</ha-section-title>`
@@ -1987,15 +1894,13 @@ class AddIntegrationDialog extends LitElement {
     getIntegrationCategoryIcons(this.hass.connection).then((icons) => {
       this._categoryIcons = icons;
     });
-    // `hass` doesn't render this dialog again, so the category names have to
-    // be there before the integrations are
+    // `hass` changes don't rerender this dialog, so load names first
     const [descriptions, flowsInProgress] = await Promise.all([
       getIntegrationDescriptions(this.hass),
       fetchConfigFlowInProgress(this.hass.connection),
       this.hass.loadBackendTranslation("integration_category", "homeassistant"),
     ]);
 
-    // Closed, or opened again, while this loaded
     if (loadId !== this._loadId) {
       return;
     }
@@ -2004,8 +1909,6 @@ class AddIntegrationDialog extends LitElement {
     this._flowsInProgress = flowsInProgress.filter((flow) =>
       DISCOVERY_SOURCES.includes(flow.context.source)
     );
-    // Start with what was found, it is what most people come for
-    // A phone starts on the browse pane, with what was found at its top
     this._showDiscoveredView =
       !integrationFilter &&
       !this._narrow &&
@@ -2216,8 +2119,7 @@ class AddIntegrationDialog extends LitElement {
       return;
     }
 
-    // The discovered flows, or a phone's browse pane, are on screen, not
-    // the list of integrations
+    // The integration list isn't on screen
     if (
       !this._filter &&
       (this._showDiscoveredView ||
@@ -2251,8 +2153,7 @@ class AddIntegrationDialog extends LitElement {
     css`
       ha-adaptive-dialog {
         --dialog-content-padding: 0;
-        /* A steady sheet, the views in it have different heights. As tall
-           as the automation editor's add dialog. */
+        /* Fixed height, so switching views doesn't resize it */
         --add-integration-sheet-height: calc(
           100vh - max(var(--safe-area-inset-top), var(--ha-space-12))
         );
@@ -2261,8 +2162,6 @@ class AddIntegrationDialog extends LitElement {
         );
         --ha-bottom-sheet-height: var(--add-integration-sheet-height);
         --ha-bottom-sheet-max-height: var(--add-integration-sheet-height);
-        /* A steady dialog too, as tall as the automation editor's add
-           dialog; the lists take what the header and search leave */
         --add-integration-height: min(
           920px,
           calc(
@@ -2296,25 +2195,19 @@ class AddIntegrationDialog extends LitElement {
       .connection-row {
         display: flex;
         gap: var(--ha-space-2);
-        /* Scrolls edge to edge on a phone, like the data tables' chips. The
-           search and filters close together, then the room between the
-           panes */
         margin: calc(var(--ha-space-1) * -1) 0 var(--ha-space-4);
         padding: 0 var(--ha-space-4);
         overflow-x: auto;
-        /* Scrolls sideways only, overflow-x alone also lets it scroll up and
-           down */
+        /* overflow-x alone would also allow vertical scrolling */
         overflow-y: hidden;
         overscroll-behavior-x: contain;
         scrollbar-width: none;
         flex-shrink: 0;
-        /* Shaped like the search's filter chips */
         --ha-assist-chip-container-shape: var(--ha-border-radius-md);
       }
       .connection-row > * {
         flex-shrink: 0;
       }
-      /* Like the menus of the data tables */
       ha-dropdown-item.selected {
         border: 1px solid var(--primary-color);
         font-weight: var(--ha-font-weight-medium);
@@ -2327,9 +2220,6 @@ class AddIntegrationDialog extends LitElement {
         font-weight: var(--ha-font-weight-normal);
         color: var(--ha-color-text-secondary);
       }
-      /* The panes and lists fill what the header and search leave of the
-         dialog's or sheet's fixed height. The lists scroll to its edge, the
-         boxes end where the last card does. */
       .content {
         display: flex;
         flex: 1;
@@ -2374,7 +2264,6 @@ class AddIntegrationDialog extends LitElement {
         min-width: 0;
         position: relative;
       }
-      /* Like the automation editor's search */
       .chip-separator {
         width: 1px;
         margin: var(--ha-space-1) 0;
@@ -2410,14 +2299,12 @@ class AddIntegrationDialog extends LitElement {
         position: relative;
         z-index: 1;
         box-shadow: var(--bar-box-shadow);
-        /* Only below, over the list, not around the title */
         clip-path: inset(0 0 -16px 0);
         border-bottom: 1px solid var(--ha-color-border-neutral-quiet);
       }
       .list {
         position: relative;
       }
-      /* Like the automation editor's devices of an area on a phone */
       .subcategories {
         position: relative;
         box-sizing: border-box;
@@ -2458,7 +2345,7 @@ class AddIntegrationDialog extends LitElement {
         inset-inline: 0;
         z-index: 1;
       }
-      /* Keyboard focus scrolls rows clear of the held brand */
+      /* Keep focused rows clear of the sticky brand */
       .items ha-list-virtualized {
         --ha-list-scroll-padding-block-start: var(--ha-space-10);
         --ha-row-item-padding-inline: var(--ha-space-3);
@@ -2472,15 +2359,12 @@ class AddIntegrationDialog extends LitElement {
         --ha-row-item-padding-inline: var(--ha-space-3);
         --ha-row-item-min-height: 40px;
       }
-      /* Like the tree chevrons of the automation editor */
       .groups ha-icon-next {
         color: var(--ha-color-on-neutral-quiet);
       }
       .groups ha-list-item-button::part(start) {
         color: var(--ha-color-on-neutral-quiet);
       }
-      /* A level in, like the automation editor's tree: the room of a
-         chevron and the tree's indent */
       .groups .expand.indent {
         margin-inline-start: var(--ha-space-4);
       }
@@ -2493,7 +2377,6 @@ class AddIntegrationDialog extends LitElement {
         color: var(--ha-color-text-secondary);
         font-size: var(--ha-font-size-s);
       }
-      /* Waiting for you, so it stands out from the other counts */
       .groups ha-label {
         border: none;
         --ha-label-background-color: var(
@@ -2505,7 +2388,7 @@ class AddIntegrationDialog extends LitElement {
         width: 20px;
         transition: transform 150ms ease;
       }
-      /* Above the row's hit area, so it only folds */
+      /* Above the row's hit area */
       .groups .expand:not(.empty) {
         position: relative;
         z-index: 1;
@@ -2523,7 +2406,6 @@ class AddIntegrationDialog extends LitElement {
       .groups .expand.empty {
         visibility: hidden;
       }
-      /* A phone shows the pane on its own, so nothing in it is open */
       .groups:not(.narrow) .selected {
         background-color: var(--ha-color-fill-primary-normal-active);
         --icon-primary-color: var(--ha-color-on-primary-normal);

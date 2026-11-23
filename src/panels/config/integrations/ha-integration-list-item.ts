@@ -18,15 +18,12 @@ import type { IntegrationListItem } from "./dialog-add-integration";
 export class HaIntegrationListItem extends HaListItemButton {
   @property({ attribute: false }) public integration!: IntegrationListItem;
 
-  // A bordered card with room around it, like the automation editor's items.
-  // The room is padding, not margin, so a virtualized list measures it.
+  // Padding, not margin, so the virtualized list measures it
   @property({ type: Boolean, reflect: true }) public card = false;
 
-  // Picking it closes the dialog and starts adding, instead of a next step
   @property({ type: Boolean, attribute: "opens-flow" }) public opensFlow =
     false;
 
-  // Something of it was found, so picking it shows that first
   @property({ type: Boolean }) public discovered = false;
 
   @state()
@@ -76,7 +73,6 @@ export class HaIntegrationListItem extends HaListItemButton {
 
   protected override _renderEnd(): TemplateResult {
     const integration = this.integration;
-    // Brands, categories and "show more" found by searching aren't set up
     const yamlOnly =
       !integration.result &&
       !integration.config_flow &&
@@ -138,7 +134,6 @@ export class HaIntegrationListItem extends HaListItemButton {
             : nothing
         }
         ${
-          // Its documentation is a next step too, YAML-only says the label
           this.opensFlow && !yamlOnly
             ? html`<ha-svg-icon
                 class="add action"
@@ -167,7 +162,7 @@ export class HaIntegrationListItem extends HaListItemButton {
         --mdc-icon-size: 32px;
         height: 32px;
       }
-      /* The brand image is inline, its line box would push it off center */
+      /* The inline image's line box pushes it off center */
       .start ha-domain-icon {
         display: flex;
       }
@@ -182,15 +177,13 @@ export class HaIntegrationListItem extends HaListItemButton {
         position: relative;
         z-index: 1;
       }
-      /* Small notes on the integration, apart from what picking it does */
       .end .status {
         --mdc-icon-size: 20px;
       }
       .end .action {
         margin-inline-start: var(--ha-space-2);
       }
-      /* Decorative, below the row's hit area; like the tree chevrons of the
-         automation editor */
+      /* Below the row's hit area */
       .end ha-icon-next {
         z-index: -1;
         color: var(--ha-color-on-neutral-quiet);
@@ -205,7 +198,6 @@ export class HaIntegrationListItem extends HaListItemButton {
       .end .add {
         color: var(--primary-color);
       }
-      /* A note on how it is set up, quieter than discovered */
       .end ha-label.yaml {
         --ha-label-background-color: var(
           --ha-color-fill-neutral-normal-resting

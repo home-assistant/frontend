@@ -758,7 +758,6 @@ export const domainIcon = async (
 let integrationCategoryIcons:
   Promise<IntegrationCategoryIcons | undefined> | undefined;
 
-// They don't change while Home Assistant runs, so they load once
 export const getIntegrationCategoryIcons = (
   connection: Connection
 ): Promise<IntegrationCategoryIcons | undefined> => {
@@ -770,7 +769,6 @@ export const getIntegrationCategoryIcons = (
     )
       .then((res) => res?.resources.homeassistant)
       .catch(() => {
-        // Tried again the next time the dialog opens
         integrationCategoryIcons = undefined;
         return undefined;
       });

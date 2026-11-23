@@ -49,8 +49,6 @@ class HaDomainIntegrations extends LitElement {
   @property({ attribute: false })
   public showManageLink = false;
 
-  // Cards like the dialog's other lists, with the manage button floating
-  // at the bottom
   @property({ type: Boolean, reflect: true }) public boxed = false;
 
   protected render() {
@@ -416,7 +414,6 @@ class HaDomainIntegrations extends LitElement {
       .box {
         display: contents;
       }
-      /* Fill the scroll view, the box scrolls itself */
       :host([boxed]) {
         --ha-row-item-padding-inline: var(--ha-space-3);
         display: flex;
@@ -425,27 +422,23 @@ class HaDomainIntegrations extends LitElement {
         height: 100%;
         min-height: 0;
       }
-      /* Scrolls itself, so the footer can float over its end */
       :host([boxed]) .box {
         display: flex;
         flex-direction: column;
         flex: 1;
         min-height: 0;
         overflow: auto;
-        /* No rubber band: it would bounce the footer away from the bottom */
+        /* Bouncing would move the sticky footer */
         overscroll-behavior: none;
       }
-      /* Room after the last card, as much as the browse pane has below it */
       :host([boxed]) ha-list-base {
         flex-shrink: 0;
         padding-block-end: var(--ha-space-2);
       }
-      /* Clip instead of hide: hidden makes the list its own scroll
-         container, which would hold the title to the list, not the box */
+      /* hidden would make it a scroll container and break the sticky title */
       :host([boxed]) ha-list-base::part(base) {
         overflow-x: clip;
       }
-      /* Like the title above the other lists, held at the top */
       :host([boxed]) h3 {
         position: sticky;
         top: 0;
@@ -461,7 +454,6 @@ class HaDomainIntegrations extends LitElement {
         color: var(--primary-text-color);
         font-weight: var(--ha-font-weight-medium);
       }
-      /* Cards, like the integrations in the other lists */
       :host([boxed]) ha-list-item-button {
         padding: 0 var(--ha-space-4) var(--ha-space-2);
         box-sizing: border-box;
@@ -475,8 +467,6 @@ class HaDomainIntegrations extends LitElement {
       :host([boxed]) wa-divider {
         display: none;
       }
-      /* Managing what was found floats over the end of the list, which
-         fades out under it */
       .footer {
         position: sticky;
         bottom: 0;
