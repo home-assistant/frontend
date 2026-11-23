@@ -40,9 +40,11 @@ const flush = () =>
     setTimeout(resolve);
   });
 
+type FetchedConfig = Awaited<ReturnType<typeof fetchConfig>>;
+
 const openPanel = async (
   urlPath: string,
-  config: Awaited<ReturnType<typeof fetchConfig>> = { views: [{ cards: [] }] }
+  config: FetchedConfig = { views: [{ cards: [] }] }
 ) => {
   let notifyUpdated: () => void = () => undefined;
   const unsub = vi.fn(async () => {
@@ -191,11 +193,52 @@ describe("ha-panel-lovelace reconnect", () => {
         ],
       },
     ],
-  ])("rebuilds a dashboard with a %s strategy", async (_kind, config) => {
-    const { panel } = await openPanel("dashboard-test", config);
+    [
+      "nested section",
+      {
+        views: [
+          {
+            type: "sections",
+            sections: [{ sections: [{ strategy: { type: "test" } }] }],
+          },
+        ],
+      },
+    ],
+    [
+      "sidebar section",
+      {
+        views: [
+          {
+            type: "sections",
+            sidebar: { sections: [{ strategy: { type: "test" } }] },
+          },
+        ],
+      },
+    ],
+  ] as [string, FetchedConfig][])(
+    "rebuilds a dashboard with a %s strategy",
+    async (_kind, config) => {
+      const { panel } = await openPanel("dashboard-test", config);
+      const lovelace = panel.lovelace;
+
+      await reconnect();
+      expect(panel.lovelace).not.toBe(lovelace);
+    }
+  );
+
+  it("applies a changed config that contains empty entries", async () => {
+    const withEmpty = (cards: object[]) =>
+      ({
+        views: [null, { cards, sections: [null] }],
+      }) as unknown as FetchedConfig;
+    const { panel } = await openPanel("dashboard-test", withEmpty([]));
     const lovelace = panel.lovelace;
 
+    vi.mocked(fetchConfig).mockResolvedValueOnce(
+      withEmpty([{ type: "markdown" }])
+    );
     await reconnect();
+
     expect(panel.lovelace).not.toBe(lovelace);
   });
 
