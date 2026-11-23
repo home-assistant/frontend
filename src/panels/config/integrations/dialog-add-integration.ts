@@ -1,5 +1,4 @@
 import {
-  mdiChevronRight,
   mdiRadar,
   mdiMenuDown,
   mdiCheckDecagram,
@@ -51,6 +50,7 @@ import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import type { HaListVisibilityChangedDetail } from "../../../components/list/types";
 import "../../../components/item/ha-list-item-button";
+import type { HaListItemButton } from "../../../components/item/ha-list-item-button";
 import "../../../components/list/ha-list-virtualized";
 import type {
   HaListVirtualized,
@@ -151,7 +151,7 @@ const SEARCH_SECTIONS: SearchSection[] = [
 // is picked
 const MAX_SEARCH_ITEMS_PER_SECTION = 5;
 
-// ponytail: TEMPORARY copies of what home-assistant.io/integrations marks
+// Temporary copies of what home-assistant.io/integrations marks
 // `featured: true` and `works_with` (Works with Home Assistant). Core should
 // send these, so they stay in step with the website.
 // Picked like a brand, by its key, but lists these from every brand
@@ -246,7 +246,8 @@ const ROW_TITLE_STYLE = {
   "align-items": "center",
   "box-sizing": "border-box",
   "min-height": "40px",
-  padding: `var(--ha-space-2) var(--ha-space-3) var(--ha-space-2) ${TITLE_INSET}`,
+  "padding-block": "var(--ha-space-2)",
+  "padding-inline": `${TITLE_INSET} var(--ha-space-3)`,
   "font-weight": "var(--ha-font-weight-medium)",
   "background-color": "var(--card-background-color)",
 };
@@ -315,7 +316,6 @@ class AddIntegrationDialog extends LitElement {
   // Only what works without the cloud, or only what needs it
   @state() private _connection?: Connection;
 
-  // Only devices, hubs, or services
   // The section of the search results picked with its chip
   @state() private _searchSection?: SearchSection;
 
@@ -344,6 +344,15 @@ class AddIntegrationDialog extends LitElement {
   @state() private _sheet = false;
 
   @query("ha-list-virtualized") private _listElement?: HaListVirtualized;
+
+  @query("ha-icon-button-prev") private _backButton?: HTMLElement;
+
+  @query(".groups .selected") private _selectedBrowseRow?: HTMLElement;
+
+  @query("ha-input-search") private _searchInput?: HaInputSearch;
+
+  // The row that had the focus is gone after drilling, so it moves on
+  private _focusAfterDrill?: "in" | "out";
 
   private _width?: number;
 
@@ -404,6 +413,8 @@ class AddIntegrationDialog extends LitElement {
     );
     this._narrowQuery.addEventListener("change", this._narrowChanged);
     this._narrow = this._narrowQuery.matches;
+    // A phone shows the category it opens on, not the browse pane
+    this._drilled = this._narrow && !!params?.category;
     // ha-adaptive-dialog keeps the mode it opened in, so this doesn't listen
     this._sheet = matchMedia(ADAPTIVE_DIALOG_MEDIA_QUERY).matches;
   }
@@ -466,6 +477,12 @@ class AddIntegrationDialog extends LitElement {
       this._scrollToTop = false;
       this._listElement?.scrollElement?.scrollTo({ top: 0 });
     }
+    if (this._focusAfterDrill === "in") {
+      (this._listElement || this._backButton)?.focus();
+    } else if (this._focusAfterDrill === "out") {
+      (this._selectedBrowseRow || this._searchInput)?.focus();
+    }
+    this._focusAfterDrill = undefined;
   }
 
   public willUpdate(changedProps: PropertyValues): void {
@@ -788,6 +805,12 @@ class AddIntegrationDialog extends LitElement {
     return [header, ...protocols, ...integrations];
   }
 
+  // A brand with integrations, or only devices of protocols like Matter
+  private _isBrand(item: IntegrationListItem) {
+    const entry = this._integrations?.[item.domain];
+    return Boolean(item.domains || (entry && !("integration_type" in entry)));
+  }
+
   // The brands with more than one thing to add, and how many, A to Z.
   // An integration on its own is found under all brands.
   private _getBrands = memoizeOne(
@@ -798,7 +821,7 @@ class AddIntegrationDialog extends LitElement {
       filters?: ListFilters
     ) =>
       this._getListItems(i, h, localize, filters)
-        .integrations.filter((item) => item.domains)
+        .integrations.filter((item) => this._isBrand(item))
         .map((item) => ({
           item,
           count: this._brandRows(item).filter((row) => !row.is_header).length,
@@ -957,9 +980,13 @@ class AddIntegrationDialog extends LitElement {
       // Every integration once, also the ones only listed under a brand
       const leaves = new Map<string, IntegrationListItem>();
       [...integrations, ...yamlIntegrations].forEach((item) => {
-        const rows = item.domains
-          ? this._brandRows(item).filter((row) => !row.is_header && !row.is_add)
-          : [item];
+        // A brand of only protocol devices is found as a brand
+        const rows =
+          item.domains || (browse && this._isBrand(item))
+            ? this._brandRows(item).filter(
+                (row) => !row.is_header && !row.is_add
+              )
+            : [item];
         rows.forEach((row) => {
           if (!leaves.has(row.domain)) {
             leaves.set(row.domain, { ...row, id: row.domain });
@@ -1475,7 +1502,6 @@ class AddIntegrationDialog extends LitElement {
     );
   }
 
-  // All, or only what works without the cloud, or only what needs it
   // Like the data tables' group by: the filter's name and its value
   private _renderFilterChip(
     filter: "browse_by" | "connection",
@@ -1518,6 +1544,33 @@ class AddIntegrationDialog extends LitElement {
   private _connectionSelected(ev: HaDropdownSelectEvent) {
     const value = ev.detail.item.value;
     this._connection = value === "all" ? undefined : (value as Connection);
+    if (!this._integrations || !this._helpers) {
+      return;
+    }
+    // What was browsed may have nothing of this connection, it is left out
+    // of the browse pane then, so browse everything instead
+    const counts = this._getCounts();
+    if (
+      this._subcategory &&
+      !counts.has(`${this._category}.${this._subcategory}`)
+    ) {
+      this._subcategory = undefined;
+    }
+    if (this._category && !counts.has(this._category)) {
+      this._category = undefined;
+    }
+    if (
+      this._brand &&
+      !(this._brand in COLLECTIONS) &&
+      !this._getBrands(
+        this._integrations,
+        this._helpers,
+        this.hass.localize,
+        this._getFilters(this._connection)
+      ).some(({ item }) => item.domain === this._brand)
+    ) {
+      this._brand = undefined;
+    }
   }
 
   private _searchSectionClicked(ev: Event) {
@@ -1635,7 +1688,11 @@ class AddIntegrationDialog extends LitElement {
 
   // On a phone, show what was picked in the browse pane
   private _drillIn() {
-    this._drilled = this._narrow;
+    if (!this._narrow) {
+      return;
+    }
+    this._drilled = true;
+    this._focusAfterDrill = "in";
   }
 
   // Back one level: from a subcategory to its category, then to browsing
@@ -1645,6 +1702,7 @@ class AddIntegrationDialog extends LitElement {
       return;
     }
     this._drilled = false;
+    this._focusAfterDrill = "out";
   }
 
   // Leave room for the header and search in the sheet, or in the dialog of a
@@ -1804,22 +1862,21 @@ class AddIntegrationDialog extends LitElement {
                       }
                       .category=${category.slug}
                       @click=${this._categoryPicked}
-                      @keydown=${this._categoryKeydown}
+                      @keydown=${this._treeKeydown}
                     >
                       ${
                         this._narrow
                           ? nothing
-                          : html`<ha-svg-icon
+                          : html`<ha-icon-next
                               slot="start"
                               class=${classMap({
                                 expand: true,
                                 expanded,
                                 empty: !category.subcategories.length,
                               })}
-                              .path=${mdiChevronRight}
                               .category=${category.slug}
                               @click=${this._toggleExpanded}
-                            ></ha-svg-icon>`
+                            ></ha-icon-next>`
                       }
                       ${
                         icons?.default
@@ -1855,12 +1912,12 @@ class AddIntegrationDialog extends LitElement {
                                 .category=${category.slug}
                                 .subcategory=${subcategory.slug}
                                 @click=${this._subcategoryPicked}
+                                @keydown=${this._treeKeydown}
                               >
-                                <ha-svg-icon
+                                <ha-icon-next
                                   slot="start"
                                   class="expand empty indent"
-                                  .path=${mdiChevronRight}
-                                ></ha-svg-icon>
+                                ></ha-icon-next>
                                 ${
                                   icons?.subcategory?.[subcategory.slug]
                                     ?.default
@@ -1987,18 +2044,48 @@ class AddIntegrationDialog extends LitElement {
     this._expanded = expanded;
   }
 
-  // Like a tree: right arrow unfolds a category, left arrow folds it
-  private _categoryKeydown(ev: KeyboardEvent) {
+  // Like a tree, mirrored in RTL: right arrow unfolds a category, or moves
+  // into an open one; left arrow folds it, or moves from a subcategory to
+  // its category
+  private _treeKeydown(ev: KeyboardEvent) {
     if (ev.key !== "ArrowRight" && ev.key !== "ArrowLeft") {
       return;
     }
     ev.preventDefault();
-    const category = (ev.currentTarget as any).category as string;
+    const row = ev.currentTarget as HaListItemButton & {
+      category: string;
+      subcategory?: string;
+    };
+    const list = row.closest("ha-list-base");
+    const index = list?.items.indexOf(row) ?? -1;
+    const rtl = getComputedStyle(row).direction === "rtl";
+    const open = (ev.key === "ArrowRight") !== rtl;
+    if (row.subcategory) {
+      if (!open && list) {
+        list.setActiveItemIndex(
+          list.items.findIndex(
+            (item) =>
+              (item as typeof row).category === row.category &&
+              !(item as typeof row).subcategory
+          ),
+          true
+        );
+      }
+      return;
+    }
+    // Only a category with subcategories folds
+    if (!row.hasAttribute("aria-expanded")) {
+      return;
+    }
+    if (open && row.getAttribute("aria-expanded") === "true") {
+      list?.setActiveItemIndex(index + 1, true);
+      return;
+    }
     const expanded = new Set(this._expanded);
-    if (ev.key === "ArrowRight") {
-      expanded.add(category);
+    if (open) {
+      expanded.add(row.category);
     } else {
-      expanded.delete(category);
+      expanded.delete(row.category);
     }
     this._expanded = expanded;
   }
@@ -2355,8 +2442,13 @@ class AddIntegrationDialog extends LitElement {
       return;
     }
 
-    // The discovered flows are on screen, not the list of integrations
-    if (this._showDiscoveredView && !this._filter) {
+    // The discovered flows, or a phone's browse pane, are on screen, not
+    // the list of integrations
+    if (
+      !this._filter &&
+      (this._showDiscoveredView ||
+        (this._narrow && !this._drilled && !this._integrationFilter))
+    ) {
       return;
     }
 
@@ -2426,8 +2518,8 @@ class AddIntegrationDialog extends LitElement {
       .connection-row {
         display: flex;
         gap: var(--ha-space-2);
-        /* Scrolls edge to edge on a phone, like the data tables' chips */
-        /* The search and filters close together, then the room between the
+        /* Scrolls edge to edge on a phone, like the data tables' chips. The
+           search and filters close together, then the room between the
            panes */
         margin: calc(var(--ha-space-1) * -1) 0 var(--ha-space-4);
         padding: 0 var(--ha-space-4);
@@ -2484,7 +2576,8 @@ class AddIntegrationDialog extends LitElement {
         flex-direction: column;
         gap: var(--ha-space-3);
         min-height: 0;
-        margin: 0 0 var(--ha-space-3) var(--ha-space-4);
+        margin-block-end: var(--ha-space-3);
+        margin-inline-start: var(--ha-space-4);
       }
       .single .pane {
         flex: 1;
@@ -2504,7 +2597,6 @@ class AddIntegrationDialog extends LitElement {
         min-width: 0;
         position: relative;
       }
-      /* Like the titles of the automation editor's items */
       /* Like the automation editor's search */
       .chip-separator {
         width: 1px;
@@ -2531,8 +2623,9 @@ class AddIntegrationDialog extends LitElement {
         align-items: center;
         box-sizing: border-box;
         height: 40px;
-        padding: var(--ha-space-2) var(--ha-space-3) var(--ha-space-2)
-          calc(var(--ha-space-4) + 1px + var(--ha-space-3));
+        padding-block: var(--ha-space-2);
+        padding-inline: calc(var(--ha-space-4) + 1px + var(--ha-space-3))
+          var(--ha-space-3);
         font-weight: var(--ha-font-weight-medium);
         background-color: var(--card-background-color);
       }
@@ -2635,8 +2728,17 @@ class AddIntegrationDialog extends LitElement {
         width: 20px;
         transition: transform 150ms ease;
       }
+      /* Above the row's hit area, so it only folds */
+      .groups .expand:not(.empty) {
+        position: relative;
+        z-index: 1;
+        cursor: pointer;
+      }
       .groups .expand.expanded {
         transform: rotate(90deg);
+      }
+      .groups .expand.expanded:dir(rtl) {
+        transform: rotate(-90deg);
       }
       .groups wa-divider {
         --spacing: var(--ha-space-2);
@@ -2658,17 +2760,6 @@ class AddIntegrationDialog extends LitElement {
           flex: 1 1 auto;
           margin-inline-end: var(--ha-space-4);
         }
-      }
-      .divider {
-        border-bottom-color: var(--divider-color);
-      }
-      p {
-        text-align: center;
-        padding: 16px;
-        margin: 0;
-      }
-      p > a {
-        color: var(--primary-color);
       }
       .flex.center {
         display: flex;

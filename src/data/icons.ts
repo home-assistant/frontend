@@ -77,7 +77,6 @@ import { callWS } from "../util/websocket";
 import { getConditionDomain, getConditionObjectId } from "./condition";
 import { computeGroupMemberEntries } from "./group";
 import { getTriggerDomain, getTriggerObjectId } from "./trigger";
-import { FALLBACK_INTEGRATION_CATEGORY_ICONS } from "./integration_category_icons_fallback";
 
 /** Icon to use when no icon specified for service. */
 export const DEFAULT_SERVICE_ICON = mdiRoomService;
@@ -759,8 +758,7 @@ export const domainIcon = async (
 let integrationCategoryIcons:
   Promise<IntegrationCategoryIcons | undefined> | undefined;
 
-// They don't change while Home Assistant runs, so they load once. A Home
-// Assistant that can't give them yet gets the built-in copy.
+// They don't change while Home Assistant runs, so they load once
 export const getIntegrationCategoryIcons = (
   connection: Connection
 ): Promise<IntegrationCategoryIcons | undefined> => {
@@ -770,11 +768,12 @@ export const getIntegrationCategoryIcons = (
       "integration_category",
       "homeassistant"
     )
-      .then(
-        (res) =>
-          res?.resources.homeassistant || FALLBACK_INTEGRATION_CATEGORY_ICONS
-      )
-      .catch(() => FALLBACK_INTEGRATION_CATEGORY_ICONS);
+      .then((res) => res?.resources.homeassistant)
+      .catch(() => {
+        // Tried again the next time the dialog opens
+        integrationCategoryIcons = undefined;
+        return undefined;
+      });
   }
   return integrationCategoryIcons;
 };

@@ -76,7 +76,9 @@ export class HaIntegrationListItem extends HaListItemButton {
 
   protected override _renderEnd(): TemplateResult {
     const integration = this.integration;
+    // Brands, categories and "show more" found by searching aren't set up
     const yamlOnly =
+      !integration.result &&
       !integration.config_flow &&
       !integration.integrations &&
       !integration.iot_standards;

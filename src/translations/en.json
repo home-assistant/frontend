@@ -6019,10 +6019,6 @@
               "target": "By target",
               "type": "By type"
             },
-            "browse_by": {
-              "category": "Category",
-              "brand": "Brand"
-            },
             "show_more": "Show more",
             "unassigned_entities": "Unassigned entities",
             "unassigned_devices": "Unassigned devices",
