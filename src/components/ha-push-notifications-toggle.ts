@@ -23,6 +23,9 @@ export const pushSupported =
 class HaPushNotificationsToggle extends LitElement {
   @property({ type: Boolean }) public disabled!: boolean;
 
+  @property({ attribute: "accessible-label" })
+  public accessibleLabel?: string;
+
   @consumeLocalize()
   private _localize!: LocalizeFunc;
 
@@ -37,6 +40,7 @@ class HaPushNotificationsToggle extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-switch
+        .accessibleLabel=${this.accessibleLabel ?? ""}
         .disabled=${this.disabled || this._loading}
         .checked=${this._pushChecked}
         @change=${this._handlePushChange}

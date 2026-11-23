@@ -1,6 +1,8 @@
 import type { LitElement, PropertyValues } from "lit";
 import { css } from "lit";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { energyEditorQueryParamConfig } from "../../../../common/url/energy-editor-query-params";
+import { decodeQueryParams } from "../../../../common/url/query-params";
 import { shallowEqual } from "../../../../common/util/shallow-equal";
 import type {
   BatterySourceTypeEnergyPreference,
@@ -93,6 +95,18 @@ export type EnergyEditorConfig =
   | { kind: "water"; params: EnergyWaterSourceEditorParams }
   | { kind: "water_gas_device"; params: EnergyWaterGasDeviceEditorParams }
   | { kind: "fixed_cost"; params: EnergyFixedCostEditorParams };
+
+type PreselectedStatistic =
+  (typeof energyEditorQueryParamConfig)["string"][number];
+
+/**
+ * The statistics of a new item that the page URL preselects, like an energy
+ * meter suggestion does. Editors apply them after `_initDirtyTracking`, so
+ * the item can be saved right away.
+ */
+export const preselectedStatistics = <K extends PreselectedStatistic>(
+  keys: readonly K[]
+) => decodeQueryParams(location.search, { string: keys });
 
 export interface EnergyEditorStatus {
   /** Whether there are changes to save */

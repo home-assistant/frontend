@@ -191,6 +191,7 @@ class DialogMatterLockManage extends LitElement {
                         <ha-icon-button
                           slot="end"
                           .path=${mdiDelete}
+                          .label=${this.hass.localize("ui.common.delete")}
                           .user=${user}
                           @click=${this._handleDeleteUserClick}
                           @keydown=${stopKeydownEnterSpacePropagation}

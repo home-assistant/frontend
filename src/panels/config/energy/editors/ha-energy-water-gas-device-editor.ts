@@ -47,7 +47,11 @@ import type {
   EnergyEditorStatus,
   EnergyWaterGasDeviceEditorParams,
 } from "./energy-editor";
-import { EnergyEditorMixin, energyEditorStyles } from "./energy-editor";
+import {
+  EnergyEditorMixin,
+  energyEditorStyles,
+  preselectedStatistics,
+} from "./energy-editor";
 
 const flowRateUnitClasses = ["volume_flow_rate"];
 
@@ -134,6 +138,14 @@ export class HaEnergyWaterGasDeviceEditor extends EnergyEditorMixin(
       .map((entry) => entry.stat_rate)
       .filter((id) => id && id !== this._device?.stat_rate) as string[];
     this._initDirtyTracking({ type: "deep" }, this._device ?? null);
+    const { stat_consumption } = params.device
+      ? {}
+      : preselectedStatistics(["stat_consumption"]);
+    if (stat_consumption) {
+      this._device = { stat_consumption };
+      this._computePossibleParents();
+      this._updateDirtyState(this._device);
+    }
     this._loadUnits();
   }
 

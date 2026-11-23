@@ -33,6 +33,11 @@ import {
   PERIOD_ENERGY,
   STATISTIC_CARD_DEFAULT_PERIOD,
 } from "../../cards/hui-statistic-card";
+import {
+  collectionKeyFromFormData,
+  collectionKeyToFormData,
+  energyCollectionKeySchema,
+} from "./energy-collection-key-schema";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -150,13 +155,7 @@ export class HuiStatisticCardEditor
           type: "grid",
           schema: [
             ...(enableDateSelect
-              ? ([
-                  {
-                    type: "string",
-                    name: "collection_key",
-                    required: false,
-                  },
-                ] as HaFormSchema[])
+              ? ([energyCollectionKeySchema] as HaFormSchema[])
               : []),
             {
               name: "energy_date_selection",
@@ -195,7 +194,7 @@ export class HuiStatisticCardEditor
       return nothing;
     }
 
-    const data = this._config;
+    const data = collectionKeyToFormData(this._config);
 
     const schema = this._schema(
       this.hass.localize,
@@ -225,7 +224,9 @@ export class HuiStatisticCardEditor
   }
 
   private async _valueChanged(ev: CustomEvent) {
-    const config = { ...ev.detail.value } as StatisticCardConfig;
+    const config = collectionKeyFromFormData({
+      ...ev.detail.value,
+    } as StatisticCardConfig);
     Object.keys(config).forEach((k) => config[k] === "" && delete config[k]);
 
     if (

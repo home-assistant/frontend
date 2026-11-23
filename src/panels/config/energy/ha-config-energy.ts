@@ -39,6 +39,7 @@ import "./components/ha-energy-home-settings";
 import "./components/ha-energy-battery-settings";
 import "./components/ha-energy-gas-settings";
 import "./components/ha-energy-water-settings";
+import "./components/ha-energy-suggestions";
 import { fileDownload } from "../../../util/file_download";
 import { showToast } from "../../../util/toast";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
@@ -187,7 +188,14 @@ class HaConfigEnergy extends LitElement {
         <ha-alert>
           ${this.hass.localize("ui.panel.config.energy.new_device_info")}
         </ha-alert>
-        <div class="content">${cache(this._renderTabContent())}</div>
+        <div class="content">
+          <ha-energy-suggestions
+            .preferences=${this._preferences!}
+            .listPath=${`${this.route.prefix}/${this._currTab}`}
+            .tab=${this._currTab}
+          ></ha-energy-suggestions>
+          ${cache(this._renderTabContent())}
+        </div>
       </hass-tabs-subpage>
     `;
   }
@@ -543,6 +551,7 @@ class HaConfigEnergy extends LitElement {
           margin: 12px auto;
         }
 
+        ha-energy-suggestions,
         ha-energy-grid-settings,
         ha-energy-solar-settings,
         ha-energy-home-settings,

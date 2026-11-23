@@ -240,7 +240,7 @@ class HaPanelDevState extends LitElement {
                       <ha-icon-button
                         .path=${mdiContentCopy}
                         @click=${this._copyStateEntity}
-                        title=${this._i18n.localize(
+                        .label=${this._i18n.localize(
                           "ui.panel.config.tools.tabs.states.copy_id"
                         )}
                       ></ha-icon-button>

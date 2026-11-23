@@ -572,6 +572,11 @@ export class HaDataTable extends LitElement {
                       >
                         <ha-checkbox
                           class="mdc-data-table__row-checkbox"
+                          .accessibleLabel=${
+                            this._i18n?.localize?.(
+                              "ui.components.data-table.select_all"
+                            ) ?? ""
+                          }
                           @change=${this._handleHeaderRowCheckboxClick}
                           .indeterminate=${
                             !!this._checkedRows.length &&
@@ -898,6 +903,7 @@ export class HaDataTable extends LitElement {
                 >
                   <ha-checkbox
                     class="mdc-data-table__row-checkbox"
+                    .accessibleLabel=${this._rowCheckboxLabel(columns, row)}
                     @click=${this._handleRowCheckboxClicked}
                     .rowId=${row[this.id]}
                     .disabled=${row.selectable === false}
@@ -966,6 +972,23 @@ export class HaDataTable extends LitElement {
       </div>
     `;
   };
+
+  private _rowCheckboxLabel(
+    columns: DataTableColumnContainer,
+    row: DataTableRowData
+  ): string {
+    const mainKey = Object.keys(columns).find((key) => columns[key].main);
+    const name = mainKey ? row[mainKey] : undefined;
+    return (
+      (typeof name === "string" && name
+        ? this._i18n?.localize?.("ui.components.data-table.select_row", {
+            name,
+          })
+        : this._i18n?.localize?.(
+            "ui.components.data-table.select_row_generic"
+          )) ?? ""
+    );
+  }
 
   private _isColumnVisible(key: string, column: DataTableColumnData): boolean {
     if (column.hidden) {
@@ -1663,7 +1686,8 @@ export class HaDataTable extends LitElement {
         }
 
         .mdc-data-table__row ~ .mdc-data-table__row {
-          border-top: 1px solid var(--divider-color);
+          border-top: var(--data-table-row-border-width, 1px) solid
+            var(--divider-color);
         }
 
         .mdc-data-table__row.clickable:not(

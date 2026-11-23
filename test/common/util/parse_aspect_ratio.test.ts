@@ -50,4 +50,22 @@ describe("parseAspectRatio", () => {
     const r = parseAspectRatio("mary:lamb");
     assert.equal(r, null);
   });
+
+  it("Skips non-string input", () => {
+    // An unquoted `aspect_ratio: 16:9` in YAML is loaded as the number 969
+    assert.equal(parseAspectRatio(969 as unknown as string), null);
+    assert.equal(parseAspectRatio(1.78 as unknown as string), null);
+  });
+
+  it("Parses values with surrounding whitespace", () => {
+    assert.deepEqual(parseAspectRatio(" 16 : 9 "), ratio16by9);
+    assert.deepEqual(parseAspectRatio(" 23 % "), { w: 100, h: 23 });
+  });
+
+  it.each(["16/9", "16X9", "16x9x4", "16:9:4", "16x", "x9", "16abc", "23%x"])(
+    "Skips unhandled input %s",
+    (input) => {
+      assert.equal(parseAspectRatio(input), null);
+    }
+  );
 });

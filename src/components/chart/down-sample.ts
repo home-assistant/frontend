@@ -19,7 +19,9 @@ interface MinMaxFrame {
   maxPoint: Point;
   maxX: number;
   maxY: number;
+  lastPoint: Point;
   lastX: number;
+  lastY: number;
   gapPoint: Point | undefined;
 }
 
@@ -69,7 +71,9 @@ function newFrame(
     maxPoint: point,
     maxX: x,
     maxY: y,
+    lastPoint: point,
     lastX: x,
+    lastY: y,
     gapPoint,
   };
 }
@@ -176,7 +180,9 @@ export function downSampleLineData<
     if (!frame) {
       frames.set(frameIndex, newFrame(point, x, y, undefined));
     } else if (frame.hasValue) {
+      frame.lastPoint = point;
       frame.lastX = x;
+      frame.lastY = y;
       // Match the original strict-less / strict-greater comparisons so the
       // first occurrence wins on ties.
       if (y < frame.minY) {
@@ -192,7 +198,9 @@ export function downSampleLineData<
     } else {
       // the frame held nothing but a marker so far
       frame.hasValue = true;
+      frame.lastPoint = point;
       frame.lastX = x;
+      frame.lastY = y;
       frame.minPoint = point;
       frame.minX = x;
       frame.minY = y;
@@ -203,7 +211,13 @@ export function downSampleLineData<
   }
 
   const result: T[] = [];
-  for (const frame of frames.values()) {
+  for (const [frameIndex, frame] of frames) {
+    // A marker followed by a value in its own frame is a gap that closed
+    // within one frame, which is about one device pixel: too narrow to show.
+    // That value may be neither min nor max, so check the frame's last x.
+    const keepGap =
+      frame.gapPoint !== undefined &&
+      Number(getPointData(frame.gapPoint)[0]) >= frame.lastX;
     if (frame.hasValue) {
       // The order of the data must be preserved so max may be before min
       if (frame.minX > frame.maxX) {
@@ -213,14 +227,18 @@ export function downSampleLineData<
       if (frame.minX < frame.maxX) {
         result.push(frame.maxPoint as T);
       }
-    }
-    if (frame.gapPoint !== undefined) {
-      // A marker followed by a value in its own frame is a gap that closed
-      // within one frame, which is about one device pixel: too narrow to show.
-      // That value may be neither min nor max, so check the frame's last x.
-      if (Number(getPointData(frame.gapPoint)[0]) >= frame.lastX) {
-        result.push(frame.gapPoint as T);
+      // Step lines hold the last value until the next point, so it must
+      // survive when that point is more than a frame away.
+      if (
+        !keepGap &&
+        !frames.has(frameIndex + 1) &&
+        frame.lastY !== (frame.minX < frame.maxX ? frame.maxY : frame.minY)
+      ) {
+        result.push(frame.lastPoint as T);
       }
+    }
+    if (keepGap) {
+      result.push(frame.gapPoint as T);
     }
   }
 

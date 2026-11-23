@@ -14,10 +14,6 @@ import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/sec
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { TileCardConfig } from "../../lovelace/cards/types";
-import {
-  wrapEntityVisibility,
-  type ComputeEntityCard,
-} from "../../lovelace/strategies/helpers/entity-visibility";
 import { BINARY_STATE_ON } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { getDeviceEntityDisplayLookup } from "../../../data/device/device_registry";
@@ -25,8 +21,6 @@ import { findBatteryChargingEntity } from "../../../data/entity/entity_registry"
 
 export interface MaintenanceViewStrategyConfig {
   type: "maintenance";
-  hidden_entities?: string[];
-  edit_visibility?: boolean;
 }
 
 export const maintenanceEntityFilters: EntityFilter[] = [
@@ -41,10 +35,8 @@ export const maintenanceEntityFilters: EntityFilter[] = [
 ];
 
 export const findMaintenanceEntities = (
-  sources: EntityFilterSources,
-  hiddenEntities?: string[]
-): string[] =>
-  findFilteredEntities(sources, maintenanceEntityFilters, hiddenEntities);
+  sources: EntityFilterSources
+): string[] => findFilteredEntities(sources, maintenanceEntityFilters);
 
 const LOW_BATTERY_THRESHOLD = 20;
 
@@ -127,8 +119,7 @@ const computeMaintenanceTileCard = (
 const processAreasForBattery = (
   areaIds: string[],
   hass: HomeAssistant,
-  entities: string[],
-  computeCard: ComputeEntityCard
+  entities: string[]
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
 
@@ -150,7 +141,9 @@ const processAreasForBattery = (
     const areaCards: LovelaceCardConfig[] = [];
 
     for (const entityId of areaBatteryEntities) {
-      areaCards.push(computeCard(entityId));
+      areaCards.push(
+        computeMaintenanceTileCard(hass.states, hass.entities, entityId)
+      );
     }
 
     if (areaCards.length > 0) {
@@ -174,8 +167,7 @@ const processAreasForBattery = (
 
 const processUnassignedEntities = (
   hass: HomeAssistant,
-  entities: string[],
-  computeCard: ComputeEntityCard
+  entities: string[]
 ): LovelaceCardConfig[] => {
   const unassignedFilter = generateEntityFilter(
     hass.states,
@@ -191,7 +183,9 @@ const processUnassignedEntities = (
   const cards: LovelaceCardConfig[] = [];
 
   for (const entityId of unassignedEntities) {
-    cards.push(computeCard(entityId));
+    cards.push(
+      computeMaintenanceTileCard(hass.states, hass.entities, entityId)
+    );
   }
 
   return cards;
@@ -200,7 +194,7 @@ const processUnassignedEntities = (
 @customElement("maintenance-view-strategy")
 export class MaintenanceViewStrategy extends ReactiveElement {
   static async generate(
-    config: MaintenanceViewStrategyConfig,
+    _config: MaintenanceViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = Object.values(hass.areas);
@@ -209,16 +203,7 @@ export class MaintenanceViewStrategy extends ReactiveElement {
 
     const sections: LovelaceSectionRawConfig[] = [];
 
-    const entities = findMaintenanceEntities(
-      hass,
-      config.edit_visibility ? undefined : config.hidden_entities
-    );
-
-    const computeTileCard = (entityId: string) =>
-      computeMaintenanceTileCard(hass.states, hass.entities, entityId);
-    const computeCard: ComputeEntityCard = config.edit_visibility
-      ? wrapEntityVisibility(new Set(config.hidden_entities), computeTileCard)
-      : computeTileCard;
+    const entities = findMaintenanceEntities(hass);
 
     const floorCount =
       hierarchy.floors.length + (hierarchy.areas.length ? 1 : 0);
@@ -244,12 +229,7 @@ export class MaintenanceViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForBattery(
-        areaIds,
-        hass,
-        entities,
-        computeCard
-      );
+      const areaCards = processAreasForBattery(areaIds, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -275,12 +255,7 @@ export class MaintenanceViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForBattery(
-        hierarchy.areas,
-        hass,
-        entities,
-        computeCard
-      );
+      const areaCards = processAreasForBattery(hierarchy.areas, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -289,11 +264,7 @@ export class MaintenanceViewStrategy extends ReactiveElement {
     }
 
     // Process unassigned entities
-    const unassignedCards = processUnassignedEntities(
-      hass,
-      entities,
-      computeCard
-    );
+    const unassignedCards = processUnassignedEntities(hass, entities);
 
     if (unassignedCards.length > 0) {
       const section: LovelaceSectionRawConfig = {

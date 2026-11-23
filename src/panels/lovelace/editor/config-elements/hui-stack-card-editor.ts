@@ -139,6 +139,9 @@ export class HuiStackCardEditor
           <ha-icon-button
             @click=${this._handleAddCard}
             .path=${mdiPlus}
+            .label=${this.hass!.localize(
+              "ui.panel.lovelace.editor.edit_card.add"
+            )}
           ></ha-icon-button>
         </div>
 

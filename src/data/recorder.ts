@@ -1,7 +1,7 @@
 import type { Connection } from "home-assistant-js-websocket";
 import { DEFAULT_ENTITY_NAME } from "../common/entity/entity_name_config";
 import type { HaDurationData } from "../components/ha-duration-input";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
 import { firstWeekday } from "../common/datetime/first_weekday";
 
 export interface RecorderInfo {
@@ -161,6 +161,52 @@ export type StatisticsValidationResults = Record<
 export const getRecorderInfo = (conn: Connection) =>
   conn.sendMessagePromise<RecorderInfo>({
     type: "recorder/info",
+  });
+
+export interface RecorderTableUsage {
+  table: string;
+  bytes: number;
+}
+
+// Byte figures are null when the database cannot report table sizes.
+export interface RecorderEntityUsage {
+  // null collects rows without a known entity
+  entity_id: string | null;
+  states: number;
+  states_bytes: number | null;
+  attributes_bytes: number | null;
+}
+
+export interface RecorderStatisticUsage {
+  // null collects rows without a known statistic
+  statistic_id: string | null;
+  source: string | null;
+  statistics: number;
+  statistics_short_term: number;
+  statistics_bytes: number | null;
+  statistics_short_term_bytes: number | null;
+}
+
+export interface RecorderDatabaseUsage {
+  generated_at: string;
+  duration: number;
+  total_bytes: number;
+  free_bytes: number | null;
+  // SQLite write-ahead log, not part of total_bytes
+  wal_bytes: number | null;
+  tables: RecorderTableUsage[] | null;
+  entities: RecorderEntityUsage[];
+  statistics: RecorderStatisticUsage[];
+}
+
+// Without refresh this returns the last report of the past hour, or null.
+export const fetchRecorderDatabaseUsage = (
+  api: Pick<HomeAssistantApi, "callWS">,
+  refresh = false
+) =>
+  api.callWS<RecorderDatabaseUsage | null>({
+    type: "recorder/database_usage",
+    refresh,
   });
 
 export type EntityRecordingDisabler = "user";

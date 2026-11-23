@@ -50,3 +50,54 @@ export const subscribeThemes = (
     conn,
     onChange
   );
+
+/** `none`: the theme has no modes and fixed colors, applied on the light base. */
+export type ThemeModeSupport = "both" | "light" | "dark" | "none";
+
+export const getThemeModeSupport = (theme: Theme): ThemeModeSupport => {
+  const modes = theme.modes;
+  const hasLight = !!modes && "light" in modes;
+  const hasDark = !!modes && "dark" in modes;
+  if (hasLight && hasDark) {
+    return "both";
+  }
+  if (hasDark) {
+    return "dark";
+  }
+  if (hasLight) {
+    return "light";
+  }
+  return "none";
+};
+
+export const getThemeVariables = (
+  theme: Theme,
+  darkMode: boolean
+): Partial<ThemeVars> => {
+  const { modes, ...baseVariables } = theme;
+  return {
+    ...baseVariables,
+    ...(darkMode ? modes?.dark : modes?.light),
+  };
+};
+
+/** Setting any primary palette key counts as setting the primary color. */
+export const themeDefinesColor = (
+  themeVariables: Partial<ThemeVars>,
+  color: "primary" | "accent"
+): boolean => {
+  if (color === "accent") {
+    return "accent-color" in themeVariables;
+  }
+  return (
+    "primary-color" in themeVariables ||
+    themeDefinesPrimaryPalette(themeVariables)
+  );
+};
+
+export const themeDefinesPrimaryPalette = (
+  themeVariables: Partial<ThemeVars>
+): boolean =>
+  Object.keys(themeVariables).some((key) =>
+    key.startsWith("ha-color-primary-")
+  );

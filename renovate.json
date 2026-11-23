@@ -14,7 +14,7 @@
   "minimumReleaseAge": "3 days",
   "postUpdateOptions": ["pnpmDedupe"],
   "constraints": {
-    "ghActionsLock": "v0.4.1"
+    "ghActionsLock": "v0.5.1"
   },
   "lockFileMaintenance": {
     "description": ["Run after patch releases but before next beta"],

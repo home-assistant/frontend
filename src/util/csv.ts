@@ -1,8 +1,9 @@
 import { fileDownload } from "./file_download";
 
+// Quote fields containing a separator, quote or line break (RFC 4180).
 export function csvSafeString(s: string | undefined): string {
   if (!s) return "";
-  return /,|"/.test(s) ? `"${s.replaceAll('"', '""')}"` : s;
+  return /[,"\r\n]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s;
 }
 
 export function csvDownload(data: string[][], filename: string) {
