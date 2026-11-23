@@ -1,9 +1,11 @@
 import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import { describe, expect, it } from "vitest";
 import {
+  computeGroupMemberEntries,
   computeGroupMemberIds,
   filterGroupsWithListedMembers,
 } from "../../src/data/group";
+import type { HomeAssistant } from "../../src/types";
 
 const entity = (
   entity_id: string,
@@ -71,6 +73,52 @@ describe("computeGroupMemberIds", () => {
 
   it("not a group: undefined", () => {
     expect(computeGroupMemberIds(entity("light.lamp"))).toBeUndefined();
+  });
+});
+
+describe("computeGroupMemberEntries", () => {
+  const entities = {
+    "light.member": {
+      entity_id: "light.member",
+      platform: "member_platform",
+      translation_key: "member_key",
+    },
+    "light.no_platform": {
+      entity_id: "light.no_platform",
+      translation_key: "member_key",
+    },
+    "light.no_translation_key": {
+      entity_id: "light.no_translation_key",
+      platform: "member_platform",
+    },
+    "switch.member": {
+      entity_id: "switch.member",
+      platform: "member_platform",
+      translation_key: "member_key",
+    },
+  } as unknown as HomeAssistant["entities"];
+
+  it("keeps same-domain members with translations", () => {
+    expect(
+      computeGroupMemberEntries(
+        entity("light.group", {
+          entity_id: [
+            "light.member",
+            "light.no_platform",
+            "light.no_translation_key",
+            "light.unknown",
+            "switch.member",
+          ],
+        }),
+        entities
+      )
+    ).toEqual([entities["light.member"]]);
+  });
+
+  it("not a group: no members", () => {
+    expect(computeGroupMemberEntries(entity("light.lamp"), entities)).toEqual(
+      []
+    );
   });
 });
 

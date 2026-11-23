@@ -5,7 +5,7 @@ import {
   TEMPERATURE_ATTRIBUTES,
 } from "../../data/entity/entity_attributes";
 import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
-import { computeGroupMemberIds } from "../../data/group";
+import { computeGroupMemberEntries } from "../../data/group";
 import type { FrontendLocaleData } from "../../data/translation";
 import { TimeZone } from "../../data/translation";
 import type { WeatherEntity } from "../../data/weather";
@@ -210,16 +210,8 @@ const computeMemberAttributeValueDisplay = (
   attribute: string,
   attributeValue: string
 ): string | undefined => {
-  const memberIds = computeGroupMemberIds(stateObj);
-  if (!memberIds) {
-    return undefined;
-  }
   const domain = computeStateDomain(stateObj);
-  for (const memberId of memberIds) {
-    const member = entities[memberId] as EntityRegistryDisplayEntry | undefined;
-    if (!member?.translation_key || computeDomain(memberId) !== domain) {
-      continue;
-    }
+  for (const member of computeGroupMemberEntries(stateObj, entities)) {
     const translation = localize(
       `component.${member.platform}.entity.${domain}.${member.translation_key}.state_attributes.${attribute}.state.${attributeValue}`
     );

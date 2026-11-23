@@ -5,7 +5,12 @@ import type {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
-import type { ExtEntityRegistryEntry } from "./entity/entity_registry";
+import { computeStateDomain } from "../common/entity/compute_state_domain";
+import type { HomeAssistant } from "../types";
+import type {
+  EntityRegistryDisplayEntry,
+  ExtEntityRegistryEntry,
+} from "./entity/entity_registry";
 
 interface GroupEntityAttributes extends HassEntityAttributeBase {
   entity_id: string[];
@@ -38,6 +43,27 @@ export const computeGroupMemberIds = (
     stateObj.attributes.group_entities ??
     stateObj.attributes.entity_id;
   return Array.isArray(ids) ? ids : undefined;
+};
+
+export type GroupMemberEntry = EntityRegistryDisplayEntry &
+  Required<Pick<EntityRegistryDisplayEntry, "platform" | "translation_key">>;
+
+/**
+ * Registry entries of the members of a group in the domain of the group that
+ * have translations, or an empty list if it is not a group.
+ */
+export const computeGroupMemberEntries = (
+  stateObj: HassEntity,
+  entities: HomeAssistant["entities"]
+): GroupMemberEntry[] => {
+  const domain = computeStateDomain(stateObj);
+  return (computeGroupMemberIds(stateObj) ?? [])
+    .filter((id) => computeDomain(id) === domain)
+    .map((id) => entities[id] as EntityRegistryDisplayEntry | undefined)
+    .filter(
+      (entry): entry is GroupMemberEntry =>
+        !!entry?.translation_key && !!entry.platform
+    );
 };
 
 /**
