@@ -386,9 +386,9 @@ function processForecast(
             ? forecastTimes[1] - forecastTimes[0]
             : undefined
         );
-        for (const [time, value] of Object.entries(forecastsData)) {
-          const kWh = value / 1000;
-          solarForecastData.push([Number(time) + forecastOffset, kWh]);
+        for (const time of forecastTimes) {
+          const kWh = forecastsData[time] / 1000;
+          solarForecastData.push([time + forecastOffset, kWh]);
           trackY(kWh);
         }
 
