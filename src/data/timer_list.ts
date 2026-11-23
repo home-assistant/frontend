@@ -88,6 +88,18 @@ export const timerListTimerRemaining = (
   return 0;
 };
 
+// "9:53" or "1:02:05", without a leading zero on the first unit, as the timer
+// entity shows its countdown. Minutes always show, so a short time reads "0:35".
+export const formatTimerListRemaining = (remaining: number): string => {
+  const total = Math.ceil(remaining);
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const seconds = String(total % 60).padStart(2, "0");
+  return hours
+    ? `${hours}:${String(minutes).padStart(2, "0")}:${seconds}`
+    : `${minutes}:${seconds}`;
+};
+
 const FINISHED_VISIBLE_MS = 5 * 60 * 1000;
 
 // Active and paused timers, and timers that finished in the last 5 minutes.

@@ -14,10 +14,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
-import {
-  formatDurationDigital,
-  formatDurationLong,
-} from "../../common/datetime/format_duration";
+import { formatDurationLong } from "../../common/datetime/format_duration";
 import { consume } from "../../common/decorators/consume";
 import { consumeEntityState } from "../../common/decorators/consume-context-entry";
 import { transform } from "../../common/decorators/transform";
@@ -34,6 +31,7 @@ import type { TimerListTimer } from "../../data/timer_list";
 import {
   addTimerListTimerTime,
   callTimerListTimerAction,
+  formatTimerListRemaining,
   subscribeTimerListTimers,
   TimerListEntityFeature,
   timerListTimerRemaining,
@@ -223,12 +221,7 @@ export class HaTimerList extends LitElement {
                           <div class="row">
                             <div class="info">
                               <span class="remaining">
-                                ${formatDurationDigital(
-                                  this._i18n.locale,
-                                  normalizeTimerDuration({
-                                    seconds: Math.ceil(remaining),
-                                  })
-                                )}
+                                ${formatTimerListRemaining(remaining)}
                               </span>
                               <span class="name">
                                 ${

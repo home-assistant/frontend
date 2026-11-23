@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { TimerListTimer } from "../../src/data/timer_list";
 import {
   applyTimerListMessage,
+  formatTimerListRemaining,
   timerListTimerVisible,
 } from "../../src/data/timer_list";
 
@@ -91,5 +92,16 @@ describe("timerListTimerVisible", () => {
     ],
   ])("%s", (_name, item, visible) => {
     expect(timerListTimerVisible(item, now)).toBe(visible);
+  });
+});
+
+describe("formatTimerListRemaining", () => {
+  it.each([
+    [0, "0:00"],
+    [34.2, "0:35"],
+    [593, "9:53"],
+    [3725, "1:02:05"],
+  ])("%s seconds", (seconds, text) => {
+    expect(formatTimerListRemaining(seconds)).toBe(text);
   });
 });
