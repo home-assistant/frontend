@@ -88,6 +88,7 @@ import type {
 import {
   countActiveFilters,
   filterModeChanged,
+  filtersMatchUnassignedItem,
   hasFilterSelection,
   listFilterValue,
   matchesFilterItems,
@@ -548,7 +549,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       entityReg: EntityRegistryEntry[],
       categoryReg?: CategoryRegistryEntry[],
       labelReg?: LabelRegistryEntry[],
-      filteredStateItems?: string[] | null
+      filteredStateItems?: string[] | null,
+      includeUnassigned = true
     ): HelperItem[] => {
       if (filteredStateItems === null) {
         return [];
@@ -621,11 +623,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       }));
 
       return [...states, ...entries, ...disabledItems]
-        .filter((item) =>
-          filteredStateItems
-            ? filteredStateItems?.includes(item.entity_id)
-            : true
-        )
+        .filter((item) => {
+          if (!filteredStateItems) {
+            return true;
+          }
+          // A config entry that has no entity yet has nothing assigned
+          return item.entity_id
+            ? filteredStateItems.includes(item.entity_id)
+            : includeUnassigned;
+        })
         .map((item) => {
           const entityRegEntry =
             entityRegistryByEntityId(entityReg)[item.entity_id];
@@ -696,7 +702,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       this._entityReg,
       this._categories,
       this._labels,
-      this._filteredHelperEntityIds
+      this._filteredHelperEntityIds,
+      filtersMatchUnassignedItem(this._filters)
     );
     return html`
       <hass-tabs-subpage-data-table

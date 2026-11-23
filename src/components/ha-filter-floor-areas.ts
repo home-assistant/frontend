@@ -111,6 +111,21 @@ export class HaFilterFloorAreas extends LitElement {
 
   private _relatedRequestId = 0;
 
+  public connectedCallback() {
+    super.connectedCallback();
+    // The config pages are cached, so an item may have been edited while this
+    // filter was not on screen
+    if (
+      this.hasUpdated &&
+      this.value &&
+      (this.value.areas?.length ||
+        this.value.floors?.length ||
+        this.value.no_area)
+    ) {
+      this._findRelated();
+    }
+  }
+
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
 

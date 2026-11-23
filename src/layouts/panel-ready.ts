@@ -75,13 +75,37 @@ export class ChildPanelReady implements ReactiveController {
 export class PanelReady {
   public ready?: Promise<void>;
 
+  private _resolveReady?: () => void;
+
   public track(element: HTMLElement, waitForReady = false) {
-    this.ready = waitForReady
-      ? new Promise((resolve) => {
-          element.addEventListener("hass-panel-ready", () => resolve(), {
-            once: true,
-          });
-        })
-      : undefined;
+    // A panel replaced before it was ready, such as a dashboard that redirects
+    // to another, would never get there. Whoever waits on it waits for the
+    // panel that took its place instead.
+    const resolveReplaced = this._resolveReady;
+    this._resolveReady = undefined;
+
+    if (!waitForReady) {
+      this.ready = undefined;
+      resolveReplaced?.();
+
+      return;
+    }
+
+    this.ready = new Promise((resolve) => {
+      this._resolveReady = resolve;
+      element.addEventListener(
+        "hass-panel-ready",
+        () => {
+          if (this._resolveReady === resolve) {
+            resolve();
+          }
+        },
+        { once: true }
+      );
+    });
+
+    if (resolveReplaced) {
+      void this.ready.then(resolveReplaced);
+    }
   }
 }

@@ -18,11 +18,7 @@ import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../types";
 import type { HassioAddonInfo } from "./hassio/addon";
 import { domainToName } from "./integration";
-import {
-  getPanelIcon,
-  getPanelNameTranslationKey,
-  SYSTEM_PANELS,
-} from "./panel";
+import { getPanelIcon, getPanelTitle, SYSTEM_PANELS } from "./panel";
 
 export interface NavigationComboBoxItem extends PickerComboBoxItem {
   path: string;
@@ -59,10 +55,9 @@ const generateNavigationPanelCommands = (
   Object.entries(panels)
     .filter(([panelKey]) => !SYSTEM_PANELS.includes(panelKey))
     .map(([_panelKey, panel]) => {
-      const translationKey = getPanelNameTranslationKey(panel);
       const icon = getPanelIcon(panel) || "mdi:view-dashboard";
 
-      const primary = localize(translationKey) || panel.title || panel.url_path;
+      const primary = getPanelTitle({ localize }, panel) || panel.url_path;
 
       const panelApp = apps?.find(({ slug }) => slug === panel.url_path);
 

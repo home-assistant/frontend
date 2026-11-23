@@ -91,7 +91,7 @@ export class HaFilterBlueprints extends LitElement {
   private _relatedRequestId = 0;
 
   // The last lookup of the items without a blueprint, reused while the items
-  // are the same, such as when only the mode changes
+  // are the same, such as when only the selection changes
   private _withoutBlueprint?: {
     type: "automation" | "script";
     stateIds?: Set<string>;
@@ -100,10 +100,10 @@ export class HaFilterBlueprints extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    // An item may have been edited while the cached page was hidden, so look
-    // up the items without one again
+    // The config pages are cached, so an item may have been edited while this
+    // filter was not on screen
     this._withoutBlueprint = undefined;
-    if (this.hasUpdated && listFilterValue(this.value)?.none) {
+    if (this.hasUpdated && hasFilterSelection(this.value)) {
       this._findRelated();
     }
   }

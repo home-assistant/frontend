@@ -120,8 +120,8 @@ export class HaFilterDevices extends LitElement {
   private _relatedRequestId = 0;
 
   // The last lookup of the automations, scripts or scenes without a device,
-  // reused while nothing it depends on changed, such as when only the mode
-  // changes
+  // reused while nothing it depends on changed, such as when only the
+  // selection changes
   private _withoutDevice?: {
     type: keyof RelatedResult;
     includeDisabledEntities: boolean;
@@ -132,10 +132,10 @@ export class HaFilterDevices extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    // An item may have been edited while the cached page was hidden, so look
-    // up the items without one again
+    // The config pages are cached, so an item may have been edited while this
+    // filter was not on screen
     this._withoutDevice = undefined;
-    if (this.hasUpdated && listFilterValue(this.value)?.none) {
+    if (this.hasUpdated && hasFilterSelection(this.value)) {
       this._findRelated();
     }
   }
