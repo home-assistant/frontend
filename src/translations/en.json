@@ -1377,6 +1377,21 @@
         "select_row": "Select {name}",
         "select_row_generic": "Select row"
       },
+      "camera-player": {
+        "play": "Play",
+        "mute": "Mute",
+        "unmute": "Unmute",
+        "picture_in_picture": "Picture in picture",
+        "exit_picture_in_picture": "Exit picture in picture",
+        "fullscreen": "Full screen",
+        "exit_fullscreen": "Exit full screen",
+        "reset_zoom": "Reset zoom",
+        "zoom_hint": "Use {modifier} + scroll to zoom",
+        "connecting": "Connecting",
+        "stream_info": "Streaming with {type}. Show connection details",
+        "stream_info_connecting": "Connecting to the camera. Show connection details",
+        "stream_info_upgrading": "Streaming with {type}, connecting with {upgrading} in the background. Show connection details"
+      },
       "web-rtc-player": {
         "not_supported": "WebRTC is not supported in this browser.",
         "start_failed": "Failed to start the WebRTC stream: {message}",
@@ -2811,6 +2826,20 @@
           "header": "Device added",
           "finish": "Finish",
           "skip": "Skip and finish"
+        }
+      },
+      "camera_stream_info": {
+        "title": "Stream connection",
+        "intro": "Home Assistant starts with the connection that works most reliably and switches to a faster one as soon as it is ready.",
+        "still_images_only": "This camera has no video stream, so it shows a series of still images.",
+        "fallback_in_use": "The video streams of this camera could not be started, so still images are shown instead.",
+        "in_use": "In use",
+        "connecting": "Connecting",
+        "not_supported_count": "Not supported by this camera ({count})",
+        "description": {
+          "web_rtc": "Real-time video with the lowest delay, usually below a second. The video takes the most direct way from the camera to your device, which can need extra network setup when you are away from home. Needed to talk to the camera.",
+          "hls": "The video is sent in short pieces through Home Assistant. It works on almost every network and device, but is a few seconds behind. Used while WebRTC connects, or when WebRTC is not available.",
+          "mjpeg": "A series of still images, used when the camera has no video stream or the other connections failed. It has no sound."
         }
       },
       "shortcuts": {
@@ -10428,6 +10457,7 @@
             "energy_usage_graph": {
               "total_consumed": "Total {num} kWh",
               "total_usage": "{num} kWh",
+              "total_cost": "Net grid cost {cost}",
               "combined_from_grid": "Grid",
               "consumed_solar": "Solar",
               "consumed_battery": "Battery",

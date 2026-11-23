@@ -1,4 +1,5 @@
 import type { PictureElementsCardConfig } from "../types";
+import type { ElementPosition } from "./movable-element";
 
 // Connects the picture-elements card editor with the card in its preview, so
 // that clicks and drags on the preview edit the config. It is attached to the
@@ -15,9 +16,8 @@ const MAX_HAND_OVERS = 10;
 // Positions are in percent of the image.
 export interface PictureElementsEditorHandlers {
   selectElement: (index: number) => void;
-  moveElement: (index: number, left: number, top: number) => void;
-  // A click on the image outside of any element.
-  clickImage: (x: number, y: number) => void;
+  // Along the sides the element is placed from, like `{ right, top }`.
+  moveElement: (index: number, position: ElementPosition) => void;
 }
 
 export class PictureElementsEditorBridge extends EventTarget {
