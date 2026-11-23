@@ -4,6 +4,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { createRef, ref } from "lit/directives/ref";
+import memoizeOne from "memoize-one";
 import {
   FilterPanelController,
   filterPanelStyles,
@@ -94,15 +95,16 @@ export class HaFilterBlueprints extends LitElement {
   // are the same, such as when only the selection changes
   private _withoutBlueprint?: {
     type: "automation" | "script";
-    stateIds?: Set<string>;
+    itemIds: string[];
     items: Promise<string[]>;
+    controller: AbortController;
   };
 
   public connectedCallback() {
     super.connectedCallback();
     // The config pages are cached, so an item may have been edited while this
     // filter was not on screen: look up what is picked again
-    this._withoutBlueprint = undefined;
+    this._dropWithoutBlueprint();
     if (this.hasUpdated && hasFilterSelection(this.value)) {
       this._findRelated();
     }
@@ -115,7 +117,7 @@ export class HaFilterBlueprints extends LitElement {
     const reconnected =
       properties.get("_connected") === false && !!this._connected;
     if (reconnected) {
-      this._withoutBlueprint = undefined;
+      this._dropWithoutBlueprint();
     }
 
     if (
@@ -271,10 +273,20 @@ export class HaFilterBlueprints extends LitElement {
 
     const type = this.type;
 
-    const [results, withoutBlueprint] = await Promise.all([
-      type ? this._findForBlueprints(type, value.ids ?? []) : undefined,
-      type && value.none ? this._itemsWithoutBlueprint(type) : undefined,
-    ]);
+    let results: Set<string> | undefined;
+    let withoutBlueprint: string[] | undefined;
+    try {
+      [results, withoutBlueprint] = await Promise.all([
+        type ? this._findForBlueprints(type, value.ids ?? []) : undefined,
+        type && value.none ? this._itemsWithoutBlueprint(type) : undefined,
+      ]);
+    } catch (err) {
+      // A newer lookup took over and stopped this one
+      if (requestId !== this._relatedRequestId) {
+        return;
+      }
+      throw err;
+    }
 
     // The value changed while this lookup ran
     if (requestId !== this._relatedRequestId) {
@@ -293,12 +305,14 @@ export class HaFilterBlueprints extends LitElement {
   // The automations or scripts made from any of the blueprints
   private async _findForBlueprints(
     type: "automation" | "script",
-    blueprintIds: string[]
+    blueprintIds: string[],
+    signal?: AbortSignal
   ): Promise<Set<string>> {
     const results = await mapWithConcurrency(
       blueprintIds,
       RELATED_SEARCH_CONCURRENCY,
-      (blueprintId) => findRelated(this._api, `${type}_blueprint`, blueprintId)
+      (blueprintId) => findRelated(this._api, `${type}_blueprint`, blueprintId),
+      signal
     );
     return new Set(results.flatMap((result) => result[type] ?? []));
   }
@@ -306,13 +320,23 @@ export class HaFilterBlueprints extends LitElement {
   private _itemsWithoutBlueprint(
     type: "automation" | "script"
   ): Promise<string[]> {
+    // Only items of this type count, so another entity being added or removed
+    // doesn't look them all up again
+    const itemIds = this._itemIds(this._stateIds, type);
     const cached = this._withoutBlueprint;
-    if (cached?.type === type && cached.stateIds === this._stateIds) {
+    if (cached?.type === type && deepEqual(cached.itemIds, itemIds)) {
       return cached.items;
     }
 
-    const items = this._searchItemsWithoutBlueprint(type);
-    const lookup = { type, stateIds: this._stateIds, items };
+    // Stop the lookup this one replaces from starting more searches
+    this._dropWithoutBlueprint();
+    const controller = new AbortController();
+    const items = this._searchItemsWithoutBlueprint(
+      type,
+      itemIds,
+      controller.signal
+    );
+    const lookup = { type, itemIds, items, controller };
     this._withoutBlueprint = lookup;
     // Look them up again next time when this lookup fails
     items.catch(() => {
@@ -323,8 +347,23 @@ export class HaFilterBlueprints extends LitElement {
     return items;
   }
 
+  private _dropWithoutBlueprint() {
+    this._withoutBlueprint?.controller.abort();
+    this._withoutBlueprint = undefined;
+  }
+
+  // The ids of the automations or the scripts
+  private _itemIds = memoizeOne(
+    (stateIds: Set<string> | undefined, type: "automation" | "script") =>
+      [...(stateIds ?? [])]
+        .filter((entityId) => computeDomain(entityId) === type)
+        .sort()
+  );
+
   private async _searchItemsWithoutBlueprint(
-    type: "automation" | "script"
+    type: "automation" | "script",
+    itemIds: string[],
+    signal: AbortSignal
   ): Promise<string[]> {
     // A blueprint can be added while the page stays open, so get the current
     // ones, which also updates the list
@@ -332,12 +371,10 @@ export class HaFilterBlueprints extends LitElement {
     this._blueprints = blueprints;
     const fromBlueprint = await this._findForBlueprints(
       type,
-      Object.keys(blueprints)
+      Object.keys(blueprints),
+      signal
     );
-    return [...(this._stateIds ?? [])].filter(
-      (entityId) =>
-        computeDomain(entityId) === type && !fromBlueprint.has(entityId)
-    );
+    return itemIds.filter((entityId) => !fromBlueprint.has(entityId));
   }
 
   private _clearFilter(ev) {

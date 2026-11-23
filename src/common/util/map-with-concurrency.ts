@@ -1,18 +1,25 @@
 /**
  * Maps the items with an async function, running at most `limit` calls at a
  * time. The results keep the order of the items. When a call fails, no new
- * calls start and the returned promise rejects with that error.
+ * calls start and the returned promise rejects with that error. When the
+ * signal aborts, no new calls start and the promise rejects with its reason;
+ * calls that already started still run to the end.
  */
 export const mapWithConcurrency = async <T, R>(
   items: readonly T[],
   limit: number,
-  fn: (item: T, index: number) => Promise<R>
+  fn: (item: T, index: number) => Promise<R>,
+  signal?: AbortSignal
 ): Promise<R[]> => {
   const results = new Array<R>(items.length);
   let next = 0;
 
   const worker = async () => {
     while (next < items.length) {
+      if (signal?.aborted) {
+        next = items.length;
+        throw signal.reason;
+      }
       const index = next++;
       try {
         // Each worker waits for its call before taking the next item
