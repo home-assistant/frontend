@@ -60,6 +60,7 @@ export class HaButtonToggleGroup extends LitElement {
               @click=${this._handleClick}
               .title=${button.label}
               .disabled=${this.disabled}
+              .ariaPressed=${this.active === button.value ? "true" : "false"}
               .appearance=${this.active === button.value ? "accent" : "filled"}
             >
               ${

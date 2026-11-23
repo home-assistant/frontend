@@ -44,6 +44,9 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: "aria-describedby" })
   public ariaDescribedBy?: string;
 
+  @property({ attribute: false })
+  public accessibleLabel?: string;
+
   @property({ type: Boolean }) public open = false;
 
   @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
@@ -212,6 +215,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
         placement="bottom"
         .open=${this._drawerOpen}
         .lightDismiss=${!this.preventScrimClose}
+        .label=${this.accessibleLabel ?? ""}
         .ariaLabelledby=${this.ariaLabelledBy}
         .ariaDescribedby=${this.ariaDescribedBy}
         @keydown=${this._handleKeyDown}
@@ -239,6 +243,10 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   }
 
   private _handleTouchStart = (ev: TouchEvent) => {
+    if (ev.touches.length > 1) {
+      this._cancelResizing();
+      return;
+    }
     if (this.preventScrimClose) {
       return;
     }
@@ -265,6 +273,10 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   }
 
   private _handleTouchMove = (ev: TouchEvent) => {
+    if (ev.touches.length > 1) {
+      this._cancelResizing();
+      return;
+    }
     const currentY = ev.touches[0].clientY;
     const delta = this._gestureRecognizer.move(currentY);
 
@@ -336,6 +348,18 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
       this._animateSnapBack();
     }
   };
+
+  /**
+   * A second finger makes it a pinch, like zooming a camera picture, which
+   * never moves the sheet. Puts the sheet back where it was.
+   */
+  private _cancelResizing() {
+    this._unregisterResizeHandlers();
+    if (this._isDragging) {
+      this._isDragging = false;
+      this._animateSnapBack();
+    }
+  }
 
   private _unregisterResizeHandlers = () => {
     document.removeEventListener("touchmove", this._handleTouchMove);

@@ -133,6 +133,7 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
             <p>${this._newEncryptionKey}</p>
             <ha-icon-button
               .path=${mdiContentCopy}
+              .label=${this.hass.localize("ui.common.copy")}
               @click=${this._copyKeyToClipboard}
             ></ha-icon-button>
           </div>

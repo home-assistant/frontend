@@ -1,32 +1,29 @@
-// Handle 16x9, 16:9, 1.78x1, 1.78:1, 1.78
-// Ignore everything else
-const parseOrThrow = (num) => {
-  const parsed = parseFloat(num);
-  if (isNaN(parsed)) {
-    throw new Error(`${num} is not a number`);
-  }
-  return parsed;
-};
+// Handle 16x9, 16:9, 1.78x1, 1.78:1, 1.78 and 23%
+// Return null for everything else
+const NUMBER = String.raw`(\d+(?:\.\d*)?|\.\d+)`;
+const RATIO_REGEX = new RegExp(
+  String.raw`^\s*${NUMBER}\s*(?:[x:]\s*${NUMBER}\s*)?$`
+);
+const PERCENTAGE_REGEX = new RegExp(String.raw`^\s*${NUMBER}\s*%\s*$`);
 
 export default function parseAspectRatio(input: string) {
-  if (!input) {
+  // YAML loads an unquoted 16:9 as the base-60 number 969, so skip non-strings
+  if (!input || typeof input !== "string") {
     return null;
   }
-  try {
-    if (input.endsWith("%")) {
-      return { w: 100, h: parseOrThrow(input.slice(0, -1)) };
-    }
 
-    const arr = input.replace(":", "x").split("x");
-    if (arr.length === 0) {
-      return null;
-    }
-
-    return arr.length === 1
-      ? { w: parseOrThrow(arr[0]), h: 1 }
-      : { w: parseOrThrow(arr[0]), h: parseOrThrow(arr[1]) };
-  } catch (_err: any) {
-    // Ignore the error
+  const percentage = PERCENTAGE_REGEX.exec(input);
+  if (percentage) {
+    return { w: 100, h: parseFloat(percentage[1]) };
   }
+
+  const ratio = RATIO_REGEX.exec(input);
+  if (ratio) {
+    return {
+      w: parseFloat(ratio[1]),
+      h: ratio[2] === undefined ? 1 : parseFloat(ratio[2]),
+    };
+  }
+
   return null;
 }

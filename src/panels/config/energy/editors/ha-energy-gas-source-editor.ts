@@ -58,7 +58,11 @@ import type {
   EnergyEditorStatus,
   EnergyGasSourceEditorParams,
 } from "./energy-editor";
-import { EnergyEditorMixin, energyEditorStyles } from "./energy-editor";
+import {
+  EnergyEditorMixin,
+  energyEditorStyles,
+  preselectedStatistics,
+} from "./energy-editor";
 
 type CostType = "no-costs" | "number" | "entity" | "statistic";
 
@@ -183,6 +187,18 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
       { type: "deep" },
       { source: this._source, costs: this._costs }
     );
+    if (!params.source) {
+      this._source = {
+        ...this._source,
+        ...preselectedStatistics(["stat_energy_from"]),
+      };
+      this._pickedDisplayUnit = getDisplayUnit(
+        this._states,
+        this._source.stat_energy_from,
+        undefined
+      );
+      this._updateFormDirtyState();
+    }
     this._loadUnits();
   }
 

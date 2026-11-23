@@ -48,6 +48,8 @@ class DemoHomeDashboardStrategy extends ReactiveElement {
       ),
     };
   }
+
+  static getConfigElement = HomeDashboardStrategy.getConfigElement;
 }
 
 class DemoHomeOverviewViewStrategy extends ReactiveElement {

@@ -12,6 +12,10 @@ import type { MarkerLocation } from "../map/ha-locations-editor";
 import "../map/ha-locations-editor";
 import "../ha-form/ha-form";
 import type { LocalizeFunc } from "../../common/translations/localize";
+import {
+  computeLocationSelectorValue,
+  DEFAULT_RADIUS,
+} from "./compute-location-selector-value";
 
 @customElement("ha-selector-location")
 export class HaLocationSelector extends LitElement {
@@ -51,7 +55,7 @@ export class HaLocationSelector extends LitElement {
               {
                 name: "radius",
                 required: true,
-                default: 1000,
+                default: DEFAULT_RADIUS,
                 disabled: !!radius_readonly,
                 selector: {
                   number: {
@@ -74,7 +78,7 @@ export class HaLocationSelector extends LitElement {
       this.value = {
         latitude: this.hass.config.latitude,
         longitude: this.hass.config.longitude,
-        radius: this.selector.location?.radius ? 1000 : undefined,
+        radius: this.selector.location?.radius ? DEFAULT_RADIUS : undefined,
       };
     }
   }
@@ -126,7 +130,9 @@ export class HaLocationSelector extends LitElement {
             !value || isNaN(value.longitude)
               ? this.hass.config.longitude
               : value.longitude,
-          radius: selector.location?.radius ? value?.radius || 1000 : undefined,
+          radius: selector.location?.radius
+            ? value?.radius || DEFAULT_RADIUS
+            : undefined,
           radius_color: selector.location?.color || zoneRadiusColor,
           name: selector.location?.name,
           icon:
@@ -155,20 +161,8 @@ export class HaLocationSelector extends LitElement {
 
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const value = ev.detail.value;
-    const radius = Math.round(ev.detail.value.radius);
-
     fireEvent(this, "value-changed", {
-      value: {
-        latitude: value.latitude,
-        longitude: value.longitude,
-        ...(this.selector.location?.radius &&
-        !this.selector.location?.radius_readonly
-          ? {
-              radius,
-            }
-          : {}),
-      },
+      value: computeLocationSelectorValue(this.selector, ev.detail.value),
     });
   }
 

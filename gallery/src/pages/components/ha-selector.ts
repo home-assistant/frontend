@@ -924,7 +924,7 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
       providers: [
         {
           engine_id: "stt.cloud",
-          name: "Home Assistant Cloud",
+          name: "Home Assistant Link",
           supported_languages: ["en-US"],
           deprecated: false,
         },
@@ -934,7 +934,7 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
       providers: [
         {
           engine_id: "tts.cloud",
-          name: "Home Assistant Cloud",
+          name: "Home Assistant Link",
           supported_languages: ["en-US"],
           deprecated: false,
         },

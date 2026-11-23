@@ -233,7 +233,12 @@ export class HassTabsSubpage extends LitElement {
             }
             ${
               this.showTabs && !this._narrow
-                ? html`<div id="tabbar">${tabs}</div>`
+                ? html`<nav
+                    id="tabbar"
+                    aria-label=${localize("ui.common.subpage_tabs")}
+                  >
+                    ${tabs}
+                  </nav>`
                 : ""
             }
             <div id="toolbar-icon">
@@ -241,11 +246,6 @@ export class HassTabsSubpage extends LitElement {
             </div>
           </div>
         </slot>
-        ${
-          this.showTabs && this._narrow
-            ? html`<div id="tabbar" class="bottom-bar">${tabs}</div>`
-            : ""
-        }
       </div>
       <div class="container">
         ${
@@ -271,6 +271,17 @@ export class HassTabsSubpage extends LitElement {
       <div id="fab">
         <slot name="fab"></slot>
       </div>
+      ${
+        this.showTabs && this._narrow
+          ? html`<nav
+              id="tabbar"
+              class="bottom-bar"
+              aria-label=${localize("ui.common.subpage_tabs")}
+            >
+              ${tabs}
+            </nav>`
+          : nothing
+      }
     `;
   }
 
@@ -401,7 +412,7 @@ export class HassTabsSubpage extends LitElement {
         :host([narrow]) .toolbar-content {
           padding: 4px;
         }
-        .toolbar a {
+        #tabbar a {
           color: var(--sidebar-text-color);
           text-decoration: none;
         }

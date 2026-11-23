@@ -23,7 +23,7 @@ type HlsLite = Omit<
 const HIDDEN_CLEANUP_DELAY = 60000;
 
 @customElement("ha-hls-player")
-class HaHLSPlayer extends LitElement {
+export class HaHLSPlayer extends LitElement {
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
@@ -110,6 +110,11 @@ class HaHLSPlayer extends LitElement {
       this._restartHls();
     }
   };
+
+  /** The video that plays the stream, undefined while the app plays it. */
+  public get videoElement(): HTMLVideoElement | undefined {
+    return this._exoPlayer ? undefined : (this._videoEl ?? undefined);
+  }
 
   public connectedCallback() {
     super.connectedCallback();
@@ -309,6 +314,7 @@ class HaHLSPlayer extends LitElement {
 
   private async _renderHLSExoPlayer(url: string) {
     this._exoPlayer = true;
+    fireEvent(this, "exoplayer-changed", { active: true });
     window.addEventListener("resize", this._resizeExoPlayer);
     this.updateComplete.then(() => nextRender()).then(this._resizeExoPlayer);
     this._videoEl.style.visibility = "hidden";
@@ -444,6 +450,7 @@ class HaHLSPlayer extends LitElement {
       window.removeEventListener("resize", this._resizeExoPlayer);
       this._config.auth.external!.fireMessage({ type: "exoplayer/stop" });
       this._exoPlayer = false;
+      fireEvent(this, "exoplayer-changed", { active: false });
     }
     if (this._videoEl) {
       this._videoEl.removeAttribute("src");
@@ -505,6 +512,10 @@ class HaHLSPlayer extends LitElement {
 }
 
 declare global {
+  interface HASSDomEvents {
+    "exoplayer-changed": { active: boolean };
+  }
+
   interface HTMLElementTagNameMap {
     "ha-hls-player": HaHLSPlayer;
   }

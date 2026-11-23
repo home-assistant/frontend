@@ -6,15 +6,17 @@ const isConditionObject = (c: unknown): c is VisibilityCondition =>
   typeof c === "object" && c !== null;
 
 /**
- * Drop entries that are not condition objects, at any depth. Returns the
- * same array when every entry is valid.
+ * Drop entries that are not condition objects, at any depth. A single
+ * condition mapping is wrapped in an array. Returns the same array when it
+ * is an array and every entry is valid.
  */
 export const dropInvalidConditions = (
-  conditions: VisibilityCondition[]
+  conditions: VisibilityCondition | VisibilityCondition[]
 ): VisibilityCondition[] => {
-  let changed = false;
+  const list = ensureArray(conditions);
+  let changed = list !== conditions;
   const valid: VisibilityCondition[] = [];
-  for (const c of conditions) {
+  for (const c of list) {
     if (!isConditionObject(c)) {
       changed = true;
       continue;
@@ -30,5 +32,5 @@ export const dropInvalidConditions = (
     }
     valid.push(c);
   }
-  return changed ? valid : conditions;
+  return changed ? valid : list;
 };
