@@ -95,10 +95,7 @@ import type {
 } from "../../../data/data_table_filters";
 import {
   countActiveFilters,
-  filterModeChanged,
   hasFilterSelection,
-  listFilterValue,
-  matchesFilterItems,
   matchesListFilter,
 } from "../../../data/data_table_filters";
 import { computeDeviceClassName } from "../../../data/entity/device_class";
@@ -661,15 +658,15 @@ export class HaConfigEntities extends LitElement {
           }
         } else if (
           key === "ha-filter-integrations" &&
-          hasFilterSelection(filter)
+          Array.isArray(filter) &&
+          filter.length
         ) {
           if (!entries) {
             this._loadConfigEntries();
             return;
           }
-          const { ids: domains = [], exclude } = listFilterValue(filter)!;
           const entryIds = entries
-            .filter((entry) => domains.includes(entry.domain))
+            .filter((entry) => (filter as string[]).includes(entry.domain))
             .map((entry) => entry.entry_id);
 
           const filteredEntitiesByDomain = new Set<string>();
@@ -685,7 +682,7 @@ export class HaConfigEntities extends LitElement {
             entitiesByDomain[source.domain].push(entity);
           }
 
-          for (const val of domains) {
+          for (const val of filter) {
             if (val in entitiesByDomain) {
               entitiesByDomain[val].forEach((item) =>
                 filteredEntitiesByDomain.add(item)
@@ -695,15 +692,12 @@ export class HaConfigEntities extends LitElement {
 
           filteredEntities = filteredEntities.filter(
             (entity) =>
-              (filteredEntitiesByDomain.has(entity.entity_id) ||
-                domains.includes(entity.platform) ||
-                (!!entity.config_entry_id &&
-                  entryIds.includes(entity.config_entry_id))) !== !!exclude
+              filteredEntitiesByDomain.has(entity.entity_id) ||
+              (filter as string[]).includes(entity.platform) ||
+              (entity.config_entry_id &&
+                entryIds.includes(entity.config_entry_id))
           );
-          // Shows the integrations' own info, which only fits including them
-          if (!exclude) {
-            domains.forEach((domain) => filteredDomains.add(domain));
-          }
+          filter!.forEach((domain) => filteredDomains.add(domain));
         } else if (
           key === "ha-filter-device-classes" &&
           hasFilterSelection(filter)
@@ -711,9 +705,13 @@ export class HaConfigEntities extends LitElement {
           filteredEntities = filteredEntities.filter((entry) =>
             matchesListFilter(filter, [this._getDeviceClass(entry)])
           );
-        } else if (key === "ha-filter-domains" && hasFilterSelection(filter)) {
+        } else if (
+          key === "ha-filter-domains" &&
+          Array.isArray(filter) &&
+          filter.length
+        ) {
           filteredEntities = filteredEntities.filter((entity) =>
-            matchesListFilter(filter, [computeDomain(entity.entity_id)])
+            (filter as string[]).includes(computeDomain(entity.entity_id))
           );
         } else if (key === "ha-filter-labels" && hasFilterSelection(filter)) {
           filteredEntities = filteredEntities.filter((entity) =>
@@ -732,10 +730,10 @@ export class HaConfigEntities extends LitElement {
         }
       });
 
-      Object.entries(filteredItems).forEach(([key, items]) => {
+      Object.values(filteredItems).forEach((items) => {
         if (items) {
           filteredEntities = filteredEntities.filter((entity) =>
-            matchesFilterItems(filters[key], items, entity.entity_id)
+            items.has(entity.entity_id)
           );
         }
       });
@@ -1135,7 +1133,6 @@ export class HaConfigEntities extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-devices>
         <ha-filter-device-classes
-          excludable
           .label=${this.hass.localize(
             "ui.panel.config.entities.picker.headers.device_class"
           )}
@@ -1155,7 +1152,6 @@ export class HaConfigEntities extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-domains>
         <ha-filter-integrations
-          excludable
           .value=${this._filters["ha-filter-integrations"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -1226,12 +1222,9 @@ export class HaConfigEntities extends LitElement {
 
     // A filter also sends the value it was given, once it has found its items.
     // Only a change to what the URL holds is the user's, so a link isn't stored.
-    // The URL leaves out the mode of a filter without a selection, so a change
-    // to the mode is the user's too.
     if (
       entitiesFilterQueryString(filters) !==
-        entitiesFilterQueryString(this._filters) ||
-      filterModeChanged(ev.detail.value, this._filters[type])
+      entitiesFilterQueryString(this._filters)
     ) {
       this._storageFilters = {
         ...this._storedFilters(),

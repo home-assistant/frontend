@@ -4,7 +4,6 @@ import type {
 } from "../../data/data_table_filters";
 import { dataTableQueryParamConfig } from "./data-table-query-params";
 import {
-  excludedFilters,
   floorAreasFilterFromParams,
   floorAreasFilterParams,
   listFilterFromParams,
@@ -37,8 +36,6 @@ export const entitiesFilterQueryParamConfig = {
     "sub_entry",
     // Read until 2027.5, replaced with `assistants` on the next write
     "voice_assistant",
-    // The filters that show the items that don't match their selection
-    "exclude",
   ],
   boolean: [
     { key: "no_area", trueValue: "1" },
@@ -65,23 +62,14 @@ export const entitiesFilterQueryParams = (
   no_device: listFilterNone(filters["ha-filter-devices"]),
   device_class: listFilterIds(filters["ha-filter-device-classes"]),
   no_device_class: listFilterNone(filters["ha-filter-device-classes"]),
-  domain: listFilterIds(filters["ha-filter-integrations"]),
-  entity_domain: listFilterIds(filters["ha-filter-domains"]),
+  domain: list(filters["ha-filter-integrations"]),
+  entity_domain: list(filters["ha-filter-domains"]),
   label: listFilterIds(filters["ha-filter-labels"]),
   no_label: listFilterNone(filters["ha-filter-labels"]),
   assistants: listFilterIds(filters["ha-filter-voice-assistants"]),
   no_assistants: listFilterNone(filters["ha-filter-voice-assistants"]),
   config_entry: list(filters.config_entry),
   sub_entry: list(filters.sub_entry),
-  exclude: excludedFilters({
-    assistants: filters["ha-filter-voice-assistants"],
-    entity_domain: filters["ha-filter-domains"],
-    domain: filters["ha-filter-integrations"],
-    device_class: filters["ha-filter-device-classes"],
-    area: filters["ha-filter-floor-areas"],
-    device: filters["ha-filter-devices"],
-    label: filters["ha-filter-labels"],
-  }),
 });
 
 // The filters as the URL holds them, so values that filter the same, such as
@@ -132,7 +120,6 @@ export const entitiesLinkFromUrl = (
 
   const floors = values("floor");
   const areas = values("area");
-  const exclude = values("exclude");
   const assistants = values("assistants");
 
   return {
@@ -142,38 +129,25 @@ export const entitiesLinkFromUrl = (
       "ha-filter-floor-areas": floorAreasFilterFromParams(
         floors,
         areas,
-        params.no_area,
-        exclude
+        params.no_area
       ),
       "ha-filter-devices": listFilterFromParams(
         values("device"),
-        params.no_device,
-        exclude.includes("device")
+        params.no_device
       ),
       "ha-filter-device-classes": listFilterFromParams(
         values("device_class"),
-        params.no_device_class,
-        exclude.includes("device_class")
+        params.no_device_class
       ),
-      "ha-filter-integrations": listFilterFromParams(
-        values("domain"),
-        false,
-        exclude.includes("domain")
-      ),
-      "ha-filter-domains": listFilterFromParams(
-        values("entity_domain"),
-        false,
-        exclude.includes("entity_domain")
-      ),
+      "ha-filter-integrations": values("domain"),
+      "ha-filter-domains": values("entity_domain"),
       "ha-filter-labels": listFilterFromParams(
         values("label"),
-        params.no_label,
-        exclude.includes("label")
+        params.no_label
       ),
       "ha-filter-voice-assistants": listFilterFromParams(
         assistants.length ? assistants : values("voice_assistant"),
-        params.no_assistants,
-        exclude.includes("assistants")
+        params.no_assistants
       ),
       config_entry: values("config_entry"),
       sub_entry: values("sub_entry"),

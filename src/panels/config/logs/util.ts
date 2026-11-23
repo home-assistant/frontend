@@ -55,18 +55,14 @@ export interface SystemLogFilters {
   search: string;
   // Logger names of the picked integrations, undefined when none are picked
   loggers?: string[];
-  // Show the entries of the other loggers instead
-  excludeLoggers?: boolean;
   levels?: SystemLogLevel[];
-  // Show the entries of the other levels instead
-  excludeLevels?: boolean;
 }
 
 // The entries the errors list shows. The filter pane counts each filter from
 // the entries the other filters leave.
 export const filterSystemLogItems = (
   items: LoggedError[],
-  { search, loggers, excludeLoggers, levels, excludeLevels }: SystemLogFilters,
+  { search, loggers, levels }: SystemLogFilters,
   localize: LocalizeFunc,
   locale: FrontendLocaleData,
   config: HassConfig
@@ -74,14 +70,14 @@ export const filterSystemLogItems = (
   const term = search.toLowerCase();
 
   return items.filter((item) => {
-    if (levels?.length && levels.includes(item.level) === !!excludeLevels) {
+    if (levels?.length && !levels.includes(item.level)) {
       return false;
     }
     if (
       loggers &&
-      loggers.some(
+      !loggers.some(
         (logger) => item.name === logger || item.name.startsWith(`${logger}.`)
-      ) === !!excludeLoggers
+      )
     ) {
       return false;
     }

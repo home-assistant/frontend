@@ -45,7 +45,6 @@ import "./ha-dropdown";
 import type { HaDropdownSelectEvent } from "./ha-dropdown";
 import "./ha-dropdown-item";
 import "./ha-expansion-panel";
-import { filterBadgeStyles, renderFilterBadge } from "./ha-filter-mode";
 import "./ha-icon";
 import "./item/ha-list-item-option";
 import type { HaListItemOption } from "./item/ha-list-item-option";
@@ -161,7 +160,7 @@ export class HaFilterCategories extends LitElement {
           ${this._localize("ui.panel.config.category.caption")}
           ${
             count
-              ? html`${renderFilterBadge(this._localize, count, value?.exclude)}
+              ? html`<div class="badge">${count}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._localize(
@@ -177,10 +176,6 @@ export class HaFilterCategories extends LitElement {
         this._panel.showContent
           ? html`
               <div class="content" ${ref(this._content)}>
-                <ha-filter-mode
-                  .exclude=${value?.exclude ?? false}
-                  @filter-mode-changed=${this._modeChanged}
-                ></ha-filter-mode>
                 <ha-list-selectable
                   class="ha-scrollbar"
                   multi
@@ -376,13 +371,6 @@ export class HaFilterCategories extends LitElement {
     this._setValue({ ...value, ids: selected ? [...ids, categoryId] : ids });
   }
 
-  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
-    this._setValue({
-      ...listFilterValue(this.value),
-      exclude: ev.detail.exclude,
-    });
-  }
-
   private _setValue(value: ListFilterValue) {
     this.value = value;
 
@@ -405,7 +393,6 @@ export class HaFilterCategories extends LitElement {
     return [
       haStyleScrollbar,
       filterPanelStyles,
-      filterBadgeStyles,
       css`
         .header {
           display: flex;

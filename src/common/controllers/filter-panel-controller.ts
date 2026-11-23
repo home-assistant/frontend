@@ -41,6 +41,10 @@ export const filterPanelStyles = css`
     flex: 1;
     min-height: 0;
   }
+  /* A filter's "No …" option, which isn't a value of its own */
+  .no-value {
+    font-style: italic;
+  }
 `;
 
 const panels = new Set<FilterPanelController>();

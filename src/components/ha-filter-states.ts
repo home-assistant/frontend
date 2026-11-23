@@ -4,8 +4,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { createRef, ref } from "lit/directives/ref";
-import { consumeLocalize } from "../common/decorators/consume-context-entry";
-import type { LocalizeFunc } from "../common/translations/localize";
 import {
   FilterPanelController,
   filterPanelStyles,
@@ -16,17 +14,15 @@ import type {
   HASSDomEvent,
 } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
 import type { ListFilterValue } from "../data/data_table_filters";
 import {
   listFilterEventValue,
   listFilterValue,
+  NO_VALUE_ID,
 } from "../data/data_table_filters";
 import "./ha-expansion-panel";
-import {
-  filterBadgeStyles,
-  NO_VALUE_ID,
-  renderFilterBadge,
-} from "./ha-filter-mode";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-svg-icon";
@@ -70,9 +66,6 @@ export class HaFilterStates extends LitElement {
 
   @property() public label?: string;
 
-  /** Show the mode toggle, so the filter can show the items that don't match */
-  @property({ type: Boolean }) public excludable = false;
-
   /** Adds an option for the items without any value, labelled with this */
   @property({ attribute: "none-label" }) public noneLabel?: string;
 
@@ -103,11 +96,7 @@ export class HaFilterStates extends LitElement {
           ${this.label}
           ${
             this._count
-              ? html`${renderFilterBadge(
-                    this._localize,
-                    this._count,
-                    this._listValue?.exclude
-                  )}
+              ? html`<div class="badge">${this._count}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._localize(
@@ -123,14 +112,6 @@ export class HaFilterStates extends LitElement {
         this._panel.showContent
           ? html`
               <div class="content" ${ref(this._content)}>
-                ${
-                  this.excludable
-                    ? html`<ha-filter-mode
-                        .exclude=${this._listValue?.exclude ?? false}
-                        @filter-mode-changed=${this._modeChanged}
-                      ></ha-filter-mode>`
-                    : nothing
-                }
                 <ha-list-selectable
                   multi
                   aria-label=${ifDefined(this.label)}
@@ -179,10 +160,6 @@ export class HaFilterStates extends LitElement {
       value: listFilterEventValue(value),
       items: undefined,
     });
-  }
-
-  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
-    this._setValue({ ...this._listValue, exclude: ev.detail.exclude });
   }
 
   private _renderOption(item: FilterStateOption, nested?: { last: boolean }) {
@@ -289,7 +266,6 @@ export class HaFilterStates extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       filterPanelStyles,
-      filterBadgeStyles,
       css`
         ha-list-selectable {
           display: flex;

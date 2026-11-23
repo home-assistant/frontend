@@ -3,8 +3,6 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { stringCompare } from "../../common/string/compare";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { HomeAssistant } from "../../types";
-import type { ListFilterValue } from "../data_table_filters";
-import { listFilterValue } from "../data_table_filters";
 import { DOMAIN_DEVICE_CLASSES } from "../device_classes";
 import { domainToName } from "../integration";
 import { computeDeviceClassName, NO_DEVICE_CLASS } from "./device_class";
@@ -29,10 +27,8 @@ export const parseEntityType = (key: string): EntityType => {
       };
 };
 
-export const entityTypesNeedStates = (
-  types?: string[] | ListFilterValue
-): boolean =>
-  !!listFilterValue(types)?.ids?.some((key) => key.includes(SEPARATOR));
+export const entityTypesNeedStates = (types?: string[]): boolean =>
+  !!types?.some((key) => key.includes(SEPARATOR));
 
 // By default, a domain worth no split maps to an empty list rather than to its
 // lone bucket.

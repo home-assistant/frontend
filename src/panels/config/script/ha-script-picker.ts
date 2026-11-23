@@ -78,11 +78,9 @@ import type {
 import {
   deserializeFilters,
   countActiveFilters,
-  filterModeChanged,
   isFilterUsed,
   isRelatedItemsFilterUsed,
   listFilterValue,
-  matchesFilterItems,
   matchesListFilter,
   serializeFilters,
 } from "../../../data/data_table_filters";
@@ -761,12 +759,9 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
 
     // A filter also sends the value it was given, once it has found its items.
     // Only a change to what the URL holds is the user's, so a link isn't stored.
-    // The URL leaves out the mode of a filter without a selection, so a change
-    // to the mode is the user's too.
     if (
       scriptsFilterQueryString(filters) !==
-        scriptsFilterQueryString(this._filters) ||
-      filterModeChanged(filter.value, this._filters[type]?.value)
+      scriptsFilterQueryString(this._filters)
     ) {
       this._storageFilters = { ...this._storageFilters, [type]: filter };
     }
@@ -798,7 +793,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         ])
       ) {
         filteredEntityIds = filteredEntityIds.filter((entityId) =>
-          matchesFilterItems(filter.value, filter.items!, entityId)
+          filter.items!.has(entityId)
         );
 
         // the filters below only expose the selected options (as filter.value);

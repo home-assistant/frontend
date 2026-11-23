@@ -49,7 +49,6 @@ import {
   applySourceFilters,
   countSourceFilters,
   setSourceFilter,
-  sourceFilterFunc,
   sourceFiltersStyles,
   countTargets,
 } from "../../components/ha-sources-picker";
@@ -62,11 +61,6 @@ import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
 import { filterLogbookCompatibleEntities } from "../../data/logbook";
 import { resolveEntityIDs } from "../../data/selector";
 import { haStyle } from "../../resources/styles";
-import type { ListFilterValue } from "../../data/data_table_filters";
-import {
-  hasFilterSelection,
-  isExcludeFilter,
-} from "../../data/data_table_filters";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
@@ -76,7 +70,7 @@ const EMPTY_STATES: HomeAssistant["states"] = {};
 
 interface LogbookFilters extends SourceFilters {
   /** Keys from `computeLogbookCauseKey`. */
-  causes?: string[] | ListFilterValue;
+  causes?: string[];
 }
 
 interface LogbookState {
@@ -198,7 +192,6 @@ export class HaPanelLogbook extends LitElement {
                       })}
                     >
                       <ha-filter-entity-types
-                        excludable
                         .value=${this._filters.types}
                         .expanded=${
                           this._expandedFilter === "ha-filter-entity-types"
@@ -207,7 +200,6 @@ export class HaPanelLogbook extends LitElement {
                         @expanded-changed=${this._filterExpanded}
                       ></ha-filter-entity-types>
                       <ha-filter-integrations
-                        excludable
                         .value=${this._filters.integrations}
                         .expanded=${
                           this._expandedFilter === "ha-filter-integrations"
@@ -253,7 +245,6 @@ export class HaPanelLogbook extends LitElement {
                 .hass=${this.hass}
                 .time=${this._time}
                 .entityIds=${this._shownEntityIds}
-                .entityFilter=${this._shownEntityFilter}
                 .causeFilter=${this._shownCauses}
                 .narrow=${this.narrow}
                 show-cause
@@ -369,7 +360,6 @@ export class HaPanelLogbook extends LitElement {
     // the sources once it is closed instead of on every source change.
     if (!this.narrow || !this._sourcesShown()) {
       this._shownEntityIds = this._getEntityIds();
-      this._shownEntityFilter = this._getEntityFilter();
       this._shownCauses = this._filters.causes;
     }
   }
@@ -408,43 +398,8 @@ export class HaPanelLogbook extends LitElement {
     this._applyURLParams();
   };
 
-  /**
-   * Whether the filters only leave out entities while no target is picked.
-   * Then all activity is shown without those entities, so activity that
-   * belongs to no entity, like Home Assistant starting, stays.
-   */
-  private _onlyExcluding(): boolean {
-    if (countTargets(this._targetPickerValue) > 0) {
-      return false;
-    }
-    const active = [this._filters.types, this._filters.integrations].filter(
-      hasFilterSelection
-    );
-    return active.length > 0 && active.every(isExcludeFilter);
-  }
-
-  /** Leaves out the entities the filters exclude, while only excluding. */
-  private _getEntityFilter(): ((entityId: string) => boolean) | undefined {
-    if (!this._onlyExcluding()) {
-      return undefined;
-    }
-    return this.__sourceFilterFunc(
-      this._filters,
-      // Only a device class narrows down using the states.
-      entityTypesNeedStates(this._filters.types)
-        ? this.hass.states
-        : EMPTY_STATES,
-      this.hass.entities,
-      this._entitySources
-    );
-  }
-
   /** The entities to show activity for, or undefined for all of them. */
   private _getEntityIds(): string[] | undefined {
-    if (this._onlyExcluding()) {
-      return undefined;
-    }
-
     const hasTargets = countTargets(this._targetPickerValue) > 0;
     const targetEntities = hasTargets
       ? this.__filterTargetEntityIds(
@@ -460,10 +415,7 @@ export class HaPanelLogbook extends LitElement {
         )
       : undefined;
 
-    if (
-      !hasFilterSelection(this._filters.types) &&
-      !hasFilterSelection(this._filters.integrations)
-    ) {
+    if (!this._filters.types?.length && !this._filters.integrations?.length) {
       return targetEntities;
     }
 
@@ -525,15 +477,11 @@ export class HaPanelLogbook extends LitElement {
 
   private __filterEntityIds = memoizeOne(applySourceFilters);
 
-  private __sourceFilterFunc = memoizeOne(sourceFilterFunc);
-
   private _lastEntityIds?: string[];
 
   private _shownEntityIds?: string[];
 
-  private _shownEntityFilter?: (entityId: string) => boolean;
-
-  private _shownCauses?: string[] | ListFilterValue;
+  private _shownCauses?: string[];
 
   // A list keyed on the states must keep its identity or ha-logbook resubscribes.
   private _stableEntityIds(entityIds: string[]): string[] {

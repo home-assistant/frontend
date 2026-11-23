@@ -12,11 +12,6 @@ import { subscribeLogbook } from "../../data/logbook";
 import type { TraceContexts } from "../../data/trace";
 import { loadTraceContexts } from "../../data/trace";
 import { fetchUsers } from "../../data/user";
-import type { ListFilterValue } from "../../data/data_table_filters";
-import {
-  hasFilterSelection,
-  matchesListFilter,
-} from "../../data/data_table_filters";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook-renderer";
 import type { LogbookNameDetail } from "./logbook-entry-model";
@@ -65,17 +60,7 @@ export class HaLogbook extends LitElement {
   @property({ attribute: false }) public stateFilter?: string[];
 
   /** Keys from `computeLogbookCauseKey` to keep. */
-  /** Keys from `computeLogbookCauseKey`, or the causes to leave out. */
-  @property({ attribute: false }) public causeFilter?:
-    string[] | ListFilterValue;
-
-  /**
-   * Leaves out the entries of the entities this returns false for. Entries
-   * without an entity, like Home Assistant starting, always stay.
-   */
-  @property({ attribute: false }) public entityFilter?: (
-    entityId: string
-  ) => boolean;
+  @property({ attribute: false }) public causeFilter?: string[];
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -182,7 +167,7 @@ export class HaLogbook extends LitElement {
 
   private _shownEntries(): LogbookEntry[] | undefined {
     return this._filterEntriesByCause(
-      this._filterEntriesByEntity(this._logbookEntries, this.entityFilter),
+      this._logbookEntries,
       this.causeFilter,
       this._userIdToName,
       this._systemUserIds,
@@ -195,37 +180,26 @@ export class HaLogbook extends LitElement {
       maxEntries ? entries.slice(0, maxEntries) : entries
   );
 
-  private _filterEntriesByEntity = memoizeOne(
-    (
-      entries: LogbookEntry[] | undefined,
-      entityFilter: ((entityId: string) => boolean) | undefined
-    ): LogbookEntry[] | undefined =>
-      entries && entityFilter
-        ? entries.filter(
-            (entry) => !entry.entity_id || entityFilter(entry.entity_id)
-          )
-        : entries
-  );
-
   private _filterEntriesByCause = memoizeOne(
     (
       entries: LogbookEntry[] | undefined,
-      causeFilter: string[] | ListFilterValue | undefined,
+      causeFilter: string[] | undefined,
       userIdToName: Record<string, string>,
       systemUserIds: Set<string>,
       personUserIds: Set<string>
     ): LogbookEntry[] | undefined => {
-      if (!entries || !hasFilterSelection(causeFilter)) {
+      if (!entries || !causeFilter?.length) {
         return entries;
       }
+      const causes = new Set(causeFilter);
       return entries.filter((entry) =>
-        matchesListFilter(causeFilter, [
+        causes.has(
           computeLogbookCauseKey(
             entry,
             computeRowCause(this.hass, entry, userIdToName, systemUserIds),
             personUserIds
-          ),
-        ])
+          )
+        )
       );
     }
   );
@@ -281,12 +255,7 @@ export class HaLogbook extends LitElement {
 
     if (changed) {
       this.refresh(true);
-    } else if (
-      changedProps.has("causeFilter") ||
-      // The entity filter also changes with the states when it uses them, so
-      // only resume when it leaves nothing to show
-      (changedProps.has("entityFilter") && !this._shownEntries()?.length)
-    ) {
+    } else if (changedProps.has("causeFilter")) {
       // A filter without matches removes the renderer, which is what resumes
       // the live updates paused while scrolled down.
       this._setLiveUpdates(true);

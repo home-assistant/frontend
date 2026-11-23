@@ -69,12 +69,6 @@ import type {
   DataTableFiltersValue,
   DataTableFiltersValues,
 } from "../../../data/data_table_filters";
-import {
-  countActiveFilters,
-  filterModeChanged,
-  hasFilterSelection,
-  matchesListFilter,
-} from "../../../data/data_table_filters";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   showAlertDialog,
@@ -368,9 +362,11 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         });
       }
 
-      if (hasFilterSelection(locationFilter)) {
+      if (Array.isArray(locationFilter) && locationFilter.length) {
         filteredBackups = filteredBackups.filter((backup) =>
-          matchesListFilter(locationFilter, Object.keys(backup.agents))
+          Object.keys(backup.agents).some((agentId) =>
+            locationFilter.includes(agentId)
+          )
         );
       }
       return filteredBackups.map((backup) => {
@@ -440,7 +436,16 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         clickable
         id="backup_id"
         has-filters
-        .filters=${countActiveFilters(Object.values(this._filters))}
+        .filters=${
+          Object.values(this._filters).filter((filter) =>
+            Array.isArray(filter)
+              ? filter.length
+              : filter &&
+                Object.values(filter).some((val) =>
+                  Array.isArray(val) ? val.length : val
+                )
+          ).length
+        }
         selectable
         .selected=${this._selected.length}
         .initialGroupColumn=${this._tableSettings.grouping}
@@ -521,7 +526,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           .narrow=${this.narrow}
         ></ha-filter-states>
         <ha-filter-states
-          excludable
           .label=${this.hass.localize("ui.panel.config.backup.locations")}
           .value=${this._filters[BACKUP_LOCATIONS_FILTER]}
           .states=${this._locations(
@@ -597,12 +601,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     const filters = { ...this._filters, [type]: value };
 
     // Only a change to what the URL holds is the user's, so a link isn't stored
-    // The URL leaves out the mode of a filter without a selection, so a change
-    // to the mode is the user's too.
     if (
       backupsFilterQueryString(filters) !==
-        backupsFilterQueryString(this._filters) ||
-      filterModeChanged(value, this._filters[type])
+      backupsFilterQueryString(this._filters)
     ) {
       this._storageFilters = { ...this._storageFilters, [type]: value };
     }

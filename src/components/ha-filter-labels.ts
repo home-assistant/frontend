@@ -29,7 +29,6 @@ import {
 } from "../data/data_table_filters";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
 import "./ha-expansion-panel";
-import { filterBadgeStyles, renderFilterBadge } from "./ha-filter-mode";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-label";
@@ -104,7 +103,7 @@ export class HaFilterLabels extends LitElement {
           ${this._localize("ui.panel.config.labels.caption")}
           ${
             count
-              ? html`${renderFilterBadge(this._localize, count, value?.exclude)}
+              ? html`<div class="badge">${count}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._localize(
@@ -119,10 +118,6 @@ export class HaFilterLabels extends LitElement {
       ${
         this._panel.showContent
           ? html`<div class="content" ${ref(this._content)}>
-              <ha-filter-mode
-                .exclude=${value?.exclude ?? false}
-                @filter-mode-changed=${this._modeChanged}
-              ></ha-filter-mode>
               <ha-input-search
                 appearance="outlined"
                 .value=${this._filter}
@@ -231,13 +226,6 @@ export class HaFilterLabels extends LitElement {
     );
   }
 
-  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
-    this._setValue({
-      ...listFilterValue(this.value),
-      exclude: ev.detail.exclude,
-    });
-  }
-
   private _setValue(value: ListFilterValue) {
     this.value = value;
     fireEvent(this, "data-table-filter-changed", {
@@ -258,7 +246,6 @@ export class HaFilterLabels extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       filterPanelStyles,
-      filterBadgeStyles,
       css`
         ha-list-selectable {
           display: flex;
@@ -298,7 +285,7 @@ export class HaFilterLabels extends LitElement {
         }
         ha-input-search {
           display: block;
-          padding: var(--ha-space-1) var(--ha-space-2) var(--ha-space-2);
+          padding: var(--ha-space-1) var(--ha-space-2) 0;
         }
       `,
     ];

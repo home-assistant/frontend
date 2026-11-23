@@ -23,6 +23,7 @@ import {
   hasFilterSelection,
   listFilterEventValue,
   listFilterValue,
+  NO_VALUE_ID,
 } from "../data/data_table_filters";
 import { computeDomain } from "../common/entity/compute_domain";
 import { deepEqual } from "../common/util/deep-equal";
@@ -32,11 +33,6 @@ import { fetchBlueprints } from "../data/blueprint";
 import { apiContext, connectionContext, statesContext } from "../data/context";
 import { findRelated, RELATED_SEARCH_CONCURRENCY } from "../data/search";
 import "./ha-expansion-panel";
-import {
-  filterBadgeStyles,
-  NO_VALUE_ID,
-  renderFilterBadge,
-} from "./ha-filter-mode";
 import "./ha-icon-button";
 import "./item/ha-list-item-option";
 import type { HaListItemOption } from "./item/ha-list-item-option";
@@ -140,11 +136,7 @@ export class HaFilterBlueprints extends LitElement {
           ${this._localize("ui.panel.config.blueprint.caption")}
           ${
             this._count
-              ? html`${renderFilterBadge(
-                    this._localize,
-                    this._count,
-                    listFilterValue(this.value)?.exclude
-                  )}
+              ? html`<div class="badge">${this._count}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._localize(
@@ -160,10 +152,6 @@ export class HaFilterBlueprints extends LitElement {
         this._panel.showContent
           ? html`
               <div class="content" ${ref(this._content)}>
-                <ha-filter-mode
-                  .exclude=${listFilterValue(this.value)?.exclude ?? false}
-                  @filter-mode-changed=${this._modeChanged}
-                ></ha-filter-mode>
                 ${
                   this._blueprints
                     ? html`
@@ -223,10 +211,6 @@ export class HaFilterBlueprints extends LitElement {
   private get _count(): number {
     const value = listFilterValue(this.value);
     return (value?.ids?.length || 0) + (value?.none ? 1 : 0);
-  }
-
-  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
-    this.value = { ...listFilterValue(this.value), exclude: ev.detail.exclude };
   }
 
   private _expandedChanged(ev) {
@@ -352,7 +336,6 @@ export class HaFilterBlueprints extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       filterPanelStyles,
-      filterBadgeStyles,
       css`
         ha-list-selectable {
           display: flex;
