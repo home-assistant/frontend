@@ -88,10 +88,11 @@ class NotificationManager extends LitElement {
   // inside the topmost one for their buttons to work.
   private _moveToTopModal = () => {
     const parent = getTopModal() ?? this._home!;
-    if (this.parentNode === parent) {
-      return;
+    if (this.parentNode !== parent) {
+      parent.appendChild(this);
     }
-    parent.appendChild(this);
+    // Also when staying, as a bottom sheet that reopens itself enters the top
+    // layer again above the stack.
     this._showStack();
   };
 
