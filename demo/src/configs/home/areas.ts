@@ -22,6 +22,7 @@ export const demoAreasHome: DemoArea[] = [
     icon: "mdi:sofa",
     temperature_entity_id: "sensor.living_room_temperature",
     humidity_entity_id: "sensor.living_room_humidity",
+    co2_entity_id: "sensor.living_room_carbon_dioxide",
   },
   {
     area_id: "kitchen",
