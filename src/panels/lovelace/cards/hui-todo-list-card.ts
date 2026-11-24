@@ -508,7 +508,11 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     const toDo = Number(stateObj.state);
 
     const placeholders =
-      this._items === undefined && Number.isInteger(toDo) && toDo > 0
+      this._items === undefined &&
+      // Stand-ins are only for loading, not after the items failed
+      !this._itemsFailed &&
+      Number.isInteger(toDo) &&
+      toDo > 0
         ? this._placeholderItems(Math.min(toDo, 50))
         : undefined;
 
