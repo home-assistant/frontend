@@ -57,13 +57,15 @@ export const errorMessage = (
   if (!field) {
     return translatedMessage(localize, error);
   }
+  // Some labels end with a colon, like the repeat options
+  const name = field.replace(/:$/, "");
   return error.translation_key === "required" && !error.translation_domain
     ? localize(
         "ui.panel.config.automation.editor.errors.validation.required_field",
-        { field }
+        { field: name }
       )
     : localize("ui.panel.config.automation.editor.errors.field_message", {
-        field,
+        field: name,
         message: translatedMessage(localize, error),
       });
 };

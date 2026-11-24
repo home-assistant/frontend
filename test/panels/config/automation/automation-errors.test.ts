@@ -127,6 +127,9 @@ describe("automation errors", () => {
     expect(errorMessage(localize, oneOf, "Mode")).toBe(
       "Mode: Choose one of single, queued."
     );
+    expect(errorMessage(localize, oneOf, "For each:")).toBe(
+      "For each: Choose one of single, queued."
+    );
     expect(
       errorMessage(
         localize,
