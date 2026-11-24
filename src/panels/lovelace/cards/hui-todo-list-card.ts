@@ -182,6 +182,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   @state() private _itemsFailed = false;
 
+  private _wasUnavailable = false;
+
   protected readonly _skeletonLoading = new SkeletonLoadingController(
     this,
     () =>
@@ -449,6 +451,16 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   }
 
   public willUpdate(changedProperties: PropertyValues): void {
+    const unavailable =
+      this._stateObj?.state === UNAVAILABLE ||
+      this._stateObj?.state === UNKNOWN;
+
+    // The list is back after being unavailable
+    const cameBack =
+      this._wasUnavailable && !unavailable && this._stateObj !== undefined;
+
+    this._wasUnavailable = unavailable;
+
     if (!this.hasUpdated) {
       if (!this._entityId) {
         this._entityId = this.getEntityId();
@@ -457,8 +469,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     } else if (
       changedProperties.has("_entityId") ||
       // A failed subscription isn't retried on every update, which would
-      // loop, only when the entity changes or the card connects again
-      (!this._items && !this._itemsFailed)
+      // loop, only when the entity changes, the card connects again, or the
+      // list comes back after being unavailable
+      (!this._items && !this._itemsFailed) ||
+      (this._itemsFailed && cameBack)
     ) {
       this._items = undefined;
       this._subscribeItems();
