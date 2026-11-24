@@ -187,8 +187,8 @@ export class HaSkeletonOverlay extends LitElement {
 
   private _measureFrame?: number;
 
-  /* Whether the remembered size was looked at for this load */
-  private _reserveChecked = false;
+  /* The width the remembered size was last looked up for in this load */
+  private _reservedForWidth?: number;
 
   private _settleObserver?: ResizeObserver;
 
@@ -251,7 +251,7 @@ export class HaSkeletonOverlay extends LitElement {
       this._customSkeleton = [...this.children].some(
         (child) => child.slot === "skeleton"
       );
-      this._reserveChecked = false;
+      this._reservedForWidth = undefined;
       this._stopRemembering();
       this._observe();
     }
@@ -475,23 +475,26 @@ export class HaSkeletonOverlay extends LitElement {
     }
   }
 
-  /* Hold the height the content had last time it loaded at this width */
+  /* Hold the height the content had last time it loaded at this width. It's
+     looked up again whenever the width changes, as a layout can settle into
+     its columns after the first measure. */
   private _reserve() {
-    if (this._reserveChecked || !this.skeletonKey) {
+    if (!this.skeletonKey) {
       return;
     }
 
     const width = this.getBoundingClientRect().width;
 
-    // Not laid out yet
-    if (!width) {
+    // Not laid out yet, or already looked up at this width
+    if (!width || width === this._reservedForWidth) {
       return;
     }
 
-    this._reserveChecked = true;
+    this._reservedForWidth = width;
     const height = rememberedSkeletonHeight(this.skeletonKey, width);
 
     if (height === undefined) {
+      this._release();
       return;
     }
 
