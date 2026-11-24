@@ -411,10 +411,19 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   }
 
   private async _getStatisticsMetaData(statisticIds: string[] | undefined) {
-    const statsMetadataArray = await getStatisticMetadata(
-      this._api.callWS,
-      statisticIds
-    );
+    let statsMetadataArray: Awaited<ReturnType<typeof getStatisticMetadata>>;
+
+    try {
+      statsMetadataArray = await getStatisticMetadata(
+        this._api.callWS,
+        statisticIds
+      );
+    } catch (err) {
+      // The statistics won't be fetched after this, so stop loading
+      this._statisticsFailed = true;
+      throw err;
+    }
+
     const statisticsMetaData = {};
     statsMetadataArray.forEach((x) => {
       statisticsMetaData[x.statistic_id] = x;
