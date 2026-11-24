@@ -1587,6 +1587,8 @@ export class HaNetworkGraph extends LitElement {
     super.disconnectedCallback();
     this._stopSelectAnimation();
     this._stopWaitingForLayout?.();
+    // The layout no longer settles, so physics would stay off on return
+    this._settlingLayout = false;
     this._stopZoomAnimation();
     if (this._emphasisGuardHandler) {
       this._baseChart?.chart?.off("mouseover", this._emphasisGuardHandler);
