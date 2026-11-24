@@ -281,13 +281,17 @@ export class HaSkeletonOverlay extends LitElement {
       changedProperties.has("skeletonKey") ||
       changedProperties.has("skeletonTypeKey");
 
-    // What to hold changes, so it's looked up again on the next measure
+    // What to hold changes, so it's looked up again
     if (
       keysChanged ||
       changedProperties.has("estimating") ||
       changedProperties.has("estimatedHeight")
     ) {
       this._reservedForWidth = undefined;
+
+      if (loading) {
+        this._scheduleMeasure();
+      }
     }
 
     if (!loading && this._wasLoading) {
