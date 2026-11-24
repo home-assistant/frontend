@@ -78,6 +78,9 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   @state() private _statistics?: Statistics;
 
+  /* The last fetch failed, so nothing is loading until the next one */
+  @state() private _statisticsFailed = false;
+
   @state() private _metadata?: Record<string, StatisticsMetaData>;
 
   @state() private _unit?: string;
@@ -365,7 +368,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
           })}"
         >
           <statistics-chart
-            .isLoadingData=${!this._statistics}
+            .isLoadingData=${!this._statistics && !this._statisticsFailed}
             .statisticsData=${this._statistics}
             .metadata=${this._metadata}
             .period=${this._period}
@@ -427,6 +430,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         24 * (this._config!.days_to_show || DEFAULT_DAYS_TO_SHOW) + 1
       );
     const endDate = this._energyEnd;
+    this._statisticsFailed = false;
     try {
       let unitClass: string | undefined | null;
       if (this._config!.unit && this._metadata) {
@@ -474,6 +478,9 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       });
     } catch (_err) {
       this._statistics = undefined;
+      // No request is pending, so the card stops loading rather than staying
+      // covered until a later fetch works
+      this._statisticsFailed = true;
     }
   }
 
