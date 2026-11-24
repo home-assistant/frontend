@@ -595,14 +595,12 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
         .description {
           margin-top: 16px;
         }
-        /* The editor already makes room for the AI sidebar, a row sidebar
-           takes its place */
+        /* Room for the AI sidebar, whose place a row sidebar takes */
         :host([ai-sidebar]) .content-wrapper {
-          padding-inline-end: 0;
+          padding-inline-end: calc(var(--ai-sidebar-width) + var(--ha-space-4));
         }
         /* Room for the collapsed AI sidebar below it */
         :host([ai-sidebar]) ha-automation-sidebar {
-          inset-inline-end: var(--ha-space-3);
           width: var(--ai-sidebar-width);
           height: calc(
             -81px +

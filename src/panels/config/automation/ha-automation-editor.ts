@@ -710,7 +710,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                               .config=${this._aiDiff?.config ?? this.config}
                               .disabled=${this.readOnly || this._aiActive}
                               .hideSave=${this._aiActive}
-                              class=${aiSidebar ? "ai-sidebar" : ""}
                               .aiSidebar=${aiSidebar}
                               style=${styleMap({
                                 "padding-bottom": aiSheetSpace,
@@ -885,34 +884,42 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           }
         </div>
         ${
-          // Stays while closed, so the AI keeps its conversation
+          // Stays while closed, so the AI keeps its conversation. Lined up
+          // like the editor, so it sits where the sidebar of a row does.
           this._aiLoaded
-            ? html`<ha-automation-ai-sidebar
-                .narrow=${this.narrow}
-                .open=${this._aiSidebarOpen}
-                .suspended=${aiSheetHidden}
-                .collapsed=${aiSidebar && this._sidebarOpen}
-                .changes=${aiChanges}
-                .showingChanges=${this._aiShowChanges}
-                ?hidden=${!this.narrow && !this._aiSidebarOpen}
-                @ai-sidebar-closed=${this._closeAiSidebar}
-                @ai-sidebar-expand=${this._expandAiSidebar}
-                @ai-toggle-changes=${this._aiToggleChanges}
-                @bottom-sheet-resized=${this._aiSheetResized}
+            ? html`<div
+                class=${classMap({
+                  "ai-sidebar-positioner": true,
+                  yaml: this.mode === "yaml",
+                })}
               >
-                <ha-automation-ai-panel
-                  .hass=${this.hass}
-                  .config=${this.config}
+                <ha-automation-ai-sidebar
+                  .narrow=${this.narrow}
+                  .open=${this._aiSidebarOpen}
+                  .suspended=${aiSheetHidden}
+                  .collapsed=${aiSidebar && this._sidebarOpen}
                   .changes=${aiChanges}
                   .showingChanges=${this._aiShowChanges}
-                  .lineChanges=${this._computeAiLineChanges(
-                    this._aiChange?.before,
-                    this._aiChange?.after
-                  )}
-                  @ai-request-started=${this._aiRequestStarted}
-                  @ai-request-finished=${this._aiRequestFinished}
-                ></ha-automation-ai-panel>
-              </ha-automation-ai-sidebar>`
+                  ?hidden=${!this.narrow && !this._aiSidebarOpen}
+                  @ai-sidebar-closed=${this._closeAiSidebar}
+                  @ai-sidebar-expand=${this._expandAiSidebar}
+                  @ai-toggle-changes=${this._aiToggleChanges}
+                  @bottom-sheet-resized=${this._aiSheetResized}
+                >
+                  <ha-automation-ai-panel
+                    .hass=${this.hass}
+                    .config=${this.config}
+                    .changes=${aiChanges}
+                    .showingChanges=${this._aiShowChanges}
+                    .lineChanges=${this._computeAiLineChanges(
+                      this._aiChange?.before,
+                      this._aiChange?.after
+                    )}
+                    @ai-request-started=${this._aiRequestStarted}
+                    @ai-request-finished=${this._aiRequestFinished}
+                  ></ha-automation-ai-panel>
+                </ha-automation-ai-sidebar>
+              </div>`
             : nothing
         }
       </hass-subpage>
@@ -1732,15 +1739,27 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
             81px - var(--header-height) - 16px + var(--safe-area-inset-top, 0px)
           );
         }
-        /* Room for the AI sidebar on the right */
-        .ai-sidebar,
-        manual-automation-editor.ai-sidebar {
+        /* Room for the AI sidebar on the right, the visual editor makes it
+           inside, like for the sidebar of a row */
+        .yaml-mode.ai-sidebar {
           margin-inline-end: calc(var(--ai-sidebar-width) + var(--ha-space-4));
+        }
+        /* Lined up like the visual editor, so the fixed sidebar below lands
+           at its end, like the sidebar of a row, see manualEditorStyles */
+        .ai-sidebar-positioner {
+          display: flex;
+          justify-content: flex-end;
+          height: 0;
+          max-width: var(--ha-automation-editor-max-width);
+          margin: 0 auto;
+          padding: 0 12px;
+        }
+        .ai-sidebar-positioner.yaml {
+          max-width: none;
         }
         ha-automation-ai-sidebar:not([narrow]) {
           position: fixed;
           top: calc(var(--header-height) + 16px);
-          inset-inline-end: var(--ha-space-3);
           width: var(--ai-sidebar-width);
           height: calc(-81px + 100vh - var(--safe-area-inset-top, 0px));
           height: calc(-81px + 100dvh - var(--safe-area-inset-top, 0px));
