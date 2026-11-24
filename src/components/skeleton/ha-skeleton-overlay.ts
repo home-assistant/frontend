@@ -222,7 +222,11 @@ export class HaSkeletonOverlay extends LitElement {
   protected updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (this._isLoading) {
+    // Only when loading starts: loading events, slot changes, sizes and
+    // refresh() ask for their own, and measuring after every update would
+    // run each frame for content that animates, such as a spinner, as every
+    // reading comes out different and updates again
+    if (this._isLoading && changedProperties.has("loading")) {
       this._scheduleMeasure();
     }
 
@@ -367,6 +371,9 @@ export class HaSkeletonOverlay extends LitElement {
       // The whole content is hidden under it instead
       this._showParts();
       this._pieces = undefined;
+    } else {
+      // Read from the content again now it's gone
+      this._scheduleMeasure();
     }
   }
 
