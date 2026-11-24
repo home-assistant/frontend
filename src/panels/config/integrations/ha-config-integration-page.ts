@@ -185,6 +185,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @state() private _logInfo?: IntegrationLogInfo;
 
+  @state() private _logInfoLoaded = false;
+
   @state() private _debugLogReady = false;
 
   private _debugLogRequest = 0;
@@ -254,17 +256,18 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         this._entities = entities;
       }),
       subscribeLogInfo(this.hass.connection, (log_infos) => {
-        for (const log_info of log_infos) {
-          if (log_info.domain === this.domain) {
-            if (
-              log_info.level === LogSeverity.DEBUG &&
-              this._logInfo?.level !== LogSeverity.DEBUG
-            ) {
-              this._resetDebugLogReady();
-            }
-            this._logInfo = log_info;
-          }
+        // Core leaves out integrations that are not loaded and have no custom level
+        const logInfo = log_infos.find(
+          (log_info) => log_info.domain === this.domain
+        );
+        if (
+          logInfo?.level === LogSeverity.DEBUG &&
+          this._logInfo?.level !== LogSeverity.DEBUG
+        ) {
+          this._resetDebugLogReady();
         }
+        this._logInfo = logInfo;
+        this._logInfoLoaded = true;
       }),
     ];
   }
@@ -528,7 +531,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 }
                 ${
                   // Integrations that are not set up are not listed in the log info yet
-                  this._logInfo || this._manifest
+                  this._logInfoLoaded && (this._logInfo || this._manifest)
                     ? html`<a
                           href=${`/config/logs?search=${encodeURIComponent(this.domain)}`}
                         >
