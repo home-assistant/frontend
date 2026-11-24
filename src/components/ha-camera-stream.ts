@@ -86,6 +86,14 @@ export class HaCameraStream extends LitElement {
   @property({ type: Boolean, attribute: "mjpeg-video" })
   public mjpegVideo = false;
 
+  /**
+   * Loads the poster first to tell its size with
+   * `camera-poster-size-changed`, so a player can make room for it before
+   * the stream loads.
+   */
+  @property({ type: Boolean, attribute: "measure-poster" })
+  public measurePoster = false;
+
   // Video background image before its loaded
   @state() private _posterUrl?: string;
 
@@ -405,6 +413,12 @@ export class HaCameraStream extends LitElement {
     } catch (_err: any) {
       // poster url is optional
     }
+    if (!this.measurePoster) {
+      if (this.stateObj?.entity_id === entityId) {
+        this._posterUrl = posterUrl;
+      }
+      return;
+    }
     // Loaded here first for its size, the poster then uses the same image
     // instead of asking the camera again
     const poster = posterUrl ? await loadImage(posterUrl) : undefined;
@@ -412,11 +426,16 @@ export class HaCameraStream extends LitElement {
       return;
     }
     this._posterUrl = posterUrl;
-    fireEvent(this, "camera-poster-size-changed", {
-      size: poster?.naturalWidth
-        ? { width: poster.naturalWidth, height: poster.naturalHeight }
-        : undefined,
-    });
+    fireEvent(
+      this,
+      "camera-poster-size-changed",
+      {
+        size: poster?.naturalWidth
+          ? { width: poster.naturalWidth, height: poster.naturalHeight }
+          : undefined,
+      },
+      { bubbles: false, composed: false }
+    );
   }
 
   private _handleImageLoad() {

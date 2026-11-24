@@ -294,6 +294,7 @@ export class HaCameraPlayer extends LitElement {
             .allowExoPlayer=${this.allowExoPlayer}
             .muted=${this._muted}
             mjpeg-video
+            measure-poster
             style=${styleMap({
               transform: zoomed
                 ? `translate(${this._zoom.x}px, ${this._zoom.y}px) scale(${this._zoom.scale})`
