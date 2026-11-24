@@ -205,6 +205,9 @@ export class VoiceAssistantsExpose extends LitElement {
           html`<ha-icon-button
             @click=${this._removeEntity}
             .path=${mdiCloseCircleOutline}
+            .label=${localize(
+              "ui.panel.config.voice_assistants.expose.headers.remove"
+            )}
           ></ha-icon-button>`,
       },
     })

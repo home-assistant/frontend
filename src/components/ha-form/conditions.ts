@@ -1,3 +1,4 @@
+import { ensureArray } from "../../common/array/ensure-array";
 import type {
   HaFormCondition,
   HaFormDataContainer,
@@ -87,26 +88,38 @@ export const combineVisible = (
   return conditions;
 };
 
+const getConditionFields = (visible: HaFormVisible | undefined): string[] =>
+  visible === undefined || typeof visible === "boolean"
+    ? []
+    : ensureArray(visible).flatMap((condition) =>
+        "condition" in condition
+          ? condition.conditions.flatMap((sub) => getConditionFields(sub))
+          : [condition.field]
+      );
+
 // Hiding a field drops its value, which can flip another field's condition, so
-// resolve the set to a fixpoint. Fields are given in order as name and visible.
+// a field is evaluated after the fields its condition depends on.
 export const getHiddenFields = (
   fields: readonly (readonly [string, HaFormVisible | undefined])[],
   data: HaFormDataContainer | undefined
 ): Set<string> => {
-  const hidden = new Set<string>();
+  const conditions = new Map(fields);
   const evalData: HaFormDataContainer = { ...(data ?? {}) };
-  let changed = true;
-  while (changed) {
-    changed = false;
-    for (const [name, visible] of fields) {
-      if (hidden.has(name) || isVisible(visible, evalData)) {
-        continue;
-      }
+  const hidden = new Set<string>();
+  const resolved = new Set<string>();
+  const resolve = (name: string) => {
+    if (resolved.has(name) || !conditions.has(name)) {
+      return;
+    }
+    resolved.add(name);
+    const visible = conditions.get(name);
+    getConditionFields(visible).forEach(resolve);
+    if (!isVisible(visible, evalData)) {
       hidden.add(name);
       delete evalData[name];
-      changed = true;
     }
-  }
+  };
+  fields.forEach(([name]) => resolve(name));
   return hidden;
 };
 

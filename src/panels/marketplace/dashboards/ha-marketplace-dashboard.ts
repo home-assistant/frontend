@@ -35,9 +35,9 @@ import {
   sortedMarketplaceFilterQueryString,
 } from "../../../common/url/marketplace-query-params";
 import { shallowEqual } from "../../../common/util/shallow-equal";
-import { groupActionsSlot } from "../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
+  DataTableGroupActions,
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../layouts/hass-tabs-subpage";
@@ -400,6 +400,7 @@ export class HaMarketplaceDashboard extends LitElement {
           this._tableSettings.grouping,
           this._i18n.localize
         )}
+        .renderGroupActions=${this._renderGroupActions}
         .columnOrder=${this._orderTableColumns}
         .hiddenColumns=${this._hiddenTableColumns}
         @columns-changed=${this._handleColumnsChanged}
@@ -414,14 +415,6 @@ export class HaMarketplaceDashboard extends LitElement {
         @sorting-changed=${this._tableSettings.sortingChanged}
       >
         ${this._renderToolbar()}
-        <ha-icon-button
-          slot=${groupActionsSlot(
-            this._i18n.localize("ui.panel.marketplace.repository_status.new")
-          )}
-          .label=${this._i18n.localize("ui.panel.marketplace.menu.dismiss")}
-          .path=${mdiCheckAll}
-          @click=${this._dismissNew}
-        ></ha-icon-button>
         ${
           this.tab === "installed"
             ? html`<ha-assist-chip
@@ -984,7 +977,16 @@ export class HaMarketplaceDashboard extends LitElement {
     showMarketplaceAddFromLink(this, this._i18n.localize, this.marketplace);
   }
 
-  private _dismissNew() {
+  private _renderGroupActions: DataTableGroupActions = (group) =>
+    group === this._i18n.localize("ui.panel.marketplace.repository_status.new")
+      ? html`<ha-icon-button
+          .label=${this._i18n.localize("ui.panel.marketplace.menu.dismiss")}
+          .path=${mdiCheckAll}
+          @click=${this._dismissNew}
+        ></ha-icon-button>`
+      : nothing;
+
+  private _dismissNew = () => {
     showConfirmationDialog(this, {
       title: this._i18n.localize(
         "ui.panel.marketplace.dialog.dismiss_new.title"
@@ -1021,7 +1023,7 @@ export class HaMarketplaceDashboard extends LitElement {
         }
       },
     });
-  }
+  };
 
   private _statusStates = memoize(
     (localize: LocalizeFunc, tab: MarketplaceTab) =>

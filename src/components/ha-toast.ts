@@ -48,9 +48,29 @@ export class HaToast extends LitElement {
 
   private _dismissTimer?: ReturnType<typeof setTimeout>;
 
+  // When the running dismiss timer ends. Kept while disconnected.
+  private _dismissAt?: number;
+
   private _closeReason: ToastCloseReason = "programmatic";
 
   private _transitionId = 0;
+
+  // The last request, to continue it after a move to another parent.
+  private _shown = false;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (!this._active) {
+      return;
+    }
+    if (this._shown && this._dismissAt !== undefined) {
+      this._setDismissTimer(this._dismissAt);
+    } else if (this._shown) {
+      this.show();
+    } else {
+      this.hide(this._closeReason);
+    }
+  }
 
   public disconnectedCallback(): void {
     clearTimeout(this._dismissTimer);
@@ -60,6 +80,8 @@ export class HaToast extends LitElement {
 
   public async show(): Promise<void> {
     clearTimeout(this._dismissTimer);
+    this._dismissAt = undefined;
+    this._shown = true;
 
     if (this._active && this._visible) {
       this._setDismissTimer();
@@ -95,6 +117,8 @@ export class HaToast extends LitElement {
 
   public async hide(reason: ToastCloseReason = "programmatic"): Promise<void> {
     clearTimeout(this._dismissTimer);
+    this._dismissAt = undefined;
+    this._shown = false;
     this._closeReason = reason;
 
     if (!this._active) {
@@ -129,11 +153,12 @@ export class HaToast extends LitElement {
     this.hide(reason);
   }
 
-  private _setDismissTimer() {
+  private _setDismissTimer(dismissAt = Date.now() + this.timeoutMs) {
     if (this.timeoutMs > 0) {
+      this._dismissAt = dismissAt;
       this._dismissTimer = setTimeout(() => {
         this.hide("timeout");
-      }, this.timeoutMs);
+      }, dismissAt - Date.now());
     }
   }
 

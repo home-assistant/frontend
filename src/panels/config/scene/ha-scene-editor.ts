@@ -432,8 +432,8 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                 ${devices.map(
                   (device) => html`
                     <ha-card outlined>
-                      <h1 class="card-header">
-                        ${device.name}
+                      <div class="card-header">
+                        <h1>${device.name}</h1>
                         <ha-icon-button
                           .path=${mdiDelete}
                           .label=${this.hass.localize(
@@ -442,7 +442,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                           .device=${device.id}
                           @click=${this._deleteDevice}
                         ></ha-icon-button>
-                      </h1>
+                      </div>
                       <ha-list-base>
                         ${device.entities.map((entityId) => {
                           const entityStateObj = this.hass.states[entityId];
@@ -1342,7 +1342,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
         }
 
         if (entityId) {
-          await updateEntityRegistryEntry(this.hass, entityId, {
+          await updateEntityRegistryEntry(this.hass.callWS, entityId, {
             area_id: this._entityRegistryUpdate.area || null,
             labels: this._entityRegistryUpdate.labels || [],
             categories: {
@@ -1475,10 +1475,21 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
         ha-card ha-icon-button {
           color: var(--secondary-text-color);
         }
-        .card-header > ha-icon-button {
-          float: right;
-          position: relative;
-          top: -8px;
+        .card-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-top: var(--ha-space-3);
+          padding-bottom: var(--ha-space-3);
+        }
+        .card-header h1 {
+          margin: 0;
+          min-width: 0;
+          font: inherit;
+          overflow-wrap: anywhere;
+        }
+        .card-header ha-icon-button {
+          flex: none;
         }
         span[slot="introduction"] a {
           color: var(--primary-color);

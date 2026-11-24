@@ -191,7 +191,10 @@ class PanelMediaBrowser extends LitElement {
     }
 
     if (this.route.path === "") {
-      navigate(`/media-browser/${this._entityId}`, { replace: true });
+      navigate(`/media-browser/${this._entityId}${location.search}`, {
+        replace: true,
+        keepDialogs: true,
+      });
       return;
     }
 

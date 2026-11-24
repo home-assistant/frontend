@@ -231,7 +231,6 @@ export class HaConfigAreasDashboard extends LitElement {
                           )}</ha-dropdown-item
                         >
                       </ha-dropdown>
-                      ${renderAddShortcutTooltip(this.hass, "fab")}
                     </div>
                   </div>
                   <ha-sortable
@@ -331,6 +330,7 @@ export class HaConfigAreasDashboard extends LitElement {
             ${this.hass.localize("ui.panel.config.areas.picker.create_area")}
           </ha-dropdown-item>
         </ha-dropdown>
+        ${renderAddShortcutTooltip(this.hass, "fab")}
       </hass-tabs-subpage>
     `;
   }
@@ -361,6 +361,9 @@ export class HaConfigAreasDashboard extends LitElement {
             <ha-icon-button
               .area=${area}
               .path=${mdiPencil}
+              .label=${this.hass.localize(
+                "ui.panel.config.areas.edit_settings"
+              )}
               @click=${this._openAreaDetails}
             ></ha-icon-button>
           </div>

@@ -99,7 +99,12 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
   private _volumeController = new VolumeSliderController({
     getSlider: () => this._volumeSlider,
     step: this._volumeStep,
-    onSetVolume: (value) => this._setVolume(value),
+    onSetVolume: (value) => {
+      // The final value is set right away, so drop the pending update from
+      // the input events before it, or the same value is sent twice
+      this._debouncedVolumeSet.cancel();
+      this._setVolume(value);
+    },
     onSetVolumeDebounced: (value) => this._debouncedVolumeSet(value),
     onValueUpdated: (value) => {
       this._volumeValue = value;
@@ -340,6 +345,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                 <ha-icon-button
                   slot="trigger"
                   .path=${mdiVolumeHigh}
+                  .label=${this.hass.localize("ui.card.media_player.volume")}
                 ></ha-icon-button>
                 <div
                   class="volume-slider-container"

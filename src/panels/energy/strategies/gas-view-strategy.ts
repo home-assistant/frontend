@@ -8,9 +8,14 @@ import {
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
-import { hasGasSource, isEnergyCardVisible } from "./energy-cards";
+import {
+  hasGasDevices,
+  hasGasSource,
+  isEnergyCardVisible,
+} from "./energy-cards";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
+import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 
 @customElement("gas-view-strategy")
 export class GasViewStrategy extends ReactiveElement {
@@ -52,8 +57,8 @@ export class GasViewStrategy extends ReactiveElement {
     }
     const prefs = energyCollection.prefs;
 
-    // No gas sources available
-    if (!prefs || !hasGasSource(prefs)) {
+    // No gas sources or devices available
+    if (!prefs || (!hasGasSource(prefs) && !hasGasDevices(prefs))) {
       return view;
     }
 
@@ -93,6 +98,24 @@ export class GasViewStrategy extends ReactiveElement {
         types: ["gas"],
         grid_options: {
           columns: 12,
+        },
+      });
+    }
+
+    if (isEnergyCardVisible("gas", "gas-sankey", prefs, hidden)) {
+      const showFloorsAndAreas = shouldShowFloorsAndAreas(
+        prefs.device_consumption_gas,
+        hass,
+        (d) => d.stat_consumption
+      );
+      section.cards!.push({
+        title: hass.localize("ui.panel.energy.cards.gas_sankey_title"),
+        type: "gas-sankey",
+        collection_key: collectionKey,
+        group_by_floor: showFloorsAndAreas,
+        group_by_area: showFloorsAndAreas,
+        grid_options: {
+          columns: 24,
         },
       });
     }

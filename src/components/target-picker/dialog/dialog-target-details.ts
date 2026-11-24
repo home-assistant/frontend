@@ -1,11 +1,20 @@
+import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
+import { consume } from "../../../common/decorators/consume";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import {
+  apiContext,
+  entitiesContext,
+  statesContext,
+} from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import { getDeviceIntegrationLookup } from "../../../data/device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "../../../data/entity/entity";
@@ -33,7 +42,16 @@ import type { TargetDetailsDialogParams } from "./show-dialog-target-details";
 
 @customElement("ha-dialog-target-details")
 class DialogTargetDetails extends LitElement implements HassDialog {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
 
   @state() private _params?: TargetDetailsDialogParams;
 
@@ -50,8 +68,8 @@ class DialogTargetDetails extends LitElement implements HassDialog {
   private _exclusionsRequest = 0;
 
   private _deviceIntegrationLookup = memoizeOne(
-    (entities: HomeAssistant["entities"]) =>
-      getDeviceIntegrationLookup(Object.values(entities))
+    (entities: HomeAssistant["entities"] | null) =>
+      getDeviceIntegrationLookup(Object.values(entities ?? {}))
   );
 
   public showDialog(params: TargetDetailsDialogParams): void {
@@ -59,8 +77,17 @@ class DialogTargetDetails extends LitElement implements HassDialog {
     this._initialExclusions = params.exclusions ?? [];
     this._exclusions = this._initialExclusions;
     this._opened = true;
-    if (!params.exclusions && params.exclude) {
-      this._resolveExclusions(params);
+  }
+
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
+    if (
+      changedProperties.has("_params") &&
+      this._params &&
+      !this._params.exclusions &&
+      this._params.exclude
+    ) {
+      this._resolveExclusions(this._params);
     }
   }
 
@@ -69,7 +96,7 @@ class DialogTargetDetails extends LitElement implements HassDialog {
     let exclusions: TargetExclusion[];
     try {
       exclusions = await resolveItemExclusions(
-        this.hass,
+        this._api.callWS,
         { type: params.type, id: params.itemId },
         params.exclude,
         params.selector
@@ -128,8 +155,8 @@ class DialogTargetDetails extends LitElement implements HassDialog {
   private async _loadEntitySources(): Promise<void> {
     try {
       this._entitySources = await fetchEntitySourcesWithCache(
-        this.hass.callWS,
-        this.hass.states
+        this._api.callWS,
+        this._states ?? {}
       );
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -155,7 +182,7 @@ class DialogTargetDetails extends LitElement implements HassDialog {
       return true;
     }
     const deviceIntegrations = this._hasIntegration({ target })
-      ? this._deviceIntegrationLookup(this.hass.entities)
+      ? this._deviceIntegrationLookup(this._entities)
       : undefined;
     return ensureArray(target.device).some((d) =>
       filterSelectorDevices(d, device, deviceIntegrations)
@@ -217,19 +244,19 @@ class DialogTargetDetails extends LitElement implements HassDialog {
     return html`
       <ha-adaptive-dialog
         .open=${this._opened}
-        header-title=${this.hass.localize(
+        header-title=${this._localize(
           "ui.components.target-picker.target_details"
         )}
         @closed=${this._dialogClosed}
       >
         <div class="type-wrapper">
           <div class="type-label">
-            ${this.hass.localize(
+            ${this._localize(
               `ui.components.target-picker.type.${this._params.type}`
             )}
           </div>
           <ha-list-base
-            .ariaLabel=${`${this.hass.localize(`ui.components.target-picker.type.${this._params.type}`)}: ${this._params.title}`}
+            .ariaLabel=${`${this._localize(`ui.components.target-picker.type.${this._params.type}`)}: ${this._params.title}`}
             wrap-focus
           >
             ${
@@ -262,10 +289,10 @@ class DialogTargetDetails extends LitElement implements HassDialog {
                     appearance="plain"
                     @click=${this.closeDialog}
                   >
-                    ${this.hass.localize("ui.common.cancel")}
+                    ${this._localize("ui.common.cancel")}
                   </ha-button>
                   <ha-button slot="primaryAction" @click=${this._apply}>
-                    ${this.hass.localize("ui.common.apply")}
+                    ${this._localize("ui.common.apply")}
                   </ha-button>
                 </ha-dialog-footer>
               `

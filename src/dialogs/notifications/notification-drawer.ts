@@ -132,6 +132,7 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
         .open=${this._drawerOpen}
         @hass-drawer-closed=${this._dialogClosed}
         .direction=${computeRTLDirection(this.hass)}
+        .accessibleLabel=${this.hass.localize("ui.notification_drawer.title")}
       >
         <ha-header-bar>
           <div slot="title">

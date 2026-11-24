@@ -15,6 +15,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { consume } from "../common/decorators/consume";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
+import { setModalOpen } from "../common/dom/open-modals";
 import { withViewTransition } from "../common/util/view-transition";
 import { configContext, internationalizationContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
@@ -129,6 +130,8 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
 
   @query(".body") public bodyContainer!: HTMLDivElement;
 
+  @query("wa-dialog") private _dialog?: WaDialog;
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n?: ContextType<typeof internationalizationContext>;
@@ -236,6 +239,7 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
       return;
     }
     this._open = true;
+    setModalOpen(ev.currentTarget as WaDialog, true);
     fireEvent(this, "opened");
 
     await this.updateComplete;
@@ -274,6 +278,7 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
     if (ev.eventPhase === Event.AT_TARGET) {
       this._open = false;
       this._setFullscreen(false);
+      setModalOpen(ev.currentTarget as WaDialog, false);
       fireEvent(this, "closed");
     }
   };
@@ -284,6 +289,9 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
       this._handleFullscreenChanged as EventListener
     );
     this._setFullscreen(false);
+    if (this._dialog) {
+      setModalOpen(this._dialog, false);
+    }
     super.disconnectedCallback();
     this._open = false;
   }

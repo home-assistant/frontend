@@ -117,7 +117,7 @@ playerManager.setMessageInterceptor("LOAD", (loadRequestData) => {
   // We received a play media command, hide Lovelace and show media player
   showMediaPlayer();
   const media = loadRequestData.media;
-  // Special handling if it came from Google Assistant
+  // Special handling if it came from Google Home
   if (media.entity) {
     media.contentId = media.entity;
     media.streamType = "LIVE";

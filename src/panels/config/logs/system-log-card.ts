@@ -70,7 +70,7 @@ export class SystemLogCard extends LitElement {
 
   public async fetchData(): Promise<void> {
     this._items = undefined;
-    this._items = await fetchSystemLog(this.hass!);
+    this._items = await fetchSystemLog(this.hass!.callWS);
   }
 
   private _timestamp(item: LoggedError): string {

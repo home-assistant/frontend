@@ -55,6 +55,15 @@ export class HaFilterBlueprints extends LitElement {
 
   private _relatedRequestId = 0;
 
+  public connectedCallback() {
+    super.connectedCallback();
+    // The config pages are cached, so an item may have been edited while this
+    // filter was not on screen
+    if (this.hasUpdated && this.value?.length) {
+      this._findRelated();
+    }
+  }
+
   public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
 
@@ -80,6 +89,9 @@ export class HaFilterBlueprints extends LitElement {
               ? html`<div class="badge">${this.value?.length}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
+                    .label=${this._localize(
+                      "ui.components.subpage-data-table.clear_filter"
+                    )}
                     @click=${this._clearFilter}
                   ></ha-icon-button>`
               : nothing

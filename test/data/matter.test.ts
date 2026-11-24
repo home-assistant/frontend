@@ -1,11 +1,125 @@
-import { describe, expect, it } from "vitest";
+import type { Connection } from "home-assistant-js-websocket";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { MatterCommissioningParameters } from "../../src/data/matter";
 import {
   matterShareRemainingSeconds,
   matterShareTargetExternal,
+  watchForNewMatterDevice,
 } from "../../src/data/matter";
+import { subscribeDeviceRegistry } from "../../src/data/ws-device_registry";
 import type { ExternalConfig } from "../../src/external_app/external_messaging";
 import type { HomeAssistant } from "../../src/types";
+
+// The device registry collection unsubscribes from its updates once no
+// subscriber is left, so an extra unsubscribe silently breaks every other one.
+describe("watchForNewMatterDevice", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  // Core gives each node a `deviceid_` identifier on the device it joins.
+  const node = (id: string): [string, string] => [
+    "matter",
+    `deviceid_FABRIC-${id}-MatterNodeDevice`,
+  ];
+
+  const fakeRegistry = () => {
+    const devices = new Map<string, [string, string][]>([
+      ["existing", [node("existing"), ["matter", "serial_SN1"]]],
+    ]);
+    const eventCallbacks = new Set<() => void>();
+    const connection = {
+      connected: true,
+      sendMessagePromise: vi.fn(async () =>
+        [...devices].map(([id, identifiers]) => ({
+          id,
+          identifiers,
+          connections: [],
+        }))
+      ),
+      subscribeEvents: vi.fn(async (callback: () => void) => {
+        eventCallbacks.add(callback);
+        return async () => {
+          eventCallbacks.delete(callback);
+        };
+      }),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    } as unknown as Connection;
+    return {
+      connection,
+      eventCallbacks,
+      addDevice: (id: string) => {
+        devices.set(id, [node(id)]);
+        eventCallbacks.forEach((callback) => callback());
+      },
+      addIdentifier: (id: string, identifier: [string, string]) => {
+        devices.set(id, [...devices.get(id)!, identifier]);
+        eventCallbacks.forEach((callback) => callback());
+      },
+    };
+  };
+
+  const watch = async (registry: ReturnType<typeof fakeRegistry>) => {
+    const found = vi.fn();
+    watchForNewMatterDevice(
+      { connection: registry.connection } as HomeAssistant,
+      found
+    );
+    await vi.advanceTimersByTimeAsync(10);
+    return found;
+  };
+
+  it("reports an existing device that gained a node, as core merges a recommissioned node that shares its serial number", async () => {
+    const registry = fakeRegistry();
+    const found = await watch(registry);
+
+    registry.addIdentifier("existing", node("recommissioned"));
+    await vi.advanceTimersByTimeAsync(600);
+
+    expect(found).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ id: "existing" }),
+      true
+    );
+  });
+
+  it("ignores an existing device that gained no node", async () => {
+    const registry = fakeRegistry();
+    const found = await watch(registry);
+
+    registry.addIdentifier("existing", ["matter", "serial_SN2"]);
+    await vi.advanceTimersByTimeAsync(600);
+
+    expect(found).not.toHaveBeenCalled();
+  });
+
+  it("keeps the registry subscribed when the caller unsubscribes after a find", async () => {
+    const registry = fakeRegistry();
+    const hass = { connection: registry.connection } as HomeAssistant;
+    subscribeDeviceRegistry(registry.connection, () => undefined);
+
+    const found = vi.fn();
+    const unsub = watchForNewMatterDevice(hass, found);
+    await vi.advanceTimersByTimeAsync(10);
+
+    registry.addDevice("new");
+    await vi.advanceTimersByTimeAsync(600);
+    expect(found).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ id: "new" }),
+      false
+    );
+
+    // The add device dialog unsubscribes again when it closes.
+    unsub();
+    // Past the collection's grace period for unsubscribing.
+    await vi.advanceTimersByTimeAsync(6000);
+    expect(registry.eventCallbacks.size).toBe(1);
+  });
+});
 
 const codesOnly: MatterCommissioningParameters = {
   setup_pin_code: 20202021,

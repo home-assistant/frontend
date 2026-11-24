@@ -41,6 +41,9 @@ export class DialogLabsProgress
     return html`
       <ha-dialog
         .open=${this._open}
+        .accessibleLabel=${this.hass.localize(
+          "ui.panel.config.labs.progress.creating_backup"
+        )}
         prevent-scrim-close
         @closed=${this._handleClosed}
       >

@@ -54,7 +54,7 @@ class ZHANetworkInfoPage extends LitElement {
             ${
               this._networkSettings
                 ? html`<ha-list-base>
-                    <ha-list-item-base>
+                    <ha-list-item-base wrap-supporting-text>
                       <span slot="headline"
                         >${this.hass.localize(
                           "ui.panel.config.zha.configuration_page.channel_label"
@@ -74,7 +74,7 @@ class ZHANetworkInfoPage extends LitElement {
                         @click=${this._showChannelMigrationDialog}
                       ></ha-icon-button>
                     </ha-list-item-base>
-                    <ha-list-item-base>
+                    <ha-list-item-base wrap-supporting-text>
                       <span slot="headline">PAN ID</span>
                       <span slot="supporting-text"
                         >${
@@ -82,7 +82,7 @@ class ZHANetworkInfoPage extends LitElement {
                         }</span
                       >
                     </ha-list-item-base>
-                    <ha-list-item-base>
+                    <ha-list-item-base wrap-supporting-text>
                       <span slot="headline">Extended PAN ID</span>
                       <span slot="supporting-text"
                         >${
@@ -91,13 +91,13 @@ class ZHANetworkInfoPage extends LitElement {
                         }</span
                       >
                     </ha-list-item-base>
-                    <ha-list-item-base>
+                    <ha-list-item-base wrap-supporting-text>
                       <span slot="headline">Coordinator IEEE</span>
                       <span slot="supporting-text"
                         >${this._networkSettings.settings.node_info.ieee}</span
                       >
                     </ha-list-item-base>
-                    <ha-list-item-base>
+                    <ha-list-item-base wrap-supporting-text>
                       <span slot="headline"
                         >${this.hass.localize(
                           "ui.panel.config.zha.configuration_page.radio_type"
@@ -107,7 +107,7 @@ class ZHANetworkInfoPage extends LitElement {
                         >${this._networkSettings.radio_type}</span
                       >
                     </ha-list-item-base>
-                    <ha-list-item-base>
+                    <ha-list-item-base wrap-supporting-text>
                       <span slot="headline"
                         >${this.hass.localize(
                           "ui.panel.config.zha.configuration_page.serial_port"
@@ -121,7 +121,7 @@ class ZHANetworkInfoPage extends LitElement {
                       this._networkSettings.device.baudrate &&
                       !this._networkSettings.device.path.startsWith("socket://")
                         ? html`
-                            <ha-list-item-base>
+                            <ha-list-item-base wrap-supporting-text>
                               <span slot="headline"
                                 >${this.hass.localize(
                                   "ui.panel.config.zha.configuration_page.baudrate"
@@ -177,7 +177,6 @@ class ZHANetworkInfoPage extends LitElement {
 
         ha-list-item-base::part(supporting-text) {
           font-size: var(--ha-font-size-m);
-          white-space: normal;
         }
       `,
     ];

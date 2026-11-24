@@ -102,19 +102,6 @@ import type {
   AutomationItemComboBoxItem,
 } from "./types";
 
-type PickerSources = Pick<
-  HomeAssistant,
-  | "states"
-  | "entities"
-  | "devices"
-  | "areas"
-  | "floors"
-  | "localize"
-  | "language"
-  | "locale"
-  | "translationMetadata"
->;
-
 const TARGET_SEARCH_SECTIONS = [
   "separator",
   "entity",
@@ -218,18 +205,20 @@ export class HaAutomationAddSearch extends LitElement {
 
   private _getDevicesMemoized = memoizeOne(
     (
-      sources: PickerSources,
+      states: HomeAssistant["states"],
+      registries: ContextType<typeof registriesContext>,
+      i18n: ContextType<typeof internationalizationContext>,
       configEntryLookup: Record<string, ConfigEntry>,
       idPrefix: string
     ) =>
       getDevices({
-        states: sources.states,
-        areas: sources.areas,
-        devices: sources.devices,
-        entities: sources.entities,
-        localize: sources.localize,
-        language: sources.locale.language,
-        translationMetadata: sources.translationMetadata,
+        states,
+        areas: registries.areas,
+        devices: registries.devices,
+        entities: registries.entities,
+        localize: i18n.localize,
+        language: i18n.locale.language,
+        translationMetadata: i18n.translationMetadata,
         configEntryLookup,
         idPrefix,
       })
@@ -238,29 +227,29 @@ export class HaAutomationAddSearch extends LitElement {
   private _getLabelsMemoized = memoizeOne(getLabels);
 
   private _getEntitiesMemoized = memoizeOne(
-    (sources: PickerSources, idPrefix: string) =>
-      getEntities(sources, { idPrefix })
+    (
+      states: HomeAssistant["states"],
+      registries: ContextType<typeof registriesContext>,
+      i18n: ContextType<typeof internationalizationContext>,
+      idPrefix: string
+    ) =>
+      getEntities({
+        states,
+        entities: registries.entities,
+        devices: registries.devices,
+        areas: registries.areas,
+        floors: registries.floors,
+        localize: i18n.localize,
+        language: i18n.language,
+        translationMetadata: i18n.translationMetadata,
+        idPrefix,
+      })
   );
 
   private _getAreasAndFloorsMemoized = memoizeOne(getAreasAndFloors);
 
   private _formatAreaFloorId = (value: AreaFloorValue): string =>
     [value.type, value.id].join(TARGET_SEPARATOR);
-
-  private _getPickerSources = memoizeOne(
-    (
-      states: HomeAssistant["states"],
-      registries: ContextType<typeof registriesContext>,
-      i18n: ContextType<typeof internationalizationContext>
-    ): PickerSources => ({
-      states,
-      ...registries,
-      localize: i18n.localize,
-      language: i18n.language,
-      locale: i18n.locale,
-      translationMetadata: i18n.translationMetadata,
-    })
-  );
 
   private _removeKeyboardShortcuts?: () => void;
 
@@ -683,7 +672,9 @@ export class HaAutomationAddSearch extends LitElement {
 
       if (!selectedSection || selectedSection === "entity") {
         let entityItems = this._getEntitiesMemoized(
-          this._getPickerSources(this._states, this._registries, this._i18n),
+          this._states,
+          this._registries,
+          this._i18n,
           `entity${TARGET_SEPARATOR}`
         );
 
@@ -720,7 +711,9 @@ export class HaAutomationAddSearch extends LitElement {
 
       if (!selectedSection || selectedSection === "device") {
         let deviceItems = this._getDevicesMemoized(
-          this._getPickerSources(this._states, this._registries, this._i18n),
+          this._states,
+          this._registries,
+          this._i18n,
           configEntryLookup,
           `device${TARGET_SEPARATOR}`
         );

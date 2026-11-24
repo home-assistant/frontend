@@ -47,7 +47,7 @@ export class HaListItemBase extends HaRowItem {
   protected readonly defaultRole: string = "listitem";
 
   // The list this row registered with.
-  private _list?: HaListBase;
+  protected _list?: HaListBase;
 
   public connectedCallback(): void {
     super.connectedCallback();

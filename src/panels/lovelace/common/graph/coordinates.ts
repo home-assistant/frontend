@@ -88,6 +88,153 @@ export const coordinates = (
   return calcPoints(sampledData, width, height, limits);
 };
 
+// State history only holds changes, so a sensor that does not change sends
+// nothing and two readings can be hours apart. A curve from one to the other
+// shows a trend that never happened: the value held until the later reading.
+// A stretch without readings counts as quiet when it is both this many times
+// the average distance between the other readings and this much of the graph.
+const QUIET_DISTANCE = 3;
+const QUIET_WIDTH = 0.1;
+
+// Finds the readings the sensor went quiet after, counting the stretch from
+// the last reading to the end of the graph. A stretch also has to be wider than
+// a sampling frame, so holds never get finer than the graph itself. A reading
+// followed by a state that is not a number, such as unavailable, starts no
+// quiet stretch: the value is unknown from there, not held.
+const findQuietStretches = (
+  history: [number, number][],
+  unknownAfter: boolean[],
+  maxX: number,
+  frame: number,
+  startsAtWindow: boolean
+): number[] => {
+  const width = maxX - history[0][0];
+
+  if (history.length < 2 || width <= 0) {
+    return [];
+  }
+
+  const quiet: number[] = [];
+
+  for (let i = 0; i < history.length; i++) {
+    const nextX = i + 1 < history.length ? history[i + 1][0] : maxX;
+    const distance = nextX - history[i][0];
+    // averaged over the other readings only, so that the stretch does not
+    // raise the bar it has to clear, and a tenth of it when there are none
+    const spacing =
+      Math.max((width - distance) / (history.length - 1), 0) || distance / 10;
+
+    if (
+      !unknownAfter[i] &&
+      distance > QUIET_DISTANCE * spacing &&
+      // the first reading is the state at the start of the window, which moves
+      // on with every redraw: holding it only while it is wide enough would
+      // snap the hold back into a curve as it scrolls out
+      ((i === 0 && startsAtWindow) ||
+        (distance > QUIET_WIDTH * width && distance > frame))
+    ) {
+      quiet.push(i);
+    }
+  }
+
+  return quiet;
+};
+
+// Holds the state across each quiet stretch. Sampling keeps the lowest and
+// highest value of each frame, or their mean, so the reading before a stretch
+// is put back first, and the one after it too unless the graph shows means,
+// where one raw reading would stand out as a spike. The held line starts one
+// average distance after the earlier reading and ends with points two and one
+// before the later one, because each curve reaches halfway to its neighbours:
+// that keeps the curves into and out of the stretch as tight as anywhere else.
+const holdQuietStretches = (
+  history: [number, number][],
+  unknownAfter: boolean[],
+  sampled: [number, number][],
+  maxDetails: number,
+  useMean: boolean,
+  limits?: { minX?: number; maxX?: number }
+): [number, number][] => {
+  if (!history.length) {
+    return sampled;
+  }
+
+  const minX = limits?.minX ?? history[0][0];
+  const maxX = limits?.maxX ?? history[history.length - 1][0];
+  const quiet = findQuietStretches(
+    history,
+    unknownAfter,
+    maxX,
+    // the widest frame downSampleLineData can use for this range
+    Math.ceil((maxX - minX) / Math.max(Math.floor(maxDetails), 1)),
+    // the graphs move the state the window starts in to its start on every
+    // redraw
+    limits?.minX !== undefined && history[0][0] <= limits.minX
+  );
+
+  if (!quiet.length) {
+    return sampled;
+  }
+
+  const ends = quiet.map((index) => history[index + 1]?.[0] ?? maxX);
+  const quietWidth = quiet.reduce(
+    (sum, index, i) => sum + ends[i] - history[index][0],
+    0
+  );
+  const spacing =
+    (maxX - history[0][0] - quietWidth) / Math.max(sampled.length - 1, 1);
+
+  const result: [number, number][] = [];
+  let next = 0;
+
+  quiet.forEach((index, i) => {
+    const settled = history[index];
+    const resumed = history[index + 1] as [number, number] | undefined;
+    const endX = ends[i];
+    const step = Math.min(
+      spacing || (endX - settled[0]) / 10,
+      (endX - settled[0]) / 4
+    );
+
+    while (next < sampled.length && sampled[next][0] <= settled[0]) {
+      result.push(sampled[next++]);
+    }
+    const last = result[result.length - 1];
+    if (!last || last[0] !== settled[0] || last[1] !== settled[1]) {
+      result.push(settled);
+    }
+    // nothing was recorded here, but the mean of a frame with readings on both
+    // sides can land inside: it stands for the readings after the stretch, so
+    // it moves to where they start
+    const moved: [number, number][] = [];
+    while (next < sampled.length && sampled[next][0] < endX) {
+      moved.push([endX, sampled[next++][1]]);
+    }
+
+    result.push(
+      [settled[0] + step, settled[1]],
+      [endX - 2 * step, settled[1]],
+      [endX - step, settled[1]],
+      ...moved
+    );
+
+    const kept = sampled[next];
+    if (
+      resumed &&
+      !useMean &&
+      (!kept || kept[0] !== resumed[0] || kept[1] !== resumed[1])
+    ) {
+      result.push(resumed);
+    }
+  });
+
+  while (next < sampled.length) {
+    result.push(sampled[next++]);
+  }
+
+  return result;
+};
+
 export const coordinatesMinimalResponseCompressedState = (
   history: EntityHistoryState[] | undefined,
   width: number,
@@ -99,12 +246,41 @@ export const coordinatesMinimalResponseCompressedState = (
   if (!history?.length) {
     return { points: [], yAxisOrigin: 0 };
   }
-  const mappedHistory: [number, number][] = history.map((item) => [
+  const mappedHistory: [number, number][] = [];
+  const unknownAfter: boolean[] = [];
+  for (const item of history) {
+    const value = Number(item.s);
+    if (Number.isNaN(value)) {
+      if (unknownAfter.length) {
+        unknownAfter[unknownAfter.length - 1] = true;
+      }
+      continue;
+    }
     // With minimal response and compressed state, we don't have last_changed,
     // so we use last_updated since its always the same as last_changed since
     // we already filtered out states that are the same.
-    item.lu * 1000,
-    Number(item.s),
-  ]);
-  return coordinates(mappedHistory, width, height, maxDetails, limits, useMean);
+    mappedHistory.push([item.lu * 1000, value]);
+    unknownAfter.push(false);
+  }
+
+  const sampledData: [number, number][] = downSampleLineData(
+    mappedHistory,
+    maxDetails,
+    limits?.minX,
+    limits?.maxX,
+    useMean
+  );
+  return calcPoints(
+    holdQuietStretches(
+      mappedHistory,
+      unknownAfter,
+      sampledData,
+      maxDetails,
+      useMean,
+      limits
+    ),
+    width,
+    height,
+    limits
+  );
 };

@@ -112,7 +112,7 @@ export class HaMoreInfoTimerPresets extends LitElement {
     };
 
     const result = await updateEntityRegistryEntry(
-      this._api,
+      this._api.callWS,
       this.entry.entity_id,
       {
         options_domain: "timer",

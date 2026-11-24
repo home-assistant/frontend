@@ -14,6 +14,8 @@ import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
 } from "../common/dom/fire_event";
+import { getTopModal, subscribeOpenModals } from "../common/dom/open-modals";
+import { stopKeydownEnterSpacePropagation } from "../common/dom/stop_propagation";
 import { popoverSupported } from "../common/feature-detect/support-popover";
 import type { LocalizeKeys } from "../common/translations/localize";
 import "../components/ha-button";
@@ -64,6 +66,36 @@ class NotificationManager extends LitElement {
   private _toasts!: NodeListOf<HTMLElementTagNameMap["ha-toast"]>;
 
   private _anonymousId = 0;
+
+  private _home?: ParentNode;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this._home) {
+      return;
+    }
+    this._home = this.parentNode!;
+    subscribeOpenModals(this._modalsChanged);
+    this._modalsChanged();
+  }
+
+  // A dialog reports that it opens before it enters the top layer. Wait, so
+  // that the stack enters the top layer after the dialog and paints above it.
+  private _modalsChanged = () => {
+    queueMicrotask(this._moveToTopModal);
+  };
+
+  // A modal dialog makes everything outside it inert, so the toasts must be
+  // inside the topmost one for their buttons to work.
+  private _moveToTopModal = () => {
+    const parent = getTopModal() ?? this._home!;
+    if (this.parentNode !== parent) {
+      parent.appendChild(this);
+    }
+    // Also when staying, as a bottom sheet that reopens itself enters the top
+    // layer again above the stack.
+    this._showStack();
+  };
 
   public async showDialog(parameters: ShowToastParams) {
     if (parameters.duration === 0) {
@@ -131,6 +163,8 @@ class NotificationManager extends LitElement {
         ({ parameters }) => parameters.bottomOffset ?? 0
       )
     );
+    // Inside a dialog, Enter on a toast button would otherwise also reach
+    // dialogs that submit on Enter, like the one to add a user.
     return html`
       <div
         class="stack"
@@ -138,6 +172,8 @@ class NotificationManager extends LitElement {
           "--notification-stack-bottom-offset": `${bottomOffset}px`,
         })}
         popover=${ifDefined(popoverSupported ? "manual" : undefined)}
+        @keydown=${stopKeydownEnterSpacePropagation}
+        @keypress=${stopKeydownEnterSpacePropagation}
       >
         ${repeat(
           this._notifications,
@@ -286,13 +322,18 @@ class NotificationManager extends LitElement {
   }
 
   static override styles = css`
+    :host {
+      /* No box, so the manager does not change the layout of a dialog. */
+      display: contents;
+    }
     .stack {
       position: fixed;
       inset-block-start: auto;
       inset-inline-end: auto;
       inset-block-end: calc(
         var(--safe-area-inset-bottom, 0px) + var(--ha-space-4) +
-          var(--notification-stack-bottom-offset, 0px)
+          var(--notification-stack-bottom-offset, 0px) +
+          var(--ha-startup-progress-offset, 0px)
       );
       inset-inline-start: 50%;
       margin: 0;

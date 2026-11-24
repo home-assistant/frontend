@@ -60,6 +60,7 @@ export const ADAPTIVE_DIALOG_MEDIA_QUERY =
  * @attr {boolean} without-header - Hides the default header.
  * @attr {boolean} hide-close-button - Hides the default close button.
  * @attr {boolean} allow-mode-change - When set, the component can switch between dialog and bottom-sheet modes as the viewport changes.
+ * @prop {string} accessibleLabel - Accessible name for dialogs that put their title in a slot.
  *
  * @event opened - Fired when the dialog/sheet is shown.
  * @event closed - Fired after the dialog/sheet is hidden.
@@ -102,6 +103,9 @@ export class HaAdaptiveDialog extends LitElement {
 
   @property({ attribute: "header-title" })
   public headerTitle?: string;
+
+  @property({ attribute: false })
+  public accessibleLabel?: string;
 
   @property({ attribute: "header-subtitle" })
   public headerSubtitle?: string;
@@ -201,7 +205,8 @@ export class HaAdaptiveDialog extends LitElement {
     if (this.mode === "bottom-sheet") {
       return html`
         <ha-bottom-sheet
-          .ariaLabelledBy=${this._defaultAriaLabelledBy}
+          .accessibleLabel=${this.accessibleLabel ?? this.headerTitle}
+          .ariaLabelledBy=${this.ariaLabelledBy}
           .ariaDescribedBy=${this.ariaDescribedBy}
           .flexContent=${this.flexContent}
           .open=${this.open}
@@ -231,6 +236,7 @@ export class HaAdaptiveDialog extends LitElement {
         .ariaLabelledBy=${this.ariaLabelledBy}
         .ariaDescribedBy=${this.ariaDescribedBy}
         .headerTitle=${this.headerTitle}
+        .accessibleLabel=${this.accessibleLabel}
         .headerSubtitle=${this.headerSubtitle}
         .headerSubtitlePosition=${this.headerSubtitlePosition}
         .flexContent=${this.flexContent}

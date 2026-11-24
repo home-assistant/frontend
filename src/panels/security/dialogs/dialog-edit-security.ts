@@ -1,5 +1,5 @@
 import type { ContextType } from "@lit/context";
-import { css, html, LitElement, nothing, type PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { consume } from "../../../common/decorators/consume";
 import "../../../components/ha-button";
@@ -19,10 +19,7 @@ import { haStyleDialog } from "../../../resources/styles";
 import type { ValueChangedEvent } from "../../../types";
 import "../../../components/entity/ha-favorites-editor";
 import "../components/security-alerts-editor";
-import {
-  createSecurityEntityFilter,
-  type SecurityEntityContext,
-} from "../security-entity-filter";
+import { createSecurityEntityFilter } from "../security-entity-filter";
 import type { EditSecurityDialogParams } from "./show-dialog-edit-security";
 
 @customElement("dialog-edit-security")
@@ -37,25 +34,11 @@ export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontend
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
 
-  @state()
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
 
-  @state()
   @consume({ context: registriesContext, subscribe: true })
   private _registries!: ContextType<typeof registriesContext>;
-
-  private _entityContext?: SecurityEntityContext;
-
-  protected willUpdate(changedProps: PropertyValues): void {
-    super.willUpdate(changedProps);
-    if (changedProps.has("_states") || changedProps.has("_registries")) {
-      this._entityContext = {
-        states: this._states,
-        ...this._registries,
-      };
-    }
-  }
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -179,7 +162,10 @@ export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontend
     this._updateDirtyState(this._state);
   }
 
-  private _entityFilter = createSecurityEntityFilter(() => this._entityContext);
+  private _entityFilter = createSecurityEntityFilter(
+    () => this._states,
+    () => this._registries
+  );
 
   private async _save(): Promise<void> {
     if (!this.params || !this._state) return;

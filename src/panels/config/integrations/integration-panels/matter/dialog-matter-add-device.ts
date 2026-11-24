@@ -102,13 +102,21 @@ class DialogMatterAddDevice extends LitElement {
 
   private _mainEntityFetched = false;
 
+  // A recommissioned node joins its existing device, next to the entities of
+  // its earlier nodes, so only what is new since opening belongs to it.
+  private _deviceExisted = false;
+
+  private _entityIdsAtOpen = new Set<string>();
+
   private _unsub?: UnsubscribeFunc;
 
   public showDialog(): void {
     this._open = true;
-    this._unsub = watchForNewMatterDevice(this.hass, (device) => {
+    this._entityIdsAtOpen = new Set(Object.keys(this.hass.entities));
+    this._unsub = watchForNewMatterDevice(this.hass, (device, existing) => {
       // make sure a refresh of the page will navigate to the device page, old iOS apps will refresh the webview when commissioning is done
       setRefreshUrl(`/config/devices/device/${device.id}`);
+      this._deviceExisted = existing;
       this._newDevice = device;
       this._fetchMainEntity();
       this._maybeShowDeviceAdded();
@@ -127,7 +135,8 @@ class DialogMatterAddDevice extends LitElement {
 
   private get _waitForCommissioningFinish(): boolean {
     // When the app supports reporting Matter commissioning status, defer
-    // advancing past the spinner until we receive matter/commission/finish.
+    // advancing past the spinner of its own flow until we receive
+    // matter/commission/finish.
     return !!this.hass.auth.external?.config.hasMatterStatusReport;
   }
 
@@ -135,7 +144,13 @@ class DialogMatterAddDevice extends LitElement {
     if (!this._newDevice) {
       return;
     }
-    if (this._waitForCommissioningFinish && !this._commissioningFinished) {
+    // Only the app's own flow, started from the "new" step, reports back.
+    // The other steps commission through core or another app.
+    if (
+      this._step === "new" &&
+      this._waitForCommissioningFinish &&
+      !this._commissioningFinished
+    ) {
       return;
     }
     this._step = "device_added";
@@ -149,6 +164,8 @@ class DialogMatterAddDevice extends LitElement {
       if (this._newDevice) {
         // Device already showed up in the registry — ignore the failure signal
         // and let the user finish the rename flow.
+        this._commissioningFinished = true;
+        this._maybeShowDeviceAdded();
         return;
       }
       showToast(this, {
@@ -178,12 +195,19 @@ class DialogMatterAddDevice extends LitElement {
     }
   }
 
+  private _entityIdsAddedTo(device: DeviceRegistryEntry): string[] {
+    return Object.values(this.hass.entities)
+      .filter(
+        (e) =>
+          e.device_id === device.id && !this._entityIdsAtOpen.has(e.entity_id)
+      )
+      .map((e) => e.entity_id);
+  }
+
   private async _fetchMainEntity(): Promise<void> {
     if (!this._newDevice || this._mainEntityFetched) return;
 
-    const entityIds = Object.values(this.hass.entities)
-      .filter((e) => e.device_id === this._newDevice!.id)
-      .map((e) => e.entity_id);
+    const entityIds = this._entityIdsAddedTo(this._newDevice);
 
     if (!entityIds.length) return;
 
@@ -214,6 +238,7 @@ class DialogMatterAddDevice extends LitElement {
     this._step = "main";
     this._pairingCode = "";
     this._newDevice = undefined;
+    this._deviceExisted = false;
     this._mainEntity = undefined;
     this._mainEntityFetched = false;
     this._proposedDeviceName = undefined;
@@ -272,7 +297,10 @@ class DialogMatterAddDevice extends LitElement {
             hass: this.hass,
             device: this._newDevice,
             mainEntity: this._mainEntity,
-            proposedName: this._proposedDeviceName,
+            // The name typed in the app would rename an existing device.
+            proposedName: this._deviceExisted
+              ? undefined
+              : this._proposedDeviceName,
           }
         )}
       </div>
@@ -309,7 +337,7 @@ class DialogMatterAddDevice extends LitElement {
       const areaChanged = area !== origArea;
 
       if (nameChanged || areaChanged) {
-        await updateDeviceRegistryEntry(this.hass, device.id, {
+        await updateDeviceRegistryEntry(this.hass.callWS, device.id, {
           ...(nameChanged && { name_by_user: name || null }),
           ...(areaChanged && { area_id: area || null }),
         }).catch((err: Error) =>
@@ -322,18 +350,20 @@ class DialogMatterAddDevice extends LitElement {
         );
       }
 
+      // Earlier nodes' entities keep their IDs, which automations may use.
       if (nameChanged && name) {
-        const entityIds = Object.values(this.hass.entities)
-          .filter((e) => e.device_id === device.id)
-          .map((e) => e.entity_id);
+        const entityIds = this._entityIdsAddedTo(device);
 
         if (entityIds.length) {
-          const mapping = await getAutomaticEntityIds(this.hass, entityIds);
+          const mapping = await getAutomaticEntityIds(
+            this.hass.callWS,
+            entityIds
+          );
           await Promise.allSettled(
             Object.entries(mapping)
               .filter((entry): entry is [string, string] => !!entry[1])
               .map(([oldId, newId]) =>
-                updateEntityRegistryEntry(this.hass, oldId, {
+                updateEntityRegistryEntry(this.hass.callWS, oldId, {
                   new_entity_id: newId,
                 }).catch((err: Error) =>
                   showAlertDialog(this, {
@@ -355,7 +385,7 @@ class DialogMatterAddDevice extends LitElement {
           undefined;
         if (deviceClass !== origClass) {
           await updateEntityRegistryEntry(
-            this.hass,
+            this.hass.callWS,
             this._mainEntity.entity_id,
             { device_class: deviceClass || null }
           ).catch((err: Error) =>

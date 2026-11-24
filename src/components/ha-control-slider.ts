@@ -219,6 +219,7 @@ export class HaControlSlider extends LitElement {
         this.pressed = false;
         this._hideTooltip();
         this.value = savedValue;
+        fireEvent(this, "slider-moved", { value: undefined });
       });
       this._mc.on("panmove", (e) => {
         if (this.disabled) return;

@@ -85,6 +85,11 @@ const _removeOpenDialogTag = (dialogTag: string) => {
 export const getTopOpenDialogTag = (): string | undefined =>
   OPEN_DIALOG_TAGS[OPEN_DIALOG_TAGS.length - 1];
 
+/** The params the dialog with this tag was shown with, while it is open. */
+export const getOpenDialogParams = <T>(dialogTag: string): T | undefined =>
+  OPEN_DIALOG_STACK.find((dialog) => dialog.dialogTag === dialogTag)
+    ?.dialogParams as T | undefined;
+
 /** The URL of the last dialog's entry, when the dialog went back to close. */
 let closedDialogUrl: { pathname: string; search: string } | undefined;
 
@@ -224,7 +229,11 @@ export const showDialog = async (
   }
 
   const targetParent = (parentElement || element).shadowRoot!;
-  if (dialogElement!.parentNode !== targetParent) {
+  if (
+    dialogElement!.parentNode !== targetParent &&
+    // The notification manager moves itself into the topmost modal.
+    !(NON_MODAL_DIALOG_TAGS.has(dialogTag) && dialogElement!.isConnected)
+  ) {
     targetParent.appendChild(dialogElement!);
   }
 

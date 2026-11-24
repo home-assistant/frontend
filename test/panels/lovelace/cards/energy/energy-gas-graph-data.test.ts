@@ -38,6 +38,7 @@ const gasOnlyPrefs = (sources: number): EnergyPreferences => ({
   })),
   device_consumption: [],
   device_consumption_water: [],
+  device_consumption_gas: [],
 });
 
 // Fixed "now" so the end fallback is deterministic.
@@ -131,6 +132,7 @@ describe("generateEnergyGasGraphData", () => {
       ],
       device_consumption: [],
       device_consumption_water: [],
+      device_consumption_gas: [],
     };
     const energyData = generateEnergyData(5, {
       days: 2,

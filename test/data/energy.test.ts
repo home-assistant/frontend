@@ -12,6 +12,7 @@ import {
   TimeZone,
 } from "../../src/data/translation";
 import {
+  calculateGridNetCost,
   computeConsumptionSingle,
   computeEnergyLabel,
   computeEnergyDeviceLabels,
@@ -32,6 +33,7 @@ import {
 import type {
   EnergyData,
   EnergyPreferences,
+  GridSourceTypeEnergyPreference,
   EnergySource,
   EnergySumData,
 } from "../../src/data/energy";
@@ -49,7 +51,8 @@ const checkConsumptionResult = (
     to_battery: number | undefined;
     from_battery: number | undefined;
   },
-  exact = true
+  exact = true,
+  options?: Parameters<typeof computeConsumptionSingle>[1]
 ): {
   grid_to_battery: number;
   battery_to_grid: number;
@@ -60,8 +63,9 @@ const checkConsumptionResult = (
   used_battery: number;
   used_total: number;
 } => {
-  const result = computeConsumptionSingle(input);
+  const result = computeConsumptionSingle(input, options);
   if (exact) {
+    const measured = options?.measured;
     assert.equal(
       result.used_total,
       result.used_solar + result.used_battery + result.used_grid
@@ -71,12 +75,24 @@ const checkConsumptionResult = (
       result.solar_to_grid + result.battery_to_grid
     );
     assert.equal(
-      input.to_battery || 0,
+      (input.to_battery || 0) +
+        (measured?.grid_to_battery || 0) +
+        (measured?.solar_to_battery || 0),
       result.grid_to_battery + result.solar_to_battery
     );
     assert.equal(
       input.solar || 0,
       result.solar_to_battery + result.solar_to_grid + result.used_solar
+    );
+    assert.equal(
+      input.from_grid || 0,
+      result.used_grid + result.grid_to_battery
+    );
+    assert.equal(
+      (input.from_battery || 0) +
+        (measured?.battery_to_home || 0) +
+        (measured?.battery_to_grid || 0),
+      result.used_battery + result.battery_to_grid
     );
   }
   return result;
@@ -646,6 +662,294 @@ describe("Energy Usage Calculation Tests", () => {
         used_total: 12.367099999999994,
       }
     );
+  });
+});
+
+describe("Measured battery flows", () => {
+  const noTotals = { to_battery: undefined, from_battery: undefined };
+
+  it("keeps grid charging that an estimate would call solar charging", () => {
+    assert.deepEqual(
+      checkConsumptionResult(
+        { from_grid: 6, to_grid: 3, solar: 8, ...noTotals },
+        true,
+        {
+          measured: {
+            grid_to_battery: 2,
+            solar_to_battery: 3,
+            battery_to_home: 4,
+            battery_to_grid: 1,
+          },
+        }
+      ),
+      {
+        grid_to_battery: 2,
+        battery_to_grid: 1,
+        solar_to_battery: 3,
+        solar_to_grid: 2,
+        used_solar: 3,
+        used_grid: 4,
+        used_battery: 4,
+        used_total: 11,
+      }
+    );
+  });
+
+  it("estimates only the batteries configured with totals", () => {
+    assert.deepEqual(
+      checkConsumptionResult(
+        { from_grid: 5, to_grid: 1, solar: 4, to_battery: 1, from_battery: 2 },
+        true,
+        {
+          measured: {
+            grid_to_battery: 2,
+            solar_to_battery: 0,
+            battery_to_home: 1,
+            battery_to_grid: 0,
+          },
+        }
+      ),
+      {
+        grid_to_battery: 2,
+        battery_to_grid: 0,
+        solar_to_battery: 1,
+        solar_to_grid: 1,
+        used_solar: 2,
+        used_grid: 3,
+        used_battery: 3,
+        used_total: 8,
+      }
+    );
+  });
+
+  it("takes the home reading as the total and leaves out battery to home", () => {
+    assert.deepEqual(
+      computeConsumptionSingle(
+        { from_grid: 6, to_grid: 3, solar: 8, ...noTotals },
+        {
+          measured: {
+            grid_to_battery: 2,
+            solar_to_battery: 3,
+            battery_to_home: 4,
+            battery_to_grid: 1,
+          },
+          used_total: 10,
+        }
+      ),
+      {
+        grid_to_battery: 2,
+        battery_to_grid: 1,
+        solar_to_battery: 3,
+        solar_to_grid: 2,
+        used_solar: 3,
+        used_grid: 3,
+        used_battery: 4,
+        used_total: 10,
+      }
+    );
+  });
+
+  it("keeps solar charging without a solar source out of the home load", () => {
+    assert.deepEqual(
+      computeConsumptionSingle(
+        { from_grid: 5, to_grid: 0, solar: undefined, ...noTotals },
+        {
+          measured: {
+            grid_to_battery: 0,
+            solar_to_battery: 2,
+            battery_to_home: 1,
+            battery_to_grid: 0,
+          },
+        }
+      ),
+      {
+        grid_to_battery: 0,
+        battery_to_grid: 0,
+        solar_to_battery: 2,
+        solar_to_grid: 0,
+        used_solar: 0,
+        used_grid: 5,
+        used_battery: 1,
+        used_total: 6,
+      }
+    );
+  });
+
+  it("keeps grid charging out of the home load without a grid import meter", () => {
+    const { consumption } = computeConsumptionData(
+      {
+        solar: { 1: 3 },
+        grid_to_battery: { 1: 2 },
+        solar_to_battery: { 1: 0 },
+        battery_to_home: { 1: 1 },
+        battery_to_grid: { 1: 0 },
+        to_battery_totals: {},
+        from_battery_totals: {},
+        total: {},
+        timestamps: [1],
+      },
+      undefined
+    );
+    assert.equal(consumption.used_total[1], 4);
+    assert.equal(consumption.used_solar[1], 3);
+    assert.equal(consumption.grid_to_battery[1], 2);
+  });
+
+  it("keeps battery to grid without an export meter out of the home load", () => {
+    assert.deepEqual(
+      computeConsumptionSingle(
+        { from_grid: 3, to_grid: undefined, solar: 0, ...noTotals },
+        {
+          measured: {
+            grid_to_battery: 0,
+            solar_to_battery: 0,
+            battery_to_home: 0,
+            battery_to_grid: 1,
+          },
+        }
+      ),
+      {
+        grid_to_battery: 0,
+        battery_to_grid: 1,
+        solar_to_battery: 0,
+        solar_to_grid: 0,
+        used_solar: 0,
+        used_grid: 3,
+        used_battery: 0,
+        used_total: 3,
+      }
+    );
+  });
+
+  it("keeps one battery charging another as battery to home", () => {
+    assert.deepEqual(
+      checkConsumptionResult(
+        { from_grid: 3, to_grid: 0, solar: 0, to_battery: 2, from_battery: 0 },
+        true,
+        {
+          measured: {
+            grid_to_battery: 0,
+            solar_to_battery: 0,
+            battery_to_home: 2,
+            battery_to_grid: 0,
+          },
+        }
+      ),
+      {
+        grid_to_battery: 2,
+        battery_to_grid: 0,
+        solar_to_battery: 0,
+        solar_to_grid: 0,
+        used_solar: 0,
+        used_grid: 1,
+        used_battery: 2,
+        used_total: 3,
+      }
+    );
+  });
+
+  it("never lowers grid charging above the grid import", () => {
+    assert.deepEqual(
+      computeConsumptionSingle(
+        { from_grid: 2, to_grid: 0, solar: 4, ...noTotals },
+        {
+          measured: {
+            grid_to_battery: 3,
+            solar_to_battery: 0,
+            battery_to_home: 0,
+            battery_to_grid: 0,
+          },
+        }
+      ),
+      {
+        grid_to_battery: 3,
+        battery_to_grid: 0,
+        solar_to_battery: 0,
+        solar_to_grid: 0,
+        used_solar: 3,
+        used_grid: 0,
+        used_battery: 0,
+        used_total: 3,
+      }
+    );
+  });
+});
+
+describe("computeConsumptionSingle on live power", () => {
+  // The power Sankey card's own copy of the estimate, before it called
+  // computeConsumptionSingle
+  const legacyPowerFlows = (
+    { solar, from_grid, to_grid, from_battery, to_battery },
+    homePower: number | undefined
+  ) => {
+    const used_total =
+      homePower ?? from_grid + solar + from_battery - to_grid - to_battery;
+    let solar_remaining = solar;
+    let grid_remaining = from_grid;
+    let battery_remaining = from_battery;
+    let to_battery_remaining = to_battery;
+    let to_grid_remaining = to_grid;
+    let used_total_remaining = Math.max(used_total, 0);
+    let grid_to_battery = 0;
+    const excess = Math.max(
+      0,
+      Math.min(to_battery_remaining, grid_remaining - used_total_remaining)
+    );
+    grid_to_battery += excess;
+    to_battery_remaining -= excess;
+    grid_remaining -= excess;
+    const solar_to_battery = Math.min(solar_remaining, to_battery_remaining);
+    to_battery_remaining -= solar_to_battery;
+    solar_remaining -= solar_to_battery;
+    const solar_to_grid = Math.min(solar_remaining, to_grid_remaining);
+    to_grid_remaining -= solar_to_grid;
+    solar_remaining -= solar_to_grid;
+    const battery_to_grid = Math.min(battery_remaining, to_grid_remaining);
+    battery_remaining -= battery_to_grid;
+    const grid_to_battery_2 = Math.min(grid_remaining, to_battery_remaining);
+    grid_to_battery += grid_to_battery_2;
+    grid_remaining -= grid_to_battery_2;
+    const used_solar = Math.min(used_total_remaining, solar_remaining);
+    used_total_remaining -= used_solar;
+    const used_battery = Math.min(battery_remaining, used_total_remaining);
+    used_total_remaining -= used_battery;
+    const used_grid = Math.min(used_total_remaining, grid_remaining);
+    return {
+      grid_to_battery,
+      battery_to_grid,
+      solar_to_battery,
+      solar_to_grid,
+      used_solar,
+      used_grid,
+      used_battery,
+      used_total: Math.max(0, used_total),
+    };
+  };
+
+  it("matches the card's former estimate, with and without a home sensor", () => {
+    const watts = [0, 150, 1234.5, 4000];
+    for (const solar of watts) {
+      for (const grid of [-2500, -150, ...watts]) {
+        for (const battery of [-3000, -200, ...watts]) {
+          for (const homePower of [undefined, 0, 900, 5000]) {
+            const input = {
+              solar,
+              from_grid: Math.max(grid, 0),
+              to_grid: Math.max(-grid, 0),
+              from_battery: Math.max(battery, 0),
+              to_battery: Math.max(-battery, 0),
+            };
+            const flows = computeConsumptionSingle(input, {
+              used_total: homePower,
+            });
+            assert.deepEqual(
+              { ...flows, used_total: Math.max(0, flows.used_total) },
+              legacyPowerFlows(input, homePower)
+            );
+          }
+        }
+      }
+    }
   });
 });
 
@@ -2104,7 +2408,6 @@ describe("getEnergyDataCollection gas energy unit", () => {
       stat_compensation: null,
       entity_energy_price_export: null,
       number_energy_price_export: null,
-      cost_adjustment_day: 0,
     },
     solar: {
       type: "solar",
@@ -2383,6 +2686,159 @@ describe("computeEnergyDeviceLabels", () => {
       { "sensor.washer_power": "Washer Power" }
     );
   });
+
+  describe("devices that share a device", () => {
+    const PANEL_STATES = {
+      "sensor.panel_kitchen_energy": createMockEntityState(
+        "sensor.panel_kitchen_energy",
+        "1",
+        { friendly_name: "Panel Kitchen energy" }
+      ),
+      "sensor.panel_kitchen_power": createMockEntityState(
+        "sensor.panel_kitchen_power",
+        "5",
+        { friendly_name: "Panel Kitchen power" }
+      ),
+      "sensor.panel_laundry_energy": createMockEntityState(
+        "sensor.panel_laundry_energy",
+        "1",
+        { friendly_name: "Panel Laundry energy" }
+      ),
+      "sensor.panel_laundry_power": createMockEntityState(
+        "sensor.panel_laundry_power",
+        "5",
+        { friendly_name: "Panel Laundry power" }
+      ),
+      "sensor.boiler_energy": createMockEntityState(
+        "sensor.boiler_energy",
+        "1",
+        { friendly_name: "Boiler energy" }
+      ),
+    };
+
+    const createEntry = (entityId: string, name: string, deviceId: string) =>
+      ({
+        entity_id: entityId,
+        labels: [],
+        name,
+        device_id: deviceId,
+      }) as unknown as EntityRegistryDisplayEntry;
+
+    const panelHass = createMockHass(PANEL_STATES, {
+      entities: {
+        "sensor.panel_kitchen_energy": createEntry(
+          "sensor.panel_kitchen_energy",
+          "Kitchen",
+          "panel"
+        ),
+        "sensor.panel_kitchen_power": createEntry(
+          "sensor.panel_kitchen_power",
+          "Kitchen power",
+          "panel"
+        ),
+        "sensor.panel_laundry_energy": createEntry(
+          "sensor.panel_laundry_energy",
+          "Laundry",
+          "panel"
+        ),
+        "sensor.panel_laundry_power": createEntry(
+          "sensor.panel_laundry_power",
+          "Laundry power",
+          "panel"
+        ),
+        "sensor.boiler_energy": createEntry(
+          "sensor.boiler_energy",
+          "Energy",
+          "boiler"
+        ),
+      },
+      devices: {
+        panel: { id: "panel", name: "Panel", name_by_user: null },
+        boiler: { id: "boiler", name: "Boiler", name_by_user: null },
+      } as unknown as Record<string, DeviceRegistryEntry>,
+    });
+
+    it("adds the entity name to devices sharing a device", () => {
+      assert.deepEqual(
+        computeEnergyDeviceLabels(
+          panelHass.states,
+          panelHass.formatEntityName,
+          [
+            { stat_consumption: "sensor.panel_kitchen_energy" },
+            { stat_consumption: "sensor.panel_laundry_energy" },
+            { stat_consumption: "sensor.boiler_energy" },
+          ]
+        ),
+        {
+          "sensor.panel_kitchen_energy": "Panel Kitchen",
+          "sensor.panel_laundry_energy": "Panel Laundry",
+          "sensor.boiler_energy": "Boiler",
+        }
+      );
+    });
+
+    it("leaves a device alone once its sibling is named by the user", () => {
+      assert.deepEqual(
+        computeEnergyDeviceLabels(
+          panelHass.states,
+          panelHass.formatEntityName,
+          [
+            {
+              stat_consumption: "sensor.panel_kitchen_energy",
+              name: "Kitchen",
+            },
+            { stat_consumption: "sensor.panel_laundry_energy" },
+          ]
+        ),
+        {
+          "sensor.panel_kitchen_energy": "Kitchen",
+          "sensor.panel_laundry_energy": "Panel",
+        }
+      );
+    });
+
+    it("gives way to a user name that collides with the device name", () => {
+      assert.deepEqual(
+        computeEnergyDeviceLabels(
+          panelHass.states,
+          panelHass.formatEntityName,
+          [
+            { stat_consumption: "sensor.panel_kitchen_energy", name: "Panel" },
+            { stat_consumption: "sensor.panel_laundry_energy" },
+          ]
+        ),
+        {
+          "sensor.panel_kitchen_energy": "Panel",
+          "sensor.panel_laundry_energy": "Panel Laundry",
+        }
+      );
+    });
+
+    it("tells apart the rate statistics of one device", () => {
+      assert.deepEqual(
+        computeEnergyDeviceLabels(
+          panelHass.states,
+          panelHass.formatEntityName,
+          [
+            {
+              stat_consumption: "sensor.panel_kitchen_energy",
+              stat_rate: "sensor.panel_kitchen_power",
+            },
+            {
+              stat_consumption: "sensor.panel_laundry_energy",
+              stat_rate: "sensor.panel_laundry_power",
+            },
+          ],
+          undefined,
+          "stat_rate"
+        ),
+        {
+          "sensor.panel_kitchen_power": "Panel Kitchen power",
+          "sensor.panel_laundry_power": "Panel Laundry power",
+        }
+      );
+    });
+  });
 });
 
 describe("computeConsumptionData with a home meter", () => {
@@ -2412,5 +2868,76 @@ describe("computeConsumptionData with a home meter", () => {
 
   it("never changes the measured grid value", () => {
     assert.equal(consumption.used_grid[1], baseline.used_grid[1]);
+  });
+});
+
+describe("calculateGridNetCost", () => {
+  const grid = (
+    overrides: Partial<GridSourceTypeEnergyPreference>
+  ): GridSourceTypeEnergyPreference => ({
+    type: "grid",
+    stat_energy_from: "sensor.import",
+    stat_energy_to: "sensor.export",
+    stat_cost: null,
+    entity_energy_price: null,
+    number_energy_price: null,
+    stat_compensation: null,
+    entity_energy_price_export: null,
+    number_energy_price_export: null,
+    ...overrides,
+  });
+  const series = (...changes: (number | null)[]) =>
+    changes.map((change, i) => ({ start: i, end: i + 1, change }));
+  const info = {
+    cost_sensors: {
+      "sensor.import": "sensor.import_cost",
+      "sensor.export": "sensor.export_compensation",
+    },
+    solar_forecast_domains: [],
+  };
+
+  it("subtracts export compensation from import cost", () => {
+    assert.equal(
+      calculateGridNetCost([grid({})], info, {
+        "sensor.import": series(2, 3),
+        "sensor.import_cost": series(1, 1.5),
+        "sensor.export": series(4),
+        "sensor.export_compensation": series(0.5),
+      }),
+      2
+    );
+  });
+
+  it("prefers configured cost statistics over generated cost sensors", () => {
+    assert.equal(
+      calculateGridNetCost(
+        [grid({ stat_cost: "sensor.my_cost", stat_energy_to: null })],
+        info,
+        {
+          "sensor.import": series(2),
+          "sensor.import_cost": series(9),
+          "sensor.my_cost": series(1.25),
+        }
+      ),
+      1.25
+    );
+  });
+
+  it("returns undefined without cost statistics or period data", () => {
+    assert.isUndefined(
+      calculateGridNetCost(
+        [grid({})],
+        { ...info, cost_sensors: {} },
+        {
+          "sensor.import": series(2),
+        }
+      )
+    );
+    assert.isUndefined(
+      calculateGridNetCost([grid({})], info, {
+        "sensor.import": series(null),
+        "sensor.import_cost": series(null),
+      })
+    );
   });
 });

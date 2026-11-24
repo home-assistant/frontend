@@ -180,6 +180,7 @@ export class MatterConfigDashboard extends LitElement {
             )}
           >
             <ha-list-item-button
+              wrap-headline
               href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}&status=disabled`}
             >
               <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
@@ -192,6 +193,7 @@ export class MatterConfigDashboard extends LitElement {
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-list-item-button>
             <ha-list-item-button
+              wrap-headline
               href=${`/config/entities?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
             >
               <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
@@ -218,7 +220,11 @@ export class MatterConfigDashboard extends LitElement {
               "ui.panel.config.matter.panel.options_title"
             )}
           >
-            <ha-list-item-button href="/config/matter/options">
+            <ha-list-item-button
+              wrap-headline
+              wrap-supporting-text
+              href="/config/matter/options"
+            >
               <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
               <div slot="headline">
                 ${this.hass.localize(
@@ -234,7 +240,11 @@ export class MatterConfigDashboard extends LitElement {
             </ha-list-item-button>
             ${
               isComponentLoaded(this.hass.config, "thread")
-                ? html`<ha-list-item-button href="/config/thread">
+                ? html`<ha-list-item-button
+                    wrap-headline
+                    wrap-supporting-text
+                    href="/config/thread"
+                  >
                     <ha-svg-icon
                       slot="start"
                       .path=${THREAD_ICON}

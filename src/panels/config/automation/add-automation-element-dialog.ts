@@ -526,10 +526,13 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
       return nothing;
     }
 
+    const title = this._getDialogTitle(this.params.type);
+
     if (this._bottomSheetMode) {
       return html`
         <ha-bottom-sheet
           open
+          .accessibleLabel=${title}
           @closed=${this._handleClosed}
           @after-show=${this._handleAfterShow}
           flexcontent
@@ -543,6 +546,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
       <ha-dialog
         width="large"
         open
+        .accessibleLabel=${title}
         @closed=${this._handleClosed}
         @after-show=${this._handleAfterShow}
         flexcontent
@@ -718,6 +722,15 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
                 </div>
                 <ha-automation-add-items
                   .items=${this._getItemSections(sources, systemDomains)}
+                  .loadingLabel=${
+                    this._tab === "targets" &&
+                    this._selectedTarget &&
+                    !this._selectedGroup &&
+                    !this._targetElementKeys &&
+                    !this._loadItemsError
+                      ? localize("ui.common.loading")
+                      : undefined
+                  }
                   .replacingItemKey=${params.replacingItemKey}
                   .scrollable=${!this._narrow || this._tab === "blocks"}
                   .error=${
@@ -799,6 +812,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
               ></ha-icon-button-prev>`
             : html`<ha-icon-button
                 .path=${mdiClose}
+                .label=${this._i18n.localize("ui.common.close")}
                 @click=${this._close}
                 slot="navigationIcon"
               ></ha-icon-button>`

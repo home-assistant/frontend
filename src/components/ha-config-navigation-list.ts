@@ -2,6 +2,7 @@ import type { ContextType } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { consume } from "../common/decorators/consume";
 import { configContext } from "../data/context";
 import "./ha-icon-next";
@@ -32,27 +33,18 @@ class HaConfigNavigationList extends LitElement {
           return html`
             <ha-list-item-button
               .href=${externalApp ? undefined : page.path}
+              .headline=${page.name}
+              .supportingText=${this.hasSecondary ? page.description : undefined}
               @click=${externalApp ? this._handleExternalApp : undefined}
             >
-              <div
+              <ha-svg-icon
                 slot="start"
                 class=${page.iconColor ? "icon-background" : ""}
-                .style="background-color: ${page.iconColor || "undefined"}"
-              >
-                <ha-svg-icon
-                  .path=${page.iconPath}
-                  .secondaryPath=${page.iconSecondaryPath}
-                  .viewBox=${page.iconViewBox}
-                ></ha-svg-icon>
-              </div>
-              <span slot="headline">${page.name}</span>
-              ${
-                this.hasSecondary
-                  ? html`<span slot="supporting-text"
-                      >${page.description}</span
-                    >`
-                  : ""
-              }
+                style=${styleMap({ backgroundColor: page.iconColor })}
+                .path=${page.iconPath}
+                .secondaryPath=${page.iconSecondaryPath}
+                .viewBox=${page.iconViewBox}
+              ></ha-svg-icon>
               ${
                 !this.narrow
                   ? html`<ha-icon-next slot="end"></ha-icon-next>`
@@ -82,8 +74,6 @@ class HaConfigNavigationList extends LitElement {
     }
     .icon-background {
       border-radius: var(--ha-border-radius-circle);
-    }
-    .icon-background ha-svg-icon {
       color: #fff;
     }
   `;

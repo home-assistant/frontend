@@ -384,6 +384,21 @@ export class HaServiceControl extends LitElement {
     return targetEntities;
   });
 
+  private _targetEntitiesForService(
+    serviceData: ExtHassService | undefined
+  ): string[] | null {
+    if (
+      !serviceData ||
+      !(
+        "target" in serviceData ||
+        serviceData.flatFields.some((field) => field.key === "entity_id")
+      )
+    ) {
+      return null;
+    }
+    return this._getTargetedEntities(serviceData.target, this._value);
+  }
+
   private _filterField(
     filter: ExtHassService["fields"][number]["filter"],
     targetEntities: string[] | null
@@ -465,10 +480,8 @@ export class HaServiceControl extends LitElement {
       serviceData?.flatFields.some((field) => showOptionalToggle(field))
     );
 
-    const targetEntities = this._getTargetedEntities(
-      serviceData?.target,
-      this._value
-    );
+    // Actions that can never have targets get null, like template targets
+    const targetEntities = this._targetEntitiesForService(serviceData);
 
     const domain = this._value?.action
       ? computeDomain(this._value.action)
@@ -531,6 +544,9 @@ export class HaServiceControl extends LitElement {
                     >
                       <ha-icon-button
                         .path=${mdiHelpCircleOutline}
+                        .label=${this.hass.localize(
+                          "ui.components.service-control.integration_doc"
+                        )}
                         class="help-icon"
                       ></ha-icon-button>
                     </a>`
@@ -689,6 +705,13 @@ export class HaServiceControl extends LitElement {
       domain && serviceName
         ? this.hass.services[domain][serviceName].description_placeholders
         : undefined;
+    const fieldName =
+      this.hass.localize(
+        `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`,
+        descriptionPlaceholders
+      ) ||
+      dataField.name ||
+      dataField.key;
 
     return dataField.selector
       ? html`<ha-settings-row
@@ -704,6 +727,7 @@ export class HaServiceControl extends LitElement {
                 : ""
               : html`<ha-checkbox
                   .key=${dataField.key}
+                  .accessibleLabel=${fieldName}
                   .checked=${
                     this._checkedKeys.has(dataField.key) ||
                     (!!this._value?.data &&
@@ -718,14 +742,7 @@ export class HaServiceControl extends LitElement {
             slot="heading"
             class=${showOptional ? "clickable" : ""}
             @click=${showOptional ? this._toggleCheckbox : undefined}
-            >${
-              this.hass.localize(
-                `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`,
-                descriptionPlaceholders
-              ) ||
-              dataField.name ||
-              dataField.key
-            }</span
+            >${fieldName}</span
           >
           <span
             slot="description"
@@ -799,15 +816,29 @@ export class HaServiceControl extends LitElement {
 
     if (checked) {
       this._checkedKeys.add(key);
-      const field = this._getServiceInfo(
+      const serviceData = this._getServiceInfo(
         this._value?.action,
         this.hass.services
-      )?.flatFields.find((_field) => _field.key === key);
+      );
+      const field = serviceData?.flatFields.find(
+        (_field) => _field.key === key
+      );
 
       let defaultValue = field?.default;
 
       if (defaultValue == null && field?.selector) {
-        defaultValue = getSelectorFallbackValue(field.selector);
+        const entityIds = this._targetEntitiesForService(serviceData);
+        defaultValue = getSelectorFallbackValue(
+          field.selector,
+          entityIds
+            ? Object.fromEntries(
+                entityIds.map((entityId) => [
+                  entityId,
+                  this.hass.states[entityId],
+                ])
+              )
+            : undefined
+        );
       }
 
       if (defaultValue != null) {

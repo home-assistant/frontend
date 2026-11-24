@@ -30,8 +30,12 @@ import type {
   GridSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import {
+  calculateGridNetCost,
   computeConsumptionData,
   energySourcesByType,
+  getBatteryEnergyStatIds,
+  getBatteryFlowStatIds,
+  getBatteryName,
   getSuggestedPeriod,
   getSummedData,
   validateEnergyCollectionKey,
@@ -71,6 +75,13 @@ const colorPropertyMap = {
   used_battery: "--energy-battery-out-color",
   used_home: "--primary-color",
 };
+
+interface BatteryStatIds {
+  // Series of batteries with direction statistics, by series key
+  series: Record<"to_battery" | "from_battery", Record<string, string[]>>;
+  // Every statistic of a category, for combined sources
+  combined: Record<"to_battery" | "from_battery", string[]>;
+}
 
 const stackOrder = {
   to_battery: 1,
@@ -120,6 +131,8 @@ export class HuiEnergyUsageGraphCard
   @state() private _compareEnd?: Date;
 
   @state() private _total?: number;
+
+  @state() private _totalCost?: number;
 
   private _data?: EnergyData;
 
@@ -176,24 +189,48 @@ export class HuiEnergyUsageGraphCard
       return nothing;
     }
 
+    const totalCost =
+      this._totalCost !== undefined && this._hassConfig.currency
+        ? formatNumber(this._totalCost, this._i18n.locale, {
+            style: "currency",
+            currency: this._hassConfig.currency,
+          })
+        : undefined;
+
     return html`
       <ha-card>
         ${
           this._config.title
             ? html` <div class="card-header">
                 <span>${this._config.title}</span>
-                ${
-                  this._total
-                    ? html`<hui-energy-graph-chip
-                        .tooltip=${this._formatTotal(this._total)}
-                      >
-                        ${this._i18n.localize(
-                          "ui.panel.lovelace.cards.energy.energy_usage_graph.total_usage",
-                          { num: formatNumber(this._total, this._i18n.locale) }
-                        )}
-                      </hui-energy-graph-chip>`
-                    : nothing
-                }
+                <div class="chips">
+                  ${
+                    this._total
+                      ? html`<hui-energy-graph-chip
+                          .tooltip=${this._formatTotal(this._total)}
+                        >
+                          ${this._i18n.localize(
+                            "ui.panel.lovelace.cards.energy.energy_usage_graph.total_usage",
+                            {
+                              num: formatNumber(this._total, this._i18n.locale),
+                            }
+                          )}
+                        </hui-energy-graph-chip>`
+                      : nothing
+                  }
+                  ${
+                    totalCost
+                      ? html`<hui-energy-graph-chip
+                          .tooltip=${this._i18n.localize(
+                            "ui.panel.lovelace.cards.energy.energy_usage_graph.total_cost",
+                            { cost: totalCost }
+                          )}
+                        >
+                          ${totalCost}
+                        </hui-energy-graph-chip>`
+                      : nothing
+                  }
+                </div>
               </div>`
             : nothing
         }
@@ -353,6 +390,11 @@ export class HuiEnergyUsageGraphCard
       from_battery: {},
     };
 
+    const batteryStatIds: BatteryStatIds = {
+      series: { to_battery: {}, from_battery: {} },
+      combined: { to_battery: [], from_battery: [] },
+    };
+
     for (const source of energyData.prefs.energy_sources) {
       if (source.type === "solar") {
         if (statIds.solar) {
@@ -364,23 +406,40 @@ export class HuiEnergyUsageGraphCard
       }
 
       if (source.type === "battery") {
+        const { charge, discharge } = getBatteryEnergyStatIds(source);
+        const chargeKey = charge[0];
+        const dischargeKey = discharge[0];
         if (statIds.to_battery) {
-          statIds.to_battery.push(source.stat_energy_to);
-          statIds.from_battery!.push(source.stat_energy_from);
+          statIds.to_battery.push(chargeKey);
+          statIds.from_battery!.push(dischargeKey);
         } else {
-          statIds.to_battery = [source.stat_energy_to];
-          statIds.from_battery = [source.stat_energy_from];
+          statIds.to_battery = [chargeKey];
+          statIds.from_battery = [dischargeKey];
         }
-        if (source.name) {
-          statLabels.to_battery[source.stat_energy_to] = this._i18n.localize(
+        batteryStatIds.combined.to_battery.push(...charge);
+        batteryStatIds.combined.from_battery.push(...discharge);
+        const flows = getBatteryFlowStatIds(source);
+        if (flows) {
+          // Discharge shows only what reached the home
+          batteryStatIds.series.to_battery[chargeKey] = charge;
+          batteryStatIds.series.from_battery[dischargeKey] =
+            flows.battery_to_home ? [flows.battery_to_home] : [];
+        }
+        const name = getBatteryName(
+          this._states,
+          this._formatters.formatEntityName,
+          source,
+          energyData.statsMetadata
+        );
+        if (name) {
+          statLabels.to_battery[chargeKey] = this._i18n.localize(
             "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_charged",
-            { name: source.name }
+            { name }
           );
-          statLabels.from_battery[source.stat_energy_from] =
-            this._i18n.localize(
-              "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_discharged",
-              { name: source.name }
-            );
+          statLabels.from_battery[dischargeKey] = this._i18n.localize(
+            "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_discharged",
+            { name }
+          );
         }
         continue;
       }
@@ -518,6 +577,7 @@ export class HuiEnergyUsageGraphCard
           computedStyles,
           typeLabels,
           statLabels,
+          batteryStatIds,
           trackY,
           combineTypes,
           true
@@ -547,6 +607,7 @@ export class HuiEnergyUsageGraphCard
         computedStyles,
         typeLabels,
         statLabels,
+        batteryStatIds,
         trackY,
         combineTypes,
         false
@@ -569,6 +630,11 @@ export class HuiEnergyUsageGraphCard
     this._chartData = datasets;
     this._legendData = this._getLegendData(datasets);
     this._total = this._processTotal(consumption);
+    this._totalCost = calculateGridNetCost(
+      energySourcesByType(energyData.prefs).grid ?? [],
+      energyData.info,
+      energyData.stats
+    );
   }
 
   private _getLegendData(
@@ -638,6 +704,7 @@ export class HuiEnergyUsageGraphCard
       to_battery: Record<string, string>;
       from_battery: Record<string, string>;
     },
+    batteryStatIds: BatteryStatIds,
     trackY: (v: number) => void,
     combineTypes: Set<string>,
     compare = false
@@ -668,13 +735,24 @@ export class HuiEnergyUsageGraphCard
         statIds!.forEach((id) => {
           sets[id] = {};
         });
-        sumEnergyStatistics(statistics, statIds!).forEach((stat) => {
+        sumEnergyStatistics(
+          statistics,
+          batteryStatIds.combined[key] ?? statIds!
+        ).forEach((stat) => {
           sets[statIds![0]][stat.start] = stat.change!;
         });
         combinedData[key] = sets;
         return;
       }
       statIds!.forEach((id) => {
+        const summedIds = batteryStatIds.series[key]?.[id];
+        if (summedIds) {
+          sets[id] = {};
+          sumEnergyStatistics(statistics, summedIds).forEach((stat) => {
+            sets[id][stat.start] = stat.change!;
+          });
+          return;
+        }
         const stats = statistics[id];
         if (!stats) {
           sets[id] = {};
@@ -705,30 +783,55 @@ export class HuiEnergyUsageGraphCard
       combinedData.used_solar = { used_solar: consumptionData.used_solar };
     }
 
+    const measuredToHome = summedData.battery_to_home;
     if (combinedData.from_battery) {
       // Discharge that did not reach the home
       const batteryNotUsed: Record<number, number> = {};
-      for (const start of summedData.timestamps) {
-        batteryNotUsed[start] =
-          (summedData.from_battery?.[start] ?? 0) -
-          consumptionData.used_battery[start];
+      let bySource = combinedData.from_battery;
+      let used = consumptionData.used_battery;
+      if (measuredToHome && !combineTypes.has("battery")) {
+        // Measured batteries have their own bars, only the rest is estimated
+        bySource = Object.fromEntries(
+          Object.entries(bySource).filter(
+            ([id]) => !(id in batteryStatIds.series.from_battery)
+          )
+        );
+        used = {};
+        for (const start of summedData.timestamps) {
+          used[start] =
+            consumptionData.used_battery[start] -
+            Math.max(measuredToHome[start] ?? 0, 0);
+          batteryNotUsed[start] =
+            (summedData.from_battery_totals?.[start] ?? 0) - used[start];
+        }
+      } else {
+        for (const start of summedData.timestamps) {
+          batteryNotUsed[start] =
+            (summedData.from_battery?.[start] ?? 0) -
+            consumptionData.used_battery[start];
+        }
       }
       combinedData.used_battery = {
-        used_battery:
-          buildCombinedUsed(
-            combinedData.from_battery,
-            batteryNotUsed,
-            consumptionData.used_battery
-          ) ?? {},
+        used_battery: buildCombinedUsed(bySource, batteryNotUsed, used) ?? {},
       };
     }
 
     if (combinedData.from_grid && summedData.to_battery) {
+      let gridNotUsed = consumptionData.grid_to_battery;
+      if (measuredToHome) {
+        // Measured flows can leave grid import that no estimate covers
+        gridNotUsed = {};
+        for (const start of summedData.timestamps) {
+          gridNotUsed[start] =
+            (summedData.from_grid?.[start] ?? 0) -
+            consumptionData.used_grid[start];
+        }
+      }
       combinedData.used_grid = {
         used_grid:
           buildCombinedUsed(
             combinedData.from_grid,
-            consumptionData.grid_to_battery,
+            gridNotUsed,
             consumptionData.used_grid
           ) ?? {},
       };
@@ -835,6 +938,12 @@ export class HuiEnergyUsageGraphCard
       justify-content: space-between;
       align-items: center;
       padding-bottom: 0;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: var(--ha-space-2);
     }
     .content {
       padding: 16px;

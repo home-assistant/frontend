@@ -42,6 +42,7 @@ import type {
   StatisticValue,
 } from "./recorder";
 import {
+  calculateStatisticSumGrowth,
   fetchStatistics,
   getDisplayUnit,
   getStatisticLabel,
@@ -81,7 +82,6 @@ export const emptyGridSourceEnergyPreference =
     number_energy_price: null,
     entity_energy_price_export: null,
     number_energy_price_export: null,
-    cost_adjustment_day: 0,
   });
 
 export const emptySolarEnergyPreference =
@@ -94,13 +94,6 @@ export const emptySolarEnergyPreference =
 export const emptyHomeEnergyPreference =
   (): HomeSourceTypeEnergyPreference => ({
     type: "home",
-    stat_energy_to: "",
-  });
-
-export const emptyBatteryEnergyPreference =
-  (): BatterySourceTypeEnergyPreference => ({
-    type: "battery",
-    stat_energy_from: "",
     stat_energy_to: "",
   });
 
@@ -169,7 +162,6 @@ export interface GridSourceTypeEnergyPreference {
   stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
 
-  cost_adjustment_day: number;
   name?: string;
 }
 
@@ -190,16 +182,127 @@ export interface HomeSourceTypeEnergyPreference {
   name?: string;
 }
 
-export interface BatterySourceTypeEnergyPreference {
+export interface BatteryTotalsSourceTypeEnergyPreference {
   type: "battery";
-  stat_energy_from: string;
-  stat_energy_to: string;
+  stat_energy_from: string; // out of the battery
+  stat_energy_to: string; // into the battery
   stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
   stat_soc?: string;
   capacity?: number; // usable capacity in kWh, used to weight the combined SOC
+  entity_capacity?: string; // sensor reporting usable capacity in an energy unit
   name?: string;
 }
+
+// Non-negative power sensors, any subset
+export interface BatteryDirectionsPowerConfig {
+  stat_rate_from_grid?: string; // grid → battery
+  stat_rate_from_solar?: string; // solar → battery
+  stat_rate_to_home?: string; // battery → home
+  stat_rate_to_grid?: string; // battery → grid
+}
+
+// A missing direction is 0. At least one charge and one discharge direction is
+// required, so getBatteryEnergyStatIds never returns an empty list.
+export interface BatteryDirectionsSourceTypeEnergyPreference {
+  type: "battery";
+  stat_energy_from?: undefined;
+  stat_energy_to?: undefined;
+  stat_energy_from_grid?: string; // grid → battery
+  stat_energy_from_solar?: string; // solar → battery
+  stat_energy_to_home?: string; // battery → home
+  stat_energy_to_grid?: string; // battery → grid
+  // Net power generated from power_config, + discharge and − charge
+  stat_rate?: string;
+  power_config?: BatteryDirectionsPowerConfig;
+  stat_soc?: string;
+  capacity?: number;
+  entity_capacity?: string;
+  name?: string;
+}
+
+export type BatterySourceTypeEnergyPreference =
+  | BatteryTotalsSourceTypeEnergyPreference
+  | BatteryDirectionsSourceTypeEnergyPreference;
+
+export interface BatteryFlowStatIds {
+  grid_to_battery?: string;
+  solar_to_battery?: string;
+  battery_to_home?: string;
+  battery_to_grid?: string;
+}
+
+export const BATTERY_FLOW_KEYS = [
+  "grid_to_battery",
+  "solar_to_battery",
+  "battery_to_home",
+  "battery_to_grid",
+] as const satisfies readonly (keyof BatteryFlowStatIds)[];
+
+export const isBatteryDirections = (
+  source: BatterySourceTypeEnergyPreference
+): source is BatteryDirectionsSourceTypeEnergyPreference => {
+  const directions = source as BatteryDirectionsSourceTypeEnergyPreference;
+  return !!(
+    directions.stat_energy_from_grid ||
+    directions.stat_energy_from_solar ||
+    directions.stat_energy_to_home ||
+    directions.stat_energy_to_grid
+  );
+};
+
+/** The direction statistics, or undefined for a battery configured with totals. */
+export const getBatteryFlowStatIds = (
+  source: BatterySourceTypeEnergyPreference
+): BatteryFlowStatIds | undefined =>
+  isBatteryDirections(source)
+    ? {
+        grid_to_battery: source.stat_energy_from_grid || undefined,
+        solar_to_battery: source.stat_energy_from_solar || undefined,
+        battery_to_home: source.stat_energy_to_home || undefined,
+        battery_to_grid: source.stat_energy_to_grid || undefined,
+      }
+    : undefined;
+
+/** The direction power sensors, or undefined for a battery configured with totals. */
+export const getBatteryFlowPowerIds = (
+  source: BatterySourceTypeEnergyPreference
+): BatteryFlowStatIds | undefined =>
+  isBatteryDirections(source)
+    ? {
+        grid_to_battery: source.power_config?.stat_rate_from_grid || undefined,
+        solar_to_battery:
+          source.power_config?.stat_rate_from_solar || undefined,
+        battery_to_home: source.power_config?.stat_rate_to_home || undefined,
+        battery_to_grid: source.power_config?.stat_rate_to_grid || undefined,
+      }
+    : undefined;
+
+/** Statistics whose sum is the energy going into and coming out of the battery. */
+export const getBatteryEnergyStatIds = (
+  source: BatterySourceTypeEnergyPreference
+): { charge: string[]; discharge: string[] } => {
+  if (!isBatteryDirections(source)) {
+    return {
+      charge: [source.stat_energy_to],
+      discharge: [source.stat_energy_from],
+    };
+  }
+  const ids = (...stats: (string | undefined)[]) =>
+    stats.filter((id): id is string => !!id);
+  return {
+    charge: ids(source.stat_energy_from_grid, source.stat_energy_from_solar),
+    discharge: ids(source.stat_energy_to_home, source.stat_energy_to_grid),
+  };
+};
+
+/** Identifies a battery in page keys and lookups. */
+export const getBatteryPrimaryStat = (
+  source: BatterySourceTypeEnergyPreference
+): string => {
+  const { charge, discharge } = getBatteryEnergyStatIds(source);
+  return discharge[0] ?? charge[0] ?? "";
+};
 export interface GasSourceTypeEnergyPreference {
   type: "gas";
 
@@ -252,12 +355,14 @@ export interface EnergyPreferences {
   energy_sources: EnergySource[];
   device_consumption: DeviceConsumptionEnergyPreference[];
   device_consumption_water: DeviceConsumptionEnergyPreference[];
+  device_consumption_gas: DeviceConsumptionEnergyPreference[];
 }
 
 export const EMPTY_PREFERENCES: EnergyPreferences = {
   energy_sources: [],
   device_consumption: [],
   device_consumption_water: [],
+  device_consumption_gas: [],
 };
 
 export interface EnergyInfo {
@@ -275,6 +380,7 @@ export interface EnergyPreferencesValidation {
   energy_sources: EnergyValidationIssue[][];
   device_consumption: EnergyValidationIssue[][];
   device_consumption_water: EnergyValidationIssue[][];
+  device_consumption_gas: EnergyValidationIssue[][];
 }
 
 export const getEnergyInfo = (callWS: HomeAssistant["callWS"]) =>
@@ -337,9 +443,47 @@ export interface EnergySourceByType {
 export const energySourcesByType = (prefs: EnergyPreferences) =>
   groupBy(prefs.energy_sources, (item) => item.type) as EnergySourceByType;
 
+/** Import cost minus export compensation, or undefined without cost data. */
+export const calculateGridNetCost = (
+  sources: GridSourceTypeEnergyPreference[],
+  info: EnergyInfo,
+  stats: Statistics
+): number | undefined => {
+  let total: number | undefined;
+  const add = (
+    energyStatId: string | null,
+    costStatId: string | null,
+    sign: 1 | -1
+  ) => {
+    if (!energyStatId) {
+      return;
+    }
+    const statId = costStatId || info.cost_sensors[energyStatId];
+    if (!statId) {
+      return;
+    }
+    const cost = calculateStatisticSumGrowth(stats[statId]);
+    if (calculateStatisticSumGrowth(stats[energyStatId]) === null && !cost) {
+      return;
+    }
+    total = (total ?? 0) + sign * (cost ?? 0);
+  };
+  for (const source of sources) {
+    add(source.stat_energy_from, source.stat_cost, 1);
+    add(source.stat_energy_to, source.stat_compensation, -1);
+  }
+  return total;
+};
+
 const ENERGY_DEVICE_NAME = [
   { type: "parent_device" },
   { type: "device" },
+] satisfies EntityNameItem[];
+
+const ENERGY_DEVICE_ENTITY_NAME = [
+  { type: "parent_device" },
+  { type: "device" },
+  { type: "entity" },
 ] satisfies EntityNameItem[];
 
 /**
@@ -347,20 +491,30 @@ const ENERGY_DEVICE_NAME = [
  * otherwise the device is named like an entity without the entity part, so
  * the energy and power sensors of one device share a name. Entities without a
  * device and statistics without an entity keep the statistic label.
+ *
+ * `includeEntityName` adds the entity name back for devices that would
+ * otherwise share a name with another device in the same list, see
+ * `computeAmbiguousEnergyDevices`.
  */
 export const computeEnergyLabel = (
   states: HomeAssistant["states"],
   formatEntityName: HomeAssistant["formatEntityName"],
   statisticId: string,
   statisticsMetaData?: StatisticsMetaData,
-  customName?: string
+  customName?: string,
+  includeEntityName = false
 ): string => {
   if (customName) {
     return customName;
   }
 
   const entity = states[statisticId];
-  const deviceName = entity && formatEntityName(entity, ENERGY_DEVICE_NAME);
+  const deviceName =
+    entity &&
+    formatEntityName(
+      entity,
+      includeEntityName ? ENERGY_DEVICE_ENTITY_NAME : ENERGY_DEVICE_NAME
+    );
   if (deviceName) {
     return deviceName;
   }
@@ -370,6 +524,28 @@ export const computeEnergyLabel = (
     formatEntityName,
     statisticId,
     statisticsMetaData
+  );
+};
+
+/**
+ * Name that cards show as "<name> charged" and "<name> discharged". Unnamed
+ * batteries configured with totals are labelled by each statistic instead.
+ */
+export const getBatteryName = (
+  states: HomeAssistant["states"],
+  formatEntityName: HomeAssistant["formatEntityName"],
+  source: BatterySourceTypeEnergyPreference,
+  statsMetadata?: Record<string, StatisticsMetaData>
+): string | undefined => {
+  if (source.name || !isBatteryDirections(source)) {
+    return source.name;
+  }
+  const primary = getBatteryPrimaryStat(source);
+  return computeEnergyLabel(
+    states,
+    formatEntityName,
+    primary,
+    statsMetadata?.[primary]
   );
 };
 
@@ -387,6 +563,61 @@ export const computeEnergyStatisticArea = (
 };
 
 /**
+ * Statistic ids of the devices that would share their label with another
+ * device in the same list, which happens when one device has several meters of
+ * the same type. Those are named with the entity name as well, so they stay
+ * apart in the charts. Lists hold one type of device, so an energy meter and a
+ * water meter of one device never collide.
+ */
+export const computeAmbiguousEnergyDevices = (
+  states: HomeAssistant["states"],
+  formatEntityName: HomeAssistant["formatEntityName"],
+  devices: Partial<DeviceConsumptionEnergyPreference>[],
+  statisticKey: "stat_consumption" | "stat_rate" = "stat_consumption"
+): Set<string> => {
+  const statisticIdsByLabel = new Map<string, Set<string>>();
+  const named = new Set<string>();
+
+  for (const device of devices) {
+    const statisticId = device[statisticKey];
+    if (!statisticId) {
+      continue;
+    }
+    const entity = states[statisticId];
+    // A name set by the user is the label, so it counts towards a collision,
+    // but it is never the one that gives way. Statistics named after their
+    // entity or their metadata are distinct enough already.
+    const label =
+      device.name || (entity && formatEntityName(entity, ENERGY_DEVICE_NAME));
+    if (!label) {
+      continue;
+    }
+    if (device.name) {
+      named.add(statisticId);
+    }
+    const statisticIds = statisticIdsByLabel.get(label);
+    if (statisticIds) {
+      statisticIds.add(statisticId);
+    } else {
+      statisticIdsByLabel.set(label, new Set([statisticId]));
+    }
+  }
+
+  const ambiguous = new Set<string>();
+  for (const statisticIds of statisticIdsByLabel.values()) {
+    if (statisticIds.size > 1) {
+      for (const statisticId of statisticIds) {
+        if (!named.has(statisticId)) {
+          ambiguous.add(statisticId);
+        }
+      }
+    }
+  }
+
+  return ambiguous;
+};
+
+/**
  * Device labels keyed by statistic id. Cards that show live power or flow
  * key their nodes by `stat_rate` instead of `stat_consumption`; devices
  * without the requested statistic are left out.
@@ -399,6 +630,12 @@ export const computeEnergyDeviceLabels = (
   statisticKey: "stat_consumption" | "stat_rate" = "stat_consumption"
 ): Record<string, string> => {
   const labels: Record<string, string> = {};
+  const ambiguous = computeAmbiguousEnergyDevices(
+    states,
+    formatEntityName,
+    devices,
+    statisticKey
+  );
 
   for (const device of devices) {
     const statisticId = device[statisticKey];
@@ -408,7 +645,8 @@ export const computeEnergyDeviceLabels = (
         formatEntityName,
         statisticId,
         statsMetadata?.[statisticId],
-        device.name
+        device.name,
+        ambiguous.has(statisticId)
       );
     }
   }
@@ -471,8 +709,8 @@ export const getReferencedStatisticIds = (
     }
 
     if (source.type === "battery") {
-      statIDs.push(source.stat_energy_from);
-      statIDs.push(source.stat_energy_to);
+      const { charge, discharge } = getBatteryEnergyStatIds(source);
+      statIDs.push(...discharge, ...charge);
       continue;
     }
 
@@ -505,6 +743,11 @@ export const getReferencedStatisticIds = (
   if (!(includeTypes && !includeTypes.includes("water"))) {
     statIDs.push(
       ...prefs.device_consumption_water.map((d) => d.stat_consumption)
+    );
+  }
+  if (!(includeTypes && !includeTypes.includes("gas"))) {
+    statIDs.push(
+      ...prefs.device_consumption_gas.map((d) => d.stat_consumption)
     );
   }
 
@@ -543,6 +786,7 @@ export const getReferencedStatisticIdsPower = (
   }
   statIDs.push(...prefs.device_consumption.map((d) => d.stat_rate));
   statIDs.push(...prefs.device_consumption_water.map((d) => d.stat_rate));
+  statIDs.push(...prefs.device_consumption_gas.map((d) => d.stat_rate));
 
   return statIDs.filter(Boolean) as string[];
 };
@@ -651,9 +895,16 @@ const getEnergyData = async (
   const gasIsOtherEnergy =
     ENERGY_UNITS.includes(gasUnit as any) && gasUnit !== "kWh";
   const gasEnergyStatIds = gasIsOtherEnergy
-    ? (energySourcesByType(prefs).gas ?? []).map(
-        (source) => source.stat_energy_from
-      )
+    ? [
+        ...new Set([
+          ...(energySourcesByType(prefs).gas ?? []).map(
+            (source) => source.stat_energy_from
+          ),
+          ...prefs.device_consumption_gas.map(
+            (device) => device.stat_consumption
+          ),
+        ]),
+      ]
     : [];
   const gasEnergyUnits: StatisticsUnitConfiguration = {
     energy: gasIsOtherEnergy
@@ -1474,13 +1725,18 @@ export type EnergyGasUnitClass = (typeof energyGasUnitClass)[number];
 export const getEnergyGasUnitClass = (
   prefs: EnergyPreferences,
   excludeSource?: string,
-  statisticsMetaData: Record<string, StatisticsMetaData> = {}
+  statisticsMetaData: Record<string, StatisticsMetaData> = {},
+  excludeFrom?: "source" | "device"
 ): EnergyGasUnitClass | undefined => {
   for (const source of prefs.energy_sources) {
     if (source.type !== "gas") {
       continue;
     }
-    if (excludeSource && excludeSource === source.stat_energy_from) {
+    if (
+      excludeSource &&
+      excludeSource === source.stat_energy_from &&
+      excludeFrom !== "device"
+    ) {
       continue;
     }
     const statisticIdWithMeta = statisticsMetaData[source.stat_energy_from];
@@ -1492,6 +1748,19 @@ export const getEnergyGasUnitClass = (
       return statisticIdWithMeta.unit_class as EnergyGasUnitClass;
     }
   }
+  for (const device of prefs.device_consumption_gas) {
+    if (
+      excludeSource &&
+      excludeSource === device.stat_consumption &&
+      excludeFrom !== "source"
+    ) {
+      continue;
+    }
+    const unitClass = statisticsMetaData[device.stat_consumption]?.unit_class;
+    if (energyGasUnitClass.includes(unitClass as EnergyGasUnitClass)) {
+      return unitClass as EnergyGasUnitClass;
+    }
+  }
   return undefined;
 };
 
@@ -1501,15 +1770,15 @@ const getEnergyGasUnit = (
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): string => {
-  const units = prefs.energy_sources
-    .filter((s) => s.type === "gas")
-    .map((s) =>
-      getDisplayUnit(
-        states,
-        s.stat_energy_from,
-        statisticsMetaData[s.stat_energy_from]
-      )
-    );
+  const gasStatIds = [
+    ...prefs.energy_sources.flatMap((s) =>
+      s.type === "gas" ? [s.stat_energy_from] : []
+    ),
+    ...prefs.device_consumption_gas.map((d) => d.stat_consumption),
+  ];
+  const units = gasStatIds.map((id) =>
+    getDisplayUnit(states, id, statisticsMetaData[id])
+  );
 
   const unitClass = getEnergyGasUnitClass(prefs, undefined, statisticsMetaData);
   if (unitClass === "energy") {
@@ -1525,7 +1794,8 @@ const getEnergyGasUnit = (
           return [source.stat_energy_to];
         }
         if (source.type === "battery") {
-          return [source.stat_energy_from, source.stat_energy_to];
+          const { charge, discharge } = getBatteryEnergyStatIds(source);
+          return [...discharge, ...charge];
         }
         if (source.type === "grid") {
           return [source.stat_energy_from, source.stat_energy_to].filter(
@@ -1535,10 +1805,7 @@ const getEnergyGasUnit = (
         return [];
       }),
     ]);
-    const isSharedWithKWh = prefs.energy_sources.some(
-      (source) =>
-        source.type === "gas" && kWhStatIds.has(source.stat_energy_from)
-    );
+    const isSharedWithKWh = gasStatIds.some((id) => kWhStatIds.has(id));
     const first = units[0];
     if (
       !isSharedWithKWh &&
@@ -1601,6 +1868,14 @@ export interface EnergySumData {
   from_battery?: Record<number, number>;
   solar?: Record<number, number>;
   home?: Record<number, number>;
+  // Set together, only when a battery has direction statistics
+  grid_to_battery?: Record<number, number>;
+  solar_to_battery?: Record<number, number>;
+  battery_to_home?: Record<number, number>;
+  battery_to_grid?: Record<number, number>;
+  // Charge and discharge of the batteries configured with totals
+  to_battery_totals?: Record<number, number>;
+  from_battery_totals?: Record<number, number>;
   total: {
     to_grid?: number;
     from_grid?: number;
@@ -1608,6 +1883,12 @@ export interface EnergySumData {
     from_battery?: number;
     solar?: number;
     home?: number;
+    grid_to_battery?: number;
+    solar_to_battery?: number;
+    battery_to_home?: number;
+    battery_to_grid?: number;
+    to_battery_totals?: number;
+    from_battery_totals?: number;
   };
   timestamps: number[];
 }
@@ -1649,14 +1930,10 @@ const getSummedDataPartial = (
   data: EnergyData,
   compare?: boolean
 ): EnergySumData => {
-  const statIds: {
-    to_grid?: string[];
-    from_grid?: string[];
-    solar?: string[];
-    to_battery?: string[];
-    from_battery?: string[];
-    home?: string[];
-  } = {};
+  const statIds: Partial<
+    Record<Exclude<keyof EnergySumData, "total" | "timestamps">, string[]>
+  > = {};
+  const batteries: BatterySourceTypeEnergyPreference[] = [];
 
   for (const source of data.prefs.energy_sources) {
     if (source.type === "solar") {
@@ -1674,12 +1951,14 @@ const getSummedDataPartial = (
     }
 
     if (source.type === "battery") {
+      batteries.push(source);
+      const { charge, discharge } = getBatteryEnergyStatIds(source);
       if (statIds.to_battery) {
-        statIds.to_battery.push(source.stat_energy_to);
-        statIds.from_battery!.push(source.stat_energy_from);
+        statIds.to_battery.push(...charge);
+        statIds.from_battery!.push(...discharge);
       } else {
-        statIds.to_battery = [source.stat_energy_to];
-        statIds.from_battery = [source.stat_energy_from];
+        statIds.to_battery = [...charge];
+        statIds.from_battery = [...discharge];
       }
       continue;
     }
@@ -1703,6 +1982,23 @@ const getSummedDataPartial = (
         statIds.to_grid = [source.stat_energy_to];
       }
     }
+  }
+
+  if (batteries.some(isBatteryDirections)) {
+    for (const key of BATTERY_FLOW_KEYS) {
+      statIds[key] = batteries.flatMap(
+        (battery) => getBatteryFlowStatIds(battery)?.[key] ?? []
+      );
+    }
+    const totalsBatteries = batteries.filter(
+      (battery) => !isBatteryDirections(battery)
+    );
+    statIds.to_battery_totals = totalsBatteries.flatMap(
+      (battery) => getBatteryEnergyStatIds(battery).charge
+    );
+    statIds.from_battery_totals = totalsBatteries.flatMap(
+      (battery) => getBatteryEnergyStatIds(battery).discharge
+    );
   }
 
   const summedData: EnergySumData = { total: {}, timestamps: [] };
@@ -1775,11 +2071,12 @@ const computeConsumptionDataPartial = (
     },
   };
 
+  const measured = BATTERY_FLOW_KEYS.some((key) => data[key]);
   const fromGrid = data.from_grid;
   const toGrid = data.to_grid;
   const solarData = data.solar;
-  const toBattery = data.to_battery;
-  const fromBattery = data.from_battery;
+  const toBattery = measured ? data.to_battery_totals : data.to_battery;
+  const fromBattery = measured ? data.from_battery_totals : data.from_battery;
   const total = outData.total;
 
   data.timestamps.forEach((t) => {
@@ -1794,13 +2091,25 @@ const computeConsumptionDataPartial = (
       used_total,
       solar_to_battery,
       solar_to_grid,
-    } = computeConsumptionSingle({
-      from_grid: fromGrid && (fromGrid[t] ?? 0),
-      to_grid: toGrid && (toGrid[t] ?? 0),
-      solar: solarData && (solarData[t] ?? 0),
-      to_battery: toBattery && (toBattery[t] ?? 0),
-      from_battery: fromBattery && (fromBattery[t] ?? 0),
-    });
+    } = computeConsumptionSingle(
+      {
+        from_grid: fromGrid && (fromGrid[t] ?? 0),
+        to_grid: toGrid && (toGrid[t] ?? 0),
+        solar: solarData && (solarData[t] ?? 0),
+        to_battery: toBattery && (toBattery[t] ?? 0),
+        from_battery: fromBattery && (fromBattery[t] ?? 0),
+      },
+      measured
+        ? {
+            measured: {
+              grid_to_battery: data.grid_to_battery?.[t] ?? 0,
+              solar_to_battery: data.solar_to_battery?.[t] ?? 0,
+              battery_to_home: data.battery_to_home?.[t] ?? 0,
+              battery_to_grid: data.battery_to_grid?.[t] ?? 0,
+            },
+          }
+        : undefined
+    );
 
     const usedTotal = hasHome ? Math.max(homeUsed, 0) : used_total;
     outData.used_total[t] = usedTotal;
@@ -1824,13 +2133,15 @@ const computeConsumptionDataPartial = (
   return outData;
 };
 
-export const computeConsumptionSingle = (data: {
+interface ConsumptionInput {
   from_grid: number | undefined;
   to_grid: number | undefined;
   solar: number | undefined;
   to_battery: number | undefined;
   from_battery: number | undefined;
-}): {
+}
+
+interface ConsumptionResult {
   grid_to_battery: number;
   battery_to_grid: number;
   solar_to_battery: number;
@@ -1839,7 +2150,12 @@ export const computeConsumptionSingle = (data: {
   used_grid: number;
   used_battery: number;
   used_total: number;
-} => {
+}
+
+const inferConsumption = (
+  data: ConsumptionInput,
+  usedTotal?: number
+): ConsumptionResult => {
   let to_grid = Math.max(data.to_grid || 0, 0);
   let to_battery = Math.max(data.to_battery || 0, 0);
   let solar = Math.max(data.solar || 0, 0);
@@ -1847,11 +2163,12 @@ export const computeConsumptionSingle = (data: {
   let from_battery = Math.max(data.from_battery || 0, 0);
 
   const used_total =
+    usedTotal ??
     (from_grid || 0) +
-    (solar || 0) +
-    (from_battery || 0) -
-    (to_grid || 0) -
-    (to_battery || 0);
+      (solar || 0) +
+      (from_battery || 0) -
+      (to_grid || 0) -
+      (to_battery || 0);
 
   let grid_to_battery = 0;
 
@@ -1916,6 +2233,70 @@ export const computeConsumptionSingle = (data: {
     battery_to_grid,
     solar_to_battery,
     solar_to_grid,
+  };
+};
+
+export type MeasuredBatteryFlows = Record<
+  (typeof BATTERY_FLOW_KEYS)[number],
+  number | undefined
+>;
+
+/**
+ * Splits the energy or power of one period into flows. Batteries with
+ * direction statistics pass them in `measured`, and `to_battery` and
+ * `from_battery` then only hold the batteries configured with totals.
+ * Measured flows are kept as they are; only the rest is estimated. Leave a
+ * meter undefined when it isn't configured, rather than 0.
+ */
+export const computeConsumptionSingle = (
+  data: ConsumptionInput,
+  options?: { measured?: MeasuredBatteryFlows; used_total?: number }
+): ConsumptionResult => {
+  const measured = options?.measured;
+  if (!measured) {
+    return inferConsumption(data, options?.used_total);
+  }
+  const clamp = (value: number | undefined) => Math.max(value || 0, 0);
+  const gridToBattery = clamp(measured.grid_to_battery);
+  const solarToBattery = clamp(measured.solar_to_battery);
+  const batteryToHome = clamp(measured.battery_to_home);
+  const batteryToGrid = clamp(measured.battery_to_grid);
+  const fromGrid = clamp(data.from_grid);
+  const toGrid = clamp(data.to_grid);
+  const solar = clamp(data.solar);
+  // A flow without a configured meter never passed one, so it stays out of
+  // the home load
+  const metered = (meter: number | undefined, flow: number) =>
+    meter === undefined ? 0 : flow;
+  const toBattery =
+    clamp(data.to_battery) +
+    metered(data.from_grid, gridToBattery) +
+    metered(data.solar, solarToBattery);
+  const fromBattery =
+    clamp(data.from_battery) +
+    batteryToHome +
+    metered(data.to_grid, batteryToGrid);
+  const usedTotal =
+    options.used_total ?? fromGrid + solar + fromBattery - toGrid - toBattery;
+
+  // Only what the measured flows leave over is estimated
+  const inferred = inferConsumption(
+    {
+      from_grid: Math.max(fromGrid - gridToBattery, 0),
+      to_grid: Math.max(toGrid - batteryToGrid, 0),
+      solar: Math.max(solar - solarToBattery, 0),
+      to_battery: data.to_battery,
+      from_battery: data.from_battery,
+    },
+    Math.max(usedTotal - batteryToHome, 0)
+  );
+  return {
+    ...inferred,
+    grid_to_battery: inferred.grid_to_battery + gridToBattery,
+    solar_to_battery: inferred.solar_to_battery + solarToBattery,
+    battery_to_grid: inferred.battery_to_grid + batteryToGrid,
+    used_battery: inferred.used_battery + batteryToHome,
+    used_total: usedTotal,
   };
 };
 
@@ -2200,6 +2581,48 @@ export const formatFlowRateShort = (
   });
 };
 
+export type WaterGasResource = "water" | "gas";
+
+export const getWaterGasDevicesKey = (resource: WaterGasResource) =>
+  `device_consumption_${resource}` as const;
+
+export const getWaterGasDevices = (
+  prefs: EnergyPreferences,
+  resource: WaterGasResource
+): DeviceConsumptionEnergyPreference[] =>
+  prefs[getWaterGasDevicesKey(resource)];
+
+export const getFlowRateUnit = (
+  resource: WaterGasResource,
+  prefs: EnergyPreferences,
+  states: HomeAssistant["states"]
+): string | undefined => {
+  const ids = [
+    ...prefs.energy_sources.flatMap((s) =>
+      s.type === resource && s.stat_rate ? [s.stat_rate] : []
+    ),
+    ...getWaterGasDevices(prefs, resource).flatMap((d) =>
+      d.stat_rate ? [d.stat_rate] : []
+    ),
+  ];
+  for (const id of ids) {
+    const unit = states[id]?.attributes.unit_of_measurement;
+    if (unit) {
+      return unit;
+    }
+  }
+  return undefined;
+};
+
+export const getFlowRateInUnit = (
+  stateObj: HassEntity | undefined,
+  unit: string
+): number | undefined => {
+  const value = getFlowRateFromState(stateObj);
+  const factor = FLOW_RATE_TO_LMIN[unit];
+  return value === undefined || factor === undefined ? value : value / factor;
+};
+
 /**
  * Get current power value from entity state, normalized to watts (W)
  * @param stateObj - The entity state object to get power value from
@@ -2280,6 +2703,7 @@ export const downloadEnergyData = (
   const energy_sources = energyData.prefs.energy_sources;
   const device_consumption = energyData.prefs.device_consumption;
   const device_consumption_water = energyData.prefs.device_consumption_water;
+  const device_consumption_gas = energyData.prefs.device_consumption_gas;
   const stats = state.stats;
 
   interface CsvRow {
@@ -2365,18 +2789,54 @@ export const downloadEnergyData = (
     grid_productions_cost
   );
 
+  const batteries = energy_sources.filter(
+    (s): s is BatterySourceTypeEnergyPreference => s.type === "battery"
+  );
   const battery_ins: string[] = [];
   const battery_outs: string[] = [];
-  energy_sources
-    .filter((s) => s.type === "battery")
-    .forEach((source) => {
-      source = source as BatterySourceTypeEnergyPreference;
-      battery_ins.push(source.stat_energy_to);
-      battery_outs.push(source.stat_energy_from);
+  const battery_flows: Record<keyof BatteryFlowStatIds, string[]> = {
+    grid_to_battery: [],
+    solar_to_battery: [],
+    battery_to_home: [],
+    battery_to_grid: [],
+  };
+  batteries.forEach((source) => {
+    const flows = getBatteryFlowStatIds(source);
+    if (!flows) {
+      const { charge, discharge } = getBatteryEnergyStatIds(source);
+      battery_ins.push(...charge);
+      battery_outs.push(...discharge);
+      return;
+    }
+    BATTERY_FLOW_KEYS.forEach((key) => {
+      if (flows[key]) {
+        battery_flows[key].push(flows[key]);
+      }
     });
+  });
 
   printCategory("battery_in", battery_ins, electricUnit);
   printCategory("battery_out", battery_outs, electricUnit);
+  printCategory(
+    "battery_in_from_grid",
+    battery_flows.grid_to_battery,
+    electricUnit
+  );
+  printCategory(
+    "battery_in_from_solar",
+    battery_flows.solar_to_battery,
+    electricUnit
+  );
+  printCategory(
+    "battery_out_to_home",
+    battery_flows.battery_to_home,
+    electricUnit
+  );
+  printCategory(
+    "battery_out_to_grid",
+    battery_flows.battery_to_grid,
+    electricUnit
+  );
 
   const solar_productions: string[] = [];
   energy_sources
@@ -2460,6 +2920,16 @@ export const downloadEnergyData = (
     printCategory("device_consumption_water", waterDevices, state.waterUnit);
   }
 
+  if (device_consumption_gas) {
+    const gasDevices: string[] = [];
+    device_consumption_gas.forEach((source) => {
+      source = source as DeviceConsumptionEnergyPreference;
+      gasDevices.push(source.stat_consumption);
+    });
+
+    printCategory("device_consumption_gas", gasDevices, state.gasUnit);
+  }
+
   const { summedData } = getSummedData(state);
   const { consumption } = computeConsumptionData(summedData, undefined);
 
@@ -2483,7 +2953,7 @@ export const downloadEnergyData = (
 
   const hasSolar = !!solar_productions.length;
   const hasHome = !!home_consumptions.length;
-  const hasBattery = !!battery_ins.length;
+  const hasBattery = batteries.length > 0;
   const hasGridReturn = !!grid_productions.length;
   const hasGridSource = !!grid_consumptions.length;
 

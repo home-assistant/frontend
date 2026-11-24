@@ -104,6 +104,8 @@ export class HaConfigAppsRepositories extends LitElement {
               .disabled=${used}
               .slug=${row.slug}
               .path=${used ? mdiDeleteOff : mdiDelete}
+              .label=${localize("ui.panel.config.apps.repositories.remove")}
+              hide-title
               @click=${this._removeRepository}
               class="delete"
             ></ha-icon-button>
