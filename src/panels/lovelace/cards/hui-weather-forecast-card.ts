@@ -269,7 +269,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       }
       if (e.code === "invalid_entity_id") {
         setTimeout(() => {
-          this._subscribed = undefined;
+          // Unless a newer request has taken its place meanwhile
+          if (this._subscribed === subscription) {
+            this._subscribed = undefined;
+          }
         }, 2000);
       }
       throw e;
