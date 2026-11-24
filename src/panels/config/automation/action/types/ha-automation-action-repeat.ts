@@ -20,6 +20,7 @@ import type {
 import type { HaSelector } from "../../../../../components/ha-selector/ha-selector";
 import type { HaActionSelector } from "../../../../../components/ha-selector/ha-selector-action";
 import type { HaConditionSelector } from "../../../../../components/ha-selector/ha-selector-condition";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 
 const OPTIONS = ["count", "while", "until", "for_each"] as const;
 type RepeatType = (typeof OPTIONS)[number];
@@ -29,6 +30,11 @@ export const getRepeatType = (action: RepeatAction["repeat"]) =>
 
 @customElement("ha-automation-action-repeat")
 export class HaRepeatAction extends LitElement implements ActionElement {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    key: "repeat",
+    inlineFields: ["count", "for_each"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public disabled = false;
@@ -123,6 +129,8 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
     const data = { ...action, type };
     return html`<ha-form
+      .error=${this._fieldErrors.fields}
+      .computeError=${this._fieldErrors.formError(this._computeLabelCallback)}
       .hass=${this.hass}
       .data=${data}
       .schema=${schema}

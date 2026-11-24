@@ -268,6 +268,7 @@ export default class HaAutomationConditionRow extends LitElement {
       </ha-automation-row-event-chip>
 
       ${renderRowErrorIcon(
+        this.hass.localize,
         this.pathController.errors,
         this.pathController.path,
         this.hass.localize("ui.panel.config.automation.editor.errors.label")

@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
+import type { LocalizeFunc } from "../../../../src/common/translations/localize";
 import type { ConfigPath } from "../../../../src/common/util/config-path";
 import type { ConfigValidationError } from "../../../../src/data/config";
 import {
   configErrorPath,
+  errorMessage,
   errorOwner,
   errorText,
   fieldErrors,
@@ -33,6 +35,21 @@ const validationError = (
   translation_domain: null,
   translation_placeholders: {},
 });
+
+const TRANSLATIONS: Record<string, string> = {
+  "ui.panel.config.automation.editor.errors.field_message":
+    "{field}: {message}",
+  "ui.panel.config.automation.editor.errors.validation.required_field":
+    "{field} is required.",
+  "ui.panel.config.automation.editor.errors.validation.value_one_of":
+    "Choose one of {values}.",
+};
+
+const localize = ((key: string, values: Record<string, string> = {}) =>
+  (TRANSLATIONS[key] ?? "").replace(
+    /\{(\w+)\}/g,
+    (_, name: string) => values[name]
+  )) as LocalizeFunc;
 
 describe("automation errors", () => {
   it("belong to the deepest rendered row on their path", () => {
@@ -75,15 +92,51 @@ describe("automation errors", () => {
       validationError("row itself", ["triggers", 1]),
       validationError("other row", ["triggers", 2, "for"]),
     ];
-    expect(fieldErrors(errors, ["triggers", 1])).toEqual({
+    expect(fieldErrors(localize, errors, ["triggers", 1])).toEqual({
       for: "bad for",
       entity_id: "bad entity",
     });
-    expect(fieldErrors(errors, ["triggers", 3])).toEqual({});
+    expect(fieldErrors(localize, errors, ["triggers", 3])).toEqual({});
 
-    expect(errorText(errors[0], ["triggers", 1])).toBe("for.hours: bad for");
-    expect(errorText(errors[3], ["triggers", 1])).toBe("row itself");
-    expect(errorText(errors[4])).toBe("triggers[2].for: other row");
+    expect(errorText(localize, errors[0], ["triggers", 1])).toBe(
+      "for.hours: bad for"
+    );
+    expect(errorText(localize, errors[3], ["triggers", 1])).toBe("row itself");
+    expect(errorText(localize, errors[4])).toBe("triggers[2].for: other row");
+  });
+
+  it("are translated when the frontend knows their key", () => {
+    const oneOf = {
+      ...validationError("value must be one of ['single', 'queued']", ["mode"]),
+      translation_key: "value_one_of",
+      translation_placeholders: { values: ["single", "queued"] },
+    };
+    expect(errorMessage(localize, oneOf)).toBe("Choose one of single, queued.");
+    expect(errorText(localize, oneOf)).toBe(
+      "mode: Choose one of single, queued."
+    );
+    // Keys of an integration are not in the frontend translations
+    expect(
+      errorMessage(localize, { ...oneOf, translation_domain: "light" })
+    ).toBe(oneOf.message);
+    expect(
+      errorMessage(localize, { ...oneOf, translation_key: "expected_type" })
+    ).toBe(oneOf.message);
+
+    // Errors shown above a field name it
+    expect(errorMessage(localize, oneOf, "Mode")).toBe(
+      "Mode: Choose one of single, queued."
+    );
+    expect(
+      errorMessage(
+        localize,
+        {
+          ...validationError("required key not provided", ["entity_id"]),
+          translation_key: "required",
+        },
+        "Entity"
+      )
+    ).toBe("Entity is required.");
   });
 
   it("get the index of a block written as a single item", () => {

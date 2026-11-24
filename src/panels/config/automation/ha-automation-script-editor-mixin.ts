@@ -32,6 +32,7 @@ import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mi
 import type { Constructor, HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import {
+  errorMessage,
   errorsEqual,
   mapErrorsToConfig,
   NO_ERRORS,
@@ -256,7 +257,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       // Shown before revalidating, so a later save that succeeds closes it
       this._showSaveFailedToast(
         errors.length === 1
-          ? errors[0].message
+          ? errorMessage(this.hass.localize, errors[0])
           : this.hass.localize(
               "ui.panel.config.automation.editor.errors.problems_found",
               { count: errors.length }
@@ -343,7 +344,12 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
 
     /** All errors, for the editors that have no rows to show them on. */
     protected renderConfigErrorsAlert(slot?: string) {
-      return renderErrorsAlert(this.configErrors, BLUEPRINT_PATH, slot);
+      return renderErrorsAlert(
+        this.hass.localize,
+        this.configErrors,
+        BLUEPRINT_PATH,
+        slot
+      );
     }
 
     private _showSaveFailedToast(problems: string) {

@@ -1,5 +1,8 @@
 import { createContext } from "@lit/context";
-import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../common/translations/localize";
 import {
   formatPath,
   pathEquals,
@@ -41,7 +44,53 @@ export const ownedErrors = (
   return owned.length ? owned : NO_ERRORS;
 };
 
+/**
+ * The message of an error, translated when core sent a translation key the
+ * frontend knows, like `required`.
+ */
+export const errorMessage = (
+  localize: LocalizeFunc,
+  error: ConfigValidationError,
+  /** The label of the field the error is about, to name it in the message */
+  field?: string
+): string => {
+  if (!field) {
+    return translatedMessage(localize, error);
+  }
+  return error.translation_key === "required" && !error.translation_domain
+    ? localize(
+        "ui.panel.config.automation.editor.errors.validation.required_field",
+        { field }
+      )
+    : localize("ui.panel.config.automation.editor.errors.field_message", {
+        field,
+        message: translatedMessage(localize, error),
+      });
+};
+
+const translatedMessage = (
+  localize: LocalizeFunc,
+  error: ConfigValidationError
+): string => {
+  if (!error.translation_key || error.translation_domain) {
+    return error.message;
+  }
+  const placeholders = Object.fromEntries(
+    Object.entries(error.translation_placeholders).map(([key, value]) => [
+      key,
+      Array.isArray(value) ? value.join(", ") : String(value),
+    ])
+  );
+  return (
+    localize(
+      `ui.panel.config.automation.editor.errors.validation.${error.translation_key}` as LocalizeKeys,
+      placeholders
+    ) || error.message
+  );
+};
+
 export const fieldErrors = (
+  localize: LocalizeFunc,
   errors: ConfigValidationError[],
   path: ConfigPath
 ): Record<string, string> => {
@@ -50,7 +99,7 @@ export const fieldErrors = (
   errors.forEach((error) => {
     const field = errorField(error, path);
     if (field !== undefined && !(field in fields)) {
-      fields[field] = error.message;
+      fields[field] = errorMessage(localize, error);
     }
   });
   return fields;
@@ -66,15 +115,15 @@ export const errorField = (
     : undefined;
 
 export const errorText = (
+  localize: LocalizeFunc,
   error: ConfigValidationError,
   path: ConfigPath = []
 ): string => {
   const relative = pathStartsWith(error.path, path)
     ? error.path.slice(path.length)
     : error.path;
-  return relative.length
-    ? `${formatPath(relative)}: ${error.message}`
-    : error.message;
+  const message = errorMessage(localize, error);
+  return relative.length ? `${formatPath(relative)}: ${message}` : message;
 };
 
 export const errorsEqual = (
@@ -236,7 +285,7 @@ export const deviceErrorText = (
 ): string =>
   error.code === "required"
     ? localize("ui.panel.config.automation.editor.errors.device_required")
-    : error.message;
+    : errorMessage(localize, error);
 
 export const deviceAutomationErrorText = (
   localize: LocalizeFunc,
@@ -245,4 +294,4 @@ export const deviceAutomationErrorText = (
 ): string =>
   error.code === "required"
     ? localize(`ui.panel.config.devices.automation.${kind}.required`)
-    : error.message;
+    : errorMessage(localize, error);
