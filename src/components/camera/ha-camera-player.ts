@@ -29,13 +29,16 @@ import "../ha-spinner";
 import "../ha-svg-icon";
 import "./ha-camera-stream-badge";
 import {
-  clampZoomPan,
+  fitPicture,
   isZoomed,
   panBy,
+  refitZoomPan,
+  visiblePart,
   ZOOM_PAN_IDENTITY,
   zoomAtPoint,
   type ZoomPan,
   type ZoomPanSize,
+  type ZoomPanViewport,
 } from "./zoom-pan";
 
 const CONTROLS_TIMEOUT = 3000;
@@ -52,6 +55,9 @@ const WHEEL_ZOOM_SPEED = 0.0025;
 
 // The longer side of the minimap of a zoomed in picture, in pixels
 const MINIMAP_SIZE = 64;
+
+// Most cameras, for the room the player keeps until it knows the picture
+const DEFAULT_ASPECT_RATIO = 16 / 9;
 
 interface PointerInfo {
   x: number;
@@ -105,6 +111,11 @@ export class HaCameraPlayer extends LitElement {
 
   @state() private _zoom: ZoomPan = ZOOM_PAN_IDENTITY;
 
+  @state() private _pictureSize?: ZoomPanSize;
+
+  // Known before the stream's picture, so the player can make room for it
+  @state() private _posterSize?: ZoomPanSize;
+
   @state() private _gesture = false;
 
   @state() private _fullscreen = false;
@@ -130,13 +141,13 @@ export class HaCameraPlayer extends LitElement {
   // More than one finger touched since all were lifted, so it is no tap
   private _multiPointer = false;
 
-  // The size of the viewport the zoom was last made for
-  private _zoomSize: ZoomPanSize = { width: 0, height: 0 };
+  // The viewport and picture the zoom was last made for
+  private _zoomViewport: ZoomPanViewport = fitPicture({ width: 0, height: 0 });
 
   private _viewportResize = new ResizeController(this, {
     target: null,
     skipInitial: true,
-    callback: () => this._viewportResized(),
+    callback: () => this._refitZoom(),
   });
 
   private _controlsTimeout?: number;
@@ -201,6 +212,8 @@ export class HaCameraPlayer extends LitElement {
     const oldStateObj = changedProps.get("stateObj");
     if (oldStateObj && oldStateObj.entity_id !== this.stateObj?.entity_id) {
       this._zoom = ZOOM_PAN_IDENTITY;
+      this._pictureSize = undefined;
+      this._posterSize = undefined;
     }
   }
 
@@ -258,6 +271,11 @@ export class HaCameraPlayer extends LitElement {
             "camera-player-zoomed": zoomed,
             gesture: this._gesture,
           })}
+          style=${styleMap({
+            aspectRatio: this._fullscreen
+              ? undefined
+              : String(this._aspectRatio()),
+          })}
           @pointerdown=${this._pointerDown}
           @pointerup=${this._pointerUp}
           @pointercancel=${this._pointerCancel}
@@ -279,6 +297,7 @@ export class HaCameraPlayer extends LitElement {
             @camera-stream-status-changed=${this._statusChanged}
             @load=${this._updateVideo}
             @camera-capabilities-changed=${this._capabilitiesChanged}
+            @camera-poster-size-changed=${this._posterSizeChanged}
           ></ha-camera-stream>
         </div>
         ${inApp ? nothing : this._renderControls(status, zoomed, badgeVisible)}
@@ -400,12 +419,12 @@ export class HaCameraPlayer extends LitElement {
    * which isn't mirrored in right to left languages.
    */
   private _renderMinimap() {
-    const { scale, x, y } = this._zoom;
-    const { width, height } = this._zoomSize;
+    const { width, height } = this._zoomViewport.picture;
     if (!width || !height) {
       return nothing;
     }
     const longSide = Math.max(width, height);
+    const area = visiblePart(this._zoom, this._zoomViewport);
     return html`<div
       class=${classMap({ minimap: true, gesture: this._gesture })}
       style=${styleMap({
@@ -417,10 +436,10 @@ export class HaCameraPlayer extends LitElement {
       <div
         class="area"
         style=${styleMap({
-          left: `${(-x / (width * scale)) * 100}%`,
-          top: `${(-y / (height * scale)) * 100}%`,
-          width: `${100 / scale}%`,
-          height: `${100 / scale}%`,
+          left: `${area.x * 100}%`,
+          top: `${area.y * 100}%`,
+          width: `${area.width * 100}%`,
+          height: `${area.height * 100}%`,
         })}
       ></div>
     </div>`;
@@ -523,6 +542,18 @@ export class HaCameraPlayer extends LitElement {
     this._capabilities = ev.detail.capabilities;
   }
 
+  /** Of the stream's picture, its poster until then, or most cameras'. */
+  private _aspectRatio(): number {
+    const size = this._pictureSize ?? this._posterSize;
+    return size ? size.width / size.height : DEFAULT_ASPECT_RATIO;
+  }
+
+  private _posterSizeChanged(
+    ev: HASSDomEvent<HASSDomEvents["camera-poster-size-changed"]>
+  ) {
+    this._posterSize = ev.detail.size;
+  }
+
   private _showStreamInfo() {
     showCameraStreamInfoDialog(this, {
       status: this._status,
@@ -538,6 +569,7 @@ export class HaCameraPlayer extends LitElement {
       return;
     }
     this._video = this._stream?.videoElement;
+    this._updatePictureSize();
     // Binds the video first, which resets its paused state
     await this.updateComplete;
     if (!this._status.connecting) {
@@ -577,6 +609,7 @@ export class HaCameraPlayer extends LitElement {
     for (const type of ["play", "pause", "emptied"]) {
       video.addEventListener(type, this._updatePaused);
     }
+    video.addEventListener("resize", this._updatePictureSize);
     // Only a pause from outside shows the play button, not the moment before
     // a new video starts playing
     this._paused = false;
@@ -595,6 +628,7 @@ export class HaCameraPlayer extends LitElement {
     for (const type of ["play", "pause", "emptied"]) {
       video?.removeEventListener(type, this._updatePaused);
     }
+    video?.removeEventListener("resize", this._updatePictureSize);
     video?.removeEventListener(
       "enterpictureinpicture",
       this._pictureInPictureChanged
@@ -703,35 +737,44 @@ export class HaCameraPlayer extends LitElement {
     }
   }
 
-  private _viewportSize() {
+  private _updatePictureSize = () => {
+    const size = this._stream?.pictureSize;
+    if (
+      size &&
+      (size.width !== this._pictureSize?.width ||
+        size.height !== this._pictureSize.height)
+    ) {
+      this._pictureSize = size;
+    }
+    // The new picture can have another size
+    this._refitZoom();
+  };
+
+  private _measureViewport() {
     const rect = this._viewport!.getBoundingClientRect();
     // Kept for the minimap, every zoom and pan measures it first
-    this._zoomSize = { width: rect.width, height: rect.height };
-    return { rect, size: this._zoomSize };
+    this._zoomViewport = fitPicture(
+      { width: rect.width, height: rect.height },
+      this._stream?.pictureSize ?? this._pictureSize ?? this._posterSize
+    );
+    return { rect, viewport: this._zoomViewport };
   }
 
   /**
-   * Keeps the same part of the picture in view when the size changes, like
-   * when turning a phone.
+   * Keeps the same part of the picture in view when the viewport or the
+   * picture changes size.
    */
-  private _viewportResized() {
-    const oldSize = this._zoomSize;
-    if (!isZoomed(this._zoom) || !this._viewport || !oldSize.width) {
+  private _refitZoom = () => {
+    const oldViewport = this._zoomViewport;
+    if (!isZoomed(this._zoom) || !this._viewport || !oldViewport.width) {
       return;
     }
-    const { size } = this._viewportSize();
-    if (!size.width || !size.height) {
+    const { viewport } = this._measureViewport();
+    if (!viewport.width || !viewport.height) {
       return;
     }
-    this._zoom = clampZoomPan(
-      {
-        scale: this._zoom.scale,
-        x: (this._zoom.x * size.width) / oldSize.width,
-        y: (this._zoom.y * size.height) / oldSize.height,
-      },
-      size
-    );
-  }
+    this._zoom = refitZoomPan(this._zoom, oldViewport, viewport);
+  };
 
   private _resetZoom() {
     this._zoom = ZOOM_PAN_IDENTITY;
@@ -749,7 +792,7 @@ export class HaCameraPlayer extends LitElement {
     // Also keeps the browser from zooming the whole page
     ev.preventDefault();
     this._hideWheelHint();
-    const { rect, size } = this._viewportSize();
+    const { rect, viewport } = this._measureViewport();
     // Lines instead of pixels, like in Firefox with a mouse wheel
     const delta =
       ev.deltaMode === WheelEvent.DOM_DELTA_LINE ? ev.deltaY * 33 : ev.deltaY;
@@ -758,7 +801,7 @@ export class HaCameraPlayer extends LitElement {
       this._zoom,
       this._zoom.scale * Math.exp(-clampedDelta * WHEEL_ZOOM_SPEED),
       { x: ev.clientX - rect.left, y: ev.clientY - rect.top },
-      size
+      viewport
     );
   }
 
@@ -789,12 +832,12 @@ export class HaCameraPlayer extends LitElement {
       this._resetZoom();
       return;
     }
-    const { rect, size } = this._viewportSize();
+    const { rect, viewport } = this._measureViewport();
     this._zoom = zoomAtPoint(
       this._zoom,
       2,
       { x: ev.clientX - rect.left, y: ev.clientY - rect.top },
-      size
+      viewport
     );
   }
 
@@ -828,7 +871,7 @@ export class HaCameraPlayer extends LitElement {
     if (!pointer || !this._viewport) {
       return;
     }
-    const { rect, size } = this._viewportSize();
+    const { rect, viewport } = this._measureViewport();
 
     if (this._pointers.size === 2) {
       const [a, b] = [...this._pointers.values()];
@@ -846,13 +889,13 @@ export class HaCameraPlayer extends LitElement {
         this._zoom,
         (this._zoom.scale * newDistance) / oldDistance,
         { x: oldCenter.x - rect.left, y: oldCenter.y - rect.top },
-        size
+        viewport
       );
       this._zoom = panBy(
         zoomed,
         newCenter.x - oldCenter.x,
         newCenter.y - oldCenter.y,
-        size
+        viewport
       );
       return;
     }
@@ -862,7 +905,7 @@ export class HaCameraPlayer extends LitElement {
     pointer.x = ev.clientX;
     pointer.y = ev.clientY;
     if (this._pointers.size === 1 && isZoomed(this._zoom)) {
-      this._zoom = panBy(this._zoom, dx, dy, size);
+      this._zoom = panBy(this._zoom, dx, dy, viewport);
     }
   }
 
@@ -953,12 +996,14 @@ export class HaCameraPlayer extends LitElement {
     .viewport {
       position: relative;
       overflow: hidden;
+      max-height: var(--video-max-height, calc(100vh - 97px));
       /* Scrolls the page until zoomed in, pinches are handled here */
       touch-action: pan-x pan-y;
+      /* From the poster's or a default size to the stream's */
+      transition: aspect-ratio var(--ha-animation-duration-normal) ease-out;
     }
 
-    .player.fullscreen .viewport,
-    .player.fullscreen ha-camera-stream {
+    .player.fullscreen .viewport {
       width: 100%;
       height: 100%;
     }
@@ -972,7 +1017,11 @@ export class HaCameraPlayer extends LitElement {
       cursor: grabbing;
     }
 
+    /* Sized by the viewport, a video without a picture yet would be only
+       as high as an empty video */
     ha-camera-stream {
+      width: 100%;
+      height: 100%;
       transform-origin: 0 0;
       transition: transform var(--ha-animation-duration-fast) ease-out;
     }

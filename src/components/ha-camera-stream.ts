@@ -7,6 +7,7 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { consume } from "../common/decorators/consume";
 import { fireEvent, type HASSDomEvent } from "../common/dom/fire_event";
+import { loadImage } from "../common/dom/load-image";
 import { supportsFeature } from "../common/entity/supports-feature";
 import {
   CameraEntityFeature,
@@ -169,6 +170,21 @@ export class HaCameraStream extends LitElement {
   /** The video of the shown stream. */
   public get videoElement(): HTMLVideoElement | undefined {
     return this._visiblePlayer?.videoElement;
+  }
+
+  /**
+   * The size of the shown stream's picture, before it is fit into the
+   * player. Undefined until it is known.
+   */
+  public get pictureSize(): { width: number; height: number } | undefined {
+    const player = this._visiblePlayer;
+    if (player && player === this._mjpegPlayer) {
+      return this._mjpegPlayer.pictureSize;
+    }
+    const video = player?.videoElement;
+    return video?.videoWidth
+      ? { width: video.videoWidth, height: video.videoHeight }
+      : undefined;
   }
 
   /** Opens the video of the shown stream picture in picture. */
@@ -377,17 +393,30 @@ export class HaCameraStream extends LitElement {
   }
 
   private async _getPosterUrl(): Promise<void> {
+    const entityId = this.stateObj!.entity_id;
+    let posterUrl: string | undefined;
     try {
-      this._posterUrl = await fetchThumbnailUrlWithCache(
+      posterUrl = await fetchThumbnailUrlWithCache(
         this._thumbnailApi(this._api, this._connection),
-        this.stateObj!.entity_id,
+        entityId,
         this.clientWidth,
         this.clientHeight
       );
     } catch (_err: any) {
       // poster url is optional
-      this._posterUrl = undefined;
     }
+    // Loaded here first for its size, the poster then uses the same image
+    // instead of asking the camera again
+    const poster = posterUrl ? await loadImage(posterUrl) : undefined;
+    if (this.stateObj?.entity_id !== entityId) {
+      return;
+    }
+    this._posterUrl = posterUrl;
+    fireEvent(this, "camera-poster-size-changed", {
+      size: poster?.naturalWidth
+        ? { width: poster.naturalWidth, height: poster.naturalHeight }
+        : undefined,
+    });
   }
 
   private _handleImageLoad() {
@@ -491,6 +520,7 @@ declare global {
     "stream-type-changed": { type?: CameraStreamType };
     "camera-capabilities-changed": { capabilities?: CameraCapabilities };
     "camera-stream-status-changed": CameraStreamStatus;
+    "camera-poster-size-changed": { size?: { width: number; height: number } };
     streams: {
       hasAudio: boolean;
       hasVideo: boolean;
