@@ -182,7 +182,12 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   protected readonly _skeletonLoading = new SkeletonLoadingController(
     this,
-    () => this._stateObj !== undefined && this._items === undefined
+    () =>
+      this._stateObj !== undefined &&
+      // An unavailable list may never send its items
+      this._stateObj.state !== UNAVAILABLE &&
+      this._stateObj.state !== UNKNOWN &&
+      this._items === undefined
   );
 
   /* Stand-ins for the items while they load, as many as the list's state
@@ -501,8 +506,13 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     const items = this._items ?? placeholders;
 
+    // Stand-ins have no due date, so a due date filter would drop them all
+    const dueDatePeriod = placeholders
+      ? undefined
+      : this._config.due_date_period;
+
     // Discard memoization when we rollover to a new day, so filters can be recalculated
-    const memoTime = this._config.due_date_period
+    const memoTime = dueDatePeriod
       ? calcDate(
           new Date(),
           endOfDay,
@@ -514,20 +524,20 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     const checkedItems = this._getCheckedItems(
       items,
       this._config.display_order,
-      this._config.due_date_period,
+      dueDatePeriod,
       memoTime
     );
     const uncheckedItems = this._getUncheckedItems(
       items,
       this._config.display_order,
-      this._config.due_date_period,
+      dueDatePeriod,
       memoTime
     );
 
     const itemsWithoutStatus = this._getItemsWithoutStatus(
       items,
       this._config.display_order,
-      this._config.due_date_period,
+      dueDatePeriod,
       memoTime
     );
 
@@ -535,7 +545,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       ? this._getUncheckedAndItemsWithoutStatus(
           items,
           this._config.display_order,
-          this._config.due_date_period,
+          dueDatePeriod,
           memoTime
         )
       : undefined;
