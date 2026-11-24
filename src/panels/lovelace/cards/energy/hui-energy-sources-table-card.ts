@@ -486,17 +486,19 @@ export class HuiEnergySourcesTableCard
     const compare = data.statsCompare !== undefined;
 
     const gridCost = types.grid
-      ? calculateGridNetCost(types.grid, this._data.info, this._data.stats)
+      ? calculateGridNetCost(types.grid, data.info, data.stats)
       : undefined;
     const gridCostCompare =
-      compare && types.grid
-        ? calculateGridNetCost(
-            types.grid,
-            this._data.info,
-            this._data.statsCompare
-          )
+      data.statsCompare && types.grid
+        ? calculateGridNetCost(types.grid, data.info, data.statsCompare)
         : undefined;
-    const hasGridCost = gridCost !== undefined || gridCostCompare !== undefined;
+
+    // Before the data, the grid has a cost if it's set up with one, like gas
+    // and water, so the skeleton has the same total rows as the table
+    const hasGridCost =
+      gridCost !== undefined ||
+      gridCostCompare !== undefined ||
+      (placeholder && !!gridHasCosts);
     const totalGridCost = gridCost ?? 0;
     const totalGridCostCompare = gridCostCompare ?? 0;
 
