@@ -8,7 +8,7 @@ import {
   mdiStop,
 } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
@@ -43,6 +43,7 @@ import {
   promptParts,
   promptText,
 } from "./automation-ai-mentions";
+import type { AutomationAiPanelState } from "./automation-ai-session";
 import type { LineChanges } from "./automation-ai-stats";
 import "./ha-automation-ai-prompt";
 import type { HaAutomationAiPrompt } from "./ha-automation-ai-prompt";
@@ -63,6 +64,7 @@ interface RunningTurn {
  * @fires ai-request-started - The AI started to work on a request
  * @fires ai-request-finished - The AI is done, with the new config if any
  * @fires ai-toggle-changes - Show or hide the last changes of the AI
+ * @fires ai-state-changed - The conversation changed, to keep it
  */
 @customElement("ha-automation-ai-panel")
 export class HaAutomationAiPanel extends LitElement {
@@ -82,6 +84,9 @@ export class HaAutomationAiPanel extends LitElement {
 
   /** The lines of YAML the last request of the AI added and removed. */
   @property({ attribute: false }) public lineChanges?: LineChanges;
+
+  /** A conversation to continue, e.g. after the user was on another page. */
+  @property({ attribute: false }) public restoredState?: AutomationAiPanelState;
 
   @state() private _prompt = "";
 
@@ -115,6 +120,40 @@ export class HaAutomationAiPanel extends LitElement {
   // For the names of picked labels, the other names are in hass
   @consume({ context: labelsContext, subscribe: true })
   private _labels?: LabelRegistryEntry[];
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    const restored = this.restoredState;
+    if (changedProps.has("restoredState") && restored && !this._running) {
+      this._turns = restored.turns;
+      this._steps = restored.steps;
+      this._messages = restored.messages;
+      this._problems = restored.problems;
+      this._error = restored.error;
+    }
+  }
+
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
+    // Private, so not keys of `this`
+    const changed = changedProps as PropertyValues;
+    if (
+      !this._running &&
+      ["_running", "_turns", "_problems", "_error"].some((key) =>
+        changed.has(key)
+      )
+    ) {
+      fireEvent(this, "ai-state-changed", {
+        state: {
+          turns: this._turns,
+          steps: this._steps,
+          messages: this._messages,
+          problems: this._problems,
+          error: this._error,
+        },
+      });
+    }
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -713,5 +752,6 @@ declare global {
     "ai-request-started": undefined;
     "ai-request-finished": { config?: AutomationConfig };
     "ai-toggle-changes": undefined;
+    "ai-state-changed": { state: AutomationAiPanelState };
   }
 }

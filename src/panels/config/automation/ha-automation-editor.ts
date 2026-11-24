@@ -95,6 +95,11 @@ import { ADD_AUTOMATION_ELEMENT_QUERY_PARAM } from "./show-add-automation-elemen
 import "./blueprint-automation-editor";
 import type { HaAutomationAiPanel } from "./ai/ha-automation-ai-panel";
 import { countConfigLineChanges } from "./ai/automation-ai-stats";
+import {
+  loadAiSession,
+  saveAiSession,
+  type AutomationAiPanelState,
+} from "./ai/automation-ai-session";
 import type { HaAutomationAiSidebar } from "./ai/ha-automation-ai-sidebar";
 import type { EditorDomainHooks } from "./ha-automation-script-editor-mixin";
 import {
@@ -219,6 +224,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   // Closing it keeps the AI and its conversation, see _aiLoaded
   @state() private _aiSidebarOpen = false;
+
+  // The conversation of the AI as it last reported it, kept per automation
+  // for the browser tab, see automation-ai-session
+  private _aiPanelState?: AutomationAiPanelState;
+
+  @state() private _aiRestoredState?: AutomationAiPanelState;
 
   // The width of the AI sidebar, which the sidebar of a row shares
   @storage({ key: "automation-sidebar-width", state: true, subscribe: true })
@@ -926,8 +937,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                       this._aiChange?.before,
                       this._aiChange?.after
                     )}
+                    .restoredState=${this._aiRestoredState}
                     @ai-request-started=${this._aiRequestStarted}
                     @ai-request-finished=${this._aiRequestFinished}
+                    @ai-state-changed=${this._aiStateChanged}
                   ></ha-automation-ai-panel>
                 </ha-automation-ai-sidebar>
               </div>`
@@ -966,6 +979,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     // It takes the place of the sidebar of a row
     this._manualEditor?.triggerCloseSidebar();
     this._aiSidebarOpen = true;
+    this._persistAi();
     await this.updateComplete;
     this._aiSidebar?.expand();
     this._aiPanel?.focusPrompt();
@@ -997,6 +1011,45 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     this._aiSidebarOpen = false;
     // Nothing to switch back with while the sidebar is closed
     this._aiShowChanges = false;
+    this._persistAi();
+  }
+
+  private _aiStateChanged(ev: HASSDomEvent<HASSDomEvents["ai-state-changed"]>) {
+    this._aiPanelState = ev.detail.state;
+    this._persistAi();
+  }
+
+  // Keeps the AI of a saved automation for when the user comes back
+  private _persistAi(automationId = this.automationId) {
+    if (!automationId || !this._aiLoaded) {
+      return;
+    }
+    saveAiSession(automationId, {
+      panel: this._aiPanelState,
+      change: this._aiChange,
+      open: this._aiSidebarOpen,
+    });
+  }
+
+  private async _restoreAi() {
+    const automationId = this.automationId;
+    const session = automationId ? loadAiSession(automationId) : undefined;
+    if (!session) {
+      return;
+    }
+    await Promise.all([
+      import("./ai/ha-automation-ai-panel"),
+      import("./ai/ha-automation-ai-sidebar"),
+    ]);
+    // The user moved on to another automation meanwhile
+    if (this.automationId !== automationId) {
+      return;
+    }
+    this._aiChange = session.change;
+    this._aiPanelState = session.panel;
+    this._aiRestoredState = session.panel;
+    this._aiSidebarOpen = session.open;
+    this._aiLoaded = true;
   }
 
   private _aiRequestStarted() {
@@ -1016,6 +1069,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     this._aiChange = { before: this.config, after: config };
     // One history entry, so one undo takes back all changes of the AI
     this._updateConfig(config);
+    this._persistAi();
   }
 
   private _aiToggleChanges() {
@@ -1051,6 +1105,22 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       );
 
     const oldAutomationId = changedProps.get("automationId");
+    if (
+      changedProps.has("automationId") &&
+      oldAutomationId !== this.automationId
+    ) {
+      if (!oldAutomationId && this.automationId && this._aiLoaded) {
+        // A new automation got saved, its AI goes on under its id
+        this._persistAi();
+      } else {
+        this._aiLoaded = false;
+        this._aiSidebarOpen = false;
+        this._aiPanelState = undefined;
+        this._aiRestoredState = undefined;
+        this._resetAi();
+        this._restoreAi();
+      }
+    }
     if (
       changedProps.has("automationId") &&
       this.automationId &&
@@ -1327,6 +1397,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         },
         onClose: () => resolve(false),
         onDiscard: () => {
+          // The conversation stays, the discarded change of the AI goes
+          this._aiChange = undefined;
+          this._persistAi();
           this._aiLoaded = false;
           this._aiSidebarOpen = false;
           this._resetAi();
@@ -1487,6 +1560,8 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
     await this._saveAutomation(id);
     if (!this.automationId) {
+      // The editor may start over for the new id, the AI continues there
+      this._persistAi(id);
       navigate(`/config/automation/edit/${id}`, { replace: true });
     }
   }
@@ -1645,6 +1720,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     // The last change of the AI no longer matches the automation
     this._aiShowChanges = false;
     this._aiChange = undefined;
+    this._persistAi();
     this.config = config;
     this._updateDirtyState({
       config: this.config,
