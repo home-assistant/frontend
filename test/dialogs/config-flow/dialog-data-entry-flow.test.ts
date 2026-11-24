@@ -11,12 +11,18 @@ import type {
   DataEntryFlowStepProgress,
 } from "../../../src/data/data_entry_flow";
 import type { DeviceRegistryEntry } from "../../../src/data/device/device_registry";
+import type * as Integration from "../../../src/data/integration";
 import "../../../src/dialogs/config-flow/dialog-data-entry-flow";
 import type { FlowConfig } from "../../../src/dialogs/config-flow/show-dialog-data-entry-flow";
 import type { HomeAssistant } from "../../../src/types";
 
 vi.mock("../../../src/data/auth", () => ({
   autocompleteLoginFields: (schema: unknown) => schema,
+}));
+
+vi.mock("../../../src/data/integration", async (importOriginal) => ({
+  ...(await importOriginal<typeof Integration>()),
+  subscribeLogInfo: () => () => undefined,
 }));
 
 vi.mock("../../../src/components/ha-dialog", () => {
