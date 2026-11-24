@@ -231,7 +231,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    this._subscribed = subscribeForecast(
+    // A new request, so its skeleton shows until it answers
+    this._forecastFailed = false;
+
+    const subscription = subscribeForecast(
       this._connection,
       this._config!.entity,
       this._config!.forecast_type as "daily" | "hourly" | "twice_daily",
@@ -240,7 +243,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         this._forecastFailed = false;
       }
     ).catch((e) => {
-      this._forecastFailed = true;
+      // Only the current request decides, not one it replaced
+      if (this._subscribed === subscription) {
+        this._forecastFailed = true;
+      }
       if (e.code === "invalid_entity_id") {
         setTimeout(() => {
           this._subscribed = undefined;
@@ -248,6 +254,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       }
       throw e;
     });
+
+    this._subscribed = subscription;
   }
 
   public connectedCallback(): void {
