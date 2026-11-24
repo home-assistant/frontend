@@ -41,6 +41,9 @@ export interface SkeletonPiece {
   radius?: string;
   /* An SVG mask for a drawing, such as a gauge arc */
   mask?: string;
+  /* Where that mask sits in the piece, when something cuts the drawing short:
+     still the drawing's whole size and place, with the piece only its part */
+  maskBox?: { x: number; y: number; width: number; height: number };
   /* The part sits on a dark overlay, such as a picture card's name bar */
   onDark?: boolean;
   /* A see-through bar laid over a picture, kept as it is */
@@ -64,7 +67,7 @@ const ROUND_TAGS = new Set([
   "state-badge",
 ]);
 
-const BLOCK_TAGS = new Set(["img", "video", "ha-camera-stream"]);
+const BLOCK_TAGS = new Set(["img", "video", "canvas", "ha-camera-stream"]);
 
 /* A canvas to measure fonts with, made on first use */
 let measuringContext: CanvasRenderingContext2D | null | undefined;
@@ -312,12 +315,30 @@ export const extractSkeleton = (
         return [];
       }
 
-      // A drawing's mask is made for its whole box, so it stays whole
+      const cut = { ...piece, x, y, width: right - x, height: bottom - y };
+
+      // A drawing's mask is made for its whole box, so it keeps that box
       if (piece.kind === "shape") {
-        return [piece];
+        const mask = piece.maskBox ?? {
+          x: 0,
+          y: 0,
+          width: piece.width,
+          height: piece.height,
+        };
+
+        return [
+          {
+            ...cut,
+            maskBox: {
+              ...mask,
+              x: piece.x + mask.x - x,
+              y: piece.y + mask.y - y,
+            },
+          },
+        ];
       }
 
-      return [{ ...piece, x, y, width: right - x, height: bottom - y }];
+      return [cut];
     });
 
     pieces.push(...clipped);

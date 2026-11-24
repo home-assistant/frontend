@@ -31,6 +31,8 @@ type HiddenProperty = "opacity" | "color";
 interface HiddenStyle {
   /* The inline value from before anything hid it */
   value: string;
+  /* The value it was hidden with */
+  hidden: string;
   holders: number;
 }
 
@@ -55,6 +57,7 @@ const hideStyle = (
   } else {
     hiddenStyles[name].set(element, {
       value: element.style[name],
+      hidden,
       holders: 1,
     });
   }
@@ -75,7 +78,11 @@ const releaseStyle = (
   held.holders--;
 
   if (held.holders === 0) {
-    element.style[name] = held.value;
+    // Content that set its own value while it was hidden keeps that one
+    if (element.style[name] === held.hidden) {
+      element.style[name] = held.value;
+    }
+
     hiddenStyles[name].delete(element);
   }
 };
@@ -155,6 +162,9 @@ export class HaSkeletonOverlay extends LitElement {
   /* What to fade in once loading has ended */
   private _arriving?: ArrivingParts;
 
+  /* The fades still running from the last time loading ended */
+  private _fades: Animation[] = [];
+
   private _measureFrame?: number;
 
   private _resizeObserver = new ResizeObserver(() => this._scheduleMeasure());
@@ -189,6 +199,7 @@ export class HaSkeletonOverlay extends LitElement {
     }
 
     // Never leave the content hidden or unusable while it's away
+    this._cancelFades();
     this._showParts();
     this._restoreInert();
   }
@@ -207,6 +218,8 @@ export class HaSkeletonOverlay extends LitElement {
     const loading = this._isLoading;
 
     if (loading && !this._wasLoading) {
+      // A fade still running would show the content over the hidden style
+      this._cancelFades();
       this._customSkeleton = [...this.children].some(
         (child) => child.slot === "skeleton"
       );
@@ -521,13 +534,21 @@ export class HaSkeletonOverlay extends LitElement {
       easing: "ease-out",
     };
 
-    [...content, ...opacityParts].forEach((part) =>
-      part.animate([{ opacity: 0 }, { opacity: 1 }], fade)
-    );
-    colorParts.forEach((part) => {
-      const color = getComputedStyle(part).color;
-      part.animate([{ color: "transparent" }, { color }], fade);
-    });
+    this._fades = [
+      ...[...content, ...opacityParts].map((part) =>
+        part.animate([{ opacity: 0 }, { opacity: 1 }], fade)
+      ),
+      ...colorParts.map((part) => {
+        const color = getComputedStyle(part).color;
+
+        return part.animate([{ color: "transparent" }, { color }], fade);
+      }),
+    ];
+  }
+
+  private _cancelFades() {
+    this._fades.forEach((fade) => fade.cancel());
+    this._fades = [];
   }
 
   static readonly styles: CSSResultGroup = css`
@@ -562,6 +583,8 @@ export class HaSkeletonOverlay extends LitElement {
       --ha-skeleton-border-radius: 0;
       mask-size: 100% 100%;
       -webkit-mask-size: 100% 100%;
+      mask-repeat: no-repeat;
+      -webkit-mask-repeat: no-repeat;
     }
     /* Text and icons on a dark bar over a picture */
     .piece.on-dark {
@@ -571,8 +594,14 @@ export class HaSkeletonOverlay extends LitElement {
   `;
 }
 
-const pieceStyle = (piece: SkeletonPiece) =>
-  styleMap({
+const pieceStyle = ({ maskBox, ...piece }: SkeletonPiece) => {
+  const maskPosition = maskBox ? `${maskBox.x}px ${maskBox.y}px` : undefined;
+
+  const maskSize = maskBox
+    ? `${maskBox.width}px ${maskBox.height}px`
+    : undefined;
+
+  return styleMap({
     left: `${piece.x}px`,
     top: `${piece.y}px`,
     width: `${piece.width}px`,
@@ -582,7 +611,12 @@ const pieceStyle = (piece: SkeletonPiece) =>
     "background-color": piece.background,
     "mask-image": piece.mask,
     "-webkit-mask-image": piece.mask,
+    "mask-position": maskPosition,
+    "-webkit-mask-position": maskPosition,
+    "mask-size": maskSize,
+    "-webkit-mask-size": maskSize,
   });
+};
 
 declare global {
   interface HTMLElementTagNameMap {
