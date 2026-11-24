@@ -1530,8 +1530,10 @@ export class HaNetworkGraph extends LitElement {
     let fitZoom = Infinity;
     for (const neighbor of neighbors) {
       // In a fixed layout only the children to the right have to fit
-      const fitX =
-        neighbor.x > x ? fitRight : this.fixedLayout ? Infinity : fitLeft;
+      if (this.fixedLayout && neighbor.x <= x) {
+        continue;
+      }
+      const fitX = neighbor.x > x ? fitRight : fitLeft;
       fitZoom = Math.min(
         fitZoom,
         (zoom * fitX) / Math.abs(neighbor.x - x),

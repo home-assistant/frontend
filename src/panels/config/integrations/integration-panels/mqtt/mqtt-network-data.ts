@@ -698,7 +698,8 @@ export function createMQTTNetworkChartData(
   // A focused device shows its own items, also when the legend switches their
   // category off. A focused item shows only itself with its topics, so the
   // other items of its device do not crowd them.
-  const revealedNodeIds = new Set<string>();
+  // Search matches show too, else a match the legend hides seems not found
+  const revealedNodeIds = new Set<string>(filter ? focusNodes : []);
   if (focusedNode && nodesById.has(focusedNode)) {
     revealedNodeIds.add(focusedNode);
     if (

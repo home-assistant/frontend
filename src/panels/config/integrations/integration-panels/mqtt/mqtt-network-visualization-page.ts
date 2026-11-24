@@ -237,7 +237,8 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
     super.disconnectedCallback();
     clearInterval(this._refreshTimer);
     this._refreshTimer = undefined;
-    this._stopLiveMessages();
+    // The subscription stops, so the topic would no longer be live on return
+    this._closeTopic();
     this._stopTrackingNodeActions();
   }
 
