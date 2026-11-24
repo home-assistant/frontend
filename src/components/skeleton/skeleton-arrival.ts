@@ -100,6 +100,11 @@ class SkeletonOrDirective extends Directive {
 
       // Fade in what was rendered, once it's on the page
       requestAnimationFrame(() => {
+        // Loading again before this frame: what's there now is a skeleton
+        if (this._showedSkeleton) {
+          return;
+        }
+
         let node = part.startNode?.nextSibling;
 
         while (node && node !== part.endNode) {
