@@ -38,6 +38,7 @@ import { loadLovelaceResources } from "../../../lovelace/common/load-resources";
 import { lovelaceResourcesTabs } from "../ha-config-lovelace";
 import { showResourceDetailDialog } from "./show-dialog-lovelace-resource-detail";
 import { storage } from "../../../../common/decorators/storage";
+import { renderAddShortcutTooltip } from "../../../../mixins/keyboard-shortcut-mixin";
 
 @customElement("ha-config-lovelace-resources")
 export class HaConfigLovelaceResources extends LitElement {
@@ -199,12 +200,13 @@ export class HaConfigLovelaceResources extends LitElement {
               `
             : ""
         }
-        <ha-button slot="fab" size="l" @click=${this._addResource}>
+        <ha-button slot="fab" id="fab" size="l" @click=${this._addResource}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize(
             "ui.panel.config.lovelace.resources.picker.add_resource"
           )}
         </ha-button>
+        ${renderAddShortcutTooltip(this.hass, "fab")}
       </hass-tabs-subpage-data-table>
     `;
   }

@@ -144,6 +144,7 @@ import { getAvailableAssistants } from "../voice-assistants/expose/available-ass
 import { isHelperDomain, type HelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { renderAddShortcutTooltip } from "../../../mixins/keyboard-shortcut-mixin";
 
 function equalHelperEntity(
   a: HassEntity,
@@ -886,10 +887,11 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           this._tableSettings.grouping,
           this._categoryDeleted
         )}
-        <ha-button slot="fab" size="l" @click=${this._createHelper}>
+        <ha-button slot="fab" id="fab" size="l" @click=${this._createHelper}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.helpers.picker.create_helper")}
         </ha-button>
+        ${renderAddShortcutTooltip(this.hass, "fab")}
       </hass-tabs-subpage-data-table>
     `;
   }

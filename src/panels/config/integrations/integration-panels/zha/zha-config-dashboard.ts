@@ -50,6 +50,7 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import { fileDownload } from "../../../../../util/file_download";
 import { renderConfigEntryError } from "../../ha-config-integration-page";
+import { renderAddShortcutTooltip } from "../../../../../mixins/keyboard-shortcut-mixin";
 
 @customElement("zha-config-dashboard")
 class ZHAConfigDashboard extends LitElement {
@@ -143,12 +144,13 @@ class ZHAConfigDashboard extends LitElement {
           ${this._renderNavigationCard()} ${this._renderBackupCard()}
         </div>
 
-        <a href="/config/zha/add" slot="fab">
+        <a href="/config/zha/add" slot="fab" id="fab">
           <ha-button size="l">
             <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
             ${this.hass.localize("ui.panel.config.zha.add_device")}
           </ha-button>
         </a>
+        ${renderAddShortcutTooltip(this.hass, "fab")}
       </hass-subpage>
     `;
   }

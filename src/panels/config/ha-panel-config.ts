@@ -32,7 +32,7 @@ declare global {
 const EDITOR_SECTIONS = new Set(["automation", "script", "scene"]);
 
 const findFab = (root: ParentNode): HTMLElement | null => {
-  const fab = root.querySelector<HTMLElement>('[slot="fab"]');
+  const fab = root.querySelector<HTMLElement>('[slot="fab"]:not(slot)');
   if (fab) {
     return fab.querySelector<HTMLElement>('[slot="trigger"]') ?? fab;
   }
@@ -413,13 +413,25 @@ class HaPanelConfig extends KeyboardShortcutMixin(HassRouterPage) {
     return {
       N: () => {
         const [, , section, page] = location.pathname.split("/");
-        if (EDITOR_SECTIONS.has(section)) {
-          if (!page || page === "dashboard") {
-            navigate(`/config/${section}/edit/new`);
-          }
+        if (EDITOR_SECTIONS.has(section) && page && page !== "dashboard") {
           return;
         }
-        findFab(this.shadowRoot ?? this)?.click();
+        const fab = findFab(this.shadowRoot ?? this) as
+          (HTMLElement & { disabled?: boolean; loading?: boolean }) | null;
+        if (
+          !fab ||
+          fab.disabled ||
+          fab.loading ||
+          fab.hasAttribute("disabled")
+        ) {
+          return;
+        }
+        const href = fab.getAttribute("href");
+        if (href) {
+          navigate(href);
+        } else {
+          fab.click();
+        }
       },
     };
   }

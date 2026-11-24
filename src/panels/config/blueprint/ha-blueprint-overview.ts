@@ -61,6 +61,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../config-sections";
 import { showAddBlueprintDialog } from "./show-dialog-import-blueprint";
+import { renderAddShortcutTooltip } from "../../../mixins/keyboard-shortcut-mixin";
 
 const BARE_PATH = "/config/blueprint";
 const DASHBOARD_PATH = `${BARE_PATH}/dashboard`;
@@ -448,12 +449,18 @@ class HaBlueprintOverview extends LitElement {
           .disabled=${this._usageCountsLoading || !this._selected.length}
           @click=${this._removeSelected}
         ></ha-assist-chip>
-        <ha-button slot="fab" size="l" @click=${this._addBlueprintClicked}>
+        <ha-button
+          slot="fab"
+          id="fab"
+          size="l"
+          @click=${this._addBlueprintClicked}
+        >
           <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
           ${this.hass.localize(
             "ui.panel.config.blueprint.overview.add_blueprint"
           )}
         </ha-button>
+        ${renderAddShortcutTooltip(this.hass, "fab")}
       </hass-tabs-subpage-data-table>
     `;
   }

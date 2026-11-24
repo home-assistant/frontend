@@ -60,6 +60,7 @@ import { brandsUrl } from "../../../../../util/brands-url";
 import { fileDownload } from "../../../../../util/file_download";
 import { showZWaveJSAddNodeDialog } from "./add-node/show-dialog-zwave_js-add-node";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
+import { renderAddShortcutTooltip } from "../../../../../mixins/keyboard-shortcut-mixin";
 
 @customElement("zwave_js-config-dashboard")
 class ZWaveJSConfigDashboard extends LitElement {
@@ -189,6 +190,7 @@ class ZWaveJSConfigDashboard extends LitElement {
         </div>
         <ha-button
           slot="fab"
+          id="fab"
           size="l"
           @click=${this._addNodeClicked}
           .disabled=${
@@ -202,6 +204,7 @@ class ZWaveJSConfigDashboard extends LitElement {
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.zwave_js.common.add_node")}
         </ha-button>
+        ${renderAddShortcutTooltip(this.hass, "fab")}
       </hass-subpage>
     `;
   }

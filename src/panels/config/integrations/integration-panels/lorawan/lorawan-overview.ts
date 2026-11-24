@@ -24,6 +24,7 @@ import "../../../../../layouts/hass-subpage";
 import { panelIsReady } from "../../../../../layouts/panel-ready";
 import { haLora } from "../../../../../resources/ha-icons";
 import type { HomeAssistant } from "../../../../../types";
+import { renderAddShortcutTooltip } from "../../../../../mixins/keyboard-shortcut-mixin";
 
 @customElement("lorawan-overview")
 export class LoRaWANOverview extends LitElement {
@@ -74,6 +75,7 @@ export class LoRaWANOverview extends LitElement {
     >
       <ha-button
         slot="fab"
+        id="fab"
         size="l"
         @click=${this._addDevice}
         .disabled=${!snapshot?.connections.length}
@@ -81,6 +83,7 @@ export class LoRaWANOverview extends LitElement {
         <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
         ${this.hass.localize("ui.panel.config.lorawan.add_device")}
       </ha-button>
+      ${renderAddShortcutTooltip(this.hass, "fab")}
       <div class="container">
         ${this._error ? html`<ha-alert alert-type="error">${this.hass.localize("ui.panel.config.lorawan.overview.load_error")}<ha-button slot="action" appearance="plain" @click=${this._subscribe}>${this.hass.localize("ui.common.retry")}</ha-button></ha-alert>` : nothing}
         ${!snapshot && !this._error ? html`<ha-spinner></ha-spinner>` : nothing}

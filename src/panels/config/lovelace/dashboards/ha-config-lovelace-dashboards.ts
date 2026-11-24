@@ -74,6 +74,7 @@ import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardConfigureStrategyDialog } from "./show-dialog-lovelace-dashboard-configure-strategy";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
 import { showPanelDetailDialog } from "./show-dialog-panel-detail";
+import { renderAddShortcutTooltip } from "../../../../mixins/keyboard-shortcut-mixin";
 
 export const PANEL_DASHBOARDS = [
   "home",
@@ -465,12 +466,13 @@ export class HaConfigLovelaceDashboards extends LitElement {
           .disabled=${!this._deletableSelected().length}
           @click=${this._removeSelected}
         ></ha-assist-chip>
-        <ha-button slot="fab" size="l" @click=${this._addDashboard}>
+        <ha-button slot="fab" id="fab" size="l" @click=${this._addDashboard}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize(
             "ui.panel.config.lovelace.dashboards.picker.add_dashboard"
           )}
         </ha-button>
+        ${renderAddShortcutTooltip(this.hass, "fab")}
       </hass-tabs-subpage-data-table>
     `;
   }

@@ -2779,7 +2779,7 @@
           "my_link": "get My Home Assistant link",
           "show_shortcuts": "show keyboard shortcuts",
           "toggle_yaml": "switch between visual and YAML editor",
-          "add_new": "add a new automation, script, scene, helper, device, integration or blueprint"
+          "add_new": "add a new item on the current settings page"
         }
       }
     },

@@ -61,6 +61,7 @@ import {
 } from "./show-dialog-area-registry-detail";
 import { showAreasFloorsOrderDialog } from "./show-dialog-areas-floors-order";
 import { showFloorRegistryDetailDialog } from "./show-dialog-floor-registry-detail";
+import { renderAddShortcutTooltip } from "../../../mixins/keyboard-shortcut-mixin";
 
 const UNASSIGNED_FLOOR = "__unassigned__";
 
@@ -230,6 +231,7 @@ export class HaConfigAreasDashboard extends LitElement {
                           )}</ha-dropdown-item
                         >
                       </ha-dropdown>
+                      ${renderAddShortcutTooltip(this.hass, "fab")}
                     </div>
                   </div>
                   <ha-sortable

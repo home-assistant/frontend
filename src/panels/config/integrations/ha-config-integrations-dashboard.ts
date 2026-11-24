@@ -67,7 +67,10 @@ import {
   childPanelReadyContext,
   type RegisterChildPanelReady,
 } from "../../../layouts/panel-ready";
-import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import {
+  KeyboardShortcutMixin,
+  renderAddShortcutTooltip,
+} from "../../../mixins/keyboard-shortcut-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
@@ -804,10 +807,11 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                     : ""
           }
         </div>
-        <ha-button slot="fab" size="l" @click=${this._createFlow}>
+        <ha-button slot="fab" id="fab" size="l" @click=${this._createFlow}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.integrations.add_integration")}
         </ha-button>
+        ${renderAddShortcutTooltip(this.hass, "fab")}
       </hass-tabs-subpage>
     `;
   }

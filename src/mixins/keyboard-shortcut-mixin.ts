@@ -1,9 +1,10 @@
-import type { ReactiveElement } from "lit";
-import type { Constructor } from "../types";
+import { html, nothing, type ReactiveElement } from "lit";
+import type { Constructor, HomeAssistant } from "../types";
 import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
 import { deepActiveElement } from "../common/dom/deep-active-element";
 import { nextRender } from "../common/util/render-status";
 import { getTopOpenDialogTag } from "../dialogs/make-dialog-manager";
+import { isMac } from "../util/is_mac";
 
 declare global {
   type SupportedShortcuts = Record<string, () => void>;
@@ -23,6 +24,13 @@ const isModalBoundary = (el: EventTarget): boolean =>
     el.localName.endsWith("-dialog") ||
     el.getAttribute("role") === "dialog" ||
     el.getAttribute("aria-modal") === "true");
+
+export const renderAddShortcutTooltip = (hass: HomeAssistant, forId: string) =>
+  hass.enableShortcuts
+    ? html`<ha-tooltip slot="fab" for=${forId} placement="left">
+        ${isMac ? "⌘ ⌥ N" : "Ctrl + Alt + N"}
+      </ha-tooltip>`
+    : nothing;
 
 export const KeyboardShortcutMixin = <T extends Constructor<ReactiveElement>>(
   superClass: T

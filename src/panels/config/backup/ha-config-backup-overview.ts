@@ -43,6 +43,7 @@ import { showBackupOnboardingDialog } from "./dialogs/show-dialog-backup_onboard
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
+import { renderAddShortcutTooltip } from "../../../mixins/keyboard-shortcut-mixin";
 
 @customElement("ha-config-backup-overview")
 class HaConfigBackupOverview extends LitElement {
@@ -347,6 +348,7 @@ class HaConfigBackupOverview extends LitElement {
 
         <ha-button
           slot="fab"
+          id="fab"
           size="l"
           .loading=${backupInProgress}
           @click=${this._newBackup}
@@ -354,6 +356,7 @@ class HaConfigBackupOverview extends LitElement {
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.backup.overview.new_backup")}
         </ha-button>
+        ${renderAddShortcutTooltip(this.hass, "fab")}
       </hass-subpage>
     `;
   }
