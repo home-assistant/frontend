@@ -1098,6 +1098,9 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
           display: block;
           margin-bottom: var(--ha-space-4);
         }
+        ha-alert.debug-logging ha-button::part(label) {
+          white-space: nowrap;
+        }
       `,
     ];
   }
