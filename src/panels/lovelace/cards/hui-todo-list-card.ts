@@ -454,7 +454,12 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         this._entityId = this.getEntityId();
       }
       this._subscribeItems();
-    } else if (changedProperties.has("_entityId") || !this._items) {
+    } else if (
+      changedProperties.has("_entityId") ||
+      // A failed subscription isn't retried on every update, which would
+      // loop, only when the entity changes or the card connects again
+      (!this._items && !this._itemsFailed)
+    ) {
       this._items = undefined;
       this._subscribeItems();
     }
