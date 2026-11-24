@@ -1,13 +1,9 @@
 import "../../../../components/skeleton/ha-skeleton";
 import "../../../../components/skeleton/ha-skeleton-text";
 import type { HassConfig } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import {
-  fadeInArrival,
-  skeletonOr,
-} from "../../../../components/skeleton/skeleton-arrival";
+import { customElement, property, state } from "lit/decorators";
+import { skeletonOr } from "../../../../components/skeleton/skeleton-arrival";
 import { consume } from "../../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { relativeTime } from "../../../../common/datetime/relative_time";
@@ -70,8 +66,6 @@ export class HaMoreInfoUpdateBackup extends LitElement {
 
   @state() private _entitySources?: EntitySources;
 
-  @query("ha-row-item") private _rowItem?: HTMLElement;
-
   @consume({ context: apiContext, subscribe: true })
   private _api!: HomeAssistantApi;
 
@@ -98,19 +92,6 @@ export class HaMoreInfoUpdateBackup extends LitElement {
     this._setupBackup();
   }
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-
-    // The row's text takes its skeleton's place
-    if (
-      changedProps.get("_backupConfigLoading") === true &&
-      !this._backupConfigLoading &&
-      this._rowItem
-    ) {
-      fadeInArrival(this._rowItem);
-    }
-  }
-
   protected render() {
     if (
       !this.stateObj ||
@@ -126,19 +107,19 @@ export class HaMoreInfoUpdateBackup extends LitElement {
     }
 
     return html`
-      <ha-row-item
-        .headline=${createBackupTexts ? createBackupTexts.title : undefined}
-        .supportingText=${
-          createBackupTexts ? createBackupTexts.description : undefined
-        }
-      >
-        ${
-          !createBackupTexts
-            ? html`<ha-fade-in slot="headline" .delay=${500}
-                ><ha-skeleton-text></ha-skeleton-text
-              ></ha-fade-in>`
-            : nothing
-        }
+      <ha-row-item>
+        ${skeletonOr(
+          !createBackupTexts,
+          html`<ha-fade-in slot="headline" .delay=${500}
+            ><ha-skeleton-text></ha-skeleton-text
+          ></ha-fade-in>`,
+          // Only text that took the skeleton's place fades in
+          () =>
+            html`<span slot="headline">${createBackupTexts?.title}</span
+              ><span slot="supporting-text"
+                >${createBackupTexts?.description}</span
+              >`
+        )}
         ${skeletonOr(
           this._createBackupLoading,
           html`<ha-fade-in class="skeleton-end" slot="end" .delay=${500}
