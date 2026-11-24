@@ -16,7 +16,7 @@ import { styleMap } from "lit/directives/style-map";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { storage } from "../../common/decorators/storage";
 import { deepActiveElement } from "../../common/dom/deep-active-element";
-import type { HASSDomEvent } from "../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { ctrlOrCmdLabel } from "../../common/keyboard/ctrl-or-cmd";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { nextRender } from "../../common/util/render-status";
@@ -141,6 +141,8 @@ export class HaCameraPlayer extends LitElement {
 
   @query(".overlay") private _overlay?: HTMLElement;
 
+  private _firedAspectRatio?: number;
+
   private _pointers = new Map<number, PointerInfo>();
 
   // More than one finger touched since all were lifted, so it is no tap
@@ -230,6 +232,11 @@ export class HaCameraPlayer extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
+    const aspectRatio = this._aspectRatio();
+    if (aspectRatio !== this._firedAspectRatio) {
+      this._firedAspectRatio = aspectRatio;
+      fireEvent(this, "camera-aspect-ratio-changed", { aspectRatio });
+    }
     if (changedProps.has("keepAwake")) {
       if (this.keepAwake) {
         this._requestWakeLock();
@@ -1180,5 +1187,8 @@ export class HaCameraPlayer extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-camera-player": HaCameraPlayer;
+  }
+  interface HASSDomEvents {
+    "camera-aspect-ratio-changed": { aspectRatio: number };
   }
 }

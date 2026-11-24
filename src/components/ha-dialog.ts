@@ -65,6 +65,7 @@ type DialogHideEvent = CustomEvent<{ source?: Element }>;
  * @cssprop --dialog-backdrop-filter - Dialog scrim backdrop filter (legacy).
  * @cssprop --mdc-dialog-scrim-color - Dialog scrim color (legacy).
  * @cssprop --dialog-surface-margin-top - Top margin for the dialog surface.
+ * @cssprop --ha-dialog-width-transition - Transition of the dialog surface's width, like when it follows the size of its content. Defaults to none.
  *
  * @attr {boolean} open - Controls the dialog open state.
  * @attr {("alert"|"standard")} type - Dialog type. Defaults to "standard".
@@ -412,6 +413,7 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
           color: var(--primary-text-color);
           min-width: var(--width, var(--full-width));
           max-width: var(--width, var(--full-width));
+          transition: var(--ha-dialog-width-transition, none);
           max-height: var(
             --ha-dialog-max-height,
             calc(var(--safe-height) - var(--ha-space-20))
