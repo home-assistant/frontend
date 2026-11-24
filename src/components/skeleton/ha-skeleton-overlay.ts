@@ -535,9 +535,12 @@ export class HaSkeletonOverlay extends LitElement {
     };
 
     this._fades = [
-      ...[...content, ...opacityParts].map((part) =>
-        part.animate([{ opacity: 0 }, { opacity: 1 }], fade)
-      ),
+      // To each part's own opacity, which isn't always 1
+      ...[...content, ...opacityParts].map((part) => {
+        const opacity = getComputedStyle(part).opacity;
+
+        return part.animate([{ opacity: 0 }, { opacity }], fade);
+      }),
       ...colorParts.map((part) => {
         const color = getComputedStyle(part).color;
 
