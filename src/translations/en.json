@@ -8017,7 +8017,7 @@
           "new_flow": "Set up another instance of {integration}",
           "attention": "Attention required",
           "configured": "Configured",
-          "new": "Add device or integration",
+          "add_device_or_integration": "Add device or integration",
           "confirm_new": "Do you want to set up {integration}?",
           "add_integration": "Add integration",
           "no_integrations": "Seems like you don't have any integrations configured yet. Press the button below to add your first integration!",
@@ -8047,7 +8047,7 @@
             "category": "Category"
           },
           "all_brands": "All brands",
-          "search_brand": "Search all brands and integrations",
+          "search_all": "Search all brands and integrations",
           "search_section": {
             "brand": "Brands",
             "category": "Categories",
@@ -10612,7 +10612,7 @@
           "exit_edit_mode": "Done",
           "close": "Close",
           "add": "Add to Home Assistant",
-          "add_device": "Add device or integration",
+          "add_device_or_integration": "Add device or integration",
           "create_automation": "Create automation",
           "create_area": "Create area",
           "create_area_success": "Area created",

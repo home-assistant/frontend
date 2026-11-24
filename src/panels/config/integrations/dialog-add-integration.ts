@@ -21,14 +21,20 @@ import type {
   HASSDomTargetEvent,
 } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { HaFilterChip } from "../../../components/chips/ha-filter-chip";
+import type { HaListItemButton } from "../../../components/item/ha-list-item-button";
 import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
-import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../common/translations/localize";
 import { storage } from "../../../common/decorators/storage";
+import "../../../components/ha-adaptive-dialog";
 import "../../../components/ha-label";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
@@ -167,7 +173,7 @@ const ROW_TITLE_STYLE = {
   display: "flex",
   "align-items": "center",
   "box-sizing": "border-box",
-  "min-height": "40px",
+  "min-height": "var(--ha-space-10)",
   "padding-block": "var(--ha-space-2)",
   "padding-inline": `${TITLE_INSET} var(--ha-space-3)`,
   "font-weight": "var(--ha-font-weight-medium)",
@@ -612,7 +618,7 @@ class AddIntegrationDialog extends LitElement {
         interactive: true,
         domain,
         name: localize(
-          `ui.panel.config.integrations.add_${domain}_device` as any
+          `ui.panel.config.integrations.add_${domain}_device` as LocalizeKeys
         ),
         config_flow: true,
         is_built_in: true,
@@ -688,7 +694,8 @@ class AddIntegrationDialog extends LitElement {
           ? this._brandRows(item).filter((row) => !row.is_header && !row.is_add)
           : [item]
       );
-      items.forEach((item) => {
+      // Integrations of more than one brand count once, as they are listed
+      new Map(items.map((item) => [item.domain, item])).forEach((item) => {
         const slugs = new Set(item.categories);
         new Set([...slugs].map((slug) => slug.split(".")[0])).forEach(add);
         [...slugs].filter((slug) => slug.includes(".")).forEach(add);
@@ -706,7 +713,7 @@ class AddIntegrationDialog extends LitElement {
       const categories = new Map<string, IntegrationCategory>();
       for (const slug of counts.keys()) {
         const [category, subcategory] = slug.split(".");
-        const name = localize(`${key}.${category}.name` as any);
+        const name = localize(`${key}.${category}.name`);
         // Unknown to this Home Assistant version
         if (!name) {
           continue;
@@ -716,7 +723,7 @@ class AddIntegrationDialog extends LitElement {
         }
         const subcategoryName =
           subcategory &&
-          localize(`${key}.${category}.subcategory.${subcategory}.name` as any);
+          localize(`${key}.${category}.subcategory.${subcategory}.name`);
         if (subcategoryName) {
           categories
             .get(category)!
@@ -936,15 +943,19 @@ class AddIntegrationDialog extends LitElement {
       ? this._getBrandHeading(pickedIntegration, flowsInProgress)
       : this._narrow && this._drilled
         ? this._browsingTitle()
-        : this.hass.localize("ui.panel.config.integrations.new");
+        : this.hass.localize(
+            "ui.panel.config.integrations.add_device_or_integration"
+          );
 
     const headerSubtitle =
       !showingBrandView && this._narrow && this._drilled
         ? this._subcategory
           ? this.hass.localize(
-              `component.homeassistant.integration_category.${this._category}.name` as any
+              `component.homeassistant.integration_category.${this._category}.name`
             )
-          : this.hass.localize("ui.panel.config.integrations.new")
+          : this.hass.localize(
+              "ui.panel.config.integrations.add_device_or_integration"
+            )
         : undefined;
 
     return html`<ha-adaptive-dialog
@@ -1003,13 +1014,12 @@ class AddIntegrationDialog extends LitElement {
           : "ui.panel.config.integrations.all_integrations"
       );
     }
-    const key = `component.homeassistant.integration_category.${this._category}`;
+    const key =
+      `component.homeassistant.integration_category.${this._category}` as const;
     return (
       (this._subcategory &&
-        this.hass.localize(
-          `${key}.subcategory.${this._subcategory}.name` as any
-        )) ||
-      this.hass.localize(`${key}.name` as any)
+        this.hass.localize(`${key}.subcategory.${this._subcategory}.name`)) ||
+      this.hass.localize(`${key}.name`)
     );
   }
 
@@ -1165,7 +1175,7 @@ class AddIntegrationDialog extends LitElement {
                   .value=${this._filter}
                   @input=${this._filterChanged}
                   .placeholder=${this.hass.localize(
-                    "ui.panel.config.integrations.search_brand"
+                    "ui.panel.config.integrations.search_all"
                   )}
                   @keydown=${this._maybeSubmit}
                 ></ha-input-search>
@@ -1289,12 +1299,12 @@ class AddIntegrationDialog extends LitElement {
     options: readonly string[],
     selected: (ev: HaDropdownSelectEvent) => void
   ) {
-    const key = `ui.panel.config.integrations.${filter}`;
+    const key = `ui.panel.config.integrations.${filter}` as const;
     return html`<ha-dropdown @wa-select=${selected}>
       <ha-assist-chip
         slot="trigger"
-        .label=${this.hass.localize(`${key}.label` as any, {
-          value: this.hass.localize(`${key}.${value}` as any),
+        .label=${this.hass.localize(`${key}.label`, {
+          value: this.hass.localize(`${key}.${value}` as LocalizeKeys),
         })}
       >
         <ha-svg-icon slot="trailing-icon" .path=${mdiMenuDown}></ha-svg-icon>
@@ -1305,7 +1315,7 @@ class AddIntegrationDialog extends LitElement {
             .value=${option}
             class=${classMap({ selected: value === option })}
           >
-            ${this.hass.localize(`${key}.${option}` as any)}
+            ${this.hass.localize(`${key}.${option}` as LocalizeKeys)}
             ${
               option === "cloud"
                 ? html`<span class="option-description">
@@ -1356,8 +1366,10 @@ class AddIntegrationDialog extends LitElement {
     }
   }
 
-  private _searchSectionClicked(ev: Event) {
-    const section = (ev.currentTarget as any).section as SearchSection;
+  private _searchSectionClicked(
+    ev: HASSDomCurrentTargetEvent<HaFilterChip & { section: SearchSection }>
+  ) {
+    const section = ev.currentTarget.section;
     this._searchSection = this._searchSection === section ? undefined : section;
   }
 
@@ -1526,7 +1538,7 @@ class AddIntegrationDialog extends LitElement {
           ></ha-domain-icon>
           <span slot="headline">
             ${this.hass.localize(
-              `ui.panel.config.integrations.add_${domain}_device` as any
+              `ui.panel.config.integrations.add_${domain}_device` as LocalizeKeys
             )}
           </span>
           <ha-icon-next slot="end"></ha-icon-next>
@@ -1707,30 +1719,36 @@ class AddIntegrationDialog extends LitElement {
     </ha-list-base>`;
   }
 
-  private _brandPicked(ev: Event) {
-    this._browse({ brand: (ev.currentTarget as any).brand });
+  private _brandPicked(
+    ev: HASSDomCurrentTargetEvent<HaListItemButton & { brand?: string }>
+  ) {
+    this._browse({ brand: ev.currentTarget.brand });
   }
 
   private _discoveredPicked() {
     this._browse({ discovered: true });
   }
 
-  private _protocolPicked(ev: Event) {
-    const domain = (ev.currentTarget as any).protocol as string;
+  private _protocolPicked(
+    ev: HASSDomCurrentTargetEvent<HaListItemButton & { protocol: string }>
+  ) {
+    const domain = ev.currentTarget.protocol;
     protocolIntegrationPicked(this, this.hass, domain);
     this.closeDialog();
   }
 
   private _treeSelectionChanged(ev: WaSelectionChangeEvent) {
-    const item = ev.detail.selection[0] as unknown as
-      { category?: string; subcategory?: string } | undefined;
+    const item = ev.detail.selection[0] as
+      (WaTreeItem & { category?: string; subcategory?: string }) | undefined;
     if (item) {
       this._browse({ category: item.category, subcategory: item.subcategory });
     }
   }
 
-  private _treeExpandChanged(ev: Event) {
-    const { category } = ev.target as WaTreeItem & { category: string };
+  private _treeExpandChanged(
+    ev: HASSDomTargetEvent<WaTreeItem & { category: string }>
+  ) {
+    const { category } = ev.target;
     const open = ev.type === "wa-expand";
     if (this._expanded.has(category) === open) {
       return;
@@ -1748,8 +1766,12 @@ class AddIntegrationDialog extends LitElement {
     this._browse();
   }
 
-  private _categoryPicked(ev: Event) {
-    const { category, subcategory } = ev.currentTarget as any;
+  private _categoryPicked(
+    ev: HASSDomCurrentTargetEvent<
+      HaListItemButton & { category: string; subcategory?: string }
+    >
+  ) {
+    const { category, subcategory } = ev.currentTarget;
     this._browse({ category, subcategory });
   }
 
@@ -2226,7 +2248,7 @@ class AddIntegrationDialog extends LitElement {
         display: flex;
         align-items: center;
         box-sizing: border-box;
-        height: 40px;
+        height: var(--ha-space-10);
         padding-block: var(--ha-space-2);
         padding-inline: calc(var(--ha-space-4) + 1px + var(--ha-space-3))
           var(--ha-space-3);
@@ -2255,7 +2277,7 @@ class AddIntegrationDialog extends LitElement {
       .subcategories ha-list-item-button {
         --ha-row-item-padding-block: var(--ha-space-1);
         --ha-row-item-padding-inline: var(--ha-space-3);
-        --ha-row-item-min-height: 40px;
+        --ha-row-item-min-height: var(--ha-space-10);
       }
       .subcategories ha-list-item-button::part(start),
       .subcategories .count {
@@ -2295,7 +2317,7 @@ class AddIntegrationDialog extends LitElement {
       .groups ha-list-item-button {
         --ha-row-item-padding-block: var(--ha-space-1);
         --ha-row-item-padding-inline: var(--ha-space-3);
-        --ha-row-item-min-height: 40px;
+        --ha-row-item-min-height: var(--ha-space-10);
       }
       .groups ha-icon-next {
         color: var(--ha-color-on-neutral-quiet);
