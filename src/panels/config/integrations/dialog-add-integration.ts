@@ -303,7 +303,16 @@ class AddIntegrationDialog extends LitElement {
     ) {
       // Picked by searching, it can be far down the browse pane
       requestAnimationFrame(() => {
-        this._selectedBrowseRow?.scrollIntoView({ block: "nearest" });
+        const row = this._selectedBrowseRow;
+        const pane = row?.closest(".groups");
+        if (!row || !pane) {
+          return;
+        }
+        const rowRect = row.getBoundingClientRect();
+        const paneRect = pane.getBoundingClientRect();
+        if (rowRect.top < paneRect.top || rowRect.bottom > paneRect.bottom) {
+          row.scrollIntoView({ block: "center" });
+        }
       });
     }
     if (this._focusAfterDrill) {
