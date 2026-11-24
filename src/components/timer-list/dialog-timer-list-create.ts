@@ -47,7 +47,7 @@ class DialogTimerListCreate extends DialogMixin<TimerListCreateDialogParams>(
       <ha-dialog
         open
         width="small"
-        header-title=${this._localize("ui.components.timer-list.start_timer")}
+        header-title=${this._localize("ui.components.timer-list.add_timer")}
       >
         ${
           this._error

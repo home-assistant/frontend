@@ -1,10 +1,4 @@
-import {
-  mdiClose,
-  mdiPause,
-  mdiPlay,
-  mdiPlus,
-  mdiTimerPlusOutline,
-} from "@mdi/js";
+import { mdiClose, mdiPause, mdiPlay, mdiPlus } from "@mdi/js";
 import type {
   Connection,
   HassEntity,
@@ -35,6 +29,7 @@ import {
   subscribeTimerListTimers,
   TimerListEntityFeature,
   timerListTimerRemaining,
+  sortTimerListTimers,
   timerListTimerVisible,
 } from "../../data/timer_list";
 import type {
@@ -45,12 +40,11 @@ import type {
 import "../ha-button";
 import "../ha-icon-button";
 import "../ha-svg-icon";
-import type { HaIconButton } from "../ha-icon-button";
 import "../progress/ha-progress-bar";
 import { showTimerListCreateDialog } from "./show-dialog-timer-list-create";
 
 type TimerButtonEvent = HASSDomCurrentTargetEvent<
-  HaIconButton & { timer: TimerListTimer }
+  HTMLElement & { timer: TimerListTimer }
 >;
 
 @customElement("ha-timer-list")
@@ -161,9 +155,11 @@ export class HaTimerList extends LitElement {
     }
     const stateObj = this._stateObj;
     const unavailable = stateObj.state === UNAVAILABLE;
-    const timers = this._timers?.filter((timer) =>
-      timerListTimerVisible(timer)
-    );
+    const timers =
+      this._timers &&
+      sortTimerListTimers(
+        this._timers.filter((timer) => timerListTimerVisible(timer))
+      );
     const canPause = supportsFeature(
       stateObj,
       TimerListEntityFeature.PAUSE_TIMER
@@ -192,7 +188,7 @@ export class HaTimerList extends LitElement {
               @click=${this._showCreateDialog}
             >
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-              ${this._i18n.localize("ui.components.timer-list.start_timer")}
+              ${this._i18n.localize("ui.components.timer-list.add_timer")}
             </ha-button>
           `
         : nothing;
@@ -249,14 +245,20 @@ export class HaTimerList extends LitElement {
                               </div>
                               ${
                                 canAddTime && !finished
-                                  ? html`<ha-icon-button
+                                  ? html`<ha-button
+                                      class="add-time"
+                                      appearance="plain"
+                                      size="s"
                                       .timer=${timer}
-                                      .path=${mdiTimerPlusOutline}
-                                      .label=${this._i18n.localize(
+                                      aria-label=${this._i18n.localize(
                                         "ui.components.timer-list.add_minute"
                                       )}
                                       @click=${this._addMinute}
-                                    ></ha-icon-button>`
+                                    >
+                                      ${this._i18n.localize(
+                                        "ui.components.timer-list.add_minute_short"
+                                      )}
+                                    </ha-button>`
                                   : nothing
                               }
                               ${

@@ -3,6 +3,7 @@ import type { TimerListTimer } from "../../src/data/timer_list";
 import {
   applyTimerListMessage,
   formatTimerListRemaining,
+  sortTimerListTimers,
   timerListTimerVisible,
 } from "../../src/data/timer_list";
 
@@ -103,5 +104,38 @@ describe("formatTimerListRemaining", () => {
     [3725, "1:02:05"],
   ])("%s seconds", (seconds, text) => {
     expect(formatTimerListRemaining(seconds)).toBe(text);
+  });
+});
+
+// The list order decides which timer people see first.
+describe("sortTimerListTimers", () => {
+  const now = new Date("2026-01-01T00:00:00+00:00").getTime();
+  const running = (timer_id: string, seconds: number): TimerListTimer => ({
+    ...timer(timer_id),
+    finishes_at: new Date(now + seconds * 1000).toISOString(),
+  });
+  const paused = (timer_id: string, seconds: number): TimerListTimer => ({
+    ...timer(timer_id, "paused"),
+    paused_remaining: seconds,
+  });
+
+  it("puts finished first, then running and paused by time left", () => {
+    const sorted = sortTimerListTimers(
+      [
+        paused("p-long", 600),
+        running("r-long", 300),
+        timer("done", "finished"),
+        paused("p-short", 60),
+        running("r-short", 30),
+      ],
+      now
+    );
+    expect(sorted.map((item) => item.timer_id)).toEqual([
+      "done",
+      "r-short",
+      "r-long",
+      "p-short",
+      "p-long",
+    ]);
   });
 });

@@ -114,6 +114,25 @@ export const timerListTimerVisible = (
     timer.ended_at !== null &&
     now - new Date(timer.ended_at).getTime() < FINISHED_VISIBLE_MS);
 
+const STATUS_ORDER: Record<TimerListTimerStatus, number> = {
+  finished: 0,
+  active: 1,
+  paused: 2,
+  cancelled: 3,
+};
+
+// Finished timers first, as they need attention. Then running and paused
+// timers, each with the soonest to finish first.
+export const sortTimerListTimers = (
+  timers: TimerListTimer[],
+  now = Date.now()
+): TimerListTimer[] =>
+  [...timers].sort(
+    (a, b) =>
+      STATUS_ORDER[a.status] - STATUS_ORDER[b.status] ||
+      timerListTimerRemaining(a, now) - timerListTimerRemaining(b, now)
+  );
+
 export const createTimerListTimer = (
   callService: HomeAssistant["callService"],
   entity_id: string,
