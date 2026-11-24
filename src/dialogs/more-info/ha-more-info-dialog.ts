@@ -196,6 +196,12 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   }
 
   public showDialog(params: MoreInfoDialogParams) {
+    // The camera player keeps running for the same entity and doesn't send
+    // its size again
+    if (params.entityId !== this._entityId) {
+      this._cameraAspectRatio = undefined;
+      this._cameraTwoWayAudio = false;
+    }
     this._entityId = params.entityId;
     if (!this._entityId) {
       this.closeDialog();
@@ -214,8 +220,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
 
     this.large = params.large ?? false;
     this._fill = false;
-    this._cameraAspectRatio = undefined;
-    this._cameraTwoWayAudio = false;
     this._open = true;
     this._loadEntityRegistryEntry();
   }
@@ -1228,11 +1232,11 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
         }
 
         /* A custom property takes any value, so it can't fall back to the
-           declaration before it */
-        @supports (height: 1dvh) {
+           declaration before it. svh like the height limit of the dialog. */
+        @supports (height: 1svh) {
           ha-adaptive-dialog.camera {
             --video-max-height: calc(
-              100dvh - var(--ha-space-20) -
+              100svh - var(--ha-space-20) -
                 68px - var(--more-info-camera-controls-height, 0px)
             );
           }
