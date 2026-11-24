@@ -129,6 +129,9 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   @state() private _forecastFailed = false;
 
+  /* The entity and forecast type the forecast was asked for */
+  private _forecastKey?: string;
+
   @state() private _subscribed?: Promise<() => void>;
 
   protected readonly _skeletonLoading = new SkeletonLoadingController(
@@ -234,11 +237,24 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     // A new request, so its skeleton shows until it answers
     this._forecastFailed = false;
 
+    // Another entity's forecast mustn't show under this one while it loads
+    const forecastKey = `${this._config.entity}:${this._config.forecast_type}`;
+
+    if (this._forecastKey !== forecastKey) {
+      this._forecastEvent = undefined;
+      this._forecastKey = forecastKey;
+    }
+
     const subscription = subscribeForecast(
       this._connection,
       this._config!.entity,
       this._config!.forecast_type as "daily" | "hourly" | "twice_daily",
       (event) => {
+        // A request this one replaced may still answer
+        if (this._subscribed !== subscription) {
+          return;
+        }
+
         this._forecastEvent = event;
         this._forecastFailed = false;
       }
