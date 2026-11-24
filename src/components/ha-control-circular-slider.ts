@@ -1,5 +1,6 @@
 import {
   DIRECTION_ALL,
+  INPUT_CANCEL,
   Manager,
   Pan,
   Press,
@@ -373,6 +374,16 @@ export class HaControlCircularSlider extends LitElement {
           }
           this._lastSlider = this._activeSlider;
           this.shadowRoot?.getElementById("#slider")?.focus();
+          this._activeSlider = undefined;
+          if (pressToActivate) {
+            panRecognizer.set({ enable: false });
+          }
+        });
+        mc.on("hammer.input", (e) => {
+          if (e.eventType !== INPUT_CANCEL || !this._activeSlider) return;
+          fireEvent(this, `${this._activeSlider}-changing`, {
+            value: undefined,
+          });
           this._activeSlider = undefined;
           if (pressToActivate) {
             panRecognizer.set({ enable: false });
