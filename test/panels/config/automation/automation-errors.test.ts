@@ -117,6 +117,25 @@ describe("automation errors", () => {
       "default",
     ]);
     expect(configErrorPath(config, ["mode"])).toEqual(["mode"]);
+
+    // Editing the single item turns the block into a list, the item keeps
+    // its error
+    const delayError = validationError("bad delay", [
+      "actions",
+      0,
+      "default",
+      0,
+      "delay",
+    ]);
+    const known = knownErrorItems(config, [delayError]);
+    const edited = {
+      actions: [{ ...config.actions[0], default: [{ delay: "abd" }] }],
+    };
+    expect(
+      errorsOnKnownItems(followKnownErrorItems(known, config, edited), edited, [
+        delayError,
+      ])
+    ).toEqual([delayError]);
   });
 
   it("keep only live errors on items that already had one", () => {

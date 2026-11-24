@@ -1218,6 +1218,10 @@ export default class HaAutomationTriggerRow extends LitElement {
   };
 
   public expand() {
+    // Rows that open in the sidebar have nothing to expand
+    if (this.optionsInSidebar) {
+      return;
+    }
     this.updateComplete.then(() => {
       this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
     });

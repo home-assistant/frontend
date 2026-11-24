@@ -207,14 +207,24 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       ) {
         this._setRelatedContext();
       }
-    }
-
-    protected updated(changedProps: PropertyValues): void {
-      super.updated(changedProps);
-      if (changedProps.has("config") && this.configErrors.length) {
+      // Errors set in the same update already belong to the current config
+      if (
+        changedProps.has("config") &&
+        !changedProps.has("configErrors") &&
+        this.configErrors.length
+      ) {
+        const previous = changedProps.get("config");
+        const followed = followErrors(this.configErrors, previous, this.config);
+        if (!followed.length) {
+          this.clearConfigErrors();
+          return;
+        }
+        if (!errorsEqual(followed, this.configErrors)) {
+          this.configErrors = followed;
+        }
         this._knownErrorItems = followKnownErrorItems(
           this._knownErrorItems,
-          changedProps.get("config"),
+          previous,
           this.config
         );
         this._revalidate();
@@ -224,9 +234,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     public disconnectedCallback() {
       super.disconnectedCallback();
       this._revalidate.cancel();
-      if (this.configErrors.length) {
-        this._closeErrorsToast();
-      }
+      this._closeErrorsToast();
     }
 
     /** Shows the errors of saving `submitted`, the config sent to core. */
@@ -402,10 +410,8 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     protected clearConfigErrors() {
       this._validationRun++;
       this._revalidate.cancel();
-      if (this.configErrors.length) {
-        this.configErrors = NO_ERRORS;
-        this._closeErrorsToast();
-      }
+      this.configErrors = NO_ERRORS;
+      this._closeErrorsToast();
     }
 
     private _setRelatedContext(): void {

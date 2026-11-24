@@ -87,10 +87,16 @@ export const errorsEqual = (
       pathEquals(error.path, b[index].path)
   );
 
-const childAt = (value: unknown, segment: string | number): unknown =>
-  typeof value === "object" && value !== null
-    ? (value as Record<string | number, unknown>)[segment]
-    : undefined;
+const childAt = (value: unknown, segment: string | number): unknown => {
+  if (typeof value !== "object" || value === null) {
+    return undefined;
+  }
+  // A block written as a single item is its first row, see `configErrorPath`
+  if (segment === 0 && isConfigObject(value) && !("0" in value)) {
+    return value;
+  }
+  return (value as Record<string | number, unknown>)[segment];
+};
 
 const valueAt = (config: unknown, path: ConfigPath): unknown =>
   path.reduce<unknown>(childAt, config);
