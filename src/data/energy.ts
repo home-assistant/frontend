@@ -1202,6 +1202,8 @@ export interface EnergyCollection extends Omit<
   prefs?: EnergyPreferences;
   /** Calls back each time the preferences are fetched, before their data. */
   subscribePrefs(listener: () => void): () => void;
+  /** Calls back when the current load fails, so nothing waits on it. */
+  subscribeErrors(listener: () => void): () => void;
   clearPrefs(): void;
   setPeriod(newStart: Date, newEnd?: Date): void;
   setCompare(compare: CompareMode): void;
@@ -1471,6 +1473,7 @@ export const getEnergyDataCollection = (
   let subscriptionId = 0;
   let store = createStore<EnergyData>();
   const prefsListeners = new Set<() => void>();
+  const errorListeners = new Set<() => void>();
 
   const refresh = async (): Promise<void> => {
     const requestRevision = ++revision;
@@ -1504,6 +1507,7 @@ export const getEnergyDataCollection = (
         : await getEnergyData(options, prefs, start, end, compare);
     } catch (err) {
       if (requestRevision === revision) {
+        errorListeners.forEach((listener) => listener());
         throw err;
       }
       return;
@@ -1676,6 +1680,13 @@ export const getEnergyDataCollection = (
 
       return () => {
         prefsListeners.delete(listener);
+      };
+    },
+    subscribeErrors(listener) {
+      errorListeners.add(listener);
+
+      return () => {
+        errorListeners.delete(listener);
       };
     },
     clearPrefs() {

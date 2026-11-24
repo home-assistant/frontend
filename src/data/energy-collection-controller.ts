@@ -97,6 +97,12 @@ export class EnergyCollectionController extends ContextController {
      skeleton until it does */
   private _hasData = false;
 
+  /* Whether the load failed, as no data would come then and the skeleton
+     would cover the card, and controls that could try again, for good */
+  private _failed = false;
+
+  private _unsubErrors?: () => void;
+
   private _placeholderData?: EnergyData;
 
   constructor(
@@ -109,6 +115,7 @@ export class EnergyCollectionController extends ContextController {
       host,
       () =>
         this._unsub !== undefined &&
+        !this._failed &&
         (!this._hasData || this._options.loading?.() === true)
     );
   }
@@ -203,6 +210,7 @@ export class EnergyCollectionController extends ContextController {
     this._unsubscribe();
     this._key = key;
     this._hasData = false;
+    this._failed = false;
     this._collection = getEnergyDataCollection(this._connection, {
       callWS: this._callWS,
       entities: this._entities,
@@ -221,8 +229,14 @@ export class EnergyCollectionController extends ContextController {
       }
     });
 
+    this._unsubErrors = this._collection.subscribeErrors(() => {
+      this._failed = true;
+      this.host.requestUpdate();
+    });
+
     this._unsub = this._collection.subscribe((data) => {
       this._hasData = true;
+      this._failed = false;
       this._options.onData(data);
       // So the skeleton goes even if the host keeps nothing new
       this.host.requestUpdate();
@@ -237,6 +251,8 @@ export class EnergyCollectionController extends ContextController {
   private _unsubscribe(): void {
     this._unsubPrefs?.();
     this._unsubPrefs = undefined;
+    this._unsubErrors?.();
+    this._unsubErrors = undefined;
     this._unsub?.();
     this._unsub = undefined;
   }
