@@ -225,6 +225,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   // Closing it keeps the AI and its conversation, see _aiLoaded
   @state() private _aiSidebarOpen = false;
 
+  // The AI finished while the user didn't see it, until they do
+  @state() private _aiUnseenResult = false;
+
   // The conversation of the AI as it last reported it, kept per automation
   // for the browser tab, see automation-ai-session
   private _aiPanelState?: AutomationAiPanelState;
@@ -279,6 +282,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
+
+    if (this._aiUnseenResult && this._aiVisible) {
+      this._aiUnseenResult = false;
+    }
 
     // The rows show their marks only while the user looks at the changes
     this._aiDiff = this._aiShowChanges
@@ -480,10 +487,18 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
             ? html`<ha-icon-button
                   slot="toolbar-icon"
                   id="button-ai"
-                  class=${classMap({ active: aiSidebar, working: this._aiBusy })}
-                  .label=${this.hass.localize(
+                  class=${classMap({
+                    active: aiSidebar,
+                    working: this._aiBusy,
+                    unseen: this._aiUnseenResult,
+                  })}
+                  .label=${`${this.hass.localize(
                     `ui.panel.config.automation.editor.ai.${aiAction === "create" ? "create" : "menu"}`
-                  )}
+                  )}${
+                    this._aiUnseenResult
+                      ? ` (${this.hass.localize("ui.panel.config.automation.editor.ai.new_result")})`
+                      : ""
+                  }`}
                   .path=${mdiStarFourPoints}
                   .disabled=${!aiAction && !aiSidebar}
                   @click=${this._toggleAiSidebar}
@@ -502,6 +517,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         >
           <ha-icon-button
             slot="trigger"
+            class=${classMap({ unseen: this.narrow && this._aiUnseenResult })}
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
@@ -1058,10 +1074,16 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     this._aiBusy = true;
   }
 
+  // Open, and not below the sidebar of a row or hidden by its sheet
+  private get _aiVisible(): boolean {
+    return this._aiSidebarOpen && !this._sidebarOpen;
+  }
+
   private _aiRequestFinished(
     ev: HASSDomEvent<HASSDomEvents["ai-request-finished"]>
   ) {
     this._aiBusy = false;
+    this._aiUnseenResult = !this._aiVisible;
     const config = ev.detail.config;
     if (!config || !this.config) {
       return;
@@ -1893,15 +1915,35 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           55%,
           100% {
             filter: drop-shadow(0 0 0 rgba(var(--rgb-primary-color), 0));
+            transform: scale(1) rotate(0deg);
           }
           80% {
-            filter: drop-shadow(0 0 6px rgba(var(--rgb-primary-color), 0.9));
+            filter: drop-shadow(0 0 8px rgba(var(--rgb-primary-color), 0.9));
+            transform: scale(1.15) rotate(45deg);
           }
         }
         @media (prefers-reduced-motion: reduce) {
           ha-icon-button.working {
             animation: none;
+            filter: drop-shadow(0 0 6px rgba(var(--rgb-primary-color), 0.9));
           }
+        }
+        /* The AI has a result the user didn't see yet */
+        ha-icon-button.unseen {
+          position: relative;
+        }
+        ha-icon-button.unseen::after {
+          content: "";
+          position: absolute;
+          top: 8px;
+          inset-inline-end: 8px;
+          width: 8px;
+          height: 8px;
+          border-radius: var(--ha-border-radius-circle);
+          background-color: var(--accent-color);
+          box-shadow: 0 0 0 2px
+            var(--app-header-background-color, var(--primary-background-color));
+          pointer-events: none;
         }
         .ai-alias {
           padding: 0 var(--ha-space-2);

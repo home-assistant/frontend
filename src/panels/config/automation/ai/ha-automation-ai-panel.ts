@@ -94,15 +94,14 @@ export class HaAutomationAiPanel extends LitElement {
   private _request = 0;
 
   // The conversation before the running request, to go back to on stop
-  private _baseSteps: AutomationAiStep[] = [];
-
   private _baseMessages: AutomationAiMessage[] = [];
 
   @state() private _turns: AutomationAiTurn[] = [];
 
   @state() private _running?: RunningTurn;
 
-  @state() private _steps: AutomationAiStep[] = [];
+  // A request that ran when the user left the page, whose answer got lost
+  @state() private _interrupted?: string;
 
   @state() private _messages: AutomationAiMessage[] = [];
 
@@ -126,10 +125,10 @@ export class HaAutomationAiPanel extends LitElement {
     const restored = this.restoredState;
     if (changedProps.has("restoredState") && restored && !this._running) {
       this._turns = restored.turns;
-      this._steps = restored.steps;
       this._messages = restored.messages;
       this._problems = restored.problems;
       this._error = restored.error;
+      this._interrupted = restored.interrupted;
     }
   }
 
@@ -138,18 +137,19 @@ export class HaAutomationAiPanel extends LitElement {
     // Private, so not keys of `this`
     const changed = changedProps as PropertyValues;
     if (
-      !this._running &&
-      ["_running", "_turns", "_problems", "_error"].some((key) =>
-        changed.has(key)
+      ["_running", "_turns", "_problems", "_error", "_interrupted"].some(
+        (key) => changed.has(key)
       )
     ) {
+      // A running request is kept as interrupted, in case the user leaves
+      // the page before it finishes
       fireEvent(this, "ai-state-changed", {
         state: {
           turns: this._turns,
-          steps: this._steps,
-          messages: this._messages,
+          messages: this._running ? this._baseMessages : this._messages,
           problems: this._problems,
           error: this._error,
+          interrupted: this._running?.prompt ?? this._interrupted,
         },
       });
     }
@@ -160,6 +160,7 @@ export class HaAutomationAiPanel extends LitElement {
       <div class="content">
         ${this._renderEmpty()}
         ${this._turns.map((turn) => this._renderTurn(turn))}
+        ${this._renderInterrupted()}
         ${this._running ? this._renderRunning(this._running) : nothing}
         ${this._renderResult()} ${this._renderConversation()}
       </div>
@@ -172,6 +173,12 @@ export class HaAutomationAiPanel extends LitElement {
     await this.updateComplete;
     await this._promptEditor?.updateComplete;
     this._promptEditor?.focus();
+  }
+
+  // On one line, the bubble keeps white space
+  private _renderUserMessage(prompt: string) {
+    const text = this._renderPromptText(prompt);
+    return html`<div class="message user">${text}</div>`;
   }
 
   private _renderPromptText(prompt: string) {
@@ -203,7 +210,6 @@ export class HaAutomationAiPanel extends LitElement {
     }
     // The backend finishes the request, its result is dropped
     this._request++;
-    this._steps = this._baseSteps;
     this._messages = this._baseMessages;
     this._running = undefined;
     this._prompt = running.prompt;
@@ -212,7 +218,12 @@ export class HaAutomationAiPanel extends LitElement {
 
   // Before the first request, an invitation in the middle
   private _renderEmpty() {
-    if (this._turns.length || this._running || this._error) {
+    if (
+      this._turns.length ||
+      this._running ||
+      this._error ||
+      this._interrupted
+    ) {
       return nothing;
     }
     return html`<div class="empty">
@@ -223,7 +234,7 @@ export class HaAutomationAiPanel extends LitElement {
 
   private _renderTurn(turn: AutomationAiTurn) {
     return html`
-      <div class="message user">${this._renderPromptText(turn.prompt)}</div>
+      ${this._renderUserMessage(turn.prompt)}
       <ha-markdown
         class="message assistant"
         breaks
@@ -234,7 +245,7 @@ export class HaAutomationAiPanel extends LitElement {
 
   private _renderRunning(turn: RunningTurn) {
     return html`
-      <div class="message user">${this._renderPromptText(turn.prompt)}</div>
+      ${this._renderUserMessage(turn.prompt)}
       <ul class="steps" aria-live="polite">
         ${turn.steps.map((step) => this._renderStep(step))}
       </ul>
@@ -269,6 +280,33 @@ export class HaAutomationAiPanel extends LitElement {
         )}
       </li>
     `;
+  }
+
+  private _renderInterrupted() {
+    if (!this._interrupted || this._running) {
+      return nothing;
+    }
+    return html`
+      ${this._renderUserMessage(this._interrupted)}
+      <ha-alert alert-type="warning">
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.ai.interrupted"
+        )}
+        <ha-button slot="action" size="s" @click=${this._sendAgain}>
+          ${this.hass.localize(
+            "ui.panel.config.automation.editor.ai.send_again"
+          )}
+        </ha-button>
+      </ha-alert>
+    `;
+  }
+
+  private _sendAgain() {
+    if (!this._interrupted) {
+      return;
+    }
+    this._prompt = this._interrupted;
+    this._submit();
   }
 
   private _renderResult() {
@@ -312,8 +350,9 @@ export class HaAutomationAiPanel extends LitElement {
     `;
   }
 
+  // The messages with the AI, the steps already show above
   private _renderConversation() {
-    if (!this._steps.length && !this._messages.length) {
+    if (this._running || !this._messages.length) {
       return nothing;
     }
     return html`
@@ -323,9 +362,6 @@ export class HaAutomationAiPanel extends LitElement {
           "ui.panel.config.automation.editor.ai.show_conversation"
         )}
       >
-        <ul class="steps">
-          ${this._steps.map((step) => this._renderStep(step))}
-        </ul>
         ${this._messages.map(
           (message) => html`
             <ha-expansion-panel
@@ -507,11 +543,10 @@ export class HaAutomationAiPanel extends LitElement {
     this._prompt = "";
     this._error = undefined;
     this._problems = [];
+    this._interrupted = undefined;
     this._running = { prompt, steps: [] };
-    // Steps and messages of earlier requests stay in the conversation
-    const baseSteps = this._steps;
+    // Messages of earlier requests stay in the conversation
     const baseMessages = this._messages;
-    this._baseSteps = baseSteps;
     this._baseMessages = baseMessages;
     const request = ++this._request;
     const current = () => request === this._request;
@@ -532,7 +567,6 @@ export class HaAutomationAiPanel extends LitElement {
           if (!current()) {
             return;
           }
-          this._steps = [...baseSteps, ...steps];
           this._running = { prompt, steps };
           this._scrollToEnd();
         },
@@ -652,9 +686,6 @@ export class HaAutomationAiPanel extends LitElement {
     ha-expansion-panel {
       --expansion-panel-content-padding: 0 var(--ha-space-2);
     }
-    ha-expansion-panel .steps {
-      margin: var(--ha-space-2) 0;
-    }
     .conversation-message {
       margin-bottom: var(--ha-space-2);
     }
@@ -669,6 +700,10 @@ export class HaAutomationAiPanel extends LitElement {
     }
     ha-action-bar {
       flex-shrink: 0;
+    }
+    /* The action of an alert is as narrow as its longest word */
+    ha-alert ha-button::part(label) {
+      white-space: nowrap;
     }
     .empty {
       margin: auto;

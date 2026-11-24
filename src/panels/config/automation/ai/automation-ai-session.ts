@@ -2,17 +2,17 @@ import { getStorage } from "../../../../common/decorators/storage";
 import type { AutomationConfig } from "../../../../data/automation";
 import type {
   AutomationAiMessage,
-  AutomationAiStep,
   AutomationAiTurn,
 } from "./automation-ai-agent";
 
-/** The conversation of the AI panel, without a request that still runs. */
+/** The conversation of the AI panel, a running request as interrupted. */
 export interface AutomationAiPanelState {
   turns: AutomationAiTurn[];
-  steps: AutomationAiStep[];
   messages: AutomationAiMessage[];
   problems: string[];
   error?: string;
+  /** A request whose answer got lost, because the user left the page. */
+  interrupted?: string;
 }
 
 /** What the AI of one automation keeps while the user goes elsewhere. */
@@ -41,7 +41,11 @@ export const saveAiSession = (
   session: AutomationAiSession
 ) => {
   const { [automationId]: _old, ...others } = sessions();
-  const keep = !!(session.panel?.turns.length || session.change);
+  const keep = !!(
+    session.panel?.turns.length ||
+    session.panel?.interrupted ||
+    session.change
+  );
   getStorage("sessionStorage").setValue(
     STORAGE_KEY,
     keep ? { ...others, [automationId]: session } : others
