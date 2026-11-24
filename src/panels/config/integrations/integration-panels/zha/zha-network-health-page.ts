@@ -19,6 +19,7 @@ import { consumeEntityStates } from "../../../../../common/decorators/consume-co
 import { batteryLevelIconPath } from "../../../../../common/entity/battery_icon";
 import { formatNumberWithUnit } from "../../../../../common/number/format_number";
 import { stringCompare } from "../../../../../common/string/compare";
+import { slugify } from "../../../../../common/string/slugify";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
@@ -268,10 +269,8 @@ class ZHANetworkHealthPage extends LitElement {
 
   /** The finding a subpage shows, taken from the path below the page. */
   private get _subpage(): WorthALookKey | undefined {
-    const key = this.route?.path?.replace(/^\//, "").split("/")[0];
-    return WORTH_A_LOOK.includes(key as WorthALookKey)
-      ? (key as WorthALookKey)
-      : undefined;
+    const segment = this.route?.path?.replace(/^\//, "").split("/")[0];
+    return WORTH_A_LOOK.find((key) => slugify(key, "-") === segment);
   }
 
   protected render(): TemplateResult {
@@ -386,9 +385,13 @@ class ZHANetworkHealthPage extends LitElement {
             <ha-svg-icon .path=${mdiClockOutline}></ha-svg-icon>
             <span>
               ${this._i18n.localize(
-                "ui.panel.config.zha.network_health.updated"
+                "ui.panel.config.zha.network_health.updated",
+                {
+                  relative_time: html`<ha-relative-time
+                    .datetime=${this._updatedAt}
+                  ></ha-relative-time>`,
+                }
               )}
-              <ha-relative-time .datetime=${this._updatedAt}></ha-relative-time>
             </span>
           </p>
         </div>
@@ -524,7 +527,7 @@ class ZHANetworkHealthPage extends LitElement {
         <ha-list-nav .ariaLabel=${title}>
           ${keys.map(
             (key) => html`
-              <ha-list-item-button href=${`${BASE_PATH}/${key}`}>
+              <ha-list-item-button href=${`${BASE_PATH}/${slugify(key, "-")}`}>
                 <ha-svg-icon
                   slot="start"
                   .path=${FINDING_ICON[key]}
@@ -608,9 +611,15 @@ class ZHANetworkHealthPage extends LitElement {
       const lqi = linkQuality(device, links);
       icon = BAND_ICON[band];
       iconClass = `signal ${band}`;
-      value = `${this._i18n.localize("ui.panel.config.zha.neighbors.lqi")} ${
-        lqi === null ? "—" : formatNumberWithUnit(lqi, null, this._i18n.locale)
-      }`;
+      value = this._i18n.localize(
+        "ui.panel.config.zha.network_health.lqi_value",
+        {
+          lqi:
+            lqi === null
+              ? "—"
+              : formatNumberWithUnit(lqi, null, this._i18n.locale),
+        }
+      );
     }
 
     const parent =
@@ -721,7 +730,7 @@ class ZHANetworkHealthPage extends LitElement {
         /* A lighter shade of strong: fair is fine, just not as robust. */
         .segment.fair,
         .dot.fair {
-          background-color: color-mix(in srgb, var(--success-color) 45%, white);
+          background-color: var(--ha-color-green-70);
         }
 
         .segment.weak,
@@ -798,7 +807,7 @@ class ZHANetworkHealthPage extends LitElement {
         }
 
         .signal.fair {
-          color: color-mix(in srgb, var(--success-color) 45%, white);
+          color: var(--ha-color-green-70);
         }
 
         /* ha-svg-icon raises the specificity above the slot rule above. */
