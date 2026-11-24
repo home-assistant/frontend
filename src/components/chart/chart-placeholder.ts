@@ -19,4 +19,10 @@ export const chartPlaceholderStyles = css`
     height: 16px;
     margin: 10px auto;
   }
+  /* Legend rows grow to 40px on touch screens, as ha-chart-base draws them */
+  @media (pointer: coarse) {
+    .legend-placeholder {
+      margin: 18px auto;
+    }
+  }
 `;

@@ -2510,8 +2510,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       .chart-legend ul {
         row-gap: 0;
       }
-      /* Only grow the toggle rows, not the expand/collapse chip's row. */
-      .chart-legend li:has(.legend-toggle) {
+      /* Only grow the toggle rows, not the expand/collapse chip's row. The
+         loading row stands in for toggle rows, so it grows too. */
+      .chart-legend li:has(.legend-toggle),
+      .chart-legend li:has(.legend-placeholder) {
         height: 40px;
         padding: 0;
       }

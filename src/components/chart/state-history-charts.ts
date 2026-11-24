@@ -258,7 +258,15 @@ export class StateHistoryCharts extends LitElement {
           <div class="info placeholder" data-skeleton="block">
             ${index === 0 && !expected.timelineRows ? label : nothing}
           </div>
-          <div class="legend-placeholder" data-skeleton="text"></div>
+          ${
+            // The loaded chart only has a legend when it shows names
+            this.showNames
+              ? html`<div
+                  class="legend-placeholder"
+                  data-skeleton="text"
+                ></div>`
+              : nothing
+          }
         </div>`
     );
 
