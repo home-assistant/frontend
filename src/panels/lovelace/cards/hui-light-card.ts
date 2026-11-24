@@ -242,13 +242,12 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   private _dragEvent(ev: HASSDomEvent<HASSDomEvents["value-changing"]>): void {
     const { value } = ev.detail;
     if (value === undefined) {
-      this._hideBrightness(500);
+      this._hideBrightness();
       return;
     }
     if (typeof value !== "number" || isNaN(value)) return;
     this.shadowRoot!.querySelector(".brightness")!.innerHTML = `${value} %`;
     this._showBrightness();
-    this._hideBrightness(3000);
   }
 
   private _showBrightness(): void {
@@ -258,13 +257,13 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     );
   }
 
-  private _hideBrightness(delay: number): void {
+  private _hideBrightness(): void {
     clearTimeout(this._brightnessTimout);
     this._brightnessTimout = window.setTimeout(() => {
       this.shadowRoot!.querySelector(".brightness")?.classList.remove(
         "show_brightness"
       );
-    }, delay);
+    }, 500);
   }
 
   private _setBrightness(
