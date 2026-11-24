@@ -787,9 +787,12 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
               : "ui.panel.lovelace.cards.todo-list.swipe_reactivate"
           );
     return html`<div
-      class="swipe-indicator ${indicator.action} ${indicator.side} ${classMap({
+      class=${classMap({
+        "swipe-indicator": true,
+        [indicator.action]: true,
+        [indicator.side]: true,
         armed: indicator.armed,
-      })}"
+      })}
       style=${styleMap({
         top: `${indicator.top}px`,
         height: `${indicator.height}px`,
@@ -1224,9 +1227,14 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
     const cardRect = card.getBoundingClientRect();
     const itemRect = swipe.item.getBoundingClientRect();
+    // Position relative to the card's padding box (inside its border) and snap
+    // to whole pixels within the item, so the indicator never peeks out
+    const offset = cardRect.top + card.clientTop - card.scrollTop;
+    const top = Math.ceil(itemRect.top - offset);
+    const bottom = Math.floor(itemRect.bottom - offset);
     this._swipeIndicator = {
-      top: itemRect.top - cardRect.top + card.scrollTop,
-      height: itemRect.height,
+      top,
+      height: bottom - top,
       side,
       action,
       armed,
@@ -1477,30 +1485,43 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       padding: 0 var(--ha-space-5);
       box-sizing: border-box;
       font-weight: var(--ha-font-weight-medium);
-      opacity: 0.6;
       pointer-events: none;
-      transition: opacity var(--ha-animation-duration-fast, 150ms) ease-out;
-    }
-
-    .swipe-indicator.armed {
-      opacity: 1;
+      transition:
+        background-color var(--ha-animation-duration-fast, 150ms) ease-out,
+        color var(--ha-animation-duration-fast, 150ms) ease-out;
     }
 
     .swipe-indicator.right {
       justify-content: flex-end;
     }
 
+    /* Subtle fill while swiping, loud fill once releasing triggers the action */
     .swipe-indicator.complete {
+      background-color: var(--ha-color-fill-success-normal-resting);
+      color: var(--ha-color-on-success-normal);
+    }
+
+    .swipe-indicator.complete.armed {
       background-color: var(--ha-color-fill-success-loud-resting);
       color: var(--ha-color-on-success-loud);
     }
 
     .swipe-indicator.uncomplete {
+      background-color: var(--ha-color-fill-primary-normal-resting);
+      color: var(--ha-color-on-primary-normal);
+    }
+
+    .swipe-indicator.uncomplete.armed {
       background-color: var(--ha-color-fill-primary-loud-resting);
       color: var(--ha-color-on-primary-loud);
     }
 
     .swipe-indicator.delete {
+      background-color: var(--ha-color-fill-danger-normal-resting);
+      color: var(--ha-color-on-danger-normal);
+    }
+
+    .swipe-indicator.delete.armed {
       background-color: var(--ha-color-fill-danger-loud-resting);
       color: var(--ha-color-on-danger-loud);
     }
