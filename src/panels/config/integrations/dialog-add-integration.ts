@@ -336,8 +336,8 @@ class AddIntegrationDialog extends LitElement {
 
   private _getListItems = memoizeOne(
     (
-      i: Brands,
-      h: Integrations,
+      allIntegrations: Brands,
+      allHelpers: Integrations,
       localize: LocalizeFunc,
       connection?: Connection
     ): {
@@ -348,7 +348,7 @@ class AddIntegrationDialog extends LitElement {
       const integrations: IntegrationListItem[] = [];
       const yamlIntegrations: IntegrationListItem[] = [];
 
-      Object.entries(i).forEach(([domain, integration]) => {
+      Object.entries(allIntegrations).forEach(([domain, integration]) => {
         if (
           "integration_type" in integration &&
           integration.integration_type === "hardware"
@@ -428,17 +428,19 @@ class AddIntegrationDialog extends LitElement {
         }
       });
 
-      const helpers = Object.entries(h).map(([domain, integration]) => ({
-        id: domain,
-        interactive: true,
-        domain,
-        name: integration.name || domainToName(localize, domain),
-        config_flow: integration.config_flow,
-        is_helper: true,
-        is_built_in: integration.is_built_in !== false,
-        cloud: integration.iot_class?.startsWith("cloud_"),
-        categories: integration.categories,
-      }));
+      const helpers = Object.entries(allHelpers).map(
+        ([domain, integration]) => ({
+          id: domain,
+          interactive: true,
+          domain,
+          name: integration.name || domainToName(localize, domain),
+          config_flow: integration.config_flow,
+          is_helper: true,
+          is_built_in: integration.is_built_in !== false,
+          cloud: integration.iot_class?.startsWith("cloud_"),
+          categories: integration.categories,
+        })
+      );
 
       const ofThisConnection = (item: IntegrationListItem) =>
         item.domains
@@ -454,8 +456,8 @@ class AddIntegrationDialog extends LitElement {
 
   private _filterIntegrations = memoizeOne(
     (
-      i: Brands,
-      h: Integrations,
+      allIntegrations: Brands,
+      allHelpers: Integrations,
       localize: LocalizeFunc,
       category?: string,
       subcategory?: string,
@@ -464,8 +466,8 @@ class AddIntegrationDialog extends LitElement {
       connection?: Connection
     ): IntegrationListItem[] => {
       const { integrations, helpers } = this._getListItems(
-        i,
-        h,
+        allIntegrations,
+        allHelpers,
         localize,
         connection
       );
@@ -578,12 +580,12 @@ class AddIntegrationDialog extends LitElement {
   // Single integrations are only under all brands
   private _getBrands = memoizeOne(
     (
-      i: Brands,
-      h: Integrations,
+      allIntegrations: Brands,
+      allHelpers: Integrations,
       localize: LocalizeFunc,
       connection?: Connection
     ) =>
-      this._getListItems(i, h, localize, connection)
+      this._getListItems(allIntegrations, allHelpers, localize, connection)
         .integrations.filter((item) => this._isBrand(item))
         .map((item) => ({
           item,
@@ -705,8 +707,8 @@ class AddIntegrationDialog extends LitElement {
 
   private _getSearchFound = memoizeOne(
     (
-      i: Brands,
-      h: Integrations,
+      allIntegrations: Brands,
+      allHelpers: Integrations,
       localize: LocalizeFunc,
       filter: string,
       categoryIcons: IntegrationCategoryIcons | undefined,
@@ -714,8 +716,8 @@ class AddIntegrationDialog extends LitElement {
       connection?: Connection
     ): Record<SearchSection, IntegrationListItem[]> => {
       const { integrations, yamlIntegrations, helpers } = this._getListItems(
-        i,
-        h,
+        allIntegrations,
+        allHelpers,
         localize,
         connection
       );
@@ -740,7 +742,12 @@ class AddIntegrationDialog extends LitElement {
       });
 
       const brands: IntegrationListItem[] = browse
-        ? this._getBrands(i, h, localize, connection).map(({ item }) => ({
+        ? this._getBrands(
+            allIntegrations,
+            allHelpers,
+            localize,
+            connection
+          ).map(({ item }) => ({
             ...item,
             result: "brand",
             description: item.integrations?.join(", "),
