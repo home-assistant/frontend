@@ -76,6 +76,10 @@ export class HaSkeletonOverlay extends LitElement {
 
   private _hiddenColor = new Map<HTMLElement, string>();
 
+  /* Inline colours of content left out inside hidden text, which keeps its
+     own colour meanwhile */
+  private _keptColor = new Map<HTMLElement, string>();
+
   /* Whether the content was inert before loading made it so */
   private _hiddenInert = new Map<HTMLElement, boolean>();
 
@@ -258,7 +262,8 @@ export class HaSkeletonOverlay extends LitElement {
     }
   }
 
-  /* Whether a source is still inside this overlay, through shadow roots */
+  /* Whether a source is still inside this overlay, the way its events
+     travel: through the slots content shows in, and out of shadow roots */
   private _holds(source: EventTarget) {
     if (!(source instanceof Node)) {
       return true;
@@ -271,7 +276,12 @@ export class HaSkeletonOverlay extends LitElement {
         return true;
       }
 
-      node = node instanceof ShadowRoot ? node.host : node.parentNode;
+      node =
+        node instanceof ShadowRoot
+          ? node.host
+          : ((node instanceof Element || node instanceof Text
+              ? node.assignedSlot
+              : null) ?? node.parentNode);
     }
 
     return false;
@@ -329,11 +339,30 @@ export class HaSkeletonOverlay extends LitElement {
       part.style.opacity = "0";
     });
 
+    // What's left out with data-skeleton="none" inside text that's hidden
+    // keeps the colour it has now, rather than taking the transparent one.
+    // Read before any text is hidden.
+    const kept = skeleton.textParts.flatMap((part) =>
+      [...part.querySelectorAll('[data-skeleton="none"]')].flatMap((element) =>
+        element instanceof HTMLElement
+          ? [[element, getComputedStyle(element).color] as const]
+          : []
+      )
+    );
+
     // Text goes through its colour, so a frame drawn by the same element,
     // such as a badge's pill, stays
     skeleton.textParts.forEach((part) => {
       this._hiddenColor.set(part, part.style.color);
       part.style.color = "transparent";
+    });
+
+    kept.forEach(([element, color]) => {
+      if (!this._keptColor.has(element)) {
+        this._keptColor.set(element, element.style.color);
+      }
+
+      element.style.color = color;
     });
   }
 
@@ -344,8 +373,12 @@ export class HaSkeletonOverlay extends LitElement {
     this._hiddenColor.forEach((color, part) => {
       part.style.color = color;
     });
+    this._keptColor.forEach((color, element) => {
+      element.style.color = color;
+    });
     this._hiddenOpacity.clear();
     this._hiddenColor.clear();
+    this._keptColor.clear();
   }
 
   /* The whole content can't be focused, used or read out while it loads,
