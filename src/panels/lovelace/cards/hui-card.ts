@@ -275,6 +275,11 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
         }
       }
       if (changedProps.has("preview")) {
+        // Sizes are remembered outside edit mode only, which this changes
+        if (this.config) {
+          this._setSkeletonKeys(this.config);
+        }
+
         try {
           this._element.preview = this.preview;
           // For backwards compatibility
