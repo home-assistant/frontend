@@ -2333,6 +2333,8 @@ class AddIntegrationDialog extends LitElement {
       .groups .count {
         color: var(--ha-color-text-secondary);
         font-size: var(--ha-font-size-s);
+        /* Digits have no descenders, centering the line box sets them high */
+        text-box: trim-both cap alphabetic;
       }
       .groups ha-label {
         border: none;
