@@ -273,6 +273,7 @@ class DemoCardSkeletons extends LitElement {
     return html`
       <ha-demo-options>
         <ha-switch
+          .accessibleLabel=${"Loading"}
           .checked=${this._loaded.size === 0}
           .disabled=${this._simulating}
           @change=${this._loadingToggled}
