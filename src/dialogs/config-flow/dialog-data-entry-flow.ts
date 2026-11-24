@@ -582,11 +582,9 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
   // Debug logging is only offered while setting up an integration,
   // so it also covers integrations that have not been set up before.
   private get _debugLoggingDomain(): string | undefined {
-    if (
-      this._params?.flowConfig.flowType !== "config_flow" ||
-      this._loading ||
-      !this._step
-    ) {
+    // The current step stays set while the next step loads, so the debug
+    // logging controls stay available during a slow setup request.
+    if (this._params?.flowConfig.flowType !== "config_flow" || !this._step) {
       return undefined;
     }
     return this._params.domain ?? this._step.handler;
