@@ -10410,7 +10410,10 @@
             "drag_and_drop": "Drag and drop",
             "delete_item": "Delete item",
             "delete_confirm_title": "Remove completed items?",
-            "delete_confirm_text": "{number} {number, plural,\n  one {item}\n  other {items}\n} will be permanently removed from the to-do list."
+            "delete_confirm_text": "{number} {number, plural,\n  one {item}\n  other {items}\n} will be permanently removed from the to-do list.",
+            "delete_duplicates": "Delete duplicate items",
+            "delete_duplicates_confirm_title": "Delete duplicate items?",
+            "delete_duplicates_confirm_text": "{number} duplicate {number, plural,\n  one {item}\n  other {items}\n} will be permanently deleted from the to-do list. Active items are kept."
           },
           "picture-elements": {
             "hold": "Hold:",
@@ -11962,6 +11965,8 @@
               "due_date_period": "Due date",
               "due_date_period_helper": "Filter items to those which have a due date in the selected period.",
               "item_tap_action": "Item tap behavior",
+              "swipe_actions": "Swipe actions",
+              "swipe_actions_helper": "Swipe an active item to complete it. Swipe a completed item toward the start to delete it, or toward the end to make it active again.",
               "actions": {
                 "edit": "Default (edit item)",
                 "toggle": "Toggle item"

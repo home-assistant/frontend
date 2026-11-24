@@ -1,5 +1,6 @@
 import {
   mdiClock,
+  mdiContentDuplicate,
   mdiDelete,
   mdiDeleteSweep,
   mdiDotsVertical,
@@ -69,13 +70,15 @@ import {
   uiContext,
 } from "../../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
-import type { TodoItem } from "../../../data/todo";
+import type { TodoItem, TodoSwipeAction } from "../../../data/todo";
 import {
   TodoItemStatus,
   TodoListEntityFeature,
   TodoSortMode,
   createItem,
   deleteItems,
+  findDuplicateTodoItems,
+  getTodoSwipeAction,
   moveItem,
   subscribeItems,
   updateItem,
@@ -99,6 +102,19 @@ import type { TodoListCardConfig } from "./types";
 
 export const ITEM_TAP_ACTION_EDIT = "edit";
 export const ITEM_TAP_ACTION_TOGGLE = "toggle";
+
+const SWIPE_START_THRESHOLD = 10;
+const SWIPE_MIN_TRIGGER_DISTANCE = 72;
+const SWIPE_TRIGGER_RATIO = 0.3;
+
+interface TodoSwipeState {
+  item: HaListItemOption;
+  pointerId: number;
+  startX: number;
+  startY: number;
+  offset: number;
+  horizontal: boolean;
+}
 
 interface TodoDueDatePeriod {
   calendar?: {
@@ -187,6 +203,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   private _unsubItems?: Promise<UnsubscribeFunc>;
 
   private _refreshTimer?: number;
+
+  private _swipe?: TodoSwipeState;
+
+  private _suppressNextTap = false;
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -685,29 +705,59 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _renderMenu(config: TodoListCardConfig, _unavailable: boolean) {
-    return (!config.display_order ||
-      config.display_order === TodoSortMode.NONE) &&
-      this._todoListSupportsFeature(TodoListEntityFeature.MOVE_TODO_ITEM)
-      ? html`<ha-dropdown
-          @wa-select=${this._handlePrimaryMenuSelect}
-          placement="bottom-end"
-        >
-          <ha-icon-button
-            slot="trigger"
-            .path=${mdiDotsVertical}
-            .label=${this._i18n.localize("ui.common.menu")}
-          ></ha-icon-button>
-          <ha-dropdown-item value="reorder">
-            ${this._i18n.localize(
-              this._reordering
-                ? "ui.panel.lovelace.cards.todo-list.exit_reorder_items"
-                : "ui.panel.lovelace.cards.todo-list.reorder_items"
-            )}
-            <ha-svg-icon slot="icon" .path=${mdiSort}> </ha-svg-icon>
-          </ha-dropdown-item>
-        </ha-dropdown>`
-      : nothing;
+  private _renderMenu(config: TodoListCardConfig, unavailable: boolean) {
+    const canReorder =
+      (!config.display_order || config.display_order === TodoSortMode.NONE) &&
+      this._todoListSupportsFeature(TodoListEntityFeature.MOVE_TODO_ITEM);
+    const canDeleteDuplicates =
+      !this._reordering &&
+      this._todoListSupportsFeature(TodoListEntityFeature.DELETE_TODO_ITEM);
+    if (!canReorder && !canDeleteDuplicates) {
+      return nothing;
+    }
+    return html`<ha-dropdown
+      @wa-select=${this._handlePrimaryMenuSelect}
+      placement="bottom-end"
+    >
+      <ha-icon-button
+        slot="trigger"
+        .path=${mdiDotsVertical}
+        .label=${this._i18n.localize("ui.common.menu")}
+      ></ha-icon-button>
+      ${
+        canReorder
+          ? html`<ha-dropdown-item value="reorder">
+              ${this._i18n.localize(
+                this._reordering
+                  ? "ui.panel.lovelace.cards.todo-list.exit_reorder_items"
+                  : "ui.panel.lovelace.cards.todo-list.reorder_items"
+              )}
+              <ha-svg-icon slot="icon" .path=${mdiSort}> </ha-svg-icon>
+            </ha-dropdown-item>`
+          : nothing
+      }
+      ${
+        canDeleteDuplicates
+          ? html`<ha-dropdown-item
+              value="delete_duplicates"
+              variant="danger"
+              .disabled=${
+                unavailable ||
+                !this._getDuplicateItems(
+                  this._items,
+                  this._i18n.locale.language
+                ).length
+              }
+            >
+              ${this._i18n.localize(
+                "ui.panel.lovelace.cards.todo-list.delete_duplicates"
+              )}
+              <ha-svg-icon slot="icon" .path=${mdiContentDuplicate}>
+              </ha-svg-icon>
+            </ha-dropdown-item>`
+          : nothing
+      }
+    </ha-dropdown>`;
   }
 
   private _getDueDate(item: TodoItem): Date | undefined {
@@ -733,6 +783,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             );
           const showReorder =
             item.status !== TodoItemStatus.Completed && this._reordering;
+          const swipeable = this._swipeEnabled(unavailable);
           const due = this._getDueDate(item);
           const today =
             due && !item.due!.includes("T") && isSameDay(new Date(), due);
@@ -744,11 +795,16 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                 draggable: item.status !== TodoItemStatus.Completed,
                 completed: item.status === TodoItemStatus.Completed,
                 multiline: Boolean(item.description || item.due),
+                swipeable,
               })}"
               .selected=${item.status === TodoItemStatus.Completed}
               .disabled=${unavailable}
               @keydown=${this._handleKeydown}
               @click=${this._itemTap}
+              @pointerdown=${swipeable ? this._swipeStart : undefined}
+              @pointermove=${swipeable ? this._swipeMove : undefined}
+              @pointerup=${swipeable ? this._swipeEnd : undefined}
+              @pointercancel=${swipeable ? this._swipeCancel : undefined}
             >
               <ha-checkbox
                 slot="start"
@@ -898,6 +954,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     ev: Event & HASSDomCurrentTargetEvent<HaListItemOption>
   ): void {
     ev.stopPropagation();
+    if (this._suppressNextTap) {
+      this._suppressNextTap = false;
+      return;
+    }
     if (
       !this._config!.item_tap_action ||
       this._config!.item_tap_action === ITEM_TAP_ACTION_EDIT
@@ -1036,7 +1096,194 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   private _handlePrimaryMenuSelect(ev: HaDropdownSelectEvent) {
     if (ev.detail?.item?.value === "reorder") {
       this._toggleReorder();
+    } else if (ev.detail?.item?.value === "delete_duplicates") {
+      this._deleteDuplicateItems();
     }
+  }
+
+  private _getDuplicateItems = memoizeOne(
+    (items: TodoItem[] | undefined, language: string): TodoItem[] =>
+      items ? findDuplicateTodoItems(items, language) : []
+  );
+
+  private _deleteDuplicateItems() {
+    const uids = this._getDuplicateItems(
+      this._items,
+      this._i18n.locale.language
+    ).map((item) => item.uid);
+    if (!uids.length) {
+      return;
+    }
+    showConfirmationDialog(this, {
+      title: this._i18n.localize(
+        "ui.panel.lovelace.cards.todo-list.delete_duplicates_confirm_title"
+      ),
+      text: this._i18n.localize(
+        "ui.panel.lovelace.cards.todo-list.delete_duplicates_confirm_text",
+        { number: uids.length }
+      ),
+      dismissText: this._i18n.localize("ui.common.cancel"),
+      confirmText: this._i18n.localize("ui.common.delete"),
+      destructive: true,
+      confirm: () => {
+        deleteItems(this._api.callService, this._entityId!, uids);
+      },
+    });
+  }
+
+  private _swipeEnabled(unavailable: boolean): boolean {
+    return (
+      Boolean(this._config?.swipe_actions) &&
+      !unavailable &&
+      !this._reordering &&
+      this._todoListSupportsFeature(TodoListEntityFeature.UPDATE_TODO_ITEM)
+    );
+  }
+
+  private _swipeStart(
+    ev: PointerEvent & HASSDomCurrentTargetEvent<HaListItemOption>
+  ): void {
+    if (!ev.isPrimary || ev.button !== 0) {
+      return;
+    }
+    // Let interactive children (checkbox, buttons, links) handle their own pointer events
+    if (
+      ev
+        .composedPath()
+        .some(
+          (el) =>
+            el instanceof HTMLElement &&
+            ["ha-checkbox", "ha-icon-button", "a", "button"].includes(
+              el.localName
+            )
+        )
+    ) {
+      return;
+    }
+    this._swipe = {
+      item: ev.currentTarget,
+      pointerId: ev.pointerId,
+      startX: ev.clientX,
+      startY: ev.clientY,
+      offset: 0,
+      horizontal: false,
+    };
+  }
+
+  private _swipeMove(ev: PointerEvent): void {
+    const swipe = this._swipe;
+    if (!swipe || swipe.pointerId !== ev.pointerId) {
+      return;
+    }
+    const deltaX = ev.clientX - swipe.startX;
+    const deltaY = ev.clientY - swipe.startY;
+    if (!swipe.horizontal) {
+      if (
+        Math.abs(deltaY) > SWIPE_START_THRESHOLD &&
+        Math.abs(deltaY) > Math.abs(deltaX)
+      ) {
+        // Vertical movement: leave it to scrolling
+        this._swipe = undefined;
+        return;
+      }
+      if (Math.abs(deltaX) < SWIPE_START_THRESHOLD) {
+        return;
+      }
+      swipe.horizontal = true;
+      swipe.item.setPointerCapture(ev.pointerId);
+      swipe.item.classList.add("swiping");
+    }
+    ev.preventDefault();
+    swipe.offset = deltaX;
+    // Direct style updates avoid re-rendering the list on every pointer move
+    swipe.item.style.transform = `translateX(${deltaX}px)`;
+    const action = this._swipeAction(swipe);
+    if (action) {
+      swipe.item.dataset.swipeAction = action;
+    } else {
+      delete swipe.item.dataset.swipeAction;
+    }
+  }
+
+  private _swipeEnd(ev: PointerEvent): void {
+    const swipe = this._swipe;
+    if (!swipe || swipe.pointerId !== ev.pointerId) {
+      return;
+    }
+    if (!swipe.horizontal) {
+      this._swipe = undefined;
+      return;
+    }
+    // The pointerup is followed by a click on the item, which would open the editor
+    this._suppressNextTap = true;
+    window.setTimeout(() => {
+      this._suppressNextTap = false;
+    }, 0);
+    const action = this._swipeAction(swipe);
+    this._resetSwipe();
+    if (action) {
+      this._performSwipeAction(swipe.item.value!, action);
+    }
+  }
+
+  private _swipeCancel(): void {
+    this._resetSwipe();
+  }
+
+  private _resetSwipe(): void {
+    const swipe = this._swipe;
+    this._swipe = undefined;
+    if (!swipe) {
+      return;
+    }
+    swipe.item.classList.remove("swiping");
+    swipe.item.style.transform = "";
+    delete swipe.item.dataset.swipeAction;
+  }
+
+  private _swipeAction(swipe: TodoSwipeState): TodoSwipeAction | undefined {
+    const width = swipe.item.clientWidth;
+    const triggerDistance = Math.max(
+      SWIPE_MIN_TRIGGER_DISTANCE,
+      width * SWIPE_TRIGGER_RATIO
+    );
+    if (Math.abs(swipe.offset) < triggerDistance) {
+      return undefined;
+    }
+    const item = this._getItem(swipe.item.value!);
+    if (!item) {
+      return undefined;
+    }
+    const rtl = getComputedStyle(swipe.item).direction === "rtl";
+    const towardStart = rtl ? swipe.offset > 0 : swipe.offset < 0;
+    return getTodoSwipeAction(
+      item.status,
+      towardStart ? "start" : "end",
+      this._todoListSupportsFeature(TodoListEntityFeature.DELETE_TODO_ITEM)
+    );
+  }
+
+  private _performSwipeAction(itemId: string, action: TodoSwipeAction) {
+    const item = this._getItem(itemId);
+    if (!item) {
+      return;
+    }
+    if (action === "delete") {
+      deleteItems(this._api.callService, this._entityId!, [item.uid]);
+      return;
+    }
+    const status =
+      action === "complete"
+        ? TodoItemStatus.Completed
+        : TodoItemStatus.NeedsAction;
+    if (item.status === status) {
+      return;
+    }
+    updateItem(this._api.callService, this._entityId!, {
+      uid: item.uid,
+      summary: item.summary,
+      status,
+    });
   }
 
   private _toggleReorder() {
@@ -1174,6 +1421,31 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     .completed .summary {
       text-decoration: line-through;
+    }
+
+    ha-list-item-option.swipeable {
+      touch-action: pan-y;
+      transition:
+        transform var(--ha-animation-duration-fast, 150ms) ease-out,
+        background-color var(--ha-animation-duration-fast, 150ms) ease-out;
+    }
+
+    ha-list-item-option.swiping {
+      transition: background-color var(--ha-animation-duration-fast, 150ms)
+        ease-out;
+      user-select: none;
+    }
+
+    ha-list-item-option[data-swipe-action="complete"] {
+      background-color: var(--ha-color-fill-success-normal-resting);
+    }
+
+    ha-list-item-option[data-swipe-action="uncomplete"] {
+      background-color: var(--ha-color-fill-primary-normal-resting);
+    }
+
+    ha-list-item-option[data-swipe-action="delete"] {
+      background-color: var(--ha-color-fill-danger-normal-resting);
     }
 
     .description,

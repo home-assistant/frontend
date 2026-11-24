@@ -35,6 +35,7 @@ const cardConfigStruct = assign(
     hide_section_headers: optional(boolean()),
     display_order: optional(string()),
     item_tap_action: optional(string()),
+    swipe_actions: optional(boolean()),
     due_date_period: optional(object()),
   })
 );
@@ -114,6 +115,7 @@ export class HuiTodoListEditor
                 },
               },
             },
+            { name: "swipe_actions", selector: { boolean: {} } },
           ],
         },
       ] as const
@@ -189,6 +191,7 @@ export class HuiTodoListEditor
       case "hide_section_headers":
       case "display_order":
       case "item_tap_action":
+      case "swipe_actions":
       case "due_date_period":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.todo-list.${schema.name}`
@@ -206,6 +209,7 @@ export class HuiTodoListEditor
     switch (schema.name) {
       case "hide_section_headers":
       case "due_date_period":
+      case "swipe_actions":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.todo-list.${schema.name}_helper`
         );
