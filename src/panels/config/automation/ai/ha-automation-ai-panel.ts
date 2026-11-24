@@ -100,6 +100,9 @@ export class HaAutomationAiPanel extends LitElement {
 
   @state() private _running?: RunningTurn;
 
+  // Stays at the end while answers render, until the user scrolls
+  private _followEnd = false;
+
   // A request that ran when the user left the page, whose answer got lost
   @state() private _interrupted?: string;
 
@@ -129,6 +132,7 @@ export class HaAutomationAiPanel extends LitElement {
       this._problems = restored.problems;
       this._error = restored.error;
       this._interrupted = restored.interrupted;
+      this._scrollToEnd();
     }
   }
 
@@ -157,7 +161,12 @@ export class HaAutomationAiPanel extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="content">
+      <div
+        class="content"
+        @content-resize=${this._contentResized}
+        @wheel=${this._userScrolled}
+        @touchmove=${this._userScrolled}
+      >
         ${this._renderEmpty()}
         ${this._turns.map((turn) => this._renderTurn(turn))}
         ${this._renderInterrupted()}
@@ -612,8 +621,21 @@ export class HaAutomationAiPanel extends LitElement {
   }
 
   private async _scrollToEnd() {
+    // Answers render as markdown later, which scrolls again when it did
+    this._followEnd = true;
     await this.updateComplete;
     this._content?.scrollTo({ top: this._content.scrollHeight });
+  }
+
+  private _contentResized() {
+    if (this._followEnd) {
+      this._content?.scrollTo({ top: this._content.scrollHeight });
+    }
+  }
+
+  // The user scrolls themselves, so the end no longer pulls them down
+  private _userScrolled() {
+    this._followEnd = false;
   }
 
   private _toggleChanges() {
