@@ -7904,9 +7904,6 @@
               "not_provided": "Not provided",
               "unmanageable": "Unmanageable"
             },
-            "status_pairs": {
-              "activation": "Activation"
-            },
             "headers": {
               "state_icon": "State icon",
               "entity": "Entity",

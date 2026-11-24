@@ -7,14 +7,11 @@ import {
   mdiDotsVertical,
   mdiEye,
   mdiEyeOff,
-  mdiEyeOutline,
   mdiMenuDown,
   mdiMicrophoneMessage,
   mdiMicrophoneMessageOff,
   mdiPencilOff,
   mdiPlus,
-  mdiPower,
-  mdiPulse,
   mdiRestore,
   mdiRestoreAlert,
   mdiToggleSwitch,
@@ -78,7 +75,7 @@ import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
-import type { FilterStateItem } from "../../../components/ha-filter-states";
+import type { FilterStateOption } from "../../../components/ha-filter-states";
 import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
@@ -324,59 +321,36 @@ export class HaConfigEntities extends LitElement {
 
   // The icons of the options match the ones of the status column and of the
   // actions for the selected entities
-  private _states = memoize((localize: LocalizeFunc): FilterStateItem[] => [
+  private _states = memoize((localize: LocalizeFunc): FilterStateOption[] => [
     {
-      value: "availability",
-      label: localize("ui.panel.config.entities.picker.headers.availability"),
-      iconPath: mdiPulse,
-      options: [
-        {
-          value: "available",
-          label: localize("ui.panel.config.entities.picker.status.available"),
-          iconPath: mdiCheckCircle,
-        },
-        {
-          value: "unavailable",
-          label: localize("ui.panel.config.entities.picker.status.unavailable"),
-          iconPath: mdiAlertCircle,
-        },
-      ],
+      value: "available",
+      label: localize("ui.panel.config.entities.picker.status.available"),
+      iconPath: mdiCheckCircle,
     },
     {
-      value: "activation",
-      label: localize(
-        "ui.panel.config.entities.picker.status_pairs.activation"
-      ),
-      iconPath: mdiPower,
-      options: [
-        {
-          value: "enabled",
-          label: localize("ui.panel.config.entities.picker.status.enabled"),
-          iconPath: mdiToggleSwitch,
-        },
-        {
-          value: "disabled",
-          label: localize("ui.panel.config.entities.picker.status.disabled"),
-          iconPath: mdiToggleSwitchOffOutline,
-        },
-      ],
+      value: "unavailable",
+      label: localize("ui.panel.config.entities.picker.status.unavailable"),
+      iconPath: mdiAlertCircle,
     },
     {
-      value: "visibility",
-      label: localize("ui.panel.config.entities.picker.headers.visibility"),
-      iconPath: mdiEyeOutline,
-      options: [
-        {
-          value: "visible",
-          label: localize("ui.panel.config.entities.picker.status.visible"),
-          iconPath: mdiEye,
-        },
-        {
-          value: "hidden",
-          label: localize("ui.panel.config.entities.picker.status.hidden"),
-          iconPath: mdiEyeOff,
-        },
-      ],
+      value: "enabled",
+      label: localize("ui.panel.config.entities.picker.status.enabled"),
+      iconPath: mdiToggleSwitch,
+    },
+    {
+      value: "disabled",
+      label: localize("ui.panel.config.entities.picker.status.disabled"),
+      iconPath: mdiToggleSwitchOffOutline,
+    },
+    {
+      value: "visible",
+      label: localize("ui.panel.config.entities.picker.status.visible"),
+      iconPath: mdiEye,
+    },
+    {
+      value: "hidden",
+      label: localize("ui.panel.config.entities.picker.status.hidden"),
+      iconPath: mdiEyeOff,
     },
     {
       value: "readonly",
