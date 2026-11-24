@@ -250,13 +250,17 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       this._config!.entity,
       this._config!.forecast_type as "daily" | "hourly" | "twice_daily",
       (event) => {
-        // A request this one replaced may still answer
-        if (this._subscribed !== subscription) {
-          return;
-        }
+        // After this call returns, as a mock such as the demo's can answer
+        // before it does, while `subscription` isn't set yet
+        queueMicrotask(() => {
+          // A request this one replaced may still answer
+          if (this._subscribed !== subscription) {
+            return;
+          }
 
-        this._forecastEvent = event;
-        this._forecastFailed = false;
+          this._forecastEvent = event;
+          this._forecastFailed = false;
+        });
       }
     ).catch((e) => {
       // Only the current request decides, not one it replaced
