@@ -567,6 +567,7 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
         <ha-icon-button
           slot="button"
           class="layout-toggle ${this._treeLayout ? "active" : ""}"
+          .ariaPressed=${this._treeLayout ? "true" : "false"}
           .path=${this._treeLayout ? mdiHubOutline : mdiFileTree}
           .label=${this.hass.localize(
             "ui.panel.config.mqtt.visualization.toggle_tree_layout"
