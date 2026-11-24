@@ -167,6 +167,7 @@ class PanelTodo extends LitElement {
       ({
         type: "todo-list",
         entity: entityId,
+        swipe_actions: true,
       }) as LovelaceCardConfig
   );
 
