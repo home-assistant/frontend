@@ -4,6 +4,7 @@ import {
   mdiPlusMinusVariant,
   mdiCheckCircleOutline,
   mdiSend,
+  mdiStarFourPoints,
   mdiStop,
 } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
@@ -118,6 +119,7 @@ export class HaAutomationAiPanel extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="content">
+        ${this._renderEmpty()}
         ${this._turns.map((turn) => this._renderTurn(turn))}
         ${this._running ? this._renderRunning(this._running) : nothing}
         ${this._renderResult()} ${this._renderConversation()}
@@ -167,6 +169,17 @@ export class HaAutomationAiPanel extends LitElement {
     this._running = undefined;
     this._prompt = running.prompt;
     fireEvent(this, "ai-request-finished", {});
+  }
+
+  // Before the first request, an invitation in the middle
+  private _renderEmpty() {
+    if (this._turns.length || this._running || this._error) {
+      return nothing;
+    }
+    return html`<div class="empty">
+      <ha-svg-icon .path=${mdiStarFourPoints}></ha-svg-icon>
+      <p>${this.hass.localize("ui.panel.config.automation.editor.ai.empty")}</p>
+    </div>`;
   }
 
   private _renderTurn(turn: AutomationAiTurn) {
@@ -617,6 +630,27 @@ export class HaAutomationAiPanel extends LitElement {
     }
     ha-action-bar {
       flex-shrink: 0;
+    }
+    .empty {
+      margin: auto;
+      padding: var(--ha-space-4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--ha-space-3);
+      text-align: center;
+      color: var(--secondary-text-color);
+    }
+    .empty ha-svg-icon {
+      --mdc-icon-size: 40px;
+      color: var(--secondary-text-color);
+      fill: var(--secondary-text-color);
+    }
+    .empty p {
+      margin: 0;
+      font-size: var(--ha-font-size-xl);
+      font-weight: var(--ha-font-weight-medium);
+      line-height: var(--ha-line-height-condensed);
     }
     /* Next to the button, which shows these changes */
     .line-changes {

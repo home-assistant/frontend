@@ -30,6 +30,7 @@ const COLLAPSED_HEIGHT = 85;
  *
  * @fires ai-sidebar-closed - The user closed the sidebar
  * @fires ai-sidebar-expand - The user wants the collapsed sidebar back
+ * @fires ai-sidebar-resized - The user resized the sidebar
  * @fires ai-toggle-changes - Show or hide the last changes of the AI
  */
 @customElement("ha-automation-ai-sidebar")
@@ -67,6 +68,13 @@ export class HaAutomationAiSidebar extends LitElement {
   // Where the sheet rests, so it comes back there after it was suspended
   @state() private _position: BottomSheetPosition = "half";
 
+  // Resizes like the sidebar of a row, which shares the width
+  @state() private _resizing = false;
+
+  private _resizeStartX?: number;
+
+  private _resizeStartWidth = 0;
+
   /** Shows the content of the bottom sheet, if it is collapsed. */
   public expand() {
     if (this._sheet?.position === "collapsed") {
@@ -98,7 +106,24 @@ export class HaAutomationAiSidebar extends LitElement {
       </div>
     </div>`;
     if (!this.narrow) {
-      return html`<ha-card outlined>${content}</ha-card>`;
+      return html`${
+          this.collapsed
+            ? nothing
+            : html`<div
+                class="handle ${this._resizing ? "resizing" : ""}"
+                tabindex="0"
+                @pointerdown=${this._resizeStart}
+                @pointermove=${this._resizeMove}
+                @pointerup=${this._resizeEnd}
+                @pointercancel=${this._resizeEnd}
+                @dblclick=${this._resizeReset}
+                @keydown=${this._resizeKey}
+                @focus=${this._showHandle}
+                @blur=${this._resizeEnd}
+              >
+                <div class="indicator ${this._resizing ? "" : "hidden"}"></div>
+              </div>`
+        }<ha-card outlined>${content}</ha-card>`;
     }
     // The AI stays in the light DOM meanwhile, so it keeps its conversation
     if (!this.open || this.suspended) {
@@ -162,6 +187,57 @@ export class HaAutomationAiSidebar extends LitElement {
     </div>`;
   }
 
+  private _isRtl() {
+    return getComputedStyle(this).direction === "rtl";
+  }
+
+  private _resizeStart(ev: PointerEvent) {
+    // Keeps the browser from scrolling or selecting while dragging
+    ev.preventDefault();
+    (ev.currentTarget as HTMLElement).setPointerCapture(ev.pointerId);
+    this._resizing = true;
+    this._resizeStartX = ev.clientX;
+    this._resizeStartWidth = this.offsetWidth;
+  }
+
+  private _resizeMove(ev: PointerEvent) {
+    if (this._resizeStartX === undefined) {
+      return;
+    }
+    const delta = this._resizeStartX - ev.clientX;
+    fireEvent(this, "ai-sidebar-resized", {
+      widthPx: this._resizeStartWidth + (this._isRtl() ? -delta : delta),
+    });
+  }
+
+  private _resizeEnd() {
+    this._resizeStartX = undefined;
+    this._resizing = false;
+  }
+
+  private _showHandle() {
+    this._resizing = true;
+  }
+
+  private _resizeReset(ev: MouseEvent) {
+    ev.preventDefault();
+    this._resizeEnd();
+    fireEvent(this, "ai-sidebar-resized", { widthPx: undefined });
+  }
+
+  // The arrows make it wider and narrower, like the sidebar of a row
+  private _resizeKey(ev: KeyboardEvent) {
+    if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight") {
+      return;
+    }
+    ev.preventDefault();
+    ev.stopPropagation();
+    const wider = (ev.key === "ArrowLeft") !== this._isRtl();
+    fireEvent(this, "ai-sidebar-resized", {
+      widthPx: this.offsetWidth + (wider ? 10 : -10),
+    });
+  }
+
   private _expandRequested() {
     fireEvent(this, "ai-sidebar-expand");
   }
@@ -199,6 +275,39 @@ export class HaAutomationAiSidebar extends LitElement {
   static styles = css`
     :host {
       display: block;
+    }
+    /* Like the handle of the sidebar of a row */
+    .handle {
+      position: absolute;
+      margin-inline-start: -11px;
+      height: calc(100% - 2 * var(--ha-card-border-radius, 12px));
+      width: 24px;
+      z-index: 7;
+      cursor: ew-resize;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--ha-card-border-radius, 12px) 0;
+      touch-action: none;
+    }
+    .handle.resizing {
+      cursor: grabbing;
+    }
+    .handle:focus-visible {
+      outline: none;
+    }
+    .handle .indicator {
+      background-color: var(--primary-color);
+      height: 100%;
+      width: 4px;
+      border-radius: var(--ha-border-radius-pill);
+      transition:
+        transform 180ms ease-in-out,
+        opacity 180ms ease-in-out;
+    }
+    .handle .indicator.hidden {
+      transform: scale3d(0, 1, 1);
+      opacity: 0;
     }
     :host([narrow]) {
       /* Centers the sheet on wide screens */
@@ -264,5 +373,7 @@ declare global {
   interface HASSDomEvents {
     "ai-sidebar-closed": undefined;
     "ai-sidebar-expand": undefined;
+    /** Without a width, it goes back to the default width. */
+    "ai-sidebar-resized": { widthPx?: number };
   }
 }

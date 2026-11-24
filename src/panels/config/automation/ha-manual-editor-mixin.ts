@@ -81,10 +81,11 @@ export const ManualEditorMixin = <TConfig>(
 
     @state() private _bottomSheetHeight?: number;
 
+    // Shared with the AI sidebar, which takes the same place
     @storage({
       key: "automation-sidebar-width",
       state: false,
-      subscribe: false,
+      subscribe: true,
     })
     protected sidebarWidthPx = SIDEBAR_DEFAULT_WIDTH;
 
@@ -179,6 +180,17 @@ export const ManualEditorMixin = <TConfig>(
           </div>
         </div>
       `;
+    }
+
+    protected updated(changedProps: PropertyValues<this>): void {
+      super.updated(changedProps);
+      // The AI sidebar resized it. Protected, so not a key of `this`.
+      if ((changedProps as PropertyValues).has("sidebarWidthPx")) {
+        this.style.setProperty(
+          "--sidebar-dynamic-width",
+          `${this.sidebarWidthPx}px`
+        );
+      }
     }
 
     protected firstUpdated(changedProps: PropertyValues<this>): void {

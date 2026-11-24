@@ -81,6 +81,9 @@ import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../../resources/styles";
+import { storage } from "../../../common/decorators/storage";
+import { SIDEBAR_DEFAULT_WIDTH } from "./ha-manual-editor-mixin";
+import { CONTENT_MIN_WIDTH, SIDEBAR_MIN_WIDTH } from "./styles";
 import type { Entries, ValueChangedEvent } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showEditorToast } from "./editor-toast";
@@ -216,6 +219,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   // Closing it keeps the AI and its conversation, see _aiLoaded
   @state() private _aiSidebarOpen = false;
+
+  // The width of the AI sidebar, which the sidebar of a row shares
+  @storage({ key: "automation-sidebar-width", state: true, subscribe: true })
+  private _sidebarWidthPx = SIDEBAR_DEFAULT_WIDTH;
 
   @provide({ context: automationDiffContext })
   @state()
@@ -358,7 +365,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           this.config.alias ||
           this.hass.localize("ui.panel.config.automation.editor.default_name")
         }
-        style=${styleMap({ "--general-sheet-space": aiSheetSpace })}
+        style=${styleMap({
+          "--general-sheet-space": aiSheetSpace,
+          "--sidebar-dynamic-width": `${this._sidebarWidthPx}px`,
+        })}
       >
         ${
           aiSettings.alias
@@ -903,6 +913,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                   ?hidden=${!this.narrow && !this._aiSidebarOpen}
                   @ai-sidebar-closed=${this._closeAiSidebar}
                   @ai-sidebar-expand=${this._expandAiSidebar}
+                  @ai-sidebar-resized=${this._aiSidebarResized}
                   @ai-toggle-changes=${this._aiToggleChanges}
                   @bottom-sheet-resized=${this._aiSheetResized}
                 >
@@ -966,6 +977,15 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       return;
     }
     this._openAiSidebar();
+  }
+
+  private _aiSidebarResized(
+    ev: HASSDomEvent<HASSDomEvents["ai-sidebar-resized"]>
+  ) {
+    this._sidebarWidthPx = Math.max(
+      SIDEBAR_MIN_WIDTH,
+      ev.detail.widthPx ?? SIDEBAR_DEFAULT_WIDTH
+    );
   }
 
   // The sidebar of a row gives the place back
@@ -1732,8 +1752,16 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           display: none;
         }
         :host {
-          --ai-sidebar-width: 380px;
           --ai-sidebar-collapsed-height: 64px;
+        }
+        /* As wide as the sidebar of a row, see manualEditorStyles */
+        hass-subpage {
+          --ai-sidebar-width: min(
+            max(var(--sidebar-dynamic-width), ${SIDEBAR_MIN_WIDTH}px),
+            100vw - ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px),
+            var(--ha-automation-editor-max-width) -
+              ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px)
+          );
           /* Where the sidebar of a row ends, see manualEditorStyles */
           --ai-sidebar-bottom: calc(
             81px - var(--header-height) - 16px + var(--safe-area-inset-top, 0px)
