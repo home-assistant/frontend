@@ -134,7 +134,8 @@ export class EnergyCollectionController extends ContextController {
     const collection = this._collection;
     const prefs = collection?.prefs;
 
-    if (!collection || !prefs || this._hasData) {
+    // After a failed load, empty statistics would read as real zeros
+    if (!collection || !prefs || this._hasData || this._failed) {
       return undefined;
     }
 
