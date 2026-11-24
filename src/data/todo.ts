@@ -210,7 +210,7 @@ export type TodoSwipeAction = "complete" | "uncomplete" | "delete";
  * `direction` is logical: "start" points toward the inline start (left in LTR,
  * right in RTL), "end" toward the inline end. Active items are completed in
  * either direction. Completed items are deleted when swiped toward the start
- * and made active again when swiped toward the end.
+ * and reactivated when swiped toward the end.
  */
 export const getTodoSwipeAction = (
   status: TodoItemStatus | null,

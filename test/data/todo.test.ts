@@ -64,7 +64,7 @@ describe("getTodoSwipeAction", () => {
     expect(getTodoSwipeAction(COMPLETED, "start", false)).toBeUndefined();
   });
 
-  it("makes completed items active again when swiped toward the end", () => {
+  it("reactivates completed items swiped toward the end", () => {
     expect(getTodoSwipeAction(COMPLETED, "end", false)).toBe("uncomplete");
   });
 });

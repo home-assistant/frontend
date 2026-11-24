@@ -11966,7 +11966,7 @@
               "due_date_period_helper": "Filter items to those which have a due date in the selected period.",
               "item_tap_action": "Item tap behavior",
               "swipe_actions": "Swipe actions",
-              "swipe_actions_helper": "Swipe an active item to complete it. Swipe a completed item toward the start to delete it, or toward the end to make it active again.",
+              "swipe_actions_helper": "Swipe an active item to complete it. Swipe a completed item toward the start to delete it, or toward the end to reactivate it.",
               "actions": {
                 "edit": "Default (edit item)",
                 "toggle": "Toggle item"
