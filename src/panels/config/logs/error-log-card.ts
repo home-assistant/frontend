@@ -710,16 +710,18 @@ class ErrorLogCard extends LitElement {
             }
 
             if (lines.length) {
+              const hadLines = this._ansiToHtmlElement?.hasLines;
               this._ansiToHtmlElement?.parseLinesToColoredPre(lines);
               this._numberOfLines += lines.length;
 
-              if (this._loadingState === "empty") {
-                // A stream's first lines take the place of what showed while
-                // it opened, so they fade in as they're written
-                if (this._ansiToHtmlElement) {
-                  fadeInArrival(this._ansiToHtmlElement);
-                }
+              // A stream's first lines take the place of what showed while it
+              // opened, so they fade in as they're written. Later chunks, and
+              // lines kept through a reconnect, show as they are.
+              if (!hadLines && this._ansiToHtmlElement) {
+                fadeInArrival(this._ansiToHtmlElement);
+              }
 
+              if (this._loadingState === "empty") {
                 // delay to avoid loading older logs immediately
                 setTimeout(() => {
                   this._loadingState = "loaded";
