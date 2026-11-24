@@ -14,6 +14,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import { storage } from "../../common/decorators/storage";
 import { deepActiveElement } from "../../common/dom/deep-active-element";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { ctrlOrCmdLabel } from "../../common/keyboard/ctrl-or-cmd";
@@ -115,6 +116,10 @@ export class HaCameraPlayer extends LitElement {
 
   // Known before the stream's picture, so the player can make room for it
   @state() private _posterSize?: ZoomPanSize;
+
+  // Of each camera's picture last time, so the player opens at its size
+  @storage({ key: "cameraAspectRatios", state: true, subscribe: false })
+  private _storedAspectRatios?: Record<string, number>;
 
   @state() private _gesture = false;
 
@@ -542,10 +547,22 @@ export class HaCameraPlayer extends LitElement {
     this._capabilities = ev.detail.capabilities;
   }
 
-  /** Of the stream's picture, its poster until then, or most cameras'. */
+  /**
+   * Of the stream's picture, until then of the camera's picture last time,
+   * its poster or most cameras'.
+   */
   private _aspectRatio(): number {
-    const size = this._pictureSize ?? this._posterSize;
-    return size ? size.width / size.height : DEFAULT_ASPECT_RATIO;
+    if (this._pictureSize) {
+      return this._pictureSize.width / this._pictureSize.height;
+    }
+    const stored =
+      this.stateObj && this._storedAspectRatios?.[this.stateObj.entity_id];
+    if (stored) {
+      return stored;
+    }
+    return this._posterSize
+      ? this._posterSize.width / this._posterSize.height
+      : DEFAULT_ASPECT_RATIO;
   }
 
   private _posterSizeChanged(
@@ -745,10 +762,22 @@ export class HaCameraPlayer extends LitElement {
         size.height !== this._pictureSize.height)
     ) {
       this._pictureSize = size;
+      this._storeAspectRatio(size.width / size.height);
     }
     // The new picture can have another size
     this._refitZoom();
   };
+
+  private _storeAspectRatio(aspectRatio: number) {
+    const entityId = this.stateObj?.entity_id;
+    if (!entityId || this._storedAspectRatios?.[entityId] === aspectRatio) {
+      return;
+    }
+    this._storedAspectRatios = {
+      ...this._storedAspectRatios,
+      [entityId]: aspectRatio,
+    };
+  }
 
   private _measureViewport() {
     const rect = this._viewport!.getBoundingClientRect();
