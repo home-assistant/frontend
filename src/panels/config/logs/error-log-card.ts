@@ -714,6 +714,12 @@ class ErrorLogCard extends LitElement {
               this._numberOfLines += lines.length;
 
               if (this._loadingState === "empty") {
+                // A stream's first lines take the place of what showed while
+                // it opened, so they fade in as they're written
+                if (this._ansiToHtmlElement) {
+                  fadeInArrival(this._ansiToHtmlElement);
+                }
+
                 // delay to avoid loading older logs immediately
                 setTimeout(() => {
                   this._loadingState = "loaded";
