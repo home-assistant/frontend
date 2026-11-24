@@ -505,6 +505,14 @@ export class HaDataTable extends LitElement {
 
     const filteredDataLength = this._filteredData?.length || 0;
 
+    const showSkeleton =
+      !filteredDataLength &&
+      Boolean(
+        this.loading ||
+        !this._filteredData ||
+        (this.data.length && !this._filteredDataSourceLength)
+      );
+
     const items = this._filteredData
       ? this._groupData(
           this._filteredData,
@@ -686,70 +694,71 @@ export class HaDataTable extends LitElement {
             // Only what takes the skeleton rows' place fades in, not rows
             // that come back after a filter matched nothing
             skeletonOr(
-              !this._filteredData?.length &&
-                Boolean(
-                  this.loading ||
-                  !this._filteredData ||
-                  (this.data.length && !this._filteredDataSourceLength)
-                ),
-              html`
-                <div class="mdc-data-table__content" role="row">
-                  <ha-fade-in .duration=${300} easing="ease-in">
-                    <div role="cell">
-                      <div
-                        role="progressbar"
-                        aria-label=${
-                          this._i18n?.localize?.("ui.common.loading") ||
-                          "Loading"
-                        }
-                      >
-                        ${Array.from(
-                          {
-                            length: this.autoHeight
-                              ? 1
-                              : Math.ceil(window.innerHeight / ROW_HEIGHT),
-                          },
-                          () => html`
-                            <div class="mdc-data-table__row">
-                              ${
-                                this.selectable
-                                  ? html`<div
-                                      class="mdc-data-table__cell mdc-data-table__cell--checkbox"
-                                    ></div>`
-                                  : nothing
-                              }
-                              ${Object.entries(columns).map(([key, column]) =>
-                                (this.narrow &&
-                                  !column.main &&
-                                  !column.showNarrow) ||
-                                !this._isColumnVisible(key, column)
-                                  ? nothing
-                                  : html`
-                                      <div
-                                        class="mdc-data-table__cell ${classMap(
-                                          this._cellClasses(column)
-                                        )}"
-                                        style=${styleMap(this._cellStyles(column))}
-                                      >
-                                        ${
-                                          column.type === "icon"
-                                            ? html`<ha-skeleton-icon></ha-skeleton-icon>`
-                                            : column.type === "icon-button" ||
-                                                column.type === "overflow-menu"
-                                              ? nothing
-                                              : html`<ha-skeleton-text></ha-skeleton-text>`
-                                        }
-                                      </div>
-                                    `
-                              )}
-                            </div>
-                          `
-                        )}
-                      </div>
+              showSkeleton,
+              // Only built while it shows, so loaded tables skip the work
+              !showSkeleton
+                ? nothing
+                : html`
+                    <div class="mdc-data-table__content" role="row">
+                      <ha-fade-in .duration=${300} easing="ease-in">
+                        <div role="cell">
+                          <div
+                            role="progressbar"
+                            aria-label=${
+                              this._i18n?.localize?.("ui.common.loading") ||
+                              "Loading"
+                            }
+                          >
+                            ${Array.from(
+                              {
+                                length: this.autoHeight
+                                  ? 1
+                                  : Math.ceil(window.innerHeight / ROW_HEIGHT),
+                              },
+                              () => html`
+                                <div class="mdc-data-table__row">
+                                  ${
+                                    this.selectable
+                                      ? html`<div
+                                          class="mdc-data-table__cell mdc-data-table__cell--checkbox"
+                                        ></div>`
+                                      : nothing
+                                  }
+                                  ${Object.entries(columns).map(
+                                    ([key, column]) =>
+                                      (this.narrow &&
+                                        !column.main &&
+                                        !column.showNarrow) ||
+                                      !this._isColumnVisible(key, column)
+                                        ? nothing
+                                        : html`
+                                            <div
+                                              class="mdc-data-table__cell ${classMap(
+                                                this._cellClasses(column)
+                                              )}"
+                                              style=${styleMap(this._cellStyles(column))}
+                                            >
+                                              ${
+                                                column.type === "icon"
+                                                  ? html`<ha-skeleton-icon></ha-skeleton-icon>`
+                                                  : column.type ===
+                                                        "icon-button" ||
+                                                      column.type ===
+                                                        "overflow-menu"
+                                                    ? nothing
+                                                    : html`<ha-skeleton-text></ha-skeleton-text>`
+                                              }
+                                            </div>
+                                          `
+                                  )}
+                                </div>
+                              `
+                            )}
+                          </div>
+                        </div>
+                      </ha-fade-in>
                     </div>
-                  </ha-fade-in>
-                </div>
-              `,
+                  `,
               () =>
                 !this._filteredData?.length
                   ? this.loadError
