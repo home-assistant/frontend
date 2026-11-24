@@ -643,8 +643,7 @@ export class HaAutomationAiPanel extends LitElement {
     }
     .empty ha-svg-icon {
       --mdc-icon-size: 40px;
-      color: var(--secondary-text-color);
-      fill: var(--secondary-text-color);
+      --icon-primary-color: var(--secondary-text-color);
     }
     .empty p {
       margin: 0;
