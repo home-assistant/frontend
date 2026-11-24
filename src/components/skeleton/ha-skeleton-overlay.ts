@@ -26,6 +26,63 @@ interface ArrivingParts {
   colorParts: HTMLElement[];
 }
 
+type HiddenProperty = "opacity" | "color";
+
+interface HiddenStyle {
+  /* The inline value from before anything hid it */
+  value: string;
+  holders: number;
+}
+
+/* Overlays nest, as a stack card's cards each have their own, so two can
+   hide the same element. The first to hide one notes the value it really
+   had, and only the last to let go puts that back, so neither keeps the
+   other's hidden value as the one to restore. */
+const hiddenStyles: Record<
+  HiddenProperty,
+  Map<HTMLElement | SVGElement, HiddenStyle>
+> = { opacity: new Map(), color: new Map() };
+
+const hideStyle = (
+  element: HTMLElement | SVGElement,
+  name: HiddenProperty,
+  hidden: string
+) => {
+  const held = hiddenStyles[name].get(element);
+
+  if (held) {
+    held.holders++;
+  } else {
+    hiddenStyles[name].set(element, {
+      value: element.style[name],
+      holders: 1,
+    });
+  }
+
+  element.style[name] = hidden;
+};
+
+const releaseStyle = (
+  element: HTMLElement | SVGElement,
+  name: HiddenProperty
+) => {
+  const held = hiddenStyles[name].get(element);
+
+  if (!held) {
+    return;
+  }
+
+  held.holders--;
+
+  if (held.holders === 0) {
+    element.style[name] = held.value;
+    hiddenStyles[name].delete(element);
+  }
+};
+
+const holdersOf = (element: HTMLElement | SVGElement, name: HiddenProperty) =>
+  hiddenStyles[name].get(element)?.holders ?? 0;
+
 /* What's left out with data-skeleton="none" under an element, through
    shadow roots, as the skeleton is read */
 const leftOut = (root: Element | ShadowRoot): HTMLElement[] =>
@@ -81,10 +138,10 @@ export class HaSkeletonOverlay extends LitElement {
 
   @query("slot:not([name])") private _contentSlot?: HTMLSlotElement;
 
-  /* Inline values the parts had before they were hidden */
-  private _hiddenOpacity = new Map<HTMLElement | SVGElement, string>();
+  /* The parts this overlay hides, through hideStyle */
+  private _hiddenOpacity = new Set<HTMLElement | SVGElement>();
 
-  private _hiddenColor = new Map<HTMLElement, string>();
+  private _hiddenColor = new Set<HTMLElement>();
 
   /* Inline colours of content left out inside hidden text, which keeps its
      own colour meanwhile */
@@ -345,8 +402,10 @@ export class HaSkeletonOverlay extends LitElement {
 
   private _hideParts(skeleton: ExtractedSkeleton) {
     skeleton.parts.forEach((part) => {
-      this._hiddenOpacity.set(part, part.style.opacity);
-      part.style.opacity = "0";
+      if (!this._hiddenOpacity.has(part)) {
+        this._hiddenOpacity.add(part);
+        hideStyle(part, "opacity", "0");
+      }
     });
 
     // What's left out with data-skeleton="none" inside text that's hidden
@@ -361,8 +420,10 @@ export class HaSkeletonOverlay extends LitElement {
     // Text goes through its colour, so a frame drawn by the same element,
     // such as a badge's pill, stays
     skeleton.textParts.forEach((part) => {
-      this._hiddenColor.set(part, part.style.color);
-      part.style.color = "transparent";
+      if (!this._hiddenColor.has(part)) {
+        this._hiddenColor.add(part);
+        hideStyle(part, "color", "transparent");
+      }
     });
 
     kept.forEach(([element, color]) => {
@@ -375,12 +436,8 @@ export class HaSkeletonOverlay extends LitElement {
   }
 
   private _showParts() {
-    this._hiddenOpacity.forEach((opacity, part) => {
-      part.style.opacity = opacity;
-    });
-    this._hiddenColor.forEach((color, part) => {
-      part.style.color = color;
-    });
+    this._hiddenOpacity.forEach((part) => releaseStyle(part, "opacity"));
+    this._hiddenColor.forEach((part) => releaseStyle(part, "color"));
     this._keptColor.forEach((color, element) => {
       element.style.color = color;
     });
@@ -431,8 +488,14 @@ export class HaSkeletonOverlay extends LitElement {
       content: wholeContent
         ? (this._contentSlot?.assignedElements() ?? [])
         : [],
-      opacityParts: [...this._hiddenOpacity.keys()],
-      colorParts: [...this._hiddenColor.keys()],
+      // Only what this overlay is the last to hide shows now; a part a
+      // nested overlay still hides stays hidden, and fades in with that one
+      opacityParts: [...this._hiddenOpacity].filter(
+        (part) => holdersOf(part, "opacity") === 1
+      ),
+      colorParts: [...this._hiddenColor].filter(
+        (part) => holdersOf(part, "color") === 1
+      ),
     };
 
     this._showParts();
