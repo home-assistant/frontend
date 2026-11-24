@@ -180,6 +180,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   @state() private _items?: TodoItem[];
 
+  @state() private _itemsFailed = false;
+
   protected readonly _skeletonLoading = new SkeletonLoadingController(
     this,
     () =>
@@ -187,7 +189,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       // An unavailable list may never send its items
       this._stateObj.state !== UNAVAILABLE &&
       this._stateObj.state !== UNKNOWN &&
-      this._items === undefined
+      this._items === undefined &&
+      !this._itemsFailed
   );
 
   /* Stand-ins for the items while they load, as many as the list's state
@@ -887,13 +890,26 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     if (!(this._entityId in this._states)) {
       return;
     }
-    this._unsubItems = subscribeItems(
+
+    this._itemsFailed = false;
+
+    const subscription = subscribeItems(
       this._connection,
       this._entityId,
       (update) => {
         this._items = update.items;
       }
     );
+
+    // Without items to wait for, the card stops loading, so its controls
+    // aren't left covered. Only the current request decides.
+    subscription.catch(() => {
+      if (this._unsubItems === subscription) {
+        this._itemsFailed = true;
+      }
+    });
+
+    this._unsubItems = subscription;
   }
 
   private _getItem(itemId: string) {
