@@ -69,18 +69,27 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
 
   private _resubscribeOnReady = false;
 
-  // Whether the skeleton showed last render, so the log fades in once its
-  // first lines take the skeleton's place
-  private _showedSkeleton = false;
+  // Whether the skeleton showed and no lines have come since, so the log
+  // fades in once its first lines take its place, even when the waiting
+  // message showed in between
+  private _awaitingLines = false;
 
   private _linesArriving = false;
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     const showSkeleton = !this._lineCount && this._loading;
+
+    if (showSkeleton) {
+      this._awaitingLines = true;
+    }
+
     this._linesArriving =
-      this._showedSkeleton && !showSkeleton && this._lineCount > 0;
-    this._showedSkeleton = showSkeleton;
+      this._awaitingLines && !showSkeleton && this._lineCount > 0;
+
+    if (this._lineCount > 0) {
+      this._awaitingLines = false;
+    }
   }
 
   protected updated(changedProps: PropertyValues<this>) {

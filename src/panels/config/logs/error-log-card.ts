@@ -163,9 +163,10 @@ class ErrorLogCard extends LitElement {
 
   @state() private _loadingPrevState?: "loading" | "end" | "loaded";
 
-  // Whether the skeleton showed last render, so the log fades in once it
-  // takes the skeleton's place
-  private _showedSkeleton = false;
+  // Whether the skeleton showed and the log hasn't arrived since, so it fades
+  // in once it takes the skeleton's place, even when the waiting message
+  // showed in between
+  private _awaitingLog = false;
 
   private _logArriving = false;
 
@@ -470,9 +471,16 @@ class ErrorLogCard extends LitElement {
         !(this.filter && this._noSearchResults)
       );
 
+    if (showSkeleton) {
+      this._awaitingLog = true;
+    }
+
     this._logArriving =
-      this._showedSkeleton && !showSkeleton && this._loadingState === "loaded";
-    this._showedSkeleton = showSkeleton;
+      this._awaitingLog && !showSkeleton && this._loadingState === "loaded";
+
+    if (this._loadingState === "loaded") {
+      this._awaitingLog = false;
+    }
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
@@ -719,6 +727,8 @@ class ErrorLogCard extends LitElement {
               // lines kept through a reconnect, show as they are.
               if (!hadLines && this._ansiToHtmlElement) {
                 fadeInArrival(this._ansiToHtmlElement);
+                // Faded in here, so not again once the state says loaded
+                this._awaitingLog = false;
               }
 
               if (this._loadingState === "empty") {
