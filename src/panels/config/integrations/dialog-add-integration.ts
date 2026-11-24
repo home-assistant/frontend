@@ -93,6 +93,7 @@ import { loadVirtualizer } from "../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../types";
 import { standardToDomain } from "./ha-domain-integrations";
 import "./ha-integration-list-item";
+import "./ha-integration-list-title";
 import type { HaIntegrationListItem } from "./ha-integration-list-item";
 import type { AddIntegrationDialogParams } from "./show-add-integration-dialog";
 import { showYamlIntegrationDialog } from "./show-add-integration-dialog";
@@ -163,18 +164,6 @@ interface IntegrationCategory {
   name: string;
   subcategories: { slug: string; name: string }[];
 }
-
-// Inline, rows render in the list's shadow root
-const ROW_TITLE_STYLE = {
-  display: "flex",
-  "align-items": "center",
-  "box-sizing": "border-box",
-  "min-height": "var(--ha-space-10)",
-  "padding-block": "var(--ha-space-2)",
-  "padding-inline": "var(--ha-space-8) var(--ha-space-3)",
-  "font-weight": "var(--ha-font-weight-medium)",
-  "background-color": "var(--card-background-color)",
-};
 
 const inCategory = (
   categories: string[] | undefined,
@@ -1221,15 +1210,14 @@ class AddIntegrationDialog extends LitElement {
                           }
                           ${
                             listTitle
-                              ? html`<div
+                              ? html`<ha-integration-list-title
                                   class=${classMap({
-                                    "items-title": true,
                                     raised:
                                       this._listScrolled && !this._stickyBrand,
                                   })}
                                 >
                                   ${listTitle}
-                                </div>`
+                                </ha-integration-list-title>`
                               : nothing
                           }
                           ${
@@ -1250,9 +1238,11 @@ class AddIntegrationDialog extends LitElement {
                                   ? html`<ha-section-title class="sticky">
                                       ${this._stickyBrand}
                                     </ha-section-title>`
-                                  : html`<div class="items-title sticky raised">
+                                  : html`<ha-integration-list-title
+                                      class="sticky raised"
+                                    >
                                       ${this._stickyBrand}
-                                    </div>`
+                                    </ha-integration-list-title>`
                             }
                             <ha-list-virtualized
                               .rows=${this._filter ? rows : this._withEndSpace(rows)}
@@ -1827,9 +1817,9 @@ class AddIntegrationDialog extends LitElement {
     if (integration.is_header) {
       return this._filter
         ? html`<ha-section-title>${integration.name}</ha-section-title>`
-        : html`<div style=${styleMap(ROW_TITLE_STYLE)}>
+        : html`<ha-integration-list-title>
             ${integration.name}
-          </div>`;
+          </ha-integration-list-title>`;
     }
     return html`
       <ha-integration-list-item
@@ -2240,17 +2230,7 @@ class AddIntegrationDialog extends LitElement {
         background-color: var(--ha-color-surface-default);
         color: var(--ha-color-text-secondary);
       }
-      .items-title {
-        display: flex;
-        align-items: center;
-        box-sizing: border-box;
-        height: var(--ha-space-10);
-        padding-block: var(--ha-space-2);
-        padding-inline: var(--ha-space-8) var(--ha-space-3);
-        font-weight: var(--ha-font-weight-medium);
-        background-color: var(--card-background-color);
-      }
-      .items-title.raised {
+      ha-integration-list-title.raised {
         position: relative;
         z-index: 1;
         box-shadow: var(--bar-box-shadow);
