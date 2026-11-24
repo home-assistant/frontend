@@ -297,10 +297,21 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
         // The unavailable alert still shows, only the rows stay unmarked
         return;
       }
-      if (run !== this._validationRun || config !== this.config) {
+      if (run !== this._validationRun) {
         return;
       }
-      this._setConfigErrors(config, mapErrorsToConfig(config, errors));
+      const mapped = mapErrorsToConfig(config, errors);
+      if (config === this.config) {
+        this._setConfigErrors(config, mapped);
+        return;
+      }
+      // The editor changed the config meanwhile, e.g. when it turned a
+      // condition written as a string into an object
+      this._setConfigErrors(
+        this.config,
+        followErrors(mapped, config, this.config)
+      );
+      await this._validateConfig(false);
     }
 
     private _setConfigErrors(

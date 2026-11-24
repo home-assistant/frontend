@@ -175,15 +175,22 @@ const rowContent = (value: unknown): string =>
       : value
   );
 
+// Keys that hold rows. Others, like `data`, are fields of the row.
+const isRowsKey = (key: string): boolean =>
+  BLOCK_KEYS.has(key) || key === "repeat";
+
 const errorItemPath = (config: unknown, path: ConfigPath): ConfigPath => {
   let value = config;
   let end = 0;
-  path.forEach((segment, index) => {
+  for (const [index, segment] of path.entries()) {
+    if (typeof segment === "string" && !isRowsKey(segment)) {
+      break;
+    }
     value = childAt(value, segment);
     if (isRowItem(value, path.slice(0, index + 1))) {
       end = index + 1;
     }
-  });
+  }
   return path.slice(0, end);
 };
 
@@ -216,9 +223,14 @@ export const knownErrorItems = (
   return known;
 };
 
+interface ConfigItem {
+  path: ConfigPath;
+  item?: object;
+}
+
 interface ConfigItems {
   paths: Map<object, ConfigPath>;
-  contents: Map<string, ConfigPath[]>;
+  contents: Map<string, ConfigItem[]>;
 }
 
 // The items rows show
@@ -226,13 +238,14 @@ const configItems = (config: unknown): ConfigItems => {
   const items: ConfigItems = { paths: new Map(), contents: new Map() };
   const walk = (value: unknown, path: ConfigPath) => {
     if (isRowItem(value, path)) {
-      if (isConfigObject(value)) {
-        items.paths.set(value, path);
+      const item = isConfigObject(value) ? value : undefined;
+      if (item) {
+        items.paths.set(item, path);
       }
       const content = rowContent(value);
       items.contents.set(content, [
         ...(items.contents.get(content) ?? []),
-        path,
+        { path, item },
       ]);
     }
     if (typeof value !== "object" || value === null) {
@@ -241,6 +254,9 @@ const configItems = (config: unknown): ConfigItems => {
     Object.entries(value).forEach(([key, child]) => {
       if (Array.isArray(value)) {
         walk(child, [...path, Number(key)]);
+        return;
+      }
+      if (!isRowsKey(key)) {
         return;
       }
       // A block written as a single item is its first row
@@ -269,7 +285,7 @@ const followItem = (
   }
   // Moved after the YAML was parsed again
   const samePaths = entry.content
-    ? current.contents.get(entry.content)
+    ? current.contents.get(entry.content)?.map((other) => other.path)
     : undefined;
   if (samePaths?.length === 1) {
     return knownItemAt(config, samePaths[0]);
@@ -286,7 +302,10 @@ const followItem = (
   const beforePaths =
     isConfigObject(now) && previous.paths.has(now)
       ? [previous.paths.get(now)!]
-      : (previous.contents.get(rowContent(now)) ?? []);
+      : (previous.contents.get(rowContent(now)) ?? [])
+          // An item still in the config didn't move, it was edited to match
+          .filter(({ item }) => !item || !current.paths.has(item))
+          .map((other) => other.path);
   if (
     beforePaths.length &&
     !beforePaths.some((other) => pathEquals(other, entry.path))

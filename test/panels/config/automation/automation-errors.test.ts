@@ -250,6 +250,50 @@ describe("automation errors", () => {
     ).toEqual([templateError(0)]);
   });
 
+  it("only treat lists of rows as rows", () => {
+    // Objects in a list inside `data` belong to the action
+    const notify = {
+      action: "notify.mobile_app",
+      data: { message: "{{ a", data: { actions: [{ title: "{{ b" }] } },
+    };
+    const config = { actions: [notify] };
+    const titleError = validationError("bad title", [
+      "actions",
+      0,
+      "data",
+      "data",
+      "actions",
+      0,
+      "title",
+    ]);
+    const messageError = validationError("bad message", [
+      "actions",
+      0,
+      "data",
+      "message",
+    ]);
+    const known = knownErrorItems(config, [titleError]);
+    expect(errorsOnKnownItems(known, config, [messageError])).toEqual([
+      messageError,
+    ]);
+  });
+
+  it("keep errors of a row edited to match the next one", () => {
+    const a = { delay: "abc" };
+    const b = { delay: "abd" };
+    const delayError = (index: number) =>
+      validationError("bad delay", ["actions", index, "delay"]);
+    const before = { actions: [a, b] };
+    const known = knownErrorItems(before, [delayError(0), delayError(1)]);
+    const edited = { actions: [{ delay: "abd" }, b] };
+    expect(
+      errorsOnKnownItems(followKnownErrorItems(known, before, edited), edited, [
+        delayError(0),
+        delayError(1),
+      ])
+    ).toEqual([delayError(0), delayError(1)]);
+  });
+
   it("follow save errors to where their items are now", () => {
     const a = { delay: "abc" };
     const b = { delay: 1 };
