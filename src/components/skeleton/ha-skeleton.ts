@@ -158,7 +158,7 @@ export class HaSkeleton extends WaSkeleton {
     wave.style.setProperty("--ha-skeleton-slant", `${-WAVE_SLANT_DEG}deg`);
 
     // All waves count from the same moment, so they stay in step
-    wave.getAnimations().forEach((animation) => {
+    wave.getAnimations?.().forEach((animation) => {
       if (animation.startTime !== 0) {
         animation.startTime = 0;
       }
