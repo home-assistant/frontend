@@ -169,6 +169,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           <ha-icon-button
             slot="button"
             class=${this._showNeighbors ? "active" : "inactive"}
+            .ariaPressed=${this._showNeighbors ? "true" : "false"}
             .path=${mdiSpiderWeb}
             .label=${this.hass.localize(
               "ui.panel.config.zwave_js.visualization.toggle_neighbors"
@@ -561,17 +562,6 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         }
         ha-input-search {
           flex: 1;
-        }
-        /* ha-chart-base can't style re-slotted buttons, so mirror its look */
-        ha-icon-button[slot="button"] {
-          background: var(--card-background-color);
-          border-radius: var(--ha-border-radius-sm);
-          --ha-icon-button-size: 32px;
-          color: var(--primary-color);
-          border: 1px solid var(--divider-color);
-        }
-        ha-icon-button[slot="button"].inactive {
-          color: var(--state-inactive-color);
         }
       `,
     ];

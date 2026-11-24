@@ -384,6 +384,21 @@ export class HaServiceControl extends LitElement {
     return targetEntities;
   });
 
+  private _targetEntitiesForService(
+    serviceData: ExtHassService | undefined
+  ): string[] | null {
+    if (
+      !serviceData ||
+      !(
+        "target" in serviceData ||
+        serviceData.flatFields.some((field) => field.key === "entity_id")
+      )
+    ) {
+      return null;
+    }
+    return this._getTargetedEntities(serviceData.target, this._value);
+  }
+
   private _filterField(
     filter: ExtHassService["fields"][number]["filter"],
     targetEntities: string[] | null
@@ -466,12 +481,7 @@ export class HaServiceControl extends LitElement {
     );
 
     // Actions that can never have targets get null, like template targets
-    const targetEntities =
-      serviceData &&
-      ("target" in serviceData ||
-        serviceData.flatFields.some((field) => field.key === "entity_id"))
-        ? this._getTargetedEntities(serviceData.target, this._value)
-        : null;
+    const targetEntities = this._targetEntitiesForService(serviceData);
 
     const domain = this._value?.action
       ? computeDomain(this._value.action)
@@ -806,15 +816,29 @@ export class HaServiceControl extends LitElement {
 
     if (checked) {
       this._checkedKeys.add(key);
-      const field = this._getServiceInfo(
+      const serviceData = this._getServiceInfo(
         this._value?.action,
         this.hass.services
-      )?.flatFields.find((_field) => _field.key === key);
+      );
+      const field = serviceData?.flatFields.find(
+        (_field) => _field.key === key
+      );
 
       let defaultValue = field?.default;
 
       if (defaultValue == null && field?.selector) {
-        defaultValue = getSelectorFallbackValue(field.selector);
+        const entityIds = this._targetEntitiesForService(serviceData);
+        defaultValue = getSelectorFallbackValue(
+          field.selector,
+          entityIds
+            ? Object.fromEntries(
+                entityIds.map((entityId) => [
+                  entityId,
+                  this.hass.states[entityId],
+                ])
+              )
+            : undefined
+        );
       }
 
       if (defaultValue != null) {
