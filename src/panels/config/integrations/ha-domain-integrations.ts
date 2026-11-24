@@ -145,7 +145,7 @@ class HaDomainIntegrations extends LitElement {
                     <ha-icon-next slot="end"></ha-icon-next>
                   </ha-list-item-button>`;
                 })
-            : ""
+            : nothing
         }
         ${
           this.integration &&
@@ -182,7 +182,7 @@ class HaDomainIntegrations extends LitElement {
                     >
                     </ha-integration-list-item>`
                 )
-            : ""
+            : nothing
         }
         ${
           (PROTOCOL_INTEGRATIONS as readonly string[]).includes(this.domain)
@@ -214,7 +214,7 @@ class HaDomainIntegrations extends LitElement {
                 >
                 <ha-icon-next slot="end"></ha-icon-next>
               </ha-list-item-button>`
-            : ""
+            : nothing
         }
         ${
           this.integration &&
@@ -263,7 +263,7 @@ class HaDomainIntegrations extends LitElement {
                     >
                     </ha-integration-list-item>`
               }`
-            : ""
+            : nothing
         }
         ${
           manage && !this.boxed
