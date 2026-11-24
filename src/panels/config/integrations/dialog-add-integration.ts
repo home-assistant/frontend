@@ -578,19 +578,28 @@ class AddIntegrationDialog extends LitElement {
       brand.integrations || {}
     )
       .filter(([, integration]) => integration.integration_type !== "hardware")
-      .map(([domain, integration]) => ({
-        id: `${item.domain}/${domain}`,
-        interactive: true,
-        domain,
-        name: integration.name || domainToName(localize, domain),
-        config_flow: integration.config_flow,
-        iot_standards: integration.iot_standards,
-        supported_by: integration.supported_by,
-        is_built_in: integration.is_built_in !== false,
-        cloud: integration.iot_class?.startsWith("cloud_"),
-        single_config_entry: integration.single_config_entry,
-        categories: integration.categories,
-      }))
+      .map(([domain, brandIntegration]) => {
+        // A custom integration replacing it brings its own details
+        const custom = this._integrations?.[domain];
+        const integration =
+          custom && "integration_type" in custom && custom.is_built_in === false
+            ? custom
+            : brandIntegration;
+        return {
+          id: `${item.domain}/${domain}`,
+          interactive: true,
+          domain,
+          name: integration.name || domainToName(localize, domain),
+          config_flow: integration.config_flow,
+          iot_standards: integration.iot_standards,
+          supported_by: integration.supported_by,
+          is_built_in: integration.is_built_in !== false,
+          overwrites_built_in: integration.overwrites_built_in,
+          cloud: integration.iot_class?.startsWith("cloud_"),
+          single_config_entry: integration.single_config_entry,
+          categories: integration.categories ?? brandIntegration.categories,
+        };
+      })
       .filter((row) => ofConnection(row, this._connection))
       .sort((a, b) =>
         caseInsensitiveStringCompare(a.name, b.name, this.hass.locale.language)
