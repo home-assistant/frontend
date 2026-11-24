@@ -175,6 +175,8 @@ export class HaControlCircularSlider extends LitElement {
 
   private _managers: HammerManager[] = [];
 
+  private _lastChanging?: number;
+
   private _getPercentageFromEvent = (e: HammerInput) => {
     const bound = this._slider.getBoundingClientRect();
     const x = (2 * (e.center.x - bound.left - bound.width / 2)) / bound.width;
@@ -276,6 +278,7 @@ export class HaControlCircularSlider extends LitElement {
           const bounded = this._boundedValue(raw);
           this._setActiveValue(bounded);
           const stepped = this._steppedValue(bounded);
+          this._lastChanging = stepped;
           if (this._activeSlider) {
             fireEvent(this, `${this._activeSlider}-changing`, {
               value: stepped,
@@ -313,6 +316,7 @@ export class HaControlCircularSlider extends LitElement {
           const raw = this._percentageToValue(percentage);
           this._activeSlider = this._findActiveSlider(raw);
           this._lastSlider = this._activeSlider;
+          this._lastChanging = undefined;
           this.shadowRoot?.getElementById("#slider")?.focus();
         });
         mc.on("pancancel", () => {
@@ -329,7 +333,8 @@ export class HaControlCircularSlider extends LitElement {
           const bounded = this._boundedValue(raw);
           this._setActiveValue(bounded);
           const stepped = this._steppedValue(bounded);
-          if (this._activeSlider) {
+          if (this._activeSlider && stepped !== this._lastChanging) {
+            this._lastChanging = stepped;
             fireEvent(this, `${this._activeSlider}-changing`, {
               value: stepped,
             });
