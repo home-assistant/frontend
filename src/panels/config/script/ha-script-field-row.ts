@@ -99,7 +99,7 @@ export default class HaScriptFieldRow extends LitElement {
               .path=${mdiDotsVertical}
             ></ha-icon-button>
 
-            <ha-dropdown-item value="edit_note">
+            <ha-dropdown-item value="edit_note" .disabled=${this.disabled}>
               <ha-svg-icon
                 slot="icon"
                 .path=${mdiCommentEditOutline}

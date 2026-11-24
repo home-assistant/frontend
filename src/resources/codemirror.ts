@@ -96,8 +96,6 @@ export const yamlLintCompartment = new Compartment();
 export const phrasesCompartment = new Compartment();
 export const mergeCompartment = new Compartment();
 
-export { unifiedMergeView } from "@codemirror/merge";
-
 // Colors the changes of a unified merge view like the rest of the UI. The
 // extra .cm-editor wins over the light and dark rules of its base theme.
 export const haMergeTheme = EditorView.theme({

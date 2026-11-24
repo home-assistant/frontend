@@ -100,9 +100,15 @@ export class HaAutomationAiSettings extends LitElement {
             {
               icon,
               mark,
-              text: `${this._localize(name)}: ${this._localize(
-                `ui.panel.config.automation.editor.ai.changes.${mark}`
-              )}`,
+              text: this._localize(
+                "ui.panel.config.automation.editor.ai.changes.setting_marked",
+                {
+                  name: this._localize(name),
+                  change: this._localize(
+                    `ui.panel.config.automation.editor.ai.changes.${mark}`
+                  ),
+                }
+              ),
             },
           ]
         : [];
@@ -183,7 +189,7 @@ export class HaAutomationAiSettings extends LitElement {
       gap: var(--ha-space-1);
       height: 32px;
       box-sizing: border-box;
-      padding: 0 var(--ha-space-3) 0 var(--ha-space-2);
+      padding-inline: var(--ha-space-2) var(--ha-space-3);
       border-radius: var(--ha-border-radius-pill);
       border: 1px solid var(--ha-color-border-warning-normal);
       background-color: var(--ha-color-fill-warning-normal-resting);

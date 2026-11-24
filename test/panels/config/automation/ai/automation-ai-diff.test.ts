@@ -217,3 +217,67 @@ describe("diffAutomationConfigs for scripts", () => {
     expect(diff.hasChanges).toBe(true);
   });
 });
+
+// Cases where the diff once marked the wrong rows or missed a change
+describe("diffAutomationConfigs edge cases", () => {
+  const automation = (actions: unknown[], extra = {}) =>
+    ({ ...base, ...extra, actions }) as AutomationConfig;
+
+  it("keeps a row the same kind when it gets an optional key", () => {
+    const ifAction = { if: [{ condition: "sun", after: "sunset" }], then: [] };
+    const diff = diffAutomationConfigs(
+      automation([ifAction]),
+      automation([{ ...ifAction, else: [light("turn_off")] }])
+    );
+    // Only its new row is marked, it isn't removed and added again
+    expect(diffMarkAt(diff, ["actions", 0])).toBeUndefined();
+    expect(diffMarkAt(diff, ["actions", 1])).toBeUndefined();
+    expect(diffMarkAt(diff, ["actions", 0, "else", 0])).toBe("added");
+  });
+
+  it("marks the conditions of a repeat as rows", () => {
+    const repeat = (conditions: unknown[]) => ({
+      repeat: { while: conditions, sequence: [light("toggle")] },
+    });
+    const diff = diffAutomationConfigs(
+      automation([
+        repeat([
+          { condition: "state", entity_id: "light.kitchen", state: "on" },
+          { condition: "sun", after: "sunset" },
+        ]),
+      ]),
+      automation([
+        repeat([
+          { condition: "state", entity_id: "light.kitchen", state: "on" },
+        ]),
+      ])
+    );
+    expect(diffMarkAt(diff, ["actions", 0, "repeat", "while", 1])).toBe(
+      "removed"
+    );
+  });
+
+  it("pairs a service call with the same service", () => {
+    const notify = (message: string) => ({
+      action: "notify.notify",
+      data: { message },
+    });
+    const diff = diffAutomationConfigs(
+      automation([light("turn_on"), notify("a")]),
+      automation([notify("b")])
+    );
+    expect(diffMarkAt(diff, ["actions", 0])).toBe("removed");
+    expect(diffMarkAt(diff, ["actions", 1])).toBe("changed");
+  });
+
+  it("sees settings it doesn't know, but not empty ones", () => {
+    const before = automation([], { initial_state: false });
+    expect(
+      diffAutomationConfigs(before, automation([])).settings.initial_state
+    ).toBe("removed");
+    expect(
+      diffAutomationConfigs(automation([]), automation([], { variables: {} }))
+        .hasChanges
+    ).toBe(false);
+  });
+});

@@ -5,7 +5,8 @@ import {
   type ConfigPath,
 } from "../../../../common/util/config-path";
 import type { AutomationConfig } from "../../../../data/automation";
-import type { ScriptConfig } from "../../../../data/script";
+import type { Action, ScriptConfig } from "../../../../data/script";
+import { getActionType } from "../../../../data/script";
 
 /** A config the AI can change. */
 export type DiffConfig = AutomationConfig | ScriptConfig;
@@ -120,6 +121,8 @@ const ROW_LIST_KEYS = new Set([
   "choose",
   "default",
   "wait_for_trigger",
+  "while",
+  "until",
 ]);
 
 // Keys every kind of row can have, so they don't tell what kind of row it is
@@ -135,6 +138,15 @@ const COMMON_KEYS = new Set([
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
+
+// An empty description or `variables: {}` is no setting
+const emptyToUndefined = (value: unknown): unknown =>
+  value === "" ||
+  value === null ||
+  (Array.isArray(value) && !value.length) ||
+  (isPlainObject(value) && !Object.keys(value).length)
+    ? undefined
+    : value;
 
 const toList = (value: unknown): unknown[] =>
   value === undefined || value === null
@@ -154,15 +166,74 @@ const itemKind = (item: unknown): string => {
   if ("condition" in item) {
     return `condition:${String(item.condition)}`;
   }
-  // An action calling another service is still the same row
-  if ("action" in item || "service" in item) {
-    return "action";
+  // By the key that makes it what it is, like `if`, so an optional key like
+  // `else` doesn't make it another kind. An action calling another service is
+  // still the same row.
+  const type = getActionType(item as Action);
+  if (type !== "unknown") {
+    return type;
   }
   return (
     Object.keys(item)
       .filter((key) => !COMMON_KEYS.has(key))
       .sort()[0] ?? "empty"
   );
+};
+
+/** Like `itemKind`, but service calls only match the same service. */
+const exactKind = (item: unknown): string =>
+  isPlainObject(item) && ("action" in item || "service" in item)
+    ? `service:${String(item.action ?? item.service)}`
+    : itemKind(item);
+
+/** Pairs of indexes of items of the same kind, in order. */
+const kindPairs = (
+  oldItems: unknown[],
+  newItems: unknown[],
+  kind: (item: unknown) => string
+): [number, number][] => {
+  const pairs: [number, number][] = [];
+  let nextOld = 0;
+  newItems.forEach((newItem, newIndex) => {
+    const match = oldItems.findIndex(
+      (oldItem, index) => index >= nextOld && kind(oldItem) === kind(newItem)
+    );
+    if (match !== -1) {
+      pairs.push([match, newIndex]);
+      nextOld = match + 1;
+    }
+  });
+  return pairs;
+};
+
+// A changed service call pairs with one of the same service first, so
+// removing a row before it doesn't pair the wrong ones. The rows between
+// those pairs pair by their kind.
+const changedPairs = (
+  oldItems: unknown[],
+  newItems: unknown[]
+): [number, number][] => {
+  const pairs: [number, number][] = [];
+  let oldStart = 0;
+  let newStart = 0;
+  for (const [oldIndex, newIndex] of [
+    ...kindPairs(oldItems, newItems, exactKind),
+    [oldItems.length, newItems.length],
+  ]) {
+    for (const [oldMatch, newMatch] of kindPairs(
+      oldItems.slice(oldStart, oldIndex),
+      newItems.slice(newStart, newIndex),
+      itemKind
+    )) {
+      pairs.push([oldStart + oldMatch, newStart + newMatch]);
+    }
+    if (oldIndex < oldItems.length) {
+      pairs.push([oldIndex, newIndex]);
+    }
+    oldStart = oldIndex + 1;
+    newStart = newIndex + 1;
+  }
+  return pairs;
 };
 
 /** Pairs of indexes of equal items, in order, from a longest common subsequence. */
@@ -228,18 +299,7 @@ class DiffBuilder {
     // taken as changed. The others were removed or added, and removed rows
     // come before added ones.
     const segment = (oldItems: unknown[], newItems: unknown[]) => {
-      const pairs: [number, number][] = [];
-      let nextOld = 0;
-      newItems.forEach((newItem, newIndex) => {
-        const match = oldItems.findIndex(
-          (oldItem, index) =>
-            index >= nextOld && itemKind(oldItem) === itemKind(newItem)
-        );
-        if (match !== -1) {
-          pairs.push([match, newIndex]);
-          nextOld = match + 1;
-        }
-      });
+      const pairs = changedPairs(oldItems, newItems);
       let oldIndex = 0;
       let newIndex = 0;
       for (const [oldMatch, newMatch] of pairs) {
@@ -371,15 +431,28 @@ export const diffAutomationConfigs = (
     ]);
   }
 
+  // Every other key is a setting, also ones the layout doesn't know, so no
+  // change goes unseen
+  const settingKeys = new Set([
+    ...layout.settings,
+    ...Object.keys(oldConfig),
+    ...Object.keys(config),
+  ]);
+  layout.rowLists.forEach((key) => settingKeys.delete(key));
+  settingKeys.delete("id");
   const settings: AutomationDiff["settings"] = {};
-  for (const key of layout.settings) {
-    const oldValue = oldConfig[key];
-    const newValue = config[key];
-    // An empty description is no description
-    if (deepEqual(oldValue || undefined, newValue || undefined)) {
+  for (const key of settingKeys) {
+    const oldValue = emptyToUndefined(oldConfig[key]);
+    const newValue = emptyToUndefined(config[key]);
+    if (deepEqual(oldValue, newValue)) {
       continue;
     }
-    settings[key] = !oldValue ? "added" : !newValue ? "removed" : "changed";
+    settings[key] =
+      oldValue === undefined
+        ? "added"
+        : newValue === undefined
+          ? "removed"
+          : "changed";
   }
 
   return {

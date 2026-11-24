@@ -1,27 +1,27 @@
 import { mdiArrowRight, mdiStarFourPoints } from "@mdi/js";
 import type { HassEntities, HassServices } from "home-assistant-js-websocket";
+import type { ContextType } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
 import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import { stringifyPath } from "../../../../common/util/config-path";
+import {
+  stringifyPath,
+  type ConfigPath,
+} from "../../../../common/util/config-path";
 import "../../../../components/ha-svg-icon";
 import {
   areasContext,
   devicesContext,
   floorsContext,
   labelsContext,
-  localeContext,
+  internationalizationContext,
   servicesContext,
   statesContext,
 } from "../../../../data/context";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import type { HomeAssistant } from "../../../../types";
-import {
-  automationRowRegistryContext,
-  type AutomationRowRegistry,
-} from "../automation-path";
 import { describeFieldChanges } from "./automation-ai-change-text";
 import {
   automationDiffContext,
@@ -42,34 +42,38 @@ export class HaAutomationAiChanges extends LitElement {
   @consume({ context: automationDiffContext, subscribe: true })
   private _diff?: AutomationDiff;
 
-  // Read on render, the sidebar renders again for another row
-  @consume({ context: automationRowRegistryContext })
-  private _registry?: AutomationRowRegistry;
+  /** The path of the row open in the sidebar. */
+  @property({ attribute: false }) public path?: ConfigPath;
 
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
 
-  // Names for ids, read when the changes render, which they rarely do
-  @consume({ context: statesContext }) private _states?: HassEntities;
+  // Names for ids, kept current, read when the changes render, which they
+  // rarely do, so they don't render for every state change
+  @consume({ context: statesContext, subscribe: true })
+  private _states?: HassEntities;
 
-  @consume({ context: servicesContext }) private _services?: HassServices;
+  @consume({ context: servicesContext, subscribe: true })
+  private _services?: HassServices;
 
-  @consume({ context: devicesContext })
+  @consume({ context: devicesContext, subscribe: true })
   private _devices?: HomeAssistant["devices"];
 
-  @consume({ context: areasContext }) private _areas?: HomeAssistant["areas"];
+  @consume({ context: areasContext, subscribe: true })
+  private _areas?: HomeAssistant["areas"];
 
-  @consume({ context: floorsContext })
+  @consume({ context: floorsContext, subscribe: true })
   private _floors?: HomeAssistant["floors"];
 
-  @consume({ context: labelsContext }) private _labels?: LabelRegistryEntry[];
+  @consume({ context: labelsContext, subscribe: true })
+  private _labels?: LabelRegistryEntry[];
 
-  @consume({ context: localeContext })
-  private _locale?: HomeAssistant["locale"];
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
 
   protected render() {
-    const path = this._diff && this._registry?.selectedPath();
+    const path = this._diff && this.path;
     const mark = path && diffMarkAt(this._diff, path);
     if (!path || !mark || this.yamlMode) {
       return nothing;
@@ -84,7 +88,7 @@ export class HaAutomationAiChanges extends LitElement {
               this._diff!.items.get(key)?.before,
             {
               localize: this._localize,
-              locale: this._locale,
+              locale: this._i18n?.locale,
               states: this._states,
               services: this._services,
               devices: this._devices,
@@ -218,6 +222,8 @@ export class HaAutomationAiChanges extends LitElement {
     }
     .arrow {
       --mdc-icon-size: 16px;
+      /* Points from the old value to the new one, also right to left */
+      transform: scaleX(var(--scale-direction));
       color: var(--secondary-text-color);
     }
     del {

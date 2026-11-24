@@ -143,6 +143,7 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
         <div class="card-content ha-scrollbar">
           <ha-automation-ai-changes
             .yamlMode=${this.yamlMode}
+            .path=${this._rowRegistry?.selectedPath()}
           ></ha-automation-ai-changes>
           <slot></slot>
           ${this.renderScrollableFades(this.isWide)}

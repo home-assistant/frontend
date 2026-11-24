@@ -9,6 +9,7 @@ import { isComponentLoaded } from "../../../../common/config/is_component_loaded
 import { getStorage } from "../../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
+import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
@@ -97,6 +98,12 @@ export class AiEditorController<
 
   private _preferencesRequested = false;
 
+  // The id a new config got saved as, which the editor switches to next
+  private _savedAs?: string;
+
+  // The config the editor had when the change of the AI was last checked
+  private _seenConfig?: TConfig;
+
   // The editor leaves room for the sheet so it doesn't cover the last rows
   private _sheetHeight = 0;
 
@@ -111,8 +118,6 @@ export class AiEditorController<
   private _panelState?: AutomationAiPanelState;
 
   private _restoredState?: AutomationAiPanelState;
-
-  private _sidebarWidthPx = SIDEBAR_DEFAULT_WIDTH;
 
   private _unsubscribeWidth?: () => void;
 
@@ -155,23 +160,32 @@ export class AiEditorController<
 
   public hostConnected() {
     const storage = getStorage("localStorage");
-    this._sidebarWidthPx =
-      storage.getValue<number>(WIDTH_KEY) ?? SIDEBAR_DEFAULT_WIDTH;
-    this._unsubscribeWidth = storage.subscribeChanges(WIDTH_KEY, (_, value) => {
-      this._sidebarWidthPx = (value as number) ?? SIDEBAR_DEFAULT_WIDTH;
-      this._host.requestUpdate();
-    });
+    this._setWidth(storage.getValue<number>(WIDTH_KEY));
+    this._unsubscribeWidth = storage.subscribeChanges(WIDTH_KEY, (_, value) =>
+      this._setWidth(value as number | undefined)
+    );
+  }
+
+  // Without a render, the width changes on every move while resizing
+  private _setWidth(widthPx?: number) {
+    this._host.style.setProperty(
+      "--sidebar-dynamic-width",
+      `${widthPx ?? SIDEBAR_DEFAULT_WIDTH}px`
+    );
   }
 
   public hostDisconnected() {
     this._unsubscribeWidth?.();
     this._unsubscribeWidth = undefined;
+    // The editor goes away, so would the answer of a running request
+    this._abandonRequest();
   }
 
   public hostUpdate() {
     if (this._unseenResult && this._visible) {
       this._unseenResult = false;
     }
+    this._checkChange();
     this._diffProvider.setValue(
       this.showChanges
         ? this._diff(this.change?.before, this.change?.after)
@@ -184,10 +198,13 @@ export class AiEditorController<
       isComponentLoaded(hass.config, "ai_task")
     ) {
       this._preferencesRequested = true;
-      fetchAITaskPreferences(hass.callWS).then((prefs) => {
-        this.available = !!prefs.gen_data_entity_id;
-        this._host.requestUpdate();
-      });
+      fetchAITaskPreferences(hass.callWS)
+        .then((prefs) => {
+          this.available = !!prefs.gen_data_entity_id;
+          this._host.requestUpdate();
+        })
+        // Without its preferences, the editor has no AI
+        .catch(() => undefined);
     }
   }
 
@@ -215,10 +232,7 @@ export class AiEditorController<
 
   /** The custom properties the page of the editor needs. */
   public get pageStyle(): StyleInfo {
-    return {
-      "--general-sheet-space": this.sheetSpace,
-      "--sidebar-dynamic-width": `${this._sidebarWidthPx}px`,
-    };
+    return { "--general-sheet-space": this.sheetSpace };
   }
 
   /** Whether the menu button shows that the AI has an unseen result. */
@@ -453,8 +467,15 @@ export class AiEditorController<
     if (oldId === id) {
       return;
     }
-    if (!oldId && id && this._loaded) {
+    if (!oldId && id && id === this._savedAs) {
+      this._savedAs = undefined;
       this._persist();
+      return;
+    }
+    this._abandonRequest(oldId);
+    if (!this._loaded && !this.change && !this.sidebarOpen) {
+      // The AI wasn't used, so nothing of the editor needs to change
+      this._restore();
       return;
     }
     this._loaded = false;
@@ -467,11 +488,13 @@ export class AiEditorController<
 
   /** A new config gets this id, maybe in a new editor. */
   public saveAs(id: string) {
+    this._savedAs = id;
     this._persist(id);
   }
 
   /** The user discarded the unsaved changes, so the change of the AI too. */
   public discarded() {
+    this._abandonRequest();
     this.change = undefined;
     this._persist();
     this._loaded = false;
@@ -485,6 +508,40 @@ export class AiEditorController<
     this.change = undefined;
     this._persist();
     this._host.requestUpdate();
+  }
+
+  // The user edited the config since the AI changed it, so its change no
+  // longer shows what happened. Only checked when the config changes, a
+  // restored change waits for its config to load.
+  private _checkChange() {
+    const config = this._hooks.config();
+    if (config === this._seenConfig) {
+      return;
+    }
+    this._seenConfig = config;
+    if (!this.change || !config || this.busy || config === this.change.after) {
+      return;
+    }
+    if (deepEqual(config, this.change.after)) {
+      this.change = { ...this.change, after: config };
+      return;
+    }
+    this.change = undefined;
+    this.showChanges = false;
+    this._persist();
+  }
+
+  // Its answer would land in a config it wasn't for. Kept as interrupted
+  // under the config it was for, right away, the editor may show another one
+  // when the panel would report it.
+  private _abandonRequest(id = this._hooks.id()) {
+    const panel = this._panel;
+    // A new config without an id has nothing to keep it under
+    if (panel?.abandon() && id) {
+      this._panelState = panel.state;
+      this._persist(id);
+    }
+    this.busy = false;
   }
 
   private async _load() {
@@ -559,6 +616,10 @@ export class AiEditorController<
   private _requestFinished = (
     ev: HASSDomEvent<HASSDomEvents["ai-request-finished"]>
   ) => {
+    // From a panel of a config the editor no longer shows
+    if (ev.target !== this._panel) {
+      return;
+    }
     this.busy = false;
     this._unseenResult = !this._visible;
     this._host.requestUpdate();
@@ -576,6 +637,9 @@ export class AiEditorController<
   private _stateChanged = (
     ev: HASSDomEvent<HASSDomEvents["ai-state-changed"]>
   ) => {
+    if (ev.target !== this._panel) {
+      return;
+    }
     this._panelState = ev.detail.state;
     this._persist();
     this._host.requestUpdate();

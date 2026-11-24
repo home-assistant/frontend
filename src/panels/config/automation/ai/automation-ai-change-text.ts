@@ -148,8 +148,11 @@ const idName = (
       return sources.floors?.[id]?.name;
     case "label_id":
       return sources.labels?.find((label) => label.label_id === id)?.name;
-    default:
+    // Other values only look like entity ids, like a message
+    case "entity_id":
       return sources.states?.[id]?.attributes.friendly_name;
+    default:
+      return undefined;
   }
 };
 
@@ -211,6 +214,8 @@ const flatten = (change: FieldChange): FieldChange[] => {
     change.mark === "changed" ||
     !change.path.length ||
     !isPlainObject(value) ||
+    // An empty one has no fields to show it by
+    !Object.keys(value).length ||
     isDuration(value)
   ) {
     return [change];

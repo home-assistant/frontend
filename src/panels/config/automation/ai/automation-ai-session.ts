@@ -34,7 +34,14 @@ const sessions = () =>
 export const loadAiSession = (key: string): AutomationAiSession | undefined =>
   sessions()[key];
 
-/** Stores the session, or forgets it when there is nothing to keep. */
+// The storage of a tab is small, so the configs edited longest ago go
+const MAX_SESSIONS = 10;
+
+/**
+ * Stores the session, or forgets it when there is nothing to keep. The
+ * instructions to the AI hold the whole home, so only its answers are kept
+ * of the conversation.
+ */
 export const saveAiSession = (key: string, session: AutomationAiSession) => {
   const { [key]: _old, ...others } = sessions();
   const keep = !!(
@@ -42,8 +49,19 @@ export const saveAiSession = (key: string, session: AutomationAiSession) => {
     session.panel?.interrupted ||
     session.change
   );
+  const kept: AutomationAiSession = {
+    ...session,
+    panel: session.panel && {
+      ...session.panel,
+      messages: session.panel.messages.filter(
+        (message) => message.role === "assistant"
+      ),
+    },
+  };
+  // In the order they were saved, the latest last
+  const entries = Object.entries(keep ? { ...others, [key]: kept } : others);
   getStorage("sessionStorage").setValue(
     STORAGE_KEY,
-    keep ? { ...others, [key]: session } : others
+    Object.fromEntries(entries.slice(-MAX_SESSIONS))
   );
 };

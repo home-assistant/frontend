@@ -11,7 +11,7 @@ import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../../common/decorators/consume";
-import { storage } from "../../../common/decorators/storage";
+import { getStorage, storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { replaceCurrentUrl } from "../../../common/navigate";
@@ -88,13 +88,14 @@ export const ManualEditorMixin = <TConfig>(
 
     @state() private _bottomSheetHeight?: number;
 
-    // Shared with the AI sidebar, which takes the same place
     @storage({
       key: "automation-sidebar-width",
       state: false,
-      subscribe: true,
+      subscribe: false,
     })
     protected sidebarWidthPx = SIDEBAR_DEFAULT_WIDTH;
+
+    private _unsubscribeWidth?: () => void;
 
     @query("ha-automation-sidebar")
     protected sidebarElement?: HaAutomationSidebar;
@@ -118,10 +119,22 @@ export const ManualEditorMixin = <TConfig>(
     public connectedCallback() {
       super.connectedCallback();
       window.addEventListener("paste", this.handlePaste);
+      // The AI sidebar shares the width. Without a render, it changes on
+      // every move while resizing.
+      this._unsubscribeWidth = getStorage("localStorage").subscribeChanges(
+        "automation-sidebar-width",
+        (_, value) =>
+          this.style.setProperty(
+            "--sidebar-dynamic-width",
+            `${(value as number | undefined) ?? SIDEBAR_DEFAULT_WIDTH}px`
+          )
+      );
     }
 
     public disconnectedCallback() {
       window.removeEventListener("paste", this.handlePaste);
+      this._unsubscribeWidth?.();
+      this._unsubscribeWidth = undefined;
       super.disconnectedCallback();
     }
 
@@ -187,17 +200,6 @@ export const ManualEditorMixin = <TConfig>(
           </div>
         </div>
       `;
-    }
-
-    protected updated(changedProps: PropertyValues<this>): void {
-      super.updated(changedProps);
-      // The AI sidebar resized it. Protected, so not a key of `this`.
-      if ((changedProps as PropertyValues).has("sidebarWidthPx")) {
-        this.style.setProperty(
-          "--sidebar-dynamic-width",
-          `${this.sidebarWidthPx}px`
-        );
-      }
     }
 
     protected firstUpdated(changedProps: PropertyValues<this>): void {

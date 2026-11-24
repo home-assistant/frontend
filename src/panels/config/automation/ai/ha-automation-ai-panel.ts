@@ -39,6 +39,7 @@ import type {
   AutomationAiTurn,
 } from "./automation-ai-agent";
 import { runAutomationAi } from "./automation-ai-agent";
+import { deepEqual } from "../../../../common/util/deep-equal";
 import {
   promptMentions,
   promptParts,
@@ -48,6 +49,9 @@ import type { AutomationAiPanelState } from "./automation-ai-session";
 import type { LineChanges } from "./automation-ai-stats";
 import "./ha-automation-ai-prompt";
 import type { HaAutomationAiPrompt } from "./ha-automation-ai-prompt";
+
+// How close to the end the user has to be for answers to scroll there
+const FOLLOW_END_DISTANCE = 32;
 
 // The squares next to the numbers of changed lines, like a git diff
 const STAT_SQUARES = 5;
@@ -149,27 +153,31 @@ export class HaAutomationAiPanel extends LitElement {
         (key) => changed.has(key)
       )
     ) {
-      // A running request is kept as interrupted, in case the user leaves
-      // the page before it finishes
-      fireEvent(this, "ai-state-changed", {
-        state: {
-          turns: this._turns,
-          messages: this._running ? this._baseMessages : this._messages,
-          problems: this._problems,
-          error: this._error,
-          interrupted: this._running?.prompt ?? this._interrupted,
-        },
-      });
+      fireEvent(this, "ai-state-changed", { state: this.state });
     }
+  }
+
+  /**
+   * The conversation to keep. A running request is kept as interrupted, in
+   * case the user leaves the page before it finishes.
+   */
+  public get state(): AutomationAiPanelState {
+    return {
+      turns: this._turns,
+      messages: this._running ? this._baseMessages : this._messages,
+      problems: this._problems,
+      error: this._error,
+      interrupted: this._running?.prompt ?? this._interrupted,
+    };
   }
 
   protected render(): TemplateResult {
     return html`
       <div
         class="content"
+        role="log"
         @content-resize=${this._contentResized}
-        @wheel=${this._userScrolled}
-        @touchmove=${this._userScrolled}
+        @scroll=${this._scrolled}
       >
         ${this._renderEmpty()}
         ${this._turns.map((turn) => this._renderTurn(turn))}
@@ -239,8 +247,27 @@ export class HaAutomationAiPanel extends LitElement {
     this._request++;
     this._messages = this._baseMessages;
     this._running = undefined;
-    this._prompt = running.prompt;
+    // Unless the user typed something else meanwhile
+    if (!this._prompt.trim()) {
+      this._prompt = running.prompt;
+    }
     fireEvent(this, "ai-request-finished", {});
+  }
+
+  /**
+   * Drops the running request, e.g. when the editor shows another config. Its
+   * answer will be lost, so it shows as interrupted.
+   */
+  public abandon(): boolean {
+    const running = this._running;
+    if (!running) {
+      return false;
+    }
+    this._request++;
+    this._messages = this._baseMessages;
+    this._running = undefined;
+    this._interrupted = running.prompt;
+    return true;
   }
 
   // Before the first request, an invitation in the middle
@@ -303,7 +330,7 @@ export class HaAutomationAiPanel extends LitElement {
           `ui.panel.config.automation.editor.ai.steps.${key}` as Parameters<
             HomeAssistant["localize"]
           >[0],
-          { count: step.problems ?? 0 }
+          { count: step.problems ?? 0, kind: this.kind }
         )}
       </li>
     `;
@@ -348,13 +375,16 @@ export class HaAutomationAiPanel extends LitElement {
                 "ui.panel.config.automation.editor.ai.error",
                 {
                   error: this._error,
+                  kind: this.kind,
                 }
               )}
             </ha-alert>`
           : nothing
       }
       ${
-        this._turns.length && !this.changes
+        // Kept per request, the user may undo the changes later
+        this._turns.length &&
+        this._turns[this._turns.length - 1].changed === false
           ? html`<ha-alert alert-type="info">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.ai.no_changes"
@@ -366,7 +396,8 @@ export class HaAutomationAiPanel extends LitElement {
         this._problems.length
           ? html`<ha-alert alert-type="warning">
               ${this.hass.localize(
-                "ui.panel.config.automation.editor.ai.problems"
+                "ui.panel.config.automation.editor.ai.problems",
+                { kind: this.kind }
               )}
               <ul>
                 ${this._problems.map((problem) => html`<li>${problem}</li>`)}
@@ -427,7 +458,9 @@ export class HaAutomationAiPanel extends LitElement {
         size="s"
         variant=${this.showingChanges ? "brand" : "neutral"}
         appearance=${this.showingChanges ? "filled" : "outlined"}
-        aria-pressed=${this.showingChanges ? "true" : "false"}
+        aria-label=${this.hass.localize(
+          `ui.panel.config.automation.editor.ai.${this.showingChanges ? "hide_changes" : "show_changes"}`
+        )}
         @click=${this._toggleChanges}
       >
         <ha-svg-icon slot="start" .path=${mdiPlusMinusVariant}></ha-svg-icon>
@@ -485,6 +518,9 @@ export class HaAutomationAiPanel extends LitElement {
           ></ha-icon-button>
         </ha-target-picker>
         <ha-automation-ai-prompt
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.ai.prompt_label"
+          )}
           .placeholder=${this.hass.localize(
             `ui.panel.config.automation.editor.ai.${followUp ? "follow_up_placeholder" : this.kind === "script" ? "prompt_placeholder_script" : "prompt_placeholder"}`
           )}
@@ -493,26 +529,27 @@ export class HaAutomationAiPanel extends LitElement {
           @prompt-submit=${this._submit}
           @pick-target=${this._pickTarget}
         ></ha-automation-ai-prompt>
-        ${
-          this._running
-            ? html`<ha-icon-button
-                .label=${this.hass.localize(
-                  "ui.panel.config.automation.editor.ai.stop.label"
-                )}
-                .path=${mdiStop}
-                @click=${this._stop}
-              ></ha-icon-button>`
-            : html`<ha-icon-button
-                .label=${this.hass.localize(
-                  "ui.panel.config.automation.editor.ai.send"
-                )}
-                .path=${mdiSend}
-                .disabled=${!!this._running || !this._prompt.trim()}
-                @click=${this._submit}
-              ></ha-icon-button>`
-        }
+        <ha-icon-button
+          .label=${this.hass.localize(
+            this._running
+              ? "ui.panel.config.automation.editor.ai.stop.label"
+              : "ui.panel.config.automation.editor.ai.send"
+          )}
+          .path=${this._running ? mdiStop : mdiSend}
+          .disabled=${!this._running && !this._prompt.trim()}
+          @click=${this._sendOrStop}
+        ></ha-icon-button>
       </form>
     `;
+  }
+
+  // One button, so the focus stays on it when the AI starts and stops
+  private _sendOrStop(ev: Event) {
+    if (this._running) {
+      this._stop();
+    } else {
+      this._submit(ev);
+    }
   }
 
   private _promptChanged(ev: ValueChangedEvent<string>) {
@@ -529,7 +566,7 @@ export class HaAutomationAiPanel extends LitElement {
     this._targetPicker?.open(ev.detail.section);
   }
 
-  private async _targetPicked(ev: ValueChangedEvent<HassServiceTarget>) {
+  private _targetPicked(ev: ValueChangedEvent<HassServiceTarget>) {
     ev.stopPropagation();
     const mention = this._mentionFor(ev.detail.value);
     if (!mention) {
@@ -610,15 +647,24 @@ export class HaAutomationAiPanel extends LitElement {
       }
       config = result.config;
       this._problems = result.problems;
-      this._turns = [...this._turns, { prompt, summary: result.summary }];
+      this._turns = [
+        ...this._turns,
+        {
+          prompt,
+          summary: result.summary,
+          changed: !deepEqual(result.config, this.config),
+        },
+      ];
     } catch (err) {
       if (!current()) {
         return;
       }
       this._error =
         (err as { message?: string } | undefined)?.message ?? String(err);
-      // Let the user send the request again
-      this._prompt = prompt;
+      // Let the user send the request again, unless they typed another
+      if (!this._prompt.trim()) {
+        this._prompt = prompt;
+      }
     }
     this._running = undefined;
     fireEvent(this, "ai-request-finished", { config });
@@ -638,10 +684,18 @@ export class HaAutomationAiPanel extends LitElement {
     }
   }
 
-  // The user scrolls themselves, so the end no longer pulls them down
-  private _userScrolled() {
-    this._followEnd = false;
-  }
+  // Only stays at the end while the user is there, however they scroll
+  private _scrolled = {
+    handleEvent: () => {
+      const content = this._content;
+      if (content) {
+        this._followEnd =
+          content.scrollHeight - content.scrollTop - content.clientHeight <
+          FOLLOW_END_DISTANCE;
+      }
+    },
+    passive: true,
+  };
 
   private _toggleChanges() {
     fireEvent(this, "ai-toggle-changes");
@@ -801,8 +855,8 @@ export class HaAutomationAiPanel extends LitElement {
       display: flex;
       align-items: flex-end;
       gap: var(--ha-space-1);
-      padding: var(--ha-space-2) var(--ha-space-2) var(--ha-space-3)
-        var(--ha-space-4);
+      padding-block: var(--ha-space-2) var(--ha-space-3);
+      padding-inline: var(--ha-space-4) var(--ha-space-2);
       padding-bottom: calc(
         var(--ha-space-3) + var(--safe-area-inset-bottom, 0px)
       );

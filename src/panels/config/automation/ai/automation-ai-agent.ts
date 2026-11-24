@@ -54,6 +54,8 @@ export interface AutomationAiMention {
 export interface AutomationAiTurn {
   prompt: string;
   summary: string;
+  /** Whether the AI changed the config, unknown for older sessions. */
+  changed?: boolean;
 }
 
 export interface AutomationAiRequest {
@@ -110,6 +112,8 @@ interface KindDescription {
     config: AiEditorConfig
   ) => Partial<Record<"triggers" | "conditions" | "actions", unknown>>;
   normalize: (config: AiEditorConfig) => AiEditorConfig;
+  /** The keys of the config the backend validated under another name. */
+  validatedKeys: Record<string, string>;
   /** Whether the AI needs the trigger platforms. */
   triggers: boolean;
 }
@@ -154,6 +158,7 @@ const KINDS: Record<AiEditorKind, KindDescription> = {
     },
     normalize: (config) =>
       normalizeAutomationConfig(config as AutomationConfig),
+    validatedKeys: {},
     triggers: true,
   },
   script: {
@@ -191,13 +196,30 @@ const KINDS: Record<AiEditorKind, KindDescription> = {
       actions: (config as ScriptConfig).sequence ?? [],
     }),
     normalize: (config) => normalizeScriptConfig(config as ScriptConfig),
+    validatedKeys: { actions: "sequence" },
     triggers: false,
   },
 };
 
-const describeEntities = (hass: HomeAssistant): string => {
+/**
+ * The entities of the home, the ones the config or the request refers to
+ * first, so the limit for a large home doesn't drop them.
+ */
+const describeEntities = (
+  hass: HomeAssistant,
+  referenced: Set<string>
+): string => {
   const lines = Object.values(hass.states)
-    .filter((stateObj) => !hass.entities[stateObj.entity_id]?.hidden)
+    .filter(
+      (stateObj) =>
+        referenced.has(stateObj.entity_id) ||
+        !hass.entities[stateObj.entity_id]?.hidden
+    )
+    .sort(
+      (a, b) =>
+        Number(referenced.has(b.entity_id)) -
+        Number(referenced.has(a.entity_id))
+    )
     .slice(0, MAX_ENTITIES)
     .map((stateObj) => {
       const entry = hass.entities[stateObj.entity_id];
@@ -228,10 +250,26 @@ const describeAreas = (hass: HomeAssistant): string =>
     .map((area) => `${area.area_id} | ${area.name}`)
     .join("\n");
 
+const ENTITY_ID = /\b[a-z0-9_]+\.[a-z0-9_]+\b/g;
+
+// The entities the config or the mentions of the request refer to
+const referencedEntities = (request: AutomationAiRequest): Set<string> => {
+  const { hass, config, mentions } = request;
+  const ids = new Set(
+    (JSON.stringify(config).match(ENTITY_ID) ?? []).filter(
+      (id) => id in hass.states
+    )
+  );
+  mentions
+    ?.filter((mention) => mention.key === "entity_id")
+    .forEach((mention) => ids.add(mention.id));
+  return ids;
+};
+
 const configYaml = (config: AiEditorConfig): string => {
   // Only automations have an id in their config
   const { id: _id, ...rest } = config as AutomationConfig;
-  return dump(rest);
+  return dump(rest, { noRefs: true });
 };
 
 const MAX_DEVICES = 500;
@@ -374,7 +412,7 @@ const buildInstructions = (
     platforms,
     "- When the user refers to a device, area, floor or label, put it in the `target` instead of listing its entities.",
     keep,
-    "- Don't include an `id`.",
+    `- Don't include a top-level \`id\` for the ${kind}. Keep the \`id\` of triggers and other rows, other parts may refer to it.`,
     `- Write the summary in the language with the code "${hass.language}".`,
     "",
     "Example:",
@@ -404,7 +442,7 @@ const buildInstructions = (
     describeDevices(hass),
     "",
     "Entities (entity_id | name | area):",
-    describeEntities(hass),
+    describeEntities(hass, referencedEntities(request)),
     "",
     ...(context.triggers
       ? [
@@ -440,7 +478,7 @@ const buildInstructions = (
 const buildFixInstructions = (
   kind: AiEditorKind,
   instructions: string,
-  answer: string,
+  answer: string | undefined,
   problems: string[]
 ): string =>
   [
@@ -451,7 +489,8 @@ const buildFixInstructions = (
     "",
     `Your previous ${kind}:`,
     "```yaml",
-    answer.trim(),
+    // An answer without YAML still gets the problems to fix
+    (answer ?? "").trim(),
     "```",
     "",
     `Fix the problems and return the complete ${kind} again.`,
@@ -470,6 +509,10 @@ const checkConfig = async (
   yaml: string,
   id: string | undefined
 ): Promise<{ config?: AiEditorConfig; problems: string[] }> => {
+  // The backend may answer without the structure it was asked for
+  if (typeof yaml !== "string" || !yaml.trim()) {
+    return { problems: [`The answer has no ${kind} YAML.`] };
+  }
   let parsed: unknown;
   try {
     parsed = load(stripCodeFence(yaml));
@@ -488,7 +531,10 @@ const checkConfig = async (
   const validation = await validateConfig(hass, KINDS[kind].validate(config));
   const problems = Object.entries(validation)
     .filter(([, result]) => !result.valid)
-    .map(([key, result]) => `${key}: ${result.error}`);
+    .map(
+      ([key, result]) =>
+        `${KINDS[kind].validatedKeys[key] ?? key}: ${result.error}`
+    );
   return { config, problems };
 };
 
@@ -572,7 +618,11 @@ export const runAutomationAi = async (
           ]),
     ];
     request.onMessages(messages);
-    return result.data;
+    return {
+      summary:
+        typeof result.data?.summary === "string" ? result.data.summary : "",
+      config_yaml: result.data?.config_yaml,
+    };
   };
 
   setStep({ type: "context", status: "running" });

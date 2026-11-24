@@ -5914,6 +5914,7 @@
             "ai": {
               "menu": "Edit with AI",
               "title": "Edit with AI",
+              "prompt_label": "Request to the AI",
               "prompt_placeholder": "Turn on the hallway light when motion is detected after sunset",
               "prompt_placeholder_script": "Dim the living room lights and close its blinds",
               "follow_up_placeholder": "Ask for more changes",
@@ -5935,6 +5936,7 @@
               "send_again": "Send again",
               "new_result": "new result",
               "line_changes": "{added} {added, plural,\n one {line}\n other {lines}\n} added, {removed} removed",
+              "resize": "Resize the AI sidebar",
               "show_changes": "Show changes",
               "hide_changes": "Hide changes",
               "stop": {
@@ -5945,19 +5947,19 @@
                 "dismiss": "Keep working"
               },
               "no_changes": "The AI didn't change anything.",
-              "problems": "The automation still has problems. Check them before you accept it:",
+              "problems": "The {kind, select,\n script {script}\n other {automation}\n} still has problems. Check them before you save it:",
               "show_conversation": "Show conversation",
               "role_system": "Instructions",
               "role_user": "Request",
               "role_assistant": "Answer",
               "thinking": "Thinking",
               "steps": {
-                "context": "Read the automation, entities, and actions",
-                "context_running": "Reading the automation, entities, and actions",
+                "context": "Read the {kind, select,\n script {script}\n other {automation}\n}, entities, and actions",
+                "context_running": "Reading the {kind, select,\n script {script}\n other {automation}\n}, entities, and actions",
                 "generate": "Wrote the changes",
                 "generate_running": "Writing the changes",
-                "validate": "Checked the automation",
-                "validate_running": "Checking the automation",
+                "validate": "Checked the {kind, select,\n script {script}\n other {automation}\n}",
+                "validate_running": "Checking the {kind, select,\n script {script}\n other {automation}\n}",
                 "validate_error": "Found {count} {count, plural,\n one {problem}\n other {problems}\n}",
                 "fix": "Fixed {count} {count, plural,\n one {problem}\n other {problems}\n}",
                 "fix_running": "Fixing {count} {count, plural,\n one {problem}\n other {problems}\n}"
@@ -5969,10 +5971,11 @@
                 "added": "Added",
                 "removed": "Removed",
                 "changed": "Changed",
-                "value_changed": "{name}: {old} → {new}"
+                "value_changed": "{name}: {old} → {new}",
+                "setting_marked": "{name}: {change}"
               },
               "create": "Create with AI",
-              "error": "The AI couldn't change the automation: {error}"
+              "error": "The AI couldn't change the {kind, select,\n script {script}\n other {automation}\n}: {error}"
             },
             "modes": {
               "label": "Mode",

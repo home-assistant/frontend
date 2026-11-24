@@ -192,6 +192,9 @@ export class HaAutomationAiPrompt extends LitElement {
 
   @property() public placeholder = "";
 
+  /** Names the field for assistive technologies. */
+  @property() public label = "";
+
   @consumeLocalize()
   private _localize!: LocalizeFunc;
 
@@ -207,6 +210,18 @@ export class HaAutomationAiPrompt extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
+    this._createView();
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    // Destroyed when it was disconnected, e.g. with a cached panel
+    if (this.hasUpdated && !this._view) {
+      this._createView();
+    }
+  }
+
+  private _createView() {
     this._view = new EditorView({
       parent: this._container,
       root: this.shadowRoot!,
@@ -230,9 +245,12 @@ export class HaAutomationAiPrompt extends LitElement {
             ...defaultKeymap,
             ...historyKeymap,
           ]),
+          // Written like a message, so the keyboard of a phone helps
           EditorView.contentAttributes.of({
-            "aria-label": this.placeholder,
-            "aria-multiline": "true",
+            "aria-label": this.label,
+            spellcheck: "true",
+            autocorrect: "on",
+            autocapitalize: "sentences",
           }),
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {
@@ -355,7 +373,7 @@ export class HaAutomationAiPrompt extends LitElement {
       display: inline-flex;
       align-items: center;
       gap: var(--ha-space-1);
-      padding: 0 var(--ha-space-2) 0 var(--ha-space-1);
+      padding-inline: var(--ha-space-1) var(--ha-space-2);
       margin: 0 1px;
       border-radius: var(--ha-border-radius-md);
       background-color: var(--ha-color-fill-neutral-normal-resting);

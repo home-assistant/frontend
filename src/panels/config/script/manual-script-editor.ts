@@ -17,7 +17,6 @@ import { ensureArray } from "../../../common/array/ensure-array";
 import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-markdown";
 import type {
   Action,
   Fields,
@@ -183,6 +182,10 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
   }
 
   protected handlePaste = async (ev: ClipboardEvent) => {
+    // Nothing to paste into while editing is locked, e.g. for the AI
+    if (this.disabled) {
+      return;
+    }
     // Ignore events on inputs/textareas
     if (!canOverrideAlphanumericInput(ev.composedPath())) {
       return;
@@ -368,10 +371,6 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
           font-size: var(--ha-font-size-xl);
           font-weight: var(--ha-font-weight-normal);
           flex: 1;
-        }
-
-        .description {
-          margin-top: 16px;
         }
 
         ha-icon-button {

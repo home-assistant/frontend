@@ -127,6 +127,11 @@ export class HaAutomationAiSidebar extends LitElement {
             : html`<div
                 class="handle ${this._resizing ? "resizing" : ""}"
                 tabindex="0"
+                role="separator"
+                aria-orientation="vertical"
+                aria-label=${this._localize(
+                  "ui.panel.config.automation.editor.ai.resize"
+                )}
                 @pointerdown=${this._resizeStart}
                 @pointermove=${this._resizeMove}
                 @pointerup=${this._resizeEnd}
@@ -192,7 +197,6 @@ export class HaAutomationAiSidebar extends LitElement {
                 .label=${this._localize(
                   `ui.panel.config.automation.editor.ai.${this.showingChanges ? "hide_changes" : "show_changes"}`
                 )}
-                aria-pressed=${this.showingChanges ? "true" : "false"}
                 .path=${mdiPlusMinusVariant}
                 @click=${this._toggleChanges}
               ></ha-icon-button>`

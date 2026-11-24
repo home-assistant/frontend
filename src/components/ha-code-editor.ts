@@ -178,6 +178,9 @@ export class HaCodeEditor extends ReactiveElement {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
 
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  private _loadedMerge?: typeof import("@codemirror/merge");
+
   private _completionInfoPopover?: WaPopup;
 
   private _completionInfoContainer?: HTMLDivElement;
@@ -307,6 +310,10 @@ export class HaCodeEditor extends ReactiveElement {
   // Ensure CodeMirror module is loaded before any update
   protected override async scheduleUpdate() {
     this._loadedCodeMirror ??= await import("../resources/codemirror");
+    // Only editors that show changes need the merge view
+    if (this.original !== undefined) {
+      this._loadedMerge ??= await import("@codemirror/merge");
+    }
     super.scheduleUpdate();
   }
 
@@ -418,9 +425,9 @@ export class HaCodeEditor extends ReactiveElement {
   }
 
   private get _merge(): Extension {
-    return this.original === undefined
+    return this.original === undefined || !this._loadedMerge
       ? []
-      : this._loadedCodeMirror!.unifiedMergeView({
+      : this._loadedMerge.unifiedMergeView({
           original: this.original,
           mergeControls: false,
           allowInlineDiffs: true,
