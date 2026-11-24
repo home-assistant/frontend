@@ -436,11 +436,6 @@ class AddIntegrationDialog extends LitElement {
               : undefined,
             is_built_in: integration.is_built_in !== false,
             overwrites_built_in: integration.overwrites_built_in,
-            categories: integration.integrations
-              ? Object.values(integration.integrations).flatMap(
-                  (brandIntegration) => brandIntegration.categories || []
-                )
-              : undefined,
           });
         } else if ("integration_type" in integration) {
           // No config flow, only found by searching
@@ -521,15 +516,14 @@ class AddIntegrationDialog extends LitElement {
       // A brand shows its integrations here, not itself, like the website
       if (category) {
         return [...integrations, ...helpers]
-          .filter(ofCategory)
           .flatMap((item) =>
             item.domains
               ? this._brandRows(item)
                   .filter((row) => !row.is_header && !row.is_add)
-                  .filter(ofCategory)
                   .map((row) => ({ ...row, id: row.domain }))
               : [item]
           )
+          .filter(ofCategory)
           .filter(
             (row, index, rows) =>
               rows.findIndex((other) => other.domain === row.domain) === index
