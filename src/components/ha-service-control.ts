@@ -732,25 +732,6 @@ export class HaServiceControl extends LitElement {
       dataField.name ||
       dataField.key;
 
-    const fieldError = this.dataErrors?.[dataField.key];
-    const selectorTemplate = html`<ha-selector
-      .context=${this._selectorContext(targetEntities)}
-      .disabled=${
-        this.disabled ||
-        (showOptional &&
-          !this._checkedKeys.has(dataField.key) &&
-          (!this._value?.data || this._value.data[dataField.key] === undefined))
-      }
-      .hass=${this.hass}
-      .selector=${selector}
-      .key=${dataField.key}
-      @value-changed=${this._serviceDataChanged}
-      .value=${this._value?.data ? this._value.data[dataField.key] : undefined}
-      .placeholder=${dataField.default}
-      .localizeValue=${this._localizeValueCallback}
-      .required=${dataField.required}
-    ></ha-selector>`;
-
     return dataField.selector
       ? html`<ha-settings-row
           .narrow=${
@@ -798,7 +779,27 @@ export class HaServiceControl extends LitElement {
             ></ha-markdown>
           </span>
           <div class="field">
-            ${selectorTemplate}${this._renderError(fieldError)}
+            <ha-selector
+              .context=${this._selectorContext(targetEntities)}
+              .disabled=${
+                this.disabled ||
+                (showOptional &&
+                  !this._checkedKeys.has(dataField.key) &&
+                  (!this._value?.data ||
+                    this._value.data[dataField.key] === undefined))
+              }
+              .hass=${this.hass}
+              .selector=${selector}
+              .key=${dataField.key}
+              @value-changed=${this._serviceDataChanged}
+              .value=${
+                this._value?.data ? this._value.data[dataField.key] : undefined
+              }
+              .placeholder=${dataField.default}
+              .localizeValue=${this._localizeValueCallback}
+              .required=${dataField.required}
+            ></ha-selector>
+            ${this._renderError(this.dataErrors?.[dataField.key])}
           </div>
         </ha-settings-row>`
       : "";

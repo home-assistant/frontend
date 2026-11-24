@@ -116,7 +116,8 @@ export const rowStyles = css`
   .note-indicator {
     color: var(--ha-color-on-neutral-normal);
   }
-  .note-indicator + ha-tooltip::part(body) {
+  .note-indicator + ha-tooltip::part(body),
+  .error-indicator + ha-tooltip::part(body) {
     cursor: default;
     max-width: 300px;
   }
@@ -128,14 +129,6 @@ export const rowStyles = css`
   .error-indicator {
     color: var(--ha-color-on-danger-quiet);
     padding: var(--ha-space-3);
-  }
-  .error-indicator + ha-tooltip::part(body) {
-    cursor: default;
-    max-width: 300px;
-  }
-  .error-indicator + ha-tooltip p {
-    white-space: pre-wrap;
-    margin: 0;
   }
 `;
 
@@ -294,13 +287,9 @@ export const manualEditorStyles = css`
     color: var(--secondary-text-color);
   }
 
-  .unowned-errors {
+  .errors-alert {
     display: block;
     margin-bottom: var(--ha-space-2);
-  }
-  .unowned-errors p {
-    margin: 0;
-    white-space: pre-wrap;
   }
 `;
 

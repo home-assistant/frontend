@@ -36,13 +36,12 @@ import type {
   ValueChangedEvent,
 } from "../../../types";
 import { showToast } from "../../../util/toast";
-import "../../../components/ha-alert";
 import {
   automationErrorsContext,
   errorOwner,
-  errorText,
   NO_ERRORS,
 } from "./automation-errors";
+import { renderErrorsAlert } from "./automation-error-templates";
 import {
   AutomationRowRegistry,
   automationRowRegistryContext,
@@ -146,14 +145,11 @@ export const ManualEditorMixin = <TConfig>(
       if (!this._rowsRendered) {
         return nothing;
       }
-      const unowned = this.configErrors.filter(
-        (error) => !errorOwner(this.rowRegistry, error)
+      return renderErrorsAlert(
+        this.configErrors.filter(
+          (error) => !errorOwner(this.rowRegistry, error)
+        )
       );
-      return unowned.length
-        ? html`<ha-alert alert-type="error" class="unowned-errors">
-            ${unowned.map((error) => html`<p>${errorText(error)}</p>`)}
-          </ha-alert>`
-        : nothing;
     }
 
     protected renderContent(): TemplateResult | typeof nothing {

@@ -129,7 +129,7 @@ import "./types/ha-automation-action-wait_template";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 import { scrollRowIntoView } from "../scroll-row-into-view";
 import { AutomationPathController } from "../automation-path";
-import { renderRowErrorIcon } from "../automation-row-error-icon";
+import { renderRowErrorIcon } from "../automation-error-templates";
 
 export interface ActionElement extends LitElement {
   action: Action;

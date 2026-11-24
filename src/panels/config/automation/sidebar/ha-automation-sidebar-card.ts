@@ -13,8 +13,8 @@ import "../../../../components/ha-icon-button";
 import { ScrollableFadeMixin } from "../../../../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import "../../../../components/ha-alert";
-import { errorField, errorText } from "../automation-errors";
+import { errorField } from "../automation-errors";
+import { renderErrorsAlert } from "../automation-error-templates";
 import {
   automationInlineErrorFieldsContext,
   AutomationFieldErrorsController,
@@ -109,15 +109,7 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
               </ha-automation-editor-warning>`
             : nothing
         }
-        ${
-          errors.length
-            ? html`<ha-alert alert-type="error" class="errors">
-                ${errors.map(
-                  (error) => html`<p>${errorText(error, this._errors.path)}</p>`
-                )}
-              </ha-alert>`
-            : nothing
-        }
+        ${renderErrorsAlert(errors, this._errors.path)}
         <div class="card-content ha-scrollbar">
           <slot></slot>
           ${this.renderScrollableFades(this.isWide)}
@@ -176,13 +168,8 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
           padding-bottom: max(var(--safe-area-inset-bottom, 0px), 32px);
         }
 
-        .errors {
+        .errors-alert {
           margin: 0 var(--ha-space-4) var(--ha-space-4);
-        }
-
-        .errors p {
-          margin: 0;
-          white-space: pre-wrap;
         }
 
         .fade-top {

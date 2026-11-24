@@ -97,7 +97,7 @@ import "./types/ha-automation-condition-zone";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 import { scrollRowIntoView } from "../scroll-row-into-view";
 import { AutomationPathController } from "../automation-path";
-import { renderRowErrorIcon } from "../automation-row-error-icon";
+import { renderRowErrorIcon } from "../automation-error-templates";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;

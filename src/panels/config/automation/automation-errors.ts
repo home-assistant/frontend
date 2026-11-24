@@ -1,5 +1,4 @@
 import { createContext } from "@lit/context";
-import { ensureArray } from "../../../common/array/ensure-array";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   formatPath,
@@ -12,6 +11,7 @@ import type {
   AutomationPathRow,
   AutomationRowRegistry,
 } from "./automation-path";
+import { isConfigObject } from "./ui-support";
 
 /** The validation errors of the config being edited, paths from its root. */
 export const automationErrorsContext =
@@ -87,30 +87,6 @@ export const errorsEqual = (
       pathEquals(error.path, b[index].path)
   );
 
-const TRIGGER_LIST_KEYS = ["triggers", "wait_for_trigger"];
-
-const isTriggerSublist = (value: unknown): value is { triggers: unknown } =>
-  typeof value === "object" &&
-  value !== null &&
-  Object.keys(value).length === 1 &&
-  "triggers" in value;
-
-// Core validates triggers after flattening `triggers:` sublists one level
-// deep, so its trigger indexes count the triggers of the flat list.
-const flatTriggerPaths = (triggers: unknown[]): ConfigPath[] =>
-  triggers.flatMap((trigger, index) =>
-    isTriggerSublist(trigger)
-      ? (ensureArray(trigger.triggers) ?? []).map((_, subIndex) => [
-          index,
-          "triggers",
-          subIndex,
-        ])
-      : [[index]]
-  );
-
-const isConfigObject = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null && !Array.isArray(value);
-
 const childAt = (value: unknown, segment: string | number): unknown =>
   typeof value === "object" && value !== null
     ? (value as Record<string | number, unknown>)[segment]
@@ -119,37 +95,50 @@ const childAt = (value: unknown, segment: string | number): unknown =>
 const valueAt = (config: unknown, path: ConfigPath): unknown =>
   path.reduce<unknown>(childAt, config);
 
-/** Maps an error path of core's validated config onto the edited config. */
+const BLOCK_KEYS = new Set([
+  "triggers",
+  "conditions",
+  "actions",
+  "sequence",
+  "if",
+  "then",
+  "else",
+  "choose",
+  "default",
+  "parallel",
+  "while",
+  "until",
+  "and",
+  "or",
+  "not",
+  "wait_for_trigger",
+]);
+
+/**
+ * Core reports errors of a block written as a single item, like
+ * `default: { delay: … }`, without a list index, but the editor shows the
+ * item as the first row of the block.
+ */
 export const configErrorPath = (
   config: unknown,
   path: ConfigPath
 ): ConfigPath => {
   const result: ConfigPath = [];
   let value = config;
-  for (let index = 0; index < path.length; index++) {
-    const segment = path[index];
-    const parentKey = result[result.length - 1];
-    // Core wraps each action of the `parallel` shorthand in a sequence
-    if (
-      segment === "sequence" &&
-      path[index + 1] === 0 &&
-      result[result.length - 2] === "parallel" &&
-      isConfigObject(value) &&
-      !("sequence" in value)
-    ) {
-      index++;
+  for (const [index, segment] of path.entries()) {
+    result.push(segment);
+    value = childAt(value, segment);
+    if (typeof segment !== "string") {
       continue;
     }
-    const mapped =
-      typeof segment === "number" &&
-      Array.isArray(value) &&
-      TRIGGER_LIST_KEYS.includes(parentKey as string)
-        ? flatTriggerPaths(value)[segment]
-        : undefined;
-    (mapped ?? [segment]).forEach((part) => {
-      result.push(part);
-      value = childAt(value, part);
-    });
+    if (BLOCK_KEYS.has(segment)) {
+      if (isConfigObject(value) && typeof path[index + 1] === "string") {
+        result.push(0);
+      }
+    } else if (segment !== "repeat") {
+      // Keys inside fields like `data` are not blocks
+      return [...result, ...path.slice(index + 1)];
+    }
   }
   return result;
 };
@@ -311,7 +300,6 @@ export const followErrors = (
   });
 };
 
-/** The errors on items that already had one. */
 export const errorsOnKnownItems = (
   known: KnownErrorItem[],
   config: unknown,

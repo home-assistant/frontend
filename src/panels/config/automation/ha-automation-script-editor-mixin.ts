@@ -4,8 +4,7 @@ import type {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { css, html, nothing } from "lit";
-import { ifDefined } from "lit/directives/if-defined";
+import { css, html } from "lit";
 import { property, query, state } from "lit/decorators";
 import { consume } from "../../../common/decorators/consume";
 import { transform } from "../../../common/decorators/transform";
@@ -13,7 +12,6 @@ import { goBack, navigate } from "../../../common/navigate";
 import { debounce } from "../../../common/util/debounce";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/animation/ha-fade-in";
-import "../../../components/ha-alert";
 import "../../../components/ha-spinner"; // used by renderLoading() provided to both editors
 import type { AutomationMigrationReport } from "../../../data/automation";
 import {
@@ -36,7 +34,6 @@ import { showToast } from "../../../util/toast";
 import {
   errorsEqual,
   errorsOnKnownItems,
-  errorText,
   followErrors,
   followKnownErrorItems,
   knownErrorItems,
@@ -44,12 +41,16 @@ import {
   NO_ERRORS,
   type KnownErrorItem,
 } from "./automation-errors";
+import { renderErrorsAlert } from "./automation-error-templates";
 import type { EntityRegistryUpdate } from "./automation-save-dialog/show-dialog-automation-save";
 import { showEditorToast } from "./editor-toast";
 
 const CONFIG_ERRORS_TOAST_ID = "config-errors";
 
 const REVALIDATE_DELAY = 500;
+
+// Core reports errors in the config a blueprint generates at `use_blueprint`
+const BLUEPRINT_PATH = ["use_blueprint"];
 
 interface ErrorsEditorElement extends HTMLElement {
   revealErrors(): Promise<void>;
@@ -87,10 +88,6 @@ export const automationScriptEditorStyles: CSSResult = css`
   }
   p {
     margin-bottom: 0;
-  }
-  .config-errors p {
-    margin: 0;
-    white-space: pre-wrap;
   }
   ha-button[slot="fab"] {
     position: fixed;
@@ -249,11 +246,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
           ? followErrors(submittedErrors, submitted, this.config)
           : submittedErrors
       );
-      if (changed) {
-        // Followed errors miss items that were renamed and moved, so check
-        // everything again
-        await this._validateConfig(false);
-      }
+      // Shown before revalidating, so a later save that succeeds closes it
       this._showSaveFailedToast(
         errors.length === 1
           ? errors[0].message
@@ -262,6 +255,11 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
               { count: errors.length }
             )
       );
+      if (changed) {
+        // Followed errors miss items that were renamed and moved, so check
+        // everything again
+        await this._validateConfig(false);
+      }
       await this._revealErrors();
     }
 
@@ -312,15 +310,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
 
     /** All errors, for the editors that have no rows to show them on. */
     protected renderConfigErrorsAlert(slot?: string) {
-      return this.configErrors.length
-        ? html`<ha-alert
-            alert-type="error"
-            class="config-errors"
-            slot=${ifDefined(slot)}
-          >
-            ${this.configErrors.map((error) => html`<p>${errorText(error)}</p>`)}
-          </ha-alert>`
-        : nothing;
+      return renderErrorsAlert(this.configErrors, BLUEPRINT_PATH, slot);
     }
 
     private _showSaveFailedToast(problems: string) {

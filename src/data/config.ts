@@ -3,20 +3,24 @@ import type { HomeAssistant } from "../types";
 
 export interface ConfigValidationError {
   message: string;
-  /** Where the problem is, `[]` when core does not know. */
+  /** The path in the config as it was sent, `[]` when core does not know. */
   path: ConfigPath;
-  code?: string | null;
+  code: string | null;
+  translation_key: string | null;
+  translation_domain: string | null;
+  translation_placeholders: Record<string, unknown>;
 }
 
 export interface ValidConfig {
   valid: true;
   error: null;
+  errors: [];
 }
 
 export interface InvalidConfig {
   valid: false;
   error: string;
-  /** Paths start at the item index of the section. */
+  /** Paths are relative to the section. */
   errors: ConfigValidationError[];
 }
 
@@ -43,12 +47,8 @@ export const validationResultErrors = (
   sectionKeys: ValidationSectionKeys = {}
 ): ConfigValidationError[] =>
   (Object.keys(result) as ValidKeys[]).flatMap((key) => {
-    const section = result[key];
-    if (!section || section.valid) {
-      return [];
-    }
     const sectionKey = sectionKeys[key] ?? key;
-    return section.errors.map((error) => ({
+    return (result[key]?.errors ?? []).map((error) => ({
       ...error,
       path: [sectionKey, ...error.path],
     }));

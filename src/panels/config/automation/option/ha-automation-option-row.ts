@@ -65,7 +65,7 @@ import {
 import "../trigger/ha-automation-trigger-references";
 import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 import { AutomationPathController } from "../automation-path";
-import { renderRowErrorIcon } from "../automation-row-error-icon";
+import { renderRowErrorIcon } from "../automation-error-templates";
 
 @customElement("ha-automation-option-row")
 export default class HaAutomationOptionRow extends LitElement {

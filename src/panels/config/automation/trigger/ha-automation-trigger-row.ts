@@ -121,7 +121,7 @@ import "./types/ha-automation-trigger-zone";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 import { scrollRowIntoView } from "../scroll-row-into-view";
 import { AutomationPathController } from "../automation-path";
-import { renderRowErrorIcon } from "../automation-row-error-icon";
+import { renderRowErrorIcon } from "../automation-error-templates";
 import { targetExpandGroupContext } from "../../../../components/target-picker/target-expand-group-context";
 
 export interface TriggerElement extends LitElement {
