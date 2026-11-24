@@ -294,12 +294,21 @@ class AddIntegrationDialog extends LitElement {
       this._scrollToTop = false;
       this._listElement?.scrollElement?.scrollTo({ top: 0 });
     }
-    if (this._focusAfterDrill === "in") {
-      this._backButton?.focus();
-    } else if (this._focusAfterDrill === "out") {
-      (this._selectedBrowseRow || this._searchInput)?.focus();
+    if (this._focusAfterDrill) {
+      const drilledIn = this._focusAfterDrill === "in";
+      this._focusAfterDrill = undefined;
+      // The new rows and back button render after this element
+      requestAnimationFrame(() => {
+        if (!this._open || this._drilled !== drilledIn) {
+          return;
+        }
+        if (drilledIn) {
+          this._backButton?.focus();
+        } else {
+          (this._selectedBrowseRow || this._searchInput)?.focus();
+        }
+      });
     }
-    this._focusAfterDrill = undefined;
   }
 
   public willUpdate(changedProps: PropertyValues): void {
@@ -2043,9 +2052,6 @@ class AddIntegrationDialog extends LitElement {
         --add-integration-sheet-height: calc(
           100vh - max(var(--safe-area-inset-top), var(--ha-space-12))
         );
-        --add-integration-sheet-height: calc(
-          100dvh - max(var(--safe-area-inset-top), var(--ha-space-12))
-        );
         --ha-bottom-sheet-height: var(--add-integration-sheet-height);
         --ha-bottom-sheet-max-height: var(--add-integration-sheet-height);
         --add-integration-height: min(
@@ -2057,17 +2063,25 @@ class AddIntegrationDialog extends LitElement {
               )
           )
         );
-        --add-integration-height: min(
-          920px,
-          calc(
-            100dvh - max(
-                var(--safe-area-inset-bottom),
-                var(--ha-space-4)
-              ) - max(var(--safe-area-inset-top), var(--ha-space-4))
-          )
-        );
         --ha-dialog-min-height: var(--add-integration-height);
         --ha-dialog-max-height: var(--add-integration-height);
+      }
+      /* A custom property doesn't fall back to an earlier one it can't use */
+      @supports (height: 100dvh) {
+        ha-adaptive-dialog {
+          --add-integration-sheet-height: calc(
+            100dvh - max(var(--safe-area-inset-top), var(--ha-space-12))
+          );
+          --add-integration-height: min(
+            920px,
+            calc(
+              100dvh - max(
+                  var(--safe-area-inset-bottom),
+                  var(--ha-space-4)
+                ) - max(var(--safe-area-inset-top), var(--ha-space-4))
+            )
+          );
+        }
       }
       .search-row {
         display: flex;
