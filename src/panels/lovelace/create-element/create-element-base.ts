@@ -241,6 +241,12 @@ export const lovelaceElementPending = (
   const customTag = type ? _getCustomTag(type) : undefined;
   const tag = customTag ?? element.localName;
 
+  // A custom type without a dash can't name an element, so it shows its
+  // error straight away, as _customCreate does
+  if (customTag !== undefined && !customTag.includes("-")) {
+    return undefined;
+  }
+
   if (customElements.get(tag)) {
     return undefined;
   }
