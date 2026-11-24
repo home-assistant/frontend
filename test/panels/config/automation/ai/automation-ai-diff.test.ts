@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { AutomationConfig } from "../../../../../src/data/automation";
+import type { ScriptConfig } from "../../../../../src/data/script";
 import {
   diffAutomationConfigs,
   diffMarkAt,
   diffRowChangeAt,
+  SCRIPT_DIFF_LAYOUT,
 } from "../../../../../src/panels/config/automation/ai/automation-ai-diff";
 
 const light = (service: string, entity = "light.kitchen") => ({
@@ -40,7 +42,7 @@ describe("diffAutomationConfigs", () => {
       ],
     });
 
-    expect(diff.config.actions).toEqual([
+    expect((diff.config as AutomationConfig).actions).toEqual([
       { ...light("turn_on"), data: { brightness_pct: 50 } },
       { delay: { seconds: 5 } },
       light("turn_off"),
@@ -115,7 +117,7 @@ describe("diffAutomationConfigs", () => {
       triggers: [{ trigger: "time", at: "07:00:00" }],
     });
 
-    expect(diff.config.triggers).toEqual([
+    expect((diff.config as AutomationConfig).triggers).toEqual([
       base.triggers[0],
       { trigger: "time", at: "07:00:00" },
     ]);
@@ -180,5 +182,38 @@ describe("diffAutomationConfigs", () => {
     expect(diffRowChangeAt(added, ["actions", 3, "parallel", 0])).toEqual({
       before: null,
     });
+  });
+});
+
+// Scripts keep their rows in the sequence and their inputs in fields, which
+// the script editor shows apart from the rows
+describe("diffAutomationConfigs for scripts", () => {
+  const script = {
+    alias: "Movie time",
+    sequence: [light("turn_on"), light("turn_off")],
+  } as ScriptConfig;
+
+  it("marks the rows of the sequence and the fields as a setting", () => {
+    const diff = diffAutomationConfigs(
+      script,
+      {
+        ...script,
+        icon: "mdi:movie",
+        fields: { brightness: { selector: { number: {} } } },
+        sequence: [light("turn_on"), { delay: { seconds: 5 } }],
+      } as ScriptConfig,
+      SCRIPT_DIFF_LAYOUT
+    );
+
+    // The removed row shows where it was, before the one that replaced it
+    expect((diff.config as ScriptConfig).sequence).toEqual([
+      light("turn_on"),
+      light("turn_off"),
+      { delay: { seconds: 5 } },
+    ]);
+    expect(diffMarkAt(diff, ["sequence", 1])).toBe("removed");
+    expect(diffMarkAt(diff, ["sequence", 2])).toBe("added");
+    expect(diff.settings).toEqual({ icon: "added", fields: "added" });
+    expect(diff.hasChanges).toBe(true);
   });
 });

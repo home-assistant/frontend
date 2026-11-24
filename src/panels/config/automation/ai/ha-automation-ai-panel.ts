@@ -23,7 +23,6 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-markdown";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-svg-icon";
-import type { AutomationConfig } from "../../../../data/automation";
 import { labelsContext } from "../../../../data/context";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import { ensureArray } from "../../../../common/array/ensure-array";
@@ -32,6 +31,8 @@ import "../../../../components/ha-target-picker";
 import type { HaTargetPicker } from "../../../../components/ha-target-picker";
 import type { ValueChangedEvent, HomeAssistant } from "../../../../types";
 import type {
+  AiEditorConfig,
+  AiEditorKind,
   AutomationAiMention,
   AutomationAiMessage,
   AutomationAiStep,
@@ -73,7 +74,10 @@ export class HaAutomationAiPanel extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   /** The config the next request changes. */
-  @property({ attribute: false }) public config!: AutomationConfig;
+  /** Whether it edits an automation or a script. */
+  @property() public kind: AiEditorKind = "automation";
+
+  @property({ attribute: false }) public config!: AiEditorConfig;
 
   /** Whether the last request of the AI changed the automation. */
   @property({ type: Boolean }) public changes = false;
@@ -575,10 +579,11 @@ export class HaAutomationAiPanel extends LitElement {
     const current = () => request === this._request;
     fireEvent(this, "ai-request-started");
 
-    let config: AutomationConfig | undefined;
+    let config: AiEditorConfig | undefined;
     try {
       const result = await runAutomationAi({
         hass: this.hass,
+        kind: this.kind,
         config: this.config,
         prompt: promptText(prompt),
         mentions: promptMentions(prompt),
@@ -821,7 +826,7 @@ declare global {
 
   interface HASSDomEvents {
     "ai-request-started": undefined;
-    "ai-request-finished": { config?: AutomationConfig };
+    "ai-request-finished": { config?: AiEditorConfig };
     "ai-toggle-changes": undefined;
     "ai-state-changed": { state: AutomationAiPanelState };
   }

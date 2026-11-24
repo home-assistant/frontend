@@ -16,10 +16,17 @@ import type {
 import { subscribeTriggers } from "../../../../data/trigger";
 import type { AutomationConfig } from "../../../../data/automation";
 import { normalizeAutomationConfig } from "../../../../data/automation";
+import type { ScriptConfig } from "../../../../data/script";
+import { normalizeScriptConfig } from "../../../../data/script";
 import type { ChatLog } from "../../../../data/chat_log";
 import { subscribeChatLog } from "../../../../data/chat_log";
 import { validateConfig } from "../../../../data/config";
 import type { HomeAssistant } from "../../../../types";
+
+/** What the AI edits, in the automation or the script editor. */
+export type AiEditorKind = "automation" | "script";
+
+export type AiEditorConfig = AutomationConfig | ScriptConfig;
 
 /** A step the agent takes, shown to the user while it works. */
 export interface AutomationAiStep {
@@ -51,8 +58,9 @@ export interface AutomationAiTurn {
 
 export interface AutomationAiRequest {
   hass: HomeAssistant;
+  kind: AiEditorKind;
   /** The config the AI changes. */
-  config: AutomationConfig;
+  config: AiEditorConfig;
   prompt: string;
   /** Earlier requests of the same session, oldest first. */
   history: AutomationAiTurn[];
@@ -63,7 +71,7 @@ export interface AutomationAiRequest {
 }
 
 export interface AutomationAiResult {
-  config: AutomationConfig;
+  config: AiEditorConfig;
   summary: string;
   /** Problems the AI could not fix, the user decides whether to keep it. */
   problems: string[];
@@ -74,25 +82,118 @@ const MAX_FIX_ATTEMPTS = 2;
 // Keeps the prompt within what models take for a large home
 const MAX_ENTITIES = 1500;
 
-const STRUCTURE: AITaskStructure = {
+const structure = (kind: AiEditorKind): AITaskStructure => ({
   summary: {
     description:
       "A short message to the user, in their language, saying what you changed and anything they should check. If the request can't be done, say why.",
     required: true,
     selector: { text: { multiline: true } },
   },
-  automation_yaml: {
-    description:
-      "The complete updated automation as YAML, including everything you didn't change.",
+  config_yaml: {
+    description: `The complete updated ${kind} as YAML, including everything you didn't change.`,
     required: true,
     selector: { text: { multiline: true } },
   },
-};
+});
 
-interface GeneratedAutomation {
+interface GeneratedConfig {
   summary: string;
-  automation_yaml: string;
+  config_yaml: string;
 }
+
+// What tells an automation and a script apart for the AI
+interface KindDescription {
+  rules: string[];
+  example: Record<string, unknown>;
+  /** The parts of the config the backend validates. */
+  validate: (
+    config: AiEditorConfig
+  ) => Partial<Record<"triggers" | "conditions" | "actions", unknown>>;
+  normalize: (config: AiEditorConfig) => AiEditorConfig;
+  /** Whether the AI needs the trigger platforms. */
+  triggers: boolean;
+}
+
+const PLATFORM_FIELDS =
+  "They take a `target` with `entity_id`, `device_id`, `area_id`, `floor_id` or `label_id`, and their fields go under `options`. Fields marked with * are required, use their default unless the request needs another value.";
+
+const KINDS: Record<AiEditorKind, KindDescription> = {
+  automation: {
+    rules: [
+      "- Use the current syntax: `triggers` with a `trigger` key per trigger, `conditions` with a `condition` key per condition, and `actions` with `action: domain.action_name` for actions.",
+      `- Prefer the purpose-specific triggers and conditions listed below, like \`event.received\` or \`light.turned_on\`, over generic \`state\`, \`numeric_state\`, \`template\` or \`device\` ones whenever one fits. ${PLATFORM_FIELDS}`,
+      "- Keep the existing alias and description unless the request changes what the automation does. Give a new automation a short alias and description.",
+    ],
+    example: {
+      alias: "Hallway light on motion",
+      description: "Turns on the hallway light when motion is detected.",
+      mode: "restart",
+      triggers: [
+        {
+          trigger: "event.received",
+          target: { device_id: "8d3f0c2a9b7e4c1d" },
+          options: { event_type: ["press"] },
+        },
+      ],
+      conditions: [{ condition: "sun", after: "sunset" }],
+      actions: [
+        {
+          action: "light.turn_on",
+          target: { area_id: "hallway" },
+          data: { brightness_pct: 60 },
+        },
+      ],
+    },
+    validate: (config) => {
+      const automation = config as AutomationConfig;
+      return {
+        triggers: automation.triggers ?? [],
+        conditions: automation.conditions ?? [],
+        actions: automation.actions ?? [],
+      };
+    },
+    normalize: (config) =>
+      normalizeAutomationConfig(config as AutomationConfig),
+    triggers: true,
+  },
+  script: {
+    rules: [
+      "- Use the current syntax: `sequence` with the actions, with `action: domain.action_name` for actions, and `fields` for the inputs the script takes, each with a `name` and a `selector`. Conditions in the sequence have a `condition` key.",
+      `- Prefer the purpose-specific conditions listed below over generic \`state\`, \`numeric_state\`, \`template\` or \`device\` ones whenever one fits. ${PLATFORM_FIELDS}`,
+      "- Keep the existing alias, description and icon unless the request changes what the script does. Give a new script a short alias and description.",
+    ],
+    example: {
+      alias: "Movie time",
+      description: "Dims the living room and closes its blinds.",
+      mode: "single",
+      fields: {
+        brightness: {
+          name: "Brightness",
+          default: 20,
+          selector: {
+            number: { min: 0, max: 100, unit_of_measurement: "%" },
+          },
+        },
+      },
+      sequence: [
+        {
+          action: "light.turn_on",
+          target: { area_id: "living_room" },
+          data: { brightness_pct: "{{ brightness }}" },
+        },
+        {
+          action: "cover.close_cover",
+          target: { area_id: "living_room" },
+        },
+      ],
+    },
+    validate: (config) => ({
+      actions: (config as ScriptConfig).sequence ?? [],
+    }),
+    normalize: (config) => normalizeScriptConfig(config as ScriptConfig),
+    triggers: false,
+  },
+};
 
 const describeEntities = (hass: HomeAssistant): string => {
   const lines = Object.values(hass.states)
@@ -127,8 +228,9 @@ const describeAreas = (hass: HomeAssistant): string =>
     .map((area) => `${area.area_id} | ${area.name}`)
     .join("\n");
 
-const configYaml = (config: AutomationConfig): string => {
-  const { id: _id, ...rest } = config;
+const configYaml = (config: AiEditorConfig): string => {
+  // Only automations have an id in their config
+  const { id: _id, ...rest } = config as AutomationConfig;
   return dump(rest);
 };
 
@@ -240,12 +342,15 @@ interface AutomationAiContext {
 }
 
 const fetchContext = async (
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  kind: AiEditorKind
 ): Promise<AutomationAiContext> => {
   const [triggers, conditions] = await Promise.all([
-    firstMessage<TriggerDescriptions>((callback) =>
-      subscribeTriggers(hass.connection, callback)
-    ),
+    KINDS[kind].triggers
+      ? firstMessage<TriggerDescriptions>((callback) =>
+          subscribeTriggers(hass.connection, callback)
+        )
+      : undefined,
     firstMessage<ConditionDescriptions>((callback) =>
       subscribeConditions(hass.connection, callback)
     ),
@@ -257,47 +362,29 @@ const buildInstructions = (
   request: AutomationAiRequest,
   context: AutomationAiContext
 ): string => {
-  const { hass, config, prompt, history, mentions } = request;
+  const { hass, kind, config, prompt, history, mentions } = request;
+  const [syntax, platforms, keep] = KINDS[kind].rules;
   return [
-    "You edit a Home Assistant automation in the automation editor for the user. Apply the user's request to the current automation and return the complete updated automation.",
+    `You edit a Home Assistant ${kind} in the ${kind} editor for the user. Apply the user's request to the current ${kind} and return the complete updated ${kind}.`,
     "",
     "Rules:",
-    "- Return the whole automation as YAML, including the parts you didn't change. Keep unchanged parts exactly as they are, in the same order, so the user only reviews what you changed.",
-    "- Use the current syntax: `triggers` with a `trigger` key per trigger, `conditions` with a `condition` key per condition, and `actions` with `action: domain.action_name` for actions.",
+    `- Return the whole ${kind} as YAML, including the parts you didn't change. Keep unchanged parts exactly as they are, in the same order, so the user only reviews what you changed.`,
+    syntax,
     "- Only use entities, devices, areas and actions from the lists below.",
-    "- Prefer the purpose-specific triggers and conditions listed below, like `event.received` or `light.turned_on`, over generic `state`, `numeric_state`, `template` or `device` ones whenever one fits. They take a `target` with `entity_id`, `device_id`, `area_id`, `floor_id` or `label_id`, and their fields go under `options`. Fields marked with * are required, use their default unless the request needs another value.",
+    platforms,
     "- When the user refers to a device, area, floor or label, put it in the `target` instead of listing its entities.",
-    "- Keep the existing alias and description unless the request changes what the automation does. Give a new automation a short alias and description.",
+    keep,
     "- Don't include an `id`.",
     `- Write the summary in the language with the code "${hass.language}".`,
     "",
     "Example:",
     "```yaml",
-    dump({
-      alias: "Hallway light on motion",
-      description: "Turns on the hallway light when motion is detected.",
-      mode: "restart",
-      triggers: [
-        {
-          trigger: "event.received",
-          target: { device_id: "8d3f0c2a9b7e4c1d" },
-          options: { event_type: ["press"] },
-        },
-      ],
-      conditions: [{ condition: "sun", after: "sunset" }],
-      actions: [
-        {
-          action: "light.turn_on",
-          target: { area_id: "hallway" },
-          data: { brightness_pct: 60 },
-        },
-      ],
-    }).trim(),
+    dump(KINDS[kind].example).trim(),
     "```",
     "",
     ...(history.length
       ? [
-          "Earlier requests in this session, which the current automation already includes, unless the user changed it since:",
+          `Earlier requests in this session, which the current ${kind} already includes, unless the user changed it since:`,
           ...history.map(
             (turn) =>
               `- Request: ${turn.prompt}\n  Your answer: ${turn.summary}`
@@ -305,7 +392,7 @@ const buildInstructions = (
           "",
         ]
       : []),
-    "Current automation:",
+    `Current ${kind}:`,
     "```yaml",
     configYaml(config).trim(),
     "```",
@@ -351,6 +438,7 @@ const buildInstructions = (
 };
 
 const buildFixInstructions = (
+  kind: AiEditorKind,
   instructions: string,
   answer: string,
   problems: string[]
@@ -361,12 +449,12 @@ const buildFixInstructions = (
     "Your previous answer had these problems:",
     ...problems.map((problem) => `- ${problem}`),
     "",
-    "Your previous automation:",
+    `Your previous ${kind}:`,
     "```yaml",
     answer.trim(),
     "```",
     "",
-    "Fix the problems and return the complete automation again.",
+    `Fix the problems and return the complete ${kind} again.`,
   ].join("\n");
 
 const stripCodeFence = (yaml: string): string =>
@@ -375,12 +463,13 @@ const stripCodeFence = (yaml: string): string =>
     .replace(/^```(?:ya?ml)?\s*\n/i, "")
     .replace(/\n```\s*$/, "");
 
-/** Parses and checks a generated automation, returning its problems. */
-const checkAutomation = async (
+/** Parses and checks a generated config, returning its problems. */
+const checkConfig = async (
   hass: HomeAssistant,
+  kind: AiEditorKind,
   yaml: string,
   id: string | undefined
-): Promise<{ config?: AutomationConfig; problems: string[] }> => {
+): Promise<{ config?: AiEditorConfig; problems: string[] }> => {
   let parsed: unknown;
   try {
     parsed = load(stripCodeFence(yaml));
@@ -388,19 +477,15 @@ const checkAutomation = async (
     return { problems: [`The YAML is invalid: ${(err as Error).message}`] };
   }
   if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
-    return { problems: ["The YAML is not an automation."] };
+    return { problems: [`The YAML is not a ${kind}.`] };
   }
   const { id: _id, ...rest } = parsed as AutomationConfig;
-  const config = normalizeAutomationConfig({
+  const config = KINDS[kind].normalize({
     ...(id ? { id } : {}),
     ...rest,
-  } as AutomationConfig);
+  } as AiEditorConfig);
 
-  const validation = await validateConfig(hass, {
-    triggers: config.triggers ?? [],
-    conditions: config.conditions ?? [],
-    actions: config.actions ?? [],
-  });
+  const validation = await validateConfig(hass, KINDS[kind].validate(config));
   const problems = Object.entries(validation)
     .filter(([, result]) => !result.valid)
     .map(([key, result]) => `${key}: ${result.error}`);
@@ -447,9 +532,9 @@ const chatLogMessages = (chatLog: ChatLog): AutomationAiMessage[] =>
     .filter((message) => message.content || message.thinking);
 
 /**
- * Asks the AI task entity for data generation to change an automation. It
- * checks the answer with the automation validation of the backend and lets the
- * AI fix the problems it finds.
+ * Asks the AI task entity for data generation to change an automation or a
+ * script. It checks the answer with the validation of the backend and lets
+ * the AI fix the problems it finds.
  */
 export const runAutomationAi = async (
   request: AutomationAiRequest
@@ -467,17 +552,12 @@ export const runAutomationAi = async (
     request.onStep(steps);
   };
 
-  const generate = async (
-    instructions: string
-  ): Promise<GeneratedAutomation> => {
-    const result = await generateDataAITask<GeneratedAutomation>(
-      hass.callService,
-      {
-        task_name: "frontend__automation__edit",
-        instructions,
-        structure: STRUCTURE,
-      }
-    );
+  const generate = async (instructions: string): Promise<GeneratedConfig> => {
+    const result = await generateDataAITask<GeneratedConfig>(hass.callService, {
+      task_name: `frontend__${request.kind}__edit`,
+      instructions,
+      structure: structure(request.kind),
+    });
     const chatLog = await fetchChatLog(hass, result.conversation_id);
     messages = [
       ...messages,
@@ -496,7 +576,10 @@ export const runAutomationAi = async (
   };
 
   setStep({ type: "context", status: "running" });
-  const instructions = buildInstructions(request, await fetchContext(hass));
+  const instructions = buildInstructions(
+    request,
+    await fetchContext(hass, request.kind)
+  );
   setStep({ type: "context", status: "done" });
 
   setStep({ type: "generate", status: "running" });
@@ -506,10 +589,11 @@ export const runAutomationAi = async (
   for (let attempt = 0; ; attempt++) {
     setStep({ type: "validate", status: "running" });
     // eslint-disable-next-line no-await-in-loop
-    const { config, problems } = await checkAutomation(
+    const { config, problems } = await checkConfig(
       hass,
-      answer.automation_yaml,
-      request.config.id
+      request.kind,
+      answer.config_yaml,
+      (request.config as AutomationConfig).id
     );
     setStep({
       type: "validate",
@@ -527,7 +611,12 @@ export const runAutomationAi = async (
     setStep({ type: "fix", status: "running", problems: problems.length });
     // eslint-disable-next-line no-await-in-loop
     answer = await generate(
-      buildFixInstructions(instructions, answer.automation_yaml, problems)
+      buildFixInstructions(
+        request.kind,
+        instructions,
+        answer.config_yaml,
+        problems
+      )
     );
     setStep({ type: "fix", status: "done", problems: problems.length });
   }

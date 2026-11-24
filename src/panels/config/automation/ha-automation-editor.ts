@@ -1,14 +1,11 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { provide } from "@lit/context";
 import {
-  mdiCodeBraces,
   mdiCog,
   mdiContentSave,
   mdiDebugStepOver,
   mdiDelete,
   mdiDotsVertical,
   mdiFileEdit,
-  mdiFormTextbox,
   mdiInformationOutline,
   mdiPlay,
   mdiPlayCircleOutline,
@@ -17,7 +14,6 @@ import {
   mdiRedo,
   mdiRenameBox,
   mdiRobotConfused,
-  mdiStarFourPoints,
   mdiStopCircleOutline,
   mdiTag,
   mdiTransitConnection,
@@ -26,14 +22,11 @@ import {
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isNavigationClick } from "../../../common/dom/is-navigation-click";
 import { goBack, navigate } from "../../../common/navigate";
@@ -45,7 +38,6 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
-import { fetchAITaskPreferences } from "../../../data/ai_task";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import type {
   AutomationConfig,
@@ -81,9 +73,6 @@ import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../../resources/styles";
-import { storage } from "../../../common/decorators/storage";
-import { SIDEBAR_DEFAULT_WIDTH } from "./ha-manual-editor-mixin";
-import { CONTENT_MIN_WIDTH, SIDEBAR_MIN_WIDTH } from "./styles";
 import type { Entries, ValueChangedEvent } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showEditorToast } from "./editor-toast";
@@ -93,14 +82,7 @@ import { showAutomationSaveDialog } from "./automation-save-dialog/show-dialog-a
 import { showAutomationSaveTimeoutDialog } from "./automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 import { ADD_AUTOMATION_ELEMENT_QUERY_PARAM } from "./show-add-automation-element-dialog";
 import "./blueprint-automation-editor";
-import type { HaAutomationAiPanel } from "./ai/ha-automation-ai-panel";
-import { countConfigLineChanges } from "./ai/automation-ai-stats";
-import {
-  loadAiSession,
-  saveAiSession,
-  type AutomationAiPanelState,
-} from "./ai/automation-ai-session";
-import type { HaAutomationAiSidebar } from "./ai/ha-automation-ai-sidebar";
+import { AiEditorController, aiEditorStyles } from "./ai/ai-editor-controller";
 import type { EditorDomainHooks } from "./ha-automation-script-editor-mixin";
 import {
   AutomationScriptEditorMixin,
@@ -109,11 +91,6 @@ import {
 import "./manual-automation-editor";
 import type { HaManualAutomationEditor } from "./manual-automation-editor";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
-import {
-  automationDiffContext,
-  diffAutomationConfigs,
-  type AutomationDiff,
-} from "./ai/automation-ai-diff";
 
 import { AutomationTriggerController } from "./trigger/automation-trigger-controller";
 import { renderCtrlOrCmd } from "../../../common/keyboard/ctrl-or-cmd";
@@ -145,14 +122,6 @@ declare global {
   }
 }
 
-const withoutId = (config?: AutomationConfig) => {
-  if (!config) {
-    return undefined;
-  }
-  const { id: _id, ...rest } = config;
-  return rest;
-};
-
 @customElement("ha-automation-editor")
 export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationConfig>(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
@@ -166,10 +135,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
-  @query("ha-automation-ai-sidebar") private _aiSidebar?: HaAutomationAiSidebar;
-
-  @query("ha-automation-ai-panel") private _aiPanel?: HaAutomationAiPanel;
-
   private _configSubscriptions: Record<
     string,
     (config?: AutomationConfig) => void
@@ -179,7 +144,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   private _triggerController = new AutomationTriggerController(this, {
     getConfig: () => this.config,
-    canEdit: () => !this.readOnly && !this.saving && !this._aiActive,
+    canEdit: () => !this.readOnly && !this.saving && !this._ai.active,
     commit: (config) => {
       this._manualEditor?.resetPastedConfig();
       this._updateConfig(config);
@@ -197,67 +162,24 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   private _newAutomationId?: string;
 
-  /** Whether an AI task entity for data generation is set up. */
-  @state() private _aiAvailable = false;
-
-  private _aiPreferencesRequested = false;
-
-  // The AI shows in a tab once it was opened, and keeps its conversation
-  @state() private _aiLoaded = false;
-
-  @state() private _aiBusy = false;
-
-  // The editor leaves room for the sheet so it doesn't cover the last rows
-  @state() private _aiSheetHeight = 0;
-
-  // On narrow screens the sidebar is a bottom sheet too, and hides this one
-  @state() private _sidebarOpen = false;
-
-  /** The config before and after the last change of the AI. */
-  @state() private _aiChange?: {
-    before: AutomationConfig;
-    after: AutomationConfig;
-  };
-
-  /** Whether the editor shows the last change of the AI instead of the config. */
-  @state() private _aiShowChanges = false;
-
-  // Closing it keeps the AI and its conversation, see _aiLoaded
-  @state() private _aiSidebarOpen = false;
-
-  // The AI finished while the user didn't see it, until they do
-  @state() private _aiUnseenResult = false;
-
-  // The conversation of the AI as it last reported it, kept per automation
-  // for the browser tab, see automation-ai-session
-  @state() private _aiPanelState?: AutomationAiPanelState;
-
-  @state() private _aiRestoredState?: AutomationAiPanelState;
-
-  // The width of the AI sidebar, which the sidebar of a row shares
-  @storage({ key: "automation-sidebar-width", state: true, subscribe: true })
-  private _sidebarWidthPx = SIDEBAR_DEFAULT_WIDTH;
-
-  @provide({ context: automationDiffContext })
-  @state()
-  private _aiDiff?: AutomationDiff;
-
-  private _computeAiLineChanges = memoizeOne(
-    (before?: AutomationConfig, after?: AutomationConfig) =>
-      before && after
-        ? countConfigLineChanges(withoutId(before), withoutId(after))
-        : undefined
-  );
-
-  private _computeAiDiff = memoizeOne(
-    (before?: AutomationConfig, after?: AutomationConfig) =>
-      before && after ? diffAutomationConfigs(before, after) : undefined
-  );
-
-  /** Whether editing is locked, while the AI works or its changes show. */
-  private get _aiActive(): boolean {
-    return this._aiBusy || this._aiShowChanges;
-  }
+  private _ai = new AiEditorController<AutomationConfig>(this, {
+    kind: "automation",
+    hass: () => this.hass,
+    config: () => this.config,
+    id: () => this.automationId,
+    narrow: () => this.narrow,
+    readOnly: () => this.readOnly,
+    yamlErrors: () => !!this.yamlErrors,
+    yamlMode: () => this.mode === "yaml",
+    commit: (config) => this._updateConfig(config),
+    closeRowSidebar: () => this._manualEditor?.triggerCloseSidebar(),
+    confirmUnsavedChanged: () => this.confirmUnsavedChanged(),
+    toggleYamlMode: () => this._toggleYamlMode(),
+    isEmpty: (config) =>
+      (["triggers", "conditions", "actions"] as const).every(
+        (key) => !ensureArray(config[key] ?? []).length
+      ),
+  });
 
   protected domainHooks: EditorDomainHooks<AutomationConfig> = {
     domain: "automation",
@@ -282,26 +204,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
-
-    if (this._aiUnseenResult && this._aiVisible) {
-      this._aiUnseenResult = false;
-    }
-
-    // The rows show their marks only while the user looks at the changes
-    this._aiDiff = this._aiShowChanges
-      ? this._computeAiDiff(this._aiChange?.before, this._aiChange?.after)
-      : undefined;
-
-    if (
-      !this._aiPreferencesRequested &&
-      this.hass &&
-      isComponentLoaded(this.hass.config, "ai_task")
-    ) {
-      this._aiPreferencesRequested = true;
-      fetchAITaskPreferences(this.hass.callWS).then((prefs) => {
-        this._aiAvailable = !!prefs.gen_data_entity_id;
-      });
-    }
 
     if (
       this.entityRegCreated &&
@@ -357,21 +259,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
     const useBlueprint = "use_blueprint" in this.config;
     const shortcutIcon = renderCtrlOrCmd(this.hass.localize);
-    const aiSettings = this._aiDiff?.settings ?? {};
-    // On narrow screens the sheet of a row hides the AI sheet
-    const aiSheetHidden = this.narrow && this._sidebarOpen;
-    // On wide screens the editor makes room for the AI sidebar, on narrow
-    // ones for the AI sheet
-    const aiSidebar = this._aiSidebarOpen && !this.narrow;
-    const aiSheetSpace =
-      this._aiSidebarOpen && this.narrow && !aiSheetHidden
-        ? `${this._aiSheetHeight}px`
-        : undefined;
-    const aiAction = this._aiAction();
-    const aiChanges = !!this._computeAiDiff(
-      this._aiChange?.before,
-      this._aiChange?.after
-    )?.hasChanges;
+    const aiSheetSpace = this._ai.sheetSpace;
 
     return html`
       <hass-subpage
@@ -383,27 +271,13 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           this.config.alias ||
           this.hass.localize("ui.panel.config.automation.editor.default_name")
         }
-        style=${styleMap({
-          "--general-sheet-space": aiSheetSpace,
-          "--sidebar-dynamic-width": `${this._sidebarWidthPx}px`,
-        })}
+        style=${styleMap(this._ai.pageStyle)}
       >
+        ${this._ai.renderAlias(
+          this.hass.localize("ui.panel.config.automation.editor.default_name")
+        )}
         ${
-          aiSettings.alias
-            ? html`<span slot="header" class="ai-alias diff-${aiSettings.alias}"
-                >${
-                  (aiSettings.alias === "removed"
-                    ? this._aiDiff?.before.alias
-                    : this._aiDiff?.config.alias) ||
-                  this.hass.localize(
-                    "ui.panel.config.automation.editor.default_name"
-                  )
-                }</span
-              >`
-            : nothing
-        }
-        ${
-          this.mode === "gui" && !this.narrow && !this._aiActive
+          this.mode === "gui" && !this.narrow && !this._ai.active
             ? html`<ha-icon-button
                   slot="toolbar-icon"
                   .label=${this.hass.localize("ui.common.undo")}
@@ -451,7 +325,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
             : nothing
         }
         ${
-          this.config?.id && !this.narrow && !this._aiActive
+          this.config?.id && !this.narrow && !this._ai.active
             ? html`
                 <ha-button
                   appearance="plain"
@@ -469,55 +343,15 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
               `
             : ""
         }
-        ${
-          this._aiActive
-            ? html`<ha-icon-button
-                slot="toolbar-icon"
-                .label=${this.hass.localize(
-                  `ui.panel.config.automation.editor.edit_${this.mode === "gui" ? "yaml" : "ui"}`
-                )}
-                .path=${this.mode === "gui" ? mdiCodeBraces : mdiFormTextbox}
-                @click=${this._toggleYamlMode}
-              ></ha-icon-button>`
-            : nothing
-        }
-        ${
-          // On narrow screens it is in the menu
-          this._aiAvailable && !useBlueprint && !this.narrow
-            ? html`<ha-icon-button
-                  slot="toolbar-icon"
-                  id="button-ai"
-                  class=${classMap({
-                    active: aiSidebar,
-                    working: this._aiBusy,
-                    unseen: this._aiUnseenResult,
-                  })}
-                  .label=${`${this.hass.localize(
-                    `ui.panel.config.automation.editor.ai.${aiAction === "create" ? "create" : "menu"}`
-                  )}${
-                    this._aiUnseenResult
-                      ? ` (${this.hass.localize("ui.panel.config.automation.editor.ai.new_result")})`
-                      : ""
-                  }`}
-                  .path=${mdiStarFourPoints}
-                  .disabled=${!aiAction && !aiSidebar}
-                  @click=${this._toggleAiSidebar}
-                ></ha-icon-button>
-                <ha-tooltip placement="bottom" for="button-ai">
-                  ${this.hass.localize(
-                    `ui.panel.config.automation.editor.ai.${aiAction === "create" ? "create" : "menu"}`
-                  )}
-                </ha-tooltip>`
-            : nothing
-        }
+        ${this._ai.renderToolbarButtons(!useBlueprint)}
         <ha-dropdown
           slot="toolbar-icon"
-          ?hidden=${this._aiActive}
+          ?hidden=${this._ai.active}
           @wa-select=${this._handleDropdownSelect}
         >
           <ha-icon-button
             slot="trigger"
-            class=${classMap({ unseen: this.narrow && this._aiUnseenResult })}
+            class=${classMap({ "ai-unseen": this._ai.menuUnseen })}
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
@@ -540,20 +374,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                   </ha-dropdown-item>`
               : nothing
           }
-          ${
-            // Wide screens have a button for it in the toolbar
-            this.narrow && this._aiAvailable && !useBlueprint
-              ? html`<ha-dropdown-item value="ai_edit" .disabled=${!aiAction}>
-                  ${this.hass.localize(
-                    `ui.panel.config.automation.editor.ai.${aiAction === "create" ? "create" : "menu"}`
-                  )}
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiStarFourPoints}
-                  ></ha-svg-icon>
-                </ha-dropdown-item>`
-              : nothing
-          }
+          ${this._ai.renderMenuItem(!useBlueprint)}
 
           <ha-dropdown-item .disabled=${!stateObj} value="info">
             ${this.hass.localize("ui.panel.config.automation.editor.show_info")}
@@ -583,7 +404,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           </ha-dropdown-item>
 
           ${
-            stateObj && this.narrow && !this._aiActive
+            stateObj && this.narrow && !this._ai.active
               ? html`<ha-dropdown-item value="trace">
                   ${this.hass.localize(
                     "ui.panel.config.automation.editor.show_trace"
@@ -701,7 +522,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         <div
           class=${classMap({
             "yaml-mode": this.mode === "yaml",
-            "ai-sidebar": aiSidebar && this.mode === "yaml",
+            "ai-sidebar": this._ai.sidebarBeside && this.mode === "yaml",
           })}
           style=${styleMap({
             "padding-bottom": this.mode === "yaml" ? aiSheetSpace : undefined,
@@ -744,10 +565,13 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                               .narrow=${this.narrow}
                               .isWide=${this.isWide}
                               .stateObj=${stateObj}
-                              .config=${this._aiDiff?.config ?? this.config}
-                              .disabled=${this.readOnly || this._aiActive}
-                              .hideSave=${this._aiActive}
-                              .aiSidebar=${aiSidebar}
+                              .config=${
+                                (this._ai.diff?.config as AutomationConfig) ??
+                                this.config
+                              }
+                              .disabled=${this.readOnly || this._ai.active}
+                              .hideSave=${this._ai.active}
+                              .aiSidebar=${this._ai.sidebarBeside}
                               style=${styleMap({
                                 "padding-bottom": aiSheetSpace,
                               })}
@@ -879,36 +703,20 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                           `
                         : nothing
                     }
-                    ${
-                      this._aiActive
-                        ? html`<ha-yaml-editor
-                            .value=${this._aiYaml(
-                              this._aiShowChanges
-                                ? this._aiChange?.after
-                                : this.config
-                            )}
-                            .original=${
-                              this._aiShowChanges
-                                ? this._aiOriginalYaml(this._aiChange?.before)
-                                : undefined
-                            }
-                            auto-update
-                            read-only
-                            disable-fullscreen
-                          ></ha-yaml-editor>`
-                        : html`<ha-yaml-editor
-                            .defaultValue=${this._preprocessYaml()}
-                            .readOnly=${this.readOnly}
-                            @value-changed=${this._yamlChanged}
-                            @editor-save=${this._handleSaveAutomation}
-                            disable-fullscreen
-                          ></ha-yaml-editor>`
-                    }
+                    ${this._ai.renderYamlEditor(
+                      html`<ha-yaml-editor
+                        .defaultValue=${this._preprocessYaml()}
+                        .readOnly=${this.readOnly}
+                        @value-changed=${this._yamlChanged}
+                        @editor-save=${this._handleSaveAutomation}
+                        disable-fullscreen
+                      ></ha-yaml-editor>`
+                    )}
                     <ha-button
                       slot="fab"
                       size="l"
-                      class=${this.isDirtyState && !this._aiActive ? "dirty" : ""}
-                      .disabled=${this.saving || this._aiActive}
+                      class=${this.isDirtyState && !this._ai.active ? "dirty" : ""}
+                      .disabled=${this.saving || this._ai.active}
                       @click=${this._handleSaveAutomation}
                     >
                       <ha-svg-icon
@@ -920,226 +728,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                 : nothing
           }
         </div>
-        ${
-          // Stays while closed, so the AI keeps its conversation. Lined up
-          // like the editor, so it sits where the sidebar of a row does.
-          this._aiLoaded
-            ? html`<div
-                class=${classMap({
-                  "ai-sidebar-positioner": true,
-                  yaml: this.mode === "yaml",
-                })}
-              >
-                <ha-automation-ai-sidebar
-                  .narrow=${this.narrow}
-                  .open=${this._aiSidebarOpen}
-                  .suspended=${aiSheetHidden}
-                  .collapsed=${aiSidebar && this._sidebarOpen}
-                  .changes=${aiChanges}
-                  .showingChanges=${this._aiShowChanges}
-                  .canClear=${this._aiCanClear}
-                  ?hidden=${!this.narrow && !this._aiSidebarOpen}
-                  @ai-sidebar-closed=${this._closeAiSidebar}
-                  @ai-sidebar-expand=${this._expandAiSidebar}
-                  @ai-sidebar-resized=${this._aiSidebarResized}
-                  @ai-clear-conversation=${this._clearAiConversation}
-                  @ai-open-settings=${this._openAiSettings}
-                  @ai-toggle-changes=${this._aiToggleChanges}
-                  @bottom-sheet-resized=${this._aiSheetResized}
-                >
-                  <ha-automation-ai-panel
-                    .hass=${this.hass}
-                    .config=${this.config}
-                    .changes=${aiChanges}
-                    .showingChanges=${this._aiShowChanges}
-                    .lineChanges=${this._computeAiLineChanges(
-                      this._aiChange?.before,
-                      this._aiChange?.after
-                    )}
-                    .restoredState=${this._aiRestoredState}
-                    @ai-request-started=${this._aiRequestStarted}
-                    @ai-request-finished=${this._aiRequestFinished}
-                    @ai-state-changed=${this._aiStateChanged}
-                  ></ha-automation-ai-panel>
-                </ha-automation-ai-sidebar>
-              </div>`
-            : nothing
-        }
+        ${this._ai.renderSidebar()}
       </hass-subpage>
     `;
-  }
-
-  /** What the AI button offers, if it shows. */
-  private _aiAction(): "create" | "edit" | undefined {
-    // Invalid YAML isn't the config the AI would get
-    if (
-      !this._aiAvailable ||
-      this.readOnly ||
-      this.yamlErrors ||
-      !this.config
-    ) {
-      return undefined;
-    }
-    return this._isEmptyAutomation(this.config) ? "create" : "edit";
-  }
-
-  private _isEmptyAutomation(config: AutomationConfig) {
-    return (["triggers", "conditions", "actions"] as const).every(
-      (key) => !ensureArray(config[key] ?? []).length
-    );
-  }
-
-  private async _openAiSidebar() {
-    await Promise.all([
-      import("./ai/ha-automation-ai-panel"),
-      import("./ai/ha-automation-ai-sidebar"),
-    ]);
-    this._aiLoaded = true;
-    // It takes the place of the sidebar of a row
-    this._manualEditor?.triggerCloseSidebar();
-    this._aiSidebarOpen = true;
-    this._persistAi();
-    await this.updateComplete;
-    this._aiSidebar?.expand();
-    this._aiPanel?.focusPrompt();
-  }
-
-  private _toggleAiSidebar() {
-    if (this._aiSidebarOpen && !this._sidebarOpen) {
-      this._closeAiSidebar();
-      return;
-    }
-    this._openAiSidebar();
-  }
-
-  private get _aiCanClear(): boolean {
-    const panel = this._aiPanelState;
-    return (
-      !this._aiBusy &&
-      !!(
-        panel?.turns.length ||
-        panel?.interrupted ||
-        panel?.error ||
-        this._aiChange
-      )
-    );
-  }
-
-  private _clearAiConversation() {
-    this._aiPanel?.clear();
-    // The changes belong to the conversation, they stay in the automation
-    this._aiShowChanges = false;
-    this._aiChange = undefined;
-    this._persistAi();
-  }
-
-  private async _openAiSettings() {
-    if (await this.confirmUnsavedChanged()) {
-      navigate("/config/ai");
-    }
-  }
-
-  private _aiSidebarResized(
-    ev: HASSDomEvent<HASSDomEvents["ai-sidebar-resized"]>
-  ) {
-    this._sidebarWidthPx = Math.max(
-      SIDEBAR_MIN_WIDTH,
-      ev.detail.widthPx ?? SIDEBAR_DEFAULT_WIDTH
-    );
-  }
-
-  // The sidebar of a row gives the place back
-  private _expandAiSidebar() {
-    this._manualEditor?.triggerCloseSidebar();
-  }
-
-  private _closeAiSidebar() {
-    this._aiSidebarOpen = false;
-    // Nothing to switch back with while the sidebar is closed
-    this._aiShowChanges = false;
-    this._persistAi();
-  }
-
-  private _aiStateChanged(ev: HASSDomEvent<HASSDomEvents["ai-state-changed"]>) {
-    this._aiPanelState = ev.detail.state;
-    this._persistAi();
-  }
-
-  // Keeps the AI of a saved automation for when the user comes back
-  private _persistAi(automationId = this.automationId) {
-    if (!automationId || !this._aiLoaded) {
-      return;
-    }
-    saveAiSession(automationId, {
-      panel: this._aiPanelState,
-      change: this._aiChange,
-      open: this._aiSidebarOpen,
-    });
-  }
-
-  private async _restoreAi() {
-    const automationId = this.automationId;
-    const session = automationId ? loadAiSession(automationId) : undefined;
-    if (!session) {
-      return;
-    }
-    await Promise.all([
-      import("./ai/ha-automation-ai-panel"),
-      import("./ai/ha-automation-ai-sidebar"),
-    ]);
-    // The user moved on to another automation meanwhile
-    if (this.automationId !== automationId) {
-      return;
-    }
-    this._aiChange = session.change;
-    this._aiPanelState = session.panel;
-    this._aiRestoredState = session.panel;
-    this._aiSidebarOpen = session.open;
-    this._aiLoaded = true;
-  }
-
-  private _aiRequestStarted() {
-    this._manualEditor?.triggerCloseSidebar();
-    this._aiShowChanges = false;
-    this._aiBusy = true;
-  }
-
-  // Open, and not below the sidebar of a row or hidden by its sheet
-  private get _aiVisible(): boolean {
-    return this._aiSidebarOpen && !this._sidebarOpen;
-  }
-
-  private _aiRequestFinished(
-    ev: HASSDomEvent<HASSDomEvents["ai-request-finished"]>
-  ) {
-    this._aiBusy = false;
-    this._aiUnseenResult = !this._aiVisible;
-    const config = ev.detail.config;
-    if (!config || !this.config) {
-      return;
-    }
-    this._aiChange = { before: this.config, after: config };
-    // One history entry, so one undo takes back all changes of the AI
-    this._updateConfig(config);
-    this._persistAi();
-  }
-
-  private _aiToggleChanges() {
-    this._manualEditor?.triggerCloseSidebar();
-    this._aiShowChanges = !this._aiShowChanges && !!this._aiChange;
-  }
-
-  private _resetAi() {
-    this._manualEditor?.triggerCloseSidebar();
-    this._aiBusy = false;
-    this._aiShowChanges = false;
-    this._aiChange = undefined;
-  }
-
-  private _aiSheetResized(
-    ev: HASSDomEvent<HASSDomEvents["bottom-sheet-resized"]>
-  ) {
-    this._aiSheetHeight = ev.detail.height;
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -1157,21 +748,8 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       );
 
     const oldAutomationId = changedProps.get("automationId");
-    if (
-      changedProps.has("automationId") &&
-      oldAutomationId !== this.automationId
-    ) {
-      if (!oldAutomationId && this.automationId && this._aiLoaded) {
-        // A new automation got saved, its AI goes on under its id
-        this._persistAi();
-      } else {
-        this._aiLoaded = false;
-        this._aiSidebarOpen = false;
-        this._aiPanelState = undefined;
-        this._aiRestoredState = undefined;
-        this._resetAi();
-        this._restoreAi();
-      }
+    if (changedProps.has("automationId")) {
+      this._ai.idChanged(oldAutomationId);
     }
     if (
       changedProps.has("automationId") &&
@@ -1286,7 +864,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   private _valueChanged(ev: ValueChangedEvent<AutomationConfig>) {
     ev.stopPropagation();
     // The editor shows the changes of the AI, which are not the config
-    if (this._aiActive) {
+    if (this._ai.active) {
       return;
     }
     const config = ev.detail.value;
@@ -1301,7 +879,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     ev: CustomEvent<{ value: SidebarConfig | undefined }>
   ) => {
     this._triggerController.checkShowIndices(ev.detail.value);
-    this._sidebarOpen = !!ev.detail.value;
+    this._ai.rowSidebarChanged(!!ev.detail.value);
   };
 
   private _updateConfig(config: AutomationConfig) {
@@ -1383,12 +961,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     });
   }
 
-  // The YAML editor hides the id, see _preprocessYaml. Kept per argument, so
-  // the editor only gets a new value when the config changes.
-  private _aiYaml = memoizeOne(withoutId);
-
-  private _aiOriginalYaml = memoizeOne(withoutId);
-
   private _preprocessYaml() {
     if (!this.config) {
       return {};
@@ -1450,11 +1022,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         onClose: () => resolve(false),
         onDiscard: () => {
           // The conversation stays, the discarded change of the AI goes
-          this._aiChange = undefined;
-          this._persistAi();
-          this._aiLoaded = false;
-          this._aiSidebarOpen = false;
-          this._resetAi();
+          this._ai.discarded();
           this.yamlErrors = undefined;
           this._markDirtyStateClean();
           resolve(true);
@@ -1590,7 +1158,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   }
 
   private async _handleSaveAutomation(): Promise<void> {
-    if (this._aiActive) {
+    if (this._ai.active) {
       return;
     }
     if (this.yamlErrors) {
@@ -1613,7 +1181,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     await this._saveAutomation(id);
     if (!this.automationId) {
       // The editor may start over for the new id, the AI continues there
-      this._persistAi(id);
+      this._ai.saveAs(id);
       navigate(`/config/automation/edit/${id}`, { replace: true });
     }
   }
@@ -1756,23 +1324,20 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   }
 
   private _cutSelectedRow() {
-    if (!this._aiActive) {
+    if (!this._ai.active) {
       this._manualEditor?.cutSelectedRow();
     }
   }
 
   private _deleteSelectedRow() {
-    if (!this._aiActive) {
+    if (!this._ai.active) {
       this._manualEditor?.deleteSelectedRow();
     }
   }
 
   private _applyUndoRedo(config: AutomationConfig) {
     this._manualEditor?.triggerCloseSidebar();
-    // The last change of the AI no longer matches the automation
-    this._aiShowChanges = false;
-    this._aiChange = undefined;
-    this._persistAi();
+    this._ai.undoRedoApplied();
     this.config = config;
     this._updateDirtyState({
       config: this.config,
@@ -1781,13 +1346,13 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   }
 
   private _undo() {
-    if (!this._aiActive) {
+    if (!this._ai.active) {
       this._undoRedoController.undo();
     }
   }
 
   private _redo() {
-    if (!this._aiActive) {
+    if (!this._ai.active) {
       this._undoRedoController.redo();
     }
   }
@@ -1807,7 +1372,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         this._redo();
         break;
       case "ai_edit":
-        this._openAiSidebar();
+        this._ai.open();
         break;
       case "info":
         this._showInfo();
@@ -1852,6 +1417,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     return [
       haStyle,
       automationScriptEditorStyles,
+      aiEditorStyles,
       css`
         manual-automation-editor,
         blueprint-automation-editor {
@@ -1873,124 +1439,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         }
         h1 {
           margin: 0;
-        }
-        /* Replaced by its YAML switch while the user reviews changes of the
-           AI, the rest of the menu would change the automation */
-        ha-dropdown[hidden] {
-          display: none;
-        }
-        :host {
-          --ai-sidebar-collapsed-height: 64px;
-        }
-        /* As wide as the sidebar of a row, see manualEditorStyles */
-        hass-subpage {
-          --ai-sidebar-width: min(
-            max(var(--sidebar-dynamic-width), ${SIDEBAR_MIN_WIDTH}px),
-            100vw - ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px),
-            var(--ha-automation-editor-max-width) -
-              ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px)
-          );
-          /* Where the sidebar of a row ends, see manualEditorStyles */
-          --ai-sidebar-bottom: calc(
-            81px - var(--header-height) - 16px + var(--safe-area-inset-top, 0px)
-          );
-        }
-        /* Room for the AI sidebar on the right, the visual editor makes it
-           inside, like for the sidebar of a row */
-        .yaml-mode.ai-sidebar {
-          margin-inline-end: calc(var(--ai-sidebar-width) + var(--ha-space-4));
-        }
-        /* Lined up like the visual editor, so the fixed sidebar below lands
-           at its end, like the sidebar of a row, see manualEditorStyles */
-        .ai-sidebar-positioner {
-          display: flex;
-          justify-content: flex-end;
-          height: 0;
-          max-width: var(--ha-automation-editor-max-width);
-          margin: 0 auto;
-          padding: 0 12px;
-        }
-        .ai-sidebar-positioner.yaml {
-          max-width: none;
-        }
-        ha-automation-ai-sidebar:not([narrow]) {
-          position: fixed;
-          top: calc(var(--header-height) + 16px);
-          width: var(--ai-sidebar-width);
-          height: calc(-81px + 100vh - var(--safe-area-inset-top, 0px));
-          height: calc(-81px + 100dvh - var(--safe-area-inset-top, 0px));
-          z-index: 1;
-        }
-        /* Only its header, below the sidebar of a row */
-        ha-automation-ai-sidebar[collapsed]:not([narrow]) {
-          top: auto;
-          bottom: var(--ai-sidebar-bottom);
-          height: var(--ai-sidebar-collapsed-height);
-        }
-        ha-automation-ai-sidebar[hidden] {
-          display: none;
-        }
-        /* The AI button while the AI sidebar is open */
-        ha-icon-button.active {
-          color: var(--primary-color);
-          background-color: var(--ha-color-fill-primary-normal-resting);
-          border-radius: var(--ha-border-radius-circle);
-        }
-        /* Shines while the AI works, also when its sidebar is closed */
-        ha-icon-button.working {
-          animation: ai-shine 1.8s ease-in-out infinite;
-        }
-        @keyframes ai-shine {
-          0%,
-          55%,
-          100% {
-            filter: drop-shadow(0 0 0 rgba(var(--rgb-primary-color), 0));
-            transform: scale(1) rotate(0deg);
-          }
-          80% {
-            filter: drop-shadow(0 0 8px rgba(var(--rgb-primary-color), 0.9));
-            transform: scale(1.15) rotate(45deg);
-          }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          ha-icon-button.working {
-            animation: none;
-            filter: drop-shadow(0 0 6px rgba(var(--rgb-primary-color), 0.9));
-          }
-        }
-        /* The AI has a result the user didn't see yet */
-        ha-icon-button.unseen {
-          position: relative;
-        }
-        ha-icon-button.unseen::after {
-          content: "";
-          position: absolute;
-          top: 8px;
-          inset-inline-end: 8px;
-          width: 8px;
-          height: 8px;
-          border-radius: var(--ha-border-radius-circle);
-          background-color: var(--accent-color);
-          box-shadow: 0 0 0 2px
-            var(--app-header-background-color, var(--primary-background-color));
-          pointer-events: none;
-        }
-        .ai-alias {
-          padding: 0 var(--ha-space-2);
-          box-decoration-break: clone;
-          -webkit-box-decoration-break: clone;
-          border-radius: var(--ha-border-radius-sm);
-          background-color: var(--ha-color-fill-warning-normal-resting);
-          color: var(--ha-color-on-warning-normal);
-        }
-        .ai-alias.diff-added {
-          background-color: var(--ha-color-fill-success-normal-resting);
-          color: var(--ha-color-on-success-normal);
-        }
-        .ai-alias.diff-removed {
-          background-color: var(--ha-color-fill-danger-normal-resting);
-          color: var(--ha-color-on-danger-normal);
-          text-decoration: line-through;
         }
         .header-name {
           display: flex;

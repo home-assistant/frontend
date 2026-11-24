@@ -5,6 +5,10 @@ import {
   type ConfigPath,
 } from "../../../../common/util/config-path";
 import type { AutomationConfig } from "../../../../data/automation";
+import type { ScriptConfig } from "../../../../data/script";
+
+/** A config the AI can change. */
+export type DiffConfig = AutomationConfig | ScriptConfig;
 
 /** How a part of a config differs from the config it was based on. */
 export type DiffMark = "added" | "changed" | "removed";
@@ -17,27 +21,48 @@ export interface FieldChange {
   newValue?: unknown;
 }
 
-/** The automation settings outside of triggers, conditions and actions. */
-export const AUTOMATION_SETTING_KEYS = [
-  "alias",
-  "description",
-  "mode",
-  "max",
-  "max_exceeded",
-  "variables",
-  "trigger_variables",
-] as const;
+/** Where an automation or a script keeps its rows, and its other settings. */
+export interface DiffLayout {
+  rowLists: readonly string[];
+  settings: readonly string[];
+}
 
-export type AutomationSettingKey = (typeof AUTOMATION_SETTING_KEYS)[number];
+export const AUTOMATION_DIFF_LAYOUT: DiffLayout = {
+  rowLists: ["triggers", "conditions", "actions"],
+  settings: [
+    "alias",
+    "description",
+    "mode",
+    "max",
+    "max_exceeded",
+    "variables",
+    "trigger_variables",
+  ],
+};
+
+// The fields of a script are no rows of the editor, so they are a setting
+export const SCRIPT_DIFF_LAYOUT: DiffLayout = {
+  rowLists: ["sequence"],
+  settings: [
+    "alias",
+    "description",
+    "icon",
+    "mode",
+    "max",
+    "max_exceeded",
+    "variables",
+    "fields",
+  ],
+};
 
 export interface AutomationDiff {
   /** The config the AI changed. */
-  before: AutomationConfig;
+  before: DiffConfig;
   /**
    * The new config with the removed rows put back where they were, so the
    * editor can show them. Only for showing, never for saving.
    */
-  config: AutomationConfig;
+  config: DiffConfig;
   /** Marks of rows, keyed by their stringified path in `config`. */
   rows: Map<string, DiffMark>;
   /**
@@ -47,7 +72,7 @@ export interface AutomationDiff {
   items: Map<string, RowChange>;
   /** Changed values of changed rows, keyed by the row's stringified path. */
   fields: Map<string, FieldChange[]>;
-  settings: Partial<Record<AutomationSettingKey, DiffMark>>;
+  settings: Partial<Record<string, DiffMark>>;
   hasChanges: boolean;
 }
 
@@ -327,26 +352,27 @@ class DiffBuilder {
 }
 
 /**
- * Compares a new automation config with the one it was based on. Rows that
- * are in both but differ are changed, rows only in the new config are added
- * and rows only in the old one are removed.
+ * Compares a new automation or script config with the one it was based on.
+ * Rows that are in both but differ are changed, rows only in the new config
+ * are added and rows only in the old one are removed.
  */
 export const diffAutomationConfigs = (
-  before: AutomationConfig,
-  after: AutomationConfig
+  before: DiffConfig,
+  after: DiffConfig,
+  layout: DiffLayout = AUTOMATION_DIFF_LAYOUT
 ): AutomationDiff => {
   const builder = new DiffBuilder();
   const config = { ...after } as Record<string, unknown>;
   const oldConfig = before as unknown as Record<string, unknown>;
 
-  for (const key of ["triggers", "conditions", "actions"]) {
+  for (const key of layout.rowLists) {
     config[key] = builder.rowList(toList(oldConfig[key]), toList(config[key]), [
       key,
     ]);
   }
 
   const settings: AutomationDiff["settings"] = {};
-  for (const key of AUTOMATION_SETTING_KEYS) {
+  for (const key of layout.settings) {
     const oldValue = oldConfig[key];
     const newValue = config[key];
     // An empty description is no description
@@ -358,7 +384,7 @@ export const diffAutomationConfigs = (
 
   return {
     before,
-    config: config as unknown as AutomationConfig,
+    config: config as unknown as DiffConfig,
     rows: builder.rows,
     items: builder.items,
     fields: builder.fields,
