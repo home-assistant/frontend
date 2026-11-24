@@ -177,7 +177,8 @@ class AddIntegrationDialog extends LitElement {
 
   @query("ha-icon-button-prev") private _backButton?: HTMLElement;
 
-  @query(".groups .selected") private _selectedBrowseRow?: HTMLElement;
+  @query(".groups .selected, .groups wa-tree-item[selected]")
+  private _selectedBrowseRow?: HTMLElement;
 
   @query("ha-input-search") private _searchInput?: HaInputSearch;
 
@@ -293,6 +294,17 @@ class AddIntegrationDialog extends LitElement {
     if (this._scrollToTop) {
       this._scrollToTop = false;
       this._listElement?.scrollElement?.scrollTo({ top: 0 });
+    }
+    if (
+      !this._narrow &&
+      (changedProps.has("_brand") ||
+        changedProps.has("_category") ||
+        changedProps.has("_subcategory"))
+    ) {
+      // Picked by searching, it can be far down the browse pane
+      requestAnimationFrame(() => {
+        this._selectedBrowseRow?.scrollIntoView({ block: "nearest" });
+      });
     }
     if (this._focusAfterDrill) {
       const drilledIn = this._focusAfterDrill === "in";
