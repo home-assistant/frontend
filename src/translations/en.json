@@ -5945,7 +5945,7 @@
             "unavailable": "Automation is unavailable",
             "errors": {
               "label": "Problem",
-              "problems_found": "{count} problems found",
+              "problems_found": "{count, plural,\n  one {# problem found}\n  other {# problems found}\n}",
               "save_failed": "Saving failed: {problems}",
               "target_required": "Choose at least one target.",
               "target_invalid": "Some targets aren't valid. Remove or replace them.",

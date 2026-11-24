@@ -221,7 +221,17 @@ const configItems = (config: unknown): ConfigItems => {
       ]);
     }
     Object.entries(value).forEach(([key, child]) => {
-      walk(child, [...path, Array.isArray(value) ? Number(key) : key]);
+      if (Array.isArray(value)) {
+        walk(child, [...path, Number(key)]);
+        return;
+      }
+      // A block written as a single item is its first row
+      walk(
+        child,
+        BLOCK_KEYS.has(key) && isConfigObject(child)
+          ? [...path, key, 0]
+          : [...path, key]
+      );
     });
   };
   walk(config, []);

@@ -233,6 +233,8 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
 
     public disconnectedCallback() {
       super.disconnectedCallback();
+      // Pending validations must not touch errors or the toast anymore
+      this._validationRun++;
       this._revalidate.cancel();
       this._closeErrorsToast();
     }

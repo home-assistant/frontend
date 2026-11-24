@@ -238,5 +238,22 @@ describe("automation errors", () => {
       validationError("bad template", ["actions", 0, "wait_template"]),
       validationError("bad mode", ["mode"]),
     ]);
+
+    // A block written as a single item moves with the action around it
+    const choose = { choose: [], default: { delay: "abc" } };
+    const delay = { delay: 1 };
+    const singleton = { actions: [choose, delay] };
+    const defaultError = validationError("bad delay", [
+      "actions",
+      0,
+      "default",
+      0,
+      "delay",
+    ]);
+    expect(
+      followErrors([defaultError], singleton, { actions: [delay, choose] })
+    ).toEqual([
+      validationError("bad delay", ["actions", 1, "default", 0, "delay"]),
+    ]);
   });
 });
