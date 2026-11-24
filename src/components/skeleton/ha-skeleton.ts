@@ -46,6 +46,8 @@ export class HaSkeleton extends WaSkeleton {
 
   private static _trackFrame?: number;
 
+  @query(".indicator") private _indicator?: HTMLDivElement;
+
   @query(".wave") private _wave?: HTMLDivElement;
 
   private _resizeObserver?: ResizeObserver;
@@ -68,7 +70,9 @@ export class HaSkeleton extends WaSkeleton {
 
       // Read every skeleton before writing any, so layout runs once
       const boxes = [...HaSkeleton._waving].flatMap((skeleton) => {
-        const rect = skeleton.getBoundingClientRect();
+        // The wave sits in the indicator, which can be smaller than the
+        // host, such as a text skeleton's bar in the middle of its line
+        const rect = (skeleton._indicator ?? skeleton).getBoundingClientRect();
         // A hidden skeleton, such as a picker's once it has loaded, stays
         // out of the box so it doesn't stretch the track
         const shown = getComputedStyle(skeleton).visibility === "visible";
@@ -135,7 +139,9 @@ export class HaSkeleton extends WaSkeleton {
     super.updated(changedProperties);
 
     if (changedProperties.has("effect")) {
-      if (this.effect === "sheen") {
+      // An update can finish after the skeleton has gone, and it only
+      // rejoins when it's connected again
+      if (this.effect === "sheen" && this.isConnected) {
         HaSkeleton._waving.add(this);
       } else {
         HaSkeleton._waving.delete(this);
