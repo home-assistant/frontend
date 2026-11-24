@@ -1,4 +1,6 @@
 import {
+  mdiCheck,
+  mdiCheckboxBlankOutline,
   mdiClock,
   mdiContentDuplicate,
   mdiDelete,
@@ -31,6 +33,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { calcDate } from "../../../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
@@ -116,6 +119,22 @@ interface TodoSwipeState {
   horizontal: boolean;
 }
 
+interface TodoSwipeIndicator {
+  top: number;
+  height: number;
+  /** Physical side that is revealed while the item slides away */
+  side: "left" | "right";
+  action: TodoSwipeAction;
+  /** Whether releasing now triggers the action */
+  armed: boolean;
+}
+
+const SWIPE_ACTION_ICONS: Record<TodoSwipeAction, string> = {
+  complete: mdiCheck,
+  uncomplete: mdiCheckboxBlankOutline,
+  delete: mdiDelete,
+};
+
 interface TodoDueDatePeriod {
   calendar?: {
     period: string;
@@ -200,11 +219,15 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   @query("ha-list-selectable") private _list?: HaListSelectable;
 
+  @query("ha-card") private _card?: HTMLElement;
+
   private _unsubItems?: Promise<UnsubscribeFunc>;
 
   private _refreshTimer?: number;
 
   private _swipe?: TodoSwipeState;
+
+  @state() private _swipeIndicator?: TodoSwipeIndicator;
 
   private _suppressNextTap = false;
 
@@ -701,6 +724,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             }
           </ha-list-selectable>
         </ha-sortable>
+        ${this._renderSwipeIndicator()}
       </ha-card>
     `;
   }
@@ -758,6 +782,34 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           : nothing
       }
     </ha-dropdown>`;
+  }
+
+  private _renderSwipeIndicator() {
+    const indicator = this._swipeIndicator;
+    if (!indicator) {
+      return nothing;
+    }
+    const label =
+      indicator.action === "delete"
+        ? this._i18n.localize("ui.common.delete")
+        : this._i18n.localize(
+            indicator.action === "complete"
+              ? "ui.panel.lovelace.cards.todo-list.swipe_complete"
+              : "ui.panel.lovelace.cards.todo-list.swipe_reactivate"
+          );
+    return html`<div
+      class="swipe-indicator ${indicator.action} ${indicator.side} ${classMap({
+        armed: indicator.armed,
+      })}"
+      style=${styleMap({
+        top: `${indicator.top}px`,
+        height: `${indicator.height}px`,
+      })}
+      aria-hidden="true"
+    >
+      <ha-svg-icon .path=${SWIPE_ACTION_ICONS[indicator.action]}></ha-svg-icon>
+      <span>${label}</span>
+    </div>`;
   }
 
   private _getDueDate(item: TodoItem): Date | undefined {
@@ -1197,12 +1249,40 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     swipe.offset = deltaX;
     // Direct style updates avoid re-rendering the list on every pointer move
     swipe.item.style.transform = `translateX(${deltaX}px)`;
-    const action = this._swipeAction(swipe);
-    if (action) {
-      swipe.item.dataset.swipeAction = action;
-    } else {
-      delete swipe.item.dataset.swipeAction;
+    this._updateSwipeIndicator(swipe);
+  }
+
+  private _updateSwipeIndicator(swipe: TodoSwipeState): void {
+    const action = this._swipeAction(swipe, false);
+    if (!action || swipe.offset === 0) {
+      this._swipeIndicator = undefined;
+      return;
     }
+    const side = swipe.offset > 0 ? "left" : "right";
+    const armed = Boolean(this._swipeAction(swipe));
+    const current = this._swipeIndicator;
+    // Only re-render when the visible state changes
+    if (
+      current &&
+      current.action === action &&
+      current.side === side &&
+      current.armed === armed
+    ) {
+      return;
+    }
+    const card = this._card;
+    if (!card) {
+      return;
+    }
+    const cardRect = card.getBoundingClientRect();
+    const itemRect = swipe.item.getBoundingClientRect();
+    this._swipeIndicator = {
+      top: itemRect.top - cardRect.top + card.scrollTop,
+      height: itemRect.height,
+      side,
+      action,
+      armed,
+    };
   }
 
   private _swipeEnd(ev: PointerEvent): void {
@@ -1238,16 +1318,19 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
     swipe.item.classList.remove("swiping");
     swipe.item.style.transform = "";
-    delete swipe.item.dataset.swipeAction;
+    this._swipeIndicator = undefined;
   }
 
-  private _swipeAction(swipe: TodoSwipeState): TodoSwipeAction | undefined {
+  private _swipeAction(
+    swipe: TodoSwipeState,
+    requireThreshold = true
+  ): TodoSwipeAction | undefined {
     const width = swipe.item.clientWidth;
     const triggerDistance = Math.max(
       SWIPE_MIN_TRIGGER_DISTANCE,
       width * SWIPE_TRIGGER_RATIO
     );
-    if (Math.abs(swipe.offset) < triggerDistance) {
+    if (requireThreshold && Math.abs(swipe.offset) < triggerDistance) {
       return undefined;
     }
     const item = this._getItem(swipe.item.value!);
@@ -1347,6 +1430,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   static styles = css`
     ha-card {
+      position: relative;
       height: 100%;
       box-sizing: border-box;
       overflow-y: auto;
@@ -1431,21 +1515,49 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
 
     ha-list-item-option.swiping {
-      transition: background-color var(--ha-animation-duration-fast, 150ms)
-        ease-out;
+      position: relative;
+      z-index: 1;
+      transition: none;
       user-select: none;
+      background-color: var(--ha-card-background, var(--card-background-color));
     }
 
-    ha-list-item-option[data-swipe-action="complete"] {
-      background-color: var(--ha-color-fill-success-normal-resting);
+    .swipe-indicator {
+      position: absolute;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-2);
+      padding: 0 var(--ha-space-5);
+      box-sizing: border-box;
+      font-weight: var(--ha-font-weight-medium);
+      opacity: 0.6;
+      pointer-events: none;
+      transition: opacity var(--ha-animation-duration-fast, 150ms) ease-out;
     }
 
-    ha-list-item-option[data-swipe-action="uncomplete"] {
-      background-color: var(--ha-color-fill-primary-normal-resting);
+    .swipe-indicator.armed {
+      opacity: 1;
     }
 
-    ha-list-item-option[data-swipe-action="delete"] {
-      background-color: var(--ha-color-fill-danger-normal-resting);
+    .swipe-indicator.right {
+      justify-content: flex-end;
+    }
+
+    .swipe-indicator.complete {
+      background-color: var(--ha-color-fill-success-loud-resting);
+      color: var(--ha-color-on-success-loud);
+    }
+
+    .swipe-indicator.uncomplete {
+      background-color: var(--ha-color-fill-primary-loud-resting);
+      color: var(--ha-color-on-primary-loud);
+    }
+
+    .swipe-indicator.delete {
+      background-color: var(--ha-color-fill-danger-loud-resting);
+      color: var(--ha-color-on-danger-loud);
     }
 
     .description,

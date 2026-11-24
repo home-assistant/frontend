@@ -10412,6 +10412,8 @@
             "delete_confirm_title": "Remove completed items?",
             "delete_confirm_text": "{number} {number, plural,\n  one {item}\n  other {items}\n} will be permanently removed from the to-do list.",
             "delete_duplicates": "Delete duplicate items",
+            "swipe_complete": "Complete",
+            "swipe_reactivate": "Reactivate",
             "delete_duplicates_confirm_title": "Delete duplicate items?",
             "delete_duplicates_confirm_text": "{number} duplicate {number, plural,\n  one {item}\n  other {items}\n} will be permanently deleted from the to-do list. Active items are kept."
           },
