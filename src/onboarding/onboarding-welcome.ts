@@ -48,11 +48,17 @@ class OnboardingWelcome extends LitElement {
       <div class="divider">
         <wa-divider></wa-divider>
         <div>
-          <span>
-            ${skeletonOr(!ready, renderSkeleton("chip"), () =>
-              this._localize("ui.panel.page-onboarding.welcome.or_restore")
-            )}
-          </span>
+          ${skeletonOr(
+            !ready,
+            html`<span>${renderSkeleton("chip")}</span>`,
+            // One padded span either way, as skeletonOr would wrap bare text
+            () =>
+              html`<span
+                >${this._localize(
+                  "ui.panel.page-onboarding.welcome.or_restore"
+                )}</span
+              >`
+          )}
         </div>
       </div>
 
