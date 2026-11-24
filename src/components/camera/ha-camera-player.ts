@@ -1027,6 +1027,9 @@ export class HaCameraPlayer extends LitElement {
       position: relative;
       overflow: hidden;
       max-height: var(--video-max-height, calc(100vh - 97px));
+      /* Narrower than the player when its height is limited, the aspect
+         ratio limits its width too */
+      margin-inline: auto;
       /* Scrolls the page until zoomed in, pinches are handled here */
       touch-action: pan-x pan-y;
       /* From the poster's or a default size to the stream's */
