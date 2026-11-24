@@ -437,6 +437,7 @@ export class HaNetworkGraph extends LitElement {
           : html`<ha-icon-button
               slot="button"
               class=${this._physicsEnabled ? "active" : "inactive"}
+              .ariaPressed=${this._physicsEnabled ? "true" : "false"}
               .path=${mdiGoogleCirclesGroup}
               @click=${this._togglePhysics}
               label=${this._localize(
@@ -447,6 +448,7 @@ export class HaNetworkGraph extends LitElement {
       <ha-icon-button
         slot="button"
         class=${this._showLabels ? "active" : "inactive"}
+        .ariaPressed=${this._showLabels ? "true" : "false"}
         .path=${mdiFormatTextVariant}
         @click=${this._toggleLabels}
         label=${this._localize("ui.panel.config.common.graph.toggle_labels")}

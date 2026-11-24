@@ -169,6 +169,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           <ha-icon-button
             slot="button"
             class=${this._showNeighbors ? "active" : "inactive"}
+            .ariaPressed=${this._showNeighbors ? "true" : "false"}
             .path=${mdiSpiderWeb}
             .label=${this.hass.localize(
               "ui.panel.config.zwave_js.visualization.toggle_neighbors"
