@@ -26,6 +26,16 @@ interface ArrivingParts {
   colorParts: HTMLElement[];
 }
 
+/* What's left out with data-skeleton="none" under an element, through
+   shadow roots, as the skeleton is read */
+const leftOut = (root: Element | ShadowRoot): HTMLElement[] =>
+  [...root.querySelectorAll("*")].flatMap((element) => [
+    ...(element instanceof HTMLElement && element.dataset.skeleton === "none"
+      ? [element]
+      : []),
+    ...(element.shadowRoot ? leftOut(element.shadowRoot) : []),
+  ]);
+
 /**
  * Shows a skeleton of its content while that content loads, read from the
  * content itself: each line of text, icon, image, control and drawing gets
@@ -343,10 +353,8 @@ export class HaSkeletonOverlay extends LitElement {
     // keeps the colour it has now, rather than taking the transparent one.
     // Read before any text is hidden.
     const kept = skeleton.textParts.flatMap((part) =>
-      [...part.querySelectorAll('[data-skeleton="none"]')].flatMap((element) =>
-        element instanceof HTMLElement
-          ? [[element, getComputedStyle(element).color] as const]
-          : []
+      leftOut(part).map(
+        (element) => [element, getComputedStyle(element).color] as const
       )
     );
 
