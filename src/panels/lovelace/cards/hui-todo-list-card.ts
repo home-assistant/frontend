@@ -451,13 +451,14 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   }
 
   public willUpdate(changedProperties: PropertyValues): void {
+    // A missing entity counts too, so its return is a way back
     const unavailable =
-      this._stateObj?.state === UNAVAILABLE ||
-      this._stateObj?.state === UNKNOWN;
+      this._stateObj === undefined ||
+      this._stateObj.state === UNAVAILABLE ||
+      this._stateObj.state === UNKNOWN;
 
     // The list is back after being unavailable
-    const cameBack =
-      this._wasUnavailable && !unavailable && this._stateObj !== undefined;
+    const cameBack = this._wasUnavailable && !unavailable;
 
     this._wasUnavailable = unavailable;
 
