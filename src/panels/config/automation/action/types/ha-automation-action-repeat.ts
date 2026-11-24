@@ -25,6 +25,9 @@ import { AutomationFieldErrorsController } from "../../automation-field-errors";
 const OPTIONS = ["count", "while", "until", "for_each"] as const;
 type RepeatType = (typeof OPTIONS)[number];
 
+// The rows of `while`, `until` and `sequence` show their own errors
+const INLINE_FIELDS = ["count", "for_each"];
+
 export const getRepeatType = (action: RepeatAction["repeat"]) =>
   OPTIONS.find((option) => option in action);
 
@@ -32,7 +35,7 @@ export const getRepeatType = (action: RepeatAction["repeat"]) =>
 export class HaRepeatAction extends LitElement implements ActionElement {
   private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
     key: "repeat",
-    inlineFields: ["count", "for_each"],
+    inlineFields: INLINE_FIELDS,
   });
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -58,6 +61,12 @@ export class HaRepeatAction extends LitElement implements ActionElement {
   public static get defaultConfig(): RepeatAction {
     return { repeat: { count: 2, sequence: [] } };
   }
+
+  private _formErrors = memoizeOne((fields: Record<string, string>) =>
+    Object.fromEntries(
+      Object.entries(fields).filter(([field]) => INLINE_FIELDS.includes(field))
+    )
+  );
 
   private _schema = memoizeOne(
     (
@@ -129,7 +138,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
     const data = { ...action, type };
     return html`<ha-form
-      .error=${this._fieldErrors.fields}
+      .error=${this._formErrors(this._fieldErrors.fields)}
       .computeError=${this._fieldErrors.formError(this._computeLabelCallback)}
       .hass=${this.hass}
       .data=${data}
