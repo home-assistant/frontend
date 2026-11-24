@@ -42,12 +42,14 @@ export class HuiHorizontalStackCard extends HuiStackCard {
         #root > hui-card {
           display: contents;
         }
-        /* Cards stretch to the tallest one */
-        #root > hui-card > ha-skeleton-overlay {
+        /* Cards stretch to the tallest one. An overlay holding a remembered
+           height keeps its own grid, where the space it holds sits under the
+           card rather than above it */
+        #root > hui-card > ha-skeleton-overlay:not([reserved]) {
           display: flex;
           flex-direction: column;
         }
-        #root > hui-card > ha-skeleton-overlay > * {
+        #root > hui-card > ha-skeleton-overlay:not([reserved]) > * {
           flex: 1;
         }
       `,
