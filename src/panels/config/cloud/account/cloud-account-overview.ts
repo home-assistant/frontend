@@ -494,7 +494,6 @@ export class CloudAccountOverview extends LitElement {
           this.hass.localize("ui.panel.config.cloud.account.overview.on")
         );
       case "error":
-      case "ssl_client_context_error":
         return this._statusLine(
           "disabled",
           this.hass.localize("ui.panel.config.cloud.account.overview.error")
