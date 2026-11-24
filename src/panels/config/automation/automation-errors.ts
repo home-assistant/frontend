@@ -159,13 +159,28 @@ export const mapErrorsToConfig = (
   }));
 
 // Rows sit at list items that are objects, not at entries of value lists
-// like `entity_id`
+// like `entity_id`. A template condition can be written as a string.
+const isRowItem = (value: unknown, path: ConfigPath): boolean =>
+  typeof path[path.length - 1] === "number" &&
+  (isConfigObject(value) ||
+    (typeof value === "string" &&
+      BLOCK_KEYS.has(String(path[path.length - 2]))));
+
+// The editor turns a template condition written as a string into an object,
+// so both have the same content
+const rowContent = (value: unknown): string =>
+  JSON.stringify(
+    typeof value === "string"
+      ? { condition: "template", value_template: value }
+      : value
+  );
+
 const errorItemPath = (config: unknown, path: ConfigPath): ConfigPath => {
   let value = config;
   let end = 0;
   path.forEach((segment, index) => {
     value = childAt(value, segment);
-    if (typeof segment === "number" && isConfigObject(value)) {
+    if (isRowItem(value, path.slice(0, index + 1))) {
       end = index + 1;
     }
   });
@@ -181,9 +196,10 @@ export interface KnownErrorItem {
 
 const knownItemAt = (config: unknown, path: ConfigPath): KnownErrorItem => {
   const item = valueAt(config, path);
-  return isConfigObject(item)
-    ? { path, item, content: JSON.stringify(item) }
-    : { path };
+  if (isConfigObject(item)) {
+    return { path, item, content: rowContent(item) };
+  }
+  return isRowItem(item, path) ? { path, content: rowContent(item) } : { path };
 };
 
 export const knownErrorItems = (
@@ -205,20 +221,22 @@ interface ConfigItems {
   contents: Map<string, ConfigPath[]>;
 }
 
-// The list entries that are objects, the items rows show
+// The items rows show
 const configItems = (config: unknown): ConfigItems => {
   const items: ConfigItems = { paths: new Map(), contents: new Map() };
   const walk = (value: unknown, path: ConfigPath) => {
-    if (typeof value !== "object" || value === null) {
-      return;
-    }
-    if (typeof path[path.length - 1] === "number" && isConfigObject(value)) {
-      items.paths.set(value, path);
-      const content = JSON.stringify(value);
+    if (isRowItem(value, path)) {
+      if (isConfigObject(value)) {
+        items.paths.set(value, path);
+      }
+      const content = rowContent(value);
       items.contents.set(content, [
         ...(items.contents.get(content) ?? []),
         path,
       ]);
+    }
+    if (typeof value !== "object" || value === null) {
+      return;
     }
     Object.entries(value).forEach(([key, child]) => {
       if (Array.isArray(value)) {
@@ -261,13 +279,14 @@ const followItem = (
     return knownItemAt(config, entry.path);
   }
   const now = valueAt(config, entry.path);
-  if (!isConfigObject(now)) {
+  if (!isConfigObject(now) && !isRowItem(now, entry.path)) {
     return undefined;
   }
   // An item that was already there took the place, e.g. after a delete
-  const beforePaths = previous.paths.has(now)
-    ? [previous.paths.get(now)!]
-    : (previous.contents.get(JSON.stringify(now)) ?? []);
+  const beforePaths =
+    isConfigObject(now) && previous.paths.has(now)
+      ? [previous.paths.get(now)!]
+      : (previous.contents.get(rowContent(now)) ?? []);
   if (
     beforePaths.length &&
     !beforePaths.some((other) => pathEquals(other, entry.path))

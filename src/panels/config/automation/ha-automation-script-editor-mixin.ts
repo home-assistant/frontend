@@ -388,9 +388,10 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
         return;
       }
       const mapped = mapErrorsToConfig(config, sectionErrors);
-      const validated = Object.keys(sections).map(
-        (key) => sectionKeys[key] ?? key
-      );
+      // Core skips missing sections, so their errors stay
+      const validated = Object.entries(sections)
+        .filter(([, value]) => value !== undefined)
+        .map(([key]) => sectionKeys[key] ?? key);
       const errors = [
         ...this.configErrors.filter(
           (error) => !validated.includes(error.path[0] as string)

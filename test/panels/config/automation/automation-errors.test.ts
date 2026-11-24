@@ -223,6 +223,33 @@ describe("automation errors", () => {
     ).toEqual([forError(0)]);
   });
 
+  it("track template conditions written as a string", () => {
+    const templateError = (index: number) =>
+      validationError("bad template", ["conditions", index]);
+    const before = { conditions: ["{{ a", "{{ b }}"] };
+    const known = knownErrorItems(before, [templateError(0)]);
+
+    // Errors of other conditions written as a string aren't on a known item
+    expect(
+      errorsOnKnownItems(known, before, [templateError(0), templateError(1)])
+    ).toEqual([templateError(0)]);
+
+    // The visual editor turns them into objects
+    const normalized = {
+      conditions: before.conditions.map((value_template) => ({
+        condition: "template",
+        value_template,
+      })),
+    };
+    expect(
+      errorsOnKnownItems(
+        followKnownErrorItems(known, before, normalized),
+        normalized,
+        [templateError(0)]
+      )
+    ).toEqual([templateError(0)]);
+  });
+
   it("follow save errors to where their items are now", () => {
     const a = { delay: "abc" };
     const b = { delay: 1 };
