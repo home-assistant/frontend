@@ -45,7 +45,7 @@ import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../skeleton/ha-skeleton-icon";
 import "../skeleton/ha-skeleton-text";
-import { skeletonArrivalStyles } from "../skeleton/skeleton-arrival";
+import { skeletonOr } from "../skeleton/skeleton-arrival";
 import "../ha-svg-icon";
 import "../input/ha-input-search";
 import { filterData, sortData } from "./sort-filter";
@@ -683,139 +683,149 @@ export class HaDataTable extends LitElement {
               : nothing
           }
           ${
-            !this._filteredData?.length
-              ? this.loading ||
-                !this._filteredData ||
-                (this.data.length && !this._filteredDataSourceLength)
-                ? html`
-                    <div class="mdc-data-table__content" role="row">
-                      <ha-fade-in .duration=${300} easing="ease-in">
-                        <div role="cell">
-                          <div
-                            role="progressbar"
-                            aria-label=${
-                              this._i18n?.localize?.("ui.common.loading") ||
-                              "Loading"
-                            }
-                          >
-                            ${Array.from(
-                              {
-                                length: this.autoHeight
-                                  ? 1
-                                  : Math.ceil(window.innerHeight / ROW_HEIGHT),
-                              },
-                              () => html`
-                                <div class="mdc-data-table__row">
-                                  ${
-                                    this.selectable
-                                      ? html`<div
-                                          class="mdc-data-table__cell mdc-data-table__cell--checkbox"
-                                        ></div>`
-                                      : nothing
-                                  }
-                                  ${Object.entries(columns).map(
-                                    ([key, column]) =>
-                                      (this.narrow &&
-                                        !column.main &&
-                                        !column.showNarrow) ||
-                                      !this._isColumnVisible(key, column)
-                                        ? nothing
-                                        : html`
-                                            <div
-                                              class="mdc-data-table__cell ${classMap(
-                                                this._cellClasses(column)
-                                              )}"
-                                              style=${styleMap(this._cellStyles(column))}
-                                            >
-                                              ${
-                                                column.type === "icon"
-                                                  ? html`<ha-skeleton-icon></ha-skeleton-icon>`
-                                                  : column.type ===
-                                                        "icon-button" ||
-                                                      column.type ===
-                                                        "overflow-menu"
-                                                    ? nothing
-                                                    : html`<ha-skeleton-text></ha-skeleton-text>`
-                                              }
-                                            </div>
-                                          `
-                                  )}
-                                </div>
-                              `
-                            )}
-                          </div>
-                        </div>
-                      </ha-fade-in>
-                    </div>
-                  `
-                : this.loadError
-                  ? nothing
-                  : html`
-                      <div class="mdc-data-table__content">
-                        <div class="mdc-data-table__row" role="row">
-                          <div
-                            class="mdc-data-table__cell grows center"
-                            role="cell"
-                          >
-                            ${
-                              this.data.length
-                                ? this._i18n?.localize?.(
-                                    "ui.components.data-table.no_match_filter"
-                                  ) || "No rows matching current filters"
-                                : this.noDataText ||
-                                  this._i18n?.localize?.(
-                                    "ui.components.data-table.no-data"
-                                  ) ||
-                                  "No data"
-                            }
-                          </div>
-                        </div>
+            // Only what takes the skeleton rows' place fades in, not rows
+            // that come back after a filter matched nothing
+            skeletonOr(
+              !this._filteredData?.length &&
+                Boolean(
+                  this.loading ||
+                  !this._filteredData ||
+                  (this.data.length && !this._filteredDataSourceLength)
+                ),
+              html`
+                <div class="mdc-data-table__content" role="row">
+                  <ha-fade-in .duration=${300} easing="ease-in">
+                    <div role="cell">
+                      <div
+                        role="progressbar"
+                        aria-label=${
+                          this._i18n?.localize?.("ui.common.loading") ||
+                          "Loading"
+                        }
+                      >
+                        ${Array.from(
+                          {
+                            length: this.autoHeight
+                              ? 1
+                              : Math.ceil(window.innerHeight / ROW_HEIGHT),
+                          },
+                          () => html`
+                            <div class="mdc-data-table__row">
+                              ${
+                                this.selectable
+                                  ? html`<div
+                                      class="mdc-data-table__cell mdc-data-table__cell--checkbox"
+                                    ></div>`
+                                  : nothing
+                              }
+                              ${Object.entries(columns).map(([key, column]) =>
+                                (this.narrow &&
+                                  !column.main &&
+                                  !column.showNarrow) ||
+                                !this._isColumnVisible(key, column)
+                                  ? nothing
+                                  : html`
+                                      <div
+                                        class="mdc-data-table__cell ${classMap(
+                                          this._cellClasses(column)
+                                        )}"
+                                        style=${styleMap(this._cellStyles(column))}
+                                      >
+                                        ${
+                                          column.type === "icon"
+                                            ? html`<ha-skeleton-icon></ha-skeleton-icon>`
+                                            : column.type === "icon-button" ||
+                                                column.type === "overflow-menu"
+                                              ? nothing
+                                              : html`<ha-skeleton-text></ha-skeleton-text>`
+                                        }
+                                      </div>
+                                    `
+                              )}
+                            </div>
+                          `
+                        )}
                       </div>
+                    </div>
+                  </ha-fade-in>
+                </div>
+              `,
+              () =>
+                !this._filteredData?.length
+                  ? this.loadError
+                    ? nothing
+                    : html`
+                        <div class="mdc-data-table__content">
+                          <div class="mdc-data-table__row" role="row">
+                            <div
+                              class="mdc-data-table__cell grows center"
+                              role="cell"
+                            >
+                              ${
+                                this.data.length
+                                  ? this._i18n?.localize?.(
+                                      "ui.components.data-table.no_match_filter"
+                                    ) || "No rows matching current filters"
+                                  : this.noDataText ||
+                                    this._i18n?.localize?.(
+                                      "ui.components.data-table.no-data"
+                                    ) ||
+                                    "No data"
+                              }
+                            </div>
+                          </div>
+                        </div>
+                      `
+                  : html`
+                      ${
+                        this.groupColumn &&
+                        !this.autoHeight &&
+                        this._stickyGroup !== undefined
+                          ? html`<div
+                              class="mdc-data-table__row sticky-group-header"
+                              role="row"
+                              aria-rowindex=${ifDefined(
+                                stickyGroupIndex === -1
+                                  ? undefined
+                                  : stickyGroupIndex + (this.loadError ? 3 : 2)
+                              )}
+                              .group=${this._stickyGroup}
+                              @click=${this._collapseStickyGroup}
+                            >
+                              ${keyed(
+                                this._stickyGroup,
+                                this._renderGroupHeader(
+                                  this._stickyGroup,
+                                  this._collapsedGroups.includes(
+                                    this._stickyGroup
+                                  ),
+                                  this._i18n?.localize,
+                                  this.renderGroupActions,
+                                  true
+                                )
+                              )}
+                            </div>`
+                          : nothing
+                      }
+                      <!-- The list fades in as a whole; rows made later as it
+                    scrolls show at once -->
+                      <lit-virtualizer
+                        scroller
+                        class="mdc-data-table__content scroller ha-scrollbar ${classMap(
+                          {
+                            grouped:
+                              Boolean(this.groupColumn) && !this.autoHeight,
+                          }
+                        )}"
+                        tabindex=${ifDefined(!this.autoHeight ? "0" : undefined)}
+                        @scroll=${this._saveScrollPos}
+                        @visibilityChanged=${this._handleVisibilityChanged}
+                        .items=${items}
+                        .keyFunction=${this._keyFunction}
+                        .renderItem=${renderRow}
+                      ></lit-virtualizer>
                     `
-              : html`
-                  ${
-                    this.groupColumn &&
-                    !this.autoHeight &&
-                    this._stickyGroup !== undefined
-                      ? html`<div
-                          class="mdc-data-table__row sticky-group-header"
-                          role="row"
-                          aria-rowindex=${ifDefined(
-                            stickyGroupIndex === -1
-                              ? undefined
-                              : stickyGroupIndex + (this.loadError ? 3 : 2)
-                          )}
-                          .group=${this._stickyGroup}
-                          @click=${this._collapseStickyGroup}
-                        >
-                          ${keyed(
-                            this._stickyGroup,
-                            this._renderGroupHeader(
-                              this._stickyGroup,
-                              this._collapsedGroups.includes(this._stickyGroup),
-                              this._i18n?.localize,
-                              this.renderGroupActions,
-                              true
-                            )
-                          )}
-                        </div>`
-                      : nothing
-                  }
-                  <!-- The list fades in once as it takes the skeleton rows'
-                    place; rows made later as it scrolls show at once -->
-                  <lit-virtualizer
-                    scroller
-                    class="mdc-data-table__content scroller ha-scrollbar arriving ${classMap(
-                      { grouped: Boolean(this.groupColumn) && !this.autoHeight }
-                    )}"
-                    tabindex=${ifDefined(!this.autoHeight ? "0" : undefined)}
-                    @scroll=${this._saveScrollPos}
-                    @visibilityChanged=${this._handleVisibilityChanged}
-                    .items=${items}
-                    .keyFunction=${this._keyFunction}
-                    .renderItem=${renderRow}
-                  ></lit-virtualizer>
-                `
+            )
           }
         </div>
       </div>
@@ -1631,7 +1641,6 @@ export class HaDataTable extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
-      skeletonArrivalStyles,
       css`
         /* default mdc styles, colors changed, without checkbox styles */
         :host {
