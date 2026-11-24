@@ -229,6 +229,11 @@ export class HaSkeletonOverlay extends LitElement {
 
     if (this._wasLoading) {
       this._observe();
+    } else if (this.hasUpdated) {
+      // Disconnecting stopped remembering, and content put back after
+      // loading, such as a card whose code came late, settles into its size
+      // again here
+      this._rememberWhenSettled();
     }
   }
 
