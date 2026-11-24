@@ -46,6 +46,9 @@ import { getMoreInfoHintCardFeatureEditor } from "./get-more-info-hint-card-feat
 const PILL_GAP = 8;
 const PILL_MIN_SIZE = 32;
 
+/* How long to wait for the entity's settings before showing without them */
+const ENTRY_TIMEOUT = 5000;
+
 const supportsLightColorFavoritesCardFeatureFromState = (
   stateObj: HassEntity
 ) => {
@@ -98,6 +101,8 @@ class HuiLightColorFavoritesCardFeature
 
   private _unsubEntityRegistry?: UnsubscribeFunc;
 
+  private _entryTimeout?: number;
+
   // The favourites are read from the entity's settings
   protected readonly _skeletonLoading = new SkeletonLoadingController(
     this,
@@ -125,6 +130,8 @@ class HuiLightColorFavoritesCardFeature
   }
 
   private _unsubscribeEntityRegistry() {
+    window.clearTimeout(this._entryTimeout);
+
     if (this._unsubEntityRegistry) {
       this._unsubEntityRegistry();
       this._unsubEntityRegistry = undefined;
@@ -145,6 +152,15 @@ class HuiLightColorFavoritesCardFeature
       } catch (_e) {
         this._entry = null;
       }
+
+      // The registry gives no word when it fails to load, so stop waiting
+      // after a while. The entry still applies if it comes later.
+      window.clearTimeout(this._entryTimeout);
+      this._entryTimeout = window.setTimeout(() => {
+        if (this._entry === undefined) {
+          this._entry = null;
+        }
+      }, ENTRY_TIMEOUT);
     }
   }
 

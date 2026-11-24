@@ -45,6 +45,9 @@ import type {
   TimerPresetsCardFeatureConfig,
 } from "./types";
 
+/* How long to wait for the entity's settings before showing without them */
+const ENTRY_TIMEOUT = 5000;
+
 const supportsTimerPresetsCardFeatureFromState = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return domain === "timer";
@@ -102,6 +105,8 @@ class HuiTimerPresetsCardFeature
 
   private _unsubEntityRegistry?: UnsubscribeFunc;
 
+  private _entryTimeout?: number;
+
   // The presets are read from the entity's settings
   protected readonly _skeletonLoading = new SkeletonLoadingController(
     this,
@@ -119,6 +124,8 @@ class HuiTimerPresetsCardFeature
   }
 
   private _unsubscribeEntityRegistry() {
+    window.clearTimeout(this._entryTimeout);
+
     if (this._unsubEntityRegistry) {
       this._unsubEntityRegistry();
       this._unsubEntityRegistry = undefined;
@@ -138,6 +145,15 @@ class HuiTimerPresetsCardFeature
       } catch (_e) {
         this._entry = null;
       }
+
+      // The registry gives no word when it fails to load, so stop waiting
+      // after a while. The entry still applies if it comes later.
+      window.clearTimeout(this._entryTimeout);
+      this._entryTimeout = window.setTimeout(() => {
+        if (this._entry === undefined) {
+          this._entry = null;
+        }
+      }, ENTRY_TIMEOUT);
     }
   }
 
