@@ -159,3 +159,69 @@ export const moveItem = (
     uid,
     previous_uid,
   });
+
+const normalizeTodoSummary = (summary: string, language?: string): string =>
+  summary.trim().replace(/\s+/g, " ").toLocaleLowerCase(language);
+
+/**
+ * Find to-do items that duplicate another item by summary.
+ *
+ * Summaries are compared case-insensitively, ignoring leading, trailing, and
+ * repeated whitespace. For each group of duplicates, the first active item is
+ * kept (falling back to the first item of the group), and all other items are
+ * returned so they can be deleted.
+ */
+export const findDuplicateTodoItems = (
+  items: readonly TodoItem[],
+  language?: string
+): TodoItem[] => {
+  const groups = new Map<string, TodoItem[]>();
+  for (const item of items) {
+    const key = normalizeTodoSummary(item.summary, language);
+    if (!key) {
+      continue;
+    }
+    const group = groups.get(key);
+    if (group) {
+      group.push(item);
+    } else {
+      groups.set(key, [item]);
+    }
+  }
+
+  const duplicates: TodoItem[] = [];
+  for (const group of groups.values()) {
+    if (group.length < 2) {
+      continue;
+    }
+    const keep =
+      group.find((item) => item.status !== TodoItemStatus.Completed) ??
+      group[0];
+    duplicates.push(...group.filter((item) => item !== keep));
+  }
+  return duplicates;
+};
+
+export type TodoSwipeAction = "complete" | "uncomplete" | "delete";
+
+/**
+ * Resolve the action for a swipe gesture on a to-do item.
+ *
+ * `direction` is logical: "start" points toward the inline start (left in LTR,
+ * right in RTL), "end" toward the inline end. Active items are completed in
+ * either direction. Completed items are deleted when swiped toward the start
+ * and reactivated when swiped toward the end.
+ */
+export const getTodoSwipeAction = (
+  status: TodoItemStatus | null,
+  direction: "start" | "end",
+  canDelete: boolean
+): TodoSwipeAction | undefined => {
+  if (status !== TodoItemStatus.Completed) {
+    return "complete";
+  }
+  if (direction === "end") {
+    return "uncomplete";
+  }
+  return canDelete ? "delete" : undefined;
+};
