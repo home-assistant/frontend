@@ -9,6 +9,18 @@ const WAVE_SLANT_DEG = 20;
 
 const WAVE_SLANT = Math.tan((WAVE_SLANT_DEG * Math.PI) / 180);
 
+/* Older browsers don't know :dir(), so they don't mirror the wave either and
+   it's placed left to right there */
+const DIR_SELECTOR_SUPPORTED = (() => {
+  try {
+    document.documentElement.matches(":dir(rtl)");
+
+    return true;
+  } catch {
+    return false;
+  }
+})();
+
 /**
  * Placeholder shown while content loads. Sized by its container unless a
  * more specific variant such as `ha-skeleton-text` or `ha-skeleton-icon` is used.
@@ -57,9 +69,14 @@ export class HaSkeleton extends WaSkeleton {
       // Read every skeleton before writing any, so layout runs once
       const boxes = [...HaSkeleton._waving].flatMap((skeleton) => {
         const rect = skeleton.getBoundingClientRect();
-        const rtl = getComputedStyle(skeleton).direction === "rtl";
+        // A hidden skeleton, such as a picker's once it has loaded, stays
+        // out of the box so it doesn't stretch the track
+        const shown = getComputedStyle(skeleton).visibility === "visible";
+        // The same check the mirroring uses, so a left-to-right cell on a
+        // right-to-left page is placed the way it's drawn
+        const rtl = DIR_SELECTOR_SUPPORTED && skeleton.matches(":dir(rtl)");
 
-        return rect.width > 0 ? [{ skeleton, rect, rtl }] : [];
+        return rect.width > 0 && shown ? [{ skeleton, rect, rtl }] : [];
       });
 
       if (boxes.length === 0) {
