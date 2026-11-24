@@ -171,6 +171,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                 prevent-interaction-on-scroll
                 @value-changing=${this._dragEvent}
                 @value-changed=${this._setBrightness}
+                @focusout=${this._hideBrightness}
                 style=${styleMap({
                   visibility: lightSupportsBrightness(stateObj)
                     ? "visible"
