@@ -687,19 +687,30 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
         `
       : nothing;
 
+    // Also when the camera was opened from a smaller entity's related view
+    const cameraAspectRatio =
+      domain === "camera" && isDefaultView
+        ? this._cameraAspectRatio
+        : undefined;
+
     return html`
       <ha-adaptive-dialog
         .open=${this._open}
-        .width=${this._fill ? "full" : this.large ? "large" : "medium"}
+        .width=${
+          this._fill
+            ? "full"
+            : this.large || cameraAspectRatio
+              ? "large"
+              : "medium"
+        }
         class=${classMap({ camera: domain === "camera" })}
         style=${styleMap({
           "--more-info-camera-controls-height": this._cameraTwoWayAudio
             ? "72px"
             : undefined,
-          "--ha-dialog-width-lg":
-            domain === "camera" && isDefaultView && this._cameraAspectRatio
-              ? `clamp(var(--ha-dialog-width-md, 580px), calc(var(--video-max-height) * ${this._cameraAspectRatio}), 1920px)`
-              : undefined,
+          "--ha-dialog-width-lg": cameraAspectRatio
+            ? `clamp(var(--ha-dialog-width-md, 580px), calc(var(--video-max-height) * ${cameraAspectRatio}), 1920px)`
+            : undefined,
         })}
         @camera-aspect-ratio-changed=${this._cameraAspectRatioChanged}
         @camera-capabilities-changed=${this._cameraCapabilitiesChanged}
