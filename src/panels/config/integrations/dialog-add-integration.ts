@@ -726,7 +726,7 @@ class AddIntegrationDialog extends LitElement {
           .search(filter)
           .map((result) => result.item);
 
-      const leaves = new Map<string, IntegrationListItem>();
+      const integrationsByDomain = new Map<string, IntegrationListItem>();
       [...integrations, ...yamlIntegrations].forEach((item) => {
         const rows =
           item.domains || (browse && this._isBrand(item))
@@ -735,8 +735,8 @@ class AddIntegrationDialog extends LitElement {
               )
             : [item];
         rows.forEach((row) => {
-          if (!leaves.has(row.domain)) {
-            leaves.set(row.domain, { ...row, id: row.domain });
+          if (!integrationsByDomain.has(row.domain)) {
+            integrationsByDomain.set(row.domain, { ...row, id: row.domain });
           }
         });
       });
@@ -789,7 +789,7 @@ class AddIntegrationDialog extends LitElement {
       return {
         brand: search(brands),
         category: search(categories),
-        integration: search([...leaves.values()]),
+        integration: search([...integrationsByDomain.values()]),
         helper: search(helpers),
       };
     }
