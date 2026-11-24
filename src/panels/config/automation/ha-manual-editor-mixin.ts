@@ -59,6 +59,13 @@ export const ManualEditorMixin = <TConfig>(
 
     @property({ type: Boolean }) public saving = false;
 
+    /**
+     * The AI sidebar is open next to the editor. The sidebar of a row takes
+     * its place.
+     */
+    @property({ type: Boolean, reflect: true, attribute: "ai-sidebar" })
+    public aiSidebar = false;
+
     /** Hides the save button, e.g. while the user reviews changes of the AI. */
     @property({ type: Boolean, attribute: "hide-save" }) public hideSave =
       false;

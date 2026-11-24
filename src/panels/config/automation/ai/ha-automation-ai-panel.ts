@@ -486,7 +486,7 @@ export class HaAutomationAiPanel extends LitElement {
         </ha-target-picker>
         <ha-automation-ai-prompt
           .placeholder=${this.hass.localize(
-            `ui.panel.config.automation.editor.ai.${followUp ? "follow_up_placeholder" : "prompt_placeholder"}`
+            `ui.panel.config.automation.editor.ai.${followUp ? "follow_up_placeholder" : this.kind === "script" ? "prompt_placeholder_script" : "prompt_placeholder"}`
           )}
           .value=${this._prompt}
           @value-changed=${this._promptChanged}

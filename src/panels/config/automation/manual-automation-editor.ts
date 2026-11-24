@@ -2,8 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { load, YAML11_SCHEMA } from "js-yaml";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, queryAll, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
+import { customElement, property, queryAll } from "lit/decorators";
 import {
   any,
   array,
@@ -14,15 +13,12 @@ import {
   string,
   union,
 } from "superstruct";
-import { mdiDebugStepOver } from "@mdi/js";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
-import { consume } from "../../../common/decorators/consume";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
-import "../../../components/ha-svg-icon";
 import type {
   AutomationConfig,
   Condition,
@@ -31,23 +27,12 @@ import type {
   Trigger,
 } from "../../../data/automation";
 import {
-  AUTOMATION_DEFAULT_MAX,
-  AUTOMATION_DEFAULT_MODE,
   isCondition,
   isTrigger,
   normalizeAutomationConfig,
 } from "../../../data/automation";
-import {
-  getActionType,
-  isMaxMode,
-  type Action,
-  type MODES,
-  type MODES_MAX,
-} from "../../../data/script";
-import {
-  automationDiffContext,
-  type AutomationDiff,
-} from "./ai/automation-ai-diff";
+import { getActionType, type Action } from "../../../data/script";
+import "./ai/ha-automation-ai-settings";
 import { showEditorToast } from "./editor-toast";
 import "./action/ha-automation-action";
 import type HaAutomationAction from "./action/ha-automation-action";
@@ -92,17 +77,6 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
 ) {
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  /**
-   * The AI sidebar is open next to the editor. The sidebar of a row takes
-   * its place.
-   */
-  @property({ type: Boolean, reflect: true, attribute: "ai-sidebar" })
-  public aiSidebar = false;
-
-  @state()
-  @consume({ context: automationDiffContext, subscribe: true })
-  private _diff?: AutomationDiff;
-
   @queryAll("ha-automation-action, ha-automation-condition")
   protected collapsableElements?: NodeListOf<
     HaAutomationAction | HaAutomationCondition
@@ -110,7 +84,9 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
 
   protected renderContent() {
     return html`
-      ${this._renderModeChange()} ${this._renderDescription()}
+      <ha-automation-ai-settings
+        .config=${this.config}
+      ></ha-automation-ai-settings>
       <div class="header">
         <h2 id="triggers-heading" class="name">
           ${this.hass.localize(
@@ -220,84 +196,6 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
         sidebar
       ></ha-automation-action>
     `;
-  }
-
-  // The mode is only in a dialog, so a change of the AI shows here
-  private _renderModeChange() {
-    const before = this._diff?.before;
-    if (!before || "use_blueprint" in this.config) {
-      return nothing;
-    }
-    const oldMode = before.mode || AUTOMATION_DEFAULT_MODE;
-    const newMode = this.config.mode || AUTOMATION_DEFAULT_MODE;
-    const oldMax = isMaxMode(oldMode)
-      ? before.max || AUTOMATION_DEFAULT_MAX
-      : undefined;
-    const newMax = isMaxMode(newMode)
-      ? this.config.max || AUTOMATION_DEFAULT_MAX
-      : undefined;
-    const modeName = (mode: string) =>
-      this.hass.localize(
-        `ui.panel.config.automation.editor.modes.${mode as (typeof MODES)[number]}`
-      );
-    const changes = [
-      ...(oldMode !== newMode
-        ? [
-            this.hass.localize(
-              "ui.panel.config.automation.editor.ai.changes.value_changed",
-              {
-                name: this.hass.localize(
-                  "ui.panel.config.automation.editor.modes.label"
-                ),
-                old: modeName(oldMode),
-                new: modeName(newMode),
-              }
-            ),
-          ]
-        : []),
-      ...(newMax !== undefined && oldMax !== newMax
-        ? [
-            this.hass.localize(
-              "ui.panel.config.automation.editor.ai.changes.value_changed",
-              {
-                name: this.hass.localize(
-                  `ui.panel.config.automation.editor.max.${newMode as (typeof MODES_MAX)[number]}`
-                ),
-                old: oldMax ?? "—",
-                new: newMax,
-              }
-            ),
-          ]
-        : []),
-    ];
-    if (!changes.length) {
-      return nothing;
-    }
-    return html`<div class="mode-changes">
-      ${changes.map(
-        (change) =>
-          html`<span class="mode-change">
-            <ha-svg-icon .path=${mdiDebugStepOver}></ha-svg-icon>${change}
-          </span>`
-      )}
-    </div>`;
-  }
-
-  private _renderDescription() {
-    const mark = this._diff?.settings.description;
-    // A removed description is shown as it was, struck through
-    const description =
-      mark === "removed"
-        ? this._diff?.before.description
-        : this.config.description;
-    if (!description) {
-      return nothing;
-    }
-    return html`<ha-markdown
-      class=${classMap({ description: true, [`diff-${mark}`]: !!mark })}
-      breaks
-      .content=${description}
-    ></ha-markdown>`;
   }
 
   protected saveConfig() {
@@ -594,66 +492,6 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
 
         .description {
           margin-top: 16px;
-        }
-        /* Room for the AI sidebar, whose place a row sidebar takes */
-        :host([ai-sidebar]) .content-wrapper {
-          padding-inline-end: calc(var(--ai-sidebar-width) + var(--ha-space-4));
-        }
-        /* Room for the collapsed AI sidebar below it */
-        :host([ai-sidebar]) ha-automation-sidebar {
-          width: var(--ai-sidebar-width);
-          height: calc(
-            -81px +
-              100vh - var(--safe-area-inset-top, 0px) - var(
-                --ai-sidebar-collapsed-height
-              ) - var(--ha-space-2)
-          );
-          height: calc(
-            -81px +
-              100dvh - var(--safe-area-inset-top, 0px) - var(
-                --ai-sidebar-collapsed-height
-              ) - var(--ha-space-2)
-          );
-          z-index: 2;
-        }
-        /* Chips, so the mode doesn't look like the description */
-        .mode-changes {
-          display: flex;
-          flex-wrap: wrap;
-          gap: var(--ha-space-2);
-          margin-top: 16px;
-        }
-        .mode-change {
-          display: inline-flex;
-          align-items: center;
-          gap: var(--ha-space-1);
-          height: 32px;
-          box-sizing: border-box;
-          padding: 0 var(--ha-space-3) 0 var(--ha-space-2);
-          border-radius: var(--ha-border-radius-pill);
-          border: 1px solid var(--ha-color-border-warning-normal);
-          background-color: var(--ha-color-fill-warning-normal-resting);
-          color: var(--ha-color-on-warning-normal);
-          font-size: var(--ha-font-size-s);
-          font-weight: var(--ha-font-weight-medium);
-        }
-        .mode-change ha-svg-icon {
-          --mdc-icon-size: 18px;
-        }
-        .description[class*="diff-"] {
-          padding: var(--ha-space-1) var(--ha-space-3);
-          border-radius: var(--ha-border-radius-md);
-          border-inline-start: 4px solid var(--ha-color-border-warning-loud);
-          background-color: var(--ha-color-fill-warning-quiet-resting);
-        }
-        .description.diff-added {
-          border-inline-start-color: var(--ha-color-border-success-loud);
-          background-color: var(--ha-color-fill-success-quiet-resting);
-        }
-        .description.diff-removed {
-          border-inline-start-color: var(--ha-color-border-danger-loud);
-          background-color: var(--ha-color-fill-danger-quiet-resting);
-          text-decoration: line-through;
         }
       `,
     ];

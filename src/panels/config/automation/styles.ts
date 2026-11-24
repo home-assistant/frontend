@@ -277,6 +277,28 @@ export const manualEditorStyles = css`
     display: none;
   }
 
+  /* Room for the AI sidebar, whose place a row sidebar takes */
+  :host([ai-sidebar]) .content-wrapper {
+    padding-inline-end: calc(var(--ai-sidebar-width) + var(--ha-space-4));
+  }
+  /* Room for the collapsed AI sidebar below it */
+  :host([ai-sidebar]) ha-automation-sidebar {
+    width: var(--ai-sidebar-width);
+    height: calc(
+      -81px +
+        100vh - var(--safe-area-inset-top, 0px) - var(
+          --ai-sidebar-collapsed-height
+        ) - var(--ha-space-2)
+    );
+    height: calc(
+      -81px +
+        100dvh - var(--safe-area-inset-top, 0px) - var(
+          --ai-sidebar-collapsed-height
+        ) - var(--ha-space-2)
+    );
+    z-index: 2;
+  }
+
   .sidebar-positioner {
     display: flex;
     justify-content: flex-end;

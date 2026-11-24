@@ -5915,6 +5915,7 @@
               "menu": "Edit with AI",
               "title": "Edit with AI",
               "prompt_placeholder": "Turn on the hallway light when motion is detected after sunset",
+              "prompt_placeholder_script": "Dim the living room lights and close its blinds",
               "follow_up_placeholder": "Ask for more changes",
               "send": "Send",
               "add_target": "Add entity, device, area, or label",

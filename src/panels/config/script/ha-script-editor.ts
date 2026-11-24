@@ -22,6 +22,8 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
+import { ensureArray } from "../../../common/array/ensure-array";
 import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { goBack, navigate } from "../../../common/navigate";
@@ -70,6 +72,10 @@ import { showAutomationSaveDialog } from "../automation/automation-save-dialog/s
 import { showAutomationSaveTimeoutDialog } from "../automation/automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "./blueprint-script-editor";
+import {
+  AiEditorController,
+  aiEditorStyles,
+} from "../automation/ai/ai-editor-controller";
 import type { EditorDomainHooks } from "../automation/ha-automation-script-editor-mixin";
 import {
   AutomationScriptEditorMixin,
@@ -105,6 +111,23 @@ export class HaScriptEditor extends SubscribeMixin(
   private _undoRedoController = new UndoRedoController<ScriptConfig>(this, {
     apply: (config) => this._applyUndoRedo(config),
     currentConfig: () => this.config!,
+  });
+
+  private _ai = new AiEditorController<ScriptConfig>(this, {
+    kind: "script",
+    hass: () => this.hass,
+    config: () => this.config,
+    id: () => this.scriptId,
+    narrow: () => this.narrow,
+    readOnly: () => this.readOnly,
+    yamlErrors: () => !!this.yamlErrors,
+    yamlMode: () => this.mode === "yaml",
+    commit: (config) => this._updateConfig(config),
+    closeRowSidebar: () => this._manualEditor?.triggerCloseSidebar(),
+    confirmUnsavedChanged: () => this.confirmUnsavedChanged(),
+    toggleYamlMode: () => this._toggleYamlMode(),
+    isEmpty: (config) =>
+      !ensureArray(config.sequence ?? []).length && !config.fields,
   });
 
   public override get isDirtyState(): boolean {
@@ -178,9 +201,13 @@ export class HaScriptEditor extends SubscribeMixin(
           this.config.alias ||
           this.hass.localize("ui.panel.config.script.editor.default_name")
         }
+        style=${styleMap(this._ai.pageStyle)}
       >
+        ${this._ai.renderAlias(
+          this.hass.localize("ui.panel.config.script.editor.default_name")
+        )}
         ${
-          this.mode === "gui" && !this.narrow
+          this.mode === "gui" && !this.narrow && !this._ai.active
             ? html`<ha-icon-button
                   slot="toolbar-icon"
                   .label=${this.hass.localize("ui.common.undo")}
@@ -227,7 +254,7 @@ export class HaScriptEditor extends SubscribeMixin(
             : nothing
         }
         ${
-          this.scriptId && !this.narrow
+          this.scriptId && !this.narrow && !this._ai.active
             ? html`
                 <ha-button
                   appearance="plain"
@@ -241,12 +268,15 @@ export class HaScriptEditor extends SubscribeMixin(
               `
             : ""
         }
+        ${this._ai.renderToolbarButtons(!useBlueprint)}
         <ha-dropdown
           slot="toolbar-icon"
+          ?hidden=${this._ai.active}
           @wa-select=${this._handleDropdownSelect}
         >
           <ha-icon-button
             slot="trigger"
+            class=${classMap({ "ai-unseen": this._ai.menuUnseen })}
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
@@ -269,6 +299,7 @@ export class HaScriptEditor extends SubscribeMixin(
                   </ha-dropdown-item>`
               : nothing
           }
+          ${this._ai.renderMenuItem(!useBlueprint)}
 
           <ha-dropdown-item .disabled=${!this.scriptId} value="info">
             ${this.hass.localize("ui.panel.config.script.editor.show_info")}
@@ -411,7 +442,16 @@ export class HaScriptEditor extends SubscribeMixin(
             </ha-svg-icon>
           </ha-dropdown-item>
         </ha-dropdown>
-        <div class=${this.mode === "yaml" ? "yaml-mode" : ""}>
+        <div
+          class=${classMap({
+            "yaml-mode": this.mode === "yaml",
+            "ai-sidebar": this._ai.sidebarBeside && this.mode === "yaml",
+          })}
+          style=${styleMap({
+            "padding-bottom":
+              this.mode === "yaml" ? this._ai.sheetSpace : undefined,
+          })}
+        >
           ${
             this.mode === "gui"
               ? html`
@@ -446,10 +486,19 @@ export class HaScriptEditor extends SubscribeMixin(
                               .hass=${this.hass}
                               .narrow=${this.narrow}
                               .isWide=${this.isWide}
-                              .config=${this.config}
-                              .disabled=${this.readOnly}
+                              .config=${
+                                (this._ai.diff?.config as ScriptConfig) ??
+                                this.config
+                              }
+                              .disabled=${this.readOnly || this._ai.active}
+                              .hideSave=${this._ai.active}
+                              .aiSidebar=${this._ai.sidebarBeside}
+                              style=${styleMap({
+                                "padding-bottom": this._ai.sheetSpace,
+                              })}
                               .saving=${this.saving}
                               @value-changed=${this._valueChanged}
+                              @sidebar-config-changed=${this._sidebarConfigChanged}
                               @editor-save=${this._handleSaveScript}
                               @save-script=${this._handleSaveScript}
                             >
@@ -532,18 +581,24 @@ export class HaScriptEditor extends SubscribeMixin(
                 `
               : this.mode === "yaml"
                 ? html`${this._renderDeprecatedMigratedAlert()}
-                    <ha-yaml-editor
-                      .defaultValue=${this._preprocessYaml()}
-                      .readOnly=${this.readOnly}
-                      disable-fullscreen
-                      @value-changed=${this._yamlChanged}
-                      @editor-save=${this._handleSaveScript}
-                    ></ha-yaml-editor>
+                    ${this._ai.renderYamlEditor(
+                      html`<ha-yaml-editor
+                        .defaultValue=${this._preprocessYaml()}
+                        .readOnly=${this.readOnly}
+                        disable-fullscreen
+                        @value-changed=${this._yamlChanged}
+                        @editor-save=${this._handleSaveScript}
+                      ></ha-yaml-editor>`
+                    )}
                     <ha-button
                       slot="fab"
                       size="l"
-                      class=${!this.readOnly && this.isDirtyState ? "dirty" : ""}
-                      .disabled=${this.saving}
+                      class=${
+                        !this.readOnly && this.isDirtyState && !this._ai.active
+                          ? "dirty"
+                          : ""
+                      }
+                      .disabled=${this.saving || this._ai.active}
                       @click=${this._handleSaveScript}
                     >
                       <ha-svg-icon
@@ -555,6 +610,7 @@ export class HaScriptEditor extends SubscribeMixin(
                 : nothing
           }
         </div>
+        ${this._ai.renderSidebar()}
       </hass-subpage>
     `;
   }
@@ -573,6 +629,9 @@ export class HaScriptEditor extends SubscribeMixin(
     super.updated(changedProps);
 
     const oldScript = changedProps.get("scriptId");
+    if (changedProps.has("scriptId")) {
+      this._ai.idChanged(oldScript);
+    }
     if (
       changedProps.has("scriptId") &&
       this.scriptId &&
@@ -666,17 +725,31 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   private _valueChanged(ev) {
+    // The editor shows the changes of the AI, which are not the config
+    if (this._ai.active) {
+      return;
+    }
+    this._updateConfig(ev.detail.value);
+  }
+
+  private _updateConfig(config: ScriptConfig) {
     if (this.config) {
       this._undoRedoController.commit(this.config);
     }
 
-    this.config = ev.detail.value;
+    this.config = config;
     this.errors = undefined;
     this._updateDirtyState({
       config: this.config!,
       entityRegistryUpdate: this.entityRegistryUpdate,
     });
   }
+
+  private _sidebarConfigChanged = (
+    ev: CustomEvent<{ value: unknown | undefined }>
+  ) => {
+    this._ai.rowSidebarChanged(!!ev.detail.value);
+  };
 
   private async _runScript() {
     if (hasScriptFields(this.hass.services, this.currentEntityId!)) {
@@ -820,6 +893,8 @@ export class HaScriptEditor extends SubscribeMixin(
         },
         onClose: () => resolve(false),
         onDiscard: () => {
+          // The conversation stays, the discarded change of the AI goes
+          this._ai.discarded();
           this.yamlErrors = undefined;
           this._markDirtyStateClean();
           resolve(true);
@@ -954,6 +1029,9 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   private async _handleSaveScript() {
+    if (this._ai.active) {
+      return;
+    }
     if (this.yamlErrors) {
       showEditorToast(this, {
         message: this.yamlErrors,
@@ -976,6 +1054,8 @@ export class HaScriptEditor extends SubscribeMixin(
 
     await this._saveScript(id);
     if (!this.scriptId) {
+      // The editor may start over for the new id, the AI continues there
+      this._ai.saveAs(String(id));
       navigate(`/config/script/edit/${id}`, { replace: true });
     }
   }
@@ -1113,15 +1193,20 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   private _cutSelectedRow() {
-    this._manualEditor?.cutSelectedRow();
+    if (!this._ai.active) {
+      this._manualEditor?.cutSelectedRow();
+    }
   }
 
   private _deleteSelectedRow() {
-    this._manualEditor?.deleteSelectedRow();
+    if (!this._ai.active) {
+      this._manualEditor?.deleteSelectedRow();
+    }
   }
 
   private _applyUndoRedo(config: ScriptConfig) {
     this._manualEditor?.triggerCloseSidebar();
+    this._ai.undoRedoApplied();
     this.config = config;
     this._updateDirtyState({
       config: this.config,
@@ -1130,11 +1215,15 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   private _undo() {
-    this._undoRedoController.undo();
+    if (!this._ai.active) {
+      this._undoRedoController.undo();
+    }
   }
 
   private _redo() {
-    this._undoRedoController.redo();
+    if (!this._ai.active) {
+      this._undoRedoController.redo();
+    }
   }
 
   private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
@@ -1147,6 +1236,9 @@ export class HaScriptEditor extends SubscribeMixin(
     switch (action) {
       case "undo":
         this._undo();
+        break;
+      case "ai_edit":
+        this._ai.open();
         break;
       case "redo":
         this._redo();
@@ -1194,6 +1286,7 @@ export class HaScriptEditor extends SubscribeMixin(
     return [
       haStyle,
       automationScriptEditorStyles,
+      aiEditorStyles,
       css`
         manual-script-editor,
         blueprint-script-editor {

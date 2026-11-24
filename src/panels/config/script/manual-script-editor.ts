@@ -39,6 +39,7 @@ import {
 } from "../automation/ha-manual-editor-mixin";
 import { showPasteReplaceDialog } from "../automation/paste-replace-dialog/show-dialog-paste-replace";
 import { manualEditorStyles, saveFabStyles } from "../automation/styles";
+import "../automation/ai/ha-automation-ai-settings";
 import "./ha-script-fields";
 import type HaScriptFields from "./ha-script-fields";
 
@@ -96,15 +97,7 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
 
   protected renderContent() {
     return html`
-      ${
-        this.config.description
-          ? html`<ha-markdown
-              class="description"
-              breaks
-              .content=${this.config.description}
-            ></ha-markdown>`
-          : nothing
-      }
+      <ha-automation-ai-settings .config=${this.config}></ha-automation-ai-settings>
     ${
       this.config.fields
         ? html`<div class="header">

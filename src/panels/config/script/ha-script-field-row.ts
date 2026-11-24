@@ -78,7 +78,6 @@ export default class HaScriptFieldRow extends LitElement {
     return html`
       <ha-card outlined>
         <ha-automation-row
-          .disabled=${this.disabled}
           @click=${this._toggleSidebar}
           .selected=${this._selected}
           .leftChevron=${hasSelector}
