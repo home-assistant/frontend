@@ -76,6 +76,10 @@ export class HaSkeletonOverlay extends LitElement {
 
   private _hiddenColor = new Map<HTMLElement, string>();
 
+  /* Whether hidden content was inert before, as it can't be used while
+     hidden */
+  private _hiddenInert = new Map<HTMLElement, boolean>();
+
   private _wasLoading = false;
 
   /* What to fade in once loading has ended */
@@ -141,6 +145,15 @@ export class HaSkeletonOverlay extends LitElement {
 
     if (this._isLoading) {
       this._scheduleMeasure();
+
+      // Content hidden as a whole can't be used either
+      if (this._customSkeleton || this._pieces === undefined) {
+        this._contentSlot?.assignedElements().forEach((element) => {
+          if (element instanceof HTMLElement) {
+            this._makeInert(element);
+          }
+        });
+      }
     }
 
     if (this._arriving) {
@@ -227,16 +240,40 @@ export class HaSkeletonOverlay extends LitElement {
       ?.assignedElements()
       .forEach((element) => this._resizeObserver.observe(element));
 
-    // Content that went away can't finish loading
-    const sources = [...this._loadingSources].filter(
-      (source) => !(source instanceof Node) || source.isConnected
+    this._pruneSources();
+    this._scheduleMeasure();
+  }
+
+  /* Content that went away, or moved out of this overlay, can't finish
+     loading here. Removing it deep inside a card fires no slotchange, so
+     this runs on every measure too, which any change of size starts. */
+  private _pruneSources() {
+    const sources = [...this._loadingSources].filter((source) =>
+      this._holds(source)
     );
 
     if (sources.length !== this._loadingSources.size) {
       this._loadingSources = new Set(sources);
     }
+  }
 
-    this._scheduleMeasure();
+  /* Whether a source is still inside this overlay, through shadow roots */
+  private _holds(source: EventTarget) {
+    if (!(source instanceof Node)) {
+      return true;
+    }
+
+    let node: Node | null = source;
+
+    while (node) {
+      if (node === this) {
+        return true;
+      }
+
+      node = node instanceof ShadowRoot ? node.host : node.parentNode;
+    }
+
+    return false;
   }
 
   private _skeletonSlotChanged(ev: Event) {
@@ -268,6 +305,8 @@ export class HaSkeletonOverlay extends LitElement {
 
   /* Read the skeleton from the content, and hide the parts it stands in for */
   private _measure() {
+    this._pruneSources();
+
     if (!this._isLoading || this._customSkeleton) {
       return;
     }
@@ -287,6 +326,11 @@ export class HaSkeletonOverlay extends LitElement {
     skeleton.parts.forEach((part) => {
       this._hiddenOpacity.set(part, part.style.opacity);
       part.style.opacity = "0";
+
+      // Hidden controls can't be focused, used or read out under the wave
+      if (part instanceof HTMLElement) {
+        this._makeInert(part);
+      }
     });
 
     // Text goes through its colour, so a frame drawn by the same element,
@@ -304,8 +348,19 @@ export class HaSkeletonOverlay extends LitElement {
     this._hiddenColor.forEach((color, part) => {
       part.style.color = color;
     });
+    this._hiddenInert.forEach((inert, part) => {
+      part.inert = inert;
+    });
     this._hiddenOpacity.clear();
     this._hiddenColor.clear();
+    this._hiddenInert.clear();
+  }
+
+  private _makeInert(element: HTMLElement) {
+    if (!this._hiddenInert.has(element)) {
+      this._hiddenInert.set(element, element.inert);
+      element.inert = true;
+    }
   }
 
   /* Show the content again before the next paint, and note what to fade in */
