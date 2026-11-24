@@ -246,6 +246,20 @@ const svgMask = (svg: SVGSVGElement, width: number, height: number) => {
     copy.setAttribute("stroke", style.stroke === "none" ? "none" : "#000");
     copy.setAttribute("stroke-width", style.strokeWidth);
     copy.setAttribute("stroke-linecap", style.strokeLinecap);
+
+    // Keep what moves or cuts a shape, such as a gauge's needle and the
+    // dashes that draw its value arc
+    if (style.transform !== "none") {
+      copy.setAttribute(
+        "style",
+        `transform: ${style.transform}; transform-origin: ${style.transformOrigin}; transform-box: ${style.transformBox}`
+      );
+    }
+
+    if (style.strokeDasharray !== "none") {
+      copy.setAttribute("stroke-dasharray", style.strokeDasharray);
+      copy.setAttribute("stroke-dashoffset", style.strokeDashoffset);
+    }
   });
 
   if (drawnPaths === 0) {
@@ -360,6 +374,11 @@ export const extractSkeleton = (
       }
 
       if (override === "keep") {
+        // Its frame stays, but its own text is read like any other
+        if (child instanceof HTMLElement) {
+          addText(child);
+        }
+
         if (child.shadowRoot) {
           walk(child.shadowRoot);
         }
@@ -535,6 +554,8 @@ export const extractSkeleton = (
     }
   };
 
+  // Text straight inside the root, such as plain text in an overlay
+  addText(root);
   walk(root);
 
   return {
