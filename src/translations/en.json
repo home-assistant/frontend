@@ -8272,6 +8272,8 @@
             "error_saving_entity": "Error updating entity: {error}",
             "created_config": "Created configuration for {name}.",
             "helper_area": "This helper isn't part of a device, so you can add it to an area.",
+            "debug_logging_enabled_description": "Extra detail from {integration} is being written to the logs. Continue the setup to reproduce the problem, then disable debug logging to download the log for your issue report.",
+            "disable_and_download_log": "Disable and download log",
             "external_step": {
               "description": "This step requires you to visit an external website to be completed.",
               "open_site": "Open website"
