@@ -10,6 +10,8 @@ const SWIPE_LOCKED_COMPONENTS = new Set([
   "ha-chart-base",
   "ha-more-info-control-select-container",
   "ha-filter-chip",
+  // Toasts are inside the sheet while it is open
+  "notification-manager",
 ]);
 
 const SWIPE_LOCKED_CLASSES = new Set([

@@ -7,6 +7,7 @@ import { consume } from "../common/decorators/consume";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { isSwipeLocked } from "../common/dom/is-swipe-locked";
+import { setModalOpen } from "../common/dom/open-modals";
 import { SwipeGestureRecognizer } from "../common/util/swipe-gesture-recognizer";
 import { configContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
@@ -79,9 +80,12 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
   private _escapePressed = false;
 
-  private _handleShow = async () => {
+  private _handleShow = async (ev: Event) => {
     this._drawerOpen = true;
     this.open = true;
+    if (ev.eventPhase === Event.AT_TARGET) {
+      setModalOpen(this._drawer, true);
+    }
     fireEvent(this, "opened");
 
     await this.updateComplete;
@@ -131,6 +135,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     if (ev.eventPhase === Event.AT_TARGET) {
       this.open = false;
       this._drawerOpen = false;
+      setModalOpen(this._drawer, false);
       fireEvent(this, "closed");
     }
   };
@@ -369,6 +374,9 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    if (this._drawer) {
+      setModalOpen(this._drawer, false);
+    }
     this.removeEventListener(
       "slider-interaction-start",
       this._handleSliderInteractionStart,
