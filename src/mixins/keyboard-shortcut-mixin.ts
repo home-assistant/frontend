@@ -5,6 +5,7 @@ import { deepActiveElement } from "../common/dom/deep-active-element";
 import { nextRender } from "../common/util/render-status";
 import { getTopOpenDialogTag } from "../dialogs/make-dialog-manager";
 import { isMac } from "../util/is_mac";
+import "../components/ha-tooltip";
 
 declare global {
   type SupportedShortcuts = Record<string, () => void>;
@@ -28,7 +29,11 @@ const isModalBoundary = (el: EventTarget): boolean =>
 export const renderAddShortcutTooltip = (hass: HomeAssistant, forId: string) =>
   hass.enableShortcuts
     ? html`<ha-tooltip slot="fab" for=${forId} placement="left">
-        ${isMac ? "⌘ ⌥ N" : "Ctrl + Alt + N"}
+        ${
+          isMac
+            ? "⌘ ⌥ N"
+            : `${hass.localize("ui.dialogs.shortcuts.keys.ctrl")} + Alt + N`
+        }
       </ha-tooltip>`
     : nothing;
 
