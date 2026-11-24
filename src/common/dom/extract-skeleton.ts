@@ -296,11 +296,41 @@ export const extractSkeleton = (
   const onDark = (style: CSSStyleDeclaration) =>
     surface !== undefined && isNearWhite(surface) && isNearWhite(style.color);
 
+  /* An element that cuts off its overflow, such as a scrolling list, cuts the
+     pieces read inside it too, as the overlay draws them on a layer of its
+     own where that clip doesn't reach */
+  const clipPieces = (from: number, rect: DOMRect) => {
+    const bounds = box(rect);
+
+    const clipped = pieces.splice(from).flatMap((piece): SkeletonPiece[] => {
+      const x = Math.max(piece.x, bounds.x);
+      const y = Math.max(piece.y, bounds.y);
+      const right = Math.min(piece.x + piece.width, bounds.x + bounds.width);
+      const bottom = Math.min(piece.y + piece.height, bounds.y + bounds.height);
+
+      if (right <= x || bottom <= y) {
+        return [];
+      }
+
+      // A drawing's mask is made for its whole box, so it stays whole
+      if (piece.kind === "shape") {
+        return [piece];
+      }
+
+      return [{ ...piece, x, y, width: right - x, height: bottom - y }];
+    });
+
+    pieces.push(...clipped);
+  };
+
   const addText = (element: Element | ShadowRoot) => {
     const owner = element instanceof ShadowRoot ? element.host : element;
 
-    // Text cut short with an ellipsis reaches past its box, so clip to it
+    // Text cut short with an ellipsis reaches past its box, so clip to it.
+    // An owner with no box of its own, such as one with display: contents,
+    // cuts nothing off.
     const clip = owner.getBoundingClientRect();
+    const clips = clip.width > 0 || clip.height > 0;
 
     element.childNodes.forEach((node) => {
       if (!(node instanceof Text) || !node.textContent?.trim()) {
@@ -325,12 +355,12 @@ export const extractSkeleton = (
         // Cut-off text ends in "…", on the right or, right to left, on the
         // left, so stop the bar where that starts
         const left =
-          rect.left < clip.left - 1
+          clips && rect.left < clip.left - 1
             ? clip.left + ellipsisWidth(style)
             : rect.left;
 
         const right =
-          rect.right > clip.right + 1
+          clips && rect.right > clip.right + 1
             ? clip.right - ellipsisWidth(style)
             : rect.right;
 
@@ -373,8 +403,14 @@ export const extractSkeleton = (
         continue;
       }
 
-      if (override === "keep") {
-        // Its frame stays, but its own text is read like any other
+      const clipsOverflow =
+        hasSize &&
+        (style.overflowX !== "visible" || style.overflowY !== "visible");
+
+      const from = pieces.length;
+
+      // Read what's inside, cut to the child where it hides its overflow
+      const descend = () => {
         if (child instanceof HTMLElement) {
           addText(child);
         }
@@ -384,6 +420,15 @@ export const extractSkeleton = (
         }
 
         walk(child);
+
+        if (clipsOverflow) {
+          clipPieces(from, rect);
+        }
+      };
+
+      if (override === "keep") {
+        // Its frame stays, but its own text is read like any other
+        descend();
         continue;
       }
 
@@ -542,15 +587,7 @@ export const extractSkeleton = (
         continue;
       }
 
-      if (child instanceof HTMLElement) {
-        addText(child);
-      }
-
-      if (child.shadowRoot) {
-        walk(child.shadowRoot);
-      }
-
-      walk(child);
+      descend();
     }
   };
 
