@@ -412,6 +412,9 @@ export class HaSkeletonOverlay extends LitElement {
 
   private _contentChanged() {
     if (!this._isLoading) {
+      // Loaded content put in later, such as a card a visibility condition
+      // shows, settles into a size worth remembering too
+      this._rememberWhenSettled();
       return;
     }
 
@@ -562,11 +565,14 @@ export class HaSkeletonOverlay extends LitElement {
 
   /* Remember the size the content settles into once it has loaded */
   private _rememberWhenSettled() {
+    // One session at a time, and none while away, which would never end
+    this._stopRemembering();
+
     const keys = [this.skeletonKey, this.skeletonTypeKey].filter(
       (key): key is string => Boolean(key)
     );
 
-    if (!keys.length) {
+    if (!keys.length || !this.isConnected) {
       return;
     }
 
