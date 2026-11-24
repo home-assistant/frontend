@@ -19,7 +19,9 @@ export class HaSkeletonText extends HaSkeleton {
       css`
         :host {
           display: inline-flex;
-          vertical-align: middle;
+          /* As tall as the line, so from its top, or it can stick out of it
+             and make the line taller */
+          vertical-align: top;
           align-items: center;
           width: var(--ha-skeleton-text-width, 140px);
           max-width: 100%;
