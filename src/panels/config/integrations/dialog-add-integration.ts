@@ -2288,7 +2288,8 @@ class AddIntegrationDialog extends LitElement {
         --spacing: var(--ha-space-2);
       }
       /* The inline icon's line box pushes it off center */
-      .groups ha-icon {
+      .groups ha-icon,
+      .groups ha-domain-icon {
         display: flex;
       }
       wa-tree {
