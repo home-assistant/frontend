@@ -2324,6 +2324,10 @@ class AddIntegrationDialog extends LitElement {
       .groups:not(.narrow) .selected::part(start) {
         color: var(--ha-color-on-primary-normal);
       }
+      .groups:not(.narrow) .selected ha-label {
+        --ha-label-background-color: var(--ha-color-fill-primary-loud-resting);
+        --ha-label-text-color: var(--ha-color-on-primary-loud);
+      }
       @media all and (max-width: 450px), all and (max-height: 500px) {
         .pane {
           flex: 1 1 auto;
