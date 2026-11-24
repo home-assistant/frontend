@@ -272,8 +272,13 @@ export class HaSkeletonOverlay extends LitElement {
       this._observe();
     }
 
+    const keysChanged =
+      changedProperties.has("skeletonKey") ||
+      changedProperties.has("skeletonTypeKey");
+
     // What to hold changes, so it's looked up again on the next measure
     if (
+      keysChanged ||
       changedProperties.has("estimating") ||
       changedProperties.has("estimatedHeight")
     ) {
@@ -283,6 +288,11 @@ export class HaSkeletonOverlay extends LitElement {
     if (!loading && this._wasLoading) {
       this._unobserve();
       this._endLoading();
+      this._rememberWhenSettled();
+    } else if (!loading && keysChanged) {
+      // Content that never loaded here, such as a card whose code was
+      // already there, still has a size worth remembering
+      this._stopRemembering();
       this._rememberWhenSettled();
     }
 
