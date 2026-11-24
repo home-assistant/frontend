@@ -321,6 +321,11 @@ export class HaControlCircularSlider extends LitElement {
         });
         mc.on("pancancel", () => {
           if (this.disabled || this.readonly) return;
+          if (this._activeSlider) {
+            fireEvent(this, `${this._activeSlider}-changing`, {
+              value: undefined,
+            });
+          }
           this._activeSlider = undefined;
           if (pressToActivate) {
             panRecognizer.set({ enable: false });
