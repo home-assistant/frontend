@@ -756,22 +756,22 @@ export const domainIcon = async (
 };
 
 let integrationCategoryIcons:
-  Promise<IntegrationCategoryIcons | undefined> | undefined;
+  ReturnType<typeof getHassIcons<"integration_category">> | undefined;
 
-export const getIntegrationCategoryIcons = (
+export const getIntegrationCategoryIcons = async (
   connection: Connection
 ): Promise<IntegrationCategoryIcons | undefined> => {
-  if (!integrationCategoryIcons) {
-    integrationCategoryIcons = getHassIcons(
-      connection,
-      "integration_category",
-      "homeassistant"
-    )
-      .then((res) => res?.resources.homeassistant)
-      .catch(() => {
-        integrationCategoryIcons = undefined;
-        return undefined;
-      });
+  // Cache the request itself, so callers while it loads share it
+  integrationCategoryIcons ??= getHassIcons(
+    connection,
+    "integration_category",
+    "homeassistant"
+  );
+  try {
+    const result = await integrationCategoryIcons;
+    return result.resources.homeassistant;
+  } catch (_err) {
+    integrationCategoryIcons = undefined;
+    return undefined;
   }
-  return integrationCategoryIcons;
 };
