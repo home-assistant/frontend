@@ -515,6 +515,8 @@ export class HaSkeletonOverlay extends LitElement {
      its columns after the first measure. */
   private _reserve() {
     if (!this.skeletonKey && !this.estimating) {
+      // Nothing to hold now, so let go of what was held for earlier content
+      this._release();
       return;
     }
 
