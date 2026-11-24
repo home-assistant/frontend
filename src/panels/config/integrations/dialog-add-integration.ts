@@ -1,3 +1,8 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
+import "@home-assistant/webawesome/dist/components/tree-item/tree-item";
+import type WaTreeItem from "@home-assistant/webawesome/dist/components/tree-item/tree-item";
+import "@home-assistant/webawesome/dist/components/tree/tree";
+import type { WaSelectionChangeEvent } from "@home-assistant/webawesome/dist/events/selection-change";
 import { mdiRadar, mdiMenuDown, mdiViewGridOutline, mdiWeb } from "@mdi/js";
 import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
@@ -5,6 +10,8 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, eventOptions, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
+import { live } from "lit/directives/live";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -22,7 +29,6 @@ import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { storage } from "../../../common/decorators/storage";
-import "@home-assistant/webawesome/dist/components/divider/divider";
 import "../../../components/ha-label";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
@@ -42,7 +48,6 @@ import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import type { HaListVisibilityChangedDetail } from "../../../components/list/types";
 import "../../../components/item/ha-list-item-button";
-import type { HaListItemButton } from "../../../components/item/ha-list-item-button";
 import "../../../components/list/ha-list-virtualized";
 import type {
   HaListVirtualized,
@@ -1547,137 +1552,101 @@ class AddIntegrationDialog extends LitElement {
         ${
           this._browseBy === "brand"
             ? this._renderBrandList()
-            : html`<ha-list-base
-                role="tree"
-                aria-label=${this.hass.localize("ui.panel.config.integrations.browse")}
-              >
-                <ha-list-item-button
-                  class=${classMap({ selected: browsingAll })}
-                  role="treeitem"
-                  aria-level="1"
-                  aria-selected=${String(browsingAll)}
-                  @click=${this._allPicked}
-                >
-                  <ha-svg-icon
-                    slot="start"
-                    .path=${mdiViewGridOutline}
-                  ></ha-svg-icon>
-                  <span slot="headline">
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.all_integrations"
-                    )}
-                  </span>
-                  ${this._narrow ? html`<ha-icon-next slot="end"></ha-icon-next>` : nothing}
-                </ha-list-item-button>
-                <wa-divider></wa-divider>
-                ${categories.map((category) => {
-                  const isCurrent =
-                    !this._filter &&
-                    !this._showDiscoveredView &&
-                    !this._brand &&
-                    category.slug === this._category;
-                  const expanded =
-                    !this._narrow && this._expanded.has(category.slug);
-                  const icons = this._categoryIcons?.[category.slug];
-                  return html`
-                    <ha-list-item-button
-                      class=${classMap({
-                        selected: isCurrent && !this._subcategory,
-                      })}
-                      role="treeitem"
-                      aria-level="1"
-                      aria-selected=${String(isCurrent && !this._subcategory)}
-                      aria-expanded=${
-                        category.subcategories.length && !this._narrow
-                          ? String(expanded)
-                          : nothing
-                      }
-                      .category=${category.slug}
-                      @click=${this._categoryPicked}
-                      @keydown=${this._treeKeydown}
-                    >
-                      ${
-                        this._narrow
-                          ? nothing
-                          : html`<ha-icon-next
-                              slot="start"
-                              class=${classMap({
-                                expand: true,
-                                expanded,
-                                empty: !category.subcategories.length,
-                              })}
-                              .category=${category.slug}
-                              @click=${this._toggleExpanded}
-                            ></ha-icon-next>`
-                      }
-                      ${
-                        icons?.default
-                          ? html`<ha-icon
-                              slot="start"
-                              .icon=${icons.default}
-                            ></ha-icon>`
-                          : nothing
-                      }
-                      <span slot="headline">${category.name}</span>
-                      <span slot="end" class="count"
-                        >${counts.get(category.slug) || 0}</span
-                      >
-                      ${this._narrow ? html`<ha-icon-next slot="end"></ha-icon-next>` : nothing}
-                    </ha-list-item-button>
-                    ${
-                      expanded
-                        ? category.subcategories.map(
-                            (subcategory) => html`
-                              <ha-list-item-button
-                                class=${classMap({
-                                  subcategory: true,
-                                  selected:
-                                    isCurrent &&
-                                    subcategory.slug === this._subcategory,
-                                })}
-                                role="treeitem"
-                                aria-level="2"
-                                aria-selected=${String(
-                                  isCurrent &&
-                                    subcategory.slug === this._subcategory
-                                )}
-                                .category=${category.slug}
-                                .subcategory=${subcategory.slug}
-                                @click=${this._categoryPicked}
-                                @keydown=${this._treeKeydown}
-                              >
-                                <ha-icon-next
-                                  slot="start"
-                                  class="expand empty indent"
-                                ></ha-icon-next>
-                                ${
-                                  icons?.subcategory?.[subcategory.slug]
-                                    ?.default
-                                    ? html`<ha-icon
-                                        slot="start"
-                                        .icon=${icons.subcategory[subcategory.slug].default}
-                                      ></ha-icon>`
-                                    : nothing
-                                }
-                                <span slot="headline">${subcategory.name}</span>
-                                <span slot="end" class="count"
-                                  >${
-                                    counts.get(
-                                      `${category.slug}.${subcategory.slug}`
-                                    ) || 0
-                                  }</span
-                                >
-                              </ha-list-item-button>
-                            `
-                          )
-                        : nothing
-                    }
-                  `;
-                })}
-              </ha-list-base>`
+            : this._renderCategories(counts, categories, browsingAll)
         }
       </div>
     </div>`;
+  }
+
+  private _renderCategories(
+    counts: Map<string, number>,
+    categories: IntegrationCategory[],
+    browsingAll: boolean
+  ) {
+    const label = this.hass.localize("ui.panel.config.integrations.browse");
+    const allLabel = this.hass.localize(
+      "ui.panel.config.integrations.all_integrations"
+    );
+    const isCurrent = (slug: string) =>
+      !this._filter &&
+      !this._showDiscoveredView &&
+      !this._brand &&
+      slug === this._category;
+    const icon = (iconName?: string, slot?: string) =>
+      iconName
+        ? html`<ha-icon slot=${ifDefined(slot)} .icon=${iconName}></ha-icon>`
+        : nothing;
+
+    if (this._narrow) {
+      return html`<ha-list-base aria-label=${label}>
+        <ha-list-item-button
+          class=${classMap({ selected: browsingAll })}
+          @click=${this._allPicked}
+        >
+          <ha-svg-icon slot="start" .path=${mdiViewGridOutline}></ha-svg-icon>
+          <span slot="headline">${allLabel}</span>
+          <ha-icon-next slot="end"></ha-icon-next>
+        </ha-list-item-button>
+        <wa-divider></wa-divider>
+        ${categories.map(
+          (category) =>
+            html`<ha-list-item-button
+              class=${classMap({ selected: isCurrent(category.slug) })}
+              .category=${category.slug}
+              @click=${this._categoryPicked}
+            >
+              ${icon(this._categoryIcons?.[category.slug]?.default, "start")}
+              <span slot="headline">${category.name}</span>
+              <span slot="end" class="count"
+                >${counts.get(category.slug) || 0}</span
+              >
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-list-item-button>`
+        )}
+      </ha-list-base>`;
+    }
+
+    return html`<wa-tree
+      aria-label=${label}
+      @wa-selection-change=${this._treeSelectionChanged}
+      @wa-expand=${this._treeExpandChanged}
+      @wa-collapse=${this._treeExpandChanged}
+    >
+      <wa-tree-item .selected=${live(browsingAll)}>
+        <ha-svg-icon .path=${mdiViewGridOutline}></ha-svg-icon>
+        <span class="name">${allLabel}</span>
+      </wa-tree-item>
+      <wa-divider></wa-divider>
+      ${categories.map((category) => {
+        const current = isCurrent(category.slug);
+        const icons = this._categoryIcons?.[category.slug];
+        return html`<wa-tree-item
+          .category=${category.slug}
+          .selected=${live(current && !this._subcategory)}
+          .expanded=${live(this._expanded.has(category.slug))}
+        >
+          ${icon(icons?.default)}
+          <span class="name">${category.name}</span>
+          <span class="count">${counts.get(category.slug) || 0}</span>
+          ${category.subcategories.map(
+            (subcategory) =>
+              html`<wa-tree-item
+                .category=${category.slug}
+                .subcategory=${subcategory.slug}
+                .selected=${live(current && subcategory.slug === this._subcategory)}
+              >
+                ${icon(icons?.subcategory?.[subcategory.slug]?.default)}
+                <span class="name">${subcategory.name}</span>
+                <span class="count"
+                  >${
+                    counts.get(`${category.slug}.${subcategory.slug}`) || 0
+                  }</span
+                >
+              </wa-tree-item>`
+          )}
+        </wa-tree-item>`;
+      })}
+    </wa-tree>`;
   }
 
   private _browseBySelected(ev: HaDropdownSelectEvent) {
@@ -1752,56 +1721,25 @@ class AddIntegrationDialog extends LitElement {
     this.closeDialog();
   }
 
-  private _toggleExpanded(ev: Event) {
-    ev.stopPropagation();
-    const category = (ev.currentTarget as any).category as string;
-    const expanded = new Set(this._expanded);
-    if (expanded.has(category)) {
-      expanded.delete(category);
-    } else {
-      expanded.add(category);
+  private _treeSelectionChanged(ev: WaSelectionChangeEvent) {
+    const item = ev.detail.selection[0] as unknown as
+      { category?: string; subcategory?: string } | undefined;
+    if (item) {
+      this._browse({ category: item.category, subcategory: item.subcategory });
     }
-    this._expanded = expanded;
   }
 
-  private _treeKeydown(ev: KeyboardEvent) {
-    if (ev.key !== "ArrowRight" && ev.key !== "ArrowLeft") {
-      return;
-    }
-    ev.preventDefault();
-    const row = ev.currentTarget as HaListItemButton & {
-      category: string;
-      subcategory?: string;
-    };
-    const list = row.closest("ha-list-base");
-    const index = list?.items.indexOf(row) ?? -1;
-    const rtl = getComputedStyle(row).direction === "rtl";
-    const open = (ev.key === "ArrowRight") !== rtl;
-    if (row.subcategory) {
-      if (!open && list) {
-        list.setActiveItemIndex(
-          list.items.findIndex(
-            (item) =>
-              (item as typeof row).category === row.category &&
-              !(item as typeof row).subcategory
-          ),
-          true
-        );
-      }
-      return;
-    }
-    if (!row.hasAttribute("aria-expanded")) {
-      return;
-    }
-    if (open && row.getAttribute("aria-expanded") === "true") {
-      list?.setActiveItemIndex(index + 1, true);
+  private _treeExpandChanged(ev: Event) {
+    const { category } = ev.target as WaTreeItem & { category: string };
+    const open = ev.type === "wa-expand";
+    if (this._expanded.has(category) === open) {
       return;
     }
     const expanded = new Set(this._expanded);
     if (open) {
-      expanded.add(row.category);
+      expanded.add(category);
     } else {
-      expanded.delete(row.category);
+      expanded.delete(category);
     }
     this._expanded = expanded;
   }
@@ -2365,9 +2303,6 @@ class AddIntegrationDialog extends LitElement {
       .groups ha-list-item-button::part(start) {
         color: var(--ha-color-on-neutral-quiet);
       }
-      .groups .expand.indent {
-        margin-inline-start: var(--ha-space-4);
-      }
       .groups ha-section-title {
         position: sticky;
         top: 0;
@@ -2384,27 +2319,45 @@ class AddIntegrationDialog extends LitElement {
         );
         --ha-label-text-color: var(--ha-color-on-primary-normal);
       }
-      .groups .expand {
-        width: 20px;
-        transition: transform 150ms ease;
-      }
-      /* Above the row's hit area */
-      .groups .expand:not(.empty) {
-        position: relative;
-        z-index: 1;
-        cursor: pointer;
-      }
-      .groups .expand.expanded {
-        transform: rotate(90deg);
-      }
-      .groups .expand.expanded:dir(rtl) {
-        transform: rotate(-90deg);
-      }
       .groups wa-divider {
         --spacing: var(--ha-space-2);
       }
-      .groups .expand.empty {
-        visibility: hidden;
+      wa-tree {
+        --wa-color-neutral-fill-quiet: var(
+          --ha-color-fill-primary-normal-active
+        );
+      }
+      wa-tree-item::part(item) {
+        height: var(--ha-space-10);
+        padding: var(--ha-space-1) var(--ha-space-3);
+        cursor: pointer;
+        border-inline-start: 0;
+      }
+      wa-tree-item::part(label) {
+        flex: 1;
+        min-width: 0;
+        gap: var(--ha-space-3);
+      }
+      wa-tree-item::part(item):hover {
+        background-color: var(--ha-color-fill-neutral-quiet-hover);
+      }
+      wa-tree-item[selected]::part(item):hover {
+        background-color: var(--ha-color-fill-primary-normal-hover);
+      }
+      wa-tree-item ha-icon,
+      wa-tree-item ha-svg-icon {
+        color: var(--ha-color-on-neutral-quiet);
+      }
+      wa-tree-item[selected] > ha-icon,
+      wa-tree-item[selected] > ha-svg-icon,
+      wa-tree-item[selected] > .name {
+        color: var(--ha-color-on-primary-normal);
+      }
+      wa-tree-item .name {
+        flex: 1;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
       .groups:not(.narrow) .selected {
         background-color: var(--ha-color-fill-primary-normal-active);
