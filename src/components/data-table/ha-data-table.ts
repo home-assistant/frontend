@@ -14,6 +14,7 @@ import {
   query,
   state,
 } from "lit/decorators";
+import type { DirectiveResult } from "lit/directive";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { join } from "lit/directives/join";
@@ -105,7 +106,9 @@ export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
     | "overflow"
     | "overflow-menu"
     | "flex";
-  template?: (row: T) => TemplateResult | string | typeof nothing;
+  template?: (
+    row: T
+  ) => TemplateResult | DirectiveResult | string | typeof nothing;
   extraTemplate?: (row: T) => TemplateResult | string | typeof nothing;
   minWidth?: string;
   maxWidth?: string;
