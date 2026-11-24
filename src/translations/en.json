@@ -5928,6 +5928,8 @@
               "expand": "Expand",
               "empty": "Let's automate something great",
               "changes_button": "Changes",
+              "clear_conversation": "Clear conversation",
+              "settings": "AI settings",
               "interrupted": "You left the page while the AI worked on this request, so its answer got lost.",
               "send_again": "Send again",
               "new_result": "new result",

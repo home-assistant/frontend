@@ -168,6 +168,20 @@ export class HaAutomationAiPanel extends LitElement {
     `;
   }
 
+  /** Starts over, with no conversation and nothing in the prompt. */
+  public clear() {
+    if (this._running) {
+      return;
+    }
+    this._turns = [];
+    this._messages = [];
+    this._baseMessages = [];
+    this._problems = [];
+    this._error = undefined;
+    this._interrupted = undefined;
+    this._prompt = "";
+  }
+
   /** Puts the cursor in the prompt, e.g. when the AI opens. */
   public async focusPrompt() {
     await this.updateComplete;

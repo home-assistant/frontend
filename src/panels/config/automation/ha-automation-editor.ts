@@ -230,7 +230,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   // The conversation of the AI as it last reported it, kept per automation
   // for the browser tab, see automation-ai-session
-  private _aiPanelState?: AutomationAiPanelState;
+  @state() private _aiPanelState?: AutomationAiPanelState;
 
   @state() private _aiRestoredState?: AutomationAiPanelState;
 
@@ -937,10 +937,13 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                   .collapsed=${aiSidebar && this._sidebarOpen}
                   .changes=${aiChanges}
                   .showingChanges=${this._aiShowChanges}
+                  .canClear=${this._aiCanClear}
                   ?hidden=${!this.narrow && !this._aiSidebarOpen}
                   @ai-sidebar-closed=${this._closeAiSidebar}
                   @ai-sidebar-expand=${this._expandAiSidebar}
                   @ai-sidebar-resized=${this._aiSidebarResized}
+                  @ai-clear-conversation=${this._clearAiConversation}
+                  @ai-open-settings=${this._openAiSettings}
                   @ai-toggle-changes=${this._aiToggleChanges}
                   @bottom-sheet-resized=${this._aiSheetResized}
                 >
@@ -1007,6 +1010,33 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       return;
     }
     this._openAiSidebar();
+  }
+
+  private get _aiCanClear(): boolean {
+    const panel = this._aiPanelState;
+    return (
+      !this._aiBusy &&
+      !!(
+        panel?.turns.length ||
+        panel?.interrupted ||
+        panel?.error ||
+        this._aiChange
+      )
+    );
+  }
+
+  private _clearAiConversation() {
+    this._aiPanel?.clear();
+    // The changes belong to the conversation, they stay in the automation
+    this._aiShowChanges = false;
+    this._aiChange = undefined;
+    this._persistAi();
+  }
+
+  private async _openAiSettings() {
+    if (await this.confirmUnsavedChanged()) {
+      navigate("/config/ai");
+    }
   }
 
   private _aiSidebarResized(

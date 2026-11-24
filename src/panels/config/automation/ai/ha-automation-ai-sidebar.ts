@@ -1,4 +1,11 @@
-import { mdiChevronUp, mdiClose, mdiPlusMinusVariant } from "@mdi/js";
+import {
+  mdiChevronUp,
+  mdiClose,
+  mdiCogOutline,
+  mdiDeleteSweepOutline,
+  mdiDotsVertical,
+  mdiPlusMinusVariant,
+} from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -9,6 +16,9 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-snap-bottom-sheet";
 import type {
@@ -31,6 +41,8 @@ const COLLAPSED_HEIGHT = 85;
  * @fires ai-sidebar-closed - The user closed the sidebar
  * @fires ai-sidebar-expand - The user wants the collapsed sidebar back
  * @fires ai-sidebar-resized - The user resized the sidebar
+ * @fires ai-clear-conversation - The user wants to start over
+ * @fires ai-open-settings - The user wants to pick the AI in the settings
  * @fires ai-toggle-changes - Show or hide the last changes of the AI
  */
 @customElement("ha-automation-ai-sidebar")
@@ -51,6 +63,9 @@ export class HaAutomationAiSidebar extends LitElement {
   /** Whether the editor shows the last changes of the AI. */
   @property({ type: Boolean, attribute: "showing-changes" })
   public showingChanges = false;
+
+  /** Whether there is a conversation to clear. */
+  @property({ type: Boolean, attribute: "can-clear" }) public canClear = false;
 
   @consumeLocalize()
   private _localize!: LocalizeFunc;
@@ -183,8 +198,47 @@ export class HaAutomationAiSidebar extends LitElement {
               ></ha-icon-button>`
             : nothing
         }
+        ${
+          this.collapsed && !this.narrow
+            ? nothing
+            : html`<ha-dropdown
+                slot="actionItems"
+                placement="bottom-end"
+                @wa-select=${this._menuSelected}
+              >
+                <ha-icon-button
+                  slot="trigger"
+                  .label=${this._localize("ui.common.menu")}
+                  .path=${mdiDotsVertical}
+                ></ha-icon-button>
+                <ha-dropdown-item value="clear" .disabled=${!this.canClear}>
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiDeleteSweepOutline}
+                  ></ha-svg-icon>
+                  ${this._localize(
+                    "ui.panel.config.automation.editor.ai.clear_conversation"
+                  )}
+                </ha-dropdown-item>
+                <ha-dropdown-item value="settings">
+                  <ha-svg-icon slot="icon" .path=${mdiCogOutline}></ha-svg-icon>
+                  ${this._localize(
+                    "ui.panel.config.automation.editor.ai.settings"
+                  )}
+                </ha-dropdown-item>
+              </ha-dropdown>`
+        }
       </ha-dialog-header>
     </div>`;
+  }
+
+  private _menuSelected(ev: HaDropdownSelectEvent) {
+    const action = ev.detail?.item?.value;
+    if (action === "clear") {
+      fireEvent(this, "ai-clear-conversation");
+    } else if (action === "settings") {
+      fireEvent(this, "ai-open-settings");
+    }
   }
 
   private _isRtl() {
@@ -373,6 +427,8 @@ declare global {
   interface HASSDomEvents {
     "ai-sidebar-closed": undefined;
     "ai-sidebar-expand": undefined;
+    "ai-clear-conversation": undefined;
+    "ai-open-settings": undefined;
     /** Without a width, it goes back to the default width. */
     "ai-sidebar-resized": { widthPx?: number };
   }
