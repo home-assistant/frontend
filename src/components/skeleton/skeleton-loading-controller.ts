@@ -1,5 +1,6 @@
 import type { ReactiveController, ReactiveControllerHost } from "lit";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { SkeletonLoadingDetail } from "./ha-skeleton-overlay";
 
 /**
  * Tells the nearest `ha-skeleton-overlay` around a component when it starts
@@ -16,6 +17,9 @@ export class SkeletonLoadingController implements ReactiveController {
 
   private _loading = false;
 
+  /* Lets go of the overlay that took the latest loading event */
+  private _release?: () => void;
+
   constructor(
     host: ReactiveControllerHost & HTMLElement,
     isLoading: () => boolean
@@ -28,8 +32,15 @@ export class SkeletonLoadingController implements ReactiveController {
   public hostConnected() {
     // A new overlay may be around it now
     if (this._loading) {
-      fireEvent(this._host, "skeleton-loading", { loading: true });
+      this._announce(true);
     }
+  }
+
+  public hostDisconnected() {
+    // Once removed, the host has no path left to the overlay, which would
+    // otherwise wait for it, covering whatever took its place
+    this._release?.();
+    this._release = undefined;
   }
 
   /**
@@ -39,7 +50,7 @@ export class SkeletonLoadingController implements ReactiveController {
    */
   public refresh() {
     if (this._loading) {
-      fireEvent(this._host, "skeleton-loading", { loading: true });
+      this._announce(true);
     }
   }
 
@@ -48,7 +59,13 @@ export class SkeletonLoadingController implements ReactiveController {
 
     if (loading !== this._loading) {
       this._loading = loading;
-      fireEvent(this._host, "skeleton-loading", { loading });
+      this._announce(loading);
     }
+  }
+
+  private _announce(loading: boolean) {
+    const detail: SkeletonLoadingDetail = { loading };
+    fireEvent(this._host, "skeleton-loading", detail);
+    this._release = loading ? detail.release : undefined;
   }
 }
