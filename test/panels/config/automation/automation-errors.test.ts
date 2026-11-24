@@ -8,6 +8,7 @@ import {
   followErrors,
   followKnownErrorItems,
   knownErrorItems,
+  mapErrorsToConfig,
   errorText,
   fieldErrors,
   ownedErrors,
@@ -248,6 +249,28 @@ describe("automation errors", () => {
         [templateError(0)]
       )
     ).toEqual([templateError(0)]);
+  });
+
+  it("track a template condition written as a single string", () => {
+    const before = { actions: [{ if: "{{ a", then: [] }] };
+    const coreError = validationError("bad template", ["actions", 0, "if"]);
+    const [error] = mapErrorsToConfig(before, [coreError]);
+    expect(error.path).toEqual(["actions", 0, "if", 0]);
+
+    // The visual editor turns it into a list with a template condition
+    const normalized = {
+      actions: [
+        { if: [{ condition: "template", value_template: "{{ a" }], then: [] },
+      ],
+    };
+    const known = knownErrorItems(before, [error]);
+    expect(
+      errorsOnKnownItems(
+        followKnownErrorItems(known, before, normalized),
+        normalized,
+        [error]
+      )
+    ).toEqual([error]);
   });
 
   it("only treat lists of rows as rows", () => {

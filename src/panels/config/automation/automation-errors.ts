@@ -87,13 +87,17 @@ export const errorsEqual = (
       pathEquals(error.path, b[index].path)
   );
 
+// A block written as a single item, or a template condition written as a
+// string, is its first row, see `configErrorPath`
+const isSingleItem = (value: unknown): boolean =>
+  typeof value === "string" || (isConfigObject(value) && !("0" in value));
+
 const childAt = (value: unknown, segment: string | number): unknown => {
+  if (segment === 0 && isSingleItem(value)) {
+    return value;
+  }
   if (typeof value !== "object" || value === null) {
     return undefined;
-  }
-  // A block written as a single item is its first row, see `configErrorPath`
-  if (segment === 0 && isConfigObject(value) && !("0" in value)) {
-    return value;
   }
   return (value as Record<string | number, unknown>)[segment];
 };
@@ -138,7 +142,10 @@ export const configErrorPath = (
       continue;
     }
     if (BLOCK_KEYS.has(segment)) {
-      if (isConfigObject(value) && typeof path[index + 1] === "string") {
+      if (
+        (isConfigObject(value) && typeof path[index + 1] === "string") ||
+        (typeof value === "string" && index === path.length - 1)
+      ) {
         result.push(0);
       }
     } else if (segment !== "repeat") {
@@ -262,7 +269,8 @@ const configItems = (config: unknown): ConfigItems => {
       // A block written as a single item is its first row
       walk(
         child,
-        BLOCK_KEYS.has(key) && isConfigObject(child)
+        BLOCK_KEYS.has(key) &&
+          (isConfigObject(child) || typeof child === "string")
           ? [...path, key, 0]
           : [...path, key]
       );
