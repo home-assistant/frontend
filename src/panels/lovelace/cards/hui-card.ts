@@ -11,7 +11,10 @@ import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-m
 import { migrateLayoutToGridOptions } from "../common/compute-card-grid-size";
 import { computeCardSize } from "../common/compute-card-size";
 import { getConfigEntityId } from "../common/get-config-entity-id";
-import { tryCreateCardElement } from "../create-element/create-card-element";
+import {
+  estimatedCardHeight,
+  tryCreateCardElement,
+} from "../create-element/create-card-element";
 import {
   createErrorCardElement,
   lovelaceElementPending,
@@ -149,10 +152,17 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
     }
     this._element.setConfig(config);
     this._elementConfig = config;
+    this._setSkeletonKeys(config);
+    fireEvent(this, "card-updated");
+  }
+
+  /* Where the overlay remembers the card's size, which previews don't */
+  private _setSkeletonKeys(config: LovelaceCardConfig) {
     this._overlay.skeletonKey = this.preview
       ? undefined
       : skeletonKey(JSON.stringify(config));
-    fireEvent(this, "card-updated");
+    this._overlay.skeletonTypeKey =
+      this.preview || !config.type ? undefined : `type:${config.type}`;
   }
 
   private _loadElement(config: LovelaceCardConfig) {
@@ -203,16 +213,19 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
     }
 
     this._overlay.replaceChildren();
-    this._overlay.skeletonKey = this.preview
-      ? undefined
-      : skeletonKey(JSON.stringify(config));
+    this._setSkeletonKeys(config);
     this.appendChild(this._overlay);
 
-    // A card whose code is still loading has nothing to show yet, so it
-    // holds a row's height for the wave until it does
+    // A card whose code is still loading has nothing to show yet, so its
+    // wave holds the height it had last time, the height of the last card of
+    // its type, or a typical height for its type, and at least a row
     const element = this._element;
     const pending = lovelaceElementPending(element, config.type);
     this._overlay.loading = pending !== undefined;
+    this._overlay.estimating = pending !== undefined;
+    this._overlay.estimatedHeight = pending
+      ? estimatedCardHeight(config.type)
+      : undefined;
     this._overlay.style.minHeight = pending
       ? "var(--row-height, var(--ha-section-grid-row-height, 56px))"
       : "";
@@ -220,6 +233,8 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
     pending?.then(() => {
       if (this._element === element) {
         this._overlay.loading = false;
+        this._overlay.estimating = false;
+        this._overlay.estimatedHeight = undefined;
         this._overlay.style.minHeight = "";
       }
     });

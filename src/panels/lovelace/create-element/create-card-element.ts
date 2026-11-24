@@ -112,6 +112,33 @@ const LAZY_LOAD_TYPES = {
   "vertical-stack": () => import("../cards/hui-vertical-stack-card"),
 };
 
+/* How tall a card that loads its own code usually is, in pixels, measured
+   with a short config in a section column. Its skeleton holds this height
+   before the card's code has loaded, the first time anything of its type is
+   shown. Cards not listed hold one row. */
+const LAZY_LOAD_HEIGHTS = {
+  "alarm-panel": 500,
+  calendar: 376,
+  "entity-filter": 170,
+  gauge: 198,
+  "history-graph": 287,
+  humidifier: 312,
+  logbook: 376,
+  markdown: 80,
+  "media-control": 152,
+  "picture-elements": 200,
+  "picture-entity": 200,
+  "picture-glance": 200,
+  "statistics-graph": 335,
+  "todo-list": 164,
+  "vertical-stack": 120,
+} satisfies Partial<Record<keyof typeof LAZY_LOAD_TYPES, number>>;
+
+const lazyLoadHeights = new Map(Object.entries(LAZY_LOAD_HEIGHTS));
+
+export const estimatedCardHeight = (type?: string): number | undefined =>
+  type ? lazyLoadHeights.get(type) : undefined;
+
 // This will not return an error card but will throw the error
 export const tryCreateCardElement = (config: LovelaceCardConfig) =>
   tryCreateLovelaceElement(

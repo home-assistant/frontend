@@ -130,7 +130,9 @@ const leftOut = (root: Element | ShadowRoot): HTMLElement[] =>
  * With a `skeleton-key`, it remembers how big the content was once loaded,
  * and next time holds that size while it loads, stretching the content to
  * fill it. Give each piece of content its own key, such as one made with
- * `skeletonKey()` from its config.
+ * `skeletonKey()` from its config. While `estimating`, content without a
+ * size of its own borrows one remembered under `skeleton-type-key`, or uses
+ * `estimatedHeight`.
  *
  * With nothing to read yet, such as before the content's code has loaded,
  * it fills itself with one plain wave. The skeleton follows the host's
@@ -147,6 +149,20 @@ export class HaSkeletonOverlay extends LitElement {
 
   /** Remember the loaded size under this key, and hold it next time */
   @property({ attribute: "skeleton-key" }) public skeletonKey?: string;
+
+  /** Also remember the loaded size under this broader key, such as a card's type */
+  @property({ attribute: "skeleton-type-key" }) public skeletonTypeKey?: string;
+
+  /**
+   * Set while the content has nothing to read a size from yet, such as before
+   * a card's code has loaded. With no size remembered under `skeleton-key`,
+   * it then holds the latest size remembered under `skeleton-type-key`, or
+   * else `estimatedHeight`.
+   */
+  @property({ type: Boolean }) public estimating = false;
+
+  /** The height in pixels to hold while estimating, with nothing remembered */
+  @property({ attribute: false }) public estimatedHeight?: number;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -254,6 +270,14 @@ export class HaSkeletonOverlay extends LitElement {
       this._reservedForWidth = undefined;
       this._stopRemembering();
       this._observe();
+    }
+
+    // What to hold changes, so it's looked up again on the next measure
+    if (
+      changedProperties.has("estimating") ||
+      changedProperties.has("estimatedHeight")
+    ) {
+      this._reservedForWidth = undefined;
     }
 
     if (!loading && this._wasLoading) {
@@ -475,11 +499,12 @@ export class HaSkeletonOverlay extends LitElement {
     }
   }
 
-  /* Hold the height the content had last time it loaded at this width. It's
+  /* Hold the height the content had last time it loaded at this width, or
+     while estimating, a height borrowed from its type or estimated. It's
      looked up again whenever the width changes, as a layout can settle into
      its columns after the first measure. */
   private _reserve() {
-    if (!this.skeletonKey) {
+    if (!this.skeletonKey && !this.estimating) {
       return;
     }
 
@@ -491,7 +516,15 @@ export class HaSkeletonOverlay extends LitElement {
     }
 
     this._reservedForWidth = width;
-    const height = rememberedSkeletonHeight(this.skeletonKey, width);
+
+    const remembered = (key?: string) =>
+      key ? rememberedSkeletonHeight(key, width) : undefined;
+
+    const height =
+      remembered(this.skeletonKey) ??
+      (this.estimating
+        ? (remembered(this.skeletonTypeKey) ?? this.estimatedHeight)
+        : undefined);
 
     if (height === undefined) {
       this._release();
@@ -512,9 +545,11 @@ export class HaSkeletonOverlay extends LitElement {
 
   /* Remember the size the content settles into once it has loaded */
   private _rememberWhenSettled() {
-    const key = this.skeletonKey;
+    const keys = [this.skeletonKey, this.skeletonTypeKey].filter(
+      (key): key is string => Boolean(key)
+    );
 
-    if (!key) {
+    if (!keys.length) {
       return;
     }
 
@@ -522,7 +557,7 @@ export class HaSkeletonOverlay extends LitElement {
       const { width, height } = this.getBoundingClientRect();
 
       if (width && height) {
-        rememberSkeletonHeight(key, width, height);
+        keys.forEach((key) => rememberSkeletonHeight(key, width, height));
       }
     });
     this._settleObserver.observe(this);
