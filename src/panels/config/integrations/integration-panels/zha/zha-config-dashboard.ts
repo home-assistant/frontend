@@ -50,6 +50,7 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import { fileDownload } from "../../../../../util/file_download";
 import { renderConfigEntryError } from "../../ha-config-integration-page";
+import "./zha-weekly-schedules-card";
 
 @customElement("zha-config-dashboard")
 class ZHAConfigDashboard extends LitElement {
@@ -140,7 +141,15 @@ class ZHAConfigDashboard extends LitElement {
         <div class="container">
           ${this._renderNetworkStatus(deviceOnline, deviceCount)}
           ${this._renderMyNetworkCard(deviceCount, entityCount)}
-          ${this._renderNavigationCard()} ${this._renderBackupCard()}
+          ${this._renderNavigationCard()}
+          ${
+            configEntry.state === "loaded"
+              ? html`<zha-weekly-schedules-card
+                  .hass=${this.hass}
+                ></zha-weekly-schedules-card>`
+              : nothing
+          }
+          ${this._renderBackupCard()}
         </div>
 
         <a href="/config/zha/add" slot="fab">
@@ -530,7 +539,8 @@ class ZHAConfigDashboard extends LitElement {
       haStyle,
       animationStyles,
       css`
-        ha-card {
+        ha-card,
+        zha-weekly-schedules-card {
           margin: auto;
           margin-top: var(--ha-space-4);
           max-width: var(--ha-content-width-narrow);

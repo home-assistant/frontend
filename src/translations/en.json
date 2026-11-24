@@ -8885,6 +8885,48 @@
             "channel_has_been_changed": "Network channel has been changed",
             "devices_will_rejoin": "Devices will re-join the network over time. This may take a few minutes.",
             "channel_auto": "Smart"
+          },
+          "weekly_schedules": {
+            "title": "Weekly schedules",
+            "description": "Keep thermostat weekly schedules in sync with schedule helpers. The helper is the source of truth: every change is written to the thermostat, which then follows the schedule even when Home Assistant is offline.",
+            "auto_override_note": "On thermostats that support temporary overrides in Auto, a manual change lasts until the next scheduled change, including the end of a time block. This does not change the schedule helper.",
+            "add": "Add weekly schedule",
+            "no_links": "No thermostat is linked to a schedule helper yet.",
+            "missing_entity": "Missing entity",
+            "edit": "Edit link",
+            "auto_disabled": "Auto is off. This thermostat will not follow the weekly schedule until you select Auto.",
+            "open_thermostat": "Open thermostat controls",
+            "sync_now": "Sync now",
+            "remove": "Remove link",
+            "removing": "Removing link and clearing the thermostat schedule…",
+            "remove_title": "Remove weekly schedule link?",
+            "remove_text": "Home Assistant stops syncing this thermostat, switches it from Auto to manual heating, and clears its weekly schedule.",
+            "remove_without_clearing_title": "Remove link without clearing the thermostat?",
+            "remove_without_clearing_text": "{error}\n\nHome Assistant will not make further changes to the thermostat. Its schedule may still be active and may continue changing the heating target. Remove the link anyway only if you can manage the thermostat separately.",
+            "remove_without_clearing": "Remove link without clearing",
+            "state": {
+              "pending": "Waiting to sync",
+              "syncing": "Syncing",
+              "synced": "Synced",
+              "error": "Sync failed"
+            },
+            "add_dialog": {
+              "title": "Add weekly schedule",
+              "description": "Pick a thermostat and the schedule helper it should follow. You can also create a new schedule helper.",
+              "thermostat": "Thermostat",
+              "schedule": "Schedule helper",
+              "schedule_helper": "In a time block's Additional data box, enter temperature: 21 using a colon. Do not use temperature=21.",
+              "edit_schedule": "Edit schedule",
+              "block_temperature": "Default time block temperature (°C)",
+              "block_temperature_helper": "Used for time blocks without their own temperature. Leave empty to require a temperature on every time block.",
+              "gap_temperature": "Default temperature outside of time blocks (°C)",
+              "gap_temperature_helper": "Used for times not covered by a time block, including days with no time blocks. Leave empty to require time blocks covering every full day from 00:00 to 24:00.",
+              "overwrite_warning": "The thermostat's weekly schedule is overwritten with the helper. It is applied when the thermostat runs in its schedule (Auto) mode.",
+              "link": "Link"
+            },
+            "edit_dialog": {
+              "title": "Edit weekly schedule"
+            }
           }
         },
         "zwave_js": {
