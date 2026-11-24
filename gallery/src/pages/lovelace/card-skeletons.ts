@@ -237,9 +237,17 @@ class DemoCardSkeletons extends LitElement {
     if (this._sections.length === 0) {
       this._sections = SECTIONS.map((cards, sectionIndex) =>
         cards.map((config, cardIndex) => {
+          // As hui-view makes them, so the grid size is there to read
+          // before the first render and follows a card whose code comes late
           const card = document.createElement("hui-card");
+          card.hass = this.hass;
           card.layout = "grid";
           card.config = config;
+          card.addEventListener("card-updated", (ev: Event) => {
+            ev.stopPropagation();
+            this.requestUpdate();
+          });
+          card.load();
 
           return { key: `${sectionIndex}-${cardIndex}`, card };
         })
@@ -392,7 +400,7 @@ class DemoCardSkeletons extends LitElement {
     }
     .view {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
       gap: var(--ha-space-8);
       padding: var(--ha-space-4);
       background-color: var(--primary-background-color);
