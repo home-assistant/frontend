@@ -76,8 +76,7 @@ export class HaSkeletonOverlay extends LitElement {
 
   private _hiddenColor = new Map<HTMLElement, string>();
 
-  /* Whether hidden content was inert before, as it can't be used while
-     hidden */
+  /* Whether the content was inert before loading made it so */
   private _hiddenInert = new Map<HTMLElement, boolean>();
 
   private _wasLoading = false;
@@ -93,10 +92,18 @@ export class HaSkeletonOverlay extends LitElement {
     this._onScreen = entries[entries.length - 1].isIntersecting;
   });
 
+  constructor() {
+    super();
+    // On the host rather than the slot, so content that says it's loading
+    // as it connects, before the first render, is heard
+    this.addEventListener("skeleton-loading", this._skeletonLoading);
+  }
+
   public connectedCallback() {
     super.connectedCallback();
     this._resizeObserver.observe(this);
     this._intersectionObserver.observe(this);
+    this._syncInert();
     this._scheduleMeasure();
   }
 
@@ -110,8 +117,9 @@ export class HaSkeletonOverlay extends LitElement {
       this._measureFrame = undefined;
     }
 
-    // Never leave the content hidden while it's away
+    // Never leave the content hidden or unusable while it's away
     this._showParts();
+    this._restoreInert();
   }
 
   /** Read the skeleton again, after the content changed but not its size */
@@ -145,16 +153,9 @@ export class HaSkeletonOverlay extends LitElement {
 
     if (this._isLoading) {
       this._scheduleMeasure();
-
-      // Content hidden as a whole can't be used either
-      if (this._customSkeleton || this._pieces === undefined) {
-        this._contentSlot?.assignedElements().forEach((element) => {
-          if (element instanceof HTMLElement) {
-            this._makeInert(element);
-          }
-        });
-      }
     }
+
+    this._syncInert();
 
     if (this._arriving) {
       this._fadeIn(this._arriving);
@@ -176,7 +177,6 @@ export class HaSkeletonOverlay extends LitElement {
             loading && (this._customSkeleton || this._pieces === undefined),
         })}
         @slotchange=${this._contentChanged}
-        @skeleton-loading=${this._skeletonLoading}
       ></slot>
       ${
         loading
@@ -217,7 +217,7 @@ export class HaSkeletonOverlay extends LitElement {
     );
   }
 
-  private _skeletonLoading(ev: HASSDomEvent<SkeletonLoadingDetail>) {
+  private _skeletonLoading = (ev: HASSDomEvent<SkeletonLoadingDetail>) => {
     // The nearest overlay owns it
     ev.stopPropagation();
     const source = ev.composedPath()[0];
@@ -231,7 +231,7 @@ export class HaSkeletonOverlay extends LitElement {
 
     this._loadingSources = sources;
     this._scheduleMeasure();
-  }
+  };
 
   private _contentChanged() {
     this._resizeObserver.disconnect();
@@ -241,6 +241,7 @@ export class HaSkeletonOverlay extends LitElement {
       .forEach((element) => this._resizeObserver.observe(element));
 
     this._pruneSources();
+    this._syncInert();
     this._scheduleMeasure();
   }
 
@@ -326,11 +327,6 @@ export class HaSkeletonOverlay extends LitElement {
     skeleton.parts.forEach((part) => {
       this._hiddenOpacity.set(part, part.style.opacity);
       part.style.opacity = "0";
-
-      // Hidden controls can't be focused, used or read out under the wave
-      if (part instanceof HTMLElement) {
-        this._makeInert(part);
-      }
     });
 
     // Text goes through its colour, so a frame drawn by the same element,
@@ -348,19 +344,40 @@ export class HaSkeletonOverlay extends LitElement {
     this._hiddenColor.forEach((color, part) => {
       part.style.color = color;
     });
-    this._hiddenInert.forEach((inert, part) => {
-      part.inert = inert;
-    });
     this._hiddenOpacity.clear();
     this._hiddenColor.clear();
-    this._hiddenInert.clear();
   }
 
-  private _makeInert(element: HTMLElement) {
-    if (!this._hiddenInert.has(element)) {
-      this._hiddenInert.set(element, element.inert);
-      element.inert = true;
-    }
+  /* The whole content can't be focused, used or read out while it loads,
+     including frames around the hidden parts, such as a card that takes
+     clicks. Content that has left, or finished, gets its own state back. */
+  private _syncInert() {
+    const loading = this.isConnected && this._isLoading;
+
+    const content = new Set(
+      loading ? (this._contentSlot?.assignedElements() ?? []) : []
+    );
+
+    this._hiddenInert.forEach((inert, element) => {
+      if (!content.has(element)) {
+        element.inert = inert;
+        this._hiddenInert.delete(element);
+      }
+    });
+
+    content.forEach((element) => {
+      if (element instanceof HTMLElement && !this._hiddenInert.has(element)) {
+        this._hiddenInert.set(element, element.inert);
+        element.inert = true;
+      }
+    });
+  }
+
+  private _restoreInert() {
+    this._hiddenInert.forEach((inert, element) => {
+      element.inert = inert;
+    });
+    this._hiddenInert.clear();
   }
 
   /* Show the content again before the next paint, and note what to fade in */
@@ -463,5 +480,10 @@ declare global {
 
   interface HASSDomEvents {
     "skeleton-loading": SkeletonLoadingDetail;
+  }
+
+  // for add event listener
+  interface HTMLElementEventMap {
+    "skeleton-loading": HASSDomEvent<HASSDomEvents["skeleton-loading"]>;
   }
 }
