@@ -449,8 +449,7 @@ class HaDomainIntegrations extends LitElement {
         min-height: var(--ha-space-10);
         margin: 0;
         padding-block: var(--ha-space-2);
-        padding-inline: calc(var(--ha-space-4) + 1px + var(--ha-space-3))
-          var(--ha-space-3);
+        padding-inline: var(--ha-space-8) var(--ha-space-3);
         background-color: var(--card-background-color);
         color: var(--primary-text-color);
         font-weight: var(--ha-font-weight-medium);

@@ -164,10 +164,6 @@ interface IntegrationCategory {
   subcategories: { slug: string; name: string }[];
 }
 
-// Lines titles up with the cards' icons
-const TITLE_INSET =
-  "calc(var(--ha-space-4) + 1px + var(--ha-row-item-padding-inline))";
-
 // Inline, rows render in the list's shadow root
 const ROW_TITLE_STYLE = {
   display: "flex",
@@ -175,7 +171,7 @@ const ROW_TITLE_STYLE = {
   "box-sizing": "border-box",
   "min-height": "var(--ha-space-10)",
   "padding-block": "var(--ha-space-2)",
-  "padding-inline": `${TITLE_INSET} var(--ha-space-3)`,
+  "padding-inline": "var(--ha-space-8) var(--ha-space-3)",
   "font-weight": "var(--ha-font-weight-medium)",
   "background-color": "var(--card-background-color)",
 };
@@ -2250,8 +2246,7 @@ class AddIntegrationDialog extends LitElement {
         box-sizing: border-box;
         height: var(--ha-space-10);
         padding-block: var(--ha-space-2);
-        padding-inline: calc(var(--ha-space-4) + 1px + var(--ha-space-3))
-          var(--ha-space-3);
+        padding-inline: var(--ha-space-8) var(--ha-space-3);
         font-weight: var(--ha-font-weight-medium);
         background-color: var(--card-background-color);
       }
