@@ -1031,12 +1031,7 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
           stateObj && entity.available
             ? html`<br /><b
                   >${localize("ui.panel.config.mqtt.visualization.state")}: </b
-                >${
-                  // A state without a value can come through as "None"
-                  !stateObj.state || stateObj.state.toLowerCase() === "none"
-                    ? localize("state.default.unknown")
-                    : this.hass.formatEntityState(stateObj)
-                }<br />${formatDateTimeWithSeconds(
+                >${this.hass.formatEntityState(stateObj)}<br />${formatDateTimeWithSeconds(
                   new Date(stateObj.last_changed),
                   this.hass.locale,
                   this.hass.config
