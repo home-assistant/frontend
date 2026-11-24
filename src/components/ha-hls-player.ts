@@ -1,4 +1,5 @@
 import type { ContextType } from "@lit/context";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type HlsType from "hls.js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -77,6 +78,14 @@ export class HaHLSPlayer extends LitElement {
   private _hlsPolyfillInstance?: HlsLite;
 
   private _exoPlayer = false;
+
+  // The app's player only follows the video when told, also when the video
+  // changes size without the window, like in a dialog that grows
+  private _exoPlayerResize = new ResizeController(this, {
+    target: null,
+    skipInitial: true,
+    callback: () => this._resizeExoPlayer(),
+  });
 
   private static streamCount = 0;
 
@@ -316,6 +325,7 @@ export class HaHLSPlayer extends LitElement {
     this._exoPlayer = true;
     fireEvent(this, "exoplayer-changed", { active: true });
     window.addEventListener("resize", this._resizeExoPlayer);
+    this._exoPlayerResize.observe(this._videoEl);
     this.updateComplete.then(() => nextRender()).then(this._resizeExoPlayer);
     this._videoEl.style.visibility = "hidden";
     await this._config.auth.external!.fireMessage({
@@ -448,6 +458,7 @@ export class HaHLSPlayer extends LitElement {
     }
     if (this._exoPlayer) {
       window.removeEventListener("resize", this._resizeExoPlayer);
+      this._exoPlayerResize.unobserve(this._videoEl);
       this._config.auth.external!.fireMessage({ type: "exoplayer/stop" });
       this._exoPlayer = false;
       fireEvent(this, "exoplayer-changed", { active: false });
@@ -500,8 +511,12 @@ export class HaHLSPlayer extends LitElement {
       max-height: var(--video-max-height, calc(100vh - 97px));
     }
 
+    /* Scrolls in a player that is only as high as its picture */
     .fatal {
       display: block;
+      box-sizing: border-box;
+      max-height: 100%;
+      overflow: auto;
       padding: 100px 16px;
     }
 
