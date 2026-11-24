@@ -207,7 +207,7 @@ export const colorStyles = css`
     --state-climate-fan_only-color: var(--cyan-color);
     --state-climate-heat-color: var(--deep-orange-color);
     --state-climate-heat-cool-color: var(--amber-color);
-    --state-cover-active-color: var(--purple-color);
+    --state-cover-active-color: var(--blue-color);
     --state-device_tracker-active-color: var(--blue-color);
     --state-device_tracker-home-color: var(--green-color);
     --state-fan-active-color: var(--cyan-color);
