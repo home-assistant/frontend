@@ -120,20 +120,16 @@ class HuiTimerProgressCardFeature
         }
       }
       .track {
-        height: var(--feature-height, 42px);
-        border-radius: var(--feature-border-radius, 12px);
-        background: color-mix(
-          in srgb,
-          var(--tile-color, var(--feature-color)) 20%,
-          transparent
-        );
+        height: var(--feature-height);
+        border-radius: var(--feature-border-radius);
+        background: color-mix(in srgb, var(--feature-color) 20%, transparent);
         overflow: hidden;
       }
       .bar {
         height: 100%;
         width: 100%;
         transform-origin: var(--float-start, left);
-        background: var(--tile-color, var(--feature-color));
+        background: var(--feature-color);
       }
     `,
   ];
