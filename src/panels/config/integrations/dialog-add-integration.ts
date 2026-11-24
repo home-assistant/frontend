@@ -4,7 +4,6 @@ import type WaTreeItem from "@home-assistant/webawesome/dist/components/tree-ite
 import "@home-assistant/webawesome/dist/components/tree/tree";
 import type { WaSelectionChangeEvent } from "@home-assistant/webawesome/dist/events/selection-change";
 import { mdiRadar, mdiMenuDown, mdiViewGridOutline, mdiWeb } from "@mdi/js";
-import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -55,10 +54,7 @@ import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import type { HaListVisibilityChangedDetail } from "../../../components/list/types";
 import "../../../components/item/ha-list-item-button";
 import "../../../components/list/ha-list-virtualized";
-import type {
-  HaListVirtualized,
-  HaListVirtualizedItem,
-} from "../../../components/list/ha-list-virtualized";
+import type { HaListVirtualized } from "../../../components/list/ha-list-virtualized";
 import { getConfigEntries } from "../../../data/config_entries";
 import {
   DISCOVERY_SOURCES,
@@ -92,90 +88,27 @@ import { haStyleDialog } from "../../../resources/styles";
 import { loadVirtualizer } from "../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../types";
 import { standardToDomain } from "./ha-domain-integrations";
+import type {
+  BrowseBy,
+  Connection,
+  IntegrationCategory,
+  IntegrationListItem,
+  SearchSection,
+} from "./add-integration-list";
+import {
+  CONNECTIONS,
+  inCategory,
+  MAX_SEARCH_ITEMS_PER_SECTION,
+  ofConnection,
+  SEARCH_SECTIONS,
+  searchOptions,
+} from "./add-integration-list";
 import "./ha-integration-list-item";
 import "./ha-integration-list-title";
 import type { HaIntegrationListItem } from "./ha-integration-list-item";
 import type { AddIntegrationDialogParams } from "./show-add-integration-dialog";
 import { showYamlIntegrationDialog } from "./show-add-integration-dialog";
 import { showSingleConfigEntryWarning } from "./show-single-config-entry-warning";
-
-export interface IntegrationListItem extends HaListVirtualizedItem {
-  name: string;
-  domain: string;
-  config_flow?: boolean;
-  is_helper?: boolean;
-  integrations?: string[];
-  domains?: string[];
-  iot_standards?: string[];
-  supported_by?: string;
-  cloud?: boolean;
-  is_built_in?: boolean;
-  overwrites_built_in?: boolean;
-  is_add?: boolean;
-  single_config_entry?: boolean;
-  // A brand title row, not pickable
-  is_header?: boolean;
-  is_end_space?: boolean;
-  result?: "brand" | "category" | "more";
-  category?: string;
-  subcategory?: string;
-  section?: SearchSection;
-  icon?: string;
-  description?: string;
-  categories?: string[];
-}
-
-type BrowseBy = "category" | "brand";
-
-type Connection = "local" | "cloud";
-
-const CONNECTIONS: Connection[] = ["local", "cloud"];
-
-const ofConnection = (item: IntegrationListItem, connection?: Connection) =>
-  !connection || (connection === "cloud") === !!item.cloud;
-
-type SearchSection = "brand" | "category" | "integration" | "helper";
-
-const SEARCH_SECTIONS: SearchSection[] = [
-  "brand",
-  "category",
-  "integration",
-  "helper",
-];
-
-const MAX_SEARCH_ITEMS_PER_SECTION = 5;
-
-const searchOptions = (filter: string): IFuseOptions<IntegrationListItem> => ({
-  keys: [
-    { name: "name", weight: 5 },
-    { name: "domain", weight: 5 },
-    { name: "integrations", weight: 2 },
-    "supported_by",
-    "iot_standards",
-  ],
-  isCaseSensitive: false,
-  minMatchCharLength: Math.min(filter.length, 2),
-  threshold: 0.2,
-  ignoreDiacritics: true,
-});
-
-interface IntegrationCategory {
-  slug: string;
-  name: string;
-  subcategories: { slug: string; name: string }[];
-}
-
-const inCategory = (
-  categories: string[] | undefined,
-  category?: string,
-  subcategory?: string
-) =>
-  !category ||
-  (categories || []).some((slug) =>
-    subcategory
-      ? slug === `${category}.${subcategory}`
-      : slug === category || slug.startsWith(`${category}.`)
-  );
 
 @customElement("dialog-add-integration")
 class AddIntegrationDialog extends LitElement {

@@ -12,7 +12,7 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import { HaListItemButton } from "../../../components/item/ha-list-item-button";
 import { domainToName } from "../../../data/integration";
-import type { IntegrationListItem } from "./dialog-add-integration";
+import type { IntegrationListItem } from "./add-integration-list";
 
 @customElement("ha-integration-list-item")
 export class HaIntegrationListItem extends HaListItemButton {
