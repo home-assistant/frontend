@@ -69,6 +69,8 @@ html`
 
 `hui-card` and `hui-badge` already wrap every card and badge in an overlay, with a `skeleton-key` from the card's config, and show a plain wave while the card's code loads. Don't add another overlay or a hand-drawn skeleton inside a card. A card that fetches data only has to say when it's loading.
 
+While a card's code loads, its wave holds the card's remembered height, else the latest height of a card of the same type (`skeleton-type-key`), else a typical height for its type from `LAZY_LOAD_HEIGHTS` in `src/panels/lovelace/create-element/create-card-element.ts`. When you add a card type that loads its own code and is taller than one row, add its height there, measured in a section column with a short config.
+
 ## Checking It
 
 Check a loading state in the browser, not only by reading the code. These work on any setup: a dev server, the demo, or the gallery.
