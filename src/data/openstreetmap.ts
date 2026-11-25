@@ -33,22 +33,26 @@ export const formatOpenStreetMapPlace = (
   place: OpenStreetMapPlace
 ): { primary: string; secondary: string } => {
   const primary = [
-    place.name || place.address[place.category],
-    place.address.house_number,
-    place.address.road || place.address.waterway,
-    place.address.village || place.address.town,
-    place.address.suburb || place.address.subdivision,
-    place.address.city || place.address.municipality,
+    ...new Set([
+      place.name || place.address[place.category],
+      place.address.house_number,
+      place.address.road || place.address.waterway,
+      place.address.village || place.address.town,
+      place.address.suburb || place.address.subdivision,
+      place.address.city || place.address.municipality,
+    ]),
   ]
     .filter(Boolean)
     .join(", ");
 
   const secondary = [
-    place.address.county ||
-      place.address.state_district ||
-      place.address.region,
-    place.address.state,
-    place.address.country,
+    ...new Set([
+      place.address.county ||
+        place.address.state_district ||
+        place.address.region,
+      place.address.state,
+      place.address.country,
+    ]),
   ]
     .filter(Boolean)
     .join(", ");

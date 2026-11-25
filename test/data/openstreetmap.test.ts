@@ -62,7 +62,7 @@ describe("formatOpenStreetMapPlace", () => {
     });
   });
 
-  it("formats a city without street address fields", () => {
+  it("omits duplicate city names", () => {
     const place = {
       place_id: 2,
       licence: "",
@@ -87,7 +87,7 @@ describe("formatOpenStreetMapPlace", () => {
     } satisfies OpenStreetMapPlace;
 
     expect(formatOpenStreetMapPlace(place)).toEqual({
-      primary: "London, London",
+      primary: "London",
       secondary: "England, United Kingdom",
     });
   });

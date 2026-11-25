@@ -37,101 +37,6 @@ import {
 // App shell
 // ---------------------------------------------------------------------------
 
-for (const failFirstSearch of [false, true]) {
-  test(`queues the latest zone address search after ${failFirstSearch ? "failure" : "success"} and selects it with the keyboard`, async ({
-    page,
-  }) => {
-    const firstSearch = Promise.withResolvers<undefined>();
-    const queries: string[] = [];
-    await page.route(
-      "https://nominatim.openstreetmap.org/search.php**",
-      async (route) => {
-        const query = new URL(route.request().url()).searchParams.get("q")!;
-        queries.push(query);
-        if (query === "London") {
-          await firstSearch.promise;
-          if (failFirstSearch) {
-            await route.fulfill({ status: 503, body: "Service unavailable" });
-            return;
-          }
-        }
-        await route.fulfill({
-          json: [
-            {
-              place_id: 1,
-              name: query,
-              category: "place",
-              type: "city",
-              lat: "48.8566",
-              lon: "2.3522",
-              address: { state: "Ile-de-France", country: "France" },
-            },
-          ],
-        });
-      }
-    );
-
-    await goToPanel(page, "/config/zone/new");
-    const selector = page.locator("ha-selector-location");
-    await selector.evaluate((element) => {
-      element.addEventListener("keydown", (event) => {
-        if (event instanceof KeyboardEvent && event.key === "Enter") {
-          element.setAttribute("data-enter-bubbled", "");
-        }
-      });
-    });
-    const input = page.getByRole("textbox", { name: "Search address" });
-    await input.fill("London");
-    const compositionPrevented = await input.evaluate((element) => {
-      const event = new KeyboardEvent("keydown", {
-        key: "Enter",
-        code: "Enter",
-        isComposing: true,
-        bubbles: true,
-        composed: true,
-        cancelable: true,
-      });
-      element.dispatchEvent(event);
-      return event.defaultPrevented;
-    });
-    expect(compositionPrevented).toBe(false);
-    await expect(selector).not.toHaveAttribute("data-enter-bubbled");
-    await expect(selector.locator("ha-spinner")).not.toBeAttached();
-    expect(queries).toEqual([]);
-
-    const requested = page.waitForRequest((request) =>
-      request.url().includes("nominatim.openstreetmap.org/search.php")
-    );
-    await input.press("Enter");
-    await requested;
-    await input.fill("Rome");
-    await input.press("Enter");
-    await input.fill("Paris");
-    await input.press("Enter");
-    await expect(input).toBeFocused();
-    firstSearch.resolve(undefined);
-
-    const result = selector.getByRole("button", {
-      name: "Paris Ile-de-France, France",
-      exact: true,
-    });
-    await expect(result).toBeVisible();
-    expect(queries).toEqual(["London", "Paris"]);
-
-    await selector.locator("ha-list-item-button").focus();
-    await page.keyboard.press(failFirstSearch ? "Space" : "Enter");
-    await expect(
-      selector.getByRole("spinbutton", { name: "Latitude*", exact: true })
-    ).toHaveValue("48.8566");
-    await expect(
-      selector.getByRole("spinbutton", { name: "Longitude*", exact: true })
-    ).toHaveValue("2.3522");
-    await expect(result).not.toBeAttached();
-    await expect(input).toBeFocused();
-    await expect(selector).not.toHaveAttribute("data-enter-bubbled");
-  });
-}
-
 test.describe("App shell", () => {
   test("page loads and ha-test element mounts", async ({ page }) => {
     const errors = trackPageErrors(page);
@@ -936,6 +841,120 @@ test.describe("Theming", () => {
 // ---------------------------------------------------------------------------
 
 test.describe("Config panel", () => {
+  test("searches for a zone with the keyboard without leaking Enter", async ({
+    page,
+  }) => {
+    const response = Promise.withResolvers<undefined>();
+    let searches = 0;
+    await page.route(
+      "https://nominatim.openstreetmap.org/search.php**",
+      async (route) => {
+        searches++;
+        await response.promise;
+        await route.fulfill({
+          json: [
+            {
+              place_id: 1,
+              name: "Paris",
+              display_name: "Paris, Ile-de-France, France",
+              category: "place",
+              type: "city",
+              lat: "48.8566",
+              lon: "2.3522",
+              address: { state: "Ile-de-France", country: "France" },
+            },
+          ],
+        });
+      }
+    );
+
+    await goToPanel(page, "/config/zone/new");
+    const selector = page.locator("ha-selector-location");
+    await selector.evaluate((element) => {
+      element.addEventListener("keydown", (event) => {
+        if (event instanceof KeyboardEvent && event.key === "Enter") {
+          element.setAttribute("data-enter-bubbled", "");
+        }
+      });
+    });
+    const input = selector.getByRole("textbox", { name: "Search address" });
+    await input.fill("Paris");
+    const compositionPrevented = await input.evaluate((element) => {
+      const event = new KeyboardEvent("keydown", {
+        key: "Enter",
+        code: "Enter",
+        isComposing: true,
+        bubbles: true,
+        composed: true,
+        cancelable: true,
+      });
+      element.dispatchEvent(event);
+      return event.defaultPrevented;
+    });
+    expect(compositionPrevented).toBe(false);
+    await expect(selector).not.toHaveAttribute("data-enter-bubbled");
+    expect(searches).toBe(0);
+
+    await input.press("Enter");
+    await expect(input).toBeFocused();
+    await expect(input).toBeEnabled();
+    await expect(input).not.toBeEditable();
+    await input.press("x");
+    await input.press("Enter");
+    await expect(input).toHaveValue("Paris");
+    response.resolve(undefined);
+
+    const result = selector.getByRole("button", {
+      name: "Paris Ile-de-France, France",
+      exact: true,
+    });
+    const status = selector.getByRole("status");
+    await expect(result).toBeVisible();
+    await expect(input).toBeEditable();
+    await expect(status).toHaveText("1 result for ‘Paris’");
+    expect(searches).toBe(1);
+
+    await selector.locator("ha-list-item-button").focus();
+    await page.keyboard.press("Enter");
+    await expect(
+      selector.getByRole("spinbutton", { name: "Latitude*", exact: true })
+    ).toHaveValue("48.8566");
+    await expect(
+      selector.getByRole("spinbutton", { name: "Longitude*", exact: true })
+    ).toHaveValue("2.3522");
+    await expect(result).not.toBeAttached();
+    await expect(input).toBeFocused();
+    await expect(status).toHaveText("Selected Paris, Ile-de-France, France");
+
+    const searchFromButton = async (key: "Enter" | "Space") => {
+      await selector
+        .getByRole("button", { name: "Search", exact: true })
+        .press(key);
+      await expect(result).toBeVisible();
+      await expect(input).toBeFocused();
+      await selector.locator("ha-list-item-button").focus();
+      await page.keyboard.press(key);
+      await expect(result).not.toBeAttached();
+      await expect(input).toBeFocused();
+    };
+    await searchFromButton("Enter");
+    await searchFromButton("Space");
+    expect(searches).toBe(3);
+
+    await page
+      .context()
+      .route("https://www.openstreetmap.org/", (route) =>
+        route.fulfill({ body: "" })
+      );
+    const popupPromise = page.waitForEvent("popup");
+    await selector
+      .getByRole("link", { name: "OpenStreetMap", exact: true })
+      .press("Enter");
+    const popup = await popupPromise;
+    await popup.close();
+    await expect(selector).not.toHaveAttribute("data-enter-bubbled");
+  });
+
   test("config panel loads without JS errors", async ({ page }) => {
     const errors = trackPageErrors(page);
 
