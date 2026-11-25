@@ -84,6 +84,10 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import type { IntegrationCategoryIcons } from "../../../data/icons";
 import { getIntegrationCategoryIcons } from "../../../data/icons";
+import {
+  integrationCategoryIcon,
+  integrationCategoryName,
+} from "../../../data/integration_category";
 import { haStyleDialog } from "../../../resources/styles";
 import { loadVirtualizer } from "../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../types";
@@ -662,11 +666,10 @@ class AddIntegrationDialog extends LitElement {
       counts: Map<string, number>,
       localize: LocalizeFunc
     ): IntegrationCategory[] => {
-      const key = "component.homeassistant.integration_category";
       const categories = new Map<string, IntegrationCategory>();
       for (const slug of counts.keys()) {
         const [category, subcategory] = slug.split(".");
-        const name = localize(`${key}.${category}.name`);
+        const name = integrationCategoryName(localize, category);
         // Unknown to this Home Assistant version
         if (!name) {
           continue;
@@ -675,8 +678,7 @@ class AddIntegrationDialog extends LitElement {
           categories.set(category, { slug: category, name, subcategories: [] });
         }
         const subcategoryName =
-          subcategory &&
-          localize(`${key}.${category}.subcategory.${subcategory}.name`);
+          subcategory && integrationCategoryName(localize, slug);
         if (subcategoryName) {
           categories
             .get(category)!
@@ -795,7 +797,7 @@ class AddIntegrationDialog extends LitElement {
                 interactive: true,
                 domain: "",
                 name: category.name,
-                icon: categoryIcons?.[category.slug]?.default,
+                icon: integrationCategoryIcon(categoryIcons, category.slug),
                 is_built_in: true,
                 result: "category" as const,
                 category: category.slug,
@@ -807,9 +809,10 @@ class AddIntegrationDialog extends LitElement {
                 name: subcategory.name,
                 description: category.name,
                 icon:
-                  categoryIcons?.[category.slug]?.subcategory?.[
-                    subcategory.slug
-                  ]?.default || categoryIcons?.[category.slug]?.default,
+                  integrationCategoryIcon(
+                    categoryIcons,
+                    `${category.slug}.${subcategory.slug}`
+                  ) || integrationCategoryIcon(categoryIcons, category.slug),
                 is_built_in: true,
                 result: "category" as const,
                 category: category.slug,
@@ -908,9 +911,7 @@ class AddIntegrationDialog extends LitElement {
     const headerSubtitle =
       !showingBrandView && this._narrow && this._drilled
         ? this._subcategory
-          ? this.hass.localize(
-              `component.homeassistant.integration_category.${this._category}.name`
-            )
+          ? integrationCategoryName(this.hass.localize, this._category!)
           : this.hass.localize(
               "ui.panel.config.integrations.add_device_or_integration"
             )
@@ -972,12 +973,13 @@ class AddIntegrationDialog extends LitElement {
           : "ui.panel.config.integrations.all_integrations"
       );
     }
-    const key =
-      `component.homeassistant.integration_category.${this._category}` as const;
     return (
       (this._subcategory &&
-        this.hass.localize(`${key}.subcategory.${this._subcategory}.name`)) ||
-      this.hass.localize(`${key}.name`)
+        integrationCategoryName(
+          this.hass.localize,
+          `${this._category}.${this._subcategory}`
+        )) ||
+      integrationCategoryName(this.hass.localize, this._category)
     );
   }
 
@@ -1379,7 +1381,6 @@ class AddIntegrationDialog extends LitElement {
     subcategories: IntegrationCategory["subcategories"]
   ) {
     const counts = this._getCounts();
-    const icons = this._categoryIcons?.[this._category!];
     const more =
       !this._subcategoriesExpanded &&
       subcategories.length > AddIntegrationDialog._SUBCATEGORIES_SHOWN;
@@ -1391,28 +1392,28 @@ class AddIntegrationDialog extends LitElement {
         ${this.hass.localize("ui.panel.config.integrations.subcategories")}
       </ha-section-title>
       <ha-list-base>
-        ${shown.map(
-          (subcategory) =>
-            html`<ha-list-item-button
-              .category=${this._category}
-              .subcategory=${subcategory.slug}
-              @click=${this._categoryPicked}
-            >
-              ${
-                icons?.subcategory?.[subcategory.slug]?.default
-                  ? html`<ha-icon
-                      slot="start"
-                      .icon=${icons.subcategory[subcategory.slug].default}
-                    ></ha-icon>`
-                  : nothing
-              }
-              <span slot="headline">${subcategory.name}</span>
-              <span slot="end" class="count">
-                ${counts.get(`${this._category}.${subcategory.slug}`) || 0}
-              </span>
-              <ha-icon-next slot="end"></ha-icon-next>
-            </ha-list-item-button>`
-        )}
+        ${shown.map((subcategory) => {
+          const icon = integrationCategoryIcon(
+            this._categoryIcons,
+            `${this._category}.${subcategory.slug}`
+          );
+          return html`<ha-list-item-button
+            .category=${this._category}
+            .subcategory=${subcategory.slug}
+            @click=${this._categoryPicked}
+          >
+            ${
+              icon
+                ? html`<ha-icon slot="start" .icon=${icon}></ha-icon>`
+                : nothing
+            }
+            <span slot="headline">${subcategory.name}</span>
+            <span slot="end" class="count">
+              ${counts.get(`${this._category}.${subcategory.slug}`) || 0}
+            </span>
+            <ha-icon-next slot="end"></ha-icon-next>
+          </ha-list-item-button>`;
+        })}
       </ha-list-base>
       ${
         more
@@ -1566,7 +1567,7 @@ class AddIntegrationDialog extends LitElement {
               .category=${category.slug}
               @click=${this._categoryPicked}
             >
-              ${icon(this._categoryIcons?.[category.slug]?.default, "start")}
+              ${icon(integrationCategoryIcon(this._categoryIcons, category.slug), "start")}
               <span slot="headline">${category.name}</span>
               <span slot="end" class="count"
                 >${counts.get(category.slug) || 0}</span
@@ -1590,13 +1591,12 @@ class AddIntegrationDialog extends LitElement {
       <wa-divider></wa-divider>
       ${categories.map((category) => {
         const current = isCurrent(category.slug);
-        const icons = this._categoryIcons?.[category.slug];
         return html`<wa-tree-item
           .category=${category.slug}
           .selected=${live(current && !this._subcategory)}
           .expanded=${live(this._expanded.has(category.slug))}
         >
-          ${icon(icons?.default)}
+          ${icon(integrationCategoryIcon(this._categoryIcons, category.slug))}
           <span class="name">${category.name}</span>
           <span class="count">${counts.get(category.slug) || 0}</span>
           ${category.subcategories.map(
@@ -1606,7 +1606,12 @@ class AddIntegrationDialog extends LitElement {
                 .subcategory=${subcategory.slug}
                 .selected=${live(current && subcategory.slug === this._subcategory)}
               >
-                ${icon(icons?.subcategory?.[subcategory.slug]?.default)}
+                ${icon(
+                  integrationCategoryIcon(
+                    this._categoryIcons,
+                    `${category.slug}.${subcategory.slug}`
+                  )
+                )}
                 <span class="name">${subcategory.name}</span>
                 <span class="count"
                   >${

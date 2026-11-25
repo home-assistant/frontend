@@ -21,7 +21,7 @@ export interface RepositoryBase {
   id: string;
   installed_version: string;
   installed: boolean;
-  // Like `energy` or `energy.solar`, the primary category first. Only
+  // Categories like `energy` or subcategories like `energy.solar`. Only
   // integrations have them, and not every one sets them yet.
   integration_categories?: string[];
   last_updated: string | number;
