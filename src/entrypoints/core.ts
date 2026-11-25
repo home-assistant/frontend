@@ -75,7 +75,7 @@ const clearUrlParams = () => {
   }
 };
 
-const SERVER_CHECK_TIMEOUT = 5_000;
+const SERVER_CHECK_TIMEOUT = 10_000;
 
 const checkServer = async () => {
   const controller = new AbortController();
