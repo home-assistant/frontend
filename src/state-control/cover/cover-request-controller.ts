@@ -5,14 +5,34 @@ import type {
   CoverEntity,
   CoverRequest,
 } from "../../data/cover";
-import { coverCurrentValue, isMoving } from "../../data/cover";
+import {
+  coverClosedTiltPositions,
+  coverCurrentValue,
+  coverOpenTiltPosition,
+  isMoving,
+} from "../../data/cover";
 
 const roundedCurrentValue = (stateObj: CoverEntity, mode: CoverControlMode) => {
   const value = coverCurrentValue(stateObj, mode);
   return value === undefined ? undefined : Math.round(value);
 };
 
-const END_VALUES = { open: 100, close: 0 };
+const endValue = (
+  action: "open" | "close",
+  mode: CoverControlMode,
+  stateObj: CoverEntity
+) => {
+  if (mode === "tilt" && action === "open") {
+    return coverOpenTiltPosition(stateObj);
+  }
+  if (mode === "tilt") {
+    return coverClosedTiltPositions(stateObj)[0];
+  }
+  if (action === "open") {
+    return 100;
+  }
+  return 0;
+};
 
 export class CoverRequestController {
   private _request?: CoverRequest;
@@ -40,7 +60,9 @@ export class CoverRequestController {
       return;
     }
     const value =
-      command.action === "set" ? command.value : END_VALUES[command.action];
+      command.action === "set"
+        ? command.value
+        : endValue(command.action, mode, stateObj);
     const startValue = roundedCurrentValue(stateObj, mode);
     this._setRequest(startValue === value ? undefined : { mode, value });
     this._startValue = startValue;

@@ -22,7 +22,7 @@ export interface CoverWave {
 
 export interface CoverShapeInput {
   position: number;
-  tilt: number;
+  tiltOpenness: number;
   wave: CoverWave;
 }
 
