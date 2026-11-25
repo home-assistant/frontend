@@ -510,6 +510,25 @@ export function generatePowerSourcesGraphData(
     data: usageData,
     z: 5,
   });
+  if (usageData.length) {
+    // Axis line above all series, so a source at 0 doesn't draw over it
+    chartData.push({
+      type: "line",
+      id: "zero-line",
+      data: [
+        [start.getTime(), 0],
+        [end.getTime(), 0],
+      ],
+      silent: true,
+      animation: false,
+      tooltip: { show: false },
+      lineStyle: {
+        width: 1.5,
+        color: computedStyles.getPropertyValue("--secondary-text-color"),
+      },
+      z: 6,
+    });
+  }
   legendData!.push({
     id: "usage",
     name: localize("ui.panel.lovelace.cards.energy.power_graph.usage"),
