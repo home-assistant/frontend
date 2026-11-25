@@ -737,6 +737,7 @@ export default class HaAutomationOptionRow extends LitElement {
     const sidebarOption = option ?? this.option;
     this._sidebarOption = sidebarOption;
     fireEvent(this, "open-sidebar", {
+      type: "option",
       save: (value) => {
         this._saveYamlOption(value);
       },
