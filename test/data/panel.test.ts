@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { getConfigSubpageTitle } from "../../src/data/panel";
+import {
+  getConfigSubpageTitle,
+  getSelectedPanelUrlPath,
+} from "../../src/data/panel";
 import type { PageNavigation } from "../../src/layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../../src/types";
 
@@ -81,5 +84,45 @@ describe("getConfigSubpageTitle", () => {
     expect(
       getConfigSubpageTitle(hass, "/config/unknown", configSections)
     ).toBeUndefined();
+  });
+});
+
+describe("getSelectedPanelUrlPath", () => {
+  const urlPaths = ["lovelace", "history", "config/logs", "config/logs/raw"];
+
+  it("falls back to the first path segment", () => {
+    expect(getSelectedPanelUrlPath(urlPaths, "/config/automation")).toBe(
+      "config"
+    );
+    expect(getSelectedPanelUrlPath(urlPaths, "/profile/general")).toBe(
+      "profile"
+    );
+  });
+
+  it("selects a panel whose url_path has several segments", () => {
+    expect(getSelectedPanelUrlPath(urlPaths, "/config/logs")).toBe(
+      "config/logs"
+    );
+    expect(getSelectedPanelUrlPath(urlPaths, "/config/logs/details")).toBe(
+      "config/logs"
+    );
+  });
+
+  it("prefers the most specific url_path", () => {
+    expect(getSelectedPanelUrlPath(urlPaths, "/config/logs/raw")).toBe(
+      "config/logs/raw"
+    );
+  });
+
+  it("only matches whole segments", () => {
+    expect(getSelectedPanelUrlPath(urlPaths, "/config/logsfoo")).toBe("config");
+  });
+
+  it("keeps matching single segment panels on their subpaths", () => {
+    expect(getSelectedPanelUrlPath(urlPaths, "/lovelace/0")).toBe("lovelace");
+  });
+
+  it("returns an empty url_path for the root path", () => {
+    expect(getSelectedPanelUrlPath(urlPaths, "/")).toBe("");
   });
 });

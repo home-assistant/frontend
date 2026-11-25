@@ -196,6 +196,21 @@ export const getPanelIconPath = (panel: PanelInfo): string | undefined => {
 
 export const FIXED_PANELS = [PROFILE_PANEL, "config", NOT_FOUND_PANEL];
 
+// A panel's url_path can span several segments (e.g. "config/logs"), so the
+// most specific url_path matching the path wins over its first segment.
+export const getSelectedPanelUrlPath = (
+  urlPaths: string[],
+  path: string
+): string =>
+  urlPaths.reduce(
+    (selected, urlPath) =>
+      urlPath.length > selected.length &&
+      (path === `/${urlPath}` || path.startsWith(`/${urlPath}/`))
+        ? urlPath
+        : selected,
+    path.split("/")[1] ?? ""
+  );
+
 export interface PanelMutableParams {
   title?: string | null;
   icon?: string | null;
