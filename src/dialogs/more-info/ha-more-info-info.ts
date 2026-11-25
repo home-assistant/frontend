@@ -131,8 +131,6 @@ export class MoreInfoInfo extends LitElement {
 
     [data-domain="camera"] .content {
       padding: 0;
-      /* max height of the video is full screen, minus the height of the header of the dialog (79px) and the max height of the dialog (mdc-dialog-max-height: calc(100% - 72px)) and the actions bar 60px */
-      --video-max-height: calc(100vh - 72px - 79px - 60px);
     }
 
     more-info-content {
