@@ -276,6 +276,21 @@ export class HaControlCircularSlider extends LitElement {
 
         mc.add(new Tap({ event: "singletap" }));
 
+        const cancelInteraction = () => {
+          if (this._activeSlider) {
+            fireEvent(this, `${this._activeSlider}-changing`, {
+              value: undefined,
+            });
+          }
+          this._activeSlider = undefined;
+          this._localValue = this.value;
+          this._localLow = this.low;
+          this._localHigh = this.high;
+          if (pressToActivate) {
+            panRecognizer.set({ enable: false });
+          }
+        };
+
         mc.on("press", (e) => {
           e.srcEvent.stopPropagation();
           e.srcEvent.preventDefault();
@@ -328,15 +343,7 @@ export class HaControlCircularSlider extends LitElement {
         });
         mc.on("pancancel", () => {
           if (this.disabled || this.readonly) return;
-          if (this._activeSlider) {
-            fireEvent(this, `${this._activeSlider}-changing`, {
-              value: undefined,
-            });
-          }
-          this._activeSlider = undefined;
-          if (pressToActivate) {
-            panRecognizer.set({ enable: false });
-          }
+          cancelInteraction();
         });
         mc.on("panmove", (e) => {
           if (this.disabled || this.readonly) return;
@@ -397,13 +404,7 @@ export class HaControlCircularSlider extends LitElement {
         });
         mc.on("hammer.input", (e) => {
           if (e.eventType !== INPUT_CANCEL || !this._activeSlider) return;
-          fireEvent(this, `${this._activeSlider}-changing`, {
-            value: undefined,
-          });
-          this._activeSlider = undefined;
-          if (pressToActivate) {
-            panRecognizer.set({ enable: false });
-          }
+          cancelInteraction();
         });
       });
     }
