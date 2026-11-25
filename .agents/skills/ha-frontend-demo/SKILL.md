@@ -46,6 +46,37 @@ For example, the water tab of the energy dashboard of the second demo is:
 http://localhost:8090/?demo=<second slug>#/energy/water
 ```
 
+## Screenshots Of A Single Card
+
+Documentation pages often show one card on its own, for example the energy date picker.
+Open the demo page whose view contains the card and capture it with Playwright, which is installed with the repository dependencies.
+Run `pnpm exec playwright install chromium` first if its browser is missing.
+
+- Use a desktop viewport, such as 1280 by 900, and a device scale factor of 1.
+- When replacing an existing image, match its width.
+- The demo data follows the current date, so dates in the card show today.
+
+A view can position a card so that it overlaps other content.
+For example, the energy views show the date picker as a bar floating over the charts.
+To capture the card on a plain background, move its element into a wrapper on `document.body`, then screenshot the wrapper:
+
+```ts
+const host = page.locator("hui-energy-date-selection-card").first();
+await host.evaluate((el) => {
+  const wrap = document.createElement("div");
+  wrap.id = "screenshot-wrap";
+  wrap.style.cssText =
+    "position:fixed;top:0;left:0;z-index:100000;padding:4px;width:631px;background:var(--primary-background-color);";
+  document.body.appendChild(wrap);
+  wrap.appendChild(el);
+});
+await page.locator("#screenshot-wrap").screenshot({ path: "card.png" });
+```
+
+The card keeps its theme and data after the move, but loses the styling its view position gave it.
+The energy date picker renders as a regular card with a border.
+Hiding the rest of the page with `visibility: hidden` does not work, because charts stay visible.
+
 ## Structure
 
 - `demo/src/ha-demo.ts`: Root element that sets up all backend mocks.
