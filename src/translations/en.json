@@ -7794,6 +7794,7 @@
             "part_of_device": "Part of {name}",
             "connected_via": "[%key:ui::panel::config::integrations::config_entry::via%]",
             "firmware_version": "Firmware",
+            "serial_number": "[%key:ui::panel::config::serial::fields::serial_number%]",
             "battery": "Battery",
             "disabled_by": "Disabled",
             "no_devices": "No devices",
