@@ -13595,6 +13595,7 @@
           "status": "Status",
           "type": "Type",
           "source": "Source",
+          "integration_categories": "Categories",
           "last_updated": "Activity",
           "actions": "Actions"
         },
@@ -13609,7 +13610,8 @@
         "filters": {
           "status": "Status",
           "type": "Type",
-          "source": "Source"
+          "source": "Source",
+          "integration_category": "Category"
         },
         "dialog_custom_repositories": {
           "title": "Add from a GitHub link",

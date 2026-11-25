@@ -1,5 +1,6 @@
 import type { IFuseOptions } from "fuse.js";
 import type { HaListVirtualizedItem } from "../../../components/list/ha-list-virtualized";
+import { inIntegrationCategory } from "../../../data/integration_category";
 
 export interface IntegrationListItem extends HaListVirtualizedItem {
   name: string;
@@ -77,8 +78,7 @@ export const inCategory = (
   subcategory?: string
 ) =>
   !category ||
-  (categories || []).some((slug) =>
-    subcategory
-      ? slug === `${category}.${subcategory}`
-      : slug === category || slug.startsWith(`${category}.`)
+  inIntegrationCategory(
+    categories,
+    subcategory ? `${category}.${subcategory}` : category
   );
