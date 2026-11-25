@@ -1,3 +1,4 @@
+import { mdiInformationOutline } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { BootstrapProgress } from "../data/bootstrap_integrations";
@@ -25,9 +26,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     private _startupFinishPending = false;
 
-    private _startupProgressEl?: HTMLElementTagNameMap["ha-startup-progress"];
-
-    private _startupProgressResize?: ResizeObserver;
+    private _startupToastKey?: string;
 
     private _disconnectedTimeout?: number;
 
@@ -35,7 +34,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       super.firstUpdated(changedProps);
       // Need to load in advance because when disconnected, can't dynamically load code.
       setTimeout(() => import("../managers/notification-manager"), 5000);
-      setTimeout(() => import("../components/ha-startup-progress"), 5000);
     }
 
     updated(changedProperties: PropertyValues<this>) {
@@ -120,6 +118,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this._startupProgress = undefined;
       this._startupFinishPending = false;
       this._startupProgressVisible = true;
+      this._startupToastKey = undefined;
       this._subscribedBootstrapProgress = subscribeBootstrapProgress(
         this.hass!.connection,
         (message) => {
@@ -132,46 +131,49 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this._updateStartupProgress();
     }
 
-    private async _updateStartupProgress() {
-      if (!this._startupProgressVisible) {
+    private _updateStartupProgress() {
+      // Wait until the translations are available.
+      if (
+        !this._startupProgressVisible ||
+        !this.hass!.localize("ui.startup_progress.starting")
+      ) {
         return;
       }
-      await import("../components/ha-startup-progress");
-      // Hidden or finished while the component was loading.
-      if (!this._startupProgressVisible) {
+      // The launch screen render swap clears the root, which detaches the
+      // notification manager and would remove a dialog opened before it.
+      const mainRendered = !!this.renderRoot.querySelector(
+        "home-assistant-main"
+      );
+      const detailsAvailable = mainRendered && !!this.hass!.user?.is_admin;
+      const key = `${mainRendered}|${detailsAvailable}`;
+      if (key === this._startupToastKey) {
         return;
       }
-      if (!this._startupProgressEl) {
-        this._startupProgressEl = document.createElement("ha-startup-progress");
-        this._startupProgressEl.addEventListener(
-          "startup-progress-dismissed",
-          () => this._hideStartupProgress()
-        );
-        // Lifts the toast stack above the card so neither covers the other.
-        this._startupProgressResize = new ResizeObserver(() =>
-          this.style.setProperty(
-            "--ha-startup-progress-offset",
-            `calc(${this._startupProgressEl?.offsetHeight ?? 0}px + var(--ha-space-2))`
-          )
-        );
-        this._startupProgressResize.observe(this._startupProgressEl);
-      }
-      // The launch screen render swap clears the root, detaching the card.
-      if (!this._startupProgressEl.isConnected) {
-        this.renderRoot.appendChild(this._startupProgressEl);
-      }
-      this._startupProgressEl.detailsAvailable =
-        !!this.renderRoot.querySelector("home-assistant-main");
+      this._startupToastKey = key;
+      showToast(this, {
+        id: SERVER_STARTUP_TOAST_ID,
+        message: { translationKey: "ui.startup_progress.starting" },
+        supportingText: {
+          translationKey: "ui.startup_progress.starting_secondary",
+        },
+        duration: -1,
+        dismissable: true,
+        dismiss: () => this._hideStartupProgress(),
+        action: detailsAvailable
+          ? {
+              text: { translationKey: "ui.startup_progress.details" },
+              icon: mdiInformationOutline,
+              keepOpen: true,
+              action: () => showStartupProgressDialog(this),
+            }
+          : undefined,
+      });
     }
 
     // Keeps the subscription, so the completion toast still reflects late failures.
     private _hideStartupProgress() {
       this._startupProgressVisible = false;
-      this._startupProgressResize?.disconnect();
-      this._startupProgressResize = undefined;
-      this.style.removeProperty("--ha-startup-progress-offset");
-      this._startupProgressEl?.remove();
-      this._startupProgressEl = undefined;
+      this._startupToastKey = undefined;
     }
 
     // Core can reach RUNNING before its final snapshot with the failures arrives.
@@ -200,10 +202,12 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
             })
           : this.hass!.localize("ui.notification_toast.started"),
         duration: issues ? 10000 : 5000,
-        action: {
-          text: this.hass!.localize("ui.notification_toast.details"),
-          action: () => showStartupProgressDialog(this),
-        },
+        action: this.hass!.user?.is_admin
+          ? {
+              text: this.hass!.localize("ui.notification_toast.details"),
+              action: () => showStartupProgressDialog(this),
+            }
+          : undefined,
       });
     }
 

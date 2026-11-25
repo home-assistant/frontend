@@ -36,6 +36,7 @@ const STATE_COLORED_DOMAIN = new Set([
   "sun",
   "switch",
   "timer",
+  "timer_list",
   "update",
   "vacuum",
   "valve",

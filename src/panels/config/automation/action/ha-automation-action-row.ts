@@ -1281,6 +1281,7 @@ export default class HaAutomationActionRow extends LitElement {
     const actionType = getAutomationActionType(sidebarAction);
 
     fireEvent(this, "open-sidebar", {
+      type: "action",
       save: (value) => {
         this._sidebarAction = value;
         fireEvent(this, "value-changed", { value });

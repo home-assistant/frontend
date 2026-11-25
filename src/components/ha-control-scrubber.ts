@@ -82,6 +82,8 @@ export class HaControlScrubber extends LitElement {
 
   private _mc?: HammerManager;
 
+  private _keyboardChanging = false;
+
   private get _range() {
     return this.max - this.min;
   }
@@ -278,12 +280,19 @@ export class HaControlScrubber extends LitElement {
         e.code === "ArrowLeft" || e.code === "ArrowDown" ? -1 : 1;
       this.value = this.normalizedValue(current + this.step * multiplier);
     }
+    this._keyboardChanging = true;
     fireEvent(this, "slider-moved", { value: this.value });
   }
 
   private _handleKeyUp(e: KeyboardEvent) {
     if (this.disabled || !A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
+    this._endKeyboardChange();
+  }
+
+  private _endKeyboardChange() {
+    if (!this._keyboardChanging) return;
+    this._keyboardChanging = false;
     fireEvent(this, "slider-moved", { value: undefined });
     fireEvent(this, "value-changed", { value: this.value });
   }
@@ -323,6 +332,7 @@ export class HaControlScrubber extends LitElement {
           aria-orientation="horizontal"
           @keydown=${this._handleKeyDown}
           @keyup=${this._handleKeyUp}
+          @blur=${this._endKeyboardChange}
         >
           <div class="rail"></div>
           <div class="track" @transitionend=${this._handleTransitionEnd}></div>

@@ -854,6 +854,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   public openSidebar(trigger?: Trigger): void {
     trigger = trigger || this.trigger;
     fireEvent(this, "open-sidebar", {
+      type: "trigger",
       save: (value) => {
         fireEvent(this, "value-changed", { value });
       },

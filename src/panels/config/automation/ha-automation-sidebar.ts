@@ -9,20 +9,12 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import { pathEquals } from "../../../common/util/config-path";
 import "../../../components/ha-snap-bottom-sheet";
 import type { HaSnapBottomSheet } from "../../../components/ha-snap-bottom-sheet";
-import {
-  isCondition,
-  isScriptField,
-  isTrigger,
-  type ActionSidebarConfig,
-  type ConditionSidebarConfig,
-  type OptionSidebarConfig,
-  type ScriptFieldSidebarConfig,
-  type SidebarConfig,
-  type TriggerSidebarConfig,
+import type {
+  ActionSidebarConfig,
+  SidebarConfig,
 } from "../../../data/automation";
 import { manifestsContext } from "../../../data/context";
 import type { DomainManifestLookup } from "../../../data/integration";
-import { isTriggerList } from "../../../data/trigger";
 import type { HomeAssistant } from "../../../types";
 import {
   automationPathContext,
@@ -293,36 +285,12 @@ export default class HaAutomationSidebar extends LitElement {
   }
 
   private _getType() {
-    if (
-      (this.config as TriggerSidebarConfig)?.config &&
-      (isTrigger((this.config as TriggerSidebarConfig)?.config) ||
-        isTriggerList((this.config as TriggerSidebarConfig)?.config))
-    ) {
-      return "trigger";
-    }
-    if (isCondition((this.config as ConditionSidebarConfig)?.config)) {
-      return "condition";
-    }
-    if (
-      (this.config as ScriptFieldSidebarConfig)?.config &&
-      isScriptField((this.config as ScriptFieldSidebarConfig)?.config)
-    ) {
-      return (this.config as ScriptFieldSidebarConfig)?.config.selector
+    if (this.config?.type === "script-field") {
+      return this.config.config.selector
         ? "script-field-selector"
         : "script-field";
     }
-
-    // option is a building block; its config only carries the option itself
-    const optionConfig = (this.config as OptionSidebarConfig)?.config;
-    if (this.config && (!optionConfig || "option" in optionConfig)) {
-      return "option";
-    }
-
-    if ((this.config as ActionSidebarConfig)?.config.action) {
-      return "action";
-    }
-
-    return undefined;
+    return this.config?.type;
   }
 
   public triggerCloseSidebar(ev?: CustomEvent) {

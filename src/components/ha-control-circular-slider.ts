@@ -185,6 +185,8 @@ export class HaControlCircularSlider extends LitElement {
 
   private _lastChanging?: number;
 
+  private _keyboardChanging = false;
+
   private _getPercentageFromEvent = (e: HammerInput) => {
     const bound = this._slider.getBoundingClientRect();
     const x = (2 * (e.center.x - bound.left - bound.width / 2)) / bound.width;
@@ -460,6 +462,7 @@ export class HaControlCircularSlider extends LitElement {
         this._setActiveValue(this._boundedValue(this.max));
         break;
     }
+    this._keyboardChanging = true;
     fireEvent(this, `${this._activeSlider}-changing`, {
       value: this._getActiveValue(),
     });
@@ -468,8 +471,14 @@ export class HaControlCircularSlider extends LitElement {
 
   private _handleKeyUp(e: KeyboardEvent) {
     if (this.disabled || !A11Y_KEY_CODES.has(e.code)) return;
-    this._activeSlider = (e.currentTarget as any).id as ActiveSlider;
     e.preventDefault();
+    this._endKeyboardChange(e);
+  }
+
+  private _endKeyboardChange(e: Event) {
+    if (!this._keyboardChanging) return;
+    this._keyboardChanging = false;
+    this._activeSlider = (e.currentTarget as any).id as ActiveSlider;
     fireEvent(this, `${this._activeSlider}-changing`, {
       value: undefined,
     });
@@ -611,6 +620,7 @@ export class HaControlCircularSlider extends LitElement {
                 )}
                 @keydown=${this._handleKeyDown}
                 @keyup=${this._handleKeyUp}
+                @blur=${this._endKeyboardChange}
               />
             `
             : nothing

@@ -280,7 +280,7 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
         subItems: [
           {
             icon: mdiDevices,
-            key: "ui.panel.lovelace.menu.add_device",
+            key: "ui.panel.lovelace.menu.add_device_or_integration",
             visible: true,
             action: this._addDevice,
             overflowAction: this._addDevice,

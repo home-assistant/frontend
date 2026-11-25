@@ -672,14 +672,6 @@ export const isCondition = (config: unknown): boolean => {
   return "condition" in condition && typeof condition.condition === "string";
 };
 
-export const isScriptField = (config: unknown): boolean => {
-  if (!config || typeof config !== "object") {
-    return false;
-  }
-  const field = config as Record<string, unknown>;
-  return "field" in field && typeof field.field === "object";
-};
-
 export const subscribeTrigger = (
   hass: HomeAssistant,
   onChange: (result: {
@@ -736,6 +728,7 @@ export interface BaseSidebarConfig {
 }
 
 export interface TriggerSidebarConfig extends BaseSidebarConfig {
+  type: "trigger";
   save: (value: Trigger) => void;
   replace?: () => void;
   rename: () => void;
@@ -755,6 +748,7 @@ export interface TriggerSidebarConfig extends BaseSidebarConfig {
 }
 
 export interface ConditionSidebarConfig extends BaseSidebarConfig {
+  type: "condition";
   save: (value: Condition) => void;
   replace?: () => void;
   rename: () => void;
@@ -774,6 +768,7 @@ export interface ConditionSidebarConfig extends BaseSidebarConfig {
 }
 
 export interface ActionSidebarConfig extends BaseSidebarConfig {
+  type: "action";
   save: (value: Action) => void;
   replace?: () => void;
   rename: () => void;
@@ -795,6 +790,7 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
 }
 
 export interface OptionSidebarConfig extends BaseSidebarConfig {
+  type: "option";
   save: (value: unknown) => void;
   rename: () => void;
   duplicate: () => void;
@@ -808,6 +804,7 @@ export interface OptionSidebarConfig extends BaseSidebarConfig {
 }
 
 export interface ScriptFieldSidebarConfig extends BaseSidebarConfig {
+  type: "script-field";
   save: (value: Field) => void;
   config: {
     field: Field;

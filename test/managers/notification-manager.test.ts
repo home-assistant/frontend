@@ -144,6 +144,26 @@ describe("notification-manager", () => {
     expect(primary).toHaveBeenCalledOnce();
   });
 
+  it("keeps the toast open after a keepOpen icon action", async () => {
+    const manager = await mountManager();
+    const action = vi.fn();
+
+    await manager.showDialog({
+      message: "Starting",
+      action: { action, icon: "M0 0", keepOpen: true, text: "Details" },
+      duration: -1,
+    });
+
+    const toast = manager.shadowRoot!.querySelector("ha-toast")!;
+    const button = manager.shadowRoot!.querySelector(
+      "ha-icon-button[slot='action']"
+    ) as HTMLElement;
+
+    button.click();
+    expect(action).toHaveBeenCalledOnce();
+    expect(toast.hide).not.toHaveBeenCalled();
+  });
+
   it("invokes the action belonging to the selected stacked toast", async () => {
     const manager = await mountManager();
     const firstAction = vi.fn();

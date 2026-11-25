@@ -35,6 +35,7 @@ const LAZY_LOADED_MORE_INFO_CONTROL = {
   switch: () => import("./controls/more-info-switch"),
   time: () => import("./controls/more-info-time"),
   timer: () => import("./controls/more-info-timer"),
+  timer_list: () => import("./controls/more-info-timer_list"),
   update: () => import("./controls/more-info-update"),
   vacuum: () => import("./controls/more-info-vacuum"),
   valve: () => import("./controls/more-info-valve"),

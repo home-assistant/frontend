@@ -24,15 +24,16 @@ import "../components/ha-toast";
 import type { ToastClosedEventDetail } from "../components/ha-toast";
 import type { HomeAssistant } from "../types";
 
+export type ToastText =
+  | string
+  | { translationKey: LocalizeKeys; args?: Record<string, string | number> };
+
 export interface ShowToastParams {
   // Unique ID for updating or closing a specific toast without flickering.
   id?: string;
-  message:
-    | string
-    | { translationKey: LocalizeKeys; args?: Record<string, string | number> };
-  announceMessage?:
-    | string
-    | { translationKey: LocalizeKeys; args?: Record<string, string | number> };
+  message: ToastText;
+  supportingText?: ToastText;
+  announceMessage?: ToastText;
   action?: ToastActionParams;
   secondaryAction?: ToastActionParams;
   dismiss?: () => void;
@@ -44,9 +45,9 @@ export interface ShowToastParams {
 export interface ToastActionParams {
   action: () => void;
   primary?: boolean;
-  text:
-    | string
-    | { translationKey: LocalizeKeys; args?: Record<string, string | number> };
+  icon?: string;
+  keepOpen?: boolean;
+  text: ToastText;
 }
 
 interface Notification {
@@ -181,24 +182,9 @@ class NotificationManager extends LitElement {
           ({ key, parameters }) => html`
             <ha-toast
               data-notification-key=${key}
-              .labelText=${
-                typeof parameters.message !== "string"
-                  ? this.hass.localize(
-                      parameters.message.translationKey,
-                      parameters.message.args
-                    )
-                  : parameters.message
-              }
-              .announceText=${
-                parameters.announceMessage
-                  ? typeof parameters.announceMessage !== "string"
-                    ? this.hass.localize(
-                        parameters.announceMessage.translationKey,
-                        parameters.announceMessage.args
-                      )
-                    : parameters.announceMessage
-                  : undefined
-              }
+              .labelText=${this._localizeText(parameters.message)}
+              .supportingText=${this._localizeText(parameters.supportingText)}
+              .announceText=${this._localizeText(parameters.announceMessage)}
               .timeoutMs=${parameters.duration!}
               .stacked=${true}
               @toast-closed=${this._toastClosed}
@@ -233,37 +219,61 @@ class NotificationManager extends LitElement {
     if (!action) {
       return nothing;
     }
+    const onClick = secondary
+      ? this._secondaryButtonClicked
+      : this._buttonClicked;
+    if (action.icon) {
+      return html`
+        <ha-icon-button
+          data-notification-key=${key}
+          .label=${this._localizeText(action.text)}
+          .path=${action.icon}
+          slot="action"
+          @click=${onClick}
+        ></ha-icon-button>
+      `;
+    }
     return html`
       <ha-button
         data-notification-key=${key}
         appearance=${action.primary ? "filled" : "plain"}
         size="s"
         slot="action"
-        @click=${secondary ? this._secondaryButtonClicked : this._buttonClicked}
+        @click=${onClick}
       >
-        ${
-          typeof action.text !== "string"
-            ? this.hass.localize(action.text.translationKey, action.text.args)
-            : action.text
-        }
+        ${this._localizeText(action.text)}
       </ha-button>
     `;
   }
 
-  private _buttonClicked(
-    ev: HASSDomCurrentTargetEvent<HTMLElementTagNameMap["ha-button"]>
-  ) {
-    const key = ev.currentTarget.dataset.notificationKey!;
-    this._getToast(key)?.hide("action");
-    this._getNotification(key)?.parameters.action?.action();
+  private _localizeText(text: ToastText): string;
+
+  private _localizeText(text: ToastText | undefined): string | undefined;
+
+  private _localizeText(text: ToastText | undefined) {
+    return typeof text === "object"
+      ? this.hass.localize(text.translationKey, text.args)
+      : text;
   }
 
-  private _secondaryButtonClicked(
-    ev: HASSDomCurrentTargetEvent<HTMLElementTagNameMap["ha-button"]>
-  ) {
+  private _buttonClicked(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
     const key = ev.currentTarget.dataset.notificationKey!;
-    this._getToast(key)?.hide("action");
-    this._getNotification(key)?.parameters.secondaryAction?.action();
+    this._runAction(key, this._getNotification(key)?.parameters.action);
+  }
+
+  private _secondaryButtonClicked(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
+    const key = ev.currentTarget.dataset.notificationKey!;
+    this._runAction(
+      key,
+      this._getNotification(key)?.parameters.secondaryAction
+    );
+  }
+
+  private _runAction(key: string, action: ToastActionParams | undefined) {
+    if (!action?.keepOpen) {
+      this._getToast(key)?.hide("action");
+    }
+    action?.action();
   }
 
   private _dismissClicked(
@@ -332,8 +342,7 @@ class NotificationManager extends LitElement {
       inset-inline-end: auto;
       inset-block-end: calc(
         var(--safe-area-inset-bottom, 0px) + var(--ha-space-4) +
-          var(--notification-stack-bottom-offset, 0px) +
-          var(--ha-startup-progress-offset, 0px)
+          var(--notification-stack-bottom-offset, 0px)
       );
       inset-inline-start: 50%;
       margin: 0;

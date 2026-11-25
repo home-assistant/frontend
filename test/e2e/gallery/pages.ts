@@ -79,6 +79,7 @@ export const moreInfoPages: GalleryPageSmokeCase[] = [
   { name: "number", selector: "demo-more-info-number" },
   { name: "scene", selector: "demo-more-info-scene" },
   { name: "timer", selector: "demo-more-info-timer" },
+  { name: "timer-list", selector: "demo-more-info-timer-list" },
   { name: "update", selector: "demo-more-info-update" },
   { name: "vacuum", selector: "demo-more-info-vacuum" },
   { name: "water-heater", selector: "demo-more-info-water-heater" },
@@ -117,5 +118,6 @@ export const lovelacePages: GalleryPageSmokeCase[] = [
   },
   { name: "thermostat-card", selector: "demo-lovelace-thermostat-card" },
   { name: "tile-card", selector: "demo-lovelace-tile-card" },
+  { name: "timer-list-card", selector: "demo-lovelace-timer-list-card" },
   { name: "todo-list-card", selector: "demo-lovelace-todo-list-card" },
 ];
