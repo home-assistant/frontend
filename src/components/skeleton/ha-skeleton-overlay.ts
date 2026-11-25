@@ -11,6 +11,7 @@ import type {
 } from "../../common/dom/extract-skeleton";
 import { extractSkeleton } from "../../common/dom/extract-skeleton";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
+import { parseAnimationDuration } from "../../common/util/parse-animation-duration";
 import { internationalizationContext } from "../../data/context";
 import type { HaSkeleton } from "./ha-skeleton";
 import "./ha-skeleton";
@@ -26,7 +27,9 @@ interface ArrivingParts {
   colorParts: HTMLElement[];
 }
 
-type HiddenProperty = "opacity" | "color";
+/* Transitions are held off too, so a part hides at once rather than easing
+   out from under its skeleton */
+type HiddenProperty = "opacity" | "color" | "transition";
 
 interface HiddenStyle {
   /* The inline value from before anything hid it */
@@ -43,7 +46,7 @@ interface HiddenStyle {
 const hiddenStyles: Record<
   HiddenProperty,
   Map<HTMLElement | SVGElement, HiddenStyle>
-> = { opacity: new Map(), color: new Map() };
+> = { opacity: new Map(), color: new Map(), transition: new Map() };
 
 const hideStyle = (
   element: HTMLElement | SVGElement,
@@ -149,6 +152,8 @@ export class HaSkeletonOverlay extends LitElement {
   private _hiddenOpacity = new Set<HTMLElement | SVGElement>();
 
   private _hiddenColor = new Set<HTMLElement>();
+
+  private _heldTransition = new Set<HTMLElement | SVGElement>();
 
   /* Inline colours of content left out inside hidden text, which keeps its
      own colour meanwhile */
@@ -453,6 +458,14 @@ export class HaSkeletonOverlay extends LitElement {
 
       element.style.color = color;
     });
+
+    // In the same frame as the hiding, so no transition runs on it
+    [...skeleton.parts, ...skeleton.textParts].forEach((part) => {
+      if (!this._heldTransition.has(part)) {
+        this._heldTransition.add(part);
+        hideStyle(part, "transition", "none");
+      }
+    });
   }
 
   private _showParts() {
@@ -461,9 +474,11 @@ export class HaSkeletonOverlay extends LitElement {
     this._keptColor.forEach((color, element) => {
       element.style.color = color;
     });
+    this._heldTransition.forEach((part) => releaseStyle(part, "transition"));
     this._hiddenOpacity.clear();
     this._hiddenColor.clear();
     this._keptColor.clear();
+    this._heldTransition.clear();
   }
 
   /* The whole content can't be focused, used or read out while it loads,
@@ -524,13 +539,13 @@ export class HaSkeletonOverlay extends LitElement {
 
   /* Fade each arriving part in, instantly with reduced motion */
   private _fadeIn({ content, opacityParts, colorParts }: ArrivingParts) {
+    // In ms or s, as the token can be either; 150ms only when it isn't set
+    const token = getComputedStyle(this)
+      .getPropertyValue("--ha-animation-duration-fast")
+      .trim();
+
     const fade: KeyframeAnimationOptions = {
-      duration:
-        parseFloat(
-          getComputedStyle(this).getPropertyValue(
-            "--ha-animation-duration-fast"
-          )
-        ) || 150,
+      duration: token ? parseAnimationDuration(token) : 150,
       easing: "ease-out",
     };
 
