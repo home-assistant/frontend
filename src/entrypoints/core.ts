@@ -79,10 +79,13 @@ const clearUrlParams = () => {
 const loadTokensOrCheckServer = async () => {
   const tokens = loadTokens();
   if (!tokens || tokens.hassUrl !== hassUrl) {
-    await fetch(`${hassUrl}/manifest.json`, {
+    const response = await fetch(`${hassUrl}/manifest.json`, {
       mode: "no-cors",
       cache: "no-store",
     });
+    if (response.status >= 500) {
+      throw new Error(`Home Assistant responded with ${response.status}`);
+    }
   }
   return tokens;
 };
