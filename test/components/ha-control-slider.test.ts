@@ -146,3 +146,44 @@ describe("ha-control-slider step bounds", () => {
     expect(values).toEqual([99, 1]);
   });
 });
+
+describe("ha-control-slider keyboard focus", () => {
+  const dispatch = (el: HaControlSlider, event: Event) =>
+    el.shadowRoot!.querySelector('[role="slider"]')!.dispatchEvent(event);
+
+  const key = (type: string) =>
+    new KeyboardEvent(type, {
+      code: "ArrowUp",
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    });
+
+  const changedValues = (el: HaControlSlider) => {
+    const values: (number | undefined)[] = [];
+    el.addEventListener("value-changed", (ev) => {
+      values.push((ev as CustomEvent).detail.value);
+    });
+    return values;
+  };
+
+  it("commits a held key's value when the slider loses focus", async () => {
+    const el = await mountSlider({ min: 0, max: 100, value: 50 });
+    const values = changedValues(el);
+    dispatch(el, key("keydown"));
+    dispatch(el, key("keydown"));
+    dispatch(el, new FocusEvent("blur"));
+    expect(values).toEqual([52]);
+    dispatch(el, key("keyup"));
+    expect(values).toEqual([52]);
+  });
+
+  it("does not commit again when the slider loses focus after the key is released", async () => {
+    const el = await mountSlider({ min: 0, max: 100, value: 50 });
+    const values = changedValues(el);
+    dispatch(el, key("keydown"));
+    dispatch(el, key("keyup"));
+    dispatch(el, new FocusEvent("blur"));
+    expect(values).toEqual([51]);
+  });
+});

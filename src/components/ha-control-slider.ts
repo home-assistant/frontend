@@ -308,14 +308,23 @@ export class HaControlSlider extends LitElement {
       );
     }
     this._showTooltip();
+    this._keyboardChanging = true;
     fireEvent(this, "slider-moved", { value: this.value });
   }
 
   private _tooltipTimeout?: number;
 
+  private _keyboardChanging = false;
+
   private _handleKeyUp(e: KeyboardEvent) {
     if (!A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
+    this._endKeyboardChange();
+  }
+
+  private _endKeyboardChange() {
+    if (!this._keyboardChanging) return;
+    this._keyboardChanging = false;
     this._hideTooltip(500);
     fireEvent(this, "value-changed", { value: this.value });
   }
@@ -405,6 +414,7 @@ export class HaControlSlider extends LitElement {
           aria-orientation=${this.vertical ? "vertical" : "horizontal"}
           @keydown=${this._handleKeyDown}
           @keyup=${this._handleKeyUp}
+          @blur=${this._endKeyboardChange}
         >
           <div class="slider-track-background"></div>
           <slot name="background"></slot>
