@@ -87,6 +87,8 @@ export class HaStateControlClimateTemperature extends LitElement {
 
   private _pendingSync = new PendingValueSync();
 
+  private _targetTemperatureBeforeChanging?: Partial<Record<Target, number>>;
+
   protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
     if (!changedProp.has("stateObj")) {
@@ -139,8 +141,16 @@ export class HaStateControlClimateTemperature extends LitElement {
 
   private _valueChanging(ev: HASSDomEvent<HASSDomEvents["value-changing"]>) {
     const { value } = ev.detail;
+    if (value === undefined) {
+      if (this._targetTemperatureBeforeChanging) {
+        this._targetTemperature = this._targetTemperatureBeforeChanging;
+        this._targetTemperatureBeforeChanging = undefined;
+      }
+      return;
+    }
     if (typeof value !== "number" || isNaN(value)) return;
     const target = ev.type.replace("-changing", "");
+    this._targetTemperatureBeforeChanging ??= this._targetTemperature;
     this._targetTemperature = {
       ...this._targetTemperature,
       [target]: value,
