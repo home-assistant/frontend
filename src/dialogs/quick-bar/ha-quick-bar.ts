@@ -265,7 +265,7 @@ export class QuickBar extends LitElement {
       <ha-adaptive-dialog
         without-header
         flexcontent
-        aria-label=${this.hass.localize("ui.dialogs.quick-bar.title")}
+        .accessibleLabel=${this.hass.localize("ui.dialogs.quick-bar.title")}
         .open=${this._open}
         hideActions
         @wa-show=${this._showTriggered}

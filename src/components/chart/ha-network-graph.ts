@@ -95,6 +95,10 @@ const SELECTED_NODE_FIT_MARGIN = 72;
 
 const FOLLOW_ROAM = "follow-selected-node";
 
+type Displayable = ReturnType<
+  ReturnType<EChartsType["getZr"]>["storage"]["getDisplayList"]
+>[number];
+
 // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/consistent-type-imports
 let GraphChart: typeof import("echarts/lib/chart/graph/install");
 
@@ -151,6 +155,8 @@ export class HaNetworkGraph extends LitElement {
   private _dragNode?: string;
 
   private _dragMoved = false;
+
+  private _dragTarget?: Displayable;
 
   private _followSelectedNode = false;
 
@@ -211,6 +217,7 @@ export class HaNetworkGraph extends LitElement {
       <ha-icon-button
         slot="button"
         class=${this._physicsEnabled ? "active" : "inactive"}
+        .ariaPressed=${this._physicsEnabled ? "true" : "false"}
         .path=${mdiGoogleCirclesGroup}
         @click=${this._togglePhysics}
         label=${this._localize("ui.panel.config.common.graph.toggle_physics")}
@@ -218,6 +225,7 @@ export class HaNetworkGraph extends LitElement {
       <ha-icon-button
         slot="button"
         class=${this._showLabels ? "active" : "inactive"}
+        .ariaPressed=${this._showLabels ? "true" : "false"}
         .path=${mdiFormatTextVariant}
         @click=${this._toggleLabels}
         label=${this._localize("ui.panel.config.common.graph.toggle_labels")}
@@ -565,6 +573,7 @@ export class HaNetworkGraph extends LitElement {
   private _handleChartSetup() {
     const chart = this._baseChart?.chart;
     chart?.on("mousedown", this._handleNodeMouseDown);
+    chart?.getZr().on("dragstart", this._handleDragStart);
     chart?.getZr().on("drag", this._handleDrag);
     chart?.getZr().on("dragend", this._handleDragEnd);
     for (const event of LEGEND_SELECT_EVENTS) {
@@ -608,6 +617,54 @@ export class HaNetworkGraph extends LitElement {
     this._dragMoved = false;
   };
 
+  // The dragged element gets the drag before the ECharts handler of its node
+  private _handleDragStart = (ev: { target?: Displayable }) => {
+    this._dragTarget?.off("drag", this._handleNodeDrag);
+    this._dragTarget = ev.target;
+    this._dragTarget?.on("drag", this._handleNodeDrag);
+  };
+
+  // Without layout animation, the ECharts handler runs the whole force layout
+  // on every move, which puts the node back before it reads its position. So
+  // the node moves here, and the other nodes stay where they are.
+  private _handleNodeDrag = (ev: { cancelBubble?: boolean }) => {
+    const chart = this._baseChart?.chart;
+    const series = this._getGraphSeries(chart);
+    const node =
+      this._dragNode === undefined
+        ? undefined
+        : series?.getGraph().getNodeById(this._dragNode);
+    if (
+      !chart ||
+      !node ||
+      !series.forceLayout ||
+      series.get(["force", "layoutAnimation"])
+    ) {
+      return;
+    }
+    ev.cancelBubble = true;
+    const data = series.getData();
+    const el = data.getItemGraphicEl(node.dataIndex);
+    data.setItemLayout(node.dataIndex, [el.x, el.y]);
+    // A new layout run starts from here, e.g. after a legend change
+    if (series.preservedPoints) {
+      series.preservedPoints[node.id] = [el.x, el.y];
+    }
+    series.forceLayout.setFixed(node.dataIndex);
+    for (const edge of node.edges) {
+      const source: number[] | undefined = edge.node1.getLayout();
+      const target: number[] | undefined = edge.node2.getLayout();
+      // The nodes of hidden legend categories have no layout
+      if (source && target) {
+        edge.setLayout([[...source], [...target]]);
+      }
+    }
+    // @ts-ignore private method but no other way to draw the new layout
+    chart.getViewOfSeriesModel(series).updateLayout(series);
+    // The handlers of the chart miss the drag now
+    chart.getZr().handler.trigger("drag", ev);
+  };
+
   private _handleDrag = () => {
     this._dragMoved = true;
   };
@@ -617,6 +674,8 @@ export class HaNetworkGraph extends LitElement {
     const moved = this._dragMoved;
     this._dragNode = undefined;
     this._dragMoved = false;
+    this._dragTarget?.off("drag", this._handleNodeDrag);
+    this._dragTarget = undefined;
     // A click also ends a drag, which releases a pinned node in ECharts
     if (!id || (!moved && !this._pinnedNodes.includes(id))) {
       return;
@@ -788,6 +847,10 @@ export class HaNetworkGraph extends LitElement {
     ha-icon-button,
     ::slotted(ha-icon-button) {
       margin-inline-end: var(--ha-space-3);
+    }
+    ha-icon-button.inactive,
+    ::slotted(ha-icon-button.inactive) {
+      color: var(--state-inactive-color);
     }
   `;
 }

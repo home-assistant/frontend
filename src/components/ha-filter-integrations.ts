@@ -12,7 +12,6 @@ import {
   FilterPanelController,
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
-import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { arrayWith, arrayWithout } from "../common/array/array-with";
 import type {
   HASSDomCurrentTargetEvent,
@@ -62,9 +61,6 @@ export class HaFilterIntegrations extends LitElement {
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
 
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
-
   @consume({ context: manifestsContext, subscribe: true })
   @state()
   private _manifests?: ContextType<typeof manifestsContext>;
@@ -92,12 +88,15 @@ export class HaFilterIntegrations extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this._localize("ui.panel.config.integrations.caption")}
+          ${this._i18n.localize("ui.panel.config.integrations.caption")}
           ${
             this.value?.length
               ? html`<div class="badge">${this.value?.length}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
+                    .label=${this._i18n.localize(
+                      "ui.components.subpage-data-table.clear_filter"
+                    )}
                     @click=${this._clearFilter}
                   ></ha-icon-button>`
               : nothing
@@ -117,7 +116,7 @@ export class HaFilterIntegrations extends LitElement {
                       </ha-input-search>
                       <ha-list-selectable
                         multi
-                        aria-label=${this._localize(
+                        aria-label=${this._i18n.localize(
                           "ui.panel.config.integrations.caption"
                         )}
                         @ha-list-item-selected=${this._handleItemToggled}
@@ -125,7 +124,7 @@ export class HaFilterIntegrations extends LitElement {
                       >
                         ${repeat(
                           this._integrations(
-                            this._localize,
+                            this._i18n.localize,
                             manifests,
                             this._filter,
                             this._i18n.locale.language

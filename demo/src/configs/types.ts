@@ -7,7 +7,13 @@ import type { ThemeSettings } from "../../../src/types";
 import type { DemoArea } from "../stubs/area_registry";
 import type { DemoFloor } from "../stubs/floor_registry";
 
-export type DemoTheme = ThemeSettings | (() => Record<string, string> | null);
+export interface DemoCustomTheme {
+  /** The vars are applied on top of the default dark or light theme */
+  dark: boolean;
+  vars: Record<string, string>;
+}
+
+export type DemoTheme = ThemeSettings | DemoCustomTheme;
 
 export interface DemoAutomation {
   config: ManualAutomationConfig & { id: string; alias: string };

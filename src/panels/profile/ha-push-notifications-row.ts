@@ -39,14 +39,13 @@ class HaPushNotificationsRow extends LitElement {
     }
 
     const isDisabled = !platformLoaded || !pushSupported;
+    const label = this.hass.localize(
+      "ui.panel.profile.push_notifications.header"
+    );
 
     return html`
       <ha-row-item>
-        <span slot="headline"
-          >${this.hass.localize(
-            "ui.panel.profile.push_notifications.header"
-          )}</span
-        >
+        <span slot="headline">${label}</span>
         <span slot="supporting-text"
           >${description}
           <a
@@ -60,6 +59,7 @@ class HaPushNotificationsRow extends LitElement {
         >
         <ha-push-notifications-toggle
           slot="end"
+          .accessibleLabel=${label}
           .disabled=${isDisabled}
         ></ha-push-notifications-toggle>
       </ha-row-item>

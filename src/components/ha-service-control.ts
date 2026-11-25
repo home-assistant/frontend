@@ -41,6 +41,7 @@ import "./ha-selector/ha-selector";
 import type { HaSelector } from "./ha-selector/ha-selector";
 import "./ha-service-picker";
 import "./ha-service-section-icon";
+import "./ha-input-helper-text";
 import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
@@ -118,6 +119,15 @@ export class HaServiceControl extends LitElement {
 
   @property({ attribute: "hide-description", type: Boolean })
   public hideDescription = false;
+
+  /** Error shown below the target picker. */
+  @property({ attribute: false }) public targetError?: string;
+
+  /** Errors shown below the data fields, keyed by field. */
+  @property({ attribute: false }) public dataErrors?: Record<string, string>;
+
+  /** Error of the data as a whole. */
+  @property({ attribute: false }) public dataError?: string;
 
   @state() private _value!: this["value"];
 
@@ -384,6 +394,21 @@ export class HaServiceControl extends LitElement {
     return targetEntities;
   });
 
+  private _targetEntitiesForService(
+    serviceData: ExtHassService | undefined
+  ): string[] | null {
+    if (
+      !serviceData ||
+      !(
+        "target" in serviceData ||
+        serviceData.flatFields.some((field) => field.key === "entity_id")
+      )
+    ) {
+      return null;
+    }
+    return this._getTargetedEntities(serviceData.target, this._value);
+  }
+
   private _filterField(
     filter: ExtHassService["fields"][number]["filter"],
     targetEntities: string[] | null
@@ -466,12 +491,7 @@ export class HaServiceControl extends LitElement {
     );
 
     // Actions that can never have targets get null, like template targets
-    const targetEntities =
-      serviceData &&
-      ("target" in serviceData ||
-        serviceData.flatFields.some((field) => field.key === "entity_id"))
-        ? this._getTargetedEntities(serviceData.target, this._value)
-        : null;
+    const targetEntities = this._targetEntitiesForService(serviceData);
 
     const domain = this._value?.action
       ? computeDomain(this._value.action)
@@ -534,6 +554,9 @@ export class HaServiceControl extends LitElement {
                     >
                       <ha-icon-button
                         .path=${mdiHelpCircleOutline}
+                        .label=${this.hass.localize(
+                          "ui.components.service-control.integration_doc"
+                        )}
                         class="help-icon"
                       ></ha-icon-button>
                     </a>`
@@ -545,13 +568,14 @@ export class HaServiceControl extends LitElement {
     ${
       serviceData && "target" in serviceData
         ? html`<ha-selector
-            class="target-selector"
-            .hass=${this.hass}
-            .selector=${targetSelector}
-            .disabled=${this.disabled}
-            @value-changed=${this._targetChanged}
-            .value=${this._value?.target}
-          ></ha-selector>`
+              class="target-selector"
+              .hass=${this.hass}
+              .selector=${targetSelector}
+              .disabled=${this.disabled}
+              @value-changed=${this._targetChanged}
+              .value=${this._value?.target}
+            ></ha-selector>
+            ${this._renderError(this.targetError)}`
         : entityId
           ? html`<ha-entity-picker
               .disabled=${this.disabled}
@@ -597,7 +621,10 @@ export class HaServiceControl extends LitElement {
               this._hasFilteredFields(fields, targetEntities)
               ? html`<ha-expansion-panel
                   left-chevron
-                  .expanded=${!dataField.collapsed}
+                  .expanded=${
+                    !dataField.collapsed ||
+                    fields.some((field) => this.dataErrors?.[field.key])
+                  }
                   .header=${
                     this.hass.localize(
                       `component.${domain}.services.${serviceName}.sections.${dataField.key}.name`,
@@ -629,7 +656,12 @@ export class HaServiceControl extends LitElement {
                 </ha-expansion-panel>`
               : nothing;
           })
-    } `;
+    }
+    ${this._unshownErrors(
+      serviceData,
+      targetEntities,
+      Boolean(shouldRenderServiceDataYaml)
+    ).map((error) => this._renderError(error))}`;
   }
 
   private _getSectionDescription(
@@ -692,6 +724,13 @@ export class HaServiceControl extends LitElement {
       domain && serviceName
         ? this.hass.services[domain][serviceName].description_placeholders
         : undefined;
+    const fieldName =
+      this.hass.localize(
+        `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`,
+        descriptionPlaceholders
+      ) ||
+      dataField.name ||
+      dataField.key;
 
     return dataField.selector
       ? html`<ha-settings-row
@@ -707,6 +746,7 @@ export class HaServiceControl extends LitElement {
                 : ""
               : html`<ha-checkbox
                   .key=${dataField.key}
+                  .accessibleLabel=${fieldName}
                   .checked=${
                     this._checkedKeys.has(dataField.key) ||
                     (!!this._value?.data &&
@@ -721,14 +761,7 @@ export class HaServiceControl extends LitElement {
             slot="heading"
             class=${showOptional ? "clickable" : ""}
             @click=${showOptional ? this._toggleCheckbox : undefined}
-            >${
-              this.hass.localize(
-                `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`,
-                descriptionPlaceholders
-              ) ||
-              dataField.name ||
-              dataField.key
-            }</span
+            >${fieldName}</span
           >
           <span
             slot="description"
@@ -745,29 +778,69 @@ export class HaServiceControl extends LitElement {
               }
             ></ha-markdown>
           </span>
-          <ha-selector
-            .context=${this._selectorContext(targetEntities)}
-            .disabled=${
-              this.disabled ||
-              (showOptional &&
-                !this._checkedKeys.has(dataField.key) &&
-                (!this._value?.data ||
-                  this._value.data[dataField.key] === undefined))
-            }
-            .hass=${this.hass}
-            .selector=${selector}
-            .key=${dataField.key}
-            @value-changed=${this._serviceDataChanged}
-            .value=${
-              this._value?.data ? this._value.data[dataField.key] : undefined
-            }
-            .placeholder=${dataField.default}
-            .localizeValue=${this._localizeValueCallback}
-            .required=${dataField.required}
-          ></ha-selector>
+          <div class="field">
+            <ha-selector
+              .context=${this._selectorContext(targetEntities)}
+              .disabled=${
+                this.disabled ||
+                (showOptional &&
+                  !this._checkedKeys.has(dataField.key) &&
+                  (!this._value?.data ||
+                    this._value.data[dataField.key] === undefined))
+              }
+              .hass=${this.hass}
+              .selector=${selector}
+              .key=${dataField.key}
+              @value-changed=${this._serviceDataChanged}
+              .value=${
+                this._value?.data ? this._value.data[dataField.key] : undefined
+              }
+              .placeholder=${dataField.default}
+              .localizeValue=${this._localizeValueCallback}
+              .required=${dataField.required}
+            ></ha-selector>
+            ${this._renderError(this.dataErrors?.[dataField.key])}
+          </div>
         </ha-settings-row>`
       : "";
   };
+
+  // Errors without a field to show them on, e.g. of a field no target
+  // supports or of a target the action doesn't have a picker for
+  private _unshownErrors(
+    serviceData: ExtHassService | undefined,
+    targetEntities: string[] | null,
+    dataYaml: boolean
+  ): string[] {
+    const targetShown = Boolean(serviceData && "target" in serviceData);
+    const shownFields = new Set(
+      dataYaml
+        ? []
+        : (serviceData?.flatFields ?? [])
+            .filter(
+              (field) =>
+                field.selector &&
+                (!field.filter ||
+                  this._filterField(field.filter, targetEntities))
+            )
+            .map((field) => field.key)
+    );
+    return [
+      ...(this.targetError && !targetShown ? [this.targetError] : []),
+      ...(this.dataError ? [this.dataError] : []),
+      ...Object.entries(this.dataErrors ?? {})
+        .filter(([key]) => !shownFields.has(key))
+        .map(([key, error]) => `${key}: ${error}`),
+    ];
+  }
+
+  private _renderError(error: string | undefined) {
+    return error
+      ? html`<ha-input-helper-text class="error"
+          >${error}</ha-input-helper-text
+        >`
+      : nothing;
+  }
 
   private _selectorContext = memoizeOne((targetEntities: string[] | null) => ({
     filter_entity: targetEntities || undefined,
@@ -802,15 +875,29 @@ export class HaServiceControl extends LitElement {
 
     if (checked) {
       this._checkedKeys.add(key);
-      const field = this._getServiceInfo(
+      const serviceData = this._getServiceInfo(
         this._value?.action,
         this.hass.services
-      )?.flatFields.find((_field) => _field.key === key);
+      );
+      const field = serviceData?.flatFields.find(
+        (_field) => _field.key === key
+      );
 
       let defaultValue = field?.default;
 
       if (defaultValue == null && field?.selector) {
-        defaultValue = getSelectorFallbackValue(field.selector);
+        const entityIds = this._targetEntitiesForService(serviceData);
+        defaultValue = getSelectorFallbackValue(
+          field.selector,
+          entityIds
+            ? Object.fromEntries(
+                entityIds.map((entityId) => [
+                  entityId,
+                  this.hass.states[entityId],
+                ])
+              )
+            : undefined
+        );
       }
 
       if (defaultValue != null) {
@@ -993,6 +1080,17 @@ export class HaServiceControl extends LitElement {
   static styles = css`
     ha-settings-row {
       padding: var(--service-control-padding, 0 var(--ha-space-4));
+    }
+    /* Every field has this wrapper, so the selector isn't rebuilt when its
+       error comes or goes */
+    .field {
+      display: flex;
+      flex-direction: column;
+    }
+    ha-input-helper-text.error {
+      color: var(--ha-color-on-danger-quiet);
+      padding-top: var(--ha-space-1);
+      padding-bottom: var(--ha-space-2);
     }
     ha-settings-row[narrow] {
       padding-bottom: var(--ha-space-2);

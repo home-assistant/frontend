@@ -116,13 +116,19 @@ export const rowStyles = css`
   .note-indicator {
     color: var(--ha-color-on-neutral-normal);
   }
-  .note-indicator + ha-tooltip::part(body) {
+  .note-indicator + ha-tooltip::part(body),
+  .error-indicator + ha-tooltip::part(body) {
     cursor: default;
     max-width: 300px;
   }
   .note-indicator + ha-tooltip p {
     white-space: pre-wrap;
     margin: 0;
+  }
+
+  .error-indicator {
+    color: var(--ha-color-on-danger-quiet);
+    padding: var(--ha-space-3);
   }
 `;
 
@@ -279,6 +285,11 @@ export const manualEditorStyles = css`
   }
   .header a {
     color: var(--secondary-text-color);
+  }
+
+  .errors-alert {
+    display: block;
+    margin-bottom: var(--ha-space-2);
   }
 `;
 

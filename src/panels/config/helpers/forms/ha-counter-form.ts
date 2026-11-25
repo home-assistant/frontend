@@ -137,10 +137,8 @@ class HaCounterForm extends LitElement {
               @change=${this._valueChanged}
               .disabled=${this.disabled}
             >
-            </ha-switch>
-            <div>
               ${this._localize("ui.dialogs.helper_settings.counter.restore")}
-            </div>
+            </ha-switch>
           </div>
         </ha-expansion-panel>
       </div>
@@ -190,10 +188,9 @@ class HaCounterForm extends LitElement {
           display: flex;
           align-items: center;
         }
-        .row div {
-          margin-left: 16px;
-          margin-inline-start: 16px;
-          margin-inline-end: initial;
+        .row ha-switch::part(label) {
+          margin-inline-start: var(--ha-space-4);
+          line-height: var(--ha-line-height-normal);
         }
         ha-input {
           margin: var(--ha-space-2) 0;

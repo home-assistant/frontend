@@ -25,6 +25,7 @@ import type { HaInput } from "../components/input/ha-input";
 import "../components/item/ha-list-item-base";
 import "../components/item/ha-list-item-button";
 import "../components/list/ha-list-base";
+import { searchResultsStatus } from "../components/list/search-results-status";
 import "../components/map/ha-locations-editor";
 import type {
   HaLocationsEditor,
@@ -66,6 +67,8 @@ class OnboardingLocation extends LitElement {
 
   @state() private _highlightedMarker?: number;
 
+  @state() private _status?: string;
+
   private _elevation?: string;
 
   private _unitSystem?: ConfigUpdateValues["unit_system"];
@@ -78,7 +81,7 @@ class OnboardingLocation extends LitElement {
 
   @query("ha-locations-editor", true) private map!: HaLocationsEditor;
 
-  @query("ha-input") private _input?: HTMLElement;
+  @query("ha-input") private _input?: HaInput;
 
   protected render(): TemplateResult {
     const addressAttribution = this._localize(
@@ -122,7 +125,7 @@ class OnboardingLocation extends LitElement {
           label=${this._localize(
             "ui.panel.page-onboarding.core-config.address_label"
           )}
-          .disabled=${this._working}
+          .readonly=${this._working}
           @keyup=${this._addressSearch}
         >
           <ha-svg-icon slot="start" .path=${mdiMagnify}></ha-svg-icon>
@@ -174,7 +177,13 @@ class OnboardingLocation extends LitElement {
                         })
                       : html`<ha-list-item-base>
                           <span slot="headline"
-                            >${this._places === null ? "" : "No results"}</span
+                            >${
+                              this._places === null
+                                ? ""
+                                : this._localize(
+                                    "ui.components.combo-box.no_match"
+                                  )
+                            }</span
                           >
                         </ha-list-item-base>`
                   }
@@ -182,6 +191,7 @@ class OnboardingLocation extends LitElement {
               `
             : nothing
         }
+        <div class="visually-hidden" role="status">${this._status}</div>
       </div>
       <ha-locations-editor
         class="flex"
@@ -211,11 +221,6 @@ class OnboardingLocation extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     setTimeout(() => this._input!.focus(), 100);
-    this.addEventListener("keyup", (ev) => {
-      if (ev.key === "Enter") {
-        this._save(ev);
-      }
-    });
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -296,27 +301,32 @@ class OnboardingLocation extends LitElement {
     if (ev.detail.id === LOCATION_MARKER_ID) {
       return;
     }
-    this._highlightedMarker = Number(ev.detail.id);
-    const place = this._places!.find(
-      (plc) => plc.place_id === Number(ev.detail.id)
-    )!;
-    this._location = [Number(place.lat), Number(place.lon)];
-    this._setCountry(place.address.country_code);
+    this._selectPlace(Number(ev.detail.id));
   }
 
   private _itemClicked(ev) {
-    this._highlightedMarker = ev.currentTarget.placeId;
-    const place = this._places!.find(
-      (plc) => plc.place_id === ev.currentTarget.placeId
-    )!;
+    this._selectPlace(ev.currentTarget.placeId);
+  }
+
+  private _selectPlace(placeId: number) {
+    const place = this._places!.find((plc) => plc.place_id === placeId)!;
+    this._highlightedMarker = placeId;
     this._location = [Number(place.lat), Number(place.lon)];
     this._setCountry(place.address.country_code);
+    this._announceSelected(place);
+  }
+
+  private _announceSelected(place: OpenStreetMapPlace) {
+    this._status = this._localize(
+      "ui.panel.page-onboarding.core-config.selected_location",
+      { location: place.display_name }
+    );
   }
 
   private async _addressSearch(ev: KeyboardEvent) {
     ev.stopPropagation();
     this._search = ((ev.currentTarget as HaInput).value ?? "").length > 0;
-    if (ev.key !== "Enter") {
+    if (ev.key !== "Enter" || !this._search || this._working) {
       return;
     }
     this._searchAddress((ev.currentTarget as HaInput).value ?? "");
@@ -326,6 +336,7 @@ class OnboardingLocation extends LitElement {
     this._working = true;
     this._highlightedMarker = undefined;
     this._error = undefined;
+    this._status = undefined;
     this._places = null;
     this.map.addEventListener(
       "markers-updated",
@@ -351,6 +362,12 @@ class OnboardingLocation extends LitElement {
         this._setCountry(this._places[0].address.country_code);
         this._elevation = undefined;
       }
+      this._status = searchResultsStatus(
+        address,
+        this._places,
+        () => true,
+        this._localize
+      );
     } catch (e: any) {
       this._places = undefined;
       this._error = e.message;
@@ -368,6 +385,7 @@ class OnboardingLocation extends LitElement {
     this._setCountry(reverse.address.country_code);
     this._places = [reverse];
     this._highlightedMarker = reverse.place_id;
+    this._announceSelected(reverse);
   }
 
   private _setCountry(countryCode: string) {
@@ -379,6 +397,7 @@ class OnboardingLocation extends LitElement {
   }
 
   private async _handleButtonClick(ev) {
+    this._input?.select();
     if (this._search) {
       this._searchAddress(ev.target.parentElement.value);
       return;
@@ -539,6 +558,15 @@ class OnboardingLocation extends LitElement {
         }
         .attribution a {
           color: inherit;
+        }
+        .visually-hidden {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          margin: -1px;
+          overflow: hidden;
+          clip-path: inset(50%);
+          white-space: nowrap;
         }
       `,
     ];

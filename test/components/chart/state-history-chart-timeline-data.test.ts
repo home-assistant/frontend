@@ -112,7 +112,7 @@ describe("downSampleTimelineSegments", () => {
     assertContiguous(result);
   });
 
-  it("merges a chosen state into a following full-width segment of that state", () => {
+  it("keeps a run from merging into a following full-width segment of its state", () => {
     const segments = [
       ...flapping(0, 400, 15, 5),
       segment("on", 400, 2000),
@@ -122,8 +122,26 @@ describe("downSampleTimelineSegments", () => {
     const result = downSampleTimelineSegments(segments, 100);
 
     expect(spans(result)).toEqual([
-      ["on", 0, 2000],
+      ["on", 0, 300],
+      ["off", 300, 400],
+      ["on", 400, 2000],
       ["off", 2000, 3000],
+    ]);
+  });
+
+  it("keeps a short excursion visible between full-width segments of one state", () => {
+    const segments = [
+      segment("off", 0, 1050),
+      segment("on", 1050, 1052),
+      segment("off", 1052, 1130),
+      segment("on", 1130, 1131),
+      segment("off", 1131, 3000),
+    ];
+
+    expect(spans(downSampleTimelineSegments(segments, 100))).toEqual([
+      ["off", 0, 1050],
+      ["on", 1050, 1131],
+      ["off", 1131, 3000],
     ]);
   });
 

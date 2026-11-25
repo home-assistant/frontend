@@ -89,6 +89,11 @@ const countNumericPoints = (data: unknown, limit: number): number => {
   return found;
 };
 
+// A silent series ignores the pointer, like the power sources graph's zero
+// line, so it is decoration rather than data to walk through.
+const isDecoration = (s: { silent?: boolean } | undefined): boolean =>
+  s?.silent === true;
+
 const countNavigablePoints = (
   series: readonly ({ data?: unknown } | undefined)[]
 ): number => {
@@ -109,9 +114,9 @@ export const canSonifyChart = (
   hiddenDatasets?: ReadonlySet<string>
 ): boolean => {
   const series = ensureArray(data);
-  const visible = hiddenDatasets?.size
-    ? series.filter((s) => !hiddenDatasets.has(String(s.id ?? s.name)))
-    : series;
+  const visible = series.filter(
+    (s) => !isDecoration(s) && !hiddenDatasets?.has(String(s.id ?? s.name))
+  );
   return (
     // Cards commonly push empty placeholder series, so judge the chart by the
     // points the extension can actually read — but every type has to be
@@ -264,7 +269,9 @@ export const sonifyChart = async (
   const allSeries = ensureArray(chartOptions.series) as (
     HaECSeriesItem | undefined
   )[];
-  const readable = allSeries.filter((s) => countNumericPoints(s?.data, 1));
+  const readable = allSeries.filter(
+    (s) => !isDecoration(s) && countNumericPoints(s?.data, 1)
+  );
   // A single point is not navigable, so it does not earn a focus stop either.
   if (countNavigablePoints(readable) < MIN_NAVIGABLE_POINTS) {
     return null;

@@ -1,12 +1,18 @@
 import { mdiChevronUp } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-icon-button";
 
 @customElement("ha-automation-row")
 export class HaAutomationRow extends LitElement {
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
   @property({ attribute: "left-chevron", type: Boolean })
   public leftChevron = false;
 
@@ -32,6 +38,9 @@ export class HaAutomationRow extends LitElement {
 
   /** Makes the row a link, with the icons slot outside of it */
   @property() public href?: string;
+
+  @property({ type: Boolean, reflect: true })
+  public error = false;
 
   @query(".row")
   private _rowElement?: HTMLDivElement;
@@ -77,6 +86,9 @@ export class HaAutomationRow extends LitElement {
                 <ha-icon-button
                   class="expand-button"
                   .path=${mdiChevronUp}
+                  .label=${this._localize(
+                    this.collapsed ? "ui.common.expand" : "ui.common.collapse"
+                  )}
                   @click=${this._handleExpand}
                   @keydown=${this._handleExpand}
                 ></ha-icon-button>
@@ -275,6 +287,15 @@ export class HaAutomationRow extends LitElement {
     }
     :host([highlight]) .row:hover {
       background-color: rgba(var(--rgb-primary-color), 0.16);
+    }
+    :host([error]) .row {
+      background-color: var(--ha-color-fill-danger-quiet-resting);
+    }
+    :host([error][selected]) .row,
+    :host([error][selected]) .row:focus {
+      outline: 2px solid var(--ha-color-border-danger-loud);
+      outline-offset: -2px;
+      background-color: var(--ha-color-fill-danger-normal-resting);
     }
 
     .icons,

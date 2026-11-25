@@ -14,13 +14,16 @@ import {
   FilterPanelController,
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
-import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeRTL } from "../common/util/compute_rtl";
 import { deepEqual } from "../common/util/deep-equal";
-import type { LocalizeFunc } from "../common/translations/localize";
 import type { AreaRegistryEntry } from "../data/area/area_registry";
 import type { FloorAreasFilterValue } from "../data/data_table_filters";
+import {
+  floorAreaLookups,
+  floorSelection,
+  toggleFloorArea,
+} from "../data/data_table_filters";
 import {
   apiContext,
   areasContext,
@@ -33,7 +36,6 @@ import {
 import { getFloorAreaLookup } from "../data/floor_registry";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
-import { haStyleScrollbar } from "../resources/styles";
 import "./ha-expansion-panel";
 import "./ha-floor-icon";
 import "./ha-icon";
@@ -48,10 +50,6 @@ import type { HaListSelectable } from "./list/ha-list-selectable";
 
 @customElement("ha-filter-floor-areas")
 export class HaFilterFloorAreas extends LitElement {
-  @state()
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
-
   @consume({ context: areasContext, subscribe: true })
   @state()
   private _areasReg!: ContextType<typeof areasContext>;
@@ -106,6 +104,21 @@ export class HaFilterFloorAreas extends LitElement {
 
   private _relatedRequestId = 0;
 
+  public connectedCallback() {
+    super.connectedCallback();
+    // The config pages are cached, so an item may have been edited while this
+    // filter was not on screen
+    if (
+      this.hasUpdated &&
+      this.value &&
+      (this.value.areas?.length ||
+        this.value.floors?.length ||
+        this.value.no_area)
+    ) {
+      this._findRelated();
+    }
+  }
+
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
 
@@ -116,7 +129,10 @@ export class HaFilterFloorAreas extends LitElement {
       (this.value?.no_area &&
         (properties.has("_devices") ||
           properties.has("_entities") ||
-          (this.type !== "device" && properties.has("_stateIds"))))
+          (this.type !== "device" && properties.has("_stateIds")))) ||
+      // Whether a floor is picked whole depends on which areas it has
+      ((!!this.value?.floors?.length || !!this.value?.areas?.length) &&
+        (properties.has("_areasReg") || properties.has("_floorsReg")))
     ) {
       this._findRelated();
     }
@@ -138,12 +154,15 @@ export class HaFilterFloorAreas extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this._localize("ui.panel.config.areas.caption")}
+          ${this._i18n.localize("ui.panel.config.areas.caption")}
           ${
             count
               ? html`<div class="badge">${count}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
+                    .label=${this._i18n.localize(
+                      "ui.components.subpage-data-table.clear_filter"
+                    )}
                     @click=${this._clearFilter}
                     @keydown=${this._handleClearFilterKeydown}
                   ></ha-icon-button>`
@@ -156,11 +175,10 @@ export class HaFilterFloorAreas extends LitElement {
           ? html`
               <div class="content" ${ref(this._content)}>
                 <ha-list-selectable
-                  class="ha-scrollbar"
                   multi
                   @ha-list-item-selected=${this._handleAdded}
                   @ha-list-item-deselected=${this._handleRemoved}
-                  aria-label=${this._localize("ui.panel.config.areas.caption")}
+                  aria-label=${this._i18n.localize("ui.panel.config.areas.caption")}
                 >
                   <ha-list-item-option
                     appearance="checkbox"
@@ -170,39 +188,45 @@ export class HaFilterFloorAreas extends LitElement {
                     .selected=${this.value?.no_area || false}
                   >
                     <span slot="headline">
-                      ${this._localize("ui.components.area-picker.no_area")}
+                      ${this._i18n.localize("ui.components.area-picker.no_area")}
                     </span>
                   </ha-list-item-option>
                   ${repeat(
                     areas?.floors || [],
                     (floor) => floor.floor_id,
-                    (floor) => html`
-                      <ha-list-item-option
-                        appearance="checkbox"
-                        selection-position="end"
-                        .value=${floor.floor_id}
-                        .type=${"floors"}
-                        .selected=${
-                          this.value?.floors?.includes(floor.floor_id) || false
-                        }
-                      >
-                        <ha-floor-icon
-                          slot="start"
-                          .floor=${floor}
-                        ></ha-floor-icon>
-                        <span slot="headline">${floor.name} </span>
-                      </ha-list-item-option>
-                      ${repeat(
-                        floor.areas,
-                        (area, index) =>
-                          `${area.area_id}${index === floor.areas.length - 1 ? "___last" : ""}`,
-                        (area, index) =>
-                          this._renderArea(
-                            area,
-                            index === floor.areas.length - 1
-                          )
-                      )}
-                    `
+                    (floor) => {
+                      const selection = floorSelection(
+                        this.value,
+                        floor.floor_id,
+                        floor.areas.map((area) => area.area_id)
+                      );
+                      return html`
+                        <ha-list-item-option
+                          appearance="checkbox"
+                          selection-position="end"
+                          .value=${floor.floor_id}
+                          .type=${"floors"}
+                          .selected=${selection === "all"}
+                          .indeterminate=${selection === "some"}
+                        >
+                          <ha-floor-icon
+                            slot="start"
+                            .floor=${floor}
+                          ></ha-floor-icon>
+                          <span slot="headline">${floor.name} </span>
+                        </ha-list-item-option>
+                        ${repeat(
+                          floor.areas,
+                          (area, index) =>
+                            `${area.area_id}${index === floor.areas.length - 1 ? "___last" : ""}`,
+                          (area, index) =>
+                            this._renderArea(
+                              area,
+                              index === floor.areas.length - 1
+                            )
+                        )}
+                      `;
+                    }
                   )}
                   ${
                     groupOtherAreas
@@ -212,7 +236,7 @@ export class HaFilterFloorAreas extends LitElement {
                             .path=${mdiTextureBox}
                           ></ha-svg-icon>
                           <span slot="headline">
-                            ${this._localize(
+                            ${this._i18n.localize(
                               "ui.panel.config.areas.picker.other_areas"
                             )}
                           </span>
@@ -248,7 +272,10 @@ export class HaFilterFloorAreas extends LitElement {
         appearance="checkbox"
         selection-position="end"
         .value=${area.area_id}
-        .selected=${this.value?.areas?.includes(area.area_id) || false}
+        .selected=${
+          this.value?.areas?.includes(area.area_id) ||
+          (!!area.floor_id && !!this.value?.floors?.includes(area.floor_id))
+        }
         .type=${"areas"}
         class=${classMap({
           rtl: computeRTL(
@@ -280,57 +307,48 @@ export class HaFilterFloorAreas extends LitElement {
   }
 
   private _handleAdded(ev: CustomEvent<number>) {
-    if (!this.value) {
-      this.value = {};
-    }
-
-    const addedItem = (ev.currentTarget as HaListSelectable).items[
-      ev.detail
-    ] as HaListItemOption & { type: string; value: string };
-
-    if (!addedItem) {
-      return;
-    }
-
-    if (addedItem.type === "no_area") {
-      this.value = { ...this.value, no_area: true };
-      return;
-    }
-
-    this.value = {
-      ...this.value,
-      [addedItem.type]: [
-        ...(this.value[addedItem.type] || []),
-        addedItem.value,
-      ],
-    };
+    this._handleToggled(ev, true);
   }
 
   private _handleRemoved(ev: CustomEvent<number>) {
-    if (!this.value) {
-      return;
-    }
-
-    const removedItem = (ev.currentTarget as HaListSelectable).items[
-      ev.detail
-    ] as HaListItemOption & { type: string; value: string };
-
-    if (!removedItem) {
-      return;
-    }
-
-    if (removedItem.type === "no_area") {
-      this.value = { ...this.value, no_area: false };
-      return;
-    }
-
-    this.value = {
-      ...this.value,
-      [removedItem.type]: this.value![removedItem.type].filter(
-        (val) => val !== removedItem.value
-      ),
-    };
+    this._handleToggled(ev, false);
   }
+
+  private _handleToggled(ev: CustomEvent<number>, selected: boolean) {
+    const item = (ev.currentTarget as HaListSelectable).items[ev.detail] as
+      (HaListItemOption & { type: string; value: string }) | undefined;
+
+    if (!item) {
+      return;
+    }
+
+    if (item.type === "no_area") {
+      this.value = { ...this.value, no_area: selected };
+      return;
+    }
+
+    this.value = toggleFloorArea(
+      this.value,
+      this._floorAreaIds(this._areasReg, this._floorsReg),
+      item.type as "floors" | "areas",
+      item.value,
+      selected
+    );
+  }
+
+  // The area ids of each floor, by floor id
+  private _floorAreaIds = memoizeOne(
+    (
+      areaReg: ContextType<typeof areasContext>,
+      floorReg: ContextType<typeof floorsContext>
+    ): Record<string, string[]> =>
+      Object.fromEntries(
+        this._areas(areaReg, floorReg).floors.map((floor) => [
+          floor.floor_id,
+          floor.areas.map((area) => area.area_id),
+        ])
+      )
+  );
 
   private _expandedChanged(ev) {
     this.expanded = ev.detail.expanded;
@@ -360,7 +378,6 @@ export class HaFilterFloorAreas extends LitElement {
 
   private async _findRelated() {
     const requestId = ++this._relatedRequestId;
-    const relatedPromises: Promise<RelatedResult>[] = [];
 
     if (
       !this.value ||
@@ -376,47 +393,43 @@ export class HaFilterFloorAreas extends LitElement {
       return;
     }
 
-    if (this.value.areas) {
-      for (const areaId of this.value.areas) {
-        if (this.type) {
-          relatedPromises.push(
-            findRelated(this._api, "area", areaId, this.includeDisabledEntities)
-          );
-        }
-      }
-    }
-
-    if (this.value.floors) {
-      for (const floorId of this.value.floors) {
-        if (this.type) {
-          relatedPromises.push(
-            findRelated(
-              this._api,
-              "floor",
-              floorId,
-              this.includeDisabledEntities
-            )
-          );
-        }
-      }
-    }
-
-    const results = await Promise.all(relatedPromises);
+    const type = this.type;
+    const value = this.value;
+    const lookups = floorAreaLookups(
+      value,
+      this._floorAreaIds(this._areasReg, this._floorsReg)
+    );
+    const search = (itemType: "area" | "floor", ids: string[]) =>
+      Promise.all(
+        ids.map(
+          async (id) =>
+            (
+              await findRelated(
+                this._api,
+                itemType,
+                id,
+                this.includeDisabledEntities
+              )
+            )[type!] ?? []
+        )
+      );
+    const [areas, floors] = type
+      ? await Promise.all([
+          search("area", lookups.areas),
+          search("floor", lookups.floors),
+        ])
+      : [[], []];
 
     // The value changed while this lookup ran
     if (requestId !== this._relatedRequestId) {
       return;
     }
 
-    const items = new Set<string>();
-    if (this.value.no_area) {
-      this._itemsWithoutArea().forEach((item) => items.add(item));
-    }
-    for (const result of results) {
-      if (result[this.type!]) {
-        result[this.type!]!.forEach((item) => items.add(item));
-      }
-    }
+    const items = new Set<string>([
+      ...(value.no_area ? this._itemsWithoutArea() : []),
+      ...areas.flat(),
+      ...floors.flat(),
+    ]);
 
     fireEvent(this, "data-table-filter-changed", {
       value: this.value,
@@ -476,10 +489,15 @@ export class HaFilterFloorAreas extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyleScrollbar,
       filterPanelStyles,
       css`
+        /* Only the list's own container scrolls, not the list as well */
         ha-list-selectable {
+          display: flex;
+          flex: 1;
+          min-height: 0;
+        }
+        ha-list-selectable::part(base) {
           flex: 1;
           min-height: 0;
         }

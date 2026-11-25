@@ -7,6 +7,7 @@ import { consume } from "../common/decorators/consume";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { isSwipeLocked } from "../common/dom/is-swipe-locked";
+import { setModalOpen } from "../common/dom/open-modals";
 import { SwipeGestureRecognizer } from "../common/util/swipe-gesture-recognizer";
 import { configContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
@@ -44,6 +45,9 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: "aria-describedby" })
   public ariaDescribedBy?: string;
 
+  @property({ attribute: false })
+  public accessibleLabel?: string;
+
   @property({ type: Boolean }) public open = false;
 
   @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
@@ -76,9 +80,12 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
   private _escapePressed = false;
 
-  private _handleShow = async () => {
+  private _handleShow = async (ev: Event) => {
     this._drawerOpen = true;
     this.open = true;
+    if (ev.eventPhase === Event.AT_TARGET) {
+      setModalOpen(this._drawer, true);
+    }
     fireEvent(this, "opened");
 
     await this.updateComplete;
@@ -128,6 +135,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     if (ev.eventPhase === Event.AT_TARGET) {
       this.open = false;
       this._drawerOpen = false;
+      setModalOpen(this._drawer, false);
       fireEvent(this, "closed");
     }
   };
@@ -212,6 +220,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
         placement="bottom"
         .open=${this._drawerOpen}
         .lightDismiss=${!this.preventScrimClose}
+        .label=${this.accessibleLabel ?? ""}
         .ariaLabelledby=${this.ariaLabelledBy}
         .ariaDescribedby=${this.ariaDescribedBy}
         @keydown=${this._handleKeyDown}
@@ -239,6 +248,10 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   }
 
   private _handleTouchStart = (ev: TouchEvent) => {
+    if (ev.touches.length > 1) {
+      this._cancelResizing();
+      return;
+    }
     if (this.preventScrimClose) {
       return;
     }
@@ -265,6 +278,10 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   }
 
   private _handleTouchMove = (ev: TouchEvent) => {
+    if (ev.touches.length > 1) {
+      this._cancelResizing();
+      return;
+    }
     const currentY = ev.touches[0].clientY;
     const delta = this._gestureRecognizer.move(currentY);
 
@@ -337,6 +354,18 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     }
   };
 
+  /**
+   * A second finger makes it a pinch, like zooming a camera picture, which
+   * never moves the sheet. Puts the sheet back where it was.
+   */
+  private _cancelResizing() {
+    this._unregisterResizeHandlers();
+    if (this._isDragging) {
+      this._isDragging = false;
+      this._animateSnapBack();
+    }
+  }
+
   private _unregisterResizeHandlers = () => {
     document.removeEventListener("touchmove", this._handleTouchMove);
     document.removeEventListener("touchend", this._handleTouchEnd);
@@ -345,6 +374,9 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    if (this._drawer) {
+      setModalOpen(this._drawer, false);
+    }
     this.removeEventListener(
       "slider-interaction-start",
       this._handleSliderInteractionStart,

@@ -171,6 +171,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                 prevent-interaction-on-scroll
                 @value-changing=${this._dragEvent}
                 @value-changed=${this._setBrightness}
+                @focusout=${this._hideBrightness}
                 style=${styleMap({
                   visibility: lightSupportsBrightness(stateObj)
                     ? "visible"
@@ -183,6 +184,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                   "state-on": stateObj.state === "on",
                   "state-unavailable": stateObj.state === UNAVAILABLE,
                 })}"
+                .label=${name}
                 .disabled=${stateObj.state === UNAVAILABLE}
                 style=${styleMap({
                   filter: this._computeBrightness(stateObj),
@@ -240,10 +242,15 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
   private _dragEvent(ev: HASSDomEvent<HASSDomEvents["value-changing"]>): void {
     const { value } = ev.detail;
+    if (value === undefined) {
+      this._hideBrightness();
+      return;
+    }
     if (typeof value !== "number" || isNaN(value)) return;
-    this.shadowRoot!.querySelector(".brightness")!.innerHTML = `${value} %`;
+    const brightness = this.shadowRoot!.querySelector(".brightness");
+    if (!brightness) return;
+    brightness.innerHTML = `${value} %`;
     this._showBrightness();
-    this._hideBrightness();
   }
 
   private _showBrightness(): void {
@@ -254,8 +261,9 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   }
 
   private _hideBrightness(): void {
+    clearTimeout(this._brightnessTimout);
     this._brightnessTimout = window.setTimeout(() => {
-      this.shadowRoot!.querySelector(".brightness")!.classList.remove(
+      this.shadowRoot!.querySelector(".brightness")?.classList.remove(
         "show_brightness"
       );
     }, 500);

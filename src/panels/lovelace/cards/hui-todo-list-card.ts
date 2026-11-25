@@ -535,7 +535,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                       slot="end"
                       class="addButton"
                       .path=${mdiPlus}
-                      .title=${this._i18n.localize(
+                      .label=${this._i18n.localize(
                         "ui.panel.lovelace.cards.todo-list.add_item"
                       )}
                       .disabled=${unavailable}
@@ -651,6 +651,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                                       <ha-icon-button
                                         slot="trigger"
                                         .path=${mdiDotsVertical}
+                                        .label=${this._i18n.localize(
+                                          "ui.common.menu"
+                                        )}
                                       ></ha-icon-button>
                                       <ha-dropdown-item
                                         value="clear"
@@ -693,6 +696,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           <ha-icon-button
             slot="trigger"
             .path=${mdiDotsVertical}
+            .label=${this._i18n.localize("ui.common.menu")}
           ></ha-icon-button>
           <ha-dropdown-item value="reorder">
             ${this._i18n.localize(
@@ -758,7 +762,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                     TodoListEntityFeature.UPDATE_TODO_ITEM
                   )
                 }
-                aria-label=${item.summary}
+                .accessibleLabel=${item.summary}
                 @click=${stopPropagation}
                 @change=${this._completeCheckboxItem}
               ></ha-checkbox>
@@ -806,7 +810,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                     `
                   : showDelete
                     ? html`<ha-icon-button
-                        .title=${this._i18n.localize(
+                        .label=${this._i18n.localize(
                           "ui.panel.lovelace.cards.todo-list.delete_item"
                         )}
                         class="deleteItemButton"

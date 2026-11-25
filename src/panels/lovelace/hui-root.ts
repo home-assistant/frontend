@@ -199,6 +199,8 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
         html`<ha-icon-button
             slot="toolbar-icon"
             .path=${mdiUndo}
+            .label=${this.hass.localize("ui.common.undo")}
+            hide-title
             @click=${this._undo}
             .disabled=${!this._undoRedoController.canUndo}
             id="button-undo"
@@ -210,6 +212,8 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
           <ha-icon-button
             slot="toolbar-icon"
             .path=${mdiRedo}
+            .label=${this.hass.localize("ui.common.redo")}
+            hide-title
             @click=${this._redo}
             .disabled=${!this._undoRedoController.canRedo}
             id="button-redo"
@@ -559,7 +563,7 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
                     ></ha-icon-button>
                     ${tabContent}
                     <ha-icon-button
-                      .title=${this.hass!.localize(
+                      .label=${this.hass!.localize(
                         "ui.panel.lovelace.editor.edit_view.edit"
                       )}
                       class="edit-icon view"

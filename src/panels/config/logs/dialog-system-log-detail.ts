@@ -173,6 +173,11 @@ class DialogSystemLogDetail extends LitElement {
     return html`
       <ha-dialog
         .open=${this._open}
+        .accessibleLabel=${this._i18n.localize("ui.panel.config.logs.details", {
+          level: this._i18n.localize(
+            `ui.panel.config.logs.level.${item.level}`
+          ),
+        })}
         width="large"
         @closed=${this._dialogClosed}
       >

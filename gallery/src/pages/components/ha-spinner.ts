@@ -23,8 +23,10 @@ export class DemoHaSpinner extends LitElement {
                 <ha-spinner size="small"></ha-spinner>
                 <ha-spinner size="medium"></ha-spinner>
                 <ha-spinner size="large"></ha-spinner>
-                <ha-spinner aria-label="Doing something..."></ha-spinner>
-                <ha-spinner .ariaLabel=${"Doing something..."}></ha-spinner>
+                <ha-spinner accessible-label="Doing something..."></ha-spinner>
+                <ha-spinner
+                  .accessibleLabel=${"Doing something..."}
+                ></ha-spinner>
               </div>
             </ha-card>
           `

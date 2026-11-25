@@ -1,4 +1,4 @@
-import type { PropertyValues, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HassConfig } from "home-assistant-js-websocket";
@@ -9,6 +9,7 @@ import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { formatNumber } from "../../../common/number/format_number";
 import type { LocalizeFunc } from "../../../common/translations/localize";
@@ -24,7 +25,6 @@ import "../../../components/ha-segmented-bar";
 import type { Segment } from "../../../components/ha-segmented-bar";
 import "../../../components/ha-spinner";
 import {
-  apiContext,
   configContext,
   fullEntitiesContext,
   internationalizationContext,
@@ -36,13 +36,11 @@ import type {
   RecorderTableUsage,
 } from "../../../data/recorder";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
-import { fetchRecorderDatabaseUsage } from "../../../data/recorder";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { FrontendLocaleData } from "../../../data/translation";
 import type { Themes } from "../../../data/ws-themes";
 import type {
   HomeAssistant,
-  HomeAssistantApi,
   HomeAssistantConfig,
   HomeAssistantInternationalization,
   HomeAssistantUI,
@@ -126,6 +124,15 @@ interface EntityUsageRow extends DatabaseUsageRow, DataTableRowData {
 export class StorageDatabaseCard extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
+  // Undefined until loaded, null when no recent report exists.
+  @property({ attribute: false }) public usage?: RecorderDatabaseUsage | null;
+
+  @property({ type: Boolean }) public loading = false;
+
+  @property({ type: Boolean }) public analyzing = false;
+
+  @property() public error?: string;
+
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
@@ -144,9 +151,6 @@ export class StorageDatabaseCard extends LitElement {
   })
   private _hassConfig!: HassConfig;
 
-  @consume({ context: apiContext, subscribe: true })
-  private _api!: HomeAssistantApi;
-
   @state()
   @consume({ context: uiContext, subscribe: true })
   @transform<HomeAssistantUI, Themes>({
@@ -163,22 +167,8 @@ export class StorageDatabaseCard extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   private _entityRegistry: EntityRegistryEntry[] = [];
 
-  // Undefined until loaded, null when no recent report exists.
-  @state() private _usage?: RecorderDatabaseUsage | null;
-
-  @state() private _loading = false;
-
-  @state() private _analyzing = false;
-
-  @state() private _error?: string;
-
-  protected firstUpdated(changedProps: PropertyValues<this>): void {
-    super.firstUpdated(changedProps);
-    this._load();
-  }
-
   protected render(): TemplateResult {
-    const usage = this._usage;
+    const usage = this.usage;
     return html`
       <ha-card
         outlined
@@ -186,42 +176,44 @@ export class StorageDatabaseCard extends LitElement {
       >
         <div class="card-content">
           ${
-            this._error
-              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            this.error
+              ? html`<ha-alert alert-type="error">${this.error}</ha-alert>`
+              : nothing
+          }
+          ${
+            this.analyzing
+              ? html`<div class="loading">
+                  <ha-spinner></ha-spinner>
+                  <span>
+                    ${this._localize(
+                      "ui.panel.config.storage.database.analyzing"
+                    )}
+                  </span>
+                </div>`
               : nothing
           }
           ${
             usage
               ? this._renderUsage(usage)
-              : this._analyzing
-                ? html`<div class="loading">
-                    <ha-spinner></ha-spinner>
-                    <span>
-                      ${this._localize(
-                        "ui.panel.config.storage.database.analyzing"
-                      )}
-                    </span>
-                  </div>`
-                : usage === null
-                  ? html`<p class="description">
-                      ${this._localize(
-                        "ui.panel.config.storage.database.description"
-                      )}
-                    </p>`
-                  : nothing
+              : usage === null && !this.analyzing
+                ? html`<p class="description">
+                    ${this._localize(
+                      "ui.panel.config.storage.database.description"
+                    )}
+                  </p>`
+                : nothing
           }
         </div>
         <div class="card-actions">
           <ha-button
             appearance="plain"
-            .loading=${this._analyzing}
-            .disabled=${this._loading || this._analyzing}
+            .disabled=${this.loading || this.analyzing}
             @click=${this._analyze}
           >
             ${this._localize(
               usage
-                ? "ui.panel.config.storage.database.analyze_again"
-                : "ui.panel.config.storage.database.analyze"
+                ? "ui.panel.config.storage.database.recalculate"
+                : "ui.panel.config.storage.database.calculate"
             )}
           </ha-button>
         </div>
@@ -458,6 +450,10 @@ export class StorageDatabaseCard extends LitElement {
     })
   );
 
+  private _analyze() {
+    fireEvent(this, "database-analyze");
+  }
+
   // Arrow function: the data table renders the template, not this card.
   private _openSettings = (
     ev: HASSDomCurrentTargetEvent<HTMLButtonElement>
@@ -467,45 +463,6 @@ export class StorageDatabaseCard extends LitElement {
       view: "settings",
     });
   };
-
-  private async _load() {
-    this._loading = true;
-    this._error = undefined;
-    try {
-      this._usage = await fetchRecorderDatabaseUsage(this._api);
-    } catch (err: any) {
-      this._error = this._errorMessage(err);
-    } finally {
-      this._loading = false;
-    }
-  }
-
-  private async _analyze() {
-    this._analyzing = true;
-    this._error = undefined;
-    try {
-      this._usage = await fetchRecorderDatabaseUsage(this._api, true);
-    } catch (err: any) {
-      this._error = this._errorMessage(err);
-    } finally {
-      this._analyzing = false;
-    }
-  }
-
-  private _errorMessage(err: any): string {
-    switch (err.code) {
-      case "recorder_not_ready":
-        return this._localize(
-          "ui.panel.config.storage.database.errors.recorder_not_ready"
-        );
-      case "migration_in_progress":
-        return this._localize(
-          "ui.panel.config.storage.database.errors.migration_in_progress"
-        );
-      default:
-        return err.message || err.code || String(err);
-    }
-  }
 
   static styles = css`
     ha-card {
@@ -547,6 +504,8 @@ export class StorageDatabaseCard extends LitElement {
     }
     ha-data-table {
       --data-table-border-width: 0;
+      --data-table-row-border-width: 0;
+      --data-table-row-height: 44px;
       height: 100%;
     }
   `;
@@ -555,5 +514,8 @@ export class StorageDatabaseCard extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "storage-database-card": StorageDatabaseCard;
+  }
+  interface HASSDomEvents {
+    "database-analyze": undefined;
   }
 }

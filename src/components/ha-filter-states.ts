@@ -1,7 +1,8 @@
+import type { ContextType } from "@lit/context";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { createRef, ref } from "lit/directives/ref";
 import {
@@ -14,25 +15,37 @@ import type {
   HASSDomEvent,
 } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
+import { consume } from "../common/decorators/consume";
+import { internationalizationContext } from "../data/context";
 import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-icon-button";
+import "./ha-svg-icon";
 import "./item/ha-list-item-option";
 import type { HaListItemOption } from "./item/ha-list-item-option";
 import "./list/ha-list-selectable";
 import type { HaListSelectable } from "./list/ha-list-selectable";
 
+export interface FilterStateOption {
+  value: any;
+  label?: string;
+  /** An icon name, like `mdi:eye` */
+  icon?: string;
+  /** An icon path, like `mdiEye` */
+  iconPath?: string;
+}
+
 @customElement("ha-filter-states")
 export class HaFilterStates extends LitElement {
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  protected _i18n!: ContextType<typeof internationalizationContext>;
+
   @property() public label?: string;
 
   @property({ attribute: false }) public value?: string[];
 
-  @property({ attribute: false }) public states?: {
-    value: any;
-    label?: string;
-    icon?: string;
-  }[];
+  @property({ attribute: false }) public states?: FilterStateOption[];
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -59,6 +72,9 @@ export class HaFilterStates extends LitElement {
               ? html`<div class="badge">${this.value?.length}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
+                    .label=${this._i18n.localize(
+                      "ui.components.subpage-data-table.clear_filter"
+                    )}
                     @click=${this._clearFilter}
                   ></ha-icon-button>`
               : nothing
@@ -84,12 +100,17 @@ export class HaFilterStates extends LitElement {
                         .selected=${this.value?.includes(item.value) ?? false}
                       >
                         ${
-                          item.icon
-                            ? html`<ha-icon
+                          item.iconPath
+                            ? html`<ha-svg-icon
                                 slot="start"
-                                .icon=${item.icon}
-                              ></ha-icon>`
-                            : nothing
+                                .path=${item.iconPath}
+                              ></ha-svg-icon>`
+                            : item.icon
+                              ? html`<ha-icon
+                                  slot="start"
+                                  .icon=${item.icon}
+                                ></ha-icon>`
+                              : nothing
                         }
                         <span slot="headline">${item.label}</span>
                       </ha-list-item-option>`
@@ -109,17 +130,17 @@ export class HaFilterStates extends LitElement {
   private _handleItemToggled(
     ev: HASSDomEvent<number> & HASSDomCurrentTargetEvent<HaListSelectable>
   ) {
-    const state = (
+    const itemValue = (
       ev.currentTarget.items[ev.detail] as HaListItemOption | undefined
     )?.value;
-    if (!state) {
+    if (!itemValue) {
       return;
     }
 
     this.value =
       ev.type === "ha-list-item-selected"
-        ? arrayWith(this.value, state)
-        : arrayWithout(this.value, state);
+        ? arrayWith(this.value, itemValue)
+        : arrayWithout(this.value, itemValue);
 
     fireEvent(this, "data-table-filter-changed", {
       value: this.value,

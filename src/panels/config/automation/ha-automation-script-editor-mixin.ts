@@ -5,15 +5,23 @@ import type {
   TemplateResult,
 } from "lit";
 import { css, html } from "lit";
-import { property, state } from "lit/decorators";
+import { property, query, state } from "lit/decorators";
 import { consume } from "../../../common/decorators/consume";
 import { transform } from "../../../common/decorators/transform";
 import { goBack, navigate } from "../../../common/navigate";
+import { debounce } from "../../../common/util/debounce";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-spinner"; // used by renderLoading() provided to both editors
 import type { AutomationMigrationReport } from "../../../data/automation";
+import {
+  parseConfigSaveError,
+  validateConfigErrors,
+  type ConfigValidationError,
+  type ValidationSectionKeys,
+} from "../../../data/config";
 import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   showAlertDialog,
@@ -22,7 +30,27 @@ import {
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import type { Constructor, HomeAssistant, Route } from "../../../types";
+import { showToast } from "../../../util/toast";
+import {
+  errorsEqual,
+  mapErrorsToConfig,
+  NO_ERRORS,
+  rowPathsShifted,
+} from "./automation-errors";
+import { renderErrorsAlert } from "./automation-error-templates";
 import type { EntityRegistryUpdate } from "./automation-save-dialog/show-dialog-automation-save";
+import { showEditorToast } from "./editor-toast";
+
+const CONFIG_ERRORS_TOAST_ID = "config-errors";
+
+const REVALIDATE_DELAY = 500;
+
+// Core reports errors in the config a blueprint generates at `use_blueprint`
+const BLUEPRINT_PATH = ["use_blueprint"];
+
+interface ErrorsEditorElement extends HTMLElement {
+  revealErrors(): Promise<void>;
+}
 
 /** Minimum config shape shared by both AutomationConfig and ScriptConfig. */
 interface BaseEditorConfig {
@@ -82,7 +110,11 @@ export const automationScriptEditorStyles: CSSResult = css`
 export interface EditorDomainHooks<TConfig> {
   fetchFileConfig(hass: HomeAssistant, id: string): Promise<TConfig>;
   normalizeConfig(raw: TConfig, report?: AutomationMigrationReport): TConfig;
-  checkValidation(): Promise<void>;
+  /** The parts of the config `validate_config` checks, none for blueprints. */
+  validationSections(
+    config: TConfig
+  ): Partial<Record<"triggers" | "conditions" | "actions", unknown>>;
+  validationSectionKeys?: ValidationSectionKeys;
   domain: "automation" | "script";
 }
 
@@ -111,8 +143,6 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     @consume({ context: fullEntitiesContext, subscribe: true })
     entityRegistry?: EntityRegistryEntry[];
 
-    @state() protected errors?: string;
-
     @state() protected yamlErrors?: string;
 
     @state() protected currentEntityId?: string;
@@ -125,7 +155,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
 
     @state() protected deprecatedConfigMigrated = false;
 
-    @state() protected validationErrors?: (string | TemplateResult)[];
+    @state() protected configErrors: ConfigValidationError[] = NO_ERRORS;
 
     @state() protected config?: TConfig;
 
@@ -157,6 +187,16 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
 
     private _relatedContextAreaId?: string;
 
+    @query("manual-automation-editor, manual-script-editor")
+    private _errorsEditor?: ErrorsEditorElement;
+
+    // Validation responses of an older run are dropped
+    private _validationRun = 0;
+
+    // Errors may be hidden for a moment while core checks moved rows, the
+    // editor keeps revalidating until they are fixed or saved
+    private _errorsActive = false;
+
     protected willUpdate(changedProps: PropertyValues): void {
       super.willUpdate(changedProps);
       if (
@@ -165,6 +205,225 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       ) {
         this._setRelatedContext();
       }
+      // Errors set in the same update already belong to the current config
+      if (
+        changedProps.has("config") &&
+        !changedProps.has("configErrors") &&
+        this._errorsActive
+      ) {
+        // The YAML editor lists errors with their paths, it has no rows
+        if (
+          this.mode === "gui" &&
+          rowPathsShifted(changedProps.get("config"), this.config)
+        ) {
+          // Until core checks the new paths, errors would show on wrong rows
+          const kept = this.config
+            ? this._unvalidatedErrors(this.config, this.configErrors)
+            : NO_ERRORS;
+          if (!errorsEqual(kept, this.configErrors)) {
+            this.configErrors = kept.length ? kept : NO_ERRORS;
+          }
+          this._validateConfig();
+        } else {
+          this._revalidate();
+        }
+      }
+    }
+
+    public disconnectedCallback() {
+      super.disconnectedCallback();
+      // Pending validations must not touch errors or the toast anymore
+      this._validationRun++;
+      this._revalidate.cancel();
+      this._closeErrorsToast();
+    }
+
+    /** Shows the errors of saving `submitted`, the config sent to core. */
+    protected async showSaveErrors(err: unknown, submitted: TConfig) {
+      const { message, errors } = parseConfigSaveError(err);
+      if (!errors.length) {
+        this._showSaveFailedToast(message);
+        return;
+      }
+      this._validationRun++;
+      const submittedErrors = mapErrorsToConfig(submitted, errors);
+      // Rows moved while saving are checked again before showing their errors
+      this._setConfigErrors(
+        rowPathsShifted(submitted, this.config)
+          ? this._unvalidatedErrors(submitted, submittedErrors)
+          : submittedErrors
+      );
+      // Shown before revalidating, so a later save that succeeds closes it
+      this._showSaveFailedToast(
+        errors.length === 1
+          ? errors[0].message
+          : this.hass.localize(
+              "ui.panel.config.automation.editor.errors.problems_found",
+              { count: errors.length }
+            )
+      );
+      if (submitted !== this.config) {
+        await this._validateConfig();
+      }
+      await this._revealErrors();
+    }
+
+    protected async checkValidation() {
+      if (!this.currentEntityId || !this.config) {
+        return;
+      }
+      if (this.hass.states[this.currentEntityId]?.state !== UNAVAILABLE) {
+        return;
+      }
+      const config = this.config;
+      const sections = this.domainHooks.validationSections(config);
+      if (!Object.keys(sections).length) {
+        return;
+      }
+      const run = ++this._validationRun;
+      let errors: ConfigValidationError[];
+      try {
+        errors = await validateConfigErrors(
+          this.hass,
+          sections,
+          this.domainHooks.validationSectionKeys
+        );
+      } catch (_err: unknown) {
+        // The unavailable alert still shows, only the rows stay unmarked
+        return;
+      }
+      if (run !== this._validationRun || !errors.length) {
+        return;
+      }
+      const mapped = mapErrorsToConfig(config, errors);
+      if (config === this.config) {
+        this._setConfigErrors(mapped);
+        return;
+      }
+      // The editor changed the config meanwhile, e.g. when it turned a
+      // condition written as a string into an object
+      this._setConfigErrors(
+        rowPathsShifted(config, this.config) ? NO_ERRORS : mapped
+      );
+      await this._validateConfig();
+    }
+
+    private _setConfigErrors(errors: ConfigValidationError[]) {
+      this._errorsActive = true;
+      if (!errorsEqual(errors, this.configErrors)) {
+        this.configErrors = errors.length ? errors : NO_ERRORS;
+      }
+    }
+
+    /** Errors revalidating doesn't update, like an invalid mode from saving. */
+    private _unvalidatedErrors(
+      config: TConfig,
+      errors: ConfigValidationError[]
+    ): ConfigValidationError[] {
+      const sectionKeys = this.domainHooks.validationSectionKeys ?? {};
+      const sections = Object.entries(
+        this.domainHooks.validationSections(config)
+      ).map(([key, value]) => ({ key: sectionKeys[key] ?? key, value }));
+      return errors.filter((error) => {
+        const section = sections.find(({ key }) => key === error.path[0]);
+        // Core skips missing sections, so errors about one stay, but errors
+        // of its removed rows go
+        return (
+          !section || (section.value === undefined && error.path.length === 1)
+        );
+      });
+    }
+
+    private async _revealErrors() {
+      await this.updateComplete;
+      if (this.mode === "gui") {
+        await this._errorsEditor?.revealErrors();
+      }
+    }
+
+    /** All errors, for the editors that have no rows to show them on. */
+    protected renderConfigErrorsAlert(slot?: string) {
+      return renderErrorsAlert(this.configErrors, BLUEPRINT_PATH, slot);
+    }
+
+    private _showSaveFailedToast(problems: string) {
+      showEditorToast(this, {
+        id: CONFIG_ERRORS_TOAST_ID,
+        message: this.hass.localize(
+          "ui.panel.config.automation.editor.errors.save_failed",
+          { problems }
+        ),
+      });
+    }
+
+    private _closeErrorsToast() {
+      // A removed editor can't reach the toast manager by bubbling
+      const host = this.isConnected
+        ? this
+        : document.querySelector<HTMLElement>("home-assistant");
+      if (!host) {
+        return;
+      }
+      showToast(host, {
+        id: CONFIG_ERRORS_TOAST_ID,
+        message: "",
+        duration: 0,
+      });
+    }
+
+    // While errors are shown, fixed problems clear and new ones show while
+    // editing. Errors outside the validated sections, like an invalid mode,
+    // wait for the next save.
+    private _revalidate = debounce(() => {
+      this._validateConfig();
+    }, REVALIDATE_DELAY);
+
+    /** Validates the sections of the current config. */
+    private async _validateConfig() {
+      this._revalidate.cancel();
+      const config = this.config;
+      if (!config || !this._errorsActive) {
+        return;
+      }
+      const sections = this.domainHooks.validationSections(config);
+      // Blueprint inputs can't be validated on their own, so their errors
+      // only last until the next edit
+      if (!Object.keys(sections).length) {
+        this.clearConfigErrors();
+        return;
+      }
+      const sectionKeys = this.domainHooks.validationSectionKeys ?? {};
+      const run = ++this._validationRun;
+      let sectionErrors: ConfigValidationError[];
+      try {
+        sectionErrors = await validateConfigErrors(
+          this.hass,
+          sections,
+          sectionKeys
+        );
+      } catch (_err: unknown) {
+        return;
+      }
+      if (run !== this._validationRun || config !== this.config) {
+        return;
+      }
+      const errors = [
+        ...this._unvalidatedErrors(config, this.configErrors),
+        ...mapErrorsToConfig(config, sectionErrors),
+      ];
+      if (!errors.length) {
+        this.clearConfigErrors();
+        return;
+      }
+      this._setConfigErrors(errors);
+    }
+
+    protected clearConfigErrors() {
+      this._errorsActive = false;
+      this._validationRun++;
+      this._revalidate.cancel();
+      this.configErrors = NO_ERRORS;
+      this._closeErrorsToast();
     }
 
     private _setRelatedContext(): void {
@@ -277,6 +536,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     protected async loadConfig(id: string) {
       const hooks = this.domainHooks;
       const domain = hooks.domain;
+      this.clearConfigErrors();
       try {
         const config = await hooks.fetchFileConfig(this.hass, id);
         if (!this.isConnected) {
@@ -296,7 +556,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
             entityRegistryUpdate: this.entityRegistryUpdate,
           }
         );
-        hooks.checkValidation();
+        this.checkValidation();
       } catch (err: any) {
         if (!this.isConnected) {
           return;

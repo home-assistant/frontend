@@ -229,7 +229,11 @@ export const showDialog = async (
   }
 
   const targetParent = (parentElement || element).shadowRoot!;
-  if (dialogElement!.parentNode !== targetParent) {
+  if (
+    dialogElement!.parentNode !== targetParent &&
+    // The notification manager moves itself into the topmost modal.
+    !(NON_MODAL_DIALOG_TAGS.has(dialogTag) && dialogElement!.isConnected)
+  ) {
     targetParent.appendChild(dialogElement!);
   }
 
