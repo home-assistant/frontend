@@ -247,7 +247,9 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       return;
     }
     if (typeof value !== "number" || isNaN(value)) return;
-    this.shadowRoot!.querySelector(".brightness")!.innerHTML = `${value} %`;
+    const brightness = this.shadowRoot!.querySelector(".brightness");
+    if (!brightness) return;
+    brightness.innerHTML = `${value} %`;
     this._showBrightness();
   }
 
