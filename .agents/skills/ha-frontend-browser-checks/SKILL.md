@@ -19,7 +19,7 @@ When the change can look different in light and dark mode, such as a colour, bor
 
 ## Check Right To Left (RTL)
 
-Check layout, alignment, icons and anything with a direction with the page set to RTL in your browser tool, then set it back. In the gallery, use its RTL toggle instead.
+Check layout, alignment, icons and anything with a direction in RTL. In the app, set your profile language to one written right to left, then set it back: many components take their direction from the language, so setting the page to RTL in your browser tool leaves them left to right. The gallery's RTL toggle checks styling only.
 
 ## Check Long Text
 
