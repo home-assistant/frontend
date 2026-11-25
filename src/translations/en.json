@@ -5914,7 +5914,14 @@
               "no_category": "No category",
               "add_label": "Add label",
               "enable": "Enable",
-              "disable": "Disable"
+              "disable": "Disable",
+              "delete_selected": {
+                "button": "[%key:ui::panel::config::entities::picker::delete_selected::button%]",
+                "confirm_title": "Delete selected automations?",
+                "confirm_text": "{count, plural,\n  one {The selected automation will be permanently deleted.}\n  other {The {count} selected automations will be permanently deleted.}\n}",
+                "failed_title": "[%key:ui::panel::config::devices::picker::bulk_actions::delete_selected::partial_failure_title%]",
+                "failed": "{count, plural,\n  one {1 automation could not be deleted.}\n  other {{count} automations could not be deleted.}\n} Only automations stored in automations.yaml can be deleted."
+              }
             },
             "empty_header": "Start automating",
             "empty_text_1": "Automations make Home Assistant automatically respond to things happening in and around your home.",
@@ -7099,6 +7106,15 @@
             "no_category_entity_reg": "To assign a category to a script it needs to have a unique ID.",
             "delete": "[%key:ui::common::delete%]",
             "duplicate": "[%key:ui::common::duplicate%]",
+            "bulk_actions": {
+              "delete_selected": {
+                "button": "[%key:ui::panel::config::entities::picker::delete_selected::button%]",
+                "confirm_title": "Delete selected scripts?",
+                "confirm_text": "{count, plural,\n  one {The selected script will be permanently deleted.}\n  other {The {count} selected scripts will be permanently deleted.}\n}",
+                "failed_title": "[%key:ui::panel::config::devices::picker::bulk_actions::delete_selected::partial_failure_title%]",
+                "failed": "{count, plural,\n  one {1 script could not be deleted.}\n  other {{count} scripts could not be deleted.}\n} Only scripts stored in scripts.yaml can be deleted."
+              }
+            },
             "empty_header": "Create your first script",
             "empty_text": "A script is a sequence of actions that can be run from a dashboard, an automation, or be triggered by voice. For example, a ''Wake-up routine'' script that gradually turns on the light in the bedroom and opens the blinds after a delay.",
             "search": "Search {number} {number, plural,\n  one {script}\n  other {scripts}\n}",
@@ -7794,6 +7810,7 @@
             "part_of_device": "Part of {name}",
             "connected_via": "[%key:ui::panel::config::integrations::config_entry::via%]",
             "firmware_version": "Firmware",
+            "serial_number": "[%key:ui::panel::config::serial::fields::serial_number%]",
             "battery": "Battery",
             "disabled_by": "Disabled",
             "no_devices": "No devices",
@@ -7903,9 +7920,6 @@
               "hidden": "Hidden",
               "not_provided": "Not provided",
               "unmanageable": "Unmanageable"
-            },
-            "status_pairs": {
-              "activation": "Activation"
             },
             "headers": {
               "state_icon": "State icon",
