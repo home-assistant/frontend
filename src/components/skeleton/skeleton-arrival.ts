@@ -7,6 +7,7 @@ import type {
   PartInfo,
 } from "lit/directive";
 import { Directive, directive, PartType } from "lit/directive";
+import { parseAnimationDuration } from "../../common/util/parse-animation-duration";
 
 /* What a skeleton or its content can be rendered as */
 type SkeletonOrValue =
@@ -31,10 +32,12 @@ const ARRIVAL_KEYFRAMES: Keyframe[] = [{ opacity: 0 }, { opacity: 1 }];
  * page, such as a log that fills in while its skeleton shows.
  */
 export const fadeInArrival = (element: Element) => {
-  const duration =
-    parseFloat(
-      getComputedStyle(element).getPropertyValue("--ha-animation-duration-fast")
-    ) || 150;
+  // In ms or s, as the token can be either; 150ms only when it isn't set
+  const token = getComputedStyle(element)
+    .getPropertyValue("--ha-animation-duration-fast")
+    .trim();
+
+  const duration = token ? parseAnimationDuration(token) : 150;
 
   element.animate(ARRIVAL_KEYFRAMES, { duration, easing: "ease-out" });
 };
