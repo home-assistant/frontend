@@ -620,15 +620,14 @@ class MoreInfoWeather extends LitElement {
         }
 
         .temp-attribute .temp {
-          position: relative;
-          margin-right: var(--ha-space-6);
           direction: ltr;
         }
 
         .temp-attribute .temp span {
-          position: absolute;
+          position: relative;
           font-size: var(--ha-font-size-2xl);
           top: 1px;
+          vertical-align: top;
         }
 
         .state,
