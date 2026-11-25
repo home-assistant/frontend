@@ -94,7 +94,11 @@ export class HaStateControlClimateTemperature extends LitElement {
     if (!changedProp.has("stateObj")) {
       return;
     }
+    if (this.stateObj.state === UNAVAILABLE) {
+      this._changingTemperature = {};
+    }
     if (changedProp.get("stateObj")?.entity_id !== this.stateObj.entity_id) {
+      this._changingTemperature = {};
       this._debouncedCallService.cancel();
       this._pendingSync.reset();
       this._syncTargetTemperature();

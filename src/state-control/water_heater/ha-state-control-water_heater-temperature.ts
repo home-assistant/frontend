@@ -71,7 +71,11 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
     if (!changedProp.has("stateObj")) {
       return;
     }
+    if (this.stateObj.state === UNAVAILABLE) {
+      this._changingTemperature = undefined;
+    }
     if (changedProp.get("stateObj")?.entity_id !== this.stateObj.entity_id) {
+      this._changingTemperature = undefined;
       this._debouncedCallService.cancel();
       this._pendingSync.reset();
       this._syncTargetTemperature();
