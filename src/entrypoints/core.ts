@@ -75,11 +75,39 @@ const clearUrlParams = () => {
   }
 };
 
+const SERVER_CHECK_TIMEOUT = 10_000;
+
+const checkServer = async () => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), SERVER_CHECK_TIMEOUT);
+  try {
+    const response = await fetch(`${hassUrl}/manifest.json`, {
+      mode: "no-cors",
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    if (response.status >= 500) {
+      throw new Error(`Home Assistant responded with ${response.status}`);
+    }
+  } finally {
+    clearTimeout(timeout);
+  }
+};
+
+// The login page is never cached, so check the server is up before getAuth redirects to it.
+const loadTokensOrCheckServer = async () => {
+  const tokens = loadTokens();
+  if (!tokens || tokens.hassUrl !== hassUrl) {
+    await checkServer();
+  }
+  return tokens;
+};
+
 const authOptions = {
   hassUrl,
   limitHassInstance: true,
   saveTokens,
-  loadTokens: () => Promise.resolve(loadTokens()),
+  loadTokens: loadTokensOrCheckServer,
 };
 
 const getAuthDroppingStaleCallback = async () => {
