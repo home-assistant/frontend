@@ -190,7 +190,10 @@ export function createMQTTNetworkChartData(
   const style = getComputedStyle(element);
   const color = (name: string) => style.getPropertyValue(name).trim();
   const iconColor = color("--text-primary-color");
-  const brokerColor = MQTT_LOGO_COLOR;
+  // The purple of the logo has too little contrast on a dark background
+  const brokerColor = hass.themes?.darkMode
+    ? color("--purple-color")
+    : MQTT_LOGO_COLOR;
   const sourceColor = color("--orange-color");
   const deviceColor = color("--indigo-color");
   const childDeviceColor = color("--light-blue-color");

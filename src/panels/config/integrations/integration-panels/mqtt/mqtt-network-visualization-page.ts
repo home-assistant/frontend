@@ -2,8 +2,8 @@ import {
   mdiCodeBraces,
   mdiFileTree,
   mdiHubOutline,
+  mdiInformationOutline,
   mdiListStatus,
-  mdiOpenInNew,
 } from "@mdi/js";
 import type {
   CallbackDataParams,
@@ -609,9 +609,8 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
     if (!configItem(this._focusedNode)) {
       return nothing;
     }
-    const canOpen =
-      this._focusedNode!.startsWith(ENTITY_PREFIX) ||
-      this._focusedNode!.startsWith(DEVICE_PREFIX);
+    const isEntity = this._focusedNode!.startsWith(ENTITY_PREFIX);
+    const canOpen = isEntity || this._focusedNode!.startsWith(DEVICE_PREFIX);
     return html`<div
       class="node-actions"
       @pointerenter=${this._nodeActionsEnter}
@@ -628,10 +627,12 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
       ${
         canOpen
           ? html`<ha-icon-button
-              .path=${mdiOpenInNew}
+              .path=${mdiInformationOutline}
               @click=${this._openFocusedDetails}
               .label=${this.hass.localize(
-                "ui.panel.config.mqtt.visualization.open_details"
+                isEntity
+                  ? "ui.panel.config.mqtt.visualization.show_more_info"
+                  : "ui.panel.config.mqtt.visualization.go_to_device"
               )}
             ></ha-icon-button>`
           : nothing
@@ -912,7 +913,7 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
     }
     return html`${info}<br /><i
         >${this.hass.localize(
-          "ui.panel.config.mqtt.visualization.click_topic"
+          "ui.panel.config.mqtt.visualization.select_topic"
         )}</i
       >`;
   };
@@ -1150,6 +1151,13 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
         }
         .node-actions .active {
           color: var(--primary-color);
+        }
+        /* Buttons a finger can hit, like in the configuration panel */
+        @media (pointer: coarse) {
+          .node-actions {
+            --ha-icon-button-size: 40px;
+            --mdc-icon-size: 20px;
+          }
         }
         ha-network-graph {
           height: 100%;
