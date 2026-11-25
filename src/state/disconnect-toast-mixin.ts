@@ -132,43 +132,36 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     }
 
     private _updateStartupProgress() {
-      if (!this._startupProgressVisible) {
+      // Wait until the translations are available.
+      if (
+        !this._startupProgressVisible ||
+        !this.hass!.localize("ui.startup_progress.starting")
+      ) {
         return;
       }
-      const message =
-        this.hass!.localize("ui.startup_progress.starting") ||
-        "Home Assistant is starting";
-      const supportingText =
-        this.hass!.localize("ui.startup_progress.starting_secondary") ||
-        "Some features may not be available yet";
       // The launch screen render swap clears the root, which detaches the
       // notification manager and would remove a dialog opened before it.
       const mainRendered = !!this.renderRoot.querySelector(
         "home-assistant-main"
       );
       const detailsAvailable = mainRendered && !!this.hass!.user?.is_admin;
-      const key = [
-        message,
-        supportingText,
-        mainRendered,
-        detailsAvailable,
-      ].join("|");
+      const key = `${mainRendered}|${detailsAvailable}`;
       if (key === this._startupToastKey) {
         return;
       }
       this._startupToastKey = key;
       showToast(this, {
         id: SERVER_STARTUP_TOAST_ID,
-        message,
-        supportingText,
+        message: { translationKey: "ui.startup_progress.starting" },
+        supportingText: {
+          translationKey: "ui.startup_progress.starting_secondary",
+        },
         duration: -1,
         dismissable: true,
         dismiss: () => this._hideStartupProgress(),
         action: detailsAvailable
           ? {
-              text:
-                this.hass!.localize("ui.startup_progress.details") ||
-                "Startup details",
+              text: { translationKey: "ui.startup_progress.details" },
               icon: mdiInformationOutline,
               keepOpen: true,
               action: () => showStartupProgressDialog(this),
