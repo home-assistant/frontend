@@ -8,6 +8,7 @@ import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
 import "../../components/ha-alert";
+import "../../components/ha-button";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
 import { getHiddenSchemaFields } from "../../components/ha-form/conditions";
 import "../../components/ha-form/ha-form";
@@ -23,6 +24,13 @@ import {
   type DirtyStateContext,
 } from "../../data/context/dirty-state";
 import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
+import type { IntegrationLogInfo } from "../../data/integration";
+import {
+  domainToName,
+  fetchIntegrationLogInfo,
+  LogSeverity,
+  setIntegrationLogLevel,
+} from "../../data/integration";
 import { previewModule } from "../../data/preview";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
@@ -54,6 +62,9 @@ class StepFlowForm extends LitElement {
   @state() private _submitErrors?: Record<string, string>;
 
   @state() private _errorMsg?: string;
+
+  // Undefined until the current log level of the integration is known
+  @state() private _debugLogging?: boolean;
 
   @consume({ context: dirtyStateContext, subscribe: true })
   @state()
@@ -129,6 +140,7 @@ class StepFlowForm extends LitElement {
               ></ha-form>`
             : nothing
         }
+        ${this._renderDebugLogging()}
       </div>
       ${
         step.preview
@@ -151,6 +163,77 @@ class StepFlowForm extends LitElement {
           : nothing
       }
     `;
+  }
+
+  // A base error is a failure of the setup itself, like a device that cannot
+  // be reached, where debug logs can show the cause. Field errors are not.
+  private get _offerDebugLogging(): boolean {
+    return (
+      this.flowConfig.flowType === "config_flow" &&
+      !!this.domain &&
+      !!this.step.errors?.base
+    );
+  }
+
+  private _renderDebugLogging() {
+    if (!this._offerDebugLogging || this._debugLogging === undefined) {
+      return nothing;
+    }
+    if (!this._debugLogging) {
+      return html`<ha-alert alert-type="info" class="debug-logging">
+        ${this.hass.localize(
+          "ui.panel.config.integrations.config_flow.debug_logging_suggestion"
+        )}
+        <ha-button
+          slot="action"
+          size="s"
+          appearance="plain"
+          @click=${this._enableDebugLogging}
+        >
+          ${this.hass.localize(
+            "ui.panel.config.integrations.config_entry.enable_debug_logging"
+          )}
+        </ha-button>
+      </ha-alert>`;
+    }
+    return html`<ha-alert alert-type="info">
+      ${this.hass.localize(
+        "ui.panel.config.integrations.config_flow.debug_logging_on",
+        {
+          integration: domainToName(this.hass.localize, this.domain!),
+          integration_page_link: html`<a
+            href=${`/config/integrations/integration/${this.domain}`}
+            >${this.hass.localize(
+              "ui.panel.config.integrations.config_flow.integration_page_link"
+            )}</a
+          >`,
+        }
+      )}
+    </ha-alert>`;
+  }
+
+  private async _fetchDebugLogging() {
+    try {
+      const logInfos: IntegrationLogInfo[] = await fetchIntegrationLogInfo(
+        this.hass.connection
+      );
+      this._debugLogging = logInfos.some(
+        (logInfo) =>
+          logInfo.domain === this.domain && logInfo.level === LogSeverity.DEBUG
+      );
+    } catch (_err) {
+      // Without the current level, the suggestion is not shown
+    }
+  }
+
+  private async _enableDebugLogging() {
+    await setIntegrationLogLevel(
+      this.hass,
+      this.domain!,
+      LogSeverity[LogSeverity.DEBUG],
+      "once"
+    );
+    this._debugLogging = true;
   }
 
   private _setError(ev: HASSDomEvent<DataEntryFlowStepForm["errors"]>) {
@@ -180,6 +263,9 @@ class StepFlowForm extends LitElement {
     super.willUpdate(changedProps);
     if (changedProps.has("step") && this.step?.preview) {
       import(`./previews/flow-preview-${previewModule(this.step.preview)}`);
+    }
+    if (this._offerDebugLogging) {
+      this._fetchDebugLogging();
     }
 
     if (
@@ -372,6 +458,10 @@ class StepFlowForm extends LitElement {
         ha-form {
           margin-top: var(--ha-space-6);
           display: block;
+        }
+
+        ha-alert.debug-logging ha-button::part(label) {
+          white-space: nowrap;
         }
       `,
     ];
