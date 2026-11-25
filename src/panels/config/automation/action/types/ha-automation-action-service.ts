@@ -12,6 +12,8 @@ import type { ServiceAction } from "../../../../../data/script";
 import { serviceActionStruct } from "../../../../../data/script";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { HomeAssistant } from "../../../../../types";
+import { targetErrorText } from "../../automation-errors";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-service")
@@ -27,6 +29,10 @@ export class HaServiceAction extends LitElement implements ActionElement {
   @state() private _action?: ServiceAction;
 
   @state() private _responseChecked = false;
+
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["target", "data"],
+  });
 
   public static get defaultConfig(): ServiceAction {
     return { action: "", data: {} };
@@ -80,6 +86,8 @@ export class HaServiceAction extends LitElement implements ActionElement {
       ? this._action.action.split(".", 2)
       : [undefined, undefined];
 
+    const targetError = this._fieldErrors.fieldError("target");
+
     const optionalResponse =
       domain && service
         ? !!this.hass.services[domain]?.[service]?.response?.optional
@@ -92,6 +100,13 @@ export class HaServiceAction extends LitElement implements ActionElement {
         .value=${this._action}
         .disabled=${this.disabled}
         .hidePicker=${!!this._action.metadata}
+        .targetError=${
+          targetError
+            ? targetErrorText(this.hass.localize, targetError)
+            : undefined
+        }
+        .dataErrors=${this._fieldErrors.nestedFieldErrors("data")}
+        .dataError=${this._fieldErrors.ownFieldError("data")?.message}
         @value-changed=${this._actionChanged}
       ></ha-service-control>
       ${

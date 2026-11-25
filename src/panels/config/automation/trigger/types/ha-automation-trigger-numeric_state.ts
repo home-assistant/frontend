@@ -4,6 +4,7 @@ import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { NumericStateTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
@@ -183,6 +184,17 @@ const SCHEMA = [
 
 @customElement("ha-automation-trigger-numeric_state")
 export class HaNumericStateTrigger extends LitElement {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: [
+      "entity_id",
+      "attribute",
+      "value_template",
+      "above",
+      "below",
+      "for",
+    ],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public trigger!: NumericStateTrigger;
@@ -230,6 +242,7 @@ export class HaNumericStateTrigger extends LitElement {
 
     return html`
       <ha-form
+        .error=${this._fieldErrors.fields}
         .hass=${this.hass}
         .data=${data}
         .schema=${SCHEMA}
