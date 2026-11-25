@@ -188,6 +188,17 @@ describe("createMQTTNetworkChartData", () => {
     }
   );
 
+  it("keeps a theme color it cannot fade", () => {
+    vi.stubGlobal("getComputedStyle", () => ({
+      getPropertyValue: () => "light-dark(#ffffff, #000000)",
+    }));
+    // A focus fades the other nodes
+    const data = chartData({ focusedNode: HUB, hiddenCategories: [] });
+    expect(
+      data.nodes.find((node) => node.id === CHILD_ENTITY)!.itemStyle!.color
+    ).toBe("light-dark(#ffffff, #000000)");
+  });
+
   it("folds a hidden node onto its parent in the tree", () => {
     const data = chartData({ hiddenCategories: DEFAULT_HIDDEN }, true);
     const hub = data.nodes.find((node) => node.id === HUB)!;

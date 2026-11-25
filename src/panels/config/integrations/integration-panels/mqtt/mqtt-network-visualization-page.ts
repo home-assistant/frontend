@@ -37,7 +37,9 @@ import {
   getConfigEntries,
   getSubEntries,
 } from "../../../../../data/config_entries";
+import type { ConfigEntry } from "../../../../../data/config_entries";
 import { showSubConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-sub-config-flow";
+import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import type {
   MQTTExplorerConfig,
   MQTTExplorerDetails,
@@ -217,8 +219,6 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
 
   private _refreshTimer?: number;
 
-  private _nodeActionsFrame?: number;
-
   // The actions stay put under the pointer, so they can be clicked
   private _nodeActionsHovered = false;
 
@@ -239,7 +239,6 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
     this._refreshTimer = undefined;
     // The subscription stops, so the topic would no longer be live on return
     this._closeTopic();
-    this._stopTrackingNodeActions();
   }
 
   protected firstUpdated(changedProperties: PropertyValues<this>): void {
@@ -249,44 +248,38 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
 
   protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
-    // A request that resolves after leaving the page still updates it
-    if (this.isConnected && this.shadowRoot!.querySelector(".node-actions")) {
-      this._nodeActionsFrame ??= requestAnimationFrame(this._trackNodeActions);
+    if (this.shadowRoot!.querySelector(".node-actions")) {
+      this._placeNodeActions();
     } else {
       // Removed actions get no pointerleave
       this._nodeActionsHovered = false;
-      this._stopTrackingNodeActions();
     }
   }
 
-  // Keeps the actions next to their node while the graph moves or zooms
-  private _trackNodeActions = (): void => {
+  // Keeps the actions next to their node, on every frame the graph draws
+  private _placeNodeActions = (): void => {
     const actions =
       this.shadowRoot!.querySelector<HTMLElement>(".node-actions");
     const graph = this.shadowRoot!.querySelector("ha-network-graph");
-    if (!actions || !graph || !this._focusedNode) {
-      this._nodeActionsFrame = undefined;
+    if (!actions || !graph || !this._focusedNode || this._nodeActionsHovered) {
       return;
     }
-    if (!this._nodeActionsHovered) {
-      const position = graph.getNodePosition(this._focusedNode);
-      if (position) {
-        // Below the node, clear of its label on the right
-        const x = Math.min(
-          Math.max(0, position.x - actions.offsetWidth / 2),
-          graph.clientWidth - actions.offsetWidth
-        );
-        const y = Math.min(
-          position.y + NODE_ACTIONS_OFFSET,
-          graph.clientHeight - actions.offsetHeight
-        );
-        actions.style.transform = `translate(${x}px, ${Math.max(0, y)}px)`;
-        actions.style.visibility = "visible";
-      } else {
-        actions.style.visibility = "hidden";
-      }
+    const position = graph.getNodePosition(this._focusedNode);
+    if (!position) {
+      actions.style.visibility = "hidden";
+      return;
     }
-    this._nodeActionsFrame = requestAnimationFrame(this._trackNodeActions);
+    // Below the node, clear of its label on the right
+    const x = Math.min(
+      Math.max(0, position.x - actions.offsetWidth / 2),
+      graph.clientWidth - actions.offsetWidth
+    );
+    const y = Math.min(
+      position.y + NODE_ACTIONS_OFFSET,
+      graph.clientHeight - actions.offsetHeight
+    );
+    actions.style.transform = `translate(${x}px, ${Math.max(0, y)}px)`;
+    actions.style.visibility = "visible";
   };
 
   private _nodeActionsEnter(): void {
@@ -295,13 +288,6 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
 
   private _nodeActionsLeave(): void {
     this._nodeActionsHovered = false;
-  }
-
-  private _stopTrackingNodeActions(): void {
-    if (this._nodeActionsFrame !== undefined) {
-      cancelAnimationFrame(this._nodeActionsFrame);
-      this._nodeActionsFrame = undefined;
-    }
   }
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {
@@ -395,18 +381,32 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
       SUBENTRY_SOURCE_PREFIX.length
     );
     // There can be more than one MQTT entry, of which one is loaded
-    const entries = await getConfigEntries(this.hass, { domain: "mqtt" });
-    for (const entry of entries) {
-      // eslint-disable-next-line no-await-in-loop
-      const subentries = await getSubEntries(this.hass.callWS, entry.entry_id);
-      const subentry = subentries.find((sub) => sub.subentry_id === subentryId);
-      if (subentry) {
-        showSubConfigFlowDialog(this, entry, subentry.subentry_type, {
-          startFlowHandler: entry.entry_id,
-          subEntryId: subentryId,
-        });
-        return;
+    let found: [ConfigEntry, string] | undefined;
+    try {
+      const entries = await getConfigEntries(this.hass, { domain: "mqtt" });
+      for (const entry of entries) {
+        // eslint-disable-next-line no-await-in-loop
+        const subentries = await getSubEntries(
+          this.hass.callWS,
+          entry.entry_id
+        );
+        const subentry = subentries.find(
+          (sub) => sub.subentry_id === subentryId
+        );
+        if (subentry) {
+          found = [entry, subentry.subentry_type];
+          break;
+        }
       }
+    } catch (err: any) {
+      showAlertDialog(this, { text: err?.message || String(err) });
+      return;
+    }
+    if (found) {
+      showSubConfigFlowDialog(this, found[0], found[1], {
+        startFlowHandler: found[0].entry_id,
+        subEntryId: subentryId,
+      });
     }
   }
 
@@ -450,6 +450,10 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
           : this.narrow
             ? html`<ha-adaptive-dialog
                 .open=${!this._closingDetails}
+                .accessibleLabel=${
+                  this._selectedTopic?.topic.topic ??
+                  this._nodeName(this._focusedNode!)
+                }
                 without-header
                 @closed=${this._handleDetailsDialogClosed}
                 >${details}</ha-adaptive-dialog
@@ -558,11 +562,13 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
         .hoverFocus=${false}
         .nodeClickRadius=${NODE_CLICK_RADIUS}
         .fixedLayout=${this._treeLayout}
+        .animateStyleChanges=${true}
         .hiddenCategories=${this._legendHiddenCategories()}
         .tooltipFormatter=${this._tooltipFormatter}
         @chart-click=${this._handleChartClick}
         @chart-zoom-reset=${this._clearFocus}
         @network-legend-changed=${this._handleLegendChange}
+        @network-graph-rendered=${this._placeNodeActions}
       >
         ${!this.narrow ? this._renderInputSearch("search") : nothing}
         <ha-icon-button

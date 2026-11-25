@@ -218,8 +218,14 @@ export function createMQTTNetworkChartData(
   // A faded node is mixed with the background instead of made transparent,
   // so the links behind it do not show through
   const graphBackgroundColor = color("--primary-background-color");
-  const fade = (value: string, opacity = FADED_OPACITY) =>
-    hexBlend(value, graphBackgroundColor, opacity * 100);
+  const fade = (value: string, opacity = FADED_OPACITY) => {
+    try {
+      return hexBlend(value, graphBackgroundColor, opacity * 100);
+    } catch (_err) {
+      // A theme color that is no hex color, like color-mix(), stays unfaded
+      return value;
+    }
+  };
 
   const nodes: NetworkNode[] = [];
   const links: NetworkLink[] = [];

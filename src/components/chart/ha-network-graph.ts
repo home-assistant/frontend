@@ -212,6 +212,12 @@ export class HaNetworkGraph extends LitElement {
   @property({ attribute: false }) public fixedLayout = false;
 
   /**
+   * Fade colors and borders when the data changes. Off for graphs that update
+   * often, whose nodes and links would be fading most of the time.
+   */
+  @property({ attribute: false }) public animateStyleChanges = false;
+
+  /**
    * Names of the legend categories that are switched off. Keep it up to date
    * with `network-legend-changed`, or leave it out to let the legend keep its
    * own selection.
@@ -311,7 +317,11 @@ export class HaNetworkGraph extends LitElement {
     ev.preventDefault();
     ev.stopPropagation();
     const pixels =
-      ev.deltaMode === WheelEvent.DOM_DELTA_LINE ? ev.deltaY * 16 : ev.deltaY;
+      ev.deltaMode === WheelEvent.DOM_DELTA_PAGE
+        ? ev.deltaY * chart.getHeight()
+        : ev.deltaMode === WheelEvent.DOM_DELTA_LINE
+          ? ev.deltaY * 16
+          : ev.deltaY;
     // A trackpad pinch sends many small deltas, a wheel a few large ones
     const factor = Math.exp(
       -pixels * (ev.ctrlKey ? PINCH_ZOOM_SPEED : WHEEL_ZOOM_SPEED)
@@ -374,7 +384,11 @@ export class HaNetworkGraph extends LitElement {
       this._physicsEnabled =
         this.data.nodes.length <= PHYSICS_DISABLE_THRESHOLD;
     }
-    if (changedProperties.has("data") && !this._reducedMotion) {
+    if (
+      changedProperties.has("data") &&
+      this.animateStyleChanges &&
+      !this._reducedMotion
+    ) {
       this._previousStyles = this._getStyles();
     }
     // Before the first render, which counts the visible nodes
@@ -1031,6 +1045,12 @@ export class HaNetworkGraph extends LitElement {
     }
   }
 
+  // Fired for every drawn frame, so the page can place things next to nodes
+  // while the graph moves, and stays idle when it does not
+  private _handleRendered = () => {
+    fireEvent(this, "network-graph-rendered");
+  };
+
   private _handleChartSetup() {
     const chart = this._baseChart?.chart;
     chart?.getZr().on("click", this._handleEmptyClick);
@@ -1040,6 +1060,7 @@ export class HaNetworkGraph extends LitElement {
     chart?.getZr().on("drag", this._handleDrag);
     chart?.getZr().on("dragend", this._handleDragEnd);
     chart?.on("finished", this._captureInitialForceView);
+    chart?.on("rendered", this._handleRendered);
     for (const event of LEGEND_SELECT_EVENTS) {
       chart?.on(event, this._handleLegendChange);
     }
@@ -1661,5 +1682,6 @@ declare global {
     "node-selected": { id: string };
     // The names of the legend categories that are switched off
     "network-legend-changed": { hidden: string[] };
+    "network-graph-rendered": undefined;
   }
 }

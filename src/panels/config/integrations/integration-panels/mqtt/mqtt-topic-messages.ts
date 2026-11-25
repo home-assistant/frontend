@@ -151,8 +151,7 @@ class MqttTopicMessages extends LitElement {
                         : nothing
                     }
                     <span slot="end" class="message-meta">
-                      QoS
-                      ${msg.qos}${
+                      ${this._localize("qos", { qos: msg.qos })}${
                         msg.retain
                           ? html` · ${this._localize("retained")}`
                           : nothing
