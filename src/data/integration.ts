@@ -50,11 +50,13 @@ export type IntegrationType =
   | "system"
   | "virtual";
 
+export type InstallationType = "built_in" | "marketplace" | "custom";
 export type DomainManifestLookup = Record<string, IntegrationManifest>;
 
 export interface IntegrationManifest {
   is_built_in: boolean;
   overwrites_built_in?: boolean;
+  installation_type?: InstallationType;
   domain: string;
   name: string;
   config_flow?: boolean;
