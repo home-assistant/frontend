@@ -51,6 +51,9 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
       return ["on", "home", "open", "locked", "problem"].includes(compareState);
     case "timer":
       return compareState === "active";
+    case "timer_list":
+      // The state is the number of active timers
+      return compareState !== "0";
     case "camera":
       return ["streaming", "recording"].includes(compareState);
   }

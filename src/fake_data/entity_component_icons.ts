@@ -279,6 +279,11 @@ export const ENTITY_COMPONENT_ICONS: Record<string, ComponentIcons> = {
       default: "mdi:clipboard-list",
     },
   },
+  timer_list: {
+    _: {
+      default: "mdi:timer-outline",
+    },
+  },
   cover: {
     _: {
       default: "mdi:window-open",

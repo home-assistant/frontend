@@ -1494,6 +1494,21 @@
         "grid": "Grid",
         "list": "List"
       },
+      "timer-list": {
+        "name": "Name",
+        "start": "Start",
+        "add_timer": "Add timer",
+        "duration": "[%key:ui::dialogs::helper_settings::timer::duration%]",
+        "pause": "Pause",
+        "resume": "Resume",
+        "cancel": "Cancel",
+        "add_minute": "Add 1 minute",
+        "add_minute_short": "+1:00",
+        "remove": "Remove",
+        "paused_name": "{name} (paused)",
+        "finished_name": "{name} (finished)",
+        "no_timers": "No active timers"
+      },
       "todo": {
         "item": {
           "summary": "Task name",
@@ -12060,6 +12075,11 @@
               "description": "This card gives you a quick overview of a sensor's state with an optional graph to visualize change over time.",
               "limit_min": "Minimum value",
               "limit_max": "Maximum value"
+            },
+            "timer-list": {
+              "name": "Timer list",
+              "description": "This card allows you to start, pause, and cancel the timers in a timer list.",
+              "hide_create": "Hide the add timer button"
             },
             "todo-list": {
               "name": "To-do list",
