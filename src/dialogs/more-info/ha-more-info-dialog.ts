@@ -154,8 +154,8 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   // The dialog grows with the camera's picture, as high as there is room for
   @state() private _cameraAspectRatio?: number;
 
-  // The camera's info shows microphone controls below the picture then
-  @state() private _cameraTwoWayAudio = false;
+  // Height of the controls the camera's info shows below the picture
+  @state() private _cameraControlsHeight?: string;
 
   @state() private _open = false;
 
@@ -200,7 +200,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     // its size again
     if (params.entityId !== this._entityId) {
       this._cameraAspectRatio = undefined;
-      this._cameraTwoWayAudio = false;
+      this._cameraControlsHeight = undefined;
     }
     this._entityId = params.entityId;
     if (!this._entityId) {
@@ -266,7 +266,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._childViewStack = [];
     this._returnUrl = undefined;
     this._cameraAspectRatio = undefined;
-    this._cameraTwoWayAudio = false;
+    this._cameraControlsHeight = undefined;
     this._isEscapeEnabled = true;
     window.removeEventListener("dialog-closed", this._enableEscapeKeyClose);
     window.removeEventListener("show-dialog", this._disableEscapeKeyClose);
@@ -709,15 +709,13 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
         }
         class=${classMap({ camera: domain === "camera" })}
         style=${styleMap({
-          "--more-info-camera-controls-height": this._cameraTwoWayAudio
-            ? "72px"
-            : undefined,
+          "--more-info-camera-controls-height": this._cameraControlsHeight,
           "--ha-dialog-width-lg": cameraAspectRatio
             ? `clamp(var(--ha-dialog-width-md, 580px), calc(var(--video-max-height) * ${cameraAspectRatio}), 1920px)`
             : undefined,
         })}
         @camera-aspect-ratio-changed=${this._cameraAspectRatioChanged}
-        @camera-capabilities-changed=${this._cameraCapabilitiesChanged}
+        @camera-controls-height-changed=${this._cameraControlsHeightChanged}
         .accessibleLabel=${title}
         @closed=${this._dialogClosed}
         @opened=${this._handleOpened}
@@ -1148,10 +1146,10 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._cameraAspectRatio = ev.detail.aspectRatio;
   }
 
-  private _cameraCapabilitiesChanged(
-    ev: HASSDomEvent<HASSDomEvents["camera-capabilities-changed"]>
+  private _cameraControlsHeightChanged(
+    ev: HASSDomEvent<HASSDomEvents["camera-controls-height-changed"]>
   ) {
-    this._cameraTwoWayAudio = ev.detail.capabilities?.two_way_audio ?? false;
+    this._cameraControlsHeight = ev.detail.height;
   }
 
   private _enlarge() {
@@ -1218,8 +1216,8 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
           --dialog-content-padding: 0;
         }
 
-        /* The dialog's margin, its header of about 68px and the microphone
-           controls of about 72px when the camera has them */
+        /* The dialog's margin, its header of about 68px and the controls
+           below the picture */
         ha-adaptive-dialog.camera {
           --video-max-height: calc(
             100vh - var(--ha-space-20) -
