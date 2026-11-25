@@ -8,7 +8,7 @@ import { consume } from "../../common/decorators/consume";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
-import { stopPropagation } from "../../common/dom/stop_propagation";
+import { stopKeydownEnterSpacePropagation } from "../../common/dom/stop_propagation";
 import "../../components/ha-alert";
 import "../../components/ha-button";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
@@ -189,7 +189,7 @@ class StepFlowForm extends LitElement {
       return html`<ha-alert
         alert-type="info"
         class="debug-logging"
-        @keydown=${stopPropagation}
+        @keydown=${stopKeydownEnterSpacePropagation}
       >
         ${this.hass.localize(
           "ui.panel.config.integrations.config_flow.debug_logging_suggestion"
@@ -202,10 +202,11 @@ class StepFlowForm extends LitElement {
     return html`<ha-alert
       alert-type="warning"
       class="debug-logging"
+      .narrow=${this.narrow}
       .title=${this.hass.localize(
         "ui.panel.config.integrations.config_entry.debug_logging_enabled"
       )}
-      @keydown=${stopPropagation}
+      @keydown=${stopKeydownEnterSpacePropagation}
     >
       <ha-svg-icon slot="icon" .path=${mdiBugPlay}></ha-svg-icon>
       ${this.hass.localize(
