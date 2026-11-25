@@ -329,8 +329,8 @@ export function generateStatisticsChartData(
           color: chartType === "bar" ? backgroundColor : borderColor,
         };
         if (chartType === "bar") {
-          // Cap the width like the energy cards do: echarts otherwise sizes a
-          // bar that is alone on the axis (one point in the range) to the axis
+          // echarts sizes bars from the smallest gap between points, so sparse
+          // data (one point, or points far apart) gets huge bars without a cap
           (series as BarSeriesOption).barMaxWidth = 50;
         }
         if (chartStacked) {
