@@ -47,6 +47,7 @@ import "../../../components/ha-icon-next";
 import "../../../components/item/ha-list-item-base";
 import "../../../components/item/ha-list-item-button";
 import "../../../components/list/ha-list-base";
+import { getSignedPath } from "../../../data/auth";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import {
   ERROR_STATES,
@@ -60,6 +61,10 @@ import { fetchDiagnosticHandler } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
 import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
+import {
+  getCoreLogFileDownloadUnavailableReason,
+  getErrorLogDownloadUrl,
+} from "../../../data/error_log";
 import { manifestsContext } from "../../../data/context";
 import type {
   DomainManifestLookup,
@@ -72,14 +77,9 @@ import {
   fetchIntegrationManifest,
   getConfigPanelPath,
   integrationIssuesUrl,
+  setIntegrationLogLevel,
   subscribeLogInfo,
 } from "../../../data/integration";
-import {
-  checkDebugLogDownloadAvailable,
-  disableIntegrationDebugLogging,
-  downloadIntegrationDebugLog,
-  enableIntegrationDebugLogging,
-} from "../../../data/integration_debug_log";
 import { QUALITY_SCALE_MAP } from "../../../data/integration_quality_scale";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showSubConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-sub-config-flow";
@@ -92,6 +92,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
+import { fileDownload } from "../../../util/file_download";
 import { configSections } from "../config-sections";
 import "./ha-config-entry-row";
 import type { HaConfigEntryRow } from "./ha-config-entry-row";
@@ -1535,7 +1536,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   }
 
   private async _handleEnableDebugLogging() {
-    await enableIntegrationDebugLogging(this.hass, this.domain);
+    const integration = this.domain;
+    await setIntegrationLogLevel(
+      this.hass,
+      integration,
+      LogSeverity[LogSeverity.DEBUG],
+      "once"
+    );
   }
 
   private _showLiveLog() {
@@ -1548,12 +1555,28 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   private async _handleDisableDebugLogging(ev: Event) {
     // Stop propagation since otherwise we end up here twice while we await the log level change.
     ev.stopPropagation();
+    const integration = this.domain;
     const request = this._debugLogRequest;
-    await disableIntegrationDebugLogging(this.hass, this.domain);
+    await setIntegrationLogLevel(
+      this.hass,
+      integration,
+      LogSeverity[LogSeverity.NOTSET],
+      "once"
+    );
     if (request !== this._debugLogRequest) {
       return;
     }
-    if (!checkDebugLogDownloadAvailable(this, this.hass)) {
+    const logFileDownloadUnavailableReason =
+      getCoreLogFileDownloadUnavailableReason(this.hass);
+    if (logFileDownloadUnavailableReason) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.logs.log_file_disabled_title"
+        ),
+        text: this.hass.localize(
+          `ui.panel.config.logs.log_file_disabled_debug_download.${logFileDownloadUnavailableReason}`
+        ),
+      });
       return;
     }
     this._debugLogReady = true;
@@ -1565,8 +1588,15 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     this._debugLogRequest++;
   }
 
-  private _downloadDebugLog() {
-    downloadIntegrationDebugLog(this.hass, this.domain);
+  private async _downloadDebugLog() {
+    const integration = this.domain;
+    const timeString = new Date().toISOString().replace(/:/g, "-");
+    const logFileName = `home-assistant_${integration}_${timeString}.log`;
+    const signedUrl = await getSignedPath(
+      this.hass,
+      getErrorLogDownloadUrl(this.hass)
+    );
+    fileDownload(signedUrl.path, logFileName);
   }
 
   private _getEntities = memoizeOne(

@@ -1,11 +1,4 @@
-import {
-  mdiBugPlay,
-  mdiBugStop,
-  mdiClose,
-  mdiDotsVertical,
-  mdiDownload,
-  mdiHelpCircleOutline,
-} from "@mdi/js";
+import { mdiClose, mdiHelpCircleOutline } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -15,14 +8,10 @@ import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { sanitizeHttpUrl } from "../../common/url/sanitize-http-url";
-import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
-import "../../components/ha-dropdown";
-import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
-import "../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../data/config_entries";
 import type { DataEntryFlowStep } from "../../data/data_entry_flow";
 import {
@@ -30,18 +19,6 @@ import {
   subscribeDataEntryFlowProgressed,
 } from "../../data/data_entry_flow";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";
-import type { IntegrationLogInfo } from "../../data/integration";
-import {
-  LogSeverity,
-  domainToName,
-  subscribeLogInfo,
-} from "../../data/integration";
-import {
-  checkDebugLogDownloadAvailable,
-  disableIntegrationDebugLogging,
-  downloadIntegrationDebugLog,
-  enableIntegrationDebugLogging,
-} from "../../data/integration_debug_log";
 import type { RepairsIssue } from "../../data/repairs";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
@@ -142,35 +119,12 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
 
   private _unsubDataEntryFlowProgress?: UnsubscribeFunc;
 
-  @state() private _logInfos?: IntegrationLogInfo[];
-
-  @state() private _debugLogReady = false;
-
-  private _debugLogRequest = 0;
-
-  private _unsubLogInfo?: UnsubscribeFunc;
-
   public async showDialog(params: DataEntryFlowDialogParams): Promise<void> {
     this._initDirtyTracking({ type: "deep" });
     this._flowHasProgressed = Boolean(params.continueFlowId);
     this._params = params;
     this._instance = instance++;
     this._open = true;
-    this._resetDebugLogReady();
-    if (params.flowConfig.flowType === "config_flow" && !this._unsubLogInfo) {
-      this._unsubLogInfo = subscribeLogInfo(
-        this.hass.connection,
-        (logInfos) => {
-          if (
-            this._isDebugLogging(logInfos) &&
-            !this._isDebugLogging(this._logInfos)
-          ) {
-            this._resetDebugLogReady();
-          }
-          this._logInfos = logInfos;
-        }
-      );
-    }
 
     const curInstance = this._instance;
     let step: DataEntryFlowStep;
@@ -282,12 +236,6 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
       this._unsubDataEntryFlowProgress();
       this._unsubDataEntryFlowProgress = undefined;
     }
-    if (this._unsubLogInfo) {
-      this._unsubLogInfo();
-      this._unsubLogInfo = undefined;
-    }
-    this._logInfos = undefined;
-    this._resetDebugLogReady();
     this._open = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -457,9 +405,7 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
               `
             : nothing
         }
-        ${this._renderDebugLoggingMenu()}
         <div>
-          ${this._renderDebugLoggingAlert()}
           ${
             this._loading || this._step === null
               ? html`
@@ -578,191 +524,6 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
       this._step?.type === "progress"
     );
   }
-
-  // Debug logging is only offered while setting up an integration,
-  // so it also covers integrations that have not been set up before.
-  private get _debugLoggingDomain(): string | undefined {
-    // The current step stays set while the next step loads, so the debug
-    // logging controls stay available during a slow setup request.
-    if (this._params?.flowConfig.flowType !== "config_flow" || !this._step) {
-      return undefined;
-    }
-    return this._params.domain ?? this._step.handler;
-  }
-
-  private _isDebugLogging(logInfos?: IntegrationLogInfo[]): boolean {
-    const domain = this._debugLoggingDomain;
-    return Boolean(
-      domain &&
-      logInfos?.some(
-        (logInfo) =>
-          logInfo.domain === domain && logInfo.level === LogSeverity.DEBUG
-      )
-    );
-  }
-
-  private _renderDebugLoggingMenu() {
-    if (!this._debugLoggingDomain || !this._logInfos) {
-      return nothing;
-    }
-    const debugLogging = this._isDebugLogging(this._logInfos);
-    return html`
-      <ha-dropdown slot="headerActionItems" placement="bottom-end">
-        <ha-icon-button
-          slot="trigger"
-          .label=${this.hass.localize("ui.common.menu")}
-          .path=${mdiDotsVertical}
-        ></ha-icon-button>
-        <ha-dropdown-item
-          .variant=${debugLogging ? "danger" : "default"}
-          @click=${
-            debugLogging
-              ? this._handleDisableDebugLogging
-              : this._handleEnableDebugLogging
-          }
-        >
-          <ha-svg-icon
-            slot="icon"
-            .path=${debugLogging ? mdiBugStop : mdiBugPlay}
-          ></ha-svg-icon>
-          ${this.hass.localize(
-            debugLogging
-              ? "ui.panel.config.integrations.config_entry.disable_debug_logging"
-              : "ui.panel.config.integrations.config_entry.enable_debug_logging"
-          )}
-        </ha-dropdown-item>
-      </ha-dropdown>
-    `;
-  }
-
-  private _renderDebugLoggingAlert() {
-    const domain = this._debugLoggingDomain;
-    if (!domain) {
-      return nothing;
-    }
-    if (this._isDebugLogging(this._logInfos)) {
-      const setupDone = this._step?.type === "create_entry";
-      return html`
-        <ha-alert
-          class="debug-logging"
-          alert-type="warning"
-          narrow
-          .title=${this.hass.localize(
-            "ui.panel.config.integrations.config_entry.debug_logging_enabled"
-          )}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiBugPlay}></ha-svg-icon>
-          ${this.hass.localize(
-            "ui.panel.config.integrations.config_flow.debug_logging_enabled_description",
-            {
-              integration: domainToName(
-                this.hass.localize,
-                domain,
-                this._params?.manifest ?? undefined
-              ),
-            }
-          )}
-          <ha-button
-            slot="action"
-            size="s"
-            variant="warning"
-            appearance="filled"
-            @click=${
-              setupDone
-                ? this._handleDisableAndDownloadDebugLog
-                : this._handleDisableDebugLogging
-            }
-          >
-            ${
-              setupDone
-                ? this.hass.localize(
-                    "ui.panel.config.integrations.config_flow.disable_and_download_log"
-                  )
-                : this.hass.localize("ui.common.disable")
-            }
-          </ha-button>
-        </ha-alert>
-      `;
-    }
-    if (this._debugLogReady) {
-      return html`
-        <ha-alert
-          class="debug-logging"
-          alert-type="info"
-          dismissable
-          narrow
-          .title=${this.hass.localize(
-            "ui.panel.config.integrations.config_entry.debug_log_ready"
-          )}
-          @alert-dismissed-clicked=${this._resetDebugLogReady}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.integrations.config_entry.debug_log_ready_description"
-          )}
-          <ha-button
-            slot="action"
-            size="s"
-            appearance="filled"
-            @click=${this._handleDownloadDebugLog}
-          >
-            <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
-            ${this.hass.localize("ui.common.download")}
-          </ha-button>
-        </ha-alert>
-      `;
-    }
-    return nothing;
-  }
-
-  private _handleEnableDebugLogging = async () => {
-    const domain = this._debugLoggingDomain;
-    if (domain) {
-      await enableIntegrationDebugLogging(this.hass, domain);
-    }
-  };
-
-  private _handleDisableDebugLogging = (ev: Event) => {
-    // Stop propagation since otherwise we end up here twice while we await the log level change.
-    ev.stopPropagation();
-    this._disableDebugLogging(false);
-  };
-
-  private _handleDisableAndDownloadDebugLog = () => {
-    this._disableDebugLogging(true);
-  };
-
-  private async _disableDebugLogging(download: boolean) {
-    const domain = this._debugLoggingDomain;
-    if (!domain) {
-      return;
-    }
-    const request = this._debugLogRequest;
-    await disableIntegrationDebugLogging(this.hass, domain);
-    if (
-      request !== this._debugLogRequest ||
-      !checkDebugLogDownloadAvailable(this, this.hass)
-    ) {
-      return;
-    }
-    if (download) {
-      await downloadIntegrationDebugLog(this.hass, domain);
-      return;
-    }
-    this._debugLogReady = true;
-  }
-
-  private _handleDownloadDebugLog = () => {
-    const domain = this._debugLoggingDomain;
-    if (domain) {
-      downloadIntegrationDebugLog(this.hass, domain);
-    }
-  };
-
-  // Also invalidates pending disable requests so they can't restore the alert.
-  private _resetDebugLogReady = () => {
-    this._debugLogReady = false;
-    this._debugLogRequest++;
-  };
 
   private _renderFooter() {
     if (!this._step || this._loading) {
@@ -1091,13 +852,6 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
         }
         .help {
           color: var(--secondary-text-color);
-        }
-        ha-alert.debug-logging {
-          display: block;
-          margin-bottom: var(--ha-space-4);
-        }
-        ha-alert.debug-logging ha-button::part(label) {
-          white-space: nowrap;
         }
       `,
     ];
