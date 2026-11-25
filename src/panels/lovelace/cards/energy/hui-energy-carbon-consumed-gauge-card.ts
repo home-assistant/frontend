@@ -1,5 +1,9 @@
 import { mdiInformationOutline } from "@mdi/js";
-import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
+import type {
+  HassConfig,
+  HassEntities,
+  HassEntity,
+} from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -15,6 +19,7 @@ import {
   configContext,
   entitiesContext,
   internationalizationContext,
+  statesContext,
 } from "../../../../data/context";
 import type { EnergyData } from "../../../../data/energy";
 import {
@@ -77,6 +82,27 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
   @consume({ context: entitiesContext, subscribe: true })
   private _entities?: HomeAssistant["entities"];
 
+  /* Whether the energy data will find a CO2 Signal sensor: one with a
+     current state in %, as getEnergyData picks it. Until the registry is
+     there to say, assume it will. */
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<HassEntities, boolean>({
+    transformer: function (this: HuiEnergyCarbonGaugeCard, states) {
+      if (!this._entities || !states) {
+        return true;
+      }
+
+      return Object.values(this._entities).some(
+        (entity) =>
+          entity.platform === "co2signal" &&
+          states[entity.entity_id]?.attributes.unit_of_measurement === "%"
+      );
+    },
+    watch: ["_entities"],
+  })
+  private _hasCo2Signal = true;
+
   constructor() {
     super();
     new EnergyCollectionController(this, {
@@ -106,12 +132,7 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
     if (!this._data) {
       // Without a CO2 Signal sensor the card shows nothing, so it doesn't
       // stand in for anything while the data loads
-      if (
-        this._entities &&
-        !Object.values(this._entities).some(
-          (entity) => entity.platform === "co2signal"
-        )
-      ) {
+      if (!this._hasCo2Signal) {
         return nothing;
       }
 
