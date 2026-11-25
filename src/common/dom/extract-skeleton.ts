@@ -414,6 +414,21 @@ export const extractSkeleton = (
         continue;
       }
 
+      // What the content hides itself, such as a light card's brightness
+      // until its slider moves, isn't read. An overlay's own hiding doesn't
+      // count: the whole content before the first reading, and parts it
+      // holds hidden inline.
+      if (
+        style.opacity === "0" &&
+        child.parentNode !== root &&
+        !(
+          (child instanceof HTMLElement || child instanceof SVGElement) &&
+          child.style.opacity === "0"
+        )
+      ) {
+        continue;
+      }
+
       const rect = child.getBoundingClientRect();
       const tag = child.localName;
       // Elements such as slots take no space but their content does
