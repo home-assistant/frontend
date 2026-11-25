@@ -79,6 +79,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
 
   private _syncTargetHumidity() {
     this._targetHumidity = this.stateObj.attributes.humidity;
+    this._changingHumidity = undefined;
   }
 
   private get _step() {
