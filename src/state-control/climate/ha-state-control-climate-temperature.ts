@@ -109,6 +109,7 @@ export class HaStateControlClimateTemperature extends LitElement {
       low: this.stateObj.attributes.target_temp_low,
       high: this.stateObj.attributes.target_temp_high,
     };
+    this._targetTemperatureBeforeChanging = undefined;
   }
 
   private get _step() {

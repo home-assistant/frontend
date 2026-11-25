@@ -82,6 +82,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
 
   private _syncTargetTemperature() {
     this._targetTemperature = this.stateObj.attributes.temperature;
+    this._targetTemperatureBeforeChanging = undefined;
   }
 
   private get _step() {
