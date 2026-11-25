@@ -81,13 +81,13 @@ export class HaStateControlClimateTemperature extends LitElement {
 
   @state() private _targetTemperature: Partial<Record<Target, number>> = {};
 
+  @state() private _changingTemperature: Partial<Record<Target, number>> = {};
+
   @state() private _selectTargetTemperature: Target = "low";
 
   private _sizeController = createStateControlCircularSliderController(this);
 
   private _pendingSync = new PendingValueSync();
-
-  private _targetTemperatureBeforeChanging?: Partial<Record<Target, number>>;
 
   protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
@@ -109,7 +109,6 @@ export class HaStateControlClimateTemperature extends LitElement {
       low: this.stateObj.attributes.target_temp_low,
       high: this.stateObj.attributes.target_temp_high,
     };
-    this._targetTemperatureBeforeChanging = undefined;
   }
 
   private get _step() {
@@ -142,21 +141,17 @@ export class HaStateControlClimateTemperature extends LitElement {
 
   private _valueChanging(ev: HASSDomEvent<HASSDomEvents["value-changing"]>) {
     const { value } = ev.detail;
-    if (value === undefined) {
-      if (this._targetTemperatureBeforeChanging) {
-        this._targetTemperature = this._targetTemperatureBeforeChanging;
-        this._targetTemperatureBeforeChanging = undefined;
-      }
+    if (typeof value !== "number" || isNaN(value)) {
+      this._changingTemperature = {};
       return;
     }
-    if (typeof value !== "number" || isNaN(value)) return;
     const target = ev.type.replace("-changing", "");
-    this._targetTemperatureBeforeChanging ??= this._targetTemperature;
-    this._targetTemperature = {
-      ...this._targetTemperature,
-      [target]: value,
-    };
+    this._changingTemperature = { [target]: value };
     this._selectTargetTemperature = target as Target;
+  }
+
+  private get _displayedTemperature() {
+    return { ...this._targetTemperature, ...this._changingTemperature };
   }
 
   private _debouncedCallService = debounce(
@@ -165,18 +160,16 @@ export class HaStateControlClimateTemperature extends LitElement {
   );
 
   private _callService(type: string) {
-    const targetTemperature =
-      this._targetTemperatureBeforeChanging ?? this._targetTemperature;
     const data =
       type === "high" || type === "low"
         ? {
             entity_id: this.stateObj!.entity_id,
-            target_temp_low: targetTemperature.low,
-            target_temp_high: targetTemperature.high,
+            target_temp_low: this._targetTemperature.low,
+            target_temp_high: this._targetTemperature.high,
           }
         : {
             entity_id: this.stateObj!.entity_id,
-            temperature: targetTemperature.value,
+            temperature: this._targetTemperature.value,
           };
     return this._pendingSync.run(
       () => this._api.callService("climate", "set_temperature", data),
@@ -367,7 +360,7 @@ export class HaStateControlClimateTemperature extends LitElement {
     }
 
     if (this._supportsTargetTemperature && !this.showCurrentAsPrimary) {
-      return this._renderTarget(this._targetTemperature.value!, "big");
+      return this._renderTarget(this._displayedTemperature.value!, "big");
     }
 
     if (this._supportsTargetTemperatureRange && !this.showCurrentAsPrimary) {
@@ -387,7 +380,7 @@ export class HaStateControlClimateTemperature extends LitElement {
                 "target_temp_low"
               )}
             </span>
-            ${this._renderTarget(this._targetTemperature.low!, "big")}
+            ${this._renderTarget(this._displayedTemperature.low!, "big")}
           </button>
           <button
             @click=${this._handleSelectTemp}
@@ -403,7 +396,7 @@ export class HaStateControlClimateTemperature extends LitElement {
                 "target_temp_high"
               )}
             </span>
-            ${this._renderTarget(this._targetTemperature.high!, "big")}
+            ${this._renderTarget(this._displayedTemperature.high!, "big")}
           </button>
         </div>
       `;
@@ -440,7 +433,7 @@ export class HaStateControlClimateTemperature extends LitElement {
       return html`
         <p class="label secondary">
           <ha-svg-icon .path=${mdiThermostat}></ha-svg-icon>
-          ${this._renderTarget(this._targetTemperature.value!, "normal")}
+          ${this._renderTarget(this._displayedTemperature.value!, "normal")}
         </p>
       `;
     }
@@ -463,7 +456,7 @@ export class HaStateControlClimateTemperature extends LitElement {
                 "target_temp_low"
               )}
             </span>
-            ${this._renderTarget(this._targetTemperature.low!, "normal", true)}
+            ${this._renderTarget(this._displayedTemperature.low!, "normal", true)}
           </button>
           <span>·</span>
           <button
@@ -480,7 +473,7 @@ export class HaStateControlClimateTemperature extends LitElement {
                 "target_temp_high"
               )}
             </span>
-            ${this._renderTarget(this._targetTemperature.high!, "normal", true)}
+            ${this._renderTarget(this._displayedTemperature.high!, "normal", true)}
           </button>
         </p>
       `;

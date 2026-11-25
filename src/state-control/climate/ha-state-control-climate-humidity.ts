@@ -52,11 +52,11 @@ export class HaStateControlClimateHumidity extends LitElement {
 
   @state() private _targetHumidity?: number;
 
+  @state() private _changingHumidity?: number;
+
   private _sizeController = createStateControlCircularSliderController(this);
 
   private _pendingSync = new PendingValueSync();
-
-  private _targetHumidityBeforeChanging?: number;
 
   protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
@@ -74,7 +74,6 @@ export class HaStateControlClimateHumidity extends LitElement {
 
   private _syncTargetHumidity() {
     this._targetHumidity = this.stateObj.attributes.humidity;
-    this._targetHumidityBeforeChanging = undefined;
   }
 
   private get _step() {
@@ -99,16 +98,11 @@ export class HaStateControlClimateHumidity extends LitElement {
 
   private _valueChanging(ev: HASSDomEvent<HASSDomEvents["value-changing"]>) {
     const { value } = ev.detail;
-    if (value === undefined) {
-      if (this._targetHumidityBeforeChanging !== undefined) {
-        this._targetHumidity = this._targetHumidityBeforeChanging;
-        this._targetHumidityBeforeChanging = undefined;
-      }
+    if (typeof value !== "number" || isNaN(value)) {
+      this._changingHumidity = undefined;
       return;
     }
-    if (typeof value !== "number" || isNaN(value)) return;
-    this._targetHumidityBeforeChanging ??= this._targetHumidity;
-    this._targetHumidity = value;
+    this._changingHumidity = value;
   }
 
   private _debouncedCallService = debounce(() => this._callService(), 1000);
@@ -116,7 +110,7 @@ export class HaStateControlClimateHumidity extends LitElement {
   private _callService() {
     const data = {
       entity_id: this.stateObj!.entity_id,
-      humidity: this._targetHumidityBeforeChanging ?? this._targetHumidity,
+      humidity: this._targetHumidity,
     };
     return this._pendingSync.run(
       () => this._api.callService("climate", "set_humidity", data),
@@ -275,7 +269,8 @@ export class HaStateControlClimateHumidity extends LitElement {
           >
           </ha-control-circular-slider>
           <div class="info">
-            ${this._renderLabel()} ${this._renderTarget(targetHumidity)}
+            ${this._renderLabel()}
+            ${this._renderTarget(this._changingHumidity ?? targetHumidity)}
             ${this._renderCurrentHumidity(
               this.stateObj.attributes.current_humidity
             )}

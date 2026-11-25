@@ -57,11 +57,11 @@ export class HaStateControlHumidifierHumidity extends LitElement {
 
   @state() private _targetHumidity?: number;
 
+  @state() private _changingHumidity?: number;
+
   private _sizeController = createStateControlCircularSliderController(this);
 
   private _pendingSync = new PendingValueSync();
-
-  private _targetHumidityBeforeChanging?: number;
 
   protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
@@ -79,7 +79,6 @@ export class HaStateControlHumidifierHumidity extends LitElement {
 
   private _syncTargetHumidity() {
     this._targetHumidity = this.stateObj.attributes.humidity;
-    this._targetHumidityBeforeChanging = undefined;
   }
 
   private get _step() {
@@ -104,16 +103,11 @@ export class HaStateControlHumidifierHumidity extends LitElement {
 
   private _valueChanging(ev: HASSDomEvent<HASSDomEvents["value-changing"]>) {
     const { value } = ev.detail;
-    if (value === undefined) {
-      if (this._targetHumidityBeforeChanging !== undefined) {
-        this._targetHumidity = this._targetHumidityBeforeChanging;
-        this._targetHumidityBeforeChanging = undefined;
-      }
+    if (typeof value !== "number" || isNaN(value)) {
+      this._changingHumidity = undefined;
       return;
     }
-    if (typeof value !== "number" || isNaN(value)) return;
-    this._targetHumidityBeforeChanging ??= this._targetHumidity;
-    this._targetHumidity = value;
+    this._changingHumidity = value;
   }
 
   private _debouncedCallService = debounce(() => this._callService(), 1000);
@@ -121,7 +115,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
   private _callService() {
     const data = {
       entity_id: this.stateObj!.entity_id,
-      humidity: this._targetHumidityBeforeChanging ?? this._targetHumidity,
+      humidity: this._targetHumidity,
     };
     return this._pendingSync.run(
       () => this._api.callService("humidifier", "set_humidity", data),
@@ -211,7 +205,10 @@ export class HaStateControlHumidifierHumidity extends LitElement {
     }
 
     if (this._targetHumidity != null && !this.showCurrentAsPrimary) {
-      return this._renderTarget(this._targetHumidity!, "big");
+      return this._renderTarget(
+        this._changingHumidity ?? this._targetHumidity,
+        "big"
+      );
     }
 
     if (this.stateObj.state !== UNAVAILABLE) {
@@ -245,7 +242,10 @@ export class HaStateControlHumidifierHumidity extends LitElement {
       return html`
         <p class="label">
           <ha-svg-icon .path=${mdiThermostat}></ha-svg-icon>
-          ${this._renderCurrent(this._targetHumidity, "normal")}
+          ${this._renderCurrent(
+            this._changingHumidity ?? this._targetHumidity,
+            "normal"
+          )}
         </p>
       `;
     }

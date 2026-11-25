@@ -60,11 +60,11 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
 
   @state() private _targetTemperature?: number;
 
+  @state() private _changingTemperature?: number;
+
   private _sizeController = createStateControlCircularSliderController(this);
 
   private _pendingSync = new PendingValueSync();
-
-  private _targetTemperatureBeforeChanging?: number;
 
   protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
@@ -82,7 +82,6 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
 
   private _syncTargetTemperature() {
     this._targetTemperature = this.stateObj.attributes.temperature;
-    this._targetTemperatureBeforeChanging = undefined;
   }
 
   private get _step() {
@@ -110,16 +109,11 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
 
   private _valueChanging(ev: HASSDomEvent<HASSDomEvents["value-changing"]>) {
     const { value } = ev.detail;
-    if (value === undefined) {
-      if (this._targetTemperatureBeforeChanging !== undefined) {
-        this._targetTemperature = this._targetTemperatureBeforeChanging;
-        this._targetTemperatureBeforeChanging = undefined;
-      }
+    if (typeof value !== "number" || isNaN(value)) {
+      this._changingTemperature = undefined;
       return;
     }
-    if (typeof value !== "number" || isNaN(value)) return;
-    this._targetTemperatureBeforeChanging ??= this._targetTemperature;
-    this._targetTemperature = value;
+    this._changingTemperature = value;
   }
 
   private _debouncedCallService = debounce(() => this._callService(), 1000);
@@ -127,8 +121,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
   private _callService() {
     const data = {
       entity_id: this.stateObj!.entity_id,
-      temperature:
-        this._targetTemperatureBeforeChanging ?? this._targetTemperature,
+      temperature: this._targetTemperature,
     };
     return this._pendingSync.run(
       () => this._api.callService("water_heater", "set_temperature", data),
@@ -283,7 +276,9 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
           </ha-control-circular-slider>
           <div class="info">
             ${this._renderLabel()}
-            ${this._renderTargetTemperature(this._targetTemperature)}
+            ${this._renderTargetTemperature(
+              this._changingTemperature ?? this._targetTemperature
+            )}
             ${this._renderCurrentTemperature(
               this.stateObj.attributes.current_temperature
             )}
