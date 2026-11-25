@@ -75,11 +75,23 @@ const clearUrlParams = () => {
   }
 };
 
+// The login page is never cached, so check the server is up before getAuth redirects to it.
+const loadTokensOrCheckServer = async () => {
+  const tokens = loadTokens();
+  if (!tokens || tokens.hassUrl !== hassUrl) {
+    await fetch(`${hassUrl}/manifest.json`, {
+      mode: "no-cors",
+      cache: "no-store",
+    });
+  }
+  return tokens;
+};
+
 const authOptions = {
   hassUrl,
   limitHassInstance: true,
   saveTokens,
-  loadTokens: () => Promise.resolve(loadTokens()),
+  loadTokens: loadTokensOrCheckServer,
 };
 
 const getAuthDroppingStaleCallback = async () => {
