@@ -1,6 +1,8 @@
 import "../../../layouts/hass-error-screen";
 import {
+  mdiDotsVertical,
   mdiDownload,
+  mdiEye,
   mdiFire,
   mdiLightningBolt,
   mdiViewDashboardEdit,
@@ -8,8 +10,9 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import type {
   EnergyPreferencesValidation,
@@ -38,6 +41,10 @@ import "./components/ha-energy-battery-settings";
 import "./components/ha-energy-gas-settings";
 import "./components/ha-energy-water-settings";
 import "./components/ha-energy-suggestions";
+import type { EnergySuggestions } from "./components/ha-energy-suggestions";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import "../../../components/ha-svg-icon";
 import { fileDownload } from "../../../util/file_download";
 import { showToast } from "../../../util/toast";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
@@ -97,6 +104,12 @@ class HaConfigEnergy extends LitElement {
   @state() private _error?: string;
 
   @state() private _statsMetadata?: Record<string, StatisticsMetaData>;
+
+  // Dismissed meters on this tab while the suggestions card is hidden
+  @state() private _unreachableDismissed = 0;
+
+  @query("ha-energy-suggestions")
+  private _suggestions?: EnergySuggestions;
 
   private get _currTab(): string {
     return this.route.path.split("/")[1] || "electricity";
@@ -175,6 +188,24 @@ class HaConfigEnergy extends LitElement {
             )}
             @click=${this._downloadDiagnostics}
           ></ha-icon-button>
+          ${
+            this._unreachableDismissed
+              ? html`<ha-dropdown @wa-select=${this._showDismissedSuggestions}>
+                  <ha-icon-button
+                    slot="trigger"
+                    .label=${this.hass.localize("ui.common.menu")}
+                    .path=${mdiDotsVertical}
+                  ></ha-icon-button>
+                  <ha-dropdown-item value="show_dismissed">
+                    <ha-svg-icon slot="icon" .path=${mdiEye}></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.panel.config.energy.suggestions.show_dismissed",
+                      { count: this._unreachableDismissed }
+                    )}
+                  </ha-dropdown-item>
+                </ha-dropdown>`
+              : nothing
+          }
         </div>
         <ha-alert>
           ${this.hass.localize("ui.panel.config.energy.new_device_info")}
@@ -184,6 +215,7 @@ class HaConfigEnergy extends LitElement {
             .preferences=${this._preferences!}
             .listPath=${`${this.route.prefix}/${this._currTab}`}
             .tab=${this._currTab}
+            @energy-suggestions-unreachable-dismissed=${this._unreachableDismissedChanged}
           ></ha-energy-suggestions>
           ${cache(this._renderTabContent())}
         </div>
@@ -444,6 +476,16 @@ class HaConfigEnergy extends LitElement {
       statsMetadata[x.statistic_id] = x;
     });
     this._statsMetadata = statsMetadata;
+  }
+
+  private _unreachableDismissedChanged(
+    ev: HASSDomEvent<HASSDomEvents["energy-suggestions-unreachable-dismissed"]>
+  ) {
+    this._unreachableDismissed = ev.detail.count;
+  }
+
+  private _showDismissedSuggestions() {
+    this._suggestions?.showDismissed();
   }
 
   private _customise() {
