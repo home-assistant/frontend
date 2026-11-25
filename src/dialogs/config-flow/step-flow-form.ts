@@ -7,6 +7,7 @@ import { consume } from "../../common/decorators/consume";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 import "../../components/ha-alert";
 import "../../components/ha-button";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
@@ -180,7 +181,11 @@ class StepFlowForm extends LitElement {
       return nothing;
     }
     if (!this._debugLogging) {
-      return html`<ha-alert alert-type="info" class="debug-logging">
+      return html`<ha-alert
+        alert-type="info"
+        class="debug-logging"
+        @keydown=${stopPropagation}
+      >
         ${this.hass.localize(
           "ui.panel.config.integrations.config_flow.debug_logging_suggestion"
         )}
@@ -196,7 +201,7 @@ class StepFlowForm extends LitElement {
         </ha-button>
       </ha-alert>`;
     }
-    return html`<ha-alert alert-type="info">
+    return html`<ha-alert alert-type="info" @keydown=${stopPropagation}>
       ${this.hass.localize(
         "ui.panel.config.integrations.config_flow.debug_logging_on",
         {
@@ -264,7 +269,7 @@ class StepFlowForm extends LitElement {
     if (changedProps.has("step") && this.step?.preview) {
       import(`./previews/flow-preview-${previewModule(this.step.preview)}`);
     }
-    if (this._offerDebugLogging) {
+    if (changedProps.has("step") && this._offerDebugLogging) {
       this._fetchDebugLogging();
     }
 
