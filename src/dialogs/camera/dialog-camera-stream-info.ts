@@ -238,6 +238,8 @@ class DialogCameraStreamInfo extends DialogMixin<CameraStreamInfoDialogParams>(
         flex-wrap: wrap;
         align-items: center;
         gap: var(--ha-space-2);
+        /* The row keeps the headline on one line, but a long tag must wrap */
+        white-space: normal;
       }
 
       .tag.cloud {
