@@ -3,7 +3,13 @@ import "@home-assistant/webawesome/dist/components/tree-item/tree-item";
 import type WaTreeItem from "@home-assistant/webawesome/dist/components/tree-item/tree-item";
 import "@home-assistant/webawesome/dist/components/tree/tree";
 import type { WaSelectionChangeEvent } from "@home-assistant/webawesome/dist/events/selection-change";
-import { mdiRadar, mdiMenuDown, mdiViewGridOutline, mdiWeb } from "@mdi/js";
+import {
+  mdiMapMarkerRadius,
+  mdiMenuDown,
+  mdiRadar,
+  mdiViewGridOutline,
+  mdiWeb,
+} from "@mdi/js";
 import Fuse from "fuse.js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -88,6 +94,8 @@ import {
   integrationCategoryIcon,
   integrationCategoryName,
 } from "../../../data/integration_category";
+import type { LocationIntegrations } from "../../../data/location";
+import { fetchLocationIntegrations } from "../../../data/location";
 import { haStyleDialog } from "../../../resources/styles";
 import { loadVirtualizer } from "../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../types";
@@ -133,6 +141,11 @@ class AddIntegrationDialog extends LitElement {
   @state() private _categoryIcons?: IntegrationCategoryIcons;
 
   @state() private _showDiscoveredView = false;
+
+  // Integrations that serve the home location
+  @state() private _suggestions?: LocationIntegrations;
+
+  @state() private _showSuggestedView = false;
 
   @state() private _expanded = new Set<string>();
 
@@ -283,6 +296,8 @@ class AddIntegrationDialog extends LitElement {
     this._searchSection = undefined;
     this._connection = undefined;
     this._showDiscoveredView = false;
+    this._suggestions = undefined;
+    this._showSuggestedView = false;
     this._expanded = new Set();
     this._drilled = false;
     this._integrationFilter = undefined;
@@ -350,6 +365,7 @@ class AddIntegrationDialog extends LitElement {
       changedProps.has("_browseBy") ||
       changedProps.has("_brand") ||
       changedProps.has("_showDiscoveredView") ||
+      changedProps.has("_showSuggestedView") ||
       changedProps.has("_searchSection") ||
       changedProps.has("_connection")
     ) {
@@ -538,6 +554,68 @@ class AddIntegrationDialog extends LitElement {
     }
   );
 
+  // Integrations of a brand are listed by themselves, like in a category
+  private _getSuggestedRows = memoizeOne(
+    (
+      allIntegrations: Brands,
+      allHelpers: Integrations,
+      localize: LocalizeFunc,
+      suggestions: LocationIntegrations,
+      components: string[],
+      connection?: Connection
+    ): IntegrationListItem[] => {
+      const { integrations } = this._getListItems(
+        allIntegrations,
+        allHelpers,
+        localize,
+        connection
+      );
+      const suggested = new Set(
+        Object.keys(suggestions).filter(
+          // Already set up, so nothing left to suggest
+          (domain) => !components.includes(domain)
+        )
+      );
+      if (!suggested.size) {
+        return [];
+      }
+      return integrations
+        .flatMap((item) =>
+          item.domains
+            ? this._brandRows(item)
+                .filter((row) => !row.is_header && !row.is_add)
+                .map((row) => ({ ...row, id: row.domain }))
+            : [item]
+        )
+        .filter((row) => suggested.has(row.domain))
+        .filter(
+          (row, index, rows) =>
+            rows.findIndex((other) => other.domain === row.domain) === index
+        )
+        .sort((a, b) =>
+          caseInsensitiveStringCompare(
+            a.name || "",
+            b.name || "",
+            this.hass.locale.language
+          )
+        );
+    }
+  );
+
+  private _getSuggested(): IntegrationListItem[] {
+    if (!this._integrations || !this._helpers || !this._suggestions) {
+      return [];
+    }
+    return this._getSuggestedRows(
+      this._integrations,
+      this._helpers,
+      this.hass.localize,
+      this._suggestions,
+      this.hass.config.components,
+      this._connection
+    );
+  }
+
   private _brandRows(item: IntegrationListItem): IntegrationListItem[] {
     const header: IntegrationListItem = {
       id: `${item.domain}/header`,
@@ -722,7 +800,9 @@ class AddIntegrationDialog extends LitElement {
 
   private _getRows(): IntegrationListItem[] {
     if (!this._filter) {
-      return this._getIntegrations();
+      return this._showSuggestedView
+        ? this._getSuggested()
+        : this._getIntegrations();
     }
     const found = this._getFound();
     return this._getSearchRows(found, this._searchSection, this.hass.localize);
@@ -960,6 +1040,11 @@ class AddIntegrationDialog extends LitElement {
     if (this._showDiscoveredView) {
       return this.hass.localize("ui.panel.config.integrations.discovered");
     }
+    if (this._showSuggestedView) {
+      return this.hass.localize(
+        "ui.panel.config.integrations.suggested_for_location"
+      );
+    }
     if (this._brand) {
       return (
         this._integrations?.[this._brand]?.name ||
@@ -1114,7 +1199,9 @@ class AddIntegrationDialog extends LitElement {
     const rows = integrations;
     // A phone has it in the dialog's title
     const listTitle =
-      !this._narrow && !this._filter && (this._category || this._brand)
+      !this._narrow &&
+      !this._filter &&
+      (this._category || this._brand || this._showSuggestedView)
         ? this._browsingTitle()
         : undefined;
     const sections = this._filter && browse;
@@ -1314,6 +1401,9 @@ class AddIntegrationDialog extends LitElement {
     if (this._category && !counts.has(this._category)) {
       this._category = undefined;
     }
+    if (this._showSuggestedView && !this._getSuggested().length) {
+      this._showSuggestedView = false;
+    }
     if (
       this._brand &&
       !this._getBrands(
@@ -1354,11 +1444,13 @@ class AddIntegrationDialog extends LitElement {
       category?: string;
       subcategory?: string;
       discovered?: boolean;
+      suggested?: boolean;
     } = {}
   ) {
     this._filter = "";
     this._searchSection = undefined;
     this._showDiscoveredView = !!view.discovered;
+    this._showSuggestedView = !!view.suggested;
     this._brand = view.brand;
     this._category = view.category;
     this._subcategory = view.subcategory;
@@ -1467,9 +1559,11 @@ class AddIntegrationDialog extends LitElement {
     const protocols = PROTOCOL_INTEGRATIONS.filter((domain) =>
       this._hasProtocol(domain)
     );
+    const suggested = this._getSuggested().length;
     const browsingAll =
       !this._filter &&
       !this._showDiscoveredView &&
+      !this._showSuggestedView &&
       !this._category &&
       !this._brand;
 
@@ -1518,6 +1612,37 @@ class AddIntegrationDialog extends LitElement {
                 <ha-list-base>${discoveredRow}${protocolRows}</ha-list-base>`
             : nothing
         }
+        ${
+          suggested
+            ? html`<ha-section-title>
+                  ${this.hass.localize("ui.panel.config.integrations.suggested")}
+                </ha-section-title>
+                <ha-list-base>
+                  <ha-list-item-button
+                    class=${classMap({
+                      selected: !this._filter && this._showSuggestedView,
+                    })}
+                    @click=${this._suggestedPicked}
+                  >
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${mdiMapMarkerRadius}
+                    ></ha-svg-icon>
+                    <span slot="headline">
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.suggested_location"
+                      )}
+                    </span>
+                    <ha-label slot="end" dense>${suggested}</ha-label>
+                    ${
+                      this._narrow
+                        ? html`<ha-icon-next slot="end"></ha-icon-next>`
+                        : nothing
+                    }
+                  </ha-list-item-button>
+                </ha-list-base>`
+            : nothing
+        }
         <ha-section-title>
           ${this.hass.localize("ui.panel.config.integrations.browse")}
         </ha-section-title>
@@ -1542,6 +1667,7 @@ class AddIntegrationDialog extends LitElement {
     const isCurrent = (slug: string) =>
       !this._filter &&
       !this._showDiscoveredView &&
+      !this._showSuggestedView &&
       !this._brand &&
       slug === this._category;
     const icon = (iconName?: string, slot?: string) =>
@@ -1629,6 +1755,7 @@ class AddIntegrationDialog extends LitElement {
     this._browseBy = ev.detail.item.value as BrowseBy;
     this._storedBrowseBy = this._browseBy;
     this._showDiscoveredView = false;
+    this._showSuggestedView = false;
     this._category = undefined;
     this._subcategory = undefined;
     this._brand = undefined;
@@ -1644,7 +1771,10 @@ class AddIntegrationDialog extends LitElement {
         )
       : [];
     const allBrands =
-      !this._filter && !this._showDiscoveredView && !this._brand;
+      !this._filter &&
+      !this._showDiscoveredView &&
+      !this._showSuggestedView &&
+      !this._brand;
     return html`<ha-list-base
       aria-label=${this.hass.localize("ui.panel.config.integrations.browse")}
     >
@@ -1666,6 +1796,7 @@ class AddIntegrationDialog extends LitElement {
               selected:
                 !this._filter &&
                 !this._showDiscoveredView &&
+                !this._showSuggestedView &&
                 item.domain === this._brand,
             })}
             .brand=${item.domain}
@@ -1692,6 +1823,10 @@ class AddIntegrationDialog extends LitElement {
 
   private _discoveredPicked() {
     this._browse({ discovered: true });
+  }
+
+  private _suggestedPicked() {
+    this._browse({ suggested: true });
   }
 
   private _protocolPicked(
@@ -1819,6 +1954,18 @@ class AddIntegrationDialog extends LitElement {
     getIntegrationCategoryIcons(this.hass.connection).then((icons) => {
       this._categoryIcons = icons;
     });
+    if (!integrationFilter && isComponentLoaded(this.hass.config, "location")) {
+      // Not needed to add anything, so the dialog doesn't wait for them
+      fetchLocationIntegrations(this.hass)
+        .then((suggestions) => {
+          if (loadId === this._loadId) {
+            this._suggestions = suggestions;
+          }
+        })
+        .catch(() => {
+          // Without suggestions, the dialog works as before
+        });
+    }
     // `hass` changes don't rerender this dialog, so load names first
     const [descriptions, flowsInProgress] = await Promise.all([
       getIntegrationDescriptions(this.hass),

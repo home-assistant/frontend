@@ -8139,6 +8139,9 @@
           "filters_disabled_hidden": "Filters, {number} disabled {number, plural,\n one {integration}\n other {integrations}\n} hidden",
           "all_integrations": "All integrations",
           "add_a_device": "Add a device",
+          "suggested": "Suggestions",
+          "suggested_location": "For your location",
+          "suggested_for_location": "Suggested for your location",
           "browse": "Browse",
           "browse_by": {
             "label": "Browse by: {value}",
