@@ -165,16 +165,18 @@ export class HaStateControlClimateTemperature extends LitElement {
   );
 
   private _callService(type: string) {
+    const targetTemperature =
+      this._targetTemperatureBeforeChanging ?? this._targetTemperature;
     const data =
       type === "high" || type === "low"
         ? {
             entity_id: this.stateObj!.entity_id,
-            target_temp_low: this._targetTemperature.low,
-            target_temp_high: this._targetTemperature.high,
+            target_temp_low: targetTemperature.low,
+            target_temp_high: targetTemperature.high,
           }
         : {
             entity_id: this.stateObj!.entity_id,
-            temperature: this._targetTemperature.value,
+            temperature: targetTemperature.value,
           };
     return this._pendingSync.run(
       () => this._api.callService("climate", "set_temperature", data),

@@ -116,7 +116,7 @@ export class HaStateControlClimateHumidity extends LitElement {
   private _callService() {
     const data = {
       entity_id: this.stateObj!.entity_id,
-      humidity: this._targetHumidity,
+      humidity: this._targetHumidityBeforeChanging ?? this._targetHumidity,
     };
     return this._pendingSync.run(
       () => this._api.callService("climate", "set_humidity", data),

@@ -127,7 +127,8 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
   private _callService() {
     const data = {
       entity_id: this.stateObj!.entity_id,
-      temperature: this._targetTemperature,
+      temperature:
+        this._targetTemperatureBeforeChanging ?? this._targetTemperature,
     };
     return this._pendingSync.run(
       () => this._api.callService("water_heater", "set_temperature", data),
