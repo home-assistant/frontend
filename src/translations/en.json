@@ -628,7 +628,13 @@
           "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
           "longitude": "[%key:ui::panel::config::zone::detail::longitude%]",
           "radius": "[%key:ui::panel::config::zone::detail::radius%]",
-          "radius_meters": "[%key:ui::panel::config::core::section::core::core_config::elevation_meters%]"
+          "radius_meters": "[%key:ui::panel::config::core::section::core::core_config::elevation_meters%]",
+          "address_label": "[%key:ui::panel::page-onboarding::core-config::address_label%]",
+          "search_disclosure": "Searches are sent directly to {openstreetmap}, which may receive your IP address. See its {osm_privacy_policy}.",
+          "osm_privacy_policy": "privacy policy",
+          "search_error": "Unable to search for this location. Try again.",
+          "search_results_label": "Search results",
+          "selected_location": "[%key:ui::panel::page-onboarding::core-config::selected_location%]"
         },
         "period": {
           "periods": {
