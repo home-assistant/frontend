@@ -104,12 +104,20 @@ export class HaStateControlClimateTemperature extends LitElement {
   }
 
   private _syncTargetTemperature() {
-    this._targetTemperature = {
+    const targetTemperature: Partial<Record<Target, number>> = {
       value: this.stateObj.attributes.temperature,
       low: this.stateObj.attributes.target_temp_low,
       high: this.stateObj.attributes.target_temp_high,
     };
-    this._changingTemperature = {};
+    if (
+      (Object.keys(this._changingTemperature) as Target[]).some(
+        (target) =>
+          targetTemperature[target] !== this._targetTemperature[target]
+      )
+    ) {
+      this._changingTemperature = {};
+    }
+    this._targetTemperature = targetTemperature;
   }
 
   private get _step() {
