@@ -128,6 +128,10 @@ export default class HaAutomationOptionRow extends LitElement {
     return this._selected;
   }
 
+  get collapsed() {
+    return this._collapsed;
+  }
+
   public static checkUiSupport(
     _localize: LocalizeFunc,
     option: Option

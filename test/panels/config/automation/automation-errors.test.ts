@@ -14,9 +14,10 @@ import {
   type AutomationPathRow,
 } from "../../../../src/panels/config/automation/automation-path";
 
-const createRow = () =>
+const createRow = (collapsed = false) =>
   ({
     selected: false,
+    collapsed,
     openSidebar: () => undefined,
     expand: () => undefined,
   }) as unknown as AutomationPathRow;
@@ -56,6 +57,14 @@ describe("automation errors", () => {
     expect(ownedErrors(registry, errors, other)).toEqual([]);
     expect(errorOwner(registry, global)).toBeUndefined();
     expect(errorOwner(registry, noPath)).toBeUndefined();
+
+    // A collapsed block keeps the rows inside rendered but hidden, so it
+    // shows their errors
+    const collapsed = createRow(true);
+    registry.register(["actions", 2], collapsed);
+    registry.register(["actions", 2, "then", 0], createRow(true));
+    const hidden = validationError("e", ["actions", 2, "then", 0, "delay"]);
+    expect(errorOwner(registry, hidden)).toBe(collapsed);
   });
 
   it("map to form fields and read relative to a row", () => {

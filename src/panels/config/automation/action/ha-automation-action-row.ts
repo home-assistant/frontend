@@ -257,6 +257,10 @@ export default class HaAutomationActionRow extends LitElement {
     return this._selected;
   }
 
+  get collapsed() {
+    return this._collapsed;
+  }
+
   protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
 

@@ -20,15 +20,16 @@ export const automationErrorsContext =
 export const NO_ERRORS: ConfigValidationError[] = [];
 
 /**
- * The row an error belongs to: the deepest rendered row on its path. Rows
- * above it only contain the error, they are expanded to show it.
+ * The row an error belongs to: the deepest visible row on its path. Rows
+ * above it only contain the error, they are expanded to show it. Collapsed
+ * rows keep the rows inside rendered but hidden, so they show their errors.
  */
 export const errorOwner = (
   registry: AutomationRowRegistry,
   error: ConfigValidationError
 ): AutomationPathRow | undefined => {
   const rows = registry.rowsAlong(error.path);
-  return rows[rows.length - 1];
+  return rows.find((row) => row.collapsed) ?? rows[rows.length - 1];
 };
 
 export const ownedErrors = (
@@ -44,7 +45,8 @@ export const fieldErrors = (
   errors: ConfigValidationError[],
   path: ConfigPath
 ): Record<string, string> => {
-  const fields: Record<string, string> = {};
+  // Without a prototype, so data keys like `constructor` aren't taken
+  const fields: Record<string, string> = Object.create(null);
   errors.forEach((error) => {
     const field = errorField(error, path);
     if (field !== undefined && !(field in fields)) {

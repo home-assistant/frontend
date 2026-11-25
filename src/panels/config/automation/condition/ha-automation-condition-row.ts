@@ -179,6 +179,10 @@ export default class HaAutomationConditionRow extends LitElement {
     return this._selected;
   }
 
+  get collapsed() {
+    return this._collapsed;
+  }
+
   private _renderOverflowLabel(label: string, shortcut?: TemplateResult) {
     return html`
       <div class="overflow-label">

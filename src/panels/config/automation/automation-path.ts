@@ -22,6 +22,8 @@ export const automationPathContext =
 
 export interface AutomationPathRow extends HTMLElement {
   readonly selected: boolean;
+  /** Whether the rows inside are hidden. */
+  readonly collapsed?: boolean;
   openSidebar(): void;
   expand(): void;
 }
@@ -70,14 +72,19 @@ export class AutomationRowRegistry {
   }
 
   /**
-   * Calls `listener` after rows were registered or unregistered, once for all
-   * changes made in the same task. Returns the function to unsubscribe.
+   * Calls `listener` after rows were registered, unregistered, collapsed or
+   * expanded, once for all changes made in the same task. Returns the
+   * function to unsubscribe.
    */
   public subscribe(listener: () => void): () => void {
     this._listeners.add(listener);
     return () => {
       this._listeners.delete(listener);
     };
+  }
+
+  public rowCollapsedChanged() {
+    this._changed();
   }
 
   private _changed() {
@@ -150,6 +157,8 @@ export class AutomationPathController extends ContextController {
 
   private _registeredRow?: AutomationPathRow;
 
+  private _collapsed?: boolean;
+
   private readonly _provider: ContextProvider<typeof automationPathContext>;
 
   constructor(
@@ -192,6 +201,15 @@ export class AutomationPathController extends ContextController {
     }
     this._syncRegistration();
     this._syncErrors();
+  }
+
+  public hostUpdated() {
+    // A collapsed row takes over the errors of the rows it hides
+    const collapsed = this._registeredRow?.collapsed;
+    if (collapsed !== this._collapsed) {
+      this._collapsed = collapsed;
+      this._registry?.rowCollapsedChanged();
+    }
   }
 
   public hostDisconnected() {
