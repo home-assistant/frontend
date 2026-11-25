@@ -174,7 +174,9 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     );
   }
 
-  /* Waiting for the first forecast of the type the card shows */
+  /* Waiting for the first forecast of the type the card shows, from a
+     request that can be made: the same checks as _subscribeForecastEvents,
+     so nothing waits on a request that never starts */
   private _isForecastLoading(): boolean {
     const stateObj = this._stateObj;
 
@@ -182,6 +184,9 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       this._config &&
       this._config.show_forecast !== false &&
       this._needForecastSubscription() &&
+      this._connection &&
+      this._hassConfig &&
+      isComponentLoaded(this._hassConfig, "weather") &&
       stateObj &&
       stateObj.state !== UNAVAILABLE &&
       this._forecastEvent?.type !== this._config.forecast_type &&
