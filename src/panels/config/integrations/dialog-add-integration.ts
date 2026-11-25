@@ -139,13 +139,13 @@ class AddIntegrationDialog extends LitElement {
 
   @state() private _pickedBrand?: string;
 
-  @state()
   @storage({
     key: "add-integration-browse-by",
-    state: true,
     subscribe: false,
   })
-  private _browseBy: BrowseBy = "brand";
+  private _storedBrowseBy: BrowseBy = "brand";
+
+  @state() private _browseBy: BrowseBy = "brand";
 
   @state() private _stickyBrand?: string;
 
@@ -191,8 +191,8 @@ class AddIntegrationDialog extends LitElement {
 
   public async showDialog(params?: AddIntegrationDialogParams): Promise<void> {
     this._navigateToResult = params?.navigateToResult ?? false;
+    this._browseBy = params?.category ? "category" : this._storedBrowseBy;
     if (params?.category) {
-      this._browseBy = "category";
       const [category, subcategory] = params.category.split(".");
       this._category = category;
       this._subcategory = subcategory || undefined;
@@ -1622,6 +1622,7 @@ class AddIntegrationDialog extends LitElement {
 
   private _browseBySelected(ev: HaDropdownSelectEvent) {
     this._browseBy = ev.detail.item.value as BrowseBy;
+    this._storedBrowseBy = this._browseBy;
     this._showDiscoveredView = false;
     this._category = undefined;
     this._subcategory = undefined;
