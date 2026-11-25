@@ -48,17 +48,14 @@ http://localhost:8090/?demo=<second slug>#/energy/water
 
 ## Screenshots Of A Single Card
 
-Documentation pages often show one card on its own, for example the energy date picker.
-Open the demo page whose view contains the card and capture it with Playwright, which is installed with the repository dependencies.
-Run `pnpm exec playwright install chromium` first if its browser is missing.
+Use Playwright from the repository dependencies, with a 1280 by 900 viewport and a device scale factor of 1.
+If its browser is missing, run `pnpm exec playwright install chromium`.
+Demo data follows the current date.
 
-- Use a desktop viewport, such as 1280 by 900, and a device scale factor of 1.
-- When replacing an existing image, match its width.
-- The demo data follows the current date, so dates in the card show today.
-
-A view can position a card so that it overlaps other content.
-For example, the energy views show the date picker as a bar floating over the charts.
-To capture the card on a plain background, move its element into a wrapper on `document.body`, then screenshot the wrapper:
+`page.locator("<card element> ha-card").first().screenshot()` crops to the card edges.
+To add a margin or set the width, move the card element into a fixed wrapper and capture the wrapper.
+Set the wrapper width to the target image width minus twice the padding, for example to match an image being replaced.
+This also works for a card that its view places over other content, such as the energy date picker bar, where a clip with a margin would include the charts below it:
 
 ```ts
 const host = page.locator("hui-energy-date-selection-card").first();
@@ -73,9 +70,7 @@ await host.evaluate((el) => {
 await page.locator("#screenshot-wrap").screenshot({ path: "card.png" });
 ```
 
-The card keeps its theme and data after the move, but loses the styling its view position gave it.
-The energy date picker renders as a regular card with a border.
-Hiding the rest of the page with `visibility: hidden` does not work, because charts stay visible.
+The moved card keeps its theme and data but loses the styling of its view position, so the energy date picker renders as a regular card with a border.
 
 ## Structure
 
