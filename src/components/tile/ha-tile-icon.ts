@@ -147,6 +147,9 @@ export class HaTileIcon extends LitElement {
       transition: color 180ms ease-in-out;
       pointer-events: none;
     }
+    ::slotted(:not([slot])) {
+      pointer-events: none;
+    }
     .container img {
       width: 100%;
       height: 100%;
