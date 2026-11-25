@@ -10118,9 +10118,10 @@
           "change_chart_type": "Change chart type",
           "database": {
             "title": "Database",
-            "description": "Use the refresh button to analyze the database and see which tables, entities and statistics use the most space.",
+            "description": "See which tables, entities and statistics use the most space in the database.",
             "analyzing": "Analyzing the database, this can take a while on a large database...",
-            "analyze": "Analyze database",
+            "calculate": "Calculate",
+            "recalculate": "Recalculate",
             "as_of": "as of {time}",
             "tables": "Tables",
             "other_tables": "Other tables",
