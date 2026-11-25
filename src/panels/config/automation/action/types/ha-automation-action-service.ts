@@ -12,7 +12,7 @@ import type { ServiceAction } from "../../../../../data/script";
 import { serviceActionStruct } from "../../../../../data/script";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { HomeAssistant } from "../../../../../types";
-import { targetErrorText } from "../../automation-errors";
+import { errorMessage, targetErrorText } from "../../automation-errors";
 import { AutomationFieldErrorsController } from "../../automation-field-errors";
 import type { ActionElement } from "../ha-automation-action-row";
 
@@ -87,6 +87,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
       : [undefined, undefined];
 
     const targetError = this._fieldErrors.fieldError("target");
+    const dataError = this._fieldErrors.ownFieldError("data");
 
     const optionalResponse =
       domain && service
@@ -106,7 +107,9 @@ export class HaServiceAction extends LitElement implements ActionElement {
             : undefined
         }
         .dataErrors=${this._fieldErrors.nestedFieldErrors("data")}
-        .dataError=${this._fieldErrors.ownFieldError("data")?.message}
+        .dataError=${
+          dataError ? errorMessage(this.hass.localize, dataError) : undefined
+        }
         @value-changed=${this._actionChanged}
       ></ha-service-control>
       ${

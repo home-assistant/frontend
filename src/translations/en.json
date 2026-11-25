@@ -5956,7 +5956,29 @@
               "save_failed": "Saving failed: {problems}",
               "target_required": "Choose at least one target.",
               "target_invalid": "Some targets aren't valid. Remove or replace them.",
-              "device_required": "Choose a device."
+              "device_required": "Choose a device.",
+              "field_message": "{field}: {message}",
+              "validation": {
+                "allowed_at_most_one_of": "Use only one of these options: {keys}.",
+                "allowed_one_of": "Use exactly one of these options: {keys}.",
+                "expected_boolean": "Choose on or off.",
+                "expected_duration": "Enter a duration.",
+                "expected_duration_detailed": "Enter a duration, like 0:05:00.",
+                "invalid_value": "[%key:ui::panel::config::automation::editor::errors::validation::not_a_valid_value%]",
+                "key_not_allowed": "[%key:ui::panel::config::automation::editor::errors::validation::not_a_valid_option%]",
+                "not_a_valid_option": "This option isn't supported here.",
+                "not_a_valid_value": "This value isn't valid.",
+                "range_max": "Enter a value of {max} or lower.",
+                "range_max_exclusive": "Enter a value lower than {max}.",
+                "range_min": "Enter a value of {min} or higher.",
+                "range_min_exclusive": "Enter a value higher than {min}.",
+                "required": "This field is required.",
+                "required_field": "{field} is required.",
+                "required_any_of": "Fill in at least one of these options: {keys}.",
+                "required_one_of": "Fill in exactly one of these options: {keys}.",
+                "value_not_empty": "This field can't be empty.",
+                "value_one_of": "Choose one of these values: {values}."
+              }
             },
             "deprecated_migrated": {
               "title": "Deprecated options updated",

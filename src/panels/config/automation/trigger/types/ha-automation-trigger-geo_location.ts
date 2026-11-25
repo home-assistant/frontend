@@ -7,9 +7,14 @@ import type { GeoLocationTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 
 @customElement("ha-automation-trigger-geo_location")
 export class HaGeolocationTrigger extends LitElement {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["source", "zone", "event"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public trigger!: GeoLocationTrigger;
@@ -55,6 +60,8 @@ export class HaGeolocationTrigger extends LitElement {
   protected render() {
     return html`
       <ha-form
+        .error=${this._fieldErrors.fields}
+        .computeError=${this._fieldErrors.formError(this._computeLabelCallback)}
         .schema=${this._schema(this.hass.localize)}
         .data=${this.trigger}
         .hass=${this.hass}

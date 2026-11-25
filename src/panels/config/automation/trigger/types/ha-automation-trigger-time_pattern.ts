@@ -6,6 +6,7 @@ import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { TimePatternTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 
 const SCHEMA = [
   { name: "hours", selector: { text: {} } },
@@ -15,6 +16,10 @@ const SCHEMA = [
 
 @customElement("ha-automation-trigger-time_pattern")
 export class HaTimePatternTrigger extends LitElement implements TriggerElement {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["hours", "minutes", "seconds"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public trigger!: TimePatternTrigger;
@@ -28,6 +33,8 @@ export class HaTimePatternTrigger extends LitElement implements TriggerElement {
   protected render() {
     return html`
       <ha-form
+        .error=${this._fieldErrors.fields}
+        .computeError=${this._fieldErrors.formError(this._computeLabelCallback)}
         .hass=${this.hass}
         .schema=${SCHEMA}
         .data=${this.trigger}

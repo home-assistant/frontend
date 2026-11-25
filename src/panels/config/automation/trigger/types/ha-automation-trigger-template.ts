@@ -60,6 +60,7 @@ export class HaTemplateTrigger extends LitElement {
     return html`
       <ha-form
         .error=${this._fieldErrors.fields}
+        .computeError=${this._fieldErrors.formError(this._computeLabelCallback)}
         .hass=${this.hass}
         .data=${data}
         .schema=${SCHEMA}
