@@ -24,6 +24,7 @@ import "../../../components/item/ha-row-item";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { ERROR_STATES } from "../../../data/config_entries";
 import {
+  brandsAccessTokenContext,
   configContext,
   devicesContext,
   uiContext,
@@ -98,6 +99,11 @@ export class HaIntegrationCard extends LitElement {
     transformer: ({ auth }) => auth.data.hassUrl,
   })
   private _hassUrl!: string;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  // @ts-ignore re-render trigger only, its value is never read
+  private _brandsAccessToken?: string;
 
   // There is no hover on touch devices, so a tap on a tooltip anchor shows
   // the tooltip instead of following the card link.

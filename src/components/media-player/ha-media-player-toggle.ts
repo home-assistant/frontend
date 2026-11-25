@@ -104,6 +104,7 @@ class HaMediaPlayerToggle extends LitElement {
         <div class="secondary-text">${secondary}</div>
       </div>
       <ha-switch
+        .accessibleLabel=${primary}
         .disabled=${this.disabled}
         .checked=${this.checked}
         @change=${this._handleChange}

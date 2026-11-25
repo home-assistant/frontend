@@ -1,6 +1,10 @@
+import {
+  pathEquals,
+  stringifyPath,
+  type ConfigPath,
+} from "../../../common/util/config-path";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 
-export type LovelacePath = (string | number)[];
 export type LovelaceItemKind = "view" | "section" | "card" | "badge";
 export type LovelacePathTarget = "item" | "list" | "slot" | "node";
 
@@ -15,32 +19,26 @@ const SLOT_KEYS: Record<string, LovelaceItemKind> = {
   card: "card",
 };
 
-export const stringifyPath = (path: LovelacePath): string => path.join("/");
-
-export const parsePath = (path: string): LovelacePath =>
+export const parsePath = (path: string): ConfigPath =>
   path === ""
     ? []
     : path
         .split("/")
         .map((segment) => (/^\d+$/.test(segment) ? Number(segment) : segment));
 
-export const pathEquals = (a: LovelacePath, b: LovelacePath): boolean =>
-  a.length === b.length && a.every((segment, index) => segment === b[index]);
-
 export const isAncestorPath = (
-  ancestor: LovelacePath,
-  path: LovelacePath
+  ancestor: ConfigPath,
+  path: ConfigPath
 ): boolean =>
   ancestor.length < path.length &&
   ancestor.every((segment, index) => segment === path[index]);
 
-export const getParentPath = (path: LovelacePath): LovelacePath =>
+export const getParentPath = (path: ConfigPath): ConfigPath =>
   path.slice(0, -1);
 
-export const getViewPath = (path: LovelacePath): LovelacePath =>
-  path.slice(0, 2);
+export const getViewPath = (path: ConfigPath): ConfigPath => path.slice(0, 2);
 
-export const getPathTarget = (path: LovelacePath): LovelacePathTarget => {
+export const getPathTarget = (path: ConfigPath): LovelacePathTarget => {
   const last = path[path.length - 1];
   if (typeof last === "number") {
     return "item";
@@ -55,7 +53,7 @@ export const getPathTarget = (path: LovelacePath): LovelacePathTarget => {
 };
 
 // Temporary compatibility: custom view layouts still pass [view, card] or [view, section, card] index tuples
-export const normalizeCardPath = (path: LovelacePath): LovelacePath => {
+export const normalizeCardPath = (path: ConfigPath): ConfigPath => {
   if (path.length < 2 || path.some((segment) => typeof segment === "string")) {
     return path;
   }
@@ -65,9 +63,7 @@ export const normalizeCardPath = (path: LovelacePath): LovelacePath => {
     : ["views", viewIndex, "sections", rest[0], "cards", rest[1]];
 };
 
-export const getItemKind = (
-  path: LovelacePath
-): LovelaceItemKind | undefined => {
+export const getItemKind = (path: ConfigPath): LovelaceItemKind | undefined => {
   for (let index = path.length - 1; index >= 0; index--) {
     const segment = path[index];
     if (typeof segment === "string") {
@@ -83,7 +79,7 @@ const isRecord = (node: unknown): node is Record<string, unknown> =>
 const isStrategyNode = (node: unknown): boolean =>
   isRecord(node) && "strategy" in node;
 
-const strategyError = (path: LovelacePath, depth: number): Error =>
+const strategyError = (path: ConfigPath, depth: number): Error =>
   new Error(
     `Cannot edit inside a strategy: ${stringifyPath(path.slice(0, depth))}`
   );
@@ -98,7 +94,7 @@ const getChild = (node: unknown, segment: string | number): unknown => {
   return undefined;
 };
 
-const readAtPath = (node: unknown, path: LovelacePath, depth = 0): unknown => {
+const readAtPath = (node: unknown, path: ConfigPath, depth = 0): unknown => {
   if (depth === path.length) {
     return node;
   }
@@ -113,7 +109,7 @@ const readAtPath = (node: unknown, path: LovelacePath, depth = 0): unknown => {
 
 const updateAtPath = (
   node: unknown,
-  path: LovelacePath,
+  path: ConfigPath,
   updater: (node: unknown) => unknown,
   depth = 0
 ): unknown => {
@@ -143,24 +139,24 @@ const updateAtPath = (
 
 const update = (
   config: LovelaceConfig,
-  path: LovelacePath,
+  path: ConfigPath,
   updater: (node: unknown) => unknown
 ): LovelaceConfig => updateAtPath(config, path, updater) as LovelaceConfig;
 
 export const getAtPath = <T = unknown>(
   config: LovelaceConfig,
-  path: LovelacePath
+  path: ConfigPath
 ): T | undefined => readAtPath(config, path) as T | undefined;
 
 export const setAtPath = (
   config: LovelaceConfig,
-  path: LovelacePath,
+  path: ConfigPath,
   value: unknown
 ): LovelaceConfig => update(config, path, () => value);
 
 export const insertAtPath = (
   config: LovelaceConfig,
-  path: LovelacePath,
+  path: ConfigPath,
   value: unknown
 ): LovelaceConfig => {
   const index = path[path.length - 1];
@@ -176,7 +172,7 @@ export const insertAtPath = (
 
 export const appendAtPath = (
   config: LovelaceConfig,
-  collectionPath: LovelacePath,
+  collectionPath: ConfigPath,
   value: unknown
 ): LovelaceConfig =>
   update(config, collectionPath, (node) =>
@@ -185,7 +181,7 @@ export const appendAtPath = (
 
 export const deleteAtPath = (
   config: LovelaceConfig,
-  path: LovelacePath
+  path: ConfigPath
 ): LovelaceConfig => {
   if (path.length === 0 || getAtPath(config, path) === undefined) {
     return config;
@@ -208,8 +204,8 @@ export const deleteAtPath = (
 
 export const moveAtPath = (
   config: LovelaceConfig,
-  from: LovelacePath,
-  to: LovelacePath
+  from: ConfigPath,
+  to: ConfigPath
 ): LovelaceConfig => {
   if (pathEquals(from, to)) {
     return config;

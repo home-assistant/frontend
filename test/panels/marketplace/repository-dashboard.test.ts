@@ -673,7 +673,7 @@ describe("ha-marketplace-repository-dashboard", () => {
       )
     ).toEqual([
       "ui.panel.marketplace.repository.community.stars",
-      "ui.panel.marketplace.repository.community.open_issues",
+      "ui.panel.marketplace.repository.community.open_issues_and_prs",
     ]);
   });
 
@@ -809,7 +809,7 @@ describe("ha-marketplace-repository-dashboard", () => {
 
       const subpage = page.shadowRoot!.querySelector("hass-subpage") as
         (HTMLElement & { header: string }) | null;
-      expect(subpage!.header).toBe("ui.panel.marketplace.title");
+      expect(subpage!.header).toBe("Marketplace");
       expect(page.shadowRoot!.querySelector(".summary h1")!.textContent).toBe(
         "Repository 1"
       );

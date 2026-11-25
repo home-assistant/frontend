@@ -29,9 +29,18 @@ import {
 } from "../../../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../../types";
+import {
+  deviceAutomationErrorText,
+  deviceErrorText,
+} from "../../automation-errors";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 
 @customElement("ha-automation-trigger-device")
 export class HaDeviceTrigger extends LitElement {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["device_id", "domain"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Object }) public trigger!: DeviceTrigger;
@@ -122,7 +131,10 @@ export class HaDeviceTrigger extends LitElement {
     try {
       // Resolve the candidates before exposing the split map, so the picker
       // never offers one that cannot host the automation.
-      const compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+      const compositeSplits = await fetchDeviceCompositeSplits(
+        this.hass.connection,
+        this.hass.callWS
+      );
       await this._resolveReplacements(compositeSplits);
       this._compositeSplits = compositeSplits;
     } catch (_err) {
@@ -133,24 +145,40 @@ export class HaDeviceTrigger extends LitElement {
   }
 
   protected render() {
+    const deviceError = this._fieldErrors.fieldError("device_id");
+    const automationError = this._fieldErrors.fieldError("domain");
     const deviceId = this._deviceId || this.trigger.device_id;
 
     return html`
       <ha-device-picker
         .value=${deviceId}
         .replacementDeviceIds=${this._replacementDeviceIds}
+        .invalid=${!!deviceError}
+        .errorMessage=${
+          deviceError
+            ? deviceErrorText(this.hass.localize, deviceError)
+            : undefined
+        }
         @value-changed=${this._devicePicked}
-        .hass=${this.hass}
         .disabled=${this.disabled}
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.device.label"
         )}
       ></ha-device-picker>
       <ha-device-trigger-picker
+        .invalid=${!!automationError}
+        .errorMessage=${
+          automationError
+            ? deviceAutomationErrorText(
+                this.hass.localize,
+                "triggers",
+                automationError
+              )
+            : undefined
+        }
         .value=${this.trigger}
         .deviceId=${deviceId}
         @value-changed=${this._deviceTriggerPicked}
-        .hass=${this.hass}
         .disabled=${this.disabled}
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.device.trigger"

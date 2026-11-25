@@ -14,8 +14,12 @@ import { computeAttributeNameDisplay } from "../../../common/entity/compute_attr
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import "../../../components/ha-control-slider";
 import type { CoverEntity } from "../../../data/cover";
-import { coverSupportsTiltPosition } from "../../../data/cover";
+import {
+  coverSupportsTiltPosition,
+  coverTiltOpenness,
+} from "../../../data/cover";
 import {
   apiContext,
   entitiesContext,
@@ -24,7 +28,6 @@ import {
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity/entity_attributes";
 import type { FrontendLocaleData } from "../../../data/translation";
-import { generateTiltSliderTrackBackgroundGradient } from "../../../state-control/cover/ha-state-control-cover-tilt-position";
 import type {
   HomeAssistant,
   HomeAssistantApi,
@@ -37,7 +40,29 @@ import type {
   LovelaceCardFeatureContext,
 } from "./types";
 
-const GRADIENT = generateTiltSliderTrackBackgroundGradient();
+const SLAT_COUNT = 24;
+const MIN_SLAT_WIDTH = 0.2;
+
+const computeTiltGradient = (stateObj: CoverEntity) => {
+  const stops: string[] = [];
+
+  for (let i = 0; i < SLAT_COUNT; i++) {
+    const tilt = ((i + 0.5) / SLAT_COUNT) * 100;
+    const closedness = 1 - coverTiltOpenness(stateObj, tilt) / 100;
+    const width = MIN_SLAT_WIDTH + (1 - MIN_SLAT_WIDTH) * closedness;
+    const slatStart = ((i + (1 - width) / 2) / SLAT_COUNT) * 100;
+    const slatEnd = ((i + (1 + width) / 2) / SLAT_COUNT) * 100;
+
+    stops.push(
+      `transparent ${slatStart}%`,
+      `var(--control-slider-color) ${slatStart}%`,
+      `var(--control-slider-color) ${slatEnd}%`,
+      `transparent ${slatEnd}%`
+    );
+  }
+
+  return stops.join(", ");
+};
 
 const supportsCoverTiltPositionCardFeatureFromState = (
   stateObj: HassEntity
@@ -132,6 +157,10 @@ class HuiCoverTiltPositionCardFeature
       "--state-cover-inactive-color": openColor,
     };
 
+    const gradientStyle = {
+      "--tilt-gradient": computeTiltGradient(this._stateObj),
+    };
+
     return html`
       <ha-control-slider
         style=${styleMap(style)}
@@ -151,7 +180,11 @@ class HuiCoverTiltPositionCardFeature
         .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_tilt_position}
         .locale=${this._locale}
       >
-        <div slot="background" class="gradient"></div
+        <div
+          slot="background"
+          class="gradient"
+          style=${styleMap(gradientStyle)}
+        ></div
       ></ha-control-slider>
     `;
   }
@@ -171,8 +204,11 @@ class HuiCoverTiltPositionCardFeature
       cardFeatureStyles,
       css`
         .gradient {
-          background: linear-gradient(to right, ${GRADIENT});
+          background: linear-gradient(to left, var(--tilt-gradient));
           opacity: 0.6;
+        }
+        .gradient:dir(rtl) {
+          background: linear-gradient(to right, var(--tilt-gradient));
         }
       `,
     ];

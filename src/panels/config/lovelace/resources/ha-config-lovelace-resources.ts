@@ -344,8 +344,8 @@ export class HaConfigLovelaceResources extends LitElement {
       haStyle,
       css`
         .content {
-          padding: 28px 20px 0;
-          max-width: 1040px;
+          padding: 28px var(--ha-content-gutter) 0;
+          max-width: var(--ha-content-width-narrow);
           margin: 0 auto;
         }
         h2 {

@@ -126,6 +126,7 @@ export class HaMoreInfoUpdateBackup extends LitElement {
               ></ha-fade-in>`
             : html`<ha-switch
                 slot="end"
+                .accessibleLabel=${createBackupTexts?.title ?? ""}
                 .checked=${this._createBackup}
                 @change=${this._createBackupChanged}
                 .disabled=${this.disabled || updateIsInstalling(this.stateObj)}
@@ -145,10 +146,10 @@ export class HaMoreInfoUpdateBackup extends LitElement {
     let type: UpdateType | undefined = undefined;
 
     try {
-      this._entitySources = await fetchEntitySourcesWithCache({
-        callWS: this._api.callWS,
-        states: this._states,
-      });
+      this._entitySources = await fetchEntitySourcesWithCache(
+        this._api.callWS,
+        this._states
+      );
       type = getUpdateType(this.stateObj!, this._entitySources!);
     } catch (err) {
       // ignore error, because the generic backup option remains available

@@ -1,3 +1,4 @@
+import { ContextProvider } from "@lit/context";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { tinykeys } from "tinykeys";
@@ -5,29 +6,33 @@ import { consume } from "../../../common/decorators/consume";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { pathEquals } from "../../../common/util/config-path";
 import "../../../components/ha-snap-bottom-sheet";
 import type { HaSnapBottomSheet } from "../../../components/ha-snap-bottom-sheet";
-import {
-  isCondition,
-  isScriptField,
-  isTrigger,
-  type ActionSidebarConfig,
-  type ConditionSidebarConfig,
-  type OptionSidebarConfig,
-  type ScriptFieldSidebarConfig,
-  type SidebarConfig,
-  type TriggerSidebarConfig,
+import type {
+  ActionSidebarConfig,
+  SidebarConfig,
 } from "../../../data/automation";
 import { manifestsContext } from "../../../data/context";
 import type { DomainManifestLookup } from "../../../data/integration";
-import { isTriggerList } from "../../../data/trigger";
 import type { HomeAssistant } from "../../../types";
+import {
+  automationPathContext,
+  automationRowRegistryContext,
+  type AutomationRowRegistry,
+} from "./automation-path";
 import "./sidebar/ha-automation-sidebar-action";
+import type HaAutomationSidebarAction from "./sidebar/ha-automation-sidebar-action";
 import "./sidebar/ha-automation-sidebar-condition";
+import type HaAutomationSidebarCondition from "./sidebar/ha-automation-sidebar-condition";
 import "./sidebar/ha-automation-sidebar-option";
+import type HaAutomationSidebarOption from "./sidebar/ha-automation-sidebar-option";
 import "./sidebar/ha-automation-sidebar-script-field";
+import type HaAutomationSidebarScriptField from "./sidebar/ha-automation-sidebar-script-field";
 import "./sidebar/ha-automation-sidebar-script-field-selector";
+import type HaAutomationSidebarScriptFieldSelector from "./sidebar/ha-automation-sidebar-script-field-selector";
 import "./sidebar/ha-automation-sidebar-trigger";
+import type HaAutomationSidebarTrigger from "./sidebar/ha-automation-sidebar-trigger";
 
 // The sidebar card header: the dialog header's 48px minimum plus its padding
 const COLLAPSED_SHEET_HEIGHT = 68;
@@ -55,15 +60,60 @@ export default class HaAutomationSidebar extends LitElement {
   @consume({ context: manifestsContext, subscribe: true })
   private _manifests?: DomainManifestLookup;
 
+  @consume({ context: automationRowRegistryContext })
+  private _registry?: AutomationRowRegistry;
+
+  // Editors in the sidebar are not inside their row, so they get its path here
+  private readonly _pathProvider = new ContextProvider(this, {
+    context: automationPathContext,
+    initialValue: [],
+  });
+
+  private _unsubscribeRegistry?: () => void;
+
   @query("ha-snap-bottom-sheet")
   private _bottomSheetElement?: HaSnapBottomSheet;
 
   @query(".handle")
   private _handleElement?: HTMLDivElement;
 
+  @query(".sidebar-content")
+  private _contentElement?:
+    | HaAutomationSidebarAction
+    | HaAutomationSidebarCondition
+    | HaAutomationSidebarOption
+    | HaAutomationSidebarScriptField
+    | HaAutomationSidebarScriptFieldSelector
+    | HaAutomationSidebarTrigger;
+
   private _resizeStartX = 0;
 
+  // Set when the user switches to YAML, consumed once the sidebar reopens
+  private _focusYamlEditor = false;
+
   private _tinykeysUnsub?: () => void;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    // A row dragged to another place while it is open changes its path
+    this._unsubscribeRegistry = this._registry?.subscribe(() =>
+      this._syncPath()
+    );
+  }
+
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has("config")) {
+      this._syncPath();
+    }
+  }
+
+  private _syncPath() {
+    const path = this.config ? (this._registry?.selectedPath() ?? []) : [];
+    if (!pathEquals(path, this._pathProvider.value)) {
+      this._pathProvider.setValue(path);
+    }
+  }
 
   protected updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
@@ -72,6 +122,10 @@ export default class HaAutomationSidebar extends LitElement {
       this._bottomSheetElement?.position === "collapsed"
     ) {
       this._bottomSheetElement.snapTo("half");
+    }
+    if (changedProperties.has("sidebarKey") && this._focusYamlEditor) {
+      this._focusYamlEditor = false;
+      this._contentElement?.focusYamlEditor();
     }
     if (changedProperties.has("config") || changedProperties.has("narrow")) {
       if (!this.config || this.narrow) {
@@ -83,6 +137,8 @@ export default class HaAutomationSidebar extends LitElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    this._unsubscribeRegistry?.();
+    this._unsubscribeRegistry = undefined;
     this._unregisterResizeHandlers();
     this._tinykeysUnsub?.();
   }
@@ -229,36 +285,12 @@ export default class HaAutomationSidebar extends LitElement {
   }
 
   private _getType() {
-    if (
-      (this.config as TriggerSidebarConfig)?.config &&
-      (isTrigger((this.config as TriggerSidebarConfig)?.config) ||
-        isTriggerList((this.config as TriggerSidebarConfig)?.config))
-    ) {
-      return "trigger";
-    }
-    if (isCondition((this.config as ConditionSidebarConfig)?.config)) {
-      return "condition";
-    }
-    if (
-      (this.config as ScriptFieldSidebarConfig)?.config &&
-      isScriptField((this.config as ScriptFieldSidebarConfig)?.config)
-    ) {
-      return (this.config as ScriptFieldSidebarConfig)?.config.selector
+    if (this.config?.type === "script-field") {
+      return this.config.config.selector
         ? "script-field-selector"
         : "script-field";
     }
-
-    // option is a building block; its config only carries the option itself
-    const optionConfig = (this.config as OptionSidebarConfig)?.config;
-    if (this.config && (!optionConfig || "option" in optionConfig)) {
-      return "option";
-    }
-
-    if ((this.config as ActionSidebarConfig)?.config.action) {
-      return "action";
-    }
-
-    return undefined;
+    return this.config?.type;
   }
 
   public triggerCloseSidebar(ev?: CustomEvent) {
@@ -271,6 +303,14 @@ export default class HaAutomationSidebar extends LitElement {
     this._closeSidebar();
   }
 
+  public get canToggleYamlMode(): boolean {
+    return !!this._contentElement?.canToggleYamlMode;
+  }
+
+  public toggleYamlMode() {
+    this._contentElement?.toggleYamlMode();
+  }
+
   private _closeSidebar() {
     this.config?.close(true);
   }
@@ -278,6 +318,9 @@ export default class HaAutomationSidebar extends LitElement {
   private _toggleYamlMode = (
     ev: HASSDomEvent<HASSDomEvents["toggle-yaml-mode"]>
   ) => {
+    // Script field sidebars don't pass the target mode, focusing is a no-op
+    // when the result is the visual editor
+    this._focusYamlEditor = ev.detail?.yamlMode !== false;
     (this.config as ActionSidebarConfig)?.toggleYamlMode(ev.detail?.yamlMode);
   };
 

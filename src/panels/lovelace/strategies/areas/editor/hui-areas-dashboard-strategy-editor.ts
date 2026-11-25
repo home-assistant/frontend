@@ -252,7 +252,7 @@ export class HuiAreasDashboardStrategyEditor
     showAreaRegistryDetailDialog(this, {
       entry: area,
       updateEntry: (values) =>
-        updateAreaRegistryEntry(this.hass!, area.area_id, values),
+        updateAreaRegistryEntry(this.hass!.callWS, area.area_id, values),
     });
   }
 

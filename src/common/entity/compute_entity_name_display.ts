@@ -3,7 +3,10 @@ import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
 } from "../../data/entity/entity_registry";
-import type { HomeAssistant, HomeAssistantRegistries } from "../../types";
+import type {
+  HomeAssistantInternationalization,
+  HomeAssistantRegistries,
+} from "../../types";
 import { ensureArray } from "../array/ensure-array";
 import { computeRTL } from "../util/compute_rtl";
 import { computeAreaName } from "./compute_area_name";
@@ -211,16 +214,20 @@ export interface EntityPickerDisplay {
   secondary?: string;
 }
 
+export interface EntityPickerDisplayOptions extends HomeAssistantRegistries {
+  language: HomeAssistantInternationalization["language"];
+  translationMetadata: HomeAssistantInternationalization["translationMetadata"];
+}
+
 export const computeEntityPickerDisplay = (
-  hass: HomeAssistantRegistries &
-    Pick<HomeAssistant, "language" | "translationMetadata">,
+  options: EntityPickerDisplayOptions,
   stateObj: HassEntity
 ): EntityPickerDisplay => {
-  const parts = computeEntityNameParts(stateObj, hass);
+  const parts = computeEntityNameParts(stateObj, options);
 
   const isRTL = computeRTL(
-    hass.language,
-    hass.translationMetadata.translations
+    options.language,
+    options.translationMetadata.translations
   );
 
   const primary = parts.entity || parts.device || stateObj.entity_id;

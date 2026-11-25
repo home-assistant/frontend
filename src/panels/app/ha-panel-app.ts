@@ -10,15 +10,13 @@ import { navigate } from "../../common/navigate";
 import { computeRouteTail } from "../../common/url/route";
 import { nextRender } from "../../common/util/render-status";
 import "../../components/ha-icon-button";
-import type { HassioAddonDetails } from "../../data/hassio/addon";
-import {
-  fetchHassioAddonInfo,
-  startHassioAddon,
-} from "../../data/hassio/addon";
+import { startHassioAddon } from "../../data/hassio/addon";
 import { extractApiErrorMessage } from "../../data/hassio/common";
+import type { IngressAppInfo } from "../../data/hassio/ingress";
 import {
   createHassioSession,
-  validateHassioSession,
+  fetchIngressAppInfo,
+  refreshHassioSession,
 } from "../../data/hassio/ingress";
 import {
   showAlertDialog,
@@ -45,7 +43,7 @@ class HaPanelApp extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @state() private _addon?: HassioAddonDetails;
+  @state() private _addon?: IngressAppInfo;
 
   @state() private _loadingMessage?: string;
 
@@ -61,6 +59,10 @@ class HaPanelApp extends LitElement {
   private _enabledKioskMode = false;
 
   private _sessionKeepAlive?: number;
+
+  private _session?: { slug: string; session: string };
+
+  private _sessionRefresh?: Promise<void>;
 
   private _fetchDataTimeout?: number;
 
@@ -94,17 +96,22 @@ class HaPanelApp extends LitElement {
     super.connectedCallback();
     window.addEventListener("message", this._handleIframeMessage);
     window.addEventListener("resize", this._handleResize);
+    document.addEventListener("visibilitychange", this._handleVisibility);
+    document.addEventListener("resume", this._handleVisibility);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("message", this._handleIframeMessage);
     window.removeEventListener("resize", this._handleResize);
+    document.removeEventListener("visibilitychange", this._handleVisibility);
+    document.removeEventListener("resume", this._handleVisibility);
 
     if (this._sessionKeepAlive) {
       clearInterval(this._sessionKeepAlive);
       this._sessionKeepAlive = undefined;
     }
+    this._session = undefined;
     if (this._fetchDataTimeout) {
       clearTimeout(this._fetchDataTimeout);
       this._fetchDataTimeout = undefined;
@@ -227,16 +234,23 @@ class HaPanelApp extends LitElement {
   }
 
   private async _fetchData(addonSlug: string) {
-    const createSessionPromise = createHassioSession(this.hass);
+    const createSessionPromise = createHassioSession(this.hass, addonSlug);
+    // The app info checks below may return before the session is awaited,
+    // and both fail when a non-admin opens an admin-only app
+    createSessionPromise.catch(() => undefined);
 
-    let addon: HassioAddonDetails;
+    let addon: IngressAppInfo;
 
     try {
-      addon = await fetchHassioAddonInfo(this.hass.callWS, addonSlug);
+      addon = await fetchIngressAppInfo(this.hass, addonSlug);
     } catch (err: any) {
       await this._showErrorAndNavigateHome(
         addonSlug,
-        extractApiErrorMessage(err)
+        err?.code === "unauthorized"
+          ? this.hass.localize("ui.panel.app.error_app_unauthorized")
+          : this.hass.localize("ui.panel.app.error_loading_app", {
+              error: extractApiErrorMessage(err),
+            })
       );
       return;
     }
@@ -316,13 +330,15 @@ class HaPanelApp extends LitElement {
 
     try {
       session = await createSessionPromise;
-    } catch (_err: any) {
+    } catch (err: any) {
       if (this._sessionKeepAlive) {
         clearInterval(this._sessionKeepAlive);
       }
       await this._showErrorAndNavigateHome(
         addon.name,
-        this.hass.localize("ui.panel.app.error_creating_session")
+        this.hass.localize("ui.panel.app.error_creating_session", {
+          error: extractApiErrorMessage(err),
+        })
       );
       return;
     }
@@ -335,16 +351,50 @@ class HaPanelApp extends LitElement {
     if (this._sessionKeepAlive) {
       clearInterval(this._sessionKeepAlive);
     }
-    this._sessionKeepAlive = window.setInterval(async () => {
-      try {
-        await validateHassioSession(this.hass, session);
-      } catch (_err: any) {
-        session = await createHassioSession(this.hass);
-      }
-    }, 60000);
+    this._session = { slug: addonSlug, session };
+    this._sessionKeepAlive = window.setInterval(this._refreshSession, 60000);
 
     this._addon = addon;
   }
+
+  // The keep-alive timer does not run while the device sleeps, so the session
+  // may have expired by the time the page is visible again. Refresh it right
+  // away instead of leaving the app unreachable until the next tick.
+  // "resume" only fires in Chromium after a frozen page, other browsers rely
+  // on "visibilitychange".
+  private _handleVisibility = () => {
+    if (!document.hidden) {
+      this._refreshSession();
+    }
+  };
+
+  private _refreshSession = (): Promise<void> => {
+    const current = this._session;
+    if (!current) {
+      return Promise.resolve();
+    }
+    if (this._sessionRefresh) {
+      return this._sessionRefresh;
+    }
+    this._sessionRefresh = refreshHassioSession(
+      this.hass,
+      current.slug,
+      current.session
+    )
+      .then((session) => {
+        // the panel may have switched to another app meanwhile
+        if (this._session === current) {
+          this._session = { slug: current.slug, session };
+        }
+      })
+      .catch((_err: any) => {
+        // Connection to Home Assistant is gone, the next refresh will retry
+      })
+      .finally(() => {
+        this._sessionRefresh = undefined;
+      });
+    return this._sessionRefresh;
+  };
 
   private async _checkLoaded(ev: Event): Promise<void> {
     const iframe = ev.target as HTMLIFrameElement;

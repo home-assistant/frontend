@@ -38,7 +38,7 @@ export interface AlarmControlPanelEntity extends HassEntityBase {
 }
 
 export const callAlarmAction = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService">,
   entity: string,
   action:
     | "arm_away"
@@ -49,7 +49,7 @@ export const callAlarmAction = (
     | "disarm",
   code?: string
 ) => {
-  hass!.callService("alarm_control_panel", `alarm_${action}`, {
+  hass.callService("alarm_control_panel", `alarm_${action}`, {
     entity_id: entity,
     code,
   });
@@ -123,7 +123,7 @@ export const setProtectedAlarmControlPanelMode = async (
     (mode === "disarmed" && stateObj.attributes.code_format)
   ) {
     const entry = await getExtendedEntityRegistryEntry(
-      hass,
+      hass.callWS,
       stateObj.entity_id
     ).catch(() => undefined);
     const defaultCode = entry?.options?.alarm_control_panel?.default_code;

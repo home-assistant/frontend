@@ -49,6 +49,11 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { graphEntitiesConfigStruct } from "../structs/entities-struct";
 import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
 import { orderPropertiesGraphCard } from "./order-properties/order-properties-graph";
+import {
+  collectionKeyFromFormData,
+  collectionKeyToFormData,
+  energyCollectionKeySchema,
+} from "./energy-collection-key-schema";
 
 const statTypeStruct = union([
   literal("state"),
@@ -232,13 +237,7 @@ export class HuiStatisticsGraphCardEditor
           type: "grid",
           schema: [
             ...(enableDateSelect
-              ? ([
-                  {
-                    type: "string",
-                    name: "collection_key",
-                    required: false,
-                  },
-                ] as HaFormSchema[])
+              ? ([energyCollectionKeySchema] as HaFormSchema[])
               : []),
             {
               name: "energy_date_selection",
@@ -408,12 +407,12 @@ export class HuiStatisticsGraphCardEditor
             statisticsMetaHasType(metaData, stat_type)
           )
         );
-    const data = {
+    const data = collectionKeyToFormData({
       chart_type: "line",
       period: this._config!.energy_date_selection ? "auto" : "hour",
       ...this._config,
       stat_types: configured_stat_types,
-    };
+    });
     const unitClass = this._metaDatas?.[0]?.unit_class;
     const statisticsUnit = unitClass
       ? undefined
@@ -429,7 +428,6 @@ export class HuiStatisticsGraphCardEditor
         @value-changed=${this._valueChanged}
       ></ha-form>
       <ha-statistics-picker
-        .hass=${this.hass}
         .placeholder=${this.hass!.localize(
           "ui.panel.lovelace.editor.card.statistics-graph.pick_statistic"
         )}
@@ -465,7 +463,9 @@ export class HuiStatisticsGraphCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const config = this._orderProperties(ev.detail.value);
+    const config = this._orderProperties(
+      collectionKeyFromFormData(ev.detail.value)
+    );
     fireEvent(this, "config-changed", { config });
   }
 

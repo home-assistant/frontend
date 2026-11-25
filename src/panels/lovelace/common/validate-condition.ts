@@ -168,8 +168,14 @@ export interface VisibilityLogicalCondition extends BaseCondition {
   conditions?: VisibilityCondition | VisibilityCondition[];
 }
 
+/** The parts of `hass` the condition checks read. */
+export type ConditionHass = Pick<
+  HomeAssistant,
+  "states" | "user" | "locale" | "config" | "entities" | "devices" | "areas"
+>;
+
 function getValueFromEntityId(
-  hass: HomeAssistant,
+  hass: ConditionHass,
   value: string
 ): string | undefined {
   if (isValidEntityId(value) && hass.states[value]) {
@@ -180,7 +186,7 @@ function getValueFromEntityId(
 
 function checkStateCondition(
   condition: StateCondition | LegacyCondition,
-  hass: HomeAssistant,
+  hass: ConditionHass,
   context: ConditionContext
 ) {
   // Prefer core `entity_id` over lovelace `entity` / the host entity.
@@ -229,7 +235,7 @@ function checkStateCondition(
 
 function checkStateNumericCondition(
   condition: NumericStateCondition,
-  hass: HomeAssistant,
+  hass: ConditionHass,
   context: ConditionContext
 ) {
   // Prefer core `entity_id` over lovelace `entity` / the host entity.
@@ -283,7 +289,7 @@ function checkViewColumnsCondition(
   );
 }
 
-function checkScreenCondition(condition: ScreenCondition, _: HomeAssistant) {
+function checkScreenCondition(condition: ScreenCondition, _: ConditionHass) {
   return condition.media_query
     ? matchMedia(condition.media_query).matches
     : false;
@@ -291,14 +297,14 @@ function checkScreenCondition(condition: ScreenCondition, _: HomeAssistant) {
 
 function checkTimeCondition(
   condition: Omit<TimeCondition, "condition">,
-  hass: HomeAssistant
+  hass: ConditionHass
 ) {
   return checkTimeInRange(hass, condition);
 }
 
 function checkLocationCondition(
   condition: LocationCondition,
-  hass: HomeAssistant
+  hass: ConditionHass
 ) {
   const stateObj = getUserPerson(hass.user?.id, hass.states);
   if (!stateObj) {
@@ -343,7 +349,7 @@ function checkLocationCondition(
  * otherwise the zone name. Passive zones never become the state.
  */
 function activeZoneState(
-  hass: HomeAssistant,
+  hass: ConditionHass,
   zoneId: string
 ): string | undefined {
   const stateObj = hass.states[zoneId];
@@ -408,7 +414,7 @@ const resolvedZonesCache = new WeakMap<
  * currently have a state.
  */
 export function resolveLocationZones(
-  hass: HomeAssistant,
+  hass: ConditionHass,
   target: HassServiceTargetWithExclude
 ): string[] {
   // Checked on every call rather than cached, so a zone that loses its state
@@ -419,7 +425,7 @@ export function resolveLocationZones(
 }
 
 function resolveTargetZones(
-  hass: HomeAssistant,
+  hass: ConditionHass,
   target: HassServiceTargetWithExclude
 ): string[] {
   const cached = resolvedZonesCache.get(target);
@@ -460,7 +466,7 @@ function resolveTargetZones(
   return zones;
 }
 
-function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
+function checkUserCondition(condition: UserCondition, hass: ConditionHass) {
   return condition.users && hass.user?.id
     ? condition.users.includes(hass.user.id)
     : false;
@@ -468,7 +474,7 @@ function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
 
 function checkAndCondition(
   condition: AndCondition,
-  hass: HomeAssistant,
+  hass: ConditionHass,
   context: ConditionContext
 ) {
   if (!condition.conditions) return true;
@@ -477,7 +483,7 @@ function checkAndCondition(
 
 function checkNotCondition(
   condition: NotCondition,
-  hass: HomeAssistant,
+  hass: ConditionHass,
   context: ConditionContext
 ) {
   if (!condition.conditions) return true;
@@ -486,7 +492,7 @@ function checkNotCondition(
 
 function checkOrCondition(
   condition: OrCondition,
-  hass: HomeAssistant,
+  hass: ConditionHass,
   context: ConditionContext
 ) {
   if (!condition.conditions) return true;
@@ -504,7 +510,7 @@ function checkOrCondition(
  */
 export function checkConditionsMet(
   conditions: (Condition | LegacyCondition)[],
-  hass: HomeAssistant,
+  hass: ConditionHass,
   context: ConditionContext
 ): boolean {
   return conditions.every((c) => {
@@ -536,15 +542,28 @@ export function checkConditionsMet(
   });
 }
 
+/**
+ * Collects every entity ID the conditions read, so a card can track only
+ * those states. Accepts a single condition because logical groups may hold
+ * one child instead of a list.
+ */
 export function extractConditionEntityIds(
-  conditions: Condition[]
+  conditions:
+    (Condition | LegacyCondition)[] | Condition | LegacyCondition | undefined
 ): Set<string> {
   const entityIds = new Set<string>();
-  for (const condition of conditions) {
-    if (condition.condition === "numeric_state") {
-      if (condition.entity) {
-        entityIds.add(condition.entity);
-      }
+  // Core format `entity_id` is checked before lovelace `entity`
+  const addEntity = (condition: { entity?: string; entity_id?: string }) => {
+    if (typeof condition.entity_id === "string") {
+      entityIds.add(condition.entity_id);
+    }
+    if (condition.entity) {
+      entityIds.add(condition.entity);
+    }
+  };
+  for (const condition of ensureArray(conditions) ?? []) {
+    if ("condition" in condition && condition.condition === "numeric_state") {
+      addEntity(condition);
       if (
         typeof condition.above === "string" &&
         isValidEntityId(condition.above)
@@ -557,10 +576,8 @@ export function extractConditionEntityIds(
       ) {
         entityIds.add(condition.below);
       }
-    } else if (condition.condition === "state") {
-      if (condition.entity) {
-        entityIds.add(condition.entity);
-      }
+    } else if (!("condition" in condition) || condition.condition === "state") {
+      addEntity(condition);
       [
         ...(ensureArray(condition.state) ?? []),
         ...(ensureArray(condition.state_not) ?? []),
@@ -570,10 +587,9 @@ export function extractConditionEntityIds(
         }
       });
     } else if ("conditions" in condition && condition.conditions) {
-      return new Set([
-        ...entityIds,
-        ...extractConditionEntityIds(condition.conditions),
-      ]);
+      extractConditionEntityIds(condition.conditions).forEach((entityId) =>
+        entityIds.add(entityId)
+      );
     }
   }
   return entityIds;

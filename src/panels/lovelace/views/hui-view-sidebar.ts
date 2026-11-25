@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import type { ConfigPath } from "../../../common/util/config-path";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { LovelaceViewSidebarConfig } from "../../../data/lovelace/config/view";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
@@ -11,7 +12,6 @@ import {
   renderSectionContainer,
   sectionContainerStyles,
 } from "../sections/section-container";
-import type { LovelacePath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 
@@ -27,7 +27,7 @@ export class HuiViewSidebar extends ConditionalListenerMixin<LovelaceViewSidebar
 
   @property({ attribute: false }) public config?: LovelaceViewSidebarConfig;
 
-  @property({ attribute: false }) public path!: LovelacePath;
+  @property({ attribute: false }) public path!: ConfigPath;
 
   private _visible = true;
 

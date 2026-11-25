@@ -2,6 +2,7 @@ import type {
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
+import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 
 /** Base attributes type that all entities share */
 export type EntityAttributes = HassEntityAttributeBase & Record<string, any>;
@@ -17,6 +18,11 @@ export type EntityInput = Pick<
   device_id?: string;
   /** Integration that provides the entity, defaults to "demo" */
   platform?: string;
+  /**
+   * Options of the entity in the mocked entity registry, such as timer
+   * presets or favorite positions
+   */
+  options?: EntityRegistryEntry["options"];
   /** When the state last changed, a random recent time by default */
   last_changed?: string;
 };

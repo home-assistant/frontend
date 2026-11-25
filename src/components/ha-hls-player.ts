@@ -1,4 +1,5 @@
 import type { ContextType } from "@lit/context";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type HlsType from "hls.js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -12,6 +13,7 @@ import type { LocalizeFunc } from "../common/translations/localize";
 import { nextRender } from "../common/util/render-status";
 import { fetchStreamUrl } from "../data/camera";
 import { apiContext, configContext, connectionContext } from "../data/context";
+import { isExternal } from "../data/external";
 import "./ha-alert";
 
 type HlsLite = Omit<
@@ -22,7 +24,7 @@ type HlsLite = Omit<
 const HIDDEN_CLEANUP_DELAY = 60000;
 
 @customElement("ha-hls-player")
-class HaHLSPlayer extends LitElement {
+export class HaHLSPlayer extends LitElement {
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
@@ -71,15 +73,27 @@ class HaHLSPlayer extends LitElement {
 
   @state() private _errorIsFatal = false;
 
-  @state() private _url!: string;
+  private _url?: string;
 
   private _hlsPolyfillInstance?: HlsLite;
 
   private _exoPlayer = false;
 
+  // The app's player only follows the video when told, also when the video
+  // changes size without the window, like in a dialog that grows
+  private _exoPlayerResize = new ResizeController(this, {
+    target: null,
+    skipInitial: true,
+    callback: () => this._resizeExoPlayer(),
+  });
+
   private static streamCount = 0;
 
   private _hiddenCleanupTimeout?: number;
+
+  // Increased on every clean up, so a start that is still waiting on the
+  // network knows it is outdated
+  private _cleanUpCount = 0;
 
   private _handleVisibilityChange = () => {
     if (document.pictureInPictureElement) {
@@ -87,6 +101,12 @@ class HaHLSPlayer extends LitElement {
       return;
     }
     if (document.hidden) {
+      if (isExternal) {
+        // The companion apps pause JavaScript timers while in the background,
+        // so a delayed clean up would not run until the app is opened again
+        this._cleanUp();
+        return;
+      }
       this._hiddenCleanupTimeout = window.setTimeout(() => {
         this._hiddenCleanupTimeout = undefined;
         this._cleanUp();
@@ -96,17 +116,20 @@ class HaHLSPlayer extends LitElement {
       clearTimeout(this._hiddenCleanupTimeout);
       this._hiddenCleanupTimeout = undefined;
     } else {
-      this._resetError();
-      this._startHls();
+      this._restartHls();
     }
   };
+
+  /** The video that plays the stream, undefined while the app plays it. */
+  public get videoElement(): HTMLVideoElement | undefined {
+    return this._exoPlayer ? undefined : (this._videoEl ?? undefined);
+  }
 
   public connectedCallback() {
     super.connectedCallback();
     HaHLSPlayer.streamCount += 1;
     if (this.hasUpdated) {
-      this._resetError();
-      this._startHls();
+      this._restartHls();
     }
     document.addEventListener("visibilitychange", this._handleVisibilityChange);
   }
@@ -171,23 +194,43 @@ class HaHLSPlayer extends LitElement {
     }
   }
 
+  /** Starts the stream again, replacing a start that is still pending. */
+  private _restartHls() {
+    if (this.entityid) {
+      // The stream URL stops working once the stream has been idle for a while
+      this._getStreamUrlFromEntityId();
+      return;
+    }
+    this._cleanUp();
+    this._resetError();
+    this._startHls();
+  }
+
   private async _getStreamUrlFromEntityId(): Promise<void> {
     this._cleanUp();
     this._resetError();
+    this._url = undefined;
 
     if (!isComponentLoaded(this._config.config, "stream")) {
       this._setFatalError("Streaming component is not loaded.");
       return;
     }
 
-    if (!this.entityid) {
+    const entityId = this.entityid;
+    if (!entityId) {
       return;
     }
+    const cleanUpCount = this._cleanUpCount;
     try {
       const { url } = await fetchStreamUrl(
         { callWS: this._api.callWS, hassUrl: this._connection.hassUrl },
-        this.entityid
+        entityId
       );
+
+      if (cleanUpCount !== this._cleanUpCount) {
+        // Removed, hidden or switched camera while fetching
+        return;
+      }
 
       this._url = this._connection.hassUrl(url);
       this._cleanUp();
@@ -198,18 +241,27 @@ class HaHLSPlayer extends LitElement {
       // eslint-disable-next-line
       console.error(err);
 
+      if (cleanUpCount !== this._cleanUpCount || entityId !== this.entityid) {
+        // Removed, hidden or switched camera while fetching
+        return;
+      }
       fireEvent(this, "streams", { hasAudio: false, hasVideo: false });
     }
   }
 
   private async _startHls(): Promise<void> {
-    const masterPlaylistPromise = fetch(this._url);
+    const url = this._url;
+    if (!url) {
+      return;
+    }
+    const cleanUpCount = this._cleanUpCount;
+    const masterPlaylistPromise = fetch(url);
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const Hls: typeof HlsType = (await import("hls.js/dist/hls.light.mjs"))
       .default;
 
-    if (!this.isConnected) {
+    if (cleanUpCount !== this._cleanUpCount || !this.isConnected) {
       return;
     }
 
@@ -231,7 +283,7 @@ class HaHLSPlayer extends LitElement {
       this.allowExoPlayer && this._config.auth.external?.config.hasExoPlayer;
     const masterPlaylist = await (await masterPlaylistPromise).text();
 
-    if (!this.isConnected) {
+    if (cleanUpCount !== this._cleanUpCount || !this.isConnected) {
       return;
     }
 
@@ -247,9 +299,9 @@ class HaHLSPlayer extends LitElement {
     let playlist_url: string;
     if (match !== null && matchTwice === null) {
       // Only send the regular playlist url if we match exactly once
-      playlist_url = new URL(match[3], this._url).href;
+      playlist_url = new URL(match[3], url).href;
     } else {
-      playlist_url = this._url;
+      playlist_url = url;
     }
 
     const codecs = match ? `${match[1]},${match[2]}` : undefined;
@@ -271,7 +323,9 @@ class HaHLSPlayer extends LitElement {
 
   private async _renderHLSExoPlayer(url: string) {
     this._exoPlayer = true;
+    fireEvent(this, "exoplayer-changed", { active: true });
     window.addEventListener("resize", this._resizeExoPlayer);
+    this._exoPlayerResize.observe(this._videoEl);
     this.updateComplete.then(() => nextRender()).then(this._resizeExoPlayer);
     this._videoEl.style.visibility = "hidden";
     await this._config.auth.external!.fireMessage({
@@ -387,20 +441,27 @@ class HaHLSPlayer extends LitElement {
 
   private async _renderHLSNative(videoEl: HTMLVideoElement, url: string) {
     videoEl.src = url;
-    videoEl.addEventListener("loadedmetadata", () => {
-      videoEl.play();
-    });
+    videoEl.addEventListener(
+      "loadedmetadata",
+      () => {
+        videoEl.play();
+      },
+      { once: true }
+    );
   }
 
   private _cleanUp() {
+    this._cleanUpCount++;
     if (this._hlsPolyfillInstance) {
       this._hlsPolyfillInstance.destroy();
       this._hlsPolyfillInstance = undefined;
     }
     if (this._exoPlayer) {
       window.removeEventListener("resize", this._resizeExoPlayer);
+      this._exoPlayerResize.unobserve(this._videoEl);
       this._config.auth.external!.fireMessage({ type: "exoplayer/stop" });
       this._exoPlayer = false;
+      fireEvent(this, "exoplayer-changed", { active: false });
     }
     if (this._videoEl) {
       this._videoEl.removeAttribute("src");
@@ -450,8 +511,12 @@ class HaHLSPlayer extends LitElement {
       max-height: var(--video-max-height, calc(100vh - 97px));
     }
 
+    /* Scrolls in a player that is only as high as its picture */
     .fatal {
       display: block;
+      box-sizing: border-box;
+      max-height: 100%;
+      overflow: auto;
       padding: 100px 16px;
     }
 
@@ -462,6 +527,10 @@ class HaHLSPlayer extends LitElement {
 }
 
 declare global {
+  interface HASSDomEvents {
+    "exoplayer-changed": { active: boolean };
+  }
+
   interface HTMLElementTagNameMap {
     "ha-hls-player": HaHLSPlayer;
   }

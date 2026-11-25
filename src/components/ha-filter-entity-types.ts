@@ -17,19 +17,17 @@ import {
   FilterPanelController,
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
-import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { computeRTL } from "../common/util/compute_rtl";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { internationalizationContext, statesContext } from "../data/context";
-import {
-  computeDeviceClassName,
-  NO_DEVICE_CLASS,
-} from "../data/entity/device_class";
+import { NO_DEVICE_CLASS } from "../data/entity/device_class";
 import {
   entityTypeKey,
+  FIXED_ENTITY_TYPE_ICONS,
   parseEntityType,
+  sortDeviceClasses,
   usedEntityTypes,
 } from "../data/entity/entity_type";
 import { domainToName } from "../data/integration";
@@ -45,11 +43,6 @@ import type { HaListItemOption } from "./item/ha-list-item-option";
 import "./list/ha-list-selectable";
 import type { HaListSelectable } from "./list/ha-list-selectable";
 
-// Core picks this one from the battery level, so it has no usable default.
-const FIXED_TYPE_ICONS: Record<string, string> = {
-  "sensor/battery": "mdi:battery",
-};
-
 interface TypeRow {
   key: string;
   domain: string;
@@ -62,10 +55,6 @@ interface TypeRow {
 
 @customElement("ha-filter-entity-types")
 export class HaFilterEntityTypes extends LitElement {
-  @state()
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
-
   @consume({ context: statesContext, subscribe: true })
   @state()
   private _states!: ContextType<typeof statesContext>;
@@ -102,12 +91,15 @@ export class HaFilterEntityTypes extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this._localize("ui.components.filter-entity-types.caption")}
+          ${this._i18n.localize("ui.components.filter-entity-types.caption")}
           ${
             count
               ? html`<div class="badge">${count}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
+                    .label=${this._i18n.localize(
+                      "ui.components.subpage-data-table.clear_filter"
+                    )}
                     @click=${this._clearFilter}
                   ></ha-icon-button>`
               : nothing
@@ -121,7 +113,7 @@ export class HaFilterEntityTypes extends LitElement {
   private _renderContent() {
     const rows = this._rows(
       this._states,
-      this._localize,
+      this._i18n.localize,
       this._i18n.locale.language,
       this._filter,
       this._expandedDomains
@@ -141,7 +133,7 @@ export class HaFilterEntityTypes extends LitElement {
       <ha-list-selectable
         multi
         controlled
-        aria-label=${this._localize("ui.components.filter-entity-types.caption")}
+        aria-label=${this._i18n.localize("ui.components.filter-entity-types.caption")}
         @ha-list-item-selected=${this._handleItemToggled}
         @ha-list-item-deselected=${this._handleItemToggled}
       >
@@ -180,7 +172,7 @@ export class HaFilterEntityTypes extends LitElement {
             ? html`<ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>`
             : html`<ha-domain-icon
                 slot="start"
-                .icon=${FIXED_TYPE_ICONS[row.key]}
+                .icon=${FIXED_ENTITY_TYPE_ICONS[row.key]}
                 .domain=${row.domain}
                 .deviceClass=${row.deviceClass}
                 .state=${row.domain === "binary_sensor" ? "on" : undefined}
@@ -194,7 +186,7 @@ export class HaFilterEntityTypes extends LitElement {
                 slot="end"
                 data-domain=${row.domain}
                 .path=${row.expanded ? mdiChevronUp : mdiChevronDown}
-                .label=${this._localize(
+                .label=${this._i18n.localize(
                   row.expanded
                     ? "ui.components.filter-entity-types.collapse"
                     : "ui.components.filter-entity-types.expand"
@@ -240,21 +232,12 @@ export class HaFilterEntityTypes extends LitElement {
       const rows: TypeRow[] = [];
 
       for (const { domain, name } of domains) {
-        const deviceClasses = types
-          .get(domain)!
-          .map((deviceClass) => ({
-            deviceClass,
-            name: this._deviceClassName(localize, domain, deviceClass),
-          }))
-          .sort((a, b) => {
-            if (a.deviceClass === NO_DEVICE_CLASS) {
-              return 1;
-            }
-            if (b.deviceClass === NO_DEVICE_CLASS) {
-              return -1;
-            }
-            return stringCompare(a.name, b.name, language);
-          });
+        const deviceClasses = sortDeviceClasses(
+          localize,
+          domain,
+          types.get(domain)!,
+          language
+        );
 
         const matchingClasses = deviceClasses.filter((entry) =>
           this._matches(filter, entry.deviceClass, entry.name)
@@ -297,16 +280,6 @@ export class HaFilterEntityTypes extends LitElement {
       return rows;
     }
   );
-
-  private _deviceClassName(
-    localize: LocalizeFunc,
-    domain: string,
-    deviceClass: string
-  ): string {
-    return deviceClass === NO_DEVICE_CLASS
-      ? localize("ui.components.filter-entity-types.no_device_class")
-      : computeDeviceClassName(localize, domain, deviceClass);
-  }
 
   private _matches(
     filter: string | undefined,

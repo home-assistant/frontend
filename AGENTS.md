@@ -41,6 +41,7 @@ Detailed guidance lives in `.agents/skills/<name>/SKILL.md`. Load every matching
 
 - `ha-frontend-contexts`: Lit contexts, `hass` migration, and rerender-sensitive state access.
 - `ha-frontend-components`: dialogs, forms, alerts, shortcuts, tooltips, panels, and Lovelace cards.
+- `ha-frontend-loading`: loading states, skeletons, spinners, loading fades, and checking how a screen looks while it loads.
 - `ha-frontend-events`: event handler typing, custom event dispatch, and event-map declarations.
 - `ha-frontend-types`: backend data contracts, optional schemas, shared types, assertions, and lifecycle types.
 - `ha-frontend-lit`: reactive fields, DOM queries, lifecycle behavior, and render-derived state.

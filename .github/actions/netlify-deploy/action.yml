@@ -35,11 +35,12 @@ runs:
         NETLIFY_AUTH_TOKEN: ${{ inputs.auth-token }}
         NETLIFY_SITE_ID: ${{ inputs.site-id }}
       run: |
-        # Execute the deployment
+        # Execute the deployment (--filter picks the root workspace project,
+        # --no-build because we deploy an already built directory)
         if [ -n "$ALIAS" ]; then
-          npx -y netlify-cli deploy --dir="$DIR" --alias "$ALIAS" --json > deploy_output.json
+          npx -y netlify-cli deploy --filter home-assistant-frontend --no-build --dir="$DIR" --alias "$ALIAS" --json > deploy_output.json
         else
-          npx -y netlify-cli deploy --dir="$DIR" --prod --json > deploy_output.json
+          npx -y netlify-cli deploy --filter home-assistant-frontend --no-build --dir="$DIR" --prod --json > deploy_output.json
         fi
 
         # Collect the urls from the deployment output

@@ -19,7 +19,7 @@ import {
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -105,6 +105,7 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-tabs-subpage-data-table";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
@@ -113,6 +114,7 @@ import { showToast } from "../../../util/toast";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { showNewAutomationDialog } from "../automation/show-dialog-new-automation";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { categoryGroupActions } from "../category/category-group-actions";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import {
   getAreaTableColumn,
@@ -155,6 +157,9 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @state() private _selected: string[] = [];
+
+  @query("hass-tabs-subpage-data-table", true)
+  private _dataTable!: HaTabsSubpageDataTable;
 
   @state() private _activeFilters?: string[];
 
@@ -452,6 +457,12 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         )}
         has-filters
         .initialGroupColumn=${this._tableSettings.grouping}
+        .renderGroupActions=${this._groupActions(
+          "script",
+          this._categories,
+          this._tableSettings.grouping,
+          this._categoryDeleted
+        )}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._tableSettings.sorting}
         .columnOrder=${this._activeColumnOrder}
@@ -532,7 +543,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
         <ha-filter-categories
-          .hass=${this.hass}
           scope="script"
           .value=${this._filters["ha-filter-categories"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -550,7 +560,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-voice-assistants>
         <ha-filter-blueprints
-          .hass=${this.hass}
           .type=${"script"}
           .value=${this._filters["ha-filter-blueprints"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -623,66 +632,66 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                 }`
             : nothing
         }
-        ${
-          this.narrow || areasInOverflow
-            ? html` <ha-dropdown
-                slot="selection-bar"
-                @wa-select=${this._handleBulkAction}
-              >
-                ${
-                  this.narrow
-                    ? html`<ha-assist-chip
-                        .label=${this.hass.localize(
-                          "ui.panel.config.automation.picker.bulk_action"
-                        )}
-                        slot="trigger"
-                      >
-                        <ha-svg-icon
-                          slot="trailing-icon"
-                          .path=${mdiMenuDown}
-                        ></ha-svg-icon>
-                      </ha-assist-chip>`
-                    : html`<ha-icon-button
-                        .path=${mdiDotsVertical}
-                        .label=${this.hass.localize(
-                          "ui.panel.config.automation.picker.bulk_action"
-                        )}
-                        slot="trigger"
-                      ></ha-icon-button>`
-                }
-                ${
-                  this.narrow
-                    ? html`<ha-dropdown-item>
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.picker.bulk_actions.move_category"
-                        )}
-                        ${this._renderCategoryItems("submenu")}
-                      </ha-dropdown-item>`
-                    : nothing
-                }
-                ${
-                  this.narrow || labelsInOverflow
-                    ? html`<ha-dropdown-item>
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.picker.bulk_actions.add_label"
-                        )}
-                        ${this._renderLabelItems("submenu")}
-                      </ha-dropdown-item>`
-                    : nothing
-                }
-                ${
-                  this.narrow || areasInOverflow
-                    ? html`<ha-dropdown-item>
-                        ${this.hass.localize(
-                          "ui.panel.config.devices.picker.bulk_actions.move_area"
-                        )}
-                        ${this._renderAreaItems("submenu")}
-                      </ha-dropdown-item>`
-                    : nothing
-                }
-              </ha-dropdown>`
-            : nothing
-        }
+        <ha-dropdown slot="selection-bar" @wa-select=${this._handleBulkAction}>
+          ${
+            this.narrow
+              ? html`<ha-assist-chip
+                  .label=${this.hass.localize(
+                    "ui.panel.config.automation.picker.bulk_action"
+                  )}
+                  slot="trigger"
+                >
+                  <ha-svg-icon
+                    slot="trailing-icon"
+                    .path=${mdiMenuDown}
+                  ></ha-svg-icon>
+                </ha-assist-chip>`
+              : html`<ha-icon-button
+                  .path=${mdiDotsVertical}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.automation.picker.bulk_action"
+                  )}
+                  slot="trigger"
+                ></ha-icon-button>`
+          }
+          ${
+            this.narrow
+              ? html`<ha-dropdown-item>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.picker.bulk_actions.move_category"
+                  )}
+                  ${this._renderCategoryItems("submenu")}
+                </ha-dropdown-item>`
+              : nothing
+          }
+          ${
+            this.narrow || labelsInOverflow
+              ? html`<ha-dropdown-item>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.picker.bulk_actions.add_label"
+                  )}
+                  ${this._renderLabelItems("submenu")}
+                </ha-dropdown-item>`
+              : nothing
+          }
+          ${
+            this.narrow || areasInOverflow
+              ? html`<ha-dropdown-item>
+                    ${this.hass.localize(
+                      "ui.panel.config.devices.picker.bulk_actions.move_area"
+                    )}
+                    ${this._renderAreaItems("submenu")}
+                  </ha-dropdown-item>
+                  <wa-divider></wa-divider>`
+              : nothing
+          }
+          <ha-dropdown-item value="delete_selected" variant="danger">
+            <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.script.picker.bulk_actions.delete_selected.button"
+            )}
+          </ha-dropdown-item>
+        </ha-dropdown>
         ${
           !this.scripts.length
             ? html` <div class="empty" slot="empty">
@@ -730,6 +739,23 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     const label = ev.detail.label;
     this._setFilter("ha-filter-labels", {
       value: [label.label_id],
+      items: undefined,
+    });
+  };
+
+  private _groupActions = memoizeOne(categoryGroupActions);
+
+  private _categoryDeleted = (categoryId: string) => {
+    const value = this._filters["ha-filter-categories"]?.value;
+
+    if (!Array.isArray(value) || !value.includes(categoryId)) {
+      return;
+    }
+
+    const remaining = value.filter((id) => id !== categoryId);
+
+    this._setFilter("ha-filter-categories", {
+      value: remaining.length ? remaining : undefined,
       items: undefined,
     });
   };
@@ -916,7 +942,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           categories: { script: category },
         })
       );
@@ -953,7 +979,7 @@ ${rejected
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           labels:
             action === "add"
               ? this.hass.entities[entityId].labels.concat(label)
@@ -1001,7 +1027,7 @@ ${rejected
       return;
     }
 
-    if (hasScriptFields(this.hass, entry.unique_id)) {
+    if (hasScriptFields(this.hass.services, entry.unique_id)) {
       this._showInfo(script);
     } else {
       await triggerScript(this.hass, entry.unique_id);
@@ -1119,12 +1145,54 @@ ${rejected
     }
   }
 
+  private _deleteSelected = () => {
+    // Only rows with an entity registry entry are selectable, so every selected
+    // script has a unique ID. The backend still refuses the ones that aren't
+    // stored in scripts.yaml, those end up in the failure alert.
+    const entries = this._entityReg.filter((entry) =>
+      this._selected.includes(entry.entity_id)
+    );
+    let failedCount = 0;
+
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.script.picker.bulk_actions.delete_selected.confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.script.picker.bulk_actions.delete_selected.confirm_text",
+        { count: entries.length }
+      ),
+      confirmText: this.hass.localize("ui.common.delete"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
+      action: async () => {
+        const results = await Promise.allSettled(
+          entries.map((entry) => deleteScript(this.hass, entry.unique_id))
+        );
+        failedCount = rejectedItems(results).length;
+        this._dataTable.clearSelection();
+      },
+    }).then((confirmed) => {
+      if (confirmed && failedCount) {
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.script.picker.bulk_actions.delete_selected.failed_title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.script.picker.bulk_actions.delete_selected.failed",
+            { count: failedCount }
+          ),
+        });
+      }
+    });
+  };
+
   private _bulkCreateCategory = () => {
     showCategoryRegistryDetailDialog(this, {
       scope: "script",
       createEntry: async (values) => {
         const category = await createCategoryRegistryEntry(
-          this.hass,
+          this.hass.callWS,
           "script",
           values
         );
@@ -1137,7 +1205,7 @@ ${rejected
   private _bulkCreateLabel = () => {
     showLabelDetailDialog(this, {
       createEntry: async (values) => {
-        const label = await createLabelRegistryEntry(this.hass, values);
+        const label = await createLabelRegistryEntry(this.hass.callWS, values);
         this._bulkLabel(label.label_id, "add");
       },
     });
@@ -1162,7 +1230,7 @@ ${rejected
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
-        updateEntityRegistryEntry(this.hass, entityId, {
+        updateEntityRegistryEntry(this.hass.callWS, entityId, {
           area_id: area,
         })
       );
@@ -1231,12 +1299,10 @@ ${rejected
           .slot=${slot}
           .value=${`label_${label.label_id}`}
           .action=${selected ? "remove" : "add"}
+          type="checkbox"
+          .checked=${selected}
+          .indeterminate=${partial}
         >
-          <ha-checkbox
-            slot="icon"
-            .checked=${selected}
-            .indeterminate=${partial}
-          ></ha-checkbox>
           <ha-label .color=${label.color} .description=${label.description}>
             ${
               label.icon
@@ -1284,6 +1350,11 @@ ${rejected
     const value = item.value;
 
     if (!value) {
+      return;
+    }
+
+    if (value === "delete_selected") {
+      this._deleteSelected();
       return;
     }
 

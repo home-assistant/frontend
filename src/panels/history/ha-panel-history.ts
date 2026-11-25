@@ -19,6 +19,7 @@ import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
 import type {
+  HASSDomCurrentTargetEvent,
   HASSDomEvent,
   HASSDomTargetEvent,
 } from "../../common/dom/fire_event";
@@ -78,7 +79,12 @@ import {
   mergeHistoryResults,
   subscribeHistory,
 } from "../../data/history";
-import { fetchStatistics } from "../../data/recorder";
+import {
+  fetchStatistics,
+  getStatisticMetadata,
+  isExternalStatistic,
+  type StatisticsMetaData,
+} from "../../data/recorder";
 import { resolveEntityIDs } from "../../data/selector";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
@@ -116,6 +122,8 @@ class HaPanelHistory extends LitElement {
 
   // The zoom window shared by all charts, in percent of their x-axis
   @state() private _zoomRange: [number, number] = [0, 100];
+
+  @state() private _zoomBarHeld = false;
 
   @state() private _filters: SourceFilters = {};
 
@@ -197,7 +205,8 @@ class HaPanelHistory extends LitElement {
       !!this._mungedStateHistory &&
       (this._mungedStateHistory.line.length > 0 ||
         this._mungedStateHistory.timeline.length > 0);
-    const showZoomBar = !loading && hasTargets && hasResults;
+    const hasCharts = !loading && hasTargets && hasResults;
+    const showZoomBar = hasCharts && (this._isZoomed() || this._zoomBarHeld);
     const sourcesLabel = sourceCount
       ? this.hass.localize("ui.panel.history.sources_count", {
           count: entityIds.length,
@@ -245,7 +254,6 @@ class HaPanelHistory extends LitElement {
                     @clear-filter=${this._clearSources}
                   >
                     <ha-sources-picker
-                      .hass=${this.hass}
                       .value=${this._targetPickerValue}
                       .filters=${this._filters}
                       .entitySources=${this._entitySources}
@@ -318,7 +326,6 @@ class HaPanelHistory extends LitElement {
                       ? this._renderEmptyState(hasTargets)
                       : html`
                           <state-history-charts
-                            .hass=${this.hass}
                             .historyData=${this._mungedStateHistory}
                             .startTime=${this._startDate}
                             .endTime=${this._endDate}
@@ -332,8 +339,13 @@ class HaPanelHistory extends LitElement {
                 }
               </div>
               ${
-                showZoomBar
-                  ? html`<ha-card class="zoom-bar">
+                hasCharts
+                  ? html`<ha-card
+                      class=${classMap({
+                        "zoom-bar": true,
+                        "keyboard-only": !showZoomBar,
+                      })}
+                    >
                       <ha-icon-button
                         .disabled=${!this._isZoomed()}
                         .label=${this.hass.localize(
@@ -347,6 +359,11 @@ class HaPanelHistory extends LitElement {
                         .end=${this._zoomRange[1]}
                         @zoom-slider-changed=${this._zoomSliderChanged}
                         @zoom-slider-reset=${this._resetZoom}
+                        @pointerdown=${this._holdZoomBar}
+                        @focusin=${this._holdZoomBar}
+                        @pointerup=${this._releaseZoomBar}
+                        @pointercancel=${this._releaseZoomBar}
+                        @focusout=${this._releaseZoomBar}
                       ></ha-chart-zoom-slider>
                     </ha-card>`
                   : nothing
@@ -367,6 +384,7 @@ class HaPanelHistory extends LitElement {
     ev: HASSDomEvent<HASSDomEvents["history-charts-zoom"]>
   ) {
     this._zoomRange = [ev.detail.start, ev.detail.end];
+    this._zoomBarHeld = false;
   }
 
   private _zoomSliderChanged(
@@ -377,7 +395,18 @@ class HaPanelHistory extends LitElement {
     this._stateHistoryCharts?.zoom(start, end);
   }
 
+  private _holdZoomBar() {
+    this._zoomBarHeld = true;
+  }
+
+  private _releaseZoomBar(ev: Event & HASSDomCurrentTargetEvent<HTMLElement>) {
+    // A mouse press focuses the slider, so it is kept until it loses focus
+    this._zoomBarHeld =
+      ev.type !== "focusout" && ev.currentTarget.matches(":focus-within");
+  }
+
   private _resetZoom() {
+    this._zoomBarHeld = false;
     this._zoomRange = [0, 100];
     this._stateHistoryCharts?.zoom(0, 100);
   }
@@ -460,9 +489,11 @@ class HaPanelHistory extends LitElement {
     super.firstUpdated(changedProps);
     // The filters label themselves with keys from the config panel.
     this.hass.loadFragmentTranslation("config");
-    fetchEntitySourcesWithCache(this.hass).then((sources) => {
-      this._entitySources = sources;
-    });
+    fetchEntitySourcesWithCache(this.hass.callWS, this.hass.states).then(
+      (sources) => {
+        this._entitySources = sources;
+      }
+    );
     const searchParams = extractSearchParamsObject();
     if (searchParams.back === "1" && history.length > 1) {
       this._showBack = true;
@@ -552,8 +583,11 @@ class HaPanelHistory extends LitElement {
     this._fetchedEntityIds = statisticIds;
     const fetchId = ++this._statsFetchId;
 
+    // The previous statistics would otherwise show under the new selection
+    // until the request is done, and with only external statistics nothing
+    // else shows the loading.
+    this._statisticsHistory = undefined;
     if (statisticIds.length === 0) {
-      this._statisticsHistory = undefined;
       return;
     }
 
@@ -562,18 +596,32 @@ class HaPanelHistory extends LitElement {
     // graph to start at 7AM, need to fetch the statistic from 6AM.
     statsStartDate.setHours(statsStartDate.getHours() - 1);
 
+    const externalIds = statisticIds.filter(isExternalStatistic);
+
     let statistics;
+    let metadata: StatisticsMetaData[];
     try {
-      statistics = await fetchStatistics(
-        this.hass!.callWS,
-        statsStartDate,
-        this._endDate,
-        statisticIds,
-        "hour",
-        undefined,
-        ["mean", "state"]
-      );
+      [statistics, metadata] = await Promise.all([
+        fetchStatistics(
+          this.hass!.callWS,
+          statsStartDate,
+          this._endDate,
+          statisticIds,
+          "hour",
+          undefined,
+          ["mean", "state"]
+        ),
+        // External statistics take name and unit from the metadata. Without
+        // it they are still shown, under their ID.
+        externalIds.length
+          ? getStatisticMetadata(this.hass!.callWS, externalIds).catch(() => [])
+          : Promise.resolve([]),
+      ]);
     } catch (_err) {
+      // External statistics have no state history that would end the loading
+      if (fetchId === this._statsFetchId) {
+        this._statisticsHistory = { line: [], timeline: [] };
+      }
       return;
     }
 
@@ -585,25 +633,30 @@ class HaPanelHistory extends LitElement {
       this.hass!,
       statistics,
       statisticIds,
-      true
+      true,
+      Object.fromEntries(metadata.map((meta) => [meta.statistic_id, meta]))
     );
   }
 
   private async _getHistory() {
-    const entityIds = this._getEntityIds();
-    this._fetchedEntityIds = entityIds;
+    const sourceIds = this._getEntityIds();
+    this._fetchedEntityIds = sourceIds;
+    const entityIds = sourceIds.filter((id) => !isExternalStatistic(id));
 
     if (entityIds.length === 0) {
       // The running subscription would keep pushing the previous entities.
       this._unsubscribeHistory();
       this._stateHistory = undefined;
       this._isLoading = false;
+      // Charts of external statistics stay mounted, so reset their zoom too
+      this._resetZoom();
       return;
     }
 
     this._isLoading = true;
     // The charts are rebuilt once loaded, so they start unzoomed.
     this._zoomRange = [0, 100];
+    this._zoomBarHeld = false;
 
     if (this._subscribed) {
       this._unsubscribeHistory();
@@ -822,6 +875,9 @@ class HaPanelHistory extends LitElement {
       },
     };
     const formatDate = (number) => new Date(number).toISOString();
+    // Entities without recorded states in the range get their current state
+    // added, which can be after the selected end
+    const end = this._endDate.getTime();
 
     for (const line of this._mungedStateHistory.line) {
       for (const entity of line.data) {
@@ -842,11 +898,17 @@ class HaPanelHistory extends LitElement {
 
         if (entity.statistics) {
           for (const s of entity.statistics) {
+            if (s.last_changed > end) {
+              continue;
+            }
             csv.push([entityId, s.state, formatDate(s.last_changed)]);
           }
         }
 
         for (const s of entity.states) {
+          if (s.last_changed > end) {
+            continue;
+          }
           const lastChanged = formatDate(s.last_changed);
           const data = [entityId, s.state, lastChanged];
 
@@ -866,6 +928,9 @@ class HaPanelHistory extends LitElement {
     for (const timeline of this._mungedStateHistory.timeline) {
       const entityId = timeline.entity_id;
       for (const s of timeline.data) {
+        if (s.last_changed > end) {
+          continue;
+        }
         csv.push([
           entityId,
           csvSafeString(s.state),
@@ -900,16 +965,14 @@ class HaPanelHistory extends LitElement {
         entities,
       },
     ];
-    addEntitiesToLovelaceView(
-      this,
-      this.hass,
-      cards,
-      {
+    addEntitiesToLovelaceView(this, this.hass, {
+      cardConfig: cards,
+      sectionConfig: {
         title: this.hass.localize("panel.history"),
         cards,
       },
-      entities
-    );
+      entities,
+    });
   }
 
   static get styles() {
@@ -1005,6 +1068,11 @@ class HaPanelHistory extends LitElement {
           padding-bottom: calc(
             56px + var(--zoom-bar-bottom) + var(--ha-space-4)
           );
+        }
+
+        /* Kept in the tab order, as zooming from the keyboard starts here */
+        .zoom-bar.keyboard-only {
+          clip-path: inset(50%);
         }
 
         /* Floats like the energy dashboard's date bar */

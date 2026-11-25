@@ -5,8 +5,9 @@ import { HaSkeleton } from "./ha-skeleton";
 
 /**
  * Placeholder for a line of text, matching the tile secondary text skeleton.
- * Its height follows the surrounding font size. Set `width` in CSS to fit the
- * expected text.
+ * It takes the height of the surrounding line, so swapping it for the text
+ * doesn't move anything, and draws a thinner bar in the middle of it. Set
+ * `width` in CSS to fit the expected text.
  *
  * @cssprop --ha-skeleton-text-width - The width of the placeholder. Defaults to `140px`.
  */
@@ -18,11 +19,18 @@ export class HaSkeletonText extends HaSkeleton {
       css`
         :host {
           display: inline-flex;
-          vertical-align: middle;
+          /* As tall as the line, so from its top, or it can stick out of it
+             and make the line taller */
+          vertical-align: top;
+          align-items: center;
           width: var(--ha-skeleton-text-width, 140px);
           max-width: 100%;
-          height: 1em;
+          height: 1.2em;
+          height: 1lh;
           min-height: 0;
+        }
+        .indicator {
+          height: 0.75em;
         }
       `,
     ];

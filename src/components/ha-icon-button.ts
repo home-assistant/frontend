@@ -22,6 +22,9 @@ export class HaIconButton extends LitElement {
   @property({ type: String, attribute: "aria-haspopup" })
   ariaHasPopup!: "false" | "true" | "menu" | "listbox" | "tree" | "grid";
 
+  @property({ attribute: false })
+  ariaPressed!: "false" | "true" | "mixed";
+
   @property({ attribute: "hide-title", type: Boolean }) hideTitle = false;
 
   @property({ type: Boolean, reflect: true }) selected = false;
@@ -47,6 +50,7 @@ export class HaIconButton extends LitElement {
         .accessibleLabel=${this.label ?? ""}
         .title=${this.hideTitle ? "" : (this.label ?? "")}
         aria-haspopup=${ifDefined(this.ariaHasPopup)}
+        .ariaPressed=${this.ariaPressed ?? null}
         .disabled=${this.disabled}
         .iconTag=${this.path ? "ha-svg-icon" : "span"}
         .href=${this.href}
@@ -71,6 +75,9 @@ export class HaIconButton extends LitElement {
       display: inline-block;
       outline: none;
       --ha-button-height: var(--ha-icon-button-size, 48px);
+      background: var(--ha-icon-button-background);
+      border: var(--ha-icon-button-border);
+      border-radius: var(--ha-icon-button-border-radius);
     }
     ha-button {
       position: relative;
@@ -82,13 +89,14 @@ export class HaIconButton extends LitElement {
       --wa-color-on-normal: currentColor;
       --wa-color-fill-quiet: transparent;
       --ha-button-label-overflow: visible;
+      --ha-button-border-radius: var(--ha-icon-button-border-radius, 50%);
     }
     ha-button::after {
       content: "";
       position: absolute;
       inset: 0;
       z-index: -1;
-      border-radius: 50%;
+      border-radius: var(--ha-icon-button-border-radius, 50%);
       background-color: currentColor;
       opacity: 0;
       pointer-events: none;

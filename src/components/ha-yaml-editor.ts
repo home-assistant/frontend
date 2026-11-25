@@ -6,6 +6,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import type { ContextType } from "@lit/context";
 import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
+import { localizeYamlErrorReason } from "../common/translations/localize-yaml-error";
 import { copyToClipboard } from "../common/util/copy-clipboard";
 import { haStyle } from "../resources/styles";
 import { showToast } from "../util/toast";
@@ -65,6 +66,8 @@ export class HaYamlEditor extends LitElement {
 
   @query("ha-code-editor") _codeEditor?: HaCodeEditor;
 
+  private _focusPending = false;
+
   public setValue(value): void {
     try {
       this._yaml = !isEmpty(value)
@@ -93,9 +96,26 @@ export class HaYamlEditor extends LitElement {
     }
   }
 
+  /**
+   * Focuses the editor. If it is still being created, it is focused once it
+   * has been rendered.
+   */
   public focus(): void {
-    if (this._codeEditor?.codemirror) {
-      this._codeEditor?.codemirror.focus();
+    if (!this.isConnected) {
+      return;
+    }
+    if (this._codeEditor) {
+      this._codeEditor.focus();
+      return;
+    }
+    this._focusPending = true;
+  }
+
+  protected updated(changedProperties: PropertyValues<this>): void {
+    super.updated(changedProperties);
+    if (this._focusPending && this._codeEditor) {
+      this._focusPending = false;
+      this._codeEditor.focus();
     }
   }
 
@@ -161,7 +181,7 @@ export class HaYamlEditor extends LitElement {
     let errorMsg: string | undefined;
     let yamlError: {
       mark?: { position: number; line: number; column: number };
-      message?: string;
+      reason?: string;
     } | null = null;
 
     if (this._yaml) {
@@ -170,8 +190,12 @@ export class HaYamlEditor extends LitElement {
       } catch (err: any) {
         // Invalid YAML
         isValid = false;
-        yamlError = err;
-        errorMsg = `${this._i18n!.localize("ui.components.yaml-editor.error", { reason: err.reason })}${err.mark ? ` (${this._i18n!.localize("ui.components.yaml-editor.error_location", { line: err.mark.line + 1, column: err.mark.column + 1 })})` : ""}`;
+        const reason = localizeYamlErrorReason(
+          this._i18n!.localize,
+          err.reason
+        );
+        yamlError = { mark: err.mark, reason };
+        errorMsg = `${this._i18n!.localize("ui.components.yaml-editor.error", { reason })}${err.mark ? ` (${this._i18n!.localize("ui.components.yaml-editor.error_location", { line: err.mark.line + 1, column: err.mark.column + 1 })})` : ""}`;
       }
     } else {
       parsed = {};

@@ -5,6 +5,16 @@ import type {
   TileCardConfig,
 } from "../../cards/types";
 
+// The camera card takes the grid area of two tiles.
+export const computeFavoriteCardSize = (entityId: string): number =>
+  computeDomain(entityId) === "camera" ? 2 : 1;
+
+export const computeFavoriteCardsSize = (entityIds: string[]): number =>
+  entityIds.reduce(
+    (size, entityId) => size + computeFavoriteCardSize(entityId),
+    0
+  );
+
 export const computeFavoriteCardConfig = (
   entityId: string
 ): LovelaceCardConfig => {

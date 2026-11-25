@@ -4,6 +4,7 @@ import { html } from "lit";
 import { customElement, state } from "lit/decorators";
 import { storage } from "../common/decorators/storage";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
+import { whenDocumentVisible } from "../common/dom/when-document-visible";
 import { handleHistoryPop, navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { decodeMoreInfoUrl } from "../common/url/more-info-query-params";
@@ -15,6 +16,8 @@ import type { WindowWithPreloads } from "../data/preloads";
 import type { RecorderInfo } from "../data/recorder";
 import { getRecorderInfo } from "../data/recorder";
 import { showHttpPendingConfigDialog } from "../dialogs/http-pending-config/show-dialog-http-pending-config";
+import { getOpenDialogParams } from "../dialogs/make-dialog-manager";
+import type { MoreInfoDialogParams } from "../dialogs/more-info/ha-more-info-dialog";
 import { showMoreInfoDialog } from "../dialogs/more-info/show-ha-more-info-dialog";
 import "../resources/custom-card-support";
 import { HassElement } from "../state/hass-element";
@@ -75,6 +78,8 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   private _hiddenTimeout?: number;
 
   private _visiblePromiseResolve?: () => void;
+
+  private _cancelVisibilityRecovery?: () => void;
 
   constructor() {
     super();
@@ -327,6 +332,16 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     // Wait for the next render to ensure the view is fully loaded
     // because the more info dialog is closed when the url changes
     afterNextRender(() => {
+      const current = decodeMoreInfoUrl(window.location.search);
+      if (current.entityId !== entityId || current.view !== view) {
+        return;
+      }
+      if (
+        getOpenDialogParams<MoreInfoDialogParams>("ha-more-info-dialog")
+          ?.entityId === entityId
+      ) {
+        return;
+      }
       showMoreInfoDialog(this, {
         entityId,
         view,
@@ -414,7 +429,9 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
         }
       }, 300000);
     }
-    window.addEventListener("focus", () => this._onVisible(), { once: true });
+    this._cancelVisibilityRecovery = whenDocumentVisible(() =>
+      this._onVisible()
+    );
   }
 
   private _suspendApp() {
@@ -426,6 +443,8 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   }
 
   private _onVisible() {
+    this._cancelVisibilityRecovery?.();
+    this._cancelVisibilityRecovery = undefined;
     // Clear timer to close the connection
     if (this._hiddenTimeout) {
       clearTimeout(this._hiddenTimeout);

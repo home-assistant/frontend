@@ -1,6 +1,6 @@
 import type { Connection } from "home-assistant-js-websocket";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, HomeAssistantApi } from "../../types";
 import type { ConfigEntry } from "../config_entries";
 import type {
   EntityRegistryDisplayEntry,
@@ -193,22 +193,19 @@ const compositeSplitsCache = new WeakMap<
 >();
 
 export const fetchDeviceCompositeSplits = (
-  hass: Pick<HomeAssistant, "connection" | "callWS">
+  connection: HomeAssistant["connection"],
+  callWS: HomeAssistant["callWS"]
 ): Promise<DeviceCompositeSplits> => {
-  const conn = hass.connection;
-
-  let request = compositeSplitsCache.get(conn);
+  let request = compositeSplitsCache.get(connection);
   if (!request) {
-    request = hass
-      .callWS<DeviceCompositeSplits>({
-        type: "config/device_registry/list_composite_splits",
-      })
-      .catch((err) => {
-        // Don't cache failures so the next caller retries.
-        compositeSplitsCache.delete(conn);
-        throw err;
-      });
-    compositeSplitsCache.set(conn, request);
+    request = callWS<DeviceCompositeSplits>({
+      type: "config/device_registry/list_composite_splits",
+    }).catch((err) => {
+      // Don't cache failures so the next caller retries.
+      compositeSplitsCache.delete(connection);
+      throw err;
+    });
+    compositeSplitsCache.set(connection, request);
   }
   return request;
 };
@@ -234,11 +231,11 @@ export const devicesInArea = (devices: DeviceRegistryEntry[], areaId: string) =>
   devices.filter((device) => device.area_id === areaId);
 
 export const updateDeviceRegistryEntry = (
-  hass: HomeAssistant,
+  callWS: HomeAssistantApi["callWS"],
   deviceId: string,
   updates: Partial<DeviceRegistryEntryMutableParams>
 ) =>
-  hass.callWS<DeviceRegistryEntry>({
+  callWS<DeviceRegistryEntry>({
     type: "config/device_registry/update",
     device_id: deviceId,
     ...updates,

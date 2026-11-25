@@ -2,6 +2,7 @@ import type { Auth, Connection } from "home-assistant-js-websocket";
 import {
   createConnection,
   ERR_INVALID_AUTH,
+  ERR_INVALID_AUTH_CALLBACK,
   getAuth,
   subscribeConfig,
   subscribeEntities,
@@ -36,17 +37,30 @@ declare global {
   }
 }
 
+const replaceUrlParams = (searchParams: URLSearchParams) => {
+  const search = searchParams.toString();
+  history.replaceState(
+    null,
+    "",
+    `${location.pathname}${search ? `?${search}` : ""}`
+  );
+};
+
+const deleteAuthCallbackParams = (searchParams: URLSearchParams) => {
+  // https://github.com/home-assistant/home-assistant-js-websocket/blob/master/lib/auth.ts
+  // Remove all data from QueryCallbackData type
+  searchParams.delete("auth_callback");
+  searchParams.delete("code");
+  searchParams.delete("state");
+  searchParams.delete("storeToken");
+};
+
 const clearUrlParams = () => {
   const searchParams = new URLSearchParams(location.search);
   let changed = false;
   // Clear auth data from url if we have been able to establish a connection
   if (location.search.includes("auth_callback=1")) {
-    // https://github.com/home-assistant/home-assistant-js-websocket/blob/master/lib/auth.ts
-    // Remove all data from QueryCallbackData type
-    searchParams.delete("auth_callback");
-    searchParams.delete("code");
-    searchParams.delete("state");
-    searchParams.delete("storeToken");
+    deleteAuthCallbackParams(searchParams);
     changed = true;
   }
   // Remove the cache-busting param added by the stale-index recovery guard in
@@ -57,12 +71,30 @@ const clearUrlParams = () => {
     changed = true;
   }
   if (changed) {
-    const search = searchParams.toString();
-    history.replaceState(
-      null,
-      "",
-      `${location.pathname}${search ? `?${search}` : ""}`
-    );
+    replaceUrlParams(searchParams);
+  }
+};
+
+const authOptions = {
+  hassUrl,
+  limitHassInstance: true,
+  saveTokens,
+  loadTokens: () => Promise.resolve(loadTokens()),
+};
+
+const getAuthDroppingStaleCallback = async () => {
+  try {
+    return await getAuth(authOptions);
+  } catch (err: unknown) {
+    if (err !== ERR_INVALID_AUTH && err !== ERR_INVALID_AUTH_CALLBACK) {
+      throw err;
+    }
+    // The auth callback in the URL was used or has expired. Drop it so a
+    // reload does not replay it, and fall back to stored tokens or a new login.
+    const searchParams = new URLSearchParams(location.search);
+    deleteAuthCallbackParams(searchParams);
+    replaceUrlParams(searchParams);
+    return getAuth(authOptions);
   }
 };
 
@@ -71,13 +103,7 @@ const authProm = isExternal
       import("../external_app/external_auth").then(({ createExternalAuth }) =>
         createExternalAuth(hassUrl)
       )
-  : () =>
-      getAuth({
-        hassUrl,
-        limitHassInstance: true,
-        saveTokens,
-        loadTokens: () => Promise.resolve(loadTokens()),
-      });
+  : getAuthDroppingStaleCallback;
 
 const connProm = async (auth) => {
   try {
@@ -140,11 +166,15 @@ window.hassConnection.then(({ conn }) => {
   const preloadWindow = window as WindowWithPreloads;
   preloadWindow.recorderInfoProm = getRecorderInfo(conn);
 
-  if (location.pathname === "/" || location.pathname.startsWith("/lovelace/")) {
-    preloadWindow.llConfProm = fetchConfig(conn, null, false);
+  // "/" opens the default panel, which is not known yet, so only preload the
+  // config when the "lovelace" dashboard is opened directly.
+  if (location.pathname.startsWith("/lovelace/")) {
+    preloadWindow.llConfProm = fetchConfig(conn, "lovelace", false);
     preloadWindow.llConfProm.catch(() => {
       // Ignore it, it is handled by Lovelace panel.
     });
+  }
+  if (location.pathname === "/" || location.pathname.startsWith("/lovelace/")) {
     preloadWindow.llResProm = fetchResources(conn);
   }
 });

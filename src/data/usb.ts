@@ -38,8 +38,8 @@ export interface SerialPortUsage extends SerialPort {
 export const scanUSBDevices = (hass: HomeAssistant) =>
   hass.callWS({ type: "usb/scan" });
 
-export const listSerialPorts = (hass: HomeAssistant) =>
-  hass.callWS<SerialPort[]>({ type: "usb/list_serial_ports" });
+export const listSerialPorts = (callWS: HomeAssistant["callWS"]) =>
+  callWS<SerialPort[]>({ type: "usb/list_serial_ports" });
 
 export const listSerialPortsWithUsage = (hass: { callWS: CallWS }) =>
   hass.callWS<SerialPortUsage[]>({

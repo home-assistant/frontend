@@ -27,9 +27,18 @@ import {
 } from "../../../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../../types";
+import {
+  deviceAutomationErrorText,
+  deviceErrorText,
+} from "../../automation-errors";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 
 @customElement("ha-automation-condition-device")
 export class HaDeviceCondition extends LitElement {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["device_id", "domain"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Object }) public condition!: DeviceCondition;
@@ -118,7 +127,10 @@ export class HaDeviceCondition extends LitElement {
     try {
       // Resolve the candidates before exposing the split map, so the picker
       // never offers one that cannot host the automation.
-      const compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+      const compositeSplits = await fetchDeviceCompositeSplits(
+        this.hass.connection,
+        this.hass.callWS
+      );
       await this._resolveReplacements(compositeSplits);
       this._compositeSplits = compositeSplits;
     } catch (_err) {
@@ -129,24 +141,40 @@ export class HaDeviceCondition extends LitElement {
   }
 
   protected render() {
+    const deviceError = this._fieldErrors.fieldError("device_id");
+    const automationError = this._fieldErrors.fieldError("domain");
     const deviceId = this._deviceId || this.condition.device_id;
 
     return html`
       <ha-device-picker
         .value=${deviceId}
         .replacementDeviceIds=${this._replacementDeviceIds}
+        .invalid=${!!deviceError}
+        .errorMessage=${
+          deviceError
+            ? deviceErrorText(this.hass.localize, deviceError)
+            : undefined
+        }
         @value-changed=${this._devicePicked}
-        .hass=${this.hass}
         .disabled=${this.disabled}
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.conditions.type.device.label"
         )}
       ></ha-device-picker>
       <ha-device-condition-picker
+        .invalid=${!!automationError}
+        .errorMessage=${
+          automationError
+            ? deviceAutomationErrorText(
+                this.hass.localize,
+                "conditions",
+                automationError
+              )
+            : undefined
+        }
         .value=${this.condition}
         .deviceId=${deviceId}
         @value-changed=${this._deviceConditionPicked}
-        .hass=${this.hass}
         .disabled=${this.disabled}
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.conditions.type.device.condition"

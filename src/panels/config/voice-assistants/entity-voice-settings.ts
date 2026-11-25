@@ -21,6 +21,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-aliases-editor";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-switch";
+import "../../../components/item/ha-list-item-switch";
 import "../../../components/item/ha-row-item";
 import "../../../components/voice-assistant-brand-icon";
 import { fetchCloudAlexaEntity } from "../../../data/alexa";
@@ -72,7 +73,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       this._fetchEntities();
     }
     if (!this.hasUpdated) {
-      fetchCloudStatus(this.hass).then((status) => {
+      fetchCloudStatus(this.hass.callWS).then((status) => {
         this._cloudStatus = status;
       });
     }
@@ -193,12 +194,15 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
     const exposedToAssist = this.exposed.conversation;
 
     return html`
-      <ha-row-item>
+      <ha-row-item wrap-headline>
         <h3 slot="headline">
           ${this.hass.localize("ui.dialogs.voice-settings.expose_header")}
         </h3>
         <ha-switch
           slot="end"
+          .accessibleLabel=${this.hass.localize(
+            "ui.dialogs.voice-settings.expose_header"
+          )}
           @change=${this._toggleAll}
           .assistants=${uiAssistants}
           .checked=${anyExposed}
@@ -227,7 +231,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                 this._googleEntity?.might_2fa;
 
               return html`
-                <ha-row-item>
+                <ha-row-item wrap-headline wrap-supporting-text>
                   <voice-assistant-brand-icon
                     slot="start"
                     .voiceAssistantId=${key}
@@ -272,6 +276,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                   }
                   <ha-switch
                     slot="end"
+                    .accessibleLabel=${voiceAssistants[key].name}
                     .assistant=${key}
                     @change=${this._toggleAssistant}
                     .disabled=${manualConfig || (!exposed && !supported)}
@@ -324,19 +329,19 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
               )}
             </ha-alert>`
           : html`
-              <ha-row-item>
+              <ha-list-item-switch
+                wrap-headline
+                wrap-supporting-text
+                .checked=${(this._aliases ?? this.entry.aliases).includes(null)}
+                @change=${this._toggleEntityNameAlias}
+              >
                 <span slot="headline">${this._computedName(this.entry)}</span>
                 <span slot="supporting-text">
                   ${this.hass.localize(
                     "ui.dialogs.voice-settings.entity_name_alias_description"
                   )}
                 </span>
-                <ha-switch
-                  slot="end"
-                  .checked=${(this._aliases ?? this.entry.aliases).includes(null)}
-                  @change=${this._toggleEntityNameAlias}
-                ></ha-switch>
-              </ha-row-item>
+              </ha-list-item-switch>
               <ha-aliases-editor
                 .aliases=${(this._aliases ?? this.entry.aliases).filter(
                   (a): a is string => a !== null
@@ -400,9 +405,13 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       .filter((a): a is string => a !== null)
       .map((alias) => alias.trim())
       .filter((alias) => alias);
-    const result = await updateEntityRegistryEntry(this.hass, this.entityId, {
-      aliases: [...nullAliases, ...stringAliases],
-    });
+    const result = await updateEntityRegistryEntry(
+      this.hass.callWS,
+      this.entityId,
+      {
+        aliases: [...nullAliases, ...stringAliases],
+      }
+    );
     fireEvent(this, "entity-entry-updated", result.entity_entry);
   }
 
@@ -415,7 +424,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
     );
     if (this.entry) {
       const entry = await getExtendedEntityRegistryEntry(
-        this.hass,
+        this.hass.callWS,
         this.entityId
       );
       fireEvent(this, "entity-entry-updated", entry);
@@ -433,7 +442,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
     exposeEntities(this.hass, assistants, [this.entityId], ev.target.checked);
     if (this.entry) {
       const entry = await getExtendedEntityRegistryEntry(
-        this.hass,
+        this.hass.callWS,
         this.entityId
       );
       fireEvent(this, "entity-entry-updated", entry);
@@ -450,12 +459,9 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
           margin: 32px;
           margin-top: 0;
         }
-        ha-row-item {
+        ha-row-item,
+        ha-list-item-switch {
           --ha-row-item-padding-inline: 0;
-        }
-        ha-row-item::part(headline),
-        ha-row-item::part(supporting-text) {
-          white-space: normal;
         }
         img {
           height: 32px;

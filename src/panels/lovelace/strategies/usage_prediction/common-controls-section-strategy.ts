@@ -6,13 +6,30 @@ import { getCommonControlsUsagePrediction } from "../../../../data/usage_predict
 import type { HomeAssistant } from "../../../../types";
 import type { HeadingCardConfig } from "../../cards/types";
 import type { Condition } from "../../common/validate-condition";
-import { computeFavoriteCardConfig } from "../helpers/favorite-cards";
+import {
+  computeFavoriteCardConfig,
+  computeFavoriteCardSize,
+  computeFavoriteCardsSize,
+} from "../helpers/favorite-cards";
 import type {
   LovelaceStrategyDependency,
   LovelaceStrategyEditor,
 } from "../types";
 
 const DEFAULT_LIMIT = 8;
+
+// The limit counts tile-sized slots, so a camera uses two of them.
+const fitToLimit = (entities: string[], limit: number): string[] => {
+  const result: string[] = [];
+  let size = 0;
+  for (const entity of entities) {
+    const entitySize = computeFavoriteCardSize(entity);
+    if (size + entitySize > limit) continue;
+    result.push(entity);
+    size += entitySize;
+  }
+  return result;
+};
 
 export interface CommonControlsSectionStrategyConfig {
   type: "common-controls";
@@ -40,6 +57,10 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
     );
   }
 
+  public static getStubConfig(): CommonControlsSectionStrategyConfig {
+    return { type: "common-controls" };
+  }
+
   static async generate(
     config: CommonControlsSectionStrategyConfig,
     hass: HomeAssistant
@@ -65,15 +86,19 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
       (entity) => entity in hass.states
     );
 
-    // Pinned entities already fill the section, skip the prediction call.
-    if (includedEntities.length >= limit) {
-      section.cards!.push(
-        ...includedEntities.slice(0, limit).map(computeFavoriteCardConfig)
-      );
+    // Pinned entities always show. Predictions only fill the free slots.
+    const freeSlots = limit - computeFavoriteCardsSize(includedEntities);
+    const predictionsLoaded = isComponentLoaded(
+      hass.config,
+      "usage_prediction"
+    );
+
+    if (includedEntities.length > 0 && (freeSlots <= 0 || !predictionsLoaded)) {
+      section.cards!.push(...includedEntities.map(computeFavoriteCardConfig));
       return section;
     }
 
-    if (!isComponentLoaded(hass.config, "usage_prediction")) {
+    if (!predictionsLoaded) {
       section.cards!.push({
         type: "markdown",
         content: hass.localize(
@@ -100,10 +125,10 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
       }
     );
 
-    const entities = [...includedEntities, ...predictedEntities].slice(
-      0,
-      limit
-    );
+    const entities = [
+      ...includedEntities,
+      ...fitToLimit(predictedEntities, freeSlots),
+    ];
 
     if (entities.length === 0) {
       section.cards!.push({

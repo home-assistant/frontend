@@ -1,4 +1,4 @@
-import { formatNumber } from "../common/number/format_number";
+import { formatNumberWithUnit } from "../common/number/format_number";
 import type { FrontendLocaleData } from "./translation";
 import type { HomeAssistant } from "../types";
 
@@ -38,9 +38,9 @@ export const formatFrequency = (
   const [divisor, unit] = FREQUENCY_UNITS.find(
     ([threshold]) => Math.abs(hz) >= threshold
   ) ?? [1, "Hz"];
-  return `${formatNumber(hz / divisor, locale, {
+  return formatNumberWithUnit(hz / divisor, unit, locale, {
     maximumFractionDigits: 3,
-  })} ${unit}`;
+  });
 };
 
 // Format a single [min, max] range; collapses to a single value when min === max.

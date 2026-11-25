@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
+import type { ConfigPath } from "../../../common/util/config-path";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -13,7 +14,6 @@ import "../../../components/ha-sortable";
 import type { HaSortableOptions } from "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import "../components/hui-badge-edit-mode";
-import type { LovelacePath } from "../editor/lovelace-path";
 import { moveAtPath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 import type { HuiBadge } from "./hui-badge";
@@ -31,7 +31,7 @@ export class HuiViewBadges extends LitElement {
 
   @property({ attribute: false }) public badges: HuiBadge[] = [];
 
-  @property({ attribute: false }) public path!: LovelacePath;
+  @property({ attribute: false }) public path!: ConfigPath;
 
   @property({ type: Boolean, attribute: "show-add-label" })
   public showAddLabel!: boolean;
@@ -97,7 +97,7 @@ export class HuiViewBadges extends LitElement {
   private _badgeAdded(ev: HASSDomEvent<HASSDomEvents["item-added"]>) {
     ev.stopPropagation();
     const { index, data } = ev.detail;
-    const oldPath = data as LovelacePath;
+    const oldPath = data as ConfigPath;
     const newConfig = moveAtPath(this.lovelace.config, oldPath, [
       ...this.path,
       index,

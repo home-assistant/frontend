@@ -1,3 +1,4 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import type { ContextType } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -12,11 +13,13 @@ import "../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../components/ha-checkbox";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-select";
-import type {
-  HaSelectOption,
-  HaSelectSelectEvent,
-} from "../../../components/ha-select";
+import "../../../components/ha-combo-box-item";
+import "../../../components/ha-generic-picker";
+import "../../../components/ha-label";
+import {
+  DEFAULT_ROW_RENDERER_CONTENT,
+  type PickerComboBoxItem,
+} from "../../../components/ha-picker-combo-box";
 import "../../../components/ha-spinner";
 import "../../../components/progress/ha-progress-bar";
 
@@ -48,7 +51,13 @@ import { repositoryAuthors } from "../tools/authors";
 import { handleGitHubRateLimited } from "../tools/connect-github";
 import { installBlockedReason } from "../tools/install-blocked-reason";
 import { generateFrontendResourceURL } from "../tools/frontend-resource";
+import type { ValueChangedEvent } from "../../../types";
 import type { MarketplaceInstallDialogParams } from "./show-dialog-marketplace-install";
+
+interface ReleaseComboBoxItem extends PickerComboBoxItem {
+  installed: boolean;
+  latest: boolean;
+}
 
 @customElement("dialog-marketplace-install")
 export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDialogParams>(
@@ -424,22 +433,22 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
               <ha-button appearance="plain" @click=${this._loadReleases}>
                 ${this._i18n.localize("ui.panel.marketplace.common.retry")}
               </ha-button>`
-          : this._releases === undefined
+          : this._releases?.length === 0
             ? this._i18n.localize(
-                "ui.panel.marketplace.dialog_install.fetching_releases"
+                "ui.panel.marketplace.dialog_install.no_releases"
               )
-            : this._releases.length === 0
-              ? this._i18n.localize(
-                  "ui.panel.marketplace.dialog_install.no_releases"
-                )
-              : html`<ha-select
-                  .label=${this._i18n.localize(
-                    "ui.panel.marketplace.dialog_install.release"
-                  )}
-                  .value=${this._selectedVersion}
-                  .options=${this._releaseOptions(this._releases)}
-                  @selected=${this._versionChanged}
-                ></ha-select>`
+            : html`<ha-generic-picker
+                .label=${this._i18n.localize(
+                  "ui.panel.marketplace.dialog_install.release"
+                )}
+                .value=${this._selectedVersion}
+                .getItems=${this._getReleaseItems}
+                .rowRenderer=${this._releaseRowRenderer}
+                .loading=${this._releases === undefined}
+                hide-clear-icon
+                no-sort
+                @value-changed=${this._versionChanged}
+              ></ha-generic-picker>`
       }
     </div>`;
   }
@@ -633,26 +642,73 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
     }
   }
 
-  private _releaseOptions(releases: MarketplaceRelease[]): HaSelectOption[] {
-    return releases.map((release) => ({
-      value: release.tag,
-      label: release.tag,
-      secondary: [
-        release.prerelease
-          ? this._i18n.localize(
-              "ui.panel.marketplace.dialog_install.pre_release"
-            )
-          : undefined,
-        relativeTime(new Date(release.published_at), this._i18n.locale),
-        release.name && release.name !== release.tag ? release.name : undefined,
-      ]
-        .filter(Boolean)
-        .join(" · "),
-    }));
-  }
+  // GitHub lists the newest first, which is the order to keep
+  private _releaseItems = memoizeOne(
+    (
+      releases: MarketplaceRelease[],
+      repository: RepositoryInfo,
+      localize: ContextType<typeof internationalizationContext>["localize"],
+      locale: ContextType<typeof internationalizationContext>["locale"]
+    ): ReleaseComboBoxItem[] =>
+      releases.map((release) => ({
+        id: release.tag,
+        primary: release.tag,
+        installed:
+          repository.installed && release.tag === repository.installed_version,
+        latest: release.tag === repository.available_version,
+        secondary: [
+          release.prerelease
+            ? localize("ui.panel.marketplace.dialog_install.pre_release")
+            : undefined,
+          relativeTime(new Date(release.published_at), locale),
+          release.name && release.name !== release.tag
+            ? release.name
+            : undefined,
+        ]
+          .filter(Boolean)
+          .join(" · "),
+      }))
+  );
 
-  private _versionChanged(ev: HaSelectSelectEvent<string, true>) {
-    this._selectedVersion = ev.detail.value;
+  private _getReleaseItems = () =>
+    this._releases && this._repository
+      ? this._releaseItems(
+          this._releases,
+          this._repository,
+          this._i18n.localize,
+          this._i18n.locale
+        )
+      : [];
+
+  private _releaseRowRenderer: RenderItemFunction<ReleaseComboBoxItem> = (
+    item
+  ) =>
+    html`<ha-combo-box-item>
+      ${DEFAULT_ROW_RENDERER_CONTENT(item)}
+      ${
+        item.installed
+          ? html`<ha-label slot="end" dense>
+              ${this._i18n.localize(
+                "ui.panel.marketplace.dialog_install.release_installed"
+              )}
+            </ha-label>`
+          : nothing
+      }
+      ${
+        item.latest
+          ? html`<ha-label slot="end" dense>
+              ${this._i18n.localize(
+                "ui.panel.marketplace.dialog_install.release_latest"
+              )}
+            </ha-label>`
+          : nothing
+      }
+    </ha-combo-box-item>`;
+
+  private _versionChanged(ev: ValueChangedEvent<string | undefined>) {
+    if (ev.detail.value) {
+      this._selectedVersion = ev.detail.value;
+    }
   }
 
   static get styles(): CSSResultGroup {
@@ -666,9 +722,6 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
         }
         .content {
           padding: var(--ha-space-6);
-        }
-        .versions ha-select {
-          display: block;
         }
         pre {
           white-space: pre-line;

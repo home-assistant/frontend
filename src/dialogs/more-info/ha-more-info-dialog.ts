@@ -24,7 +24,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
 import { keyed } from "lit/directives/keyed";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import { styleMap } from "lit/directives/style-map";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -37,7 +37,6 @@ import {
   computeEntityNameParts,
   type EntityNameType,
 } from "../../common/entity/compute_entity_name_display";
-import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import {
   getHistoryState,
   navigate,
@@ -152,6 +151,12 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
 
   @state() private _fill = false;
 
+  // The dialog grows with the camera's picture, as high as there is room for
+  @state() private _cameraAspectRatio?: number;
+
+  // Height of the controls the camera's info shows below the picture
+  @state() private _cameraControlsHeight?: string;
+
   @state() private _open = false;
 
   @state() private _parentEntityIds: string[] = [];
@@ -191,6 +196,12 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   }
 
   public showDialog(params: MoreInfoDialogParams) {
+    // The camera player keeps running for the same entity and doesn't send
+    // its size again
+    if (params.entityId !== this._entityId) {
+      this._cameraAspectRatio = undefined;
+      this._cameraControlsHeight = undefined;
+    }
     this._entityId = params.entityId;
     if (!this._entityId) {
       this.closeDialog();
@@ -219,7 +230,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     }
     try {
       this._entry = await getExtendedEntityRegistryEntry(
-        this.hass,
+        this.hass.callWS,
         this._entityId
       );
     } catch (_e) {
@@ -254,6 +265,8 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._currView = DEFAULT_VIEW;
     this._childViewStack = [];
     this._returnUrl = undefined;
+    this._cameraAspectRatio = undefined;
+    this._cameraControlsHeight = undefined;
     this._isEscapeEnabled = true;
     window.removeEventListener("dialog-closed", this._enableEscapeKeyClose);
     window.removeEventListener("show-dialog", this._disableEscapeKeyClose);
@@ -533,7 +546,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     }
 
     const result = await updateEntityRegistryEntry(
-      this.hass,
+      this.hass.callWS,
       favoritesContext.entry.entity_id,
       {
         options_domain: favoritesHandler.domain,
@@ -561,14 +574,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     await favoritesHandler.copy(favoritesContext);
   }
 
-  private _goToAddEntityTo(ev: CustomEvent<RequestSelectedDetail>) {
-    // Only check for request-selected events (from menu items), not regular clicks (from icon button)
-    if (
-      ev.type === "request-selected" &&
-      !shouldHandleRequestSelectedEvent(ev)
-    ) {
-      return;
-    }
+  private _goToAddEntityTo() {
     this._setView("add_to");
   }
 
@@ -685,10 +691,32 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
         `
       : nothing;
 
+    // Also when the camera was opened from a smaller entity's related view
+    const cameraAspectRatio =
+      domain === "camera" && isDefaultView
+        ? this._cameraAspectRatio
+        : undefined;
+
     return html`
       <ha-adaptive-dialog
         .open=${this._open}
-        .width=${this._fill ? "full" : this.large ? "large" : "medium"}
+        .width=${
+          this._fill
+            ? "full"
+            : this.large || cameraAspectRatio
+              ? "large"
+              : "medium"
+        }
+        class=${classMap({ camera: domain === "camera" })}
+        style=${styleMap({
+          "--more-info-camera-controls-height": this._cameraControlsHeight,
+          "--ha-dialog-width-lg": cameraAspectRatio
+            ? `clamp(var(--ha-dialog-width-md, 580px), calc(var(--video-max-height) * ${cameraAspectRatio}), 1920px)`
+            : undefined,
+        })}
+        @camera-aspect-ratio-changed=${this._cameraAspectRatioChanged}
+        @camera-controls-height-changed=${this._cameraControlsHeightChanged}
+        .accessibleLabel=${title}
         @closed=${this._dialogClosed}
         @opened=${this._handleOpened}
         @show-child-view=${this._showChildView}
@@ -1112,6 +1140,18 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._entry = ev.detail;
   }
 
+  private _cameraAspectRatioChanged(
+    ev: HASSDomEvent<HASSDomEvents["camera-aspect-ratio-changed"]>
+  ) {
+    this._cameraAspectRatio = ev.detail.aspectRatio;
+  }
+
+  private _cameraControlsHeightChanged(
+    ev: HASSDomEvent<HASSDomEvents["camera-controls-height-changed"]>
+  ) {
+    this._cameraControlsHeight = ev.detail.height;
+  }
+
   private _enlarge() {
     withViewTransition(() => {
       this._fill = !this._fill;
@@ -1174,6 +1214,30 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
 
         ha-adaptive-dialog {
           --dialog-content-padding: 0;
+        }
+
+        /* The dialog's margin, its header of about 68px and the controls
+           below the picture */
+        ha-adaptive-dialog.camera {
+          --video-max-height: calc(
+            100vh - var(--ha-space-20) -
+              68px - var(--more-info-camera-controls-height, 0px)
+          );
+          /* Along with the height of the picture */
+          --ha-dialog-width-transition:
+            min-width var(--ha-animation-duration-normal) ease-out,
+            max-width var(--ha-animation-duration-normal) ease-out;
+        }
+
+        /* A custom property takes any value, so it can't fall back to the
+           declaration before it. svh like the height limit of the dialog. */
+        @supports (height: 1svh) {
+          ha-adaptive-dialog.camera {
+            --video-max-height: calc(
+              100svh - var(--ha-space-20) -
+                68px - var(--more-info-camera-controls-height, 0px)
+            );
+          }
         }
 
         .content-wrapper {

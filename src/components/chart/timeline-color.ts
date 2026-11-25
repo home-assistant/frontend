@@ -35,24 +35,27 @@ function computeTimelineStateColor(
 
   const domain = computeDomain(stateObj.entity_id);
 
-  // Zone states for person/device_tracker don't have specific CSS color variables,
-  // so they all fall back to the same --state-person-active-color.
-  // Only use a custom CSS variable if explicitly defined (e.g. --state-person-kitchen-color),
-  // otherwise return undefined to get unique colors from the generic color handler.
-  if (
+  // Zone states would all share --state-person-active-color, so only an
+  // exact state variable may color them, like states of uncolored domains.
+  const isZoneState =
     (domain === "person" || domain === "device_tracker") &&
-    !((FIXED_DOMAIN_STATES[domain] || []) as readonly string[]).includes(state)
-  ) {
-    return computeCssValue(
-      `--state-${domain}-${slugify(state, "_")}-color`,
-      computedStyles
-    );
-  }
-
-  const properties = stateColorProperties(stateObj, state);
+    !((FIXED_DOMAIN_STATES[domain] || []) as readonly string[]).includes(state);
+  const properties = isZoneState
+    ? undefined
+    : stateColorProperties(stateObj, state);
 
   if (!properties) {
-    return undefined;
+    const stateKey = slugify(state, "_");
+    const deviceClass = stateObj.attributes.device_class;
+    return computeCssValue(
+      [
+        ...(deviceClass
+          ? [`--state-${domain}-${deviceClass}-${stateKey}-color`]
+          : []),
+        `--state-${domain}-${stateKey}-color`,
+      ],
+      computedStyles
+    );
   }
 
   const rgb = computeCssValue(properties, computedStyles);

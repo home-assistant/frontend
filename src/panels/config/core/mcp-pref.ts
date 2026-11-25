@@ -62,20 +62,22 @@ export class MCPPref extends LitElement {
     const enabled = this._entry && !this._entry.disabled_by;
     return html`
       <ha-card outlined>
-        <h1 class="card-header">
-          <img
-            alt=""
-            src=${brandsUrl(
-              {
-                domain: MCP_SERVER_DOMAIN,
-                type: "icon",
-                darkOptimized: this.hass.themes?.darkMode,
-              },
-              this.hass.auth.data.hassUrl
-            )}
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-          />${this.hass.localize("ui.panel.config.mcp.header")}
+        <div class="card-header">
+          <h1>
+            <img
+              alt=""
+              src=${brandsUrl(
+                {
+                  domain: MCP_SERVER_DOMAIN,
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"
+            />${this.hass.localize("ui.panel.config.mcp.header")}
+          </h1>
           ${
             enabled
               ? html`
@@ -97,7 +99,7 @@ export class MCPPref extends LitElement {
                 `
               : nothing
           }
-        </h1>
+        </div>
         <div class="card-content">
           <p>
             ${this.hass.localize(
@@ -229,9 +231,9 @@ export class MCPPref extends LitElement {
     this._enabling = true;
     try {
       // The config flow only asks for confirmation, so submit it directly
-      let step = await createConfigFlow(this.hass, MCP_SERVER_DOMAIN);
+      let step = await createConfigFlow(this.hass.callApi, MCP_SERVER_DOMAIN);
       if (step.type === "form") {
-        step = await handleConfigFlowStep(this.hass, step.flow_id, {});
+        step = await handleConfigFlowStep(this.hass.callApi, step.flow_id, {});
       }
       if (step.type === "form") {
         showConfigFlowDialog(this, {
@@ -319,6 +321,12 @@ export class MCPPref extends LitElement {
     .card-header {
       display: flex;
       align-items: center;
+    }
+    .card-header h1 {
+      display: flex;
+      align-items: center;
+      margin: 0;
+      font: inherit;
     }
     .card-header img {
       max-width: 28px;

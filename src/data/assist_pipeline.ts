@@ -404,8 +404,8 @@ export const getAssistPipelineRun = (
     pipeline_run_id,
   });
 
-export const listAssistPipelines = (hass: HomeAssistant) =>
-  hass.callWS<{
+export const listAssistPipelines = (callWS: HomeAssistant["callWS"]) =>
+  callWS<{
     pipelines: AssistPipeline[];
     preferred_pipeline: string | null;
   }>({

@@ -13,6 +13,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { formatLanguageCode } from "../../../common/language/format_language";
@@ -25,10 +26,9 @@ import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-switch";
-import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/item/ha-list-item-button";
-import "../../../components/item/ha-row-item";
+import "../../../components/item/ha-list-item-switch";
+import type { HaListItemSwitch } from "../../../components/item/ha-list-item-switch";
 import "../../../components/list/ha-list-base";
 import "../../../components/voice-assistant-brand-icon";
 import type { AssistPipeline } from "../../../data/assist_pipeline";
@@ -84,7 +84,7 @@ export class AssistPref extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
-    listAssistPipelines(this.hass).then((pipelines) => {
+    listAssistPipelines(this.hass.callWS).then((pipelines) => {
       this._pipelines = pipelines.pipelines;
       this._preferred = pipelines.preferred_pipeline;
     });
@@ -212,7 +212,13 @@ export class AssistPref extends LitElement {
           )}
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
         </ha-button>
-        <ha-row-item>
+        <ha-list-item-switch
+          wrap-headline
+          wrap-supporting-text
+          .checked=${this._exposeNew}
+          .disabled=${this._exposeNew === undefined}
+          @change=${this._exposeNewToggleChanged}
+        >
           <span slot="headline"
             >${this.hass!.localize(
               "ui.panel.config.voice_assistants.expose.expose_new_entities"
@@ -223,13 +229,7 @@ export class AssistPref extends LitElement {
               "ui.panel.config.voice_assistants.expose.expose_new_entities_info"
             )}</span
           >
-          <ha-switch
-            slot="end"
-            .checked=${this._exposeNew}
-            .disabled=${this._exposeNew === undefined}
-            @change=${this._exposeNewToggleChanged}
-          ></ha-switch>
-        </ha-row-item>
+        </ha-list-item-switch>
         <div class="card-actions">
           <ha-button
             appearance="plain"
@@ -264,8 +264,10 @@ export class AssistPref extends LitElement {
     `;
   }
 
-  private async _exposeNewToggleChanged(ev) {
-    const toggle = ev.target as HaSwitch;
+  private async _exposeNewToggleChanged(
+    ev: HASSDomTargetEvent<HaListItemSwitch>
+  ) {
+    const toggle = ev.target;
     if (this._exposeNew === undefined || this._exposeNew === toggle.checked) {
       return;
     }
@@ -414,10 +416,6 @@ export class AssistPref extends LitElement {
   static styles = css`
     a {
       color: var(--primary-color);
-    }
-    ha-row-item::part(headline),
-    ha-row-item::part(supporting-text) {
-      white-space: normal;
     }
     .header-actions {
       position: absolute;

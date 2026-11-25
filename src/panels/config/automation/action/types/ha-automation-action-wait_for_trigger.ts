@@ -2,6 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../../../common/array/ensure-array";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import { isTemplate } from "../../../../../common/string/has-template";
 import "../../../../../components/ha-form/ha-form";
 import type {
@@ -14,12 +15,17 @@ import "../../trigger/ha-automation-trigger";
 import type { TimeoutType } from "../../types";
 import type { ActionElement } from "../ha-automation-action-row";
 import { handleChangeEvent } from "../ha-automation-action-row";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 
 @customElement("ha-automation-action-wait_for_trigger")
 export class HaWaitForTriggerAction
   extends LitElement
   implements ActionElement
 {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["timeout", "continue_on_timeout"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public action!: WaitForTriggerAction;
@@ -37,7 +43,7 @@ export class HaWaitForTriggerAction
   }
 
   private _schema = memoizeOne(
-    (timeoutType: TimeoutType) =>
+    (timeoutType: TimeoutType, timeoutSet: boolean) =>
       [
         {
           name: "timeout",
@@ -52,7 +58,8 @@ export class HaWaitForTriggerAction
         {
           name: "continue_on_timeout",
           selector: { boolean: {} },
-          default: true,
+          default: timeoutSet,
+          disabled: !timeoutSet,
         },
       ] as const satisfies readonly HaFormSchema[]
   );
@@ -75,11 +82,16 @@ export class HaWaitForTriggerAction
         this.inSidebar || (!this.inSidebar && !this.indent)
           ? html`
               <ha-form
+                .error=${this._fieldErrors.fields}
+                .computeError=${this._fieldErrors.formError(
+                  this._computeLabelCallback
+                )}
                 .hass=${this.hass}
                 .data=${this.action}
-                .schema=${this._schema(timeoutType)}
+                .schema=${this._schema(timeoutType, timeout !== undefined)}
                 .disabled=${this.disabled}
                 .computeLabel=${this._computeLabelCallback}
+                @value-changed=${this._formValueChanged}
               ></ha-form>
             `
           : nothing
@@ -87,6 +99,7 @@ export class HaWaitForTriggerAction
       ${
         this.indent || (!this.inSidebar && !this.indent)
           ? html`<ha-automation-trigger
+              path-key="wait_for_trigger"
               class=${!this.inSidebar && !this.indent ? "expansion-panel" : ""}
               .triggers=${ensureArray(this.action.wait_for_trigger)}
               .hass=${this.hass}
@@ -109,6 +122,15 @@ export class HaWaitForTriggerAction
         schema.name === "continue_on_timeout" ? "continue_timeout" : schema.name
       }`
     );
+
+  private _formValueChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const value = { ...ev.detail.value };
+    if (value.timeout === undefined) {
+      delete value.continue_on_timeout;
+    }
+    fireEvent(this, "value-changed", { value });
+  }
 
   private _valueChanged(ev: CustomEvent): void {
     handleChangeEvent(this, ev);

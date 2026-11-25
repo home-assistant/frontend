@@ -64,6 +64,8 @@ import {
 } from "../styles";
 import "../trigger/ha-automation-trigger-references";
 import { getUiSupportWarnings, isConfigObject } from "../ui-support";
+import { AutomationPathController } from "../automation-path";
+import { renderRowErrorIcon } from "../automation-error-templates";
 
 @customElement("ha-automation-option-row")
 export default class HaAutomationOptionRow extends LitElement {
@@ -88,6 +90,11 @@ export default class HaAutomationOptionRow extends LitElement {
 
   @property({ type: Boolean, attribute: "sort-selected" })
   public sortSelected = false;
+
+  protected readonly pathController = new AutomationPathController(this, {
+    segment: () => (this.defaultActions ? ["default"] : [this.index]),
+    row: () => (this.optionsInSidebar ? this : undefined),
+  });
 
   @state() private _expanded = false;
 
@@ -119,6 +126,10 @@ export default class HaAutomationOptionRow extends LitElement {
 
   get selected() {
     return this._selected;
+  }
+
+  get collapsed() {
+    return this._collapsed;
   }
 
   public static checkUiSupport(
@@ -266,6 +277,12 @@ export default class HaAutomationOptionRow extends LitElement {
         }
       </h3>
 
+      ${renderRowErrorIcon(
+        this.hass.localize,
+        this.pathController.errors,
+        this.pathController.path,
+        this.hass.localize("ui.panel.config.automation.editor.errors.label")
+      )}
       <slot name="icons" slot="icons"></slot>
 
       ${
@@ -328,7 +345,16 @@ export default class HaAutomationOptionRow extends LitElement {
                   ${this._renderOverflowLabel(
                     this.hass.localize(
                       `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
-                    )
+                    ),
+                    this._selected
+                      ? html`<span class="shortcut">
+                          <span>${renderCtrlOrCmd(this.hass.localize)}</span>
+                          <span>+</span>
+                          <span>Shift</span>
+                          <span>+</span>
+                          <span>Y</span>
+                        </span>`
+                      : undefined
                   )}
                 </ha-dropdown-item>
 
@@ -439,6 +465,7 @@ export default class HaAutomationOptionRow extends LitElement {
                 )}:
               </h4>
               <ha-automation-condition
+                path-key="conditions"
                 .conditions=${ensureArray<string | Condition>(
                   this.option.conditions
                 )}
@@ -457,6 +484,7 @@ export default class HaAutomationOptionRow extends LitElement {
         )}:
       </h4>
       <ha-automation-action
+        .pathKey=${this.option ? "sequence" : undefined}
         .actions=${
           (this.option
             ? ensureArray(this.option.sequence) || []
@@ -485,6 +513,7 @@ export default class HaAutomationOptionRow extends LitElement {
                 .collapsed=${this._collapsed}
                 .selected=${this._selected}
                 .sortSelected=${this.sortSelected}
+                .error=${this.pathController.errors.length > 0}
                 @click=${this._toggleSidebar}
                 @toggle-collapsed=${this._toggleCollapse}
                 @delete-row=${this._removeOption}
@@ -708,6 +737,7 @@ export default class HaAutomationOptionRow extends LitElement {
     const sidebarOption = option ?? this.option;
     this._sidebarOption = sidebarOption;
     fireEvent(this, "open-sidebar", {
+      type: "option",
       save: (value) => {
         this._saveYamlOption(value);
       },

@@ -4,6 +4,7 @@ import {
   mdiDevices,
   mdiDownload,
   mdiFolderMultipleOutline,
+  mdiHeartPulse,
   mdiInformationOutline,
   mdiPlus,
   mdiShape,
@@ -13,7 +14,9 @@ import {
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+import { consume } from "../../../../../common/decorators/consume";
 import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/buttons/ha-progress-button";
@@ -32,8 +35,11 @@ import "../../../../../components/list/ha-list-base";
 import "../../../../../components/list/ha-list-nav";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import { getConfigEntries } from "../../../../../data/config_entries";
+import { fullEntitiesContext } from "../../../../../data/context";
+import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import type {
   ZHAConfiguration,
+  ZHADevice,
   ZHANetworkBackupAndMetadata,
 } from "../../../../../data/zha";
 import {
@@ -50,6 +56,12 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import { fileDownload } from "../../../../../util/file_download";
 import { renderConfigEntryError } from "../../ha-config-integration-page";
+import {
+  attentionCount,
+  devicesWithEntities,
+  findings,
+  managedDevices,
+} from "./network-health";
 
 @customElement("zha-config-dashboard")
 class ZHAConfigDashboard extends LitElement {
@@ -66,6 +78,13 @@ class ZHAConfigDashboard extends LitElement {
   @state() private _configuration?: ZHAConfiguration;
 
   @state() private _offlineDevices = 0;
+
+  @state() private _devices?: ZHADevice[];
+
+  /** The full registry, as hass.entities leaves out disabled entities. */
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  private _entityReg?: EntityRegistryEntry[];
 
   @state() private _totalGroups?: number;
 
@@ -237,6 +256,7 @@ class ZHAConfigDashboard extends LitElement {
             )}
           >
             <ha-list-item-button
+              wrap-headline
               href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}&status=disabled`}
             >
               <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
@@ -249,6 +269,7 @@ class ZHAConfigDashboard extends LitElement {
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-list-item-button>
             <ha-list-item-button
+              wrap-headline
               href=${`/config/entities?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
             >
               <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
@@ -260,7 +281,7 @@ class ZHAConfigDashboard extends LitElement {
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-list-item-button>
-            <ha-list-item-button href="/config/zha/groups">
+            <ha-list-item-button wrap-headline href="/config/zha/groups">
               <ha-svg-icon
                 slot="start"
                 .path=${mdiFolderMultipleOutline}
@@ -293,6 +314,14 @@ class ZHAConfigDashboard extends LitElement {
   }
 
   private _renderNavigationCard() {
+    const healthAttention =
+      this._devices && this._entityReg
+        ? this._healthAttention(
+            this._devices,
+            this._entityReg,
+            this.hass.devices
+          )
+        : 0;
     const dynamicSections = this._configuration
       ? Object.keys(this._configuration.schemas).filter(
           (section) => section !== "zha_options"
@@ -307,7 +336,11 @@ class ZHAConfigDashboard extends LitElement {
               "ui.panel.config.zha.configuration_page.options_title"
             )}
           >
-            <ha-list-item-button href="/config/zha/options">
+            <ha-list-item-button
+              wrap-headline
+              wrap-supporting-text
+              href="/config/zha/options"
+            >
               <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
               <div slot="headline">
                 ${this.hass.localize(
@@ -321,7 +354,11 @@ class ZHAConfigDashboard extends LitElement {
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-list-item-button>
-            <ha-list-item-button href="/config/zha/network-info">
+            <ha-list-item-button
+              wrap-headline
+              wrap-supporting-text
+              href="/config/zha/network-info"
+            >
               <ha-svg-icon
                 slot="start"
                 .path=${mdiInformationOutline}
@@ -338,9 +375,36 @@ class ZHAConfigDashboard extends LitElement {
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-list-item-button>
+            <ha-list-item-button href="/config/zha/network-health">
+              <ha-svg-icon slot="start" .path=${mdiHeartPulse}></ha-svg-icon>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.network_health_title"
+                )}
+              </div>
+              <div slot="supporting-text">
+                ${
+                  healthAttention
+                    ? html`<span class="attention">
+                        <span class="attention-dot"></span>
+                        ${this.hass.localize(
+                          "ui.panel.config.zha.configuration_page.network_health_attention",
+                          { count: healthAttention }
+                        )}
+                      </span>`
+                    : this.hass.localize(
+                        "ui.panel.config.zha.configuration_page.network_health_description"
+                      )
+                }
+              </div>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-list-item-button>
             ${dynamicSections.map(
               (section) => html`
-                <ha-list-item-button href=${`/config/zha/section/${section}`}>
+                <ha-list-item-button
+                  wrap-headline
+                  href=${`/config/zha/section/${section}`}
+                >
                   <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
                   <div slot="headline">
                     ${
@@ -364,7 +428,7 @@ class ZHAConfigDashboard extends LitElement {
       <ha-card class="nav-card">
         <div class="card-content">
           <ha-list-base>
-            <ha-list-item-base>
+            <ha-list-item-base wrap-headline wrap-supporting-text>
               <span slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.zha.configuration_page.download_backup"
@@ -389,7 +453,7 @@ class ZHAConfigDashboard extends LitElement {
                 )}
               </ha-progress-button>
             </ha-list-item-base>
-            <ha-list-item-base>
+            <ha-list-item-base wrap-headline wrap-supporting-text>
               <span slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.zha.configuration_page.migrate_radio"
@@ -491,6 +555,29 @@ class ZHAConfigDashboard extends LitElement {
     showOptionsFlowDialog(this, this._configEntry);
   }
 
+  /**
+   * How many devices need attention on the network health page. Only those
+   * findings count here, so battery readings are not needed.
+   */
+  private _healthAttention = memoizeOne(
+    (
+      devices: ZHADevice[],
+      entityReg: EntityRegistryEntry[],
+      haDevices: HomeAssistant["devices"]
+    ): number => {
+      const withEntities = devicesWithEntities(entityReg);
+      return attentionCount(
+        findings(managedDevices(devices), {
+          batteryLevel: () => null,
+          isDisabled: (device) =>
+            Boolean(haDevices[device.device_reg_id]?.disabled_by),
+          hasRegisteredEntities: (device) =>
+            withEntities.has(device.device_reg_id),
+        })
+      );
+    }
+  );
+
   private async _fetchDevicesAndGroups(): Promise<void> {
     const [devicesResult, groupsResult] = await Promise.allSettled([
       fetchDevices(this.hass),
@@ -501,6 +588,7 @@ class ZHAConfigDashboard extends LitElement {
       this._offlineDevices = devicesResult.value.filter(
         (d) => !d.available
       ).length;
+      this._devices = devicesResult.value;
     } else {
       this._error = devicesResult.reason?.message || devicesResult.reason;
     }
@@ -517,10 +605,24 @@ class ZHAConfigDashboard extends LitElement {
       haStyle,
       animationStyles,
       css`
+        .attention {
+          display: inline-flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+        }
+
+        .attention-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: var(--ha-border-radius-circle);
+          background-color: var(--error-color);
+          flex-shrink: 0;
+        }
+
         ha-card {
           margin: auto;
           margin-top: var(--ha-space-4);
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
         }
 
         .nav-card .card-header {
@@ -618,7 +720,7 @@ class ZHAConfigDashboard extends LitElement {
         }
 
         .container {
-          padding: var(--ha-space-2) var(--ha-space-4)
+          padding: var(--ha-space-2) var(--ha-content-gutter)
             calc(var(--ha-space-20) + var(--safe-area-inset-bottom, 0px));
         }
       `,

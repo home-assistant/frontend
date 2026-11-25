@@ -391,7 +391,7 @@ class HaPanelConfig extends HassRouterPage {
   private async _updateCloudStatus() {
     this._clearCloudStatusTimeout();
     const requestId = ++this._cloudStatusRequestId;
-    const status = await fetchCloudStatus(this.hass);
+    const status = await fetchCloudStatus(this.hass.callWS);
 
     if (requestId !== this._cloudStatusRequestId || !this.isConnected) {
       return;

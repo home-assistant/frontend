@@ -7,7 +7,7 @@ import type { HumidifierEntity } from "../../../../../data/humidifier";
 import { HUMIDIFIER_ACTION_MODE } from "../../../../../data/humidifier";
 import type { RenderBadgeFunction } from "./tile-badge";
 
-export const renderHumidifierBadge: RenderBadgeFunction = (stateObj) => {
+export const renderHumidifierBadge: RenderBadgeFunction = (stateObj, hass) => {
   const action = (stateObj as HumidifierEntity).attributes.action;
 
   if (!action || action === "off") {
@@ -16,6 +16,8 @@ export const renderHumidifierBadge: RenderBadgeFunction = (stateObj) => {
 
   return html`
     <ha-tile-badge
+      role="img"
+      aria-label=${hass.formatEntityAttributeValue(stateObj, "action")}
       style=${styleMap({
         "--tile-badge-background-color": stateColorCss(
           stateObj,

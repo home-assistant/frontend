@@ -8,6 +8,7 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
+import { AutomationPathController } from "../../automation-path";
 
 import { isTemplate } from "../../../../../common/string/has-template";
 import "../../../../../components/ha-form/ha-form";
@@ -19,15 +20,24 @@ import type {
 import type { HaSelector } from "../../../../../components/ha-selector/ha-selector";
 import type { HaActionSelector } from "../../../../../components/ha-selector/ha-selector-action";
 import type { HaConditionSelector } from "../../../../../components/ha-selector/ha-selector-condition";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 
 const OPTIONS = ["count", "while", "until", "for_each"] as const;
 type RepeatType = (typeof OPTIONS)[number];
+
+// The rows of `while`, `until` and `sequence` show their own errors
+const INLINE_FIELDS = ["count", "for_each"];
 
 export const getRepeatType = (action: RepeatAction["repeat"]) =>
   OPTIONS.find((option) => option in action);
 
 @customElement("ha-automation-action-repeat")
 export class HaRepeatAction extends LitElement implements ActionElement {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    key: "repeat",
+    inlineFields: INLINE_FIELDS,
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public disabled = false;
@@ -40,12 +50,23 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean, attribute: "indent" }) public indent = false;
 
+  // The form edits the repeat options, so its fields are keyed below "repeat"
+  protected readonly pathController = new AutomationPathController(this, {
+    segment: () => ["repeat"],
+  });
+
   @query("ha-form")
   private _formElement?: HaForm;
 
   public static get defaultConfig(): RepeatAction {
     return { repeat: { count: 2, sequence: [] } };
   }
+
+  private _formErrors = memoizeOne((fields: Record<string, string>) =>
+    Object.fromEntries(
+      Object.entries(fields).filter(([field]) => INLINE_FIELDS.includes(field))
+    )
+  );
 
   private _schema = memoizeOne(
     (
@@ -117,6 +138,8 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
     const data = { ...action, type };
     return html`<ha-form
+      .error=${this._formErrors(this._fieldErrors.fields)}
+      .computeError=${this._fieldErrors.formError(this._computeLabelCallback)}
       .hass=${this.hass}
       .data=${data}
       .schema=${schema}

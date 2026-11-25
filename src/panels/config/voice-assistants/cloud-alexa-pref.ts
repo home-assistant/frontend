@@ -2,6 +2,7 @@ import { mdiHelpCircleOutline } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isEmptyEntityDomainFilter } from "../../../common/entity/entity_domain_filter";
 import "../../../components/ha-alert";
@@ -9,7 +10,8 @@ import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
-import "../../../components/item/ha-row-item";
+import "../../../components/item/ha-list-item-switch";
+import type { HaListItemSwitch } from "../../../components/item/ha-list-item-switch";
 import "../../../components/voice-assistant-brand-icon";
 import type { CloudStatusLoggedIn } from "../../../data/cloud";
 import { updateCloudPref } from "../../../data/cloud";
@@ -80,6 +82,9 @@ export class CloudAlexaPref extends LitElement {
             class="icon-link"
           ></ha-icon-button>
           <ha-switch
+            .accessibleLabel=${this.hass.localize(
+              "ui.panel.config.cloud.account.alexa.title"
+            )}
             .checked=${alexa_enabled}
             @change=${this._enabledToggleChanged}
           ></ha-switch>
@@ -139,7 +144,13 @@ export class CloudAlexaPref extends LitElement {
                         </ha-alert>`
                       : nothing
                   }
-                  <ha-row-item>
+                  <ha-list-item-switch
+                    wrap-headline
+                    wrap-supporting-text
+                    .checked=${this._exposeNew}
+                    .disabled=${this._exposeNew === undefined}
+                    @change=${this._exposeNewToggleChanged}
+                  >
                     <span slot="headline"
                       >${this.hass!.localize(
                         "ui.panel.config.cloud.account.alexa.expose_new_entities"
@@ -150,17 +161,16 @@ export class CloudAlexaPref extends LitElement {
                         "ui.panel.config.cloud.account.alexa.expose_new_entities_info"
                       )}</span
                     >
-                    <ha-switch
-                      slot="end"
-                      .checked=${this._exposeNew}
-                      .disabled=${this._exposeNew === undefined}
-                      @change=${this._exposeNewToggleChanged}
-                    ></ha-switch>
-                  </ha-row-item>
+                  </ha-list-item-switch>
                   ${
                     alexa_registered
                       ? html`
-                          <ha-row-item>
+                          <ha-list-item-switch
+                            wrap-headline
+                            wrap-supporting-text
+                            .checked=${alexa_report_state}
+                            @change=${this._reportToggleChanged}
+                          >
                             <span slot="headline"
                               >${this.hass!.localize(
                                 "ui.panel.config.cloud.account.alexa.enable_state_reporting"
@@ -171,12 +181,7 @@ export class CloudAlexaPref extends LitElement {
                                 "ui.panel.config.cloud.account.alexa.info_state_reporting"
                               )}</span
                             >
-                            <ha-switch
-                              slot="end"
-                              .checked=${alexa_report_state}
-                              @change=${this._reportToggleChanged}
-                            ></ha-switch>
-                          </ha-row-item>
+                          </ha-list-item-switch>
                         `
                       : nothing
                   }
@@ -212,8 +217,10 @@ export class CloudAlexaPref extends LitElement {
     `;
   }
 
-  private async _exposeNewToggleChanged(ev) {
-    const toggle = ev.target as HaSwitch;
+  private async _exposeNewToggleChanged(
+    ev: HASSDomTargetEvent<HaListItemSwitch>
+  ) {
+    const toggle = ev.target;
     if (this._exposeNew === undefined || this._exposeNew === toggle.checked) {
       return;
     }
@@ -234,8 +241,8 @@ export class CloudAlexaPref extends LitElement {
     }
   }
 
-  private async _reportToggleChanged(ev) {
-    const toggle = ev.target as HaSwitch;
+  private async _reportToggleChanged(ev: HASSDomTargetEvent<HaListItemSwitch>) {
+    const toggle = ev.target;
     try {
       await updateCloudPref(this.hass!, {
         alexa_report_state: toggle.checked!,
@@ -262,12 +269,8 @@ export class CloudAlexaPref extends LitElement {
     a {
       color: var(--primary-color);
     }
-    ha-row-item {
+    ha-list-item-switch {
       --ha-row-item-padding-inline: 0;
-    }
-    ha-row-item::part(headline),
-    ha-row-item::part(supporting-text) {
-      white-space: normal;
     }
     .header-actions {
       position: absolute;

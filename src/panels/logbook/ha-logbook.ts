@@ -82,6 +82,9 @@ export class HaLogbook extends LitElement {
   @property({ attribute: "show-more-link", type: Boolean })
   public showMoreLink = true;
 
+  @property({ type: Number, attribute: "max-entries" })
+  public maxEntries?: number;
+
   @state() private _logbookEntries?: LogbookEntry[];
 
   @state() private _traceContexts: TraceContexts = {};
@@ -153,7 +156,7 @@ export class HaLogbook extends LitElement {
         .graphColor=${this.graphColor}
         .showCause=${this.showCause}
         .nameDetail=${this.nameDetail}
-        .entries=${entries}
+        .entries=${this._limitEntries(entries, this.maxEntries)}
         .traceContexts=${this._traceContexts}
         .userIdToName=${this._userIdToName}
         .systemUserIds=${this._systemUserIds}
@@ -171,6 +174,11 @@ export class HaLogbook extends LitElement {
       this._personUserIds
     );
   }
+
+  private _limitEntries = memoizeOne(
+    (entries: LogbookEntry[], maxEntries: number | undefined) =>
+      maxEntries ? entries.slice(0, maxEntries) : entries
+  );
 
   private _filterEntriesByCause = memoizeOne(
     (
@@ -525,7 +533,7 @@ export class HaLogbook extends LitElement {
     const personUserIds = new Set<string>();
 
     // Start loading users
-    const userProm = this.hass.user?.is_admin && fetchUsers(this.hass);
+    const userProm = this.hass.user?.is_admin && fetchUsers(this.hass.callWS);
 
     // Process persons
     for (const entity of Object.values(this.hass.states)) {

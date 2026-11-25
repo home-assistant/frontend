@@ -2,6 +2,7 @@ import { mdiDownload } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-analytics";
@@ -10,7 +11,8 @@ import "../../../components/ha-card";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
-import type { HaSwitch } from "../../../components/ha-switch";
+import "../../../components/item/ha-list-item-switch";
+import type { HaListItemSwitch } from "../../../components/item/ha-list-item-switch";
 import "../../../components/item/ha-row-item";
 import type { Analytics } from "../../../data/analytics";
 import {
@@ -104,7 +106,11 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
                     }
                   )}
                 </p>
-                <ha-row-item>
+                <ha-list-item-switch
+                  @change=${this._handleDeviceRowClick}
+                  .checked=${!!this._analyticsDetails?.preferences.snapshots}
+                  .disabled=${this._analyticsDetails === undefined}
+                >
                   <span slot="headline">
                     ${this.hass.localize(
                       `ui.panel.config.analytics.preferences.snapshots.title`
@@ -115,13 +121,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
                       `ui.panel.config.analytics.preferences.snapshots.description`
                     )}
                   </span>
-                  <ha-switch
-                    slot="end"
-                    @change=${this._handleDeviceRowClick}
-                    .checked=${!!this._analyticsDetails?.preferences.snapshots}
-                    .disabled=${this._analyticsDetails === undefined}
-                  ></ha-switch>
-                </ha-row-item>
+                </ha-list-item-switch>
               </div>
               <div class="card-actions">
                 <ha-button
@@ -180,6 +180,9 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
                       ? html`
                           <ha-switch
                             slot="end"
+                            .accessibleLabel=${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.data_collection.toggle_title"
+                            )}
                             @change=${this._zwaveDataCollectionToggled}
                             .checked=${this._zwaveDataCollectionOptIn === true}
                           ></ha-switch>
@@ -281,8 +284,8 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _handleDeviceRowClick(ev: Event) {
-    const target = ev.target as HaSwitch;
+  private _handleDeviceRowClick(ev: HASSDomTargetEvent<HaListItemSwitch>) {
+    const target = ev.target;
 
     this._analyticsDetails = {
       ...this._analyticsDetails!,
@@ -329,7 +332,8 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
         ha-card:not(:first-of-type) {
           margin-top: 24px;
         }
-        ha-row-item {
+        ha-row-item,
+        ha-list-item-switch {
           --ha-row-item-padding-inline: 0;
         }
         ha-card {

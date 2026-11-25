@@ -7,6 +7,47 @@ export const supportsServiceWorker = () =>
   "serviceWorker" in navigator &&
   (location.protocol === "https:" || location.hostname === "localhost");
 
+/**
+ * Reload once when a new worker takes over. The claim after a first install
+ * is skipped: that page already runs the build it registered. Returns a
+ * callback that marks the page as claimed for the cases the controller
+ * doesn't show, such as a hard reload that bypassed an active worker. A
+ * change skipped before that call was an update after all, so it reloads.
+ * `reload` returns false when it only deferred the reload, so a later change
+ * is still handled.
+ */
+export const reloadOnControllerChange = (
+  container: ServiceWorkerContainer,
+  reload: () => boolean = () => {
+    location.reload();
+    return true;
+  }
+) => {
+  let claimed = Boolean(container.controller);
+  let skipped = false;
+  let reloading = false;
+  const reloadOnce = () => {
+    if (reloading) {
+      return;
+    }
+    reloading = reload();
+  };
+  container.addEventListener("controllerchange", () => {
+    if (claimed) {
+      reloadOnce();
+      return;
+    }
+    claimed = true;
+    skipped = true;
+  });
+  return () => {
+    claimed = true;
+    if (skipped) {
+      reloadOnce();
+    }
+  };
+};
+
 export const registerServiceWorker = async (
   rootEl: HTMLElement,
   notifyUpdate = true
@@ -18,19 +59,23 @@ export const registerServiceWorker = async (
   // Set when the active worker changed while this page could not reload.
   let reloadPending = false;
 
-  // If the active service worker changes, refresh the page because the cache has changed.
   // Another tab can activate the new worker, so wait until this page has no unsaved work.
   // Until then this page runs the old build under the new worker, so its lazy imports can
   // fail and go through stale build recovery instead.
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (!window.isDirtyState) {
-      location.reload();
-      return;
+  const markClaimed = reloadOnControllerChange(navigator.serviceWorker, () => {
+    if (window.isDirtyState) {
+      reloadPending = true;
+      return false;
     }
-    reloadPending = true;
+    location.reload();
+    return true;
   });
 
   const reg = await navigator.serviceWorker.register(`/sw-${__BUILD__}.js`);
+
+  if (reg?.active) {
+    markClaimed();
+  }
 
   if (!notifyUpdate || __DEV__ || __DEMO__) {
     // No update toast here, so reload as soon as the page is clean.

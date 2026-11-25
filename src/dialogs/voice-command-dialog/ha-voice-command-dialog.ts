@@ -102,7 +102,12 @@ export class HaVoiceCommandDialog extends LitElement {
     }
 
     return html`
-      <ha-dialog .open=${this._open} @closed=${this._dialogClosed} flexcontent>
+      <ha-dialog
+        .open=${this._open}
+        .accessibleLabel=${this.hass.localize("ui.dialogs.voice_command.title")}
+        @closed=${this._dialogClosed}
+        flexcontent
+      >
         <ha-dialog-header slot="header">
           <ha-icon-button
             slot="navigationIcon"
@@ -221,7 +226,7 @@ export class HaVoiceCommandDialog extends LitElement {
       return;
     }
     const { pipelines, preferred_pipeline } = await listAssistPipelines(
-      this.hass
+      this.hass.callWS
     );
     this._pipelines = pipelines;
     this._preferredPipeline = preferred_pipeline || undefined;

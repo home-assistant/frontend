@@ -10,10 +10,12 @@ import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { formatNumber } from "../common/number/format_number";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
 import type { EntitySources } from "./entity/entity_sources";
+import type { FrontendLocaleData } from "./translation";
 
 export enum UpdateEntityFeature {
   INSTALL = 1,
@@ -77,13 +79,25 @@ export const updateButtonIsDisabled = (entity: UpdateEntity): boolean =>
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>
   !!entity.attributes.in_progress;
 
+export interface UpdateReleaseNotesMessage {
+  severity: "info" | "warning" | "error";
+  message: string;
+}
+
+export interface UpdateReleaseNotes {
+  release_notes: string | null;
+  messages: UpdateReleaseNotesMessage[];
+}
+
 export const updateReleaseNotes = (
   hass: Pick<HomeAssistant, "callWS">,
-  entityId: string
+  entityId: string,
+  language: string
 ) =>
-  hass.callWS<string | null>({
+  hass.callWS<UpdateReleaseNotes>({
     type: "update/release_notes",
     entity_id: entityId,
+    language,
   });
 
 const HOME_ASSISTANT_CORE_TITLE = "Home Assistant Core";
@@ -170,18 +184,22 @@ export const checkForEntityUpdates = async (
   element: HTMLElement,
   hass: HomeAssistant
 ) => {
-  const entities = filterUpdateEntities(
+  const updateEntities = filterUpdateEntities(
     hass.states,
     hass.formatEntityName,
     hass.locale.language
-  ).map((entity) => entity.entity_id);
+  );
+  const entities = updateEntities
+    .filter((entity) => !entity.attributes.restored)
+    .map((entity) => entity.entity_id);
 
   if (!entities.length) {
+    const messageKey = updateEntities.length
+      ? "update_integrations_not_loaded"
+      : "no_update_entities";
     showAlertDialog(element, {
-      title: hass.localize("ui.panel.config.updates.no_update_entities.title"),
-      text: hass.localize(
-        "ui.panel.config.updates.no_update_entities.description"
-      ),
+      title: hass.localize(`ui.panel.config.updates.${messageKey}.title`),
+      text: hass.localize(`ui.panel.config.updates.${messageKey}.description`),
       warning: true,
     });
     return;
@@ -237,7 +255,9 @@ export const checkForEntityUpdates = async (
 // When update is not available and there is no latest_version show "Unavailable"
 export const computeUpdateStateDisplay = (
   stateObj: UpdateEntity,
-  options: Pick<HomeAssistant, "localize" | "locale" | "formatEntityState">
+  localize: LocalizeFunc,
+  locale: FrontendLocaleData,
+  formatEntityState: HomeAssistant["formatEntityState"]
 ): string => {
   const state = stateObj.state;
   const attributes = stateObj.attributes;
@@ -252,20 +272,20 @@ export const computeUpdateStateDisplay = (
       supportsFeature(stateObj, UpdateEntityFeature.PROGRESS) &&
       attributes.update_percentage == null
     ) {
-      return options.localize("ui.card.update.preparing");
+      return localize("ui.card.update.preparing");
     }
     const supportsProgress =
       supportsFeature(stateObj, UpdateEntityFeature.PROGRESS) &&
       attributes.update_percentage !== null;
     if (supportsProgress) {
-      return options.localize("ui.card.update.installing_with_progress", {
-        progress: formatNumber(attributes.update_percentage!, options.locale, {
+      return localize("ui.card.update.installing_with_progress", {
+        progress: formatNumber(attributes.update_percentage!, locale, {
           maximumFractionDigits: attributes.display_precision,
           minimumFractionDigits: attributes.display_precision,
         }),
       });
     }
-    return options.localize("ui.card.update.installing");
+    return localize("ui.card.update.installing");
   }
 
   if (state === "off") {
@@ -275,10 +295,10 @@ export const computeUpdateStateDisplay = (
     if (isSkipped) {
       return attributes.latest_version!;
     }
-    return options.formatEntityState(stateObj);
+    return formatEntityState(stateObj);
   }
 
-  return options.formatEntityState(stateObj);
+  return formatEntityState(stateObj);
 };
 
 export type UpdateType =

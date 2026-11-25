@@ -20,6 +20,11 @@ export interface EntityFilter {
 
 export type EntityFilterFunc = (entityId: string) => boolean;
 
+export type EntityFilterSources = Pick<
+  HomeAssistant,
+  "states" | "entities" | "devices" | "areas" | "floors"
+>;
+
 const normalizeFilterArray = <T>(
   value: T | null | T[] | (T | null)[] | undefined
 ): Set<T | null> | undefined => {
@@ -156,4 +161,21 @@ export const findEntities = (
   }
 
   return results;
+};
+
+export const findFilteredEntities = (
+  sources: EntityFilterSources,
+  filters: EntityFilter[]
+): string[] => {
+  const filterFuncs = filters.map((filter) =>
+    generateEntityFilter(
+      sources.states,
+      sources.entities,
+      sources.devices,
+      sources.areas,
+      sources.floors,
+      filter
+    )
+  );
+  return findEntities(Object.keys(sources.states), filterFuncs);
 };

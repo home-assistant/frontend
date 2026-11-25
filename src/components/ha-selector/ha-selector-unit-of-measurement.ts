@@ -98,8 +98,9 @@ export class HaUnitOfMeasurementSelector extends LitElement {
       return;
     }
 
-    if (this.required && units.length === 1 && units[0] !== null) {
-      // Preselect the only allowed unit
+    if (units.length === 1 && units[0] !== null) {
+      // Preselect the only allowed unit; "no unit" is not allowed either, so
+      // this also applies to an optional field
       fireEvent(this, "value-changed", { value: units[0] });
     }
   }

@@ -1,3 +1,7 @@
+export {
+  computeCssColor,
+  computeCssVariableName,
+} from "../../common/color/compute-color";
 export { showEnterCodeDialog } from "../../dialogs/enter-code/show-enter-code-dialog";
 export {
   showAlertDialog,

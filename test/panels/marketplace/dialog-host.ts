@@ -20,6 +20,7 @@ export const deferred = <T>(): Deferred<T> => {
 export type SendMessage = (message: {
   type: string;
   repository_id?: string;
+  repository?: string;
 }) => Promise<unknown>;
 
 export const mockConnection = (

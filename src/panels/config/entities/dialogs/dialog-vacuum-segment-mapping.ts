@@ -77,7 +77,10 @@ export class DialogVacuumSegmentMapping
     if (!this._params) return;
 
     const entityId = this._params.entityId;
-    this._entry = await getExtendedEntityRegistryEntry(this.hass, entityId);
+    this._entry = await getExtendedEntityRegistryEntry(
+      this.hass.callWS,
+      entityId
+    );
 
     if (this._entry?.options?.vacuum) {
       this._areaMapping = this._entry.options.vacuum.area_mapping || {};
@@ -114,7 +117,7 @@ export class DialogVacuumSegmentMapping
         last_seen_segments: mapper.lastSeenSegments,
       };
 
-      await updateEntityRegistryEntry(this.hass, this._params.entityId, {
+      await updateEntityRegistryEntry(this.hass.callWS, this._params.entityId, {
         options_domain: "vacuum",
         options: options,
       });
@@ -164,7 +167,6 @@ export class DialogVacuumSegmentMapping
         )}
       >
         <ha-vacuum-segment-area-mapper
-          .hass=${this.hass}
           entity-id=${this._params.entityId}
           .value=${this._areaMapping}
           @value-changed=${this._valueChanged}

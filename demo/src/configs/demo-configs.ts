@@ -13,8 +13,13 @@ import type { EntityInput } from "../../../src/fake_data/entities/types";
 import type { DemoAutomation, DemoConfig, DemoTheme } from "./types";
 
 export const applyDemoTheme = (hass: MockHomeAssistant, theme: DemoTheme) => {
-  if (typeof theme === "function") {
-    hass.mockTheme(theme());
+  if ("vars" in theme) {
+    // Like a theme with only one mode in core, so the app keeps that mode
+    // when it applies the theme again
+    hass.mockTheme(
+      { modes: theme.dark ? { dark: theme.vars } : { light: theme.vars } },
+      { theme: "fake-data", dark: theme.dark }
+    );
     return;
   }
   hass.mockTheme(null, getDemoTheme(theme));

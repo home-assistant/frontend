@@ -9,13 +9,19 @@ import { HaDeviceAutomationPicker } from "./ha-device-automation-picker";
 @customElement("ha-device-condition-picker")
 class HaDeviceConditionPicker extends HaDeviceAutomationPicker<DeviceCondition> {
   protected get NO_AUTOMATION_TEXT() {
-    return this.hass.localize(
+    return this._i18n.localize(
       "ui.panel.config.devices.automation.conditions.no_conditions"
     );
   }
 
+  protected get NOT_SUPPORTED_TEXT() {
+    return this._i18n.localize(
+      "ui.panel.config.devices.automation.conditions.not_supported"
+    );
+  }
+
   protected get UNKNOWN_AUTOMATION_TEXT() {
-    return this.hass.localize(
+    return this._i18n.localize(
       "ui.panel.config.devices.automation.conditions.unknown_condition"
     );
   }

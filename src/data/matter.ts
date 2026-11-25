@@ -113,10 +113,70 @@ export interface MatterCommissioningParameters {
   setup_pin_code: number;
   setup_manual_code: string;
   setup_qr_code: string;
+  // Null when the Matter server does not report them, absent with an older Core.
+  discriminator?: number | null;
+  vendor_id?: number | null;
+  product_id?: number | null;
+  commissioning_timeout?: number | null;
 }
 
 export const canCommissionMatterExternal = (hass: HomeAssistant) =>
   hass.auth.external?.config.canCommissionMatter;
+
+export type MatterShareTarget = "apple_home" | "app_chooser";
+
+export interface MatterShareDeviceParams {
+  // Always sent: the iOS app falls back to it, the Android app ignores it.
+  setup_qr_code: string;
+  setup_pin_code: number;
+  discriminator?: number;
+  vendor_id?: number;
+  product_id?: number;
+  device_name?: string;
+  remaining_seconds?: number;
+}
+
+/** The app chooser opens a window of its own, so unlike Apple Home it needs the discriminator and timeout. */
+export const matterShareTargetExternal = (
+  hass: HomeAssistant,
+  params: MatterCommissioningParameters | undefined
+): MatterShareTarget | undefined => {
+  const config = hass.auth.external?.config;
+  if (!config || !params) {
+    return undefined;
+  }
+  if (config.canShareMatterDeviceToAppleHome) {
+    return "apple_home";
+  }
+  if (
+    config.canShareMatterDeviceToOtherApps &&
+    params.discriminator != null &&
+    params.commissioning_timeout != null
+  ) {
+    return "app_chooser";
+  }
+  return undefined;
+};
+
+/** Capped at `timeout` in case the clock went back. */
+export const matterShareRemainingSeconds = (
+  timeout: number | null | undefined,
+  requestedAt: number | undefined,
+  now: number
+): number | undefined =>
+  timeout != null && requestedAt !== undefined
+    ? Math.min(timeout, Math.floor(timeout - (now - requestedAt) / 1000))
+    : undefined;
+
+/** Rejects with `{code, message}`; `code` is `canceled` when the user backed out. */
+export const shareMatterDeviceExternal = (
+  hass: HomeAssistant,
+  params: MatterShareDeviceParams
+) =>
+  hass.auth.external!.sendMessage<"matter/share_device">({
+    type: "matter/share_device",
+    payload: params,
+  });
 
 export const startExternalCommissioning = async (hass: HomeAssistant) => {
   if (isComponentLoaded(hass.config, "thread")) {
@@ -144,37 +204,51 @@ export const startExternalCommissioning = async (hass: HomeAssistant) => {
   });
 };
 
+// Core's ID_TYPE_DEVICE_ID: each Matter node adds a `deviceid_` identifier
+// to its device, next to an optional `serial_` one.
+const MATTER_NODE_IDENTIFIER_PREFIX = "deviceid_";
+
+const matterNodeIdentifiers = (device: DeviceRegistryEntry) =>
+  device.identifiers
+    .filter(
+      ([domain, id]) =>
+        domain === "matter" && id.startsWith(MATTER_NODE_IDENTIFIER_PREFIX)
+    )
+    .map(([, id]) => id);
+
 export const watchForNewMatterDevice = (
   hass: HomeAssistant,
-  callback: (device: DeviceRegistryEntry) => void
+  callback: (device: DeviceRegistryEntry, existing: boolean) => void
 ): UnsubscribeFunc => {
-  let curMatterDevices: Set<string> | undefined;
-  const unsubDeviceReg = subscribeDeviceRegistry(hass.connection, (entries) => {
-    if (!curMatterDevices) {
-      curMatterDevices = new Set(
-        Object.values(entries)
-          .filter((device) =>
-            device.identifiers.find((identifier) => identifier[0] === "matter")
-          )
-          .map((device) => device.id)
-      );
+  let knownNodes: Set<string> | undefined;
+  let knownDevices: Set<string> | undefined;
+  let unsubDeviceReg: UnsubscribeFunc | undefined;
+  // Callers also unsubscribe after a find. The registry collection counts its
+  // subscribers, so a second unsubscribe would stop its updates for everyone.
+  const unsubscribe = () => {
+    unsubDeviceReg?.();
+    unsubDeviceReg = undefined;
+    knownNodes = undefined;
+    knownDevices = undefined;
+  };
+  // Watch for a new node rather than a new device: core merges a
+  // recommissioned node into the existing device that shares its serial number.
+  unsubDeviceReg = subscribeDeviceRegistry(hass.connection, (entries) => {
+    if (!knownNodes) {
+      knownNodes = new Set(entries.flatMap(matterNodeIdentifiers));
+      knownDevices = new Set(entries.map((entry) => entry.id));
       return;
     }
-    const newMatterDevices = Object.values(entries).filter(
-      (device) =>
-        device.identifiers.find((identifier) => identifier[0] === "matter") &&
-        !curMatterDevices!.has(device.id)
+    const device = entries.find((entry) =>
+      matterNodeIdentifiers(entry).some((id) => !knownNodes!.has(id))
     );
-    if (newMatterDevices.length) {
-      unsubDeviceReg();
-      curMatterDevices = undefined;
-      callback(newMatterDevices[0]);
+    if (device) {
+      const existing = knownDevices!.has(device.id);
+      unsubscribe();
+      callback(device, existing);
     }
   });
-  return () => {
-    unsubDeviceReg();
-    curMatterDevices = undefined;
-  };
+  return unsubscribe;
 };
 
 export const redirectOnNewMatterDevice = (

@@ -1,48 +1,60 @@
-import {
-  mdiChevronRight,
-  mdiDevices,
-  mdiFilterVariant,
-  mdiViewGridOutline,
-} from "@mdi/js";
-import type { IFuseOptions } from "fuse.js";
+import "@home-assistant/webawesome/dist/components/divider/divider";
+import "@home-assistant/webawesome/dist/components/tree-item/tree-item";
+import type WaTreeItem from "@home-assistant/webawesome/dist/components/tree-item/tree-item";
+import "@home-assistant/webawesome/dist/components/tree/tree";
+import type { WaSelectionChangeEvent } from "@home-assistant/webawesome/dist/events/selection-change";
+import { mdiRadar, mdiMenuDown, mdiViewGridOutline, mdiWeb } from "@mdi/js";
 import Fuse from "fuse.js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, query, state } from "lit/decorators";
+import { customElement, eventOptions, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
+import { live } from "lit/directives/live";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import type {
   HASSDomCurrentTargetEvent,
+  HASSDomEvent,
   HASSDomTargetEvent,
 } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { HaFilterChip } from "../../../components/chips/ha-filter-chip";
+import type { HaListItemButton } from "../../../components/item/ha-list-item-button";
 import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
-import type { LocalizeFunc } from "../../../common/translations/localize";
-import "../../../components/ha-dialog";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../common/translations/localize";
+import { storage } from "../../../common/decorators/storage";
+import "../../../components/ha-adaptive-dialog";
+import "../../../components/ha-label";
+import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
+import "../../../components/chips/ha-assist-chip";
+import "../../../components/chips/ha-filter-chip";
 import "../../../components/ha-icon";
 import "../../../components/ha-domain-icon";
+import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-section-title";
-import "../../../components/ha-tree-indicator";
 import "../../../components/list/ha-list-base";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import type { HaListVisibilityChangedDetail } from "../../../components/list/types";
 import "../../../components/item/ha-list-item-button";
 import "../../../components/list/ha-list-virtualized";
-import type {
-  HaListVirtualized,
-  HaListVirtualizedItem,
-} from "../../../components/list/ha-list-virtualized";
+import type { HaListVirtualized } from "../../../components/list/ha-list-virtualized";
 import { getConfigEntries } from "../../../data/config_entries";
 import {
   DISCOVERY_SOURCES,
@@ -75,50 +87,28 @@ import { getIntegrationCategoryIcons } from "../../../data/icons";
 import { haStyleDialog } from "../../../resources/styles";
 import { loadVirtualizer } from "../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../types";
-import "./ha-domain-integrations";
+import { standardToDomain } from "./ha-domain-integrations";
+import type {
+  BrowseBy,
+  Connection,
+  IntegrationCategory,
+  IntegrationListItem,
+  SearchSection,
+} from "./add-integration-list";
+import {
+  CONNECTIONS,
+  inCategory,
+  MAX_SEARCH_ITEMS_PER_SECTION,
+  ofConnection,
+  SEARCH_SECTIONS,
+  searchOptions,
+} from "./add-integration-list";
 import "./ha-integration-list-item";
+import "./ha-integration-list-title";
 import type { HaIntegrationListItem } from "./ha-integration-list-item";
 import type { AddIntegrationDialogParams } from "./show-add-integration-dialog";
 import { showYamlIntegrationDialog } from "./show-add-integration-dialog";
 import { showSingleConfigEntryWarning } from "./show-single-config-entry-warning";
-
-export interface IntegrationListItem extends HaListVirtualizedItem {
-  name: string;
-  domain: string;
-  config_flow?: boolean;
-  is_helper?: boolean;
-  integrations?: string[];
-  domains?: string[];
-  iot_standards?: string[];
-  supported_by?: string;
-  cloud?: boolean;
-  is_built_in?: boolean;
-  overwrites_built_in?: boolean;
-  is_add?: boolean;
-  single_config_entry?: boolean;
-  is_discovered?: boolean;
-  categories?: string[];
-}
-
-interface IntegrationCategory {
-  slug: string;
-  name: string;
-  subcategories: { slug: string; name: string }[];
-}
-
-// An integration is in a category when it lists the category itself, or one
-// of its subcategories.
-const inCategory = (
-  categories: string[] | undefined,
-  category?: string,
-  subcategory?: string
-) =>
-  !category ||
-  (categories || []).some((slug) =>
-    subcategory
-      ? slug === `${category}.${subcategory}`
-      : slug === category || slug.startsWith(`${category}.`)
-  );
 
 @customElement("dialog-add-integration")
 class AddIntegrationDialog extends LitElement {
@@ -138,18 +128,36 @@ class AddIntegrationDialog extends LitElement {
 
   @state() private _categoryIcons?: IntegrationCategoryIcons;
 
-  // What Home Assistant found, shown instead of the integrations
   @state() private _showDiscoveredView = false;
 
-  // Categories with their subcategories unfolded in the tree
   @state() private _expanded = new Set<string>();
 
-  // On a phone: picking a category in a full pane, instead of the list
-  @state() private _pickingCategory = false;
+  // Phone: showing the picked item instead of the browse pane
+  @state() private _drilled = false;
 
   @state() private _integrationFilter?: IntegrationFilter;
 
   @state() private _pickedBrand?: string;
+
+  @state()
+  @storage({
+    key: "add-integration-browse-by",
+    state: true,
+    subscribe: false,
+  })
+  private _browseBy: BrowseBy = "brand";
+
+  @state() private _stickyBrand?: string;
+
+  @state() private _subcategoriesExpanded = false;
+
+  @state() private _connection?: Connection;
+
+  @state() private _searchSection?: SearchSection;
+
+  @state() private _listScrolled = false;
+
+  @state() private _brand?: string;
 
   @state() private _prevPickedBrand?: string;
 
@@ -163,26 +171,28 @@ class AddIntegrationDialog extends LitElement {
 
   @state() private _open = false;
 
-  // One pane, the list with a filter button, instead of the tree next to it
   @state() private _narrow = false;
-
-  // The dialog fills the screen
-  @state() private _fullscreen = false;
 
   @query("ha-list-virtualized") private _listElement?: HaListVirtualized;
 
-  private _width?: number;
+  @query("ha-icon-button-prev") private _backButton?: HTMLElement;
 
-  private _height?: number;
+  @query(".groups .selected, .groups wa-tree-item[selected]")
+  private _selectedBrowseRow?: HTMLElement;
+
+  @query("ha-input-search") private _searchInput?: HaInputSearch;
+
+  // The focused row is gone after drilling
+  private _focusAfterDrill?: "in" | "out";
 
   private _loadId = 0;
 
   private _narrowQuery?: MediaQueryList;
 
-  private _fullscreenQuery?: MediaQueryList;
-
   public async showDialog(params?: AddIntegrationDialogParams): Promise<void> {
+    this._navigateToResult = params?.navigateToResult ?? false;
     if (params?.category) {
+      this._browseBy = "category";
       const [category, subcategory] = params.category.split(".");
       this._category = category;
       this._subcategory = subcategory || undefined;
@@ -201,6 +211,8 @@ class AddIntegrationDialog extends LitElement {
       ]);
 
       if (!flowsInProgress.length) {
+        // This dialog never opens, the config flow dialog is shown instead
+        fireEvent(this, "dialog-closed", { dialog: this.localName });
         await this._createFlow(params.domain);
         return;
       }
@@ -221,45 +233,28 @@ class AddIntegrationDialog extends LitElement {
     this._openedDirectly = !!(params?.brand || params?.domain);
     this._initialFilter = params?.initialFilter;
     this._integrationFilter = params?.integrationFilter;
-    this._navigateToResult = params?.navigateToResult ?? false;
     this._removeMediaListeners();
-    // Below this, the tree leaves too little room for the integrations
+    // Below this the tree leaves too little room for the list
     this._narrowQuery = matchMedia(
       "all and (max-width: 700px), all and (max-height: 500px)"
     );
     this._narrowQuery.addEventListener("change", this._narrowChanged);
     this._narrow = this._narrowQuery.matches;
-    this._fullscreenQuery = matchMedia(
-      "all and (max-width: 450px), all and (max-height: 500px)"
-    );
-    this._fullscreenQuery.addEventListener("change", this._fullscreenChanged);
-    this._fullscreen = this._fullscreenQuery.matches;
+    this._drilled = this._narrow && !!params?.category;
+  }
+
+  private _hasProtocol(domain: string) {
+    return this.hass.config.components.includes(domain);
   }
 
   private _removeMediaListeners() {
     this._narrowQuery?.removeEventListener("change", this._narrowChanged);
     this._narrowQuery = undefined;
-    this._fullscreenQuery?.removeEventListener(
-      "change",
-      this._fullscreenChanged
-    );
-    this._fullscreenQuery = undefined;
   }
 
-  private _fullscreenChanged = (ev: MediaQueryListEvent) => {
-    this._fullscreen = ev.matches;
-  };
-
-  // Turning a tablet or resizing the window switches between the phone list
-  // and the category tree
   private _narrowChanged = (ev: MediaQueryListEvent) => {
     this._narrow = ev.matches;
-    if (this._narrow) {
-      // The phone list shows the discovered flows as its first row
-      this._showDiscoveredView = false;
-    } else {
-      this._pickingCategory = false;
-    }
+    this._drilled = false;
   };
 
   public closeDialog() {
@@ -280,14 +275,61 @@ class AddIntegrationDialog extends LitElement {
     this._filter = undefined;
     this._category = undefined;
     this._subcategory = undefined;
+    this._brand = undefined;
+    this._searchSection = undefined;
+    this._connection = undefined;
     this._showDiscoveredView = false;
     this._expanded = new Set();
-    this._pickingCategory = false;
+    this._drilled = false;
     this._integrationFilter = undefined;
-    this._width = undefined;
-    this._height = undefined;
     this._loadId++;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  // The list element is reused and would keep its scroll position
+  private _scrollToTop = false;
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (this._scrollToTop) {
+      this._scrollToTop = false;
+      this._listElement?.scrollElement?.scrollTo({ top: 0 });
+    }
+    if (
+      !this._narrow &&
+      (changedProps.has("_brand") ||
+        changedProps.has("_category") ||
+        changedProps.has("_subcategory"))
+    ) {
+      // Picked by searching, it can be far down the browse pane
+      requestAnimationFrame(() => {
+        const row = this._selectedBrowseRow;
+        const pane = row?.closest(".groups");
+        if (!row || !pane) {
+          return;
+        }
+        const rowRect = row.getBoundingClientRect();
+        const paneRect = pane.getBoundingClientRect();
+        if (rowRect.top < paneRect.top || rowRect.bottom > paneRect.bottom) {
+          row.scrollIntoView({ block: "center" });
+        }
+      });
+    }
+    if (this._focusAfterDrill) {
+      const drilledIn = this._focusAfterDrill === "in";
+      this._focusAfterDrill = undefined;
+      // The new rows and back button render after this element
+      requestAnimationFrame(() => {
+        if (!this._open || this._drilled !== drilledIn) {
+          return;
+        }
+        if (drilledIn) {
+          this._backButton?.focus();
+        } else {
+          (this._selectedBrowseRow || this._searchInput)?.focus();
+        }
+      });
+    }
   }
 
   public willUpdate(changedProps: PropertyValues): void {
@@ -297,36 +339,37 @@ class AddIntegrationDialog extends LitElement {
       loadVirtualizer();
     }
 
+    if (
+      changedProps.has("_filter") ||
+      changedProps.has("_category") ||
+      changedProps.has("_subcategory") ||
+      changedProps.has("_browseBy") ||
+      changedProps.has("_brand") ||
+      changedProps.has("_showDiscoveredView") ||
+      changedProps.has("_searchSection") ||
+      changedProps.has("_connection")
+    ) {
+      this._stickyBrand = undefined;
+      this._listScrolled = false;
+      this._subcategoriesExpanded = false;
+      this._scrollToTop = true;
+    }
+
     if (this._filter === undefined && this._initialFilter !== undefined) {
       this._filter = this._initialFilter;
     }
     if (this._initialFilter !== undefined && this._filter === "") {
       this._initialFilter = undefined;
       this._filter = undefined;
-      this._width = undefined;
-      this._height = undefined;
-    } else if (
-      this.hasUpdated &&
-      changedProps.has("_filter") &&
-      !changedProps.has("_open") &&
-      (!this._width || !this._height)
-    ) {
-      // Store the width and height so that when we search, box doesn't jump
-      const boundingRect = this.shadowRoot!.querySelector(
-        "ha-list-virtualized"
-      )?.getBoundingClientRect();
-      this._width = boundingRect?.width;
-      this._height = boundingRect?.height;
     }
   }
 
-  // Every row the dialog can show, so filtering, the counts and the
-  // category list all agree on what is in a category
   private _getListItems = memoizeOne(
     (
-      i: Brands,
-      h: Integrations,
-      localize: LocalizeFunc
+      allIntegrations: Brands,
+      allHelpers: Integrations,
+      localize: LocalizeFunc,
+      connection?: Connection
     ): {
       integrations: IntegrationListItem[];
       yamlIntegrations: IntegrationListItem[];
@@ -335,7 +378,7 @@ class AddIntegrationDialog extends LitElement {
       const integrations: IntegrationListItem[] = [];
       const yamlIntegrations: IntegrationListItem[] = [];
 
-      Object.entries(i).forEach(([domain, integration]) => {
+      Object.entries(allIntegrations).forEach(([domain, integration]) => {
         if (
           "integration_type" in integration &&
           integration.integration_type === "hardware"
@@ -393,15 +436,9 @@ class AddIntegrationDialog extends LitElement {
               : undefined,
             is_built_in: integration.is_built_in !== false,
             overwrites_built_in: integration.overwrites_built_in,
-            // A brand is in every category of its integrations
-            categories: integration.integrations
-              ? Object.values(integration.integrations).flatMap(
-                  (brandIntegration) => brandIntegration.categories || []
-                )
-              : undefined,
           });
         } else if ("integration_type" in integration) {
-          // Integration without a config flow, only found by searching
+          // No config flow, only found by searching
           yamlIntegrations.push({
             id: domain,
             interactive: true,
@@ -416,35 +453,48 @@ class AddIntegrationDialog extends LitElement {
         }
       });
 
-      const helpers = Object.entries(h).map(([domain, integration]) => ({
-        id: domain,
-        interactive: true,
-        domain,
-        name: integration.name || domainToName(localize, domain),
-        config_flow: integration.config_flow,
-        is_helper: true,
-        is_built_in: integration.is_built_in !== false,
-        cloud: integration.iot_class?.startsWith("cloud_"),
-        categories: integration.categories,
-      }));
+      const helpers = Object.entries(allHelpers).map(
+        ([domain, integration]) => ({
+          id: domain,
+          interactive: true,
+          domain,
+          name: integration.name || domainToName(localize, domain),
+          config_flow: integration.config_flow,
+          is_helper: true,
+          is_built_in: integration.is_built_in !== false,
+          cloud: integration.iot_class?.startsWith("cloud_"),
+          categories: integration.categories,
+        })
+      );
 
-      return { integrations, yamlIntegrations, helpers };
+      const ofThisConnection = (item: IntegrationListItem) =>
+        item.domains
+          ? this._brandRows(item).some((row) => !row.is_header)
+          : ofConnection(item, connection);
+      return {
+        integrations: integrations.filter(ofThisConnection),
+        yamlIntegrations: yamlIntegrations.filter(ofThisConnection),
+        helpers: helpers.filter(ofThisConnection),
+      };
     }
   );
 
   private _filterIntegrations = memoizeOne(
     (
-      i: Brands,
-      h: Integrations,
+      allIntegrations: Brands,
+      allHelpers: Integrations,
       localize: LocalizeFunc,
-      filter?: string,
       category?: string,
-      subcategory?: string
+      subcategory?: string,
+      byBrand = false,
+      brand?: string,
+      connection?: Connection
     ): IntegrationListItem[] => {
-      const { integrations, yamlIntegrations, helpers } = this._getListItems(
-        i,
-        h,
-        localize
+      const { integrations, helpers } = this._getListItems(
+        allIntegrations,
+        allHelpers,
+        localize,
+        connection
       );
 
       const byName = (a: IntegrationListItem, b: IntegrationListItem) =>
@@ -456,43 +506,134 @@ class AddIntegrationDialog extends LitElement {
       const ofCategory = (item: IntegrationListItem) =>
         inCategory(item.categories, category, subcategory);
 
-      if (filter) {
-        const options: IFuseOptions<IntegrationListItem> = {
-          keys: [
-            { name: "name", weight: 5 },
-            { name: "domain", weight: 5 },
-            { name: "integrations", weight: 2 },
-            "supported_by",
-            "iot_standards",
-          ],
-          isCaseSensitive: false,
-          minMatchCharLength: Math.min(filter.length, 2),
-          threshold: 0.2,
-          ignoreDiacritics: true,
-        };
-        return [
-          ...new Fuse(integrations, options)
-            .search(filter)
-            .map((result) => result.item),
-          ...new Fuse(yamlIntegrations, options)
-            .search(filter)
-            .map((result) => result.item),
-          ...new Fuse(helpers, options)
-            .search(filter)
-            .map((result) => result.item),
-        ].filter(ofCategory);
+      if (byBrand) {
+        return [...integrations]
+          .filter((item) => !brand || item.domain === brand)
+          .sort(byName)
+          .flatMap((item) => this._brandRows(item))
+          .filter((row) => !brand || !row.is_header);
       }
-
-      // Browsing a category also shows the helpers in it
+      // A brand shows its integrations here, not itself, like the website
       if (category) {
-        return [...integrations, ...helpers].filter(ofCategory).sort(byName);
+        return [...integrations, ...helpers]
+          .flatMap((item) =>
+            item.domains
+              ? this._brandRows(item)
+                  .filter((row) => !row.is_header && !row.is_add)
+                  .map((row) => ({ ...row, id: row.domain }))
+              : [item]
+          )
+          .filter(ofCategory)
+          .filter(
+            (row, index, rows) =>
+              rows.findIndex((other) => other.domain === row.domain) === index
+          )
+          .sort(byName);
       }
       return [...integrations].sort(byName);
     }
   );
 
-  // How many integrations, brands, and helpers each category and
-  // subcategory has, like the counts in the website's sidebar
+  private _brandRows(item: IntegrationListItem): IntegrationListItem[] {
+    const header: IntegrationListItem = {
+      id: `${item.domain}/header`,
+      domain: item.domain,
+      name: item.name,
+      is_header: true,
+    };
+    const brand = this._integrations?.[item.domain];
+    if (
+      !brand ||
+      "integration_type" in brand ||
+      item.is_helper ||
+      (!brand.integrations && !brand.iot_standards)
+    ) {
+      return [header, { ...item, id: `${item.domain}/${item.domain}` }];
+    }
+    const localize = this.hass.localize;
+    const protocols: IntegrationListItem[] = (brand.iot_standards || [])
+      .map((standard) => standardToDomain[standard] || standard)
+      .filter((domain) =>
+        (PROTOCOL_INTEGRATIONS as readonly string[]).includes(domain)
+      )
+      .filter(() => this._connection !== "cloud")
+      .map((domain) => ({
+        id: `${item.domain}/add_${domain}`,
+        interactive: true,
+        domain,
+        name: localize(
+          `ui.panel.config.integrations.add_${domain}_device` as LocalizeKeys
+        ),
+        config_flow: true,
+        is_built_in: true,
+        is_add: true,
+      }));
+    const integrations: IntegrationListItem[] = Object.entries(
+      brand.integrations || {}
+    )
+      .filter(([, integration]) => integration.integration_type !== "hardware")
+      .map(([domain, brandIntegration]) => {
+        // A custom integration replacing it brings its own details
+        const custom = this._integrations?.[domain];
+        const integration =
+          custom && "integration_type" in custom && custom.is_built_in === false
+            ? custom
+            : brandIntegration;
+        return {
+          id: `${item.domain}/${domain}`,
+          interactive: true,
+          domain,
+          name: integration.name || domainToName(localize, domain),
+          config_flow: integration.config_flow,
+          iot_standards: integration.iot_standards,
+          supported_by: integration.supported_by,
+          is_built_in: integration.is_built_in !== false,
+          overwrites_built_in: integration.overwrites_built_in,
+          cloud: integration.iot_class?.startsWith("cloud_"),
+          single_config_entry: integration.single_config_entry,
+          categories: integration.categories ?? brandIntegration.categories,
+        };
+      })
+      .filter((row) => ofConnection(row, this._connection))
+      .sort((a, b) =>
+        caseInsensitiveStringCompare(a.name, b.name, this.hass.locale.language)
+      );
+    if (!integrations.length && !protocols.length) {
+      return [];
+    }
+    return [header, ...protocols, ...integrations];
+  }
+
+  // Also brands with only protocol devices, like Matter
+  private _isBrand(item: IntegrationListItem) {
+    const entry = this._integrations?.[item.domain];
+    return Boolean(item.domains || (entry && !("integration_type" in entry)));
+  }
+
+  // Single integrations are only under all brands
+  private _getBrands = memoizeOne(
+    (
+      allIntegrations: Brands,
+      allHelpers: Integrations,
+      localize: LocalizeFunc,
+      connection?: Connection
+    ) =>
+      this._getListItems(allIntegrations, allHelpers, localize, connection)
+        .integrations.filter((item) => this._isBrand(item))
+        .map((item) => ({
+          item,
+          count: this._brandRows(item).filter((row) => !row.is_header).length,
+        }))
+        .filter((brand) => brand.count)
+        .sort((a, b) =>
+          caseInsensitiveStringCompare(
+            a.item.name,
+            b.item.name,
+            this.hass.locale.language
+          )
+        )
+  );
+
   private _getCategoryCounts = memoizeOne(
     (
       integrations: IntegrationListItem[],
@@ -501,8 +642,13 @@ class AddIntegrationDialog extends LitElement {
       const counts = new Map<string, number>();
       const add = (slug: string) =>
         counts.set(slug, (counts.get(slug) || 0) + 1);
-      [...integrations, ...helpers].forEach((item) => {
-        // A brand lists the categories of all its integrations, count it once
+      const items = [...integrations, ...helpers].flatMap((item) =>
+        item.domains
+          ? this._brandRows(item).filter((row) => !row.is_header && !row.is_add)
+          : [item]
+      );
+      // Integrations of more than one brand count once, as they are listed
+      new Map(items.map((item) => [item.domain, item])).forEach((item) => {
         const slugs = new Set(item.categories);
         new Set([...slugs].map((slug) => slug.split(".")[0])).forEach(add);
         [...slugs].filter((slug) => slug.includes(".")).forEach(add);
@@ -511,7 +657,6 @@ class AddIntegrationDialog extends LitElement {
     }
   );
 
-  // Only the categories that have something to browse, from the counts
   private _getCategories = memoizeOne(
     (
       counts: Map<string, number>,
@@ -521,8 +666,8 @@ class AddIntegrationDialog extends LitElement {
       const categories = new Map<string, IntegrationCategory>();
       for (const slug of counts.keys()) {
         const [category, subcategory] = slug.split(".");
-        const name = localize(`${key}.${category}.name` as any);
-        // A category this Home Assistant doesn't know, left out
+        const name = localize(`${key}.${category}.name`);
+        // Unknown to this Home Assistant version
         if (!name) {
           continue;
         }
@@ -531,7 +676,7 @@ class AddIntegrationDialog extends LitElement {
         }
         const subcategoryName =
           subcategory &&
-          localize(`${key}.${category}.subcategory.${subcategory}.name` as any);
+          localize(`${key}.${category}.subcategory.${subcategory}.name`);
         if (subcategoryName) {
           categories
             .get(category)!
@@ -554,7 +699,8 @@ class AddIntegrationDialog extends LitElement {
     const { integrations, helpers } = this._getListItems(
       this._integrations,
       this._helpers,
-      this.hass.localize
+      this.hass.localize,
+      this._connection
     );
     return this._getCategoryCounts(integrations, helpers);
   }
@@ -564,19 +710,179 @@ class AddIntegrationDialog extends LitElement {
       this._integrations!,
       this._helpers!,
       this.hass.localize,
-      this._filter,
       this._category,
-      this._subcategory
+      this._subcategory,
+      this._byBrand(),
+      this._brand,
+      this._connection
     );
+  }
+
+  private _getRows(): IntegrationListItem[] {
+    if (!this._filter) {
+      return this._getIntegrations();
+    }
+    const found = this._getFound();
+    return this._getSearchRows(found, this._searchSection, this.hass.localize);
+  }
+
+  private _getFound() {
+    return this._getSearchFound(
+      this._integrations!,
+      this._helpers!,
+      this.hass.localize,
+      this._filter!,
+      this._categoryIcons,
+      !this._integrationFilter,
+      this._connection
+    );
+  }
+
+  private _getSearchFound = memoizeOne(
+    (
+      allIntegrations: Brands,
+      allHelpers: Integrations,
+      localize: LocalizeFunc,
+      filter: string,
+      categoryIcons: IntegrationCategoryIcons | undefined,
+      browse: boolean,
+      connection?: Connection
+    ): Record<SearchSection, IntegrationListItem[]> => {
+      const { integrations, yamlIntegrations, helpers } = this._getListItems(
+        allIntegrations,
+        allHelpers,
+        localize,
+        connection
+      );
+      const search = (items: IntegrationListItem[]) =>
+        new Fuse(items, searchOptions(filter))
+          .search(filter)
+          .map((result) => result.item);
+
+      const integrationsByDomain = new Map<string, IntegrationListItem>();
+      [...integrations, ...yamlIntegrations].forEach((item) => {
+        const rows =
+          item.domains || (browse && this._isBrand(item))
+            ? this._brandRows(item).filter(
+                (row) => !row.is_header && !row.is_add
+              )
+            : [item];
+        rows.forEach((row) => {
+          if (!integrationsByDomain.has(row.domain)) {
+            integrationsByDomain.set(row.domain, { ...row, id: row.domain });
+          }
+        });
+      });
+
+      const brands: IntegrationListItem[] = browse
+        ? this._getBrands(
+            allIntegrations,
+            allHelpers,
+            localize,
+            connection
+          ).map(({ item }) => ({
+            ...item,
+            result: "brand",
+            description: item.integrations?.join(", "),
+          }))
+        : [];
+
+      const categories: IntegrationListItem[] = browse
+        ? this._getCategories(this._getCounts(), localize).flatMap(
+            (category) => [
+              {
+                id: category.slug,
+                interactive: true,
+                domain: "",
+                name: category.name,
+                icon: categoryIcons?.[category.slug]?.default,
+                is_built_in: true,
+                result: "category" as const,
+                category: category.slug,
+              },
+              ...category.subcategories.map((subcategory) => ({
+                id: `${category.slug}.${subcategory.slug}`,
+                interactive: true,
+                domain: "",
+                name: subcategory.name,
+                description: category.name,
+                icon:
+                  categoryIcons?.[category.slug]?.subcategory?.[
+                    subcategory.slug
+                  ]?.default || categoryIcons?.[category.slug]?.default,
+                is_built_in: true,
+                result: "category" as const,
+                category: category.slug,
+                subcategory: subcategory.slug,
+              })),
+            ]
+          )
+        : [];
+
+      return {
+        brand: search(brands),
+        category: search(categories),
+        integration: search([...integrationsByDomain.values()]),
+        helper: search(helpers),
+      };
+    }
+  );
+
+  private _getSearchRows = memoizeOne(
+    (
+      found: Record<SearchSection, IntegrationListItem[]>,
+      section: SearchSection | undefined,
+      localize: LocalizeFunc
+    ): IntegrationListItem[] =>
+      SEARCH_SECTIONS.filter(
+        (type) => found[type].length && (!section || section === type)
+      ).flatMap((type) => {
+        const items = found[type];
+        const more =
+          !section && items.length > MAX_SEARCH_ITEMS_PER_SECTION + 1;
+        // `section/id`, so the section title sticks like a brand's
+        return [
+          {
+            id: `${type}/header`,
+            domain: type,
+            name: localize(
+              `ui.panel.config.integrations.search_section.${type}`
+            ),
+            is_header: true,
+          },
+          ...(more ? items.slice(0, MAX_SEARCH_ITEMS_PER_SECTION) : items).map(
+            (item) => ({ ...item, id: `${type}/${item.id}` })
+          ),
+          ...(more
+            ? [
+                {
+                  id: `${type}/more`,
+                  interactive: true,
+                  domain: "",
+                  name: localize(
+                    "ui.panel.config.integrations.search_show_more",
+                    { count: items.length - MAX_SEARCH_ITEMS_PER_SECTION }
+                  ),
+                  icon: "mdi:unfold-more-horizontal",
+                  is_built_in: true,
+                  result: "more" as const,
+                  section: type,
+                },
+              ]
+            : []),
+        ];
+      })
+  );
+
+  private _byBrand() {
+    return this._browseBy === "brand" && !this._integrationFilter;
   }
 
   protected render() {
     if (!this._open && !this._integrations && !this._helpers) {
       return nothing;
     }
-    const integrations = this._integrations
-      ? this._getIntegrations()
-      : undefined;
+    const integrations = this._integrations ? this._getRows() : undefined;
 
     const pickedIntegration = this._pickedBrand
       ? this._integrations?.[this._pickedBrand] ||
@@ -593,15 +899,29 @@ class AddIntegrationDialog extends LitElement {
 
     const headerTitle = showingBrandView
       ? this._getBrandHeading(pickedIntegration, flowsInProgress)
-      : this._pickingCategory
-        ? this.hass.localize("ui.panel.config.integrations.filter_category")
-        : this._narrow && this._category && !this._filter
-          ? this._browsingTitle()
-          : this.hass.localize("ui.panel.config.integrations.new");
+      : this._narrow && this._drilled
+        ? this._browsingTitle()
+        : this.hass.localize(
+            "ui.panel.config.integrations.add_device_or_integration"
+          );
 
-    return html`<ha-dialog
+    const headerSubtitle =
+      !showingBrandView && this._narrow && this._drilled
+        ? this._subcategory
+          ? this.hass.localize(
+              `component.homeassistant.integration_category.${this._category}.name`
+            )
+          : this.hass.localize(
+              "ui.panel.config.integrations.add_device_or_integration"
+            )
+        : undefined;
+
+    return html`<ha-adaptive-dialog
+      flexcontent
       .open=${this._open}
       header-title=${headerTitle}
+      .headerSubtitle=${headerSubtitle}
+      header-subtitle-position="above"
       width=${this._integrationFilter ? "medium" : "large"}
       @closed=${this._dialogClosed}
     >
@@ -622,35 +942,42 @@ class AddIntegrationDialog extends LitElement {
             `
           : html`
               ${
-                this._pickingCategory
+                this._narrow && this._drilled
                   ? html`<ha-icon-button-prev
                       slot="headerNavigationIcon"
-                      @click=${this._leaveCategoryPicker}
+                      @click=${this._drillOut}
                     ></ha-icon-button-prev>`
                   : nothing
               }
               ${this._renderAll(integrations)}
             `
       }
-    </ha-dialog>`;
+    </ha-adaptive-dialog>`;
   }
 
   private _browsingTitle(): string {
     if (this._showDiscoveredView) {
       return this.hass.localize("ui.panel.config.integrations.discovered");
     }
-    if (!this._category) {
-      return this.hass.localize(
-        "ui.panel.config.integrations.all_integrations"
+    if (this._brand) {
+      return (
+        this._integrations?.[this._brand]?.name ||
+        domainToName(this.hass.localize, this._brand)
       );
     }
-    const key = `component.homeassistant.integration_category.${this._category}`;
+    if (!this._category) {
+      return this.hass.localize(
+        this._byBrand()
+          ? "ui.panel.config.integrations.all_brands"
+          : "ui.panel.config.integrations.all_integrations"
+      );
+    }
+    const key =
+      `component.homeassistant.integration_category.${this._category}` as const;
     return (
       (this._subcategory &&
-        this.hass.localize(
-          `${key}.subcategory.${this._subcategory}.name` as any
-        )) ||
-      this.hass.localize(`${key}.name` as any)
+        this.hass.localize(`${key}.subcategory.${this._subcategory}.name`)) ||
+      this.hass.localize(`${key}.name`)
     );
   }
 
@@ -717,10 +1044,7 @@ class AddIntegrationDialog extends LitElement {
       .flowsInProgress=${flowsInProgress}
       .navigateToResult=${this._navigateToResult}
       .showManageLink=${this._showDiscovered || this._showDiscoveredView}
-      style=${styleMap({
-        minWidth: `${this._width}px`,
-        minHeight: `581px`,
-      })}
+      .boxed=${!integration}
       @close-dialog=${this.closeDialog}
       @supported-by=${this._handleSupportedByEvent}
       @select-brand=${this._handleSelectBrandEvent}
@@ -780,390 +1104,616 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private _renderAll(integrations?: IntegrationListItem[]): TemplateResult {
-    // Wide screens browse with the tree, phones filter with a button next
-    // to the search.
-    const browseByCategory = !this._integrationFilter;
-    const rows = integrations && this._getRows(integrations);
+    const browse = !this._integrationFilter;
+    const showBrowse =
+      browse && !this._filter && (!this._narrow || !this._drilled);
+    const showItems =
+      !this._narrow || !browse || this._drilled || !!this._filter;
+    const rows = integrations;
+    // A phone has it in the dialog's title
+    const listTitle =
+      !this._narrow && !this._filter && (this._category || this._brand)
+        ? this._browsingTitle()
+        : undefined;
+    const sections = this._filter && browse;
+    const subcategories =
+      this._narrow && this._drilled && this._category && !this._subcategory
+        ? this._getCategories(this._getCounts(), this.hass.localize).find(
+            (category) => category.slug === this._category
+          )?.subcategories || []
+        : [];
 
-    if (this._pickingCategory) {
-      return html`<div class="content picking">
-        ${this._renderCategoryTree()}
-      </div>`;
-    }
-
-    return html`<div class="search-row">
-        <ha-input-search
-          appearance="outlined"
-          ?autofocus=${!this._narrow}
-          .value=${this._filter}
-          @input=${this._filterChanged}
-          .placeholder=${this.hass.localize(
-            "ui.panel.config.integrations.search_brand"
-          )}
-          @keydown=${this._maybeSubmit}
-        ></ha-input-search>
-        ${
-          this._narrow && browseByCategory
-            ? html`<ha-icon-button
-                class=${classMap({
-                  "filter-button": true,
-                  "filter-active": !!this._category,
-                })}
-                .label=${this.hass.localize(
-                  "ui.panel.config.integrations.filter_category"
+    return html`${
+        this._narrow && this._drilled
+          ? nothing
+          : html`<div class="search-row">
+                <ha-input-search
+                  appearance="outlined"
+                  ?autofocus=${!this._narrow}
+                  .value=${this._filter}
+                  @input=${this._filterChanged}
+                  .placeholder=${this.hass.localize(
+                    "ui.panel.config.integrations.search_all"
+                  )}
+                  @keydown=${this._maybeSubmit}
+                ></ha-input-search>
+              </div>
+              <div class="connection-row">
+                ${
+                  sections
+                    ? html`${this._renderSearchSections()}
+                        <div class="chip-separator" role="separator"></div>`
+                    : browse
+                      ? this._renderFilterChip(
+                          "browse_by",
+                          this._browseBy,
+                          ["brand", "category"],
+                          this._browseBySelected
+                        )
+                      : nothing
+                }
+                ${this._renderFilterChip(
+                  "connection",
+                  this._connection ?? "all",
+                  ["all", ...CONNECTIONS],
+                  this._connectionSelected
                 )}
-                .path=${mdiFilterVariant}
-                @click=${this._openCategoryPicker}
-              ></ha-icon-button>`
+              </div>`
+      }
+      <div class=${classMap({ content: true, single: this._narrow })}>
+        ${showBrowse ? this._renderCategoryTree() : nothing}
+        ${
+          showItems
+            ? html`<div class="items">
+                ${
+                  this._showDiscoveredView && !this._filter
+                    ? html`<div class="discovered">
+                        ${this._renderBrandView(undefined, this._flowsInProgress || [])}
+                      </div>`
+                    : rows
+                      ? html`${
+                            this._filter && !rows.length
+                              ? html`<div class="empty-search">
+                                  ${this.hass.localize(
+                                    "ui.panel.config.integrations.search_no_results",
+                                    { term: this._filter }
+                                  )}
+                                </div>`
+                              : nothing
+                          }
+                          ${
+                            listTitle
+                              ? html`<ha-integration-list-title
+                                  class=${classMap({
+                                    raised:
+                                      this._listScrolled && !this._stickyBrand,
+                                  })}
+                                >
+                                  ${listTitle}
+                                </ha-integration-list-title>`
+                              : nothing
+                          }
+                          ${
+                            subcategories.length
+                              ? this._renderSubcategories(subcategories)
+                              : nothing
+                          }
+                          <div
+                            class=${classMap({
+                              list: true,
+                              boxed: !!this._filter,
+                            })}
+                          >
+                            ${
+                              !this._stickyBrand
+                                ? nothing
+                                : this._filter
+                                  ? html`<ha-section-title class="sticky">
+                                      ${this._stickyBrand}
+                                    </ha-section-title>`
+                                  : html`<ha-integration-list-title
+                                      class="sticky raised"
+                                    >
+                                      ${this._stickyBrand}
+                                    </ha-integration-list-title>`
+                            }
+                            <ha-list-virtualized
+                              .rows=${this._filter ? rows : this._withEndSpace(rows)}
+                              .rowRenderer=${this._renderRow}
+                              style=${styleMap({
+                                display:
+                                  this._filter && !rows.length ? "none" : "",
+                              })}
+                              @ha-list-visibility-changed=${this._visibilityChanged}
+                            >
+                            </ha-list-virtualized>
+                          </div>`
+                      : html`<div class="flex center">
+                          <ha-spinner></ha-spinner>
+                        </div>`
+                }
+              </div>`
             : nothing
         }
-      </div>
-      <div class="content">
-        ${browseByCategory && !this._narrow ? this._renderCategoryTree() : nothing}
-        <div class="items">
-          ${
-            this._showDiscoveredView && !this._filter
-              ? html`<div
-                  class="discovered"
-                  style=${styleMap({ height: this._listHeight() })}
-                >
-                  ${this._renderBrandView(undefined, this._flowsInProgress || [])}
-                </div>`
-              : rows
-                ? html`<ha-list-virtualized
-                    .rows=${rows}
-                    .rowRenderer=${this._renderRow}
-                    style=${styleMap({ height: this._listHeight() })}
-                  >
-                  </ha-list-virtualized>`
-                : html`<div class="flex center">
-                    <ha-spinner></ha-spinner>
-                  </div>`
-          }
-        </div>
       </div>`;
   }
 
-  // The rows of the list, what Enter picks the first of
-  private _getRows(integrations: IntegrationListItem[]): IntegrationListItem[] {
-    return this._narrow
-      ? [...this._getPhoneShortcuts(), ...integrations]
-      : integrations;
-  }
-
-  // On a phone, what was found and adding a device to a protocol you use
-  // come first in the list, while it shows everything
-  private _getPhoneShortcuts(): IntegrationListItem[] {
-    if (this._integrationFilter || this._filter || this._category) {
-      return [];
-    }
-    const discovered = this._flowsInProgress?.length || 0;
-    const shortcuts: IntegrationListItem[] = discovered
-      ? [
-          {
-            id: "_discovered",
-            interactive: true,
-            name: this.hass.localize(
-              "ui.panel.config.integrations.discovered_devices",
-              { count: discovered }
-            ),
-            domain: "_discovered",
-            config_flow: true,
-            is_built_in: true,
-            is_discovered: true,
-          },
-        ]
-      : [];
-    PROTOCOL_INTEGRATIONS.filter((domain) =>
-      this.hass.config.components.includes(domain)
-    ).forEach((domain) =>
-      shortcuts.push({
-        id: `device_${domain}`,
-        interactive: true,
-        name: this.hass.localize(
-          `ui.panel.config.integrations.add_${domain}_device` as any
-        ),
-        domain,
-        config_flow: true,
-        is_built_in: true,
-        is_add: true,
-      })
+  private _renderSearchSections() {
+    return SEARCH_SECTIONS.map(
+      (section) =>
+        html`<ha-filter-chip
+          .section=${section}
+          .selected=${this._searchSection === section}
+          .label=${this.hass.localize(
+            `ui.panel.config.integrations.search_section.${section}`
+          )}
+          @click=${this._searchSectionClicked}
+        ></ha-filter-chip>`
     );
-    return shortcuts;
   }
 
-  private async _openCategoryPicker() {
-    this._pickingCategory = true;
-    // Show where the current filter sits
-    if (this._category) {
-      this._expanded = new Set([...this._expanded, this._category]);
-    }
-
-    // The filter button is gone, keyboard users continue on the current pick
-    await this.updateComplete;
-    this.shadowRoot!.querySelector<HTMLElement>(
-      ".picking [role=treeitem][aria-selected=true]"
-    )?.focus();
+  private _renderFilterChip(
+    filter: "browse_by" | "connection",
+    value: string,
+    options: readonly string[],
+    selected: (ev: HaDropdownSelectEvent) => void
+  ) {
+    const key = `ui.panel.config.integrations.${filter}` as const;
+    return html`<ha-dropdown @wa-select=${selected}>
+      <ha-assist-chip
+        slot="trigger"
+        .label=${this.hass.localize(`${key}.label`, {
+          value: this.hass.localize(`${key}.${value}` as LocalizeKeys),
+        })}
+      >
+        <ha-svg-icon slot="trailing-icon" .path=${mdiMenuDown}></ha-svg-icon>
+      </ha-assist-chip>
+      ${options.map(
+        (option) =>
+          html`<ha-dropdown-item
+            .value=${option}
+            class=${classMap({ selected: value === option })}
+          >
+            ${this.hass.localize(`${key}.${option}` as LocalizeKeys)}
+            ${
+              option === "cloud"
+                ? html`<span class="option-description">
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.depends_on_cloud"
+                      )}
+                    </span>
+                    <ha-svg-icon slot="details" .path=${mdiWeb}></ha-svg-icon>`
+                : nothing
+            }
+          </ha-dropdown-item>`
+      )}
+    </ha-dropdown>`;
   }
 
-  // Back on the list, keyboard users continue on the filter button
-  private async _leaveCategoryPicker() {
-    if (!this._pickingCategory) {
+  private _connectionSelected(ev: HaDropdownSelectEvent) {
+    const value = ev.detail.item.value;
+    this._connection = value === "all" ? undefined : (value as Connection);
+    this._dropEmptySelection();
+  }
+
+  // A category passed in, or emptied by the connection filter, isn't in the
+  // browse pane, so fall back to its parent or everything
+  private _dropEmptySelection() {
+    if (!this._integrations || !this._helpers) {
       return;
     }
-
-    this._pickingCategory = false;
-    await this.updateComplete;
-    // A new button, it renders the element that takes the focus itself
-    const filterButton =
-      this.shadowRoot!.querySelector<LitElement>(".filter-button");
-    await filterButton?.updateComplete;
-    filterButton?.focus();
+    const counts = this._getCounts();
+    if (
+      this._subcategory &&
+      !counts.has(`${this._category}.${this._subcategory}`)
+    ) {
+      this._subcategory = undefined;
+    }
+    if (this._category && !counts.has(this._category)) {
+      this._category = undefined;
+    }
+    if (
+      this._brand &&
+      !this._getBrands(
+        this._integrations,
+        this._helpers,
+        this.hass.localize,
+        this._connection
+      ).some(({ item }) => item.domain === this._brand)
+    ) {
+      this._brand = undefined;
+    }
   }
 
-  // Leave room for the dialog margin, header and search on short screens, so
-  // only the list scrolls. The category picker has no search to make room for.
-  private _listHeight() {
-    const reserved = this._pickingCategory ? 96 : 184;
-    return this._fullscreen
-      ? `calc(100vh - ${reserved}px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))`
-      : "min(600px, calc(var(--safe-height) - var(--ha-space-20) - 184px))";
+  private _searchSectionClicked(
+    ev: HASSDomCurrentTargetEvent<HaFilterChip & { section: SearchSection }>
+  ) {
+    const section = ev.currentTarget.section;
+    this._searchSection = this._searchSection === section ? undefined : section;
   }
 
-  // Three ways in: what Home Assistant found, adding a device to a
-  // protocol you use, and browsing every integration by category.
+  private _activateResult(row: IntegrationListItem) {
+    if (row.result === "more") {
+      this._searchSection = row.section;
+      return;
+    }
+    if (row.result === "brand") {
+      this._browseBy = "brand";
+      this._browse({ brand: row.domain });
+    } else {
+      this._browseBy = "category";
+      this._browse({ category: row.category, subcategory: row.subcategory });
+    }
+  }
+
+  private _browse(
+    view: {
+      brand?: string;
+      category?: string;
+      subcategory?: string;
+      discovered?: boolean;
+    } = {}
+  ) {
+    this._filter = "";
+    this._searchSection = undefined;
+    this._showDiscoveredView = !!view.discovered;
+    this._brand = view.brand;
+    this._category = view.category;
+    this._subcategory = view.subcategory;
+    if (view.category) {
+      this._expanded = new Set([...this._expanded, view.category]);
+    }
+    this._drillIn();
+  }
+
+  // Arrow function: the list renders the rows
+  private _resultPicked = (
+    ev: HASSDomCurrentTargetEvent<HaIntegrationListItem>
+  ) => {
+    this._activateResult(ev.currentTarget.integration);
+  };
+
+  private static _SUBCATEGORIES_SHOWN = 4;
+
+  private _renderSubcategories(
+    subcategories: IntegrationCategory["subcategories"]
+  ) {
+    const counts = this._getCounts();
+    const icons = this._categoryIcons?.[this._category!];
+    const more =
+      !this._subcategoriesExpanded &&
+      subcategories.length > AddIntegrationDialog._SUBCATEGORIES_SHOWN;
+    const shown = more
+      ? subcategories.slice(0, AddIntegrationDialog._SUBCATEGORIES_SHOWN)
+      : subcategories;
+    return html`<div class="subcategories">
+      <ha-section-title>
+        ${this.hass.localize("ui.panel.config.integrations.subcategories")}
+      </ha-section-title>
+      <ha-list-base>
+        ${shown.map(
+          (subcategory) =>
+            html`<ha-list-item-button
+              .category=${this._category}
+              .subcategory=${subcategory.slug}
+              @click=${this._categoryPicked}
+            >
+              ${
+                icons?.subcategory?.[subcategory.slug]?.default
+                  ? html`<ha-icon
+                      slot="start"
+                      .icon=${icons.subcategory[subcategory.slug].default}
+                    ></ha-icon>`
+                  : nothing
+              }
+              <span slot="headline">${subcategory.name}</span>
+              <span slot="end" class="count">
+                ${counts.get(`${this._category}.${subcategory.slug}`) || 0}
+              </span>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-list-item-button>`
+        )}
+      </ha-list-base>
+      ${
+        more
+          ? html`<div class="show-more">
+              <ha-button
+                appearance="filled"
+                @click=${this._expandSubcategories}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.show_more"
+                )}
+              </ha-button>
+            </div>`
+          : nothing
+      }
+    </div>`;
+  }
+
+  private _expandSubcategories() {
+    this._subcategoriesExpanded = true;
+  }
+
+  private _drillIn() {
+    if (!this._narrow) {
+      return;
+    }
+    this._drilled = true;
+    this._focusAfterDrill = "in";
+  }
+
+  private _drillOut() {
+    if (this._subcategory) {
+      this._subcategory = undefined;
+      return;
+    }
+    this._drilled = false;
+    this._focusAfterDrill = "out";
+  }
+
+  private _withEndSpace = memoizeOne(
+    (rows: IntegrationListItem[]): IntegrationListItem[] => [
+      ...rows,
+      { id: "end-space", domain: "", name: "", is_end_space: true },
+    ]
+  );
+
   private _renderCategoryTree() {
     const counts = this._getCounts();
     const categories = this._getCategories(counts, this.hass.localize);
     const discovered = this._flowsInProgress?.length || 0;
     const protocols = PROTOCOL_INTEGRATIONS.filter((domain) =>
-      this.hass.config.components.includes(domain)
+      this._hasProtocol(domain)
     );
-    const browsingAll = !this._showDiscoveredView && !this._category;
-    // The pane on a phone only browses; the list has the rest
-    const showShortcuts = !this._narrow;
+    const browsingAll =
+      !this._filter &&
+      !this._showDiscoveredView &&
+      !this._category &&
+      !this._brand;
 
-    return html`<div
-      class="groups"
-      style=${styleMap({ height: this._listHeight() })}
-    >
-      ${
-        discovered && showShortcuts
-          ? html`
-              <ha-section-title>
-                ${this.hass.localize(
-                  "ui.panel.config.integrations.found_for_you"
-                )}
-              </ha-section-title>
-              <ha-list-base>
-                <ha-list-item-button
-                  class=${classMap({
-                    selected: this._showDiscoveredView && !this._narrow,
-                  })}
-                  @click=${this._discoveredPicked}
-                >
-                  <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
-                  <span slot="headline">
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.discovered"
-                    )}
-                  </span>
-                  <span slot="end" class="count">${discovered}</span>
-                </ha-list-item-button>
-              </ha-list-base>
-            `
-          : nothing
-      }
-      ${
-        protocols.length && showShortcuts
-          ? html`
-              <ha-section-title>
-                ${this.hass.localize("ui.panel.config.integrations.add_a_device")}
-              </ha-section-title>
-              <ha-list-base>
-                ${protocols.map(
-                  (domain) => html`
-                    <ha-list-item-button
-                      .protocol=${domain}
-                      @click=${this._protocolPicked}
-                    >
-                      <ha-domain-icon
-                        slot="start"
-                        brand-fallback
-                        .domain=${domain}
-                      ></ha-domain-icon>
-                      <span slot="headline">
-                        ${this.hass.localize(
-                          `ui.panel.config.integrations.add_${domain}_device` as any
-                        )}
-                      </span>
-                      <ha-icon-next slot="end"></ha-icon-next>
-                    </ha-list-item-button>
-                  `
-                )}
-              </ha-list-base>
-            `
-          : nothing
-      }
-      ${
-        (discovered || protocols.length) && showShortcuts
-          ? html`<ha-section-title>
-              ${this.hass.localize("ui.panel.config.integrations.browse")}
-            </ha-section-title>`
-          : nothing
-      }
-      <ha-list-base
-        role="tree"
-        aria-label=${this.hass.localize("ui.panel.config.integrations.browse")}
-      >
-        <ha-list-item-button
-          class=${classMap({ selected: browsingAll })}
-          role="treeitem"
-          aria-level="1"
-          aria-selected=${String(browsingAll)}
-          @click=${this._allPicked}
+    const discoveredRow = discovered
+      ? html`<ha-list-item-button
+          class=${classMap({
+            selected: !this._filter && this._showDiscoveredView,
+          })}
+          @click=${this._discoveredPicked}
         >
-          <ha-svg-icon
+          <ha-svg-icon slot="start" .path=${mdiRadar}></ha-svg-icon>
+          <span slot="headline">
+            ${this.hass.localize("ui.panel.config.integrations.discovered")}
+          </span>
+          <ha-label slot="end" dense>${discovered}</ha-label>
+          ${this._narrow ? html`<ha-icon-next slot="end"></ha-icon-next>` : nothing}
+        </ha-list-item-button>`
+      : nothing;
+    const protocolRows = protocols.map(
+      (domain) => html`
+        <ha-list-item-button .protocol=${domain} @click=${this._protocolPicked}>
+          <ha-domain-icon
             slot="start"
-            class="expand empty"
-            .path=${mdiChevronRight}
-          ></ha-svg-icon>
-          <ha-svg-icon slot="start" .path=${mdiViewGridOutline}></ha-svg-icon>
+            brand-fallback
+            .domain=${domain}
+          ></ha-domain-icon>
           <span slot="headline">
             ${this.hass.localize(
-              "ui.panel.config.integrations.all_integrations"
+              `ui.panel.config.integrations.add_${domain}_device` as LocalizeKeys
             )}
           </span>
+          <ha-icon-next slot="end"></ha-icon-next>
         </ha-list-item-button>
-        ${categories.map((category) => {
-          const isCurrent =
-            !this._showDiscoveredView && category.slug === this._category;
-          const expanded = this._expanded.has(category.slug);
-          const icons = this._categoryIcons?.[category.slug];
-          return html`
-            <ha-list-item-button
-              class=${classMap({
-                selected: isCurrent && !this._subcategory,
-              })}
-              role="treeitem"
-              aria-level="1"
-              aria-selected=${String(isCurrent && !this._subcategory)}
-              aria-expanded=${
-                category.subcategories.length ? String(expanded) : nothing
-              }
+      `
+    );
+
+    return html`<div class="pane">
+      <div
+        class=${classMap({ groups: true, browse: true, narrow: this._narrow })}
+      >
+        ${
+          discovered || protocols.length
+            ? html`<ha-section-title>
+                  ${this.hass.localize("ui.panel.config.integrations.add_a_device")}
+                </ha-section-title>
+                <ha-list-base>${discoveredRow}${protocolRows}</ha-list-base>`
+            : nothing
+        }
+        <ha-section-title>
+          ${this.hass.localize("ui.panel.config.integrations.browse")}
+        </ha-section-title>
+        ${
+          this._browseBy === "brand"
+            ? this._renderBrandList()
+            : this._renderCategories(counts, categories, browsingAll)
+        }
+      </div>
+    </div>`;
+  }
+
+  private _renderCategories(
+    counts: Map<string, number>,
+    categories: IntegrationCategory[],
+    browsingAll: boolean
+  ) {
+    const label = this.hass.localize("ui.panel.config.integrations.browse");
+    const allLabel = this.hass.localize(
+      "ui.panel.config.integrations.all_integrations"
+    );
+    const isCurrent = (slug: string) =>
+      !this._filter &&
+      !this._showDiscoveredView &&
+      !this._brand &&
+      slug === this._category;
+    const icon = (iconName?: string, slot?: string) =>
+      iconName
+        ? html`<ha-icon slot=${ifDefined(slot)} .icon=${iconName}></ha-icon>`
+        : nothing;
+
+    if (this._narrow) {
+      return html`<ha-list-base aria-label=${label}>
+        <ha-list-item-button
+          class=${classMap({ selected: browsingAll })}
+          @click=${this._allPicked}
+        >
+          <ha-svg-icon slot="start" .path=${mdiViewGridOutline}></ha-svg-icon>
+          <span slot="headline">${allLabel}</span>
+          <ha-icon-next slot="end"></ha-icon-next>
+        </ha-list-item-button>
+        <wa-divider></wa-divider>
+        ${categories.map(
+          (category) =>
+            html`<ha-list-item-button
+              class=${classMap({ selected: isCurrent(category.slug) })}
               .category=${category.slug}
               @click=${this._categoryPicked}
-              @keydown=${this._categoryKeydown}
             >
-              ${html`<ha-svg-icon
-                slot="start"
-                class=${classMap({
-                  expand: true,
-                  expanded,
-                  empty: !category.subcategories.length,
-                })}
-                .path=${mdiChevronRight}
-                .category=${category.slug}
-                @click=${this._toggleExpanded}
-              ></ha-svg-icon>`}
-              ${
-                icons?.default
-                  ? html`<ha-icon
-                      slot="start"
-                      .icon=${icons.default}
-                    ></ha-icon>`
-                  : nothing
-              }
+              ${icon(this._categoryIcons?.[category.slug]?.default, "start")}
               <span slot="headline">${category.name}</span>
               <span slot="end" class="count"
                 >${counts.get(category.slug) || 0}</span
               >
-            </ha-list-item-button>
-            ${
-              expanded
-                ? category.subcategories.map(
-                    (subcategory, index, all) => html`
-                      <ha-list-item-button
-                        class=${classMap({
-                          subcategory: true,
-                          selected:
-                            isCurrent && subcategory.slug === this._subcategory,
-                        })}
-                        role="treeitem"
-                        aria-level="2"
-                        aria-selected=${String(
-                          isCurrent && subcategory.slug === this._subcategory
-                        )}
-                        .category=${category.slug}
-                        .subcategory=${subcategory.slug}
-                        @click=${this._subcategoryPicked}
-                      >
-                        <ha-tree-indicator
-                          slot="start"
-                          .end=${index === all.length - 1}
-                        ></ha-tree-indicator>
-                        ${
-                          icons?.subcategory?.[subcategory.slug]?.default
-                            ? html`<ha-icon
-                                slot="start"
-                                .icon=${icons.subcategory[subcategory.slug].default}
-                              ></ha-icon>`
-                            : nothing
-                        }
-                        <span slot="headline">${subcategory.name}</span>
-                        <span slot="end" class="count"
-                          >${
-                            counts.get(
-                              `${category.slug}.${subcategory.slug}`
-                            ) || 0
-                          }</span
-                        >
-                      </ha-list-item-button>
-                    `
-                  )
-                : nothing
-            }
-          `;
-        })}
-      </ha-list-base>
-    </div>`;
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-list-item-button>`
+        )}
+      </ha-list-base>`;
+    }
+
+    return html`<wa-tree
+      aria-label=${label}
+      @wa-selection-change=${this._treeSelectionChanged}
+      @wa-expand=${this._treeExpandChanged}
+      @wa-collapse=${this._treeExpandChanged}
+    >
+      <wa-tree-item .selected=${live(browsingAll)}>
+        <ha-svg-icon .path=${mdiViewGridOutline}></ha-svg-icon>
+        <span class="name">${allLabel}</span>
+      </wa-tree-item>
+      <wa-divider></wa-divider>
+      ${categories.map((category) => {
+        const current = isCurrent(category.slug);
+        const icons = this._categoryIcons?.[category.slug];
+        return html`<wa-tree-item
+          .category=${category.slug}
+          .selected=${live(current && !this._subcategory)}
+          .expanded=${live(this._expanded.has(category.slug))}
+        >
+          ${icon(icons?.default)}
+          <span class="name">${category.name}</span>
+          <span class="count">${counts.get(category.slug) || 0}</span>
+          ${category.subcategories.map(
+            (subcategory) =>
+              html`<wa-tree-item
+                .category=${category.slug}
+                .subcategory=${subcategory.slug}
+                .selected=${live(current && subcategory.slug === this._subcategory)}
+              >
+                ${icon(icons?.subcategory?.[subcategory.slug]?.default)}
+                <span class="name">${subcategory.name}</span>
+                <span class="count"
+                  >${
+                    counts.get(`${category.slug}.${subcategory.slug}`) || 0
+                  }</span
+                >
+              </wa-tree-item>`
+          )}
+        </wa-tree-item>`;
+      })}
+    </wa-tree>`;
+  }
+
+  private _browseBySelected(ev: HaDropdownSelectEvent) {
+    this._browseBy = ev.detail.item.value as BrowseBy;
+    this._showDiscoveredView = false;
+    this._category = undefined;
+    this._subcategory = undefined;
+    this._brand = undefined;
+  }
+
+  private _renderBrandList() {
+    const brands = this._integrations
+      ? this._getBrands(
+          this._integrations,
+          this._helpers!,
+          this.hass.localize,
+          this._connection
+        )
+      : [];
+    const allBrands =
+      !this._filter && !this._showDiscoveredView && !this._brand;
+    return html`<ha-list-base
+      aria-label=${this.hass.localize("ui.panel.config.integrations.browse")}
+    >
+      <ha-list-item-button
+        class=${classMap({ selected: allBrands })}
+        @click=${this._brandPicked}
+      >
+        <ha-svg-icon slot="start" .path=${mdiViewGridOutline}></ha-svg-icon>
+        <span slot="headline">
+          ${this.hass.localize("ui.panel.config.integrations.all_brands")}
+        </span>
+        ${this._narrow ? html`<ha-icon-next slot="end"></ha-icon-next>` : nothing}
+      </ha-list-item-button>
+      <wa-divider></wa-divider>
+      ${brands.map(
+        ({ item, count }) =>
+          html`<ha-list-item-button
+            class=${classMap({
+              selected:
+                !this._filter &&
+                !this._showDiscoveredView &&
+                item.domain === this._brand,
+            })}
+            .brand=${item.domain}
+            @click=${this._brandPicked}
+          >
+            <ha-domain-icon
+              slot="start"
+              brand-fallback
+              .domain=${item.domain}
+            ></ha-domain-icon>
+            <span slot="headline">${item.name}</span>
+            <span slot="end" class="count">${count}</span>
+            ${this._narrow ? html`<ha-icon-next slot="end"></ha-icon-next>` : nothing}
+          </ha-list-item-button>`
+      )}
+    </ha-list-base>`;
+  }
+
+  private _brandPicked(
+    ev: HASSDomCurrentTargetEvent<HaListItemButton & { brand?: string }>
+  ) {
+    this._browse({ brand: ev.currentTarget.brand });
   }
 
   private _discoveredPicked() {
-    this._filter = "";
-    this._showDiscoveredView = true;
-    this._category = undefined;
-    this._subcategory = undefined;
+    this._browse({ discovered: true });
   }
 
-  private _protocolPicked(ev: Event) {
-    const domain = (ev.currentTarget as any).protocol as string;
+  private _protocolPicked(
+    ev: HASSDomCurrentTargetEvent<HaListItemButton & { protocol: string }>
+  ) {
+    const domain = ev.currentTarget.protocol;
     protocolIntegrationPicked(this, this.hass, domain);
     this.closeDialog();
   }
 
-  // The chevron only folds; picking the row also shows its integrations
-  private _toggleExpanded(ev: Event) {
-    ev.stopPropagation();
-    const category = (ev.currentTarget as any).category as string;
-    const expanded = new Set(this._expanded);
-    if (expanded.has(category)) {
-      expanded.delete(category);
-    } else {
-      expanded.add(category);
+  private _treeSelectionChanged(ev: WaSelectionChangeEvent) {
+    const item = ev.detail.selection[0] as
+      (WaTreeItem & { category?: string; subcategory?: string }) | undefined;
+    if (item) {
+      this._browse({ category: item.category, subcategory: item.subcategory });
     }
-    this._expanded = expanded;
   }
 
-  // Like a tree: right arrow unfolds a category, left arrow folds it
-  private _categoryKeydown(ev: KeyboardEvent) {
-    if (ev.key !== "ArrowRight" && ev.key !== "ArrowLeft") {
+  private _treeExpandChanged(
+    ev: HASSDomTargetEvent<WaTreeItem & { category: string }>
+  ) {
+    const { category } = ev.target;
+    const open = ev.type === "wa-expand";
+    if (this._expanded.has(category) === open) {
       return;
     }
-    ev.preventDefault();
-    const category = (ev.currentTarget as any).category as string;
     const expanded = new Set(this._expanded);
-    if (ev.key === "ArrowRight") {
+    if (open) {
       expanded.add(category);
     } else {
       expanded.delete(category);
@@ -1172,36 +1722,87 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private _allPicked() {
-    this._showDiscoveredView = false;
-    this._category = undefined;
-    this._subcategory = undefined;
-    this._leaveCategoryPicker();
+    this._browse();
   }
 
-  private _categoryPicked(ev: Event) {
-    const category = (ev.currentTarget as any).category as string;
-    this._showDiscoveredView = false;
-    this._category = category;
-    this._subcategory = undefined;
-    this._expanded = new Set([...this._expanded, category]);
-    this._leaveCategoryPicker();
+  private _categoryPicked(
+    ev: HASSDomCurrentTargetEvent<
+      HaListItemButton & { category: string; subcategory?: string }
+    >
+  ) {
+    const { category, subcategory } = ev.currentTarget;
+    this._browse({ category, subcategory });
   }
 
-  private _subcategoryPicked(ev: Event) {
-    this._showDiscoveredView = false;
-    this._category = (ev.currentTarget as any).category as string;
-    this._subcategory = (ev.currentTarget as any).subcategory as string;
-    this._leaveCategoryPicker();
+  private _isDiscovered(integration: IntegrationListItem) {
+    return Boolean(
+      !integration.result &&
+      !integration.is_add &&
+      !this._integrationFilter &&
+      integration.config_flow &&
+      this._getFlowsInProgressForDomains([integration.domain]).length
+    );
+  }
+
+  // Must match what _handleIntegrationPicked does
+  private _leadsToNextStep(integration: IntegrationListItem) {
+    if (integration.result) {
+      return true;
+    }
+    if (integration.supported_by) {
+      return false;
+    }
+    return Boolean(
+      integration.is_add ||
+      integration.integrations ||
+      integration.iot_standards ||
+      (!this._integrationFilter &&
+        (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
+          integration.domain
+        ) &&
+        this._hasProtocol(integration.domain)) ||
+      this._isDiscovered(integration)
+    );
+  }
+
+  // The virtualizer positions rows, so CSS sticky can't hold the brand
+  @eventOptions({ passive: true })
+  private _visibilityChanged(ev: HASSDomEvent<HaListVisibilityChangedDetail>) {
+    const rows = this._getRows();
+    const row = rows[ev.detail.first];
+    this._listScrolled = ev.detail.first > 0;
+    const brand = row?.id.includes("/")
+      ? rows.find((item) => item.id === `${row.id.split("/")[0]}/header`)
+      : undefined;
+    this._stickyBrand =
+      row && !row.is_header && !rows[ev.detail.first + 1]?.is_header
+        ? brand?.name
+        : undefined;
   }
 
   private _renderRow = (integration: IntegrationListItem) => {
     if (!integration) {
       return nothing;
     }
+    if (integration.is_end_space) {
+      return html`<div style="height: var(--ha-space-2)"></div>`;
+    }
+    if (integration.is_header) {
+      return this._filter
+        ? html`<ha-section-title>${integration.name}</ha-section-title>`
+        : html`<ha-integration-list-title>
+            ${integration.name}
+          </ha-integration-list-title>`;
+    }
     return html`
       <ha-integration-list-item
-        @click=${this._integrationPicked}
+        ?card=${!this._filter}
+        @click=${
+          integration.result ? this._resultPicked : this._integrationPicked
+        }
         .integration=${integration}
+        .opensFlow=${!this._leadsToNextStep(integration)}
+        .discovered=${this._isDiscovered(integration)}
       >
       </ha-integration-list-item>
     `;
@@ -1212,15 +1813,13 @@ class AddIntegrationDialog extends LitElement {
     getIntegrationCategoryIcons(this.hass.connection).then((icons) => {
       this._categoryIcons = icons;
     });
-    // `hass` doesn't render this dialog again, so the category names have to
-    // be there before the integrations are
+    // `hass` changes don't rerender this dialog, so load names first
     const [descriptions, flowsInProgress] = await Promise.all([
       getIntegrationDescriptions(this.hass),
       fetchConfigFlowInProgress(this.hass.connection),
       this.hass.loadBackendTranslation("integration_category", "homeassistant"),
     ]);
 
-    // Closed, or opened again, while this loaded
     if (loadId !== this._loadId) {
       return;
     }
@@ -1229,8 +1828,6 @@ class AddIntegrationDialog extends LitElement {
     this._flowsInProgress = flowsInProgress.filter((flow) =>
       DISCOVERY_SOURCES.includes(flow.context.source)
     );
-    // Start with what was found, it is what most people come for
-    // On a phone, it is the first row of the list instead
     this._showDiscoveredView =
       !integrationFilter &&
       !this._narrow &&
@@ -1295,23 +1892,14 @@ class AddIntegrationDialog extends LitElement {
       true
     );
 
-    // A category passed in that has nothing to browse falls back to its
-    // parent category, or to all integrations
-    const counts = this._getCounts();
-    if (
-      this._subcategory &&
-      !counts.has(`${this._category}.${this._subcategory}`)
-    ) {
-      this._subcategory = undefined;
-    }
-    if (this._category && !counts.has(this._category)) {
-      this._category = undefined;
-      this._expanded = new Set();
-    }
+    this._dropEmptySelection();
   }
 
   private async _filterChanged(ev: HASSDomTargetEvent<HaInputSearch>) {
     this._filter = ev.target.value ?? "";
+    if (!this._filter) {
+      this._searchSection = undefined;
+    }
   }
 
   private _integrationPicked = (
@@ -1326,12 +1914,6 @@ class AddIntegrationDialog extends LitElement {
   private async _handleIntegrationPicked(integration: IntegrationListItem) {
     if (integration.supported_by) {
       this._supportedBy(integration);
-      return;
-    }
-
-    if (integration.is_discovered) {
-      // Show all discovered flows
-      this._showDiscovered = true;
       return;
     }
 
@@ -1357,7 +1939,7 @@ class AddIntegrationDialog extends LitElement {
       (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
         integration.domain
       ) &&
-      isComponentLoaded(this.hass.config, integration.domain)
+      this._hasProtocol(integration.domain)
     ) {
       this._pickedBrand = integration.domain;
       return;
@@ -1456,15 +2038,23 @@ class AddIntegrationDialog extends LitElement {
       return;
     }
 
-    // The discovered flows are on screen, not the list of integrations
-    if (this._showDiscoveredView && !this._filter) {
+    // The integration list isn't on screen
+    if (
+      !this._filter &&
+      (this._showDiscoveredView ||
+        (this._narrow && !this._drilled && !this._integrationFilter))
+    ) {
       return;
     }
 
-    const rows = this._getRows(this._getIntegrations());
+    const row = this._getRows().find(
+      (item) => !item.is_header && item.result !== "more"
+    );
 
-    if (rows.length > 0) {
-      this._handleIntegrationPicked(rows[0]);
+    if (row?.result) {
+      this._activateResult(row);
+    } else if (row) {
+      this._handleIntegrationPicked(row);
     }
   }
 
@@ -1480,8 +2070,42 @@ class AddIntegrationDialog extends LitElement {
   static styles = [
     haStyleDialog,
     css`
-      ha-dialog {
+      ha-adaptive-dialog {
         --dialog-content-padding: 0;
+        /* Fixed height, so switching views doesn't resize it */
+        --add-integration-sheet-height: calc(
+          100vh - max(var(--safe-area-inset-top), var(--ha-space-12))
+        );
+        --ha-bottom-sheet-height: var(--add-integration-sheet-height);
+        --ha-bottom-sheet-max-height: var(--add-integration-sheet-height);
+        --add-integration-height: min(
+          920px,
+          calc(
+            100vh - max(var(--safe-area-inset-bottom), var(--ha-space-4)) - max(
+                var(--safe-area-inset-top),
+                var(--ha-space-4)
+              )
+          )
+        );
+        --ha-dialog-min-height: var(--add-integration-height);
+        --ha-dialog-max-height: var(--add-integration-height);
+      }
+      /* A custom property doesn't fall back to an earlier one it can't use */
+      @supports (height: 100dvh) {
+        ha-adaptive-dialog {
+          --add-integration-sheet-height: calc(
+            100dvh - max(var(--safe-area-inset-top), var(--ha-space-12))
+          );
+          --add-integration-height: min(
+            920px,
+            calc(
+              100dvh - max(
+                  var(--safe-area-inset-bottom),
+                  var(--ha-space-4)
+                ) - max(var(--safe-area-inset-top), var(--ha-space-4))
+            )
+          );
+        }
       }
       .search-row {
         display: flex;
@@ -1492,30 +2116,153 @@ class AddIntegrationDialog extends LitElement {
       .search-row ha-input-search {
         flex: 1;
       }
-      .search-row .filter-active {
+      .connection-row {
+        display: flex;
+        gap: var(--ha-space-2);
+        margin: calc(var(--ha-space-1) * -1) 0 var(--ha-space-4);
+        padding: 0 var(--ha-space-4);
+        overflow-x: auto;
+        /* overflow-x alone would also allow vertical scrolling */
+        overflow-y: hidden;
+        overscroll-behavior-x: contain;
+        scrollbar-width: none;
+        flex-shrink: 0;
+        --ha-assist-chip-container-shape: var(--ha-border-radius-md);
+      }
+      .connection-row > * {
+        flex-shrink: 0;
+      }
+      ha-dropdown-item.selected {
+        border: 1px solid var(--primary-color);
+        font-weight: var(--ha-font-weight-medium);
         color: var(--primary-color);
-        background-color: var(--ha-color-fill-primary-normal-resting);
-        border-radius: var(--ha-border-radius-circle);
+        background-color: var(--ha-color-fill-primary-quiet-resting);
+      }
+      .option-description {
+        display: block;
+        font-size: var(--ha-font-size-s);
+        font-weight: var(--ha-font-weight-normal);
+        color: var(--ha-color-text-secondary);
       }
       .content {
         display: flex;
+        flex: 1;
+        min-height: 0;
+      }
+      .items,
+      .list {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .list,
+      .discovered,
+      ha-list-virtualized {
+        flex: 1;
+        min-height: 0;
+      }
+      .pane {
+        flex: 0 0 300px;
+        display: flex;
+        flex-direction: column;
+        gap: var(--ha-space-3);
+        min-height: 0;
+        margin-block-end: var(--ha-space-4);
+        margin-inline-start: var(--ha-space-4);
+      }
+      .single .pane {
+        flex: 1;
+        margin-inline-end: var(--ha-space-4);
       }
       .groups {
-        flex: 0 0 300px;
         overflow: auto;
-        margin: 0 0 var(--ha-space-3) var(--ha-space-4);
         border-radius: var(--ha-border-radius-xl);
         border: 1px solid var(--ha-color-border-neutral-quiet);
       }
-      .picking .groups {
+      .groups.browse {
         flex: 1;
-        margin: 0;
-        border: none;
-        border-radius: 0;
+        min-height: 0;
       }
       .items {
         flex: 1;
         min-width: 0;
+        position: relative;
+      }
+      .chip-separator {
+        width: 1px;
+        margin: var(--ha-space-1) 0;
+        background-color: var(--divider-color);
+      }
+      .connection-row ha-filter-chip {
+        --ha-filter-chip-selected-container-color: var(
+          --ha-color-fill-primary-normal-hover
+        );
+        color: var(--primary-color);
+      }
+      .empty-search {
+        display: flex;
+        justify-content: center;
+        padding: var(--ha-space-6) var(--ha-space-3) var(--ha-space-3);
+        margin: 0 var(--ha-space-4);
+        border-radius: var(--ha-border-radius-xl);
+        background-color: var(--ha-color-surface-default);
+        color: var(--ha-color-text-secondary);
+      }
+      ha-integration-list-title.raised {
+        position: relative;
+        z-index: 1;
+        box-shadow: var(--bar-box-shadow);
+        clip-path: inset(0 0 -16px 0);
+        border-bottom: 1px solid var(--ha-color-border-neutral-quiet);
+      }
+      .list {
+        position: relative;
+      }
+      .subcategories {
+        position: relative;
+        box-sizing: border-box;
+        margin: 0 var(--ha-space-4) var(--ha-space-3);
+        border: 1px solid var(--ha-color-border-neutral-quiet);
+        border-radius: var(--ha-border-radius-xl);
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      .subcategories ha-list-item-button {
+        --ha-row-item-padding-block: var(--ha-space-1);
+        --ha-row-item-padding-inline: var(--ha-space-3);
+        --ha-row-item-min-height: var(--ha-space-10);
+      }
+      .subcategories ha-list-item-button::part(start),
+      .subcategories .count {
+        color: var(--ha-color-on-neutral-quiet);
+      }
+      .subcategories .show-more {
+        display: flex;
+        justify-content: center;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        padding-bottom: var(--ha-space-2);
+        box-shadow: inset 0 -8px 12px 0 rgba(0, 0, 0, 0.06);
+        z-index: 2;
+      }
+      .list.boxed {
+        margin: 0 var(--ha-space-4) var(--ha-space-4);
+        border: 1px solid var(--ha-color-border-neutral-quiet);
+        border-radius: var(--ha-border-radius-xl);
+        overflow: hidden;
+      }
+      .list .sticky {
+        position: absolute;
+        top: 0;
+        inset-inline: 0;
+        z-index: 1;
+      }
+      /* Keep focused rows clear of the sticky brand */
+      .items ha-list-virtualized {
+        --ha-list-scroll-padding-block-start: var(--ha-space-10);
+        --ha-row-item-padding-inline: var(--ha-space-3);
+        --ha-row-item-padding-block: var(--ha-space-2);
       }
       .discovered {
         overflow: auto;
@@ -1523,22 +2270,13 @@ class AddIntegrationDialog extends LitElement {
       .groups ha-list-item-button {
         --ha-row-item-padding-block: var(--ha-space-1);
         --ha-row-item-padding-inline: var(--ha-space-3);
-        --ha-row-item-min-height: 40px;
+        --ha-row-item-min-height: var(--ha-space-10);
+      }
+      .groups ha-icon-next {
+        color: var(--ha-color-on-neutral-quiet);
       }
       .groups ha-list-item-button::part(start) {
         color: var(--ha-color-on-neutral-quiet);
-      }
-      /* Indent by the width of the chevron, so the tree line hangs under
-         the icon of the category it belongs to */
-      .groups ha-tree-indicator {
-        width: 24px;
-        height: 40px;
-        margin-inline-start: 20px;
-      }
-      /* The tree line is as tall as the row, padding would make the
-         subcategories taller than the categories */
-      .groups .subcategory {
-        --ha-row-item-padding-block: 0;
       }
       .groups ha-section-title {
         position: sticky;
@@ -1548,41 +2286,78 @@ class AddIntegrationDialog extends LitElement {
       .groups .count {
         color: var(--ha-color-text-secondary);
         font-size: var(--ha-font-size-s);
+        /* Digits have no descenders, centering the line box sets them high */
+        text-box: trim-both cap alphabetic;
       }
-      .groups .expand {
-        width: 20px;
-        transition: transform 150ms ease;
+      .groups ha-label {
+        border: none;
+        --ha-label-background-color: var(
+          --ha-color-fill-primary-normal-resting
+        );
+        --ha-label-text-color: var(--ha-color-on-primary-normal);
       }
-      .groups .expand.expanded {
-        transform: rotate(90deg);
+      .groups wa-divider {
+        --spacing: var(--ha-space-2);
       }
-      .groups .expand.empty {
-        visibility: hidden;
+      /* The inline icon's line box pushes it off center */
+      .groups ha-icon,
+      .groups ha-domain-icon {
+        display: flex;
       }
-      .groups .selected {
+      wa-tree {
+        --wa-color-neutral-fill-quiet: var(
+          --ha-color-fill-primary-normal-active
+        );
+      }
+      wa-tree-item::part(item) {
+        height: var(--ha-space-10);
+        padding: var(--ha-space-1) var(--ha-space-3);
+        cursor: pointer;
+        border-inline-start: 0;
+      }
+      wa-tree-item::part(label) {
+        flex: 1;
+        min-width: 0;
+        gap: var(--ha-space-3);
+      }
+      wa-tree-item::part(item):hover {
+        background-color: var(--ha-color-fill-neutral-quiet-hover);
+      }
+      wa-tree-item[selected]::part(item):hover {
+        background-color: var(--ha-color-fill-primary-normal-hover);
+      }
+      wa-tree-item ha-icon,
+      wa-tree-item ha-svg-icon {
+        color: var(--ha-color-on-neutral-quiet);
+      }
+      wa-tree-item[selected] > ha-icon,
+      wa-tree-item[selected] > ha-svg-icon,
+      wa-tree-item[selected] > .name {
+        color: var(--ha-color-on-primary-normal);
+      }
+      wa-tree-item .name {
+        flex: 1;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      .groups:not(.narrow) .selected {
         background-color: var(--ha-color-fill-primary-normal-active);
         --icon-primary-color: var(--ha-color-on-primary-normal);
       }
-      .groups .selected::part(headline),
-      .groups .selected::part(start) {
+      .groups:not(.narrow) .selected::part(headline),
+      .groups:not(.narrow) .selected::part(start) {
         color: var(--ha-color-on-primary-normal);
       }
+      .groups:not(.narrow) .selected ha-label {
+        --ha-label-background-color: var(--ha-color-fill-primary-loud-resting);
+        --ha-label-text-color: var(--ha-color-on-primary-loud);
+      }
       @media all and (max-width: 450px), all and (max-height: 500px) {
-        .groups {
+        .pane {
           flex: 1 1 auto;
           margin-inline-end: var(--ha-space-4);
         }
-      }
-      .divider {
-        border-bottom-color: var(--divider-color);
-      }
-      p {
-        text-align: center;
-        padding: 16px;
-        margin: 0;
-      }
-      p > a {
-        color: var(--primary-color);
       }
       .flex.center {
         display: flex;

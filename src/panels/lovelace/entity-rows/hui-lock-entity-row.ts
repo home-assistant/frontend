@@ -83,7 +83,14 @@ class HuiLockEntityRow extends LitElement implements LovelaceRow {
         this.hass!.localize(`ui.card.lock.${action}`)
       ))
     ) {
-      callProtectedLockService(this, this.hass!, stateObj, action);
+      callProtectedLockService(
+        this,
+        this.hass!.callService,
+        this.hass!.callWS,
+        this.hass!.localize,
+        stateObj,
+        action
+      );
     }
   }
 }

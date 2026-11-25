@@ -26,6 +26,7 @@ import {
   saveConfig,
 } from "../../data/lovelace/config/types";
 import { fetchResources } from "../../data/lovelace/resource";
+import { LOVELACE_PANEL } from "../../data/panel";
 import type { WindowWithPreloads } from "../../data/preloads";
 import "../../layouts/hass-error-screen";
 import "../../layouts/hass-loading-screen";
@@ -83,7 +84,11 @@ export class LovelacePanel extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    if (
+    if (this._fetchConfigOnConnect) {
+      // Config was changed when we were not at the lovelace panel
+      this._fetchConfigOnConnect = false;
+      this._fetchConfig(false);
+    } else if (
       this.lovelace &&
       this.hass &&
       this.lovelace.locale !== this.hass.locale
@@ -94,17 +99,15 @@ export class LovelacePanel extends LitElement {
         this.lovelace.rawConfig,
         this.lovelace.mode
       );
-    } else if (this._fetchConfigOnConnect) {
-      // Config was changed when we were not at the lovelace panel
-      this._fetchConfig(false);
     }
     window.addEventListener("connection-status", this._handleConnectionStatus);
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    // On the main dashboard we want to stay subscribed as that one is cached.
-    if (this.urlPath !== null && this._unsubUpdates) {
+    // The "lovelace" panel is cached by the panel resolver, stay subscribed so
+    // we refetch its config when it is shown again.
+    if (this.urlPath !== LOVELACE_PANEL && this._unsubUpdates) {
       this._unsubUpdates.then((unsub) => unsub());
       this._unsubUpdates = undefined;
     }
@@ -288,6 +291,12 @@ export class LovelacePanel extends LitElement {
     this._fetchConfig(true);
   }
 
+  private _redirectToHome() {
+    // Keeps the query and any open dialog: a more-info deep link may be
+    // restored from the URL around this redirect.
+    navigate(`/home${location.search}`, { replace: true, keepDialogs: true });
+  }
+
   private async _fetchConfig(forceDiskRefresh: boolean) {
     this._loading = true;
 
@@ -297,7 +306,7 @@ export class LovelacePanel extends LitElement {
 
     // If no mode, redirect to /home as there is no "lovelace" dashboard
     if (!confMode) {
-      navigate("/home", { replace: true });
+      this._redirectToHome();
       return;
     }
 
@@ -315,20 +324,21 @@ export class LovelacePanel extends LitElement {
         (resources) => loadLovelaceResources(resources, this.hass!)
       );
     }
-    if (this.urlPath !== null || !confProm) {
-      // Refreshing a YAML config can trigger an update event. We will ignore
-      // all update events while fetching the config and for 2 seconds after the config is back.
-      // We ignore because we already have the latest config.
-      if (this.lovelace && this.lovelace.mode === "yaml") {
-        this._ignoreNextUpdateEvent = true;
-      }
-
-      confProm = fetchConfig(
-        this.hass!.connection,
-        this.urlPath,
-        forceDiskRefresh
-      );
+    // Refreshing a YAML config can trigger an update event. We will ignore
+    // all update events while fetching the config and for 2 seconds after the config is back.
+    // We ignore because we already have the latest config.
+    if (confMode === "yaml") {
+      this._ignoreNextUpdateEvent = true;
     }
+
+    const fetchDashboardConfig = () =>
+      fetchConfig(this.hass!.connection, this.urlPath, forceDiskRefresh);
+    // The preload is the config of the "lovelace" dashboard. Fetch it again if
+    // it failed, for example because the connection dropped before it came back.
+    confProm =
+      confProm && this.urlPath === "lovelace"
+        ? confProm.catch(fetchDashboardConfig)
+        : fetchDashboardConfig();
 
     try {
       rawConf = await confProm;
@@ -357,7 +367,7 @@ export class LovelacePanel extends LitElement {
         const dashboards = await fetchDashboards(this.hass!);
         const dashboard = dashboards.find((d) => d.url_path === "lovelace");
         if (!dashboard) {
-          navigate("/home", { replace: true });
+          this._redirectToHome();
           return;
         }
       }
@@ -367,7 +377,7 @@ export class LovelacePanel extends LitElement {
     } finally {
       this._loading = false;
       // Ignore updates for another 2 seconds.
-      if (this.lovelace && this.lovelace.mode === "yaml") {
+      if (confMode === "yaml") {
         setTimeout(() => {
           this._ignoreNextUpdateEvent = false;
         }, 2000);

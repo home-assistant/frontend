@@ -17,10 +17,9 @@ import { BINARY_STATE_ON, STRINGS_SEPARATOR_DOT } from "../../../common/const";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { generateEntityFilter } from "../../../common/entity/entity_filter";
 import {
-  formatNumber,
+  formatNumberWithUnit,
   isNumericState,
 } from "../../../common/number/format_number";
-import { blankBeforeUnit } from "../../../common/translations/blank_before_unit";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-aspect-ratio";
 import "../../../components/ha-card";
@@ -329,29 +328,57 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     }
   );
 
-  private _domainEntityIds = memoizeOne(
+  private _domainEntityIds = (
+    entities: HomeAssistant["entities"],
+    areaId: string,
+    domains: string[],
+    excludeEntities?: string[]
+  ): string[] => {
+    const filter = generateEntityFilter(
+      this.hass.states,
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.floors,
+      {
+        area: areaId,
+        entity_category: "none",
+        domain: domains,
+      }
+    );
+    return Object.keys(entities).filter(
+      (id) => filter(id) && !excludeEntities?.includes(id)
+    );
+  };
+
+  /**
+   * Entities in the area that can supply a sensor value through an attribute
+   * (see SENSOR_ATTRIBUTE_SOURCES), grouped by the sensor class they supply.
+   *
+   * @returns Map of sensor class to entity IDs, e.g.
+   *   { "temperature" => ["climate.living_room"],
+   *     "humidity" => ["climate.living_room", "humidifier.bedroom"] }
+   */
+  private _attributeSourceEntityIds = memoizeOne(
     (
       entities: HomeAssistant["entities"],
       areaId: string,
-      domains: string[],
+      sensorClasses: string[],
       excludeEntities?: string[]
-    ): string[] => {
-      const filter = generateEntityFilter(
-        this.hass.states,
-        this.hass.entities,
-        this.hass.devices,
-        this.hass.areas,
-        this.hass.floors,
-        {
-          area: areaId,
-          entity_category: "none",
-          domain: domains,
-        }
-      );
-      return Object.keys(entities).filter(
-        (id) => filter(id) && !excludeEntities?.includes(id)
-      );
-    }
+    ): Map<string, string[]> =>
+      new Map(
+        sensorClasses
+          .filter((sensorClass) => sensorClass in SENSOR_ATTRIBUTE_SOURCES)
+          .map((sensorClass) => [
+            sensorClass,
+            this._domainEntityIds(
+              entities,
+              areaId,
+              SENSOR_ATTRIBUTE_SOURCES[sensorClass].map((s) => s.domain),
+              excludeEntities
+            ),
+          ])
+      )
   );
 
   private _computeActiveAlertStates(): HassEntity[] {
@@ -495,13 +522,13 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         // Collect values from additional attribute sources
         const attrSources = SENSOR_ATTRIBUTE_SOURCES[sensorClass];
         if (attrSources) {
-          const domains = [...new Set(attrSources.map((s) => s.domain))];
-          const attrEntityIds = this._domainEntityIds(
-            this.hass.entities,
-            area.area_id,
-            domains,
-            excludeEntities
-          );
+          const attrEntityIds =
+            this._attributeSourceEntityIds(
+              this.hass.entities,
+              area.area_id,
+              sensorClasses,
+              excludeEntities
+            ).get(sensorClass) ?? [];
 
           for (const entityId of attrEntityIds) {
             const stateObj = this.hass.states[entityId];
@@ -539,14 +566,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           ? values.reduce((acc, v) => acc + v, 0)
           : this._computeMedianValue(values);
 
-        const formattedValue = formatNumber(value, this.hass.locale, {
+        return formatNumberWithUnit(value, uom, this.hass.locale, {
           maximumFractionDigits: 1,
         });
-        const formattedUnit = uom
-          ? `${blankBeforeUnit(uom, this.hass.locale)}${uom}`
-          : "";
-
-        return `${formattedValue}${formattedUnit}`;
       })
       .filter(Boolean)
       .join(STRINGS_SEPARATOR_DOT);
@@ -622,11 +644,11 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     const name = this._config.name || computeAreaName(area);
 
-    const primary = name;
     const secondary = this._computeSensorsDisplay();
 
     const featurePosition = this._featurePosition(this._config);
     const features = this._featureLayout(this._config);
+    const hasFeatures = features.inline.length > 0 || features.below.length > 0;
 
     const displayType = this._config.display_type || "picture";
 
@@ -652,7 +674,11 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       this._config.grid_options?.rows !== "auto";
 
     return html`
-      <ha-card style=${styleMap(style)}>
+      <ha-card
+        style=${styleMap(style)}
+        role=${ifDefined(hasFeatures ? "group" : undefined)}
+        aria-labelledby=${ifDefined(hasFeatures ? "name" : undefined)}
+      >
         ${
           displayType === "compact"
             ? nothing
@@ -734,9 +760,10 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
             class=${ifDefined(
               this._config.vertical && fixedInfoHeight ? "twoline" : undefined
             )}
-            .primary=${primary}
             .secondary=${secondary}
-          ></ha-tile-info>
+          >
+            <span slot="primary" id="name">${name}</span>
+          </ha-tile-info>
           ${
             features.inline.length > 0
               ? html`
@@ -872,7 +899,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         /* two wrapped lines inside the 32px ha-tile-container reserves */
         --_tile-info-fixed-primary-line-height: var(--ha-space-4);
       }
-      ha-tile-info.twoline::part(primary) {
+      ha-tile-info.twoline > [slot="primary"] {
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;

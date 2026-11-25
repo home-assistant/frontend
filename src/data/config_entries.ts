@@ -38,8 +38,11 @@ export interface SubEntry {
   unique_id: string | null;
 }
 
-export const getSubEntries = (hass: HomeAssistant, entry_id: string) =>
-  hass.callWS<SubEntry[]>({
+export const getSubEntries = (
+  callWS: HomeAssistant["callWS"],
+  entry_id: string
+) =>
+  callWS<SubEntry[]>({
     type: "config_entries/subentries/list",
     entry_id,
   });
@@ -138,8 +141,11 @@ export const getConfigEntries = (
   });
 };
 
-export const getConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
-  hass.callWS<{ config_entry: ConfigEntry }>({
+export const getConfigEntry = (
+  callWS: HomeAssistant["callWS"],
+  configEntryId: string
+) =>
+  callWS<{ config_entry: ConfigEntry }>({
     type: "config_entries/get_single",
     entry_id: configEntryId,
   });
@@ -214,24 +220,30 @@ export class ConfigEntryStream {
   private _entries: ConfigEntry[] = [];
 
   processMessage(message: ConfigEntryUpdate[]) {
+    let entries =
+      message.length === 0 ||
+      message.some((configEntry) => configEntry.type === null)
+        ? []
+        : [...this._entries];
     message.forEach((configEntry) => {
       if (configEntry.type === null || configEntry.type === "added") {
-        this._entries.push(configEntry.entry);
+        entries.push(configEntry.entry);
         return;
       }
       if (configEntry.type === "removed") {
-        this._entries = this._entries.filter(
+        entries = entries.filter(
           (entry) => entry.entry_id !== configEntry.entry.entry_id
         );
         return;
       }
       if (configEntry.type === "updated") {
         const newEntry = configEntry.entry;
-        this._entries = this._entries.map((entry) =>
+        entries = entries.map((entry) =>
           entry.entry_id === newEntry.entry_id ? newEntry : entry
         );
       }
     });
-    return this._entries;
+    this._entries = entries;
+    return entries;
   }
 }

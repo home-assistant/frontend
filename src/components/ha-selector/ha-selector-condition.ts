@@ -16,6 +16,8 @@ export class HaConditionSelector extends LitElement {
 
   @property({ attribute: false }) public value?: Condition;
 
+  @property() public name?: string;
+
   @property() public label?: string;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
@@ -27,6 +29,7 @@ export class HaConditionSelector extends LitElement {
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
       <ha-automation-condition
+        .pathKey=${this.name}
         .disabled=${this.disabled}
         .conditions=${this.value || []}
         .hass=${this.hass}

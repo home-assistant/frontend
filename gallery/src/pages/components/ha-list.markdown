@@ -117,11 +117,17 @@ shared slots/attributes below.
 
 **Attributes**
 
-| Name              | Type    | Default | Description                             |
-| ----------------- | ------- | ------- | --------------------------------------- |
-| `headline`        | String  | —       | Primary text. Overridden by the slot.   |
-| `supporting-text` | String  | —       | Secondary text. Overridden by the slot. |
-| `disabled`        | Boolean | `false` | Dims the row and blocks pointer events. |
+| Name                   | Type    | Default | Description                                        |
+| ---------------------- | ------- | ------- | -------------------------------------------------- |
+| `headline`             | String  | —       | Primary text. Overridden by the slot.              |
+| `supporting-text`      | String  | —       | Secondary text. Overridden by the slot.            |
+| `wrap-headline`        | Boolean | `false` | Wrap the headline instead of truncating it.        |
+| `wrap-supporting-text` | Boolean | `false` | Wrap the supporting text instead of truncating it. |
+| `disabled`             | Boolean | `false` | Dims the row and blocks pointer events.            |
+
+The headline and the supporting text stay on one line and are truncated with an
+ellipsis by default. Set `wrap-headline` or `wrap-supporting-text` on rows whose
+text has to stay readable in full, like settings with a description.
 
 **CSS parts**
 
@@ -165,6 +171,18 @@ Interactive row. Renders an inner `<a>` when `href` is set, otherwise a
 roving tabindex, the host is the tab stop and the inner element carries
 `tabindex="-1"`.
 
+Only the headline and supporting text are inside the `<a>` or `<button>`; its
+hit area is stretched over the whole row. The `start` and `end` slots sit next
+to it, so controls placed there, like an `ha-icon-button` or `ha-dropdown`,
+stay separate controls for screen readers. Slotted elements are raised above
+the hit area so they can be clicked, except icons, badges, `span`s and empty
+`div`s (dividers), which let clicks and hover through to the row. A focusable
+element (with `tabindex`) is always raised. To keep another element clickable
+on its own, like a drag handle, give it `z-index: 1` in the consumer's styles.
+
+Subclasses customize the row by overriding `_renderStart()`,
+`_renderContent()` and `_renderEnd()`. `_renderInner()` is not used.
+
 **Attributes**
 
 - `href` (String) — when set, renders an `<a>` instead of a `<button>`.
@@ -174,7 +192,53 @@ roving tabindex, the host is the tab stop and the inner element carries
 
 **CSS parts**
 
+- `control` — the inner `<a>` or `<button>`.
 - `ripple` — the ripple effect element.
+
+### `<ha-list-item-switch>`
+
+Row with a switch at the end, for settings that turn something on or off. The
+whole row is the label of the switch: clicking anywhere on it toggles the
+switch. For screen readers, the headline names the switch and the supporting
+text describes it, so don't set `accessibleLabel` yourself.
+
+The switch is its own tab stop, so the row doesn't join the roving tabindex of
+a parent list. The row can also be used on its own, outside a list; it then has
+no role.
+
+Everything in the row is part of the label, so there is no `end` slot, and
+the `start` slot is for icons and avatars only. For a row with other controls
+next to the switch or inside its text, like an `ha-icon-button` or a link, use
+`ha-list-item-base` with an `ha-switch` in the `end` slot and set its
+`accessibleLabel`.
+
+The row inherits the slots and attributes of `ha-list-item-base`, except
+`interactive`, which it doesn't use.
+
+```html
+<ha-list-item-switch checked>
+  <span slot="headline">Advanced mode</span>
+  <span slot="supporting-text">Shows advanced settings and options.</span>
+</ha-list-item-switch>
+```
+
+**Attributes**
+
+- `checked` (Boolean, default `false`, reflected) — whether the switch is on.
+- `haptic` (Boolean, default `false`) — vibrates on toggle. Only set it when
+  the change is applied right away, not when the user still has to save.
+
+**Events**
+
+- `change` — the switch was toggled. Read the new state from `checked` on the
+  row.
+
+**CSS parts**
+
+- `switch` — the `ha-switch`. It only shows the state; the row handles
+  input.
+- `base`, `start`, `content`, `headline`, `supporting-text` — as on
+  `ha-row-item`. There is no `end` part.
 
 ### `<ha-list-item-option>`
 
@@ -186,6 +250,9 @@ sit inside `<ha-list-selectable>`, which owns selection state and toggles
 
 - `selected` (Boolean, default `false`, reflected) — set by the parent
   `ha-list-selectable`.
+- `indeterminate` (Boolean, default `false`, reflected) — draws the checkbox
+  as mixed, for a row that stands for a partly selected set. Screen readers
+  hear it as "Partly selected" through `aria-description`.
 - `value` (String) — value identifying the option.
 - `appearance` (`"line"` | `"checkbox"`, default `"line"`) — `"line"`
   highlights the row; `"checkbox"` renders a decorative `<ha-checkbox>`.

@@ -15,6 +15,7 @@ import type {
   ZHANetworkBackup,
   ZHANetworkSettings,
 } from "../../../../../src/data/zha";
+import { ZHADeviceType } from "../../../../../src/data/zha";
 import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
 import { minutesAgo } from "../helpers";
 
@@ -56,7 +57,7 @@ const DEVICES: ZHADevice[] = [
     device_reg_id: "zha-coordinator",
     user_given_name: "Home Assistant Connect ZBT-1",
     power_source: "Mains",
-    device_type: "Coordinator",
+    device_type: ZHADeviceType.Coordinator,
     active_coordinator: true,
     signature: {},
     neighbors: [
@@ -83,7 +84,7 @@ const DEVICES: ZHADevice[] = [
     device_reg_id: "zha-porch-light",
     user_given_name: "Porch light",
     power_source: "Mains",
-    device_type: "Router",
+    device_type: ZHADeviceType.Router,
     active_coordinator: false,
     signature: {},
     neighbors: [
@@ -110,7 +111,7 @@ const DEVICES: ZHADevice[] = [
     device_reg_id: "zha-hall-motion",
     user_given_name: "Hall motion",
     power_source: "Battery",
-    device_type: "EndDevice",
+    device_type: ZHADeviceType.EndDevice,
     active_coordinator: false,
     signature: {},
     neighbors: [neighbor(PORCH_IEEE, "0x1a2b", "142", "Parent", "1")],
@@ -133,7 +134,7 @@ const DEVICES: ZHADevice[] = [
     device_reg_id: "zha-tv-plug",
     user_given_name: "TV plug",
     power_source: "Mains",
-    device_type: "Router",
+    device_type: ZHADeviceType.Router,
     active_coordinator: false,
     signature: {},
     neighbors: [neighbor(COORDINATOR_IEEE, "0x0000", "198", "Parent", "0")],
@@ -156,7 +157,7 @@ const DEVICES: ZHADevice[] = [
     device_reg_id: "zha-kitchen-switch",
     user_given_name: "Kitchen switch",
     power_source: "Battery",
-    device_type: "EndDevice",
+    device_type: ZHADeviceType.EndDevice,
     active_coordinator: false,
     signature: {},
     neighbors: [neighbor(PORCH_IEEE, "0x1a2b", "186", "Parent", "1")],
@@ -179,7 +180,7 @@ const DEVICES: ZHADevice[] = [
     device_reg_id: "zha-landing-sensor",
     user_given_name: "Landing sensor",
     power_source: "Battery",
-    device_type: "EndDevice",
+    device_type: ZHADeviceType.EndDevice,
     active_coordinator: false,
     signature: {},
     neighbors: [neighbor(OFFICE_IEEE, "0x7a8b", "164", "Parent", "2")],
@@ -202,7 +203,7 @@ const DEVICES: ZHADevice[] = [
     device_reg_id: "zha-garage-contact",
     user_given_name: "Garage contact",
     power_source: "Battery",
-    device_type: "EndDevice",
+    device_type: ZHADeviceType.EndDevice,
     active_coordinator: false,
     signature: {},
     neighbors: [neighbor(OFFICE_IEEE, "0x7a8b", "118", "Parent", "2")],
@@ -225,7 +226,7 @@ const DEVICES: ZHADevice[] = [
     device_reg_id: "zha-office-plug",
     user_given_name: "Office plug",
     power_source: "Mains",
-    device_type: "Router",
+    device_type: ZHADeviceType.Router,
     active_coordinator: false,
     signature: {},
     neighbors: [
@@ -593,7 +594,8 @@ export const mockZha = (hass: MockHomeAssistant) => {
   hass.mockWS("zha/devices/bindable", (msg: { ieee: string }) =>
     DEVICES.filter(
       (candidate) =>
-        candidate.device_type === "Router" && candidate.ieee !== msg.ieee
+        candidate.device_type === ZHADeviceType.Router &&
+        candidate.ieee !== msg.ieee
     )
   );
   hass.mockWS("zha/devices/bind", () => undefined);

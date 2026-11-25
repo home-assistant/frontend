@@ -1,16 +1,32 @@
+import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { consume } from "../../../common/decorators/consume";
+import {
+  consumeEntityStates,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../../../components/ha-relative-time";
+import {
+  configContext,
+  entitiesContext,
+  formattersContext,
+  uiContext,
+} from "../../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
+import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type {
   CallServiceActionConfig,
@@ -20,12 +36,16 @@ import {
   SENSOR_DEVICE_CLASS_UPTIME,
   SENSOR_TIMESTAMP_DEVICE_CLASSES,
 } from "../../../data/sensor";
-import type { HomeAssistant } from "../../../types";
+import type { Themes } from "../../../data/ws-themes";
+import type {
+  HomeAssistant,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  HomeAssistantUI,
+} from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
-import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
-import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { applyDefaultColor } from "../common/entity-color-config";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-timestamp-display";
@@ -63,9 +83,48 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     return { type: "glance", entities: foundEntities };
   }
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @state() private _config?: GlanceCardConfig;
+
+  @state() private _entityIds?: string[];
+
+  @state()
+  @consumeEntityStates({ entityIdPath: ["_entityIds"] })
+  private _stateObjs?: Record<string, HassEntity>;
+
+  @state()
+  @consume({ context: entitiesContext, subscribe: true })
+  @transform<
+    HomeAssistant["entities"],
+    Record<string, EntityRegistryDisplayEntry>
+  >({
+    transformer: function (this: HuiGlanceCard, entities) {
+      return this._selectEntityEntries(entities);
+    },
+    watch: ["_entityIds"],
+  })
+  private _entityEntries?: Record<string, EntityRegistryDisplayEntry>;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, Themes>({
+    transformer: ({ themes }) => themes,
+  })
+  private _themes!: Themes;
 
   private _configEntities?: GlanceConfigEntity[];
 
@@ -123,18 +182,11 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     this.style.setProperty("--glance-column-width", `${100 / columns}%`);
 
     this._configEntities = entities;
-
-    if (this.hass) {
-      this.requestUpdate();
-    }
-  }
-
-  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
-    return hasConfigOrEntitiesChanged(this, changedProps);
+    this._entityIds = entities.map((entityConf) => entityConf.entity);
   }
 
   protected render() {
-    if (!this._config || !this.hass) {
+    if (!this._config) {
       return nothing;
     }
     const { title } = this._config;
@@ -152,21 +204,23 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (!this._config || !this.hass) {
+    if (!this._config || !this._themes) {
       return;
     }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!changedProps.has("_themes") && !changedProps.has("_config")) {
+      return;
+    }
+    const oldThemes = changedProps.get("_themes") as Themes | undefined;
     const oldConfig = changedProps.get("_config") as
       GlanceCardConfig | undefined;
 
     if (
-      !oldHass ||
-      !oldConfig ||
-      oldHass.themes !== this.hass.themes ||
-      oldConfig.theme !== this._config.theme
+      (changedProps.has("_themes") &&
+        (!oldThemes || oldThemes !== this._themes)) ||
+      (changedProps.has("_config") &&
+        (!oldConfig || oldConfig.theme !== this._config.theme))
     ) {
-      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+      applyThemesOnElement(this, this._themes, this._config.theme);
     }
   }
 
@@ -242,8 +296,36 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     }
   `;
 
+  /** Reuses the previous record while every selected entry is unchanged. */
+  private _selectEntityEntries(
+    entities: HomeAssistant["entities"] | undefined
+  ): Record<string, EntityRegistryDisplayEntry> | undefined {
+    if (!this._entityIds || !entities) {
+      return undefined;
+    }
+    const next: Record<string, EntityRegistryDisplayEntry> = {};
+    for (const id of this._entityIds) {
+      const entry = entities[id];
+      if (entry !== undefined) {
+        next[id] = entry;
+      }
+    }
+    const previous = this._entityEntries;
+    if (!previous) {
+      return next;
+    }
+    const nextKeys = Object.keys(next);
+    if (
+      Object.keys(previous).length === nextKeys.length &&
+      nextKeys.every((key) => previous[key] === next[key])
+    ) {
+      return previous;
+    }
+    return next;
+  }
+
   private _renderEntity(entityConf: GlanceConfigEntity): TemplateResult {
-    const stateObj = this.hass!.states[entityConf.entity];
+    const stateObj = this._stateObjs?.[entityConf.entity];
 
     if (!stateObj) {
       return html`<div class="entity warning">
@@ -251,7 +333,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
           this._config!.show_name
             ? html`
                 <div class="name">
-                  ${createEntityNotFoundWarning(this.hass!.localize, this.hass!.config)}
+                  ${createEntityNotFoundWarning(this._localize, this._hassConfig)}
                 </div>
               `
             : ""
@@ -259,7 +341,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         ${
           this._config!.show_icon
             ? html` <hui-warning-element
-                .label=${createEntityNotFoundWarning(this.hass!.localize, this.hass!.config)}
+                .label=${createEntityNotFoundWarning(this._localize, this._hassConfig)}
               ></hui-warning-element>`
             : ""
         }
@@ -267,7 +349,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       </div>`;
     }
 
-    const name = this.hass!.formatEntityName(stateObj, entityConf.name);
+    const name = this._formatters.formatEntityName(stateObj, entityConf.name);
     const domain = computeDomain(entityConf.entity);
 
     return html`
@@ -334,7 +416,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                               capitalize
                             ></ha-relative-time>
                           `
-                        : this.hass!.formatEntityState(stateObj)
+                        : this._formatters.formatEntityState(stateObj)
                   }
                 </div>
               `
@@ -351,7 +433,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       ActionHandlerEvent
   ) {
     const { config } = ev.currentTarget;
-    handleAction(this, this.hass!, config, ev.detail.action!);
+    fireEvent(this, "hass-action", { config, action: ev.detail.action });
   }
 }
 

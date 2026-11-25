@@ -1,5 +1,6 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   assert,
   assign,
@@ -22,6 +23,11 @@ import type {
 } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import {
+  collectionKeyFromFormData,
+  collectionKeyToFormData,
+  energyCollectionKeySchema,
+} from "./energy-collection-key-schema";
 
 const SCHEMA: HaFormSchema[] = [
   {
@@ -60,10 +66,22 @@ const SCHEMA: HaFormSchema[] = [
     selector: { boolean: {} },
   },
   {
-    type: "string",
-    name: "collection_key",
+    name: "combine_sources",
+    visible: {
+      field: "type",
+      operator: "in",
+      value: [
+        "energy-usage-graph",
+        "energy-solar-graph",
+        "energy-gas-graph",
+        "energy-water-graph",
+        "power-sources-graph",
+      ],
+    },
     required: false,
+    selector: { boolean: {} },
   },
+  energyCollectionKeySchema,
 ];
 
 const cardConfigStruct = assign(
@@ -88,6 +106,7 @@ const cardConfigStruct = assign(
     show_legend: optional(boolean()),
     expand_legend: optional(boolean()),
     link_dashboard: optional(boolean()),
+    combine_sources: optional(boolean()),
   })
 );
 
@@ -120,22 +139,33 @@ export class HuiEnergyGraphCardEditor
       return nothing;
     }
 
-    const data = {
-      ...this._config,
-    };
+    const data = collectionKeyToFormData(this._config);
 
     return html` <ha-form
       .hass=${this.hass}
       .data=${data}
-      .schema=${SCHEMA}
+      .schema=${this._schema(this._config.type)}
       .computeLabel=${this._computeLabelCallback}
       .computeHelper=${this._computeHelperCallback}
       @value-changed=${this._valueChanged}
     ></ha-form>`;
   }
 
+  private _schema = memoizeOne((type: string): HaFormSchema[] =>
+    SCHEMA.map((field) =>
+      field.name === "combine_sources"
+        ? ({
+            ...field,
+            default: type === "power-sources-graph",
+          } as HaFormSchema)
+        : field
+    )
+  );
+
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    fireEvent(this, "config-changed", {
+      config: collectionKeyFromFormData(ev.detail.value),
+    });
   }
 
   private _computeHelperCallback = (schema) => {

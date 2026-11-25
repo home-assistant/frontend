@@ -235,7 +235,10 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
   private async _loadCompositeSplits() {
     this._loadingCompositeSplits = true;
     try {
-      this._compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+      this._compositeSplits = await fetchDeviceCompositeSplits(
+        this.hass.connection,
+        this.hass.callWS
+      );
     } catch (_err) {
       this._compositeSplits = {};
     } finally {

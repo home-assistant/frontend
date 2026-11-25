@@ -70,7 +70,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     }
     try {
       const configEntry = (
-        await getConfigEntry(this.hass, this.entry.config_entry_id)
+        await getConfigEntry(this.hass.callWS, this.entry.config_entry_id)
       ).config_entry;
       const manifest = await fetchIntegrationManifest(
         this.hass,
@@ -179,7 +179,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     showDeviceRegistryDetailDialog(this, {
       device: device,
       updateEntry: async (updates) => {
-        await updateDeviceRegistryEntry(this.hass, device.id, updates);
+        await updateDeviceRegistryEntry(this.hass.callWS, device.id, updates);
       },
     });
   }
@@ -189,7 +189,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     this._submitting = true;
     try {
       const result = await updateEntityRegistryEntry(
-        this.hass!,
+        this.hass!.callWS,
         this.entry.entity_id,
         { disabled_by: null }
       );

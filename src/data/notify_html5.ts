@@ -13,8 +13,8 @@ function urlBase64ToUint8Array(base64String: string) {
   return outputArray;
 }
 
-export const getAppKey = async (hass: HomeAssistant) => {
-  const res = await hass.callWS<string>({
+export const getAppKey = async (callWS: HomeAssistant["callWS"]) => {
+  const res = await callWS<string>({
     type: "notify/html5/appkey",
   });
   return res ? urlBase64ToUint8Array(res) : null;

@@ -51,6 +51,9 @@ const LAZY_LOAD_TYPES = {
   "energy-distribution": () =>
     import("../cards/energy/hui-energy-distribution-card"),
   "energy-gas-graph": () => import("../cards/energy/hui-energy-gas-graph-card"),
+  "gas-sankey": () => import("../cards/water-gas/hui-water-gas-sankey-card"),
+  "gas-flow-sankey": () =>
+    import("../cards/water-gas/hui-water-gas-flow-sankey-card"),
   "energy-water-graph": () =>
     import("../cards/energy/hui-energy-water-graph-card"),
   "energy-grid-neutrality-gauge": () =>
@@ -68,9 +71,9 @@ const LAZY_LOAD_TYPES = {
   "energy-usage-graph": () =>
     import("../cards/energy/hui-energy-usage-graph-card"),
   "energy-sankey": () => import("../cards/energy/hui-energy-sankey-card"),
-  "water-sankey": () => import("../cards/water/hui-water-sankey-card"),
+  "water-sankey": () => import("../cards/water-gas/hui-water-gas-sankey-card"),
   "water-flow-sankey": () =>
-    import("../cards/water/hui-water-flow-sankey-card"),
+    import("../cards/water-gas/hui-water-gas-flow-sankey-card"),
   "power-sources-graph": () =>
     import("../cards/energy/hui-power-sources-graph-card"),
   "power-sankey": () => import("../cards/energy/hui-power-sankey-card"),
@@ -92,6 +95,7 @@ const LAZY_LOAD_TYPES = {
   map: () => import("../cards/hui-map-card"),
   markdown: () => import("../cards/hui-markdown-card"),
   clock: () => import("../cards/hui-clock-card"),
+  date: () => import("../cards/hui-date-card"),
   "media-control": () => import("../cards/hui-media-control-card"),
   "picture-elements": () => import("../cards/hui-picture-elements-card"),
   "picture-entity": () => import("../cards/hui-picture-entity-card"),

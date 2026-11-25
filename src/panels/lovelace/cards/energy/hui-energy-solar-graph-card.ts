@@ -1,5 +1,6 @@
 import { endOfToday, isToday, startOfToday } from "date-fns";
 import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -7,7 +8,10 @@ import memoizeOne from "memoize-one";
 import type { BarSeriesOption, LineSeriesOption } from "echarts/charts";
 import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
-import { formatNumber } from "../../../../common/number/format_number";
+import {
+  formatNumber,
+  formatNumberWithUnit,
+} from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import {
@@ -81,6 +85,13 @@ export class HuiEnergySolarGraphCard
 
   @state() private _total?: number;
 
+  @state() private _data?: {
+    energyData: EnergyData;
+    forecasts: EnergySolarForecasts | undefined;
+  };
+
+  private _forecastsRequest = 0;
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: HomeAssistantInternationalization;
@@ -108,7 +119,7 @@ export class HuiEnergySolarGraphCard
     super();
     new EnergyCollectionController(this, {
       config: () => this._config,
-      onData: (data) => this._getStatistics(data),
+      onData: (data) => this._fetchForecasts(data),
     });
   }
 
@@ -123,10 +134,20 @@ export class HuiEnergySolarGraphCard
     this._config = config;
   }
 
+  protected willUpdate(changedProps: PropertyValues) {
+    if (changedProps.has("_config") || changedProps.has("_data")) {
+      this._processStatistics();
+    }
+  }
+
   protected render() {
     if (!this._config) {
       return nothing;
     }
+
+    const formattedTotal = this._total
+      ? formatNumberWithUnit(this._total, "kWh", this._i18n.locale)
+      : undefined;
 
     return html`
       <ha-card>
@@ -139,7 +160,7 @@ export class HuiEnergySolarGraphCard
                     ? html`<hui-energy-graph-chip
                         .tooltip=${this._formatTotal(this._total)}
                       >
-                        ${formatNumber(this._total, this._i18n.locale)} kWh
+                        ${formattedTotal}
                       </hui-energy-graph-chip>`
                     : nothing
                 }
@@ -214,11 +235,18 @@ export class HuiEnergySolarGraphCard
       )
   );
 
-  private async _getStatistics(energyData: EnergyData): Promise<void> {
+  private async _fetchForecasts(energyData: EnergyData): Promise<void> {
+    const request = ++this._forecastsRequest;
     const solarSources: SolarSourceTypeEnergyPreference[] =
       energyData.prefs.energy_sources.filter(
         (source) => source.type === "solar"
       ) as SolarSourceTypeEnergyPreference[];
+
+    // A settings-only re-publish keeps the same statistics and forecasts
+    if (this._data && energyData.stats === this._data.energyData.stats) {
+      this._data = { energyData, forecasts: this._data.forecasts };
+      return;
+    }
 
     let forecasts: EnergySolarForecasts | undefined;
     if (
@@ -231,6 +259,17 @@ export class HuiEnergySolarGraphCard
       }
     }
 
+    if (request === this._forecastsRequest) {
+      this._data = { energyData, forecasts };
+    }
+  }
+
+  private _processStatistics() {
+    if (!this._config || !this._data) {
+      return;
+    }
+    const { energyData, forecasts } = this._data;
+
     const result = generateEnergySolarGraphData({
       localize: this._i18n.localize,
       states: this._states,
@@ -240,6 +279,8 @@ export class HuiEnergySolarGraphCard
       forecasts,
       computedStyles: getComputedStyle(this),
       now: endOfToday(),
+      combineSources:
+        this._config.combine_sources ?? energyData.combineSources ?? false,
     });
 
     this._start = result.start;

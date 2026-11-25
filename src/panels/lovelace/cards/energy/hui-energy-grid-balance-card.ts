@@ -2,7 +2,10 @@ import { mdiTransmissionTower } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
-import { formatNumber } from "../../../../common/number/format_number";
+import {
+  formatNumber,
+  formatNumberWithUnit,
+} from "../../../../common/number/format_number";
 import { round } from "../../../../common/number/round";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
@@ -84,13 +87,18 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
     const exported = round(summedData.total.to_grid ?? 0, 3);
     const net = imported - exported;
 
+    const formatOptions = (value: number) =>
+      Math.abs(value) < 0.01
+        ? { maximumSignificantDigits: 2 }
+        : { maximumFractionDigits: 2 };
     const fmt = (value: number) =>
-      formatNumber(
+      formatNumber(value, this._i18n.locale, formatOptions(value));
+    const fmtEnergy = (value: number) =>
+      formatNumberWithUnit(
         value,
+        "kWh",
         this._i18n.locale,
-        Math.abs(value) < 0.01
-          ? { maximumSignificantDigits: 2 }
-          : { maximumFractionDigits: 2 }
+        formatOptions(value)
       );
 
     const isConsumption = net >= 0;
@@ -119,9 +127,13 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
             </span>
             <span slot="secondary" class="equation">
               <span class="imported" id="eq-imported">
-                ${fmt(imported)} kWh
+                ${fmtEnergy(imported)}
               </span>
-              <ha-tooltip for="eq-imported" placement="top">
+              <ha-tooltip
+                trigger="hover focus click"
+                for="eq-imported"
+                placement="top"
+              >
                 ${this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.grid_balance.imported",
                   { value: fmt(imported) }
@@ -129,9 +141,13 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
               </ha-tooltip>
               <span class="operator"> - </span>
               <span class="exported" id="eq-exported">
-                ${fmt(exported)} kWh
+                ${fmtEnergy(exported)}
               </span>
-              <ha-tooltip for="eq-exported" placement="top">
+              <ha-tooltip
+                trigger="hover focus click"
+                for="eq-exported"
+                placement="top"
+              >
                 ${this._i18n.localize(
                   "ui.panel.lovelace.cards.energy.grid_balance.exported",
                   { value: fmt(exported) }
@@ -142,9 +158,13 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
                 class="net ${isConsumption ? "consumption" : "return"}"
                 id="eq-net"
               >
-                ${fmt(net)} kWh
+                ${fmtEnergy(net)}
               </span>
-              <ha-tooltip for="eq-net" placement="top">
+              <ha-tooltip
+                trigger="hover focus click"
+                for="eq-net"
+                placement="top"
+              >
                 ${this._i18n.localize(
                   `ui.panel.lovelace.cards.energy.grid_balance.net_${isConsumption ? "import" : "export"}`,
                   { value: fmt(Math.abs(net)) }
@@ -160,7 +180,11 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
               class="bar-fill return"
               style="width: ${leftPercent}%"
             ></div>
-            <ha-tooltip for="bar-exported" placement="top">
+            <ha-tooltip
+              trigger="hover focus click"
+              for="bar-exported"
+              placement="top"
+            >
               ${this._i18n.localize(
                 "ui.panel.lovelace.cards.energy.grid_balance.exported",
                 { value: fmt(exported) }
@@ -173,7 +197,11 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
                       class="bar-net return"
                       style="width: ${netBarWidth}%"
                     ></div>
-                    <ha-tooltip for="bar-net-left" placement="top">
+                    <ha-tooltip
+                      trigger="hover focus click"
+                      for="bar-net-left"
+                      placement="top"
+                    >
                       ${this._i18n.localize(
                         "ui.panel.lovelace.cards.energy.grid_balance.net_export",
                         {
@@ -191,7 +219,11 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
               class="bar-fill consumption"
               style="width: ${rightPercent}%"
             ></div>
-            <ha-tooltip for="bar-imported" placement="top">
+            <ha-tooltip
+              trigger="hover focus click"
+              for="bar-imported"
+              placement="top"
+            >
               ${this._i18n.localize(
                 "ui.panel.lovelace.cards.energy.grid_balance.imported",
                 { value: fmt(imported) }
@@ -204,7 +236,11 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
                       class="bar-net consumption"
                       style="width: ${netBarWidth}%"
                     ></div>
-                    <ha-tooltip for="bar-net-right" placement="top">
+                    <ha-tooltip
+                      trigger="hover focus click"
+                      for="bar-net-right"
+                      placement="top"
+                    >
                       ${this._i18n.localize(
                         "ui.panel.lovelace.cards.energy.grid_balance.net_import",
                         {

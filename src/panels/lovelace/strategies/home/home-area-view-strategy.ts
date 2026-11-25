@@ -145,6 +145,10 @@ export class HomeAreaViewStrategy extends ReactiveElement {
                 type: "button",
                 icon: "mdi:power",
                 text: hass.localize("ui.panel.lovelace.strategy.light.off"),
+                label: hass.localize(
+                  "ui.panel.lovelace.strategy.light.turn_on_area",
+                  { area: area.name }
+                ),
                 tap_action: {
                   action: "perform-action",
                   perform_action: "light.turn_on",
@@ -164,6 +168,10 @@ export class HomeAreaViewStrategy extends ReactiveElement {
                 icon: "mdi:power",
                 color: "orange",
                 text: hass.localize("ui.panel.lovelace.strategy.light.on"),
+                label: hass.localize(
+                  "ui.panel.lovelace.strategy.light.turn_off_area",
+                  { area: area.name }
+                ),
                 tap_action: {
                   action: "perform-action",
                   perform_action: "light.turn_off",

@@ -91,6 +91,10 @@ html`
 `;
 ```
 
+## Loading States
+
+Load `ha-frontend-loading` for anything that shows while content loads: skeletons, spinners, loading buttons and fades.
+
 ## Shortcuts And Tooltips
 
 Use `ShortcutManager` from `src/common/keyboard/shortcuts.ts` for keyboard shortcuts. It blocks shortcuts in input fields, can prevent shortcuts during text selection, and supports character and KeyCode shortcuts for non-latin keyboards. See `src/state/quick-bar-mixin.ts` for global shortcut examples.

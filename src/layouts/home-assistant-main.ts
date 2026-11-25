@@ -66,11 +66,12 @@ export class HomeAssistantMain extends LitElement {
       this.hass.panels && this.hass.userData && this.hass.systemData;
 
     return html`
-      <ha-snowflakes .hass=${this.hass} .narrow=${this.narrow}></ha-snowflakes>
+      <ha-snowflakes .narrow=${this.narrow}></ha-snowflakes>
       <ha-drawer
         .type=${sidebarNarrow ? "modal" : ""}
         .open=${sidebarNarrow ? this._drawerOpen : false}
         .direction=${computeRTLDirection(this.hass)}
+        .accessibleLabel=${this.hass.localize("ui.sidebar.title")}
         @hass-drawer-closed=${this._drawerClosed}
       >
         <ha-sidebar
@@ -180,6 +181,13 @@ export class HomeAssistantMain extends LitElement {
       color: var(--primary-text-color);
       /* remove the grey tap highlights in iOS on the fullscreen touch targets */
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      /* Keep the negative z-index panel backgrounds (the resolver's ::before
+         and the Lovelace view background) in this host's stacking context.
+         Isolating the conditionally rendered partial-panel-resolver instead
+         can intermittently leave the Android WebView (Chromium 109-124)
+         accessibility tree with an empty panel subtree while the page paints
+         normally, which breaks UI automation such as the companion app E2E. */
+      isolation: isolate;
       --ha-sidebar-width: calc(56px + var(--safe-area-inset-left, 0px));
       --ha-top-app-bar-width: calc(100% - var(--ha-sidebar-width));
       --safe-area-content-inset-left: 0px;
@@ -201,7 +209,6 @@ export class HomeAssistantMain extends LitElement {
     partial-panel-resolver {
       display: block;
       height: 100%;
-      isolation: isolate;
     }
     partial-panel-resolver::before {
       content: "";

@@ -3,7 +3,10 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityNameParts } from "../../common/entity/compute_entity_name_display";
 import { stateColorCss } from "../../common/entity/state_color";
-import type { LocalizeKeys } from "../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { domainToName } from "../../data/integration";
 import type { LogbookEntry } from "../../data/logbook";
@@ -302,6 +305,40 @@ export const computeLogbookCause = (
 ): LogbookCause | undefined =>
   computeUserCause(item, userIdToName, systemUserIds) ??
   computeContextCause(hass, item);
+
+export const computeCausePhrase = (
+  localize: LocalizeFunc,
+  cause: LogbookCause
+): string => {
+  switch (cause.type) {
+    case "user":
+      return localize("ui.components.logbook.cause.by", {
+        name: cause.name,
+      });
+    case "automation":
+      return localize("ui.components.logbook.cause.by_automation", {
+        name: cause.name,
+      });
+    case "script":
+      return localize("ui.components.logbook.cause.by_script", {
+        name: cause.name,
+      });
+    case "state":
+      return localize("ui.components.logbook.cause.by_state_change", {
+        name: cause.name,
+      });
+    case "scheduled":
+      return localize("ui.components.logbook.cause.scheduled");
+    case "homeassistant":
+      return cause.name;
+    case "integration":
+      return localize("ui.components.logbook.cause.via", {
+        name: cause.name,
+      });
+    default:
+      return cause.name;
+  }
+};
 
 export const isRunCause = (cause?: LogbookCause): boolean =>
   cause?.type === "automation" || cause?.type === "script";

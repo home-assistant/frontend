@@ -1,0 +1,257 @@
+import { ContextProvider, createContext } from "@lit/context";
+import type { ReactiveElement } from "lit";
+import {
+  consumeContext,
+  ContextController,
+} from "../../../common/decorators/consume";
+import {
+  pathEquals,
+  stringifyPath,
+  type ConfigPath,
+} from "../../../common/util/config-path";
+import type { ConfigValidationError } from "../../../data/config";
+import {
+  automationErrorsContext,
+  errorsEqual,
+  NO_ERRORS,
+  ownedErrors,
+} from "./automation-errors";
+
+export const automationPathContext =
+  createContext<ConfigPath>("automation-path");
+
+export interface AutomationPathRow extends HTMLElement {
+  readonly selected: boolean;
+  /** Whether the rows inside are hidden. */
+  readonly collapsed?: boolean;
+  openSidebar(): void;
+  expand(): void;
+}
+
+const owner = (rows?: AutomationPathRow[]) => rows?.[rows.length - 1];
+
+/**
+ * Rows that open in the sidebar, by path. Lets the editor find the row a
+ * config path belongs to, e.g. to show it or point at an error in it.
+ */
+export class AutomationRowRegistry {
+  // Rows claiming each path, the latest one owns it. While a row is dragged
+  // over another list it claims the path of a row there, which takes the path
+  // back once the dragged row leaves.
+  private _rows = new Map<
+    string,
+    { path: ConfigPath; rows: AutomationPathRow[] }
+  >();
+
+  private _listeners = new Set<() => void>();
+
+  private _notifyScheduled = false;
+
+  public register(path: ConfigPath, row: AutomationPathRow) {
+    const key = stringifyPath(path);
+    const entry = this._rows.get(key);
+    if (!entry) {
+      this._rows.set(key, { path, rows: [row] });
+    } else {
+      entry.rows = [...entry.rows.filter((claimed) => claimed !== row), row];
+    }
+    this._changed();
+  }
+
+  public unregister(path: ConfigPath, row: AutomationPathRow) {
+    const key = stringifyPath(path);
+    const entry = this._rows.get(key);
+    if (!entry) {
+      return;
+    }
+    entry.rows = entry.rows.filter((claimed) => claimed !== row);
+    if (!entry.rows.length) {
+      this._rows.delete(key);
+    }
+    this._changed();
+  }
+
+  /**
+   * Calls `listener` after rows were registered, unregistered, collapsed or
+   * expanded, once for all changes made in the same task. Returns the
+   * function to unsubscribe.
+   */
+  public subscribe(listener: () => void): () => void {
+    this._listeners.add(listener);
+    return () => {
+      this._listeners.delete(listener);
+    };
+  }
+
+  public rowCollapsedChanged() {
+    this._changed();
+  }
+
+  private _changed() {
+    if (this._notifyScheduled || !this._listeners.size) {
+      return;
+    }
+    this._notifyScheduled = true;
+    queueMicrotask(() => {
+      this._notifyScheduled = false;
+      this._listeners.forEach((listener) => listener());
+    });
+  }
+
+  public rowAt(path: ConfigPath): AutomationPathRow | undefined {
+    return owner(this._rows.get(stringifyPath(path))?.rows);
+  }
+
+  public pathOf(row: AutomationPathRow): ConfigPath | undefined {
+    return [...this._rows.values()].find((entry) => owner(entry.rows) === row)
+      ?.path;
+  }
+
+  public selectedPath(): ConfigPath | undefined {
+    return [...this._rows.values()].find((entry) => owner(entry.rows)?.selected)
+      ?.path;
+  }
+
+  /** The rows containing `path`, outermost first. */
+  public rowsAlong(path: ConfigPath): AutomationPathRow[] {
+    return path
+      .map((_segment, index) =>
+        owner(this._rows.get(stringifyPath(path.slice(0, index + 1)))?.rows)
+      )
+      .filter((row): row is AutomationPathRow => row !== undefined);
+  }
+}
+
+export const automationRowRegistryContext =
+  createContext<AutomationRowRegistry>("automation-row-registry");
+
+interface AutomationPathControllerOptions {
+  /** Path segments this element adds to the path of its ancestor. */
+  segment: () => ConfigPath;
+  /** The host while it is a row that opens in the sidebar. */
+  row?: () => AutomationPathRow | undefined;
+}
+
+/**
+ * Consumes the path of the closest ancestor and provides it extended by the
+ * host's own segment to its descendants. For a row, also finds the validation
+ * errors the row owns and updates the host when they change.
+ */
+export class AutomationPathController extends ContextController {
+  public path: ConfigPath = [];
+
+  public errors: ConfigValidationError[] = NO_ERRORS;
+
+  @consumeContext({ context: automationErrorsContext, subscribe: true })
+  private _configErrors: ConfigValidationError[] = NO_ERRORS;
+
+  private _unsubscribeRegistry?: () => void;
+
+  @consumeContext({ context: automationPathContext, subscribe: true })
+  private _parentPath: ConfigPath = [];
+
+  @consumeContext({ context: automationRowRegistryContext })
+  private _registry?: AutomationRowRegistry;
+
+  private _registeredPath?: ConfigPath;
+
+  private _registeredRow?: AutomationPathRow;
+
+  private _collapsed?: boolean;
+
+  private readonly _provider: ContextProvider<typeof automationPathContext>;
+
+  constructor(
+    host: ReactiveElement,
+    private readonly _options: AutomationPathControllerOptions
+  ) {
+    super(host);
+    this._provider = new ContextProvider(host, {
+      context: automationPathContext,
+      initialValue: this.path,
+    });
+  }
+
+  // The path is not rendered, so a changed ancestor path is passed on without
+  // updating the host. Only the host's own segment changes go through an update.
+  protected contextUpdated() {
+    this._sync();
+  }
+
+  public hostUpdate() {
+    this._sync();
+  }
+
+  public hostConnected() {
+    // A row moved by a drag reconnects without an update
+    this._sync();
+    if (this._options.row && this._registry && !this._unsubscribeRegistry) {
+      // Another row on the path of an error can take it over or give it back
+      this._unsubscribeRegistry = this._registry.subscribe(() =>
+        this._syncErrors()
+      );
+    }
+  }
+
+  private _sync() {
+    const path = [...this._parentPath, ...this._options.segment()];
+    if (!pathEquals(path, this.path)) {
+      this.path = path;
+      this._provider.setValue(path);
+    }
+    this._syncRegistration();
+    this._syncErrors();
+  }
+
+  public hostUpdated() {
+    // A collapsed row takes over the errors of the rows it hides
+    const collapsed = this._registeredRow?.collapsed;
+    if (collapsed !== this._collapsed) {
+      this._collapsed = collapsed;
+      this._registry?.rowCollapsedChanged();
+    }
+  }
+
+  public hostDisconnected() {
+    this._unsubscribeRegistry?.();
+    this._unsubscribeRegistry = undefined;
+    this._unregister();
+  }
+
+  private _syncErrors() {
+    const errors =
+      this._registeredRow && this._registry && this._configErrors.length
+        ? ownedErrors(this._registry, this._configErrors, this._registeredRow)
+        : NO_ERRORS;
+    if (!errorsEqual(errors, this.errors)) {
+      this.errors = errors;
+      this.host.requestUpdate();
+    }
+  }
+
+  private _syncRegistration() {
+    if (!this._registry || !this._options.row) {
+      return;
+    }
+    const row = this.host.isConnected ? this._options.row() : undefined;
+    if (
+      this._registeredPath &&
+      (!row || !pathEquals(this._registeredPath, this.path))
+    ) {
+      this._unregister();
+    }
+    if (row && !this._registeredPath) {
+      this._registry.register(this.path, row);
+      this._registeredPath = this.path;
+      this._registeredRow = row;
+    }
+  }
+
+  private _unregister() {
+    if (this._registeredPath && this._registeredRow) {
+      this._registry?.unregister(this._registeredPath, this._registeredRow);
+    }
+    this._registeredPath = undefined;
+    this._registeredRow = undefined;
+  }
+}

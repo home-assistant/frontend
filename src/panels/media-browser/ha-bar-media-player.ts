@@ -12,17 +12,17 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
-import { fireEvent } from "../../common/dom/fire_event";
+import { MediaProgressController } from "../../common/controllers/media-progress-controller";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
   HASSDomTargetEvent,
 } from "../../common/dom/fire_event";
+import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityPickerDisplay } from "../../common/entity/compute_entity_name_display";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { debounce } from "../../common/util/debounce";
-import { MediaProgressController } from "../../common/controllers/media-progress-controller";
 import { VolumeSliderController } from "../../common/util/volume-slider";
 import "../../components/ha-button";
 import "../../components/ha-domain-icon";
@@ -47,6 +47,7 @@ import {
   computeMediaDescription,
   formatMediaTime,
   handleMediaControlClick,
+  removeSecondaryStopControl,
   setMediaPlayerVolume,
 } from "../../data/media-player";
 import type { ResolvedMediaSource } from "../../data/media_source";
@@ -98,7 +99,12 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
   private _volumeController = new VolumeSliderController({
     getSlider: () => this._volumeSlider,
     step: this._volumeStep,
-    onSetVolume: (value) => this._setVolume(value),
+    onSetVolume: (value) => {
+      // The final value is set right away, so drop the pending update from
+      // the input events before it, or the same value is sent twice
+      this._debouncedVolumeSet.cancel();
+      this._setVolume(value);
+    },
     onSetVolumeDebounced: (value) => this._debouncedVolumeSet(value),
     onValueUpdated: (value) => {
       this._volumeValue = value;
@@ -170,7 +176,10 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     }
 
     const controls: ControlButton[] | undefined = !this.narrow
-      ? computeMediaControls(stateObj, true)
+      ? removeSecondaryStopControl(
+          stateObj,
+          computeMediaControls(stateObj, true)
+        )
       : (stateObj.state === "playing" &&
             (supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE) ||
               supportsFeature(stateObj, MediaPlayerEntityFeature.STOP))) ||
@@ -336,6 +345,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                 <ha-icon-button
                   slot="trigger"
                   .path=${mdiVolumeHigh}
+                  .label=${this.hass.localize("ui.card.media_player.volume")}
                 ></ha-icon-button>
                 <div
                   class="volume-slider-container"
@@ -377,7 +387,18 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                   : stateObj
                     ? (() => {
                         const { primary, secondary } =
-                          computeEntityPickerDisplay(this.hass, stateObj);
+                          computeEntityPickerDisplay(
+                            {
+                              entities: this.hass.entities,
+                              devices: this.hass.devices,
+                              areas: this.hass.areas,
+                              floors: this.hass.floors,
+                              language: this.hass.language,
+                              translationMetadata:
+                                this.hass.translationMetadata,
+                            },
+                            stateObj
+                          );
                         return html`<div class="player-label">
                           <div>${primary}</div>
                           ${

@@ -1,4 +1,4 @@
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -95,18 +95,9 @@ export class HaTextSelector extends LitElement {
       .required=${this.required}
       .autocomplete=${this.selector.text?.autocomplete}
       .passwordToggle=${this.selector.text?.type === "password"}
-    >
-      ${
-        this.selector.text?.prefix
-          ? html`<span slot="start">${this.selector.text.prefix}</span>`
-          : nothing
-      }
-      ${
-        this.selector.text?.suffix
-          ? html`<span slot="end">${this.selector.text.suffix}</span>`
-          : nothing
-      }
-    </ha-input>`;
+      .inputPrefix=${this.selector.text?.prefix}
+      .inputSuffix=${this.selector.text?.suffix}
+    ></ha-input>`;
   }
 
   private _handleChange(ev: ValueChangedEvent<string> | InputEvent) {

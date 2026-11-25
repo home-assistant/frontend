@@ -476,7 +476,7 @@ export class HuiCardPicker extends LitElement {
         return nothing;
       }
 
-      return html`<div class="card" tabindex="0">
+      return html`<div class="card">
         ${until(
           this._renderCardElement(
             {
@@ -507,7 +507,7 @@ export class HuiCardPicker extends LitElement {
     const favorite = this._favorites.includes(key);
 
     return html`
-      <div class="card ${classMap({ "full-width": wide })}" tabindex="0">
+      <div class="card ${classMap({ "full-width": wide })}">
         ${cardElement.element}
         <ha-icon-button
           class="favorite ${classMap({ selected: favorite })}"
@@ -659,27 +659,24 @@ export class HuiCardPicker extends LitElement {
       }
     }
 
-    // prevent tabbing to card
-    if (element) {
-      element.tabIndex = -1;
-    }
+    const title = customCard ? customCard.name || customCard.type : name;
+    const showPreview = !!element && element.tagName !== "HUI-ERROR-CARD";
 
     return html`
-      <div
+      <button
+        type="button"
         class="overlay"
+        aria-label=${title || type}
         @click=${this._cardPicked}
         .config=${cardConfig}
-      ></div>
-      <div class="card-header">
-        ${customCard ? customCard.name || customCard.type : name}
-      </div>
+      ></button>
+      <div class="card-header" aria-hidden="true">${title}</div>
       <div
-        class="preview ${classMap({
-          description: !element || element.tagName === "HUI-ERROR-CARD",
-        })}"
+        class="preview ${classMap({ description: !showPreview })}"
+        ?inert=${showPreview}
       >
         ${
-          element && element.tagName !== "HUI-ERROR-CARD"
+          showPreview
             ? element
             : customCard
               ? customCard.description ||
@@ -848,10 +845,21 @@ export class HuiCardPicker extends LitElement {
           height: 100%;
           z-index: 1;
           box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+          border: none;
+          background: none;
+          cursor: pointer;
+          outline: none;
           border-radius: var(
             --ha-card-border-radius,
             var(--ha-border-radius-lg)
           );
+        }
+
+        .overlay:focus-visible {
+          outline: var(--wa-focus-ring);
+          outline-offset: calc(-1 * var(--wa-focus-ring-width));
         }
 
         .full-width {

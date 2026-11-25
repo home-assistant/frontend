@@ -17,6 +17,7 @@ import {
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
+import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -35,7 +36,7 @@ const strategyStruct = type({
 
 @customElement("hui-editor")
 class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
-  PreventUnsavedMixin(LitElement)
+  PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
 ) {
   @property({ type: Boolean }) public narrow = false;
 
@@ -88,7 +89,6 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
         >
         <div class="content">
           <ha-yaml-editor
-            autofocus
             @value-changed=${this._yamlChanged}
             @editor-save=${this._handleSave}
             disable-fullscreen
@@ -102,6 +102,7 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._setValue();
+    this.yamlEditor.focus();
   }
 
   protected updated(changedProps: PropertyValues<this>) {
@@ -204,6 +205,10 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
 
   private async _closeEditor() {
     await this._confirmDiscard(true);
+  }
+
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    return { Y: () => this._closeEditor() };
   }
 
   private async _resetConfig() {

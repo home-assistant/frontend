@@ -1,6 +1,8 @@
+import { navigate } from "../../../common/navigate";
 import type { LovelacePanelConfig } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
+import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import type {
   LovelaceConfig,
   LovelaceRawConfig,
@@ -10,20 +12,48 @@ import {
   isStrategyDashboard,
   saveConfig,
 } from "../../../data/lovelace/config/types";
+import { isStrategyView } from "../../../data/lovelace/config/view";
 import { fetchDashboards } from "../../../data/lovelace/dashboard";
+import { getPanelTitleFromUrlPath, LOVELACE_PANEL } from "../../../data/panel";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
+import { showToast } from "../../../util/toast";
+import { SECTIONS_VIEW_LAYOUT } from "../views/const";
+import { getViewType } from "../views/get-view-type";
+import type { SuggestCardDialogParams } from "./card-editor/show-suggest-card-dialog";
 import { showSuggestCardDialog } from "./card-editor/show-suggest-card-dialog";
+import { showEditSectionDialog } from "./section-editor/show-edit-section-dialog";
 import { showSelectViewDialog } from "./select-view/show-select-view-dialog";
+
+export type AddToViewCardDialogParams = Pick<
+  SuggestCardDialogParams,
+  "lovelaceConfig" | "saveConfig" | "path" | "yaml"
+>;
+
+export interface AddEntitiesToViewOptions {
+  cardConfig?: LovelaceCardConfig[];
+  sectionConfig?: LovelaceSectionConfig;
+  entities?: string[];
+  sectionStrategy?: LovelaceStrategyConfig;
+  showCardDialog?: (params: AddToViewCardDialogParams) => void;
+}
 
 export const addEntitiesToLovelaceView = async (
   element: HTMLElement,
   hass: HomeAssistant,
-  cardConfig: LovelaceCardConfig[],
-  sectionConfig?: LovelaceSectionConfig,
-  entities?: string[]
+  options: AddEntitiesToViewOptions
 ) => {
-  hass.loadFragmentTranslation("lovelace");
+  const { sectionStrategy } = options;
+  const showCardDialog =
+    options.showCardDialog ??
+    ((params: AddToViewCardDialogParams) =>
+      showSuggestCardDialog(element, {
+        ...params,
+        cardConfig: options.cardConfig ?? [],
+        sectionConfig: options.sectionConfig,
+        entities: options.entities,
+      }));
+  await hass.loadFragmentTranslation("lovelace");
   const dashboards = await fetchDashboards(hass);
 
   const storageDashs = dashboards.filter(
@@ -36,11 +66,7 @@ export const addEntitiesToLovelaceView = async (
 
   if (mainLovelaceMode !== "storage" && !storageDashs.length) {
     // no storage dashboards, just show the YAML config
-    showSuggestCardDialog(element, {
-      cardConfig,
-      entities,
-      yaml: true,
-    });
+    showCardDialog({ yaml: true });
     return;
   }
 
@@ -94,12 +120,7 @@ export const addEntitiesToLovelaceView = async (
   if (!hasViewList(lovelaceConfig)) {
     if (dashboards.length > storageDashs.length) {
       // all storage dashboards are generated, but we have YAML dashboards just show the YAML config
-      showSuggestCardDialog(element, {
-        cardConfig,
-        sectionConfig,
-        entities,
-        yaml: true,
-      });
+      showCardDialog({ yaml: true });
     } else {
       // all storage dashboards are generated
       showAlertDialog(element, {
@@ -116,21 +137,59 @@ export const addEntitiesToLovelaceView = async (
     return;
   }
 
-  if (!storageDashs.length && lovelaceConfig.views.length === 1) {
-    showSuggestCardDialog(element, {
-      cardConfig,
-      sectionConfig,
-      lovelaceConfig,
-      saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
-        try {
-          await saveConfig(hass!, null, newConfig);
-        } catch (_err: any) {
-          alert(hass.localize("ui.panel.lovelace.add_entities.saving_failed"));
-        }
-      },
-      path: ["views", 0],
-      entities,
+  const showAddDialog = (
+    viewUrlPath: string | null,
+    config: LovelaceConfig,
+    viewIndex: number
+  ) => {
+    const save = async (newConfig: LovelaceConfig): Promise<void> => {
+      try {
+        await saveConfig(hass!, viewUrlPath, newConfig);
+      } catch (_err: any) {
+        alert(hass.localize("ui.panel.lovelace.add_entities.saving_failed"));
+        return;
+      }
+      const dashboardPath = viewUrlPath ?? LOVELACE_PANEL;
+      const viewPath = newConfig.views[viewIndex].path || viewIndex;
+      const dashboardTitle = getPanelTitleFromUrlPath(hass, dashboardPath);
+      showToast(element, {
+        message: dashboardTitle
+          ? {
+              translationKey: "ui.panel.lovelace.add_entities.added",
+              args: { dashboard: dashboardTitle },
+            }
+          : { translationKey: "ui.panel.lovelace.add_entities.added_unnamed" },
+        action: {
+          text: { translationKey: "ui.panel.lovelace.add_entities.open" },
+          action: () => navigate(`/${dashboardPath}/${viewPath}`),
+        },
+      });
+    };
+
+    const view = config.views[viewIndex];
+    if (
+      sectionStrategy &&
+      !isStrategyView(view) &&
+      getViewType(view) === SECTIONS_VIEW_LAYOUT
+    ) {
+      showEditSectionDialog(element, {
+        lovelaceConfig: config,
+        saveConfig: save,
+        path: ["views", viewIndex, "sections", view.sections?.length ?? 0],
+        newSection: { strategy: sectionStrategy },
+      });
+      return;
+    }
+
+    showCardDialog({
+      lovelaceConfig: config,
+      saveConfig: save,
+      path: ["views", viewIndex],
     });
+  };
+
+  if (!storageDashs.length && lovelaceConfig.views.length === 1) {
+    showAddDialog(null, lovelaceConfig, 0);
     return;
   }
 
@@ -140,23 +199,6 @@ export const addEntitiesToLovelaceView = async (
     allowDashboardChange: true,
     actionLabel: hass.localize("ui.common.next"),
     dashboards,
-    viewSelectedCallback: (newUrlPath, selectedDashConfig, viewIndex) => {
-      showSuggestCardDialog(element, {
-        cardConfig,
-        sectionConfig,
-        lovelaceConfig: selectedDashConfig,
-        saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
-          try {
-            await saveConfig(hass!, newUrlPath, newConfig);
-          } catch {
-            alert(
-              hass.localize("ui.panel.lovelace.add_entities.saving_failed")
-            );
-          }
-        },
-        path: ["views", viewIndex],
-        entities,
-      });
-    },
+    viewSelectedCallback: showAddDialog,
   });
 };

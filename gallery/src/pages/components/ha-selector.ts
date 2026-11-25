@@ -683,8 +683,13 @@ const SCHEMAS: {
     name: "Unit of measurement",
     input: {
       sensor_device_class: {
-        name: "Device class",
-        selector: { device_class: { domain: "sensor" } },
+        name: "Device class of the unit below",
+        selector: {
+          device_class: {
+            domain: "sensor",
+            context: { filter_unit_of_measurement: "unit_linked" },
+          },
+        },
       },
       sensor_state_class: {
         name: "State class",
@@ -919,7 +924,7 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
       providers: [
         {
           engine_id: "stt.cloud",
-          name: "Home Assistant Cloud",
+          name: "Home Assistant Link",
           supported_languages: ["en-US"],
           deprecated: false,
         },
@@ -929,7 +934,7 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
       providers: [
         {
           engine_id: "tts.cloud",
-          name: "Home Assistant Cloud",
+          name: "Home Assistant Link",
           supported_languages: ["en-US"],
           deprecated: false,
         },

@@ -1,3 +1,4 @@
+import { provide } from "@lit/context";
 import { mdiAlertOutline, mdiHelpCircleOutline } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -33,6 +34,10 @@ import {
 } from "../../../../../data/target";
 import type { HomeAssistant } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
+import "../../../../../components/ha-input-helper-text";
+import { targetErrorText } from "../../automation-errors";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
+import { targetExpandGroupContext } from "../../../../../components/target-picker/target-expand-group-context";
 
 // Mirrors `MAX_HISTORY_PRIMING_LOOKBACK` in homeassistant/helpers/condition.py:
 // when a condition has a `for:` duration, the recorder is only queried this far
@@ -47,6 +52,14 @@ const showOptionalToggle = (field: ConditionDescription["fields"][string]) =>
 
 @customElement("ha-automation-condition-platform")
 export class HaPlatformCondition extends LitElement {
+  // Triggers and conditions don't expand the groups their targets name.
+  @provide({ context: targetExpandGroupContext })
+  protected _targetExpandGroup = false;
+
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["target"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public condition!: PlatformCondition;
@@ -228,6 +241,7 @@ export class HaPlatformCondition extends LitElement {
             ></ha-selector>`
           : nothing
       }
+      ${this._renderTargetError()}
       ${
         shouldRenderDataYaml
           ? html`<ha-yaml-editor
@@ -250,6 +264,15 @@ export class HaPlatformCondition extends LitElement {
             )
       }
     `;
+  }
+
+  private _renderTargetError() {
+    const error = this._fieldErrors.fieldError("target");
+    return error
+      ? html`<ha-input-helper-text class="target-error">
+          ${targetErrorText(this.hass.localize, error)}
+        </ha-input-helper-text>`
+      : nothing;
   }
 
   private _targetSelector = memoizeOne(
@@ -285,6 +308,10 @@ export class HaPlatformCondition extends LitElement {
     const description = this.hass.localize(
       `component.${domain}.conditions.${conditionName}.fields.${fieldName}.description`
     );
+    const label =
+      this.hass.localize(
+        `component.${domain}.conditions.${conditionName}.fields.${fieldName}.name`
+      ) || fieldName;
 
     return html`<ha-settings-row narrow>
       ${
@@ -294,6 +321,7 @@ export class HaPlatformCondition extends LitElement {
             : nothing
           : html`<ha-checkbox
               .key=${fieldName}
+              .accessibleLabel=${label}
               .checked=${
                 this._checkedKeys.has(fieldName) ||
                 (!!this.condition?.options &&
@@ -308,11 +336,7 @@ export class HaPlatformCondition extends LitElement {
         slot="heading"
         class=${showOptional ? "clickable" : ""}
         @click=${showOptional ? this._toggleCheckbox : undefined}
-        >${
-          this.hass.localize(
-            `component.${domain}.conditions.${conditionName}.fields.${fieldName}.name`
-          ) || fieldName
-        }${this._renderForPrimingInfo(fieldName)}</span
+        >${label}${this._renderForPrimingInfo(fieldName)}</span
       >
       ${
         description
@@ -673,6 +697,10 @@ export class HaPlatformCondition extends LitElement {
         --service-control-items-border-top,
         1px solid var(--divider-color)
       );
+    }
+    .target-error {
+      color: var(--ha-color-on-danger-quiet);
+      padding-bottom: var(--ha-space-2);
     }
     ha-yaml-editor {
       padding: var(--ha-space-4) 0;

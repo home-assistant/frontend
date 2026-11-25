@@ -1,18 +1,33 @@
+import type { HassConfig } from "home-assistant-js-websocket";
 import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { css, html, LitElement } from "lit";
+import { customElement, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-card";
 import "../../../components/ha-spinner";
+import { configContext } from "../../../data/context";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistantConfig } from "../../../types";
 import type { LovelaceCard } from "../types";
 
 @customElement("hui-starting-card")
 export class HuiStartingCard extends LitElement implements LovelaceCard {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig?: HassConfig;
 
   public getCardSize(): number {
     return 2;
@@ -21,28 +36,24 @@ export class HuiStartingCard extends LitElement implements LovelaceCard {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public setConfig(_config: LovelaceCardConfig): void {}
 
-  protected updated(changedProperties: PropertyValues<this>) {
+  protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
-    if (!changedProperties.has("hass") || !this.hass!.config) {
+    if (!changedProperties.has("_hassConfig") || !this._hassConfig) {
       return;
     }
 
-    if (this.hass!.config.state !== STATE_NOT_RUNNING) {
+    if (this._hassConfig.state !== STATE_NOT_RUNNING) {
       fireEvent(this, "config-refresh");
     }
   }
 
   protected render() {
-    if (!this.hass) {
-      return nothing;
-    }
-
     return html`
       <div class="content">
         <ha-fade-in .delay=${500}>
           <ha-spinner></ha-spinner>
         </ha-fade-in>
-        ${this.hass.localize("ui.panel.lovelace.cards.starting.description")}
+        ${this._localize("ui.panel.lovelace.cards.starting.description")}
       </div>
     `;
   }

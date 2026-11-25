@@ -400,7 +400,7 @@ class DialogAreasFloorsOrder extends DirtyStateProviderMixin<OrderState>()(
       // Update floor assignments for areas that changed floors
       const floorChanges = this._computeFloorChanges();
       const floorChangePromises = floorChanges.map(({ areaId, floorId }) =>
-        updateAreaRegistryEntry(this.hass, areaId, {
+        updateAreaRegistryEntry(this.hass.callWS, areaId, {
           floor_id: floorId,
         })
       );

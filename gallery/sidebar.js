@@ -82,6 +82,10 @@ export default [
         pages: ["ha-alert", "ha-spinner", "ha-tip", "ha-bar", "ha-gauge"],
       },
       {
+        header: "Charts",
+        pages: ["state-history-charts", "statistics-chart"],
+      },
+      {
         header: "Labels and text",
         pages: ["ha-badge", "ha-label-badge", "ha-chips", "ha-marquee-text"],
       },

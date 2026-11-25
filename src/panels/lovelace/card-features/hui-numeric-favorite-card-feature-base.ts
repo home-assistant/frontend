@@ -192,7 +192,10 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
 
   private async _loadEntityEntry(entityId: string): Promise<void> {
     try {
-      const entry = await getExtendedEntityRegistryEntry(this._api, entityId);
+      const entry = await getExtendedEntityRegistryEntry(
+        this._api.callWS,
+        entityId
+      );
 
       if (this.context?.entity_id === entityId) {
         this._entry = entry;

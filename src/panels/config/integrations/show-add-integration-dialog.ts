@@ -8,8 +8,7 @@ export interface AddIntegrationDialogParams {
   initialFilter?: string;
   integrationFilter?: IntegrationFilter;
   navigateToResult?: boolean;
-  // Open on a category, like `ai_voice`, or a subcategory, like
-  // `ai_voice.ai_models`
+  // Opens on a category like `ai_voice`, or a subcategory like `ai_voice.ai_models`
   category?: string;
 }
 

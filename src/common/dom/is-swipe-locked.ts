@@ -3,15 +3,23 @@ const SWIPE_LOCKED_COMPONENTS = new Set([
   "ha-slider",
   "ha-control-switch",
   "ha-control-circular-slider",
+  "ha-state-control-cover",
   "ha-hs-color-picker",
   "ha-map",
   // Charts pan and pinch-zoom on touch
   "ha-chart-base",
   "ha-more-info-control-select-container",
   "ha-filter-chip",
+  // Toasts are inside the sheet while it is open
+  "notification-manager",
 ]);
 
-const SWIPE_LOCKED_CLASSES = new Set(["volume-slider-container", "forecast"]);
+const SWIPE_LOCKED_CLASSES = new Set([
+  "volume-slider-container",
+  "forecast",
+  // A zoomed in camera picture pans on touch
+  "camera-player-zoomed",
+]);
 
 /**
  * Whether a touch inside a bottom sheet belongs to its content rather than to

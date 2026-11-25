@@ -302,6 +302,14 @@ export default tseslint.config(
     },
   },
   {
+    // Published as native ESM, where package subpath imports such as
+    // "lit/decorators.js" need their extension.
+    files: ["packages/*/src/**/*.ts"],
+    rules: {
+      "import-x/extensions": ["error", "ignorePackages", { ts: "never" }],
+    },
+  },
+  {
     plugins: {
       html,
     },
