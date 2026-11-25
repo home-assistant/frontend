@@ -85,7 +85,7 @@ class OnboardingAnalytics extends LitElement {
     super.firstUpdated(changedProps);
     this._heading?.focus();
     this.addEventListener("keypress", (ev) => {
-      if (ev.key === "Enter") {
+      if (ev.key === "Enter" && ev.composedPath()[0] !== this._heading) {
         this._save(ev);
       }
     });
