@@ -53,6 +53,7 @@ Detailed guidance lives in `.agents/skills/<name>/SKILL.md`. Load every matching
 - `ha-frontend-ux-readiness`: UI/UX routing that complements frontend review for new user experiences.
 - `ha-frontend-gallery`: gallery pages, demos, sidebar structure, content, and verification.
 - `ha-frontend-demo`: standalone demo structure, configurations, navigation, shared stubs, and verification.
+- `ha-frontend-browser-checks`: checking a change in a browser at real device sizes and right to left, and before and after captures for pull requests.
 
 ## Pull Requests
 
