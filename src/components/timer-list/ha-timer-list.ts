@@ -250,7 +250,7 @@ export class HaTimerList extends LitElement {
                                       appearance="plain"
                                       size="s"
                                       .timer=${timer}
-                                      aria-label=${this._i18n.localize(
+                                      title=${this._i18n.localize(
                                         "ui.components.timer-list.add_minute"
                                       )}
                                       @click=${this._addMinute}

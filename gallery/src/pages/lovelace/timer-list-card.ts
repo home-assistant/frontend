@@ -22,7 +22,7 @@ const CONFIGS = [
     },
   },
   {
-    heading: "With title, without the button to start a timer",
+    heading: "With title, without the add timer button",
     config: {
       type: "timer-list",
       title: "Kitchen",

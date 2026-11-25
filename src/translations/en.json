@@ -11968,7 +11968,7 @@
             "timer-list": {
               "name": "Timer list",
               "description": "This card allows you to start, pause, and cancel the timers in a timer list.",
-              "hide_create": "Hide the button to start a timer"
+              "hide_create": "Hide the add timer button"
             },
             "todo-list": {
               "name": "To-do list",
