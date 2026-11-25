@@ -120,21 +120,34 @@ class HaConfigBackupDetails extends LitElement {
                                 </p>
                               </div>
                             `
-                          : html`<ha-backup-config-retention
-                              location-specific
-                              .headline=${this.hass.localize(
-                                `ui.panel.config.backup.location.retention_for_${isLocalAgent(this.agentId) ? "this_system" : "location"}`,
-                                { location: agentName }
-                              )}
-                              .hass=${this.hass}
-                              .retention=${
-                                !this.config
-                                  ? undefined
-                                  : this.config.agents[this.agentId]
-                                      ?.retention || null
-                              }
-                              @value-changed=${this._retentionChanged}
-                            ></ha-backup-config-retention>`
+                          : html`${
+                                this.config &&
+                                !this.config.create_backup.agent_ids.includes(
+                                  this.agentId
+                                )
+                                  ? html`<div class="card-content">
+                                      <ha-alert alert-type="info">
+                                        ${this.hass.localize(
+                                          "ui.panel.config.backup.location.retention_inactive"
+                                        )}
+                                      </ha-alert>
+                                    </div>`
+                                  : nothing
+                              }<ha-backup-config-retention
+                                location-specific
+                                .headline=${this.hass.localize(
+                                  `ui.panel.config.backup.location.retention_for_${isLocalAgent(this.agentId) ? "this_system" : "location"}`,
+                                  { location: agentName }
+                                )}
+                                .hass=${this.hass}
+                                .retention=${
+                                  !this.config
+                                    ? undefined
+                                    : this.config.agents[this.agentId]
+                                        ?.retention || null
+                                }
+                                @value-changed=${this._retentionChanged}
+                              ></ha-backup-config-retention>`
                       }
                     </ha-card>
                     <ha-card>

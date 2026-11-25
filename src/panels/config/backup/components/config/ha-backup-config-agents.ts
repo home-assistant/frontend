@@ -89,7 +89,11 @@ class HaBackupConfigAgents extends LitElement {
 
     const retention = this.agentsConfig?.[agentId]?.retention;
 
-    if (retention) {
+    if (retention && !this._value.includes(agentId)) {
+      texts.push(
+        this.hass.localize("ui.panel.config.backup.agents.retention_inactive")
+      );
+    } else if (retention) {
       if (retention.copies === null && retention.days === null) {
         texts.push(
           this.hass.localize("ui.panel.config.backup.agents.retention_all")
