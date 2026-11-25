@@ -8361,8 +8361,8 @@
             "created_config": "Created configuration for {name}.",
             "helper_area": "This helper isn't part of a device, so you can add it to an area.",
             "debug_logging_suggestion": "To find out what went wrong, enable debug logging and submit again.",
-            "debug_logging_on": "Debug logging is enabled for {integration}. When you are done, disable it on the {integration_page_link} to download the log.",
-            "integration_page_link": "integration page",
+            "debug_logging_on": "Submit again to write the details of the error to the log. When you are done, disable debug logging to download the log.",
+            "disable_and_download_log": "Disable and download log",
             "external_step": {
               "description": "This step requires you to visit an external website to be completed.",
               "open_site": "Open website"

@@ -1,3 +1,4 @@
+import { mdiBugPlay } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -19,6 +20,7 @@ import type {
 } from "../../components/ha-form/types";
 import "../../components/ha-markdown";
 import "../../components/ha-spinner";
+import "../../components/ha-svg-icon";
 import { autocompleteLoginFields } from "../../data/auth";
 import {
   dirtyStateContext,
@@ -27,11 +29,14 @@ import {
 import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import type { IntegrationLogInfo } from "../../data/integration";
 import {
-  domainToName,
   fetchIntegrationLogInfo,
   LogSeverity,
   setIntegrationLogLevel,
 } from "../../data/integration";
+import {
+  checkDebugLogDownloadAvailable,
+  downloadIntegrationDebugLog,
+} from "../../data/integration_debug_log";
 import { previewModule } from "../../data/preview";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
@@ -189,31 +194,34 @@ class StepFlowForm extends LitElement {
         ${this.hass.localize(
           "ui.panel.config.integrations.config_flow.debug_logging_suggestion"
         )}
-        <ha-button
-          slot="action"
-          size="s"
-          appearance="plain"
-          @click=${this._enableDebugLogging}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.integrations.config_entry.enable_debug_logging"
-          )}
+        <ha-button slot="action" size="s" @click=${this._enableDebugLogging}>
+          ${this.hass.localize("ui.common.enable")}
         </ha-button>
       </ha-alert>`;
     }
-    return html`<ha-alert alert-type="info" @keydown=${stopPropagation}>
-      ${this.hass.localize(
-        "ui.panel.config.integrations.config_flow.debug_logging_on",
-        {
-          integration: domainToName(this.hass.localize, this.domain!),
-          integration_page_link: html`<a
-            href=${`/config/integrations/integration/${this.domain}`}
-            >${this.hass.localize(
-              "ui.panel.config.integrations.config_flow.integration_page_link"
-            )}</a
-          >`,
-        }
+    return html`<ha-alert
+      alert-type="warning"
+      class="debug-logging"
+      .title=${this.hass.localize(
+        "ui.panel.config.integrations.config_entry.debug_logging_enabled"
       )}
+      @keydown=${stopPropagation}
+    >
+      <ha-svg-icon slot="icon" .path=${mdiBugPlay}></ha-svg-icon>
+      ${this.hass.localize(
+        "ui.panel.config.integrations.config_flow.debug_logging_on"
+      )}
+      <ha-button
+        slot="action"
+        size="s"
+        variant="warning"
+        appearance="filled"
+        @click=${this._disableAndDownloadDebugLog}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.integrations.config_flow.disable_and_download_log"
+        )}
+      </ha-button>
     </ha-alert>`;
   }
 
@@ -239,6 +247,20 @@ class StepFlowForm extends LitElement {
       "once"
     );
     this._debugLogging = true;
+  }
+
+  private async _disableAndDownloadDebugLog() {
+    const domain = this.domain!;
+    await setIntegrationLogLevel(
+      this.hass,
+      domain,
+      LogSeverity[LogSeverity.NOTSET],
+      "once"
+    );
+    this._debugLogging = false;
+    if (checkDebugLogDownloadAvailable(this, this.hass)) {
+      await downloadIntegrationDebugLog(this.hass, domain);
+    }
   }
 
   private _setError(ev: HASSDomEvent<DataEntryFlowStepForm["errors"]>) {
