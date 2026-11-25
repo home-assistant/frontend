@@ -2972,7 +2972,6 @@
       "started_with_issues": "Home Assistant has started. {count, plural,\n  one {# integration needs}\n  other {# integrations need}\n} attention.",
       "details": "Details",
       "triggered": "Triggered {name}",
-      "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}",
       "new_version_available": "A new version of the frontend is available. This page will update in {seconds, plural, one {# second} other {# seconds}}.",
       "new_version_available_reload": "A new version of the frontend is available. It will be applied once you have finished what you are working on.",
