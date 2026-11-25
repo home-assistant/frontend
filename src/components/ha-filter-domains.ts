@@ -11,7 +11,6 @@ import {
   FilterPanelController,
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
-import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { arrayWith, arrayWithout } from "../common/array/array-with";
 import type {
   HASSDomCurrentTargetEvent,
@@ -34,10 +33,6 @@ import type { HaInputSearch } from "./input/ha-input-search";
 
 @customElement("ha-filter-domains")
 export class HaFilterDomains extends LitElement {
-  @state()
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
-
   @consume({ context: statesContext, subscribe: true })
   @state()
   private _states!: ContextType<typeof statesContext>;
@@ -66,13 +61,13 @@ export class HaFilterDomains extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this._localize("ui.panel.config.domains.caption")}
+          ${this._i18n.localize("ui.panel.config.domains.caption")}
           ${
             this.value?.length
               ? html`<div class="badge">${this.value?.length}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
-                    .label=${this._localize(
+                    .label=${this._i18n.localize(
                       "ui.components.subpage-data-table.clear_filter"
                     )}
                     @click=${this._clearFilter}
@@ -92,14 +87,14 @@ export class HaFilterDomains extends LitElement {
               </ha-input-search>
               <ha-list-selectable
                 multi
-                aria-label=${this._localize("ui.panel.config.domains.caption")}
+                aria-label=${this._i18n.localize("ui.panel.config.domains.caption")}
                 @ha-list-item-selected=${this._handleItemToggled}
                 @ha-list-item-deselected=${this._handleItemToggled}
               >
                 ${repeat(
                   this._domains(
                     this._states,
-                    this._localize,
+                    this._i18n.localize,
                     this._i18n.locale.language,
                     this._filter
                   ),
@@ -117,7 +112,7 @@ export class HaFilterDomains extends LitElement {
                         brand-fallback
                       ></ha-domain-icon>
                       <span slot="headline"
-                        >${domainToName(this._localize, domain)}</span
+                        >${domainToName(this._i18n.localize, domain)}</span
                       >
                     </ha-list-item-option>`
                 )}
