@@ -120,6 +120,16 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
         friendly_name: "Living room Humidity",
       },
     },
+    "sensor.living_room_carbon_dioxide": {
+      entity_id: "sensor.living_room_carbon_dioxide",
+      state: "612",
+      attributes: {
+        state_class: "measurement",
+        unit_of_measurement: "ppm",
+        device_class: "carbon_dioxide",
+        friendly_name: "Living room Carbon dioxide",
+      },
+    },
     "sensor.outdoor_temperature": {
       entity_id: "sensor.outdoor_temperature",
       state: "10.5",

@@ -58,6 +58,10 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = (localize) => ({
                   entity: "sensor.living_room_humidity",
                   color: "indigo",
                 },
+                {
+                  type: "entity",
+                  entity: "sensor.living_room_carbon_dioxide",
+                },
               ],
             },
             {
