@@ -1232,12 +1232,13 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
           --dialog-content-padding: 0;
         }
 
-        /* The dialog's margin, its header of about 68px and what the info
-           shows besides the picture */
+        /* The dialog's margin, the safe area like the dialog's height limit,
+           its header of about 68px and what the info shows besides the
+           picture */
         ha-adaptive-dialog.camera,
         ha-adaptive-dialog.image {
           --more-info-media-max-height: calc(
-            100vh - var(--ha-space-20) -
+            100vh - var(--ha-space-20) - var(--safe-area-inset-y, 0px) -
               68px - var(--more-info-media-reserved-height, 0px)
           );
           /* Along with the height of the picture */
@@ -1252,7 +1253,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
           ha-adaptive-dialog.camera,
           ha-adaptive-dialog.image {
             --more-info-media-max-height: calc(
-              100svh - var(--ha-space-20) -
+              100svh - var(--ha-space-20) - var(--safe-area-inset-y, 0px) -
                 68px - var(--more-info-media-reserved-height, 0px)
             );
           }
@@ -1269,7 +1270,10 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
         /* The info's padding around the picture and the entity's row of 40px
            above it, with 16px between them */
         ha-adaptive-dialog.image {
-          --more-info-media-reserved-height: calc(var(--ha-space-6) * 2 + 56px);
+          --more-info-media-reserved-height: calc(
+            var(--ha-space-6) +
+              max(var(--safe-area-inset-bottom, 0px), var(--ha-space-6)) + 56px
+          );
           --more-info-media-inline-padding: calc(var(--ha-space-6) * 2);
         }
 

@@ -30,6 +30,17 @@ class MoreInfoImage extends LitElement {
 
   @property({ attribute: false }) public stateObj?: ImageEntity;
 
+  private _size?: HASSDomEvents["media-size-changed"];
+
+  public connectedCallback() {
+    super.connectedCallback();
+    // A cached view that was detached while the picture loaded couldn't send
+    // its size, and the picture doesn't load again when it's shown
+    if (this._size) {
+      fireEvent(this, "media-size-changed", this._size);
+    }
+  }
+
   protected render() {
     if (!this._connection || !this.stateObj) {
       return nothing;
@@ -50,10 +61,8 @@ class MoreInfoImage extends LitElement {
     if (!naturalWidth || !naturalHeight) {
       return;
     }
-    fireEvent(this, "media-size-changed", {
-      aspectRatio: naturalWidth / naturalHeight,
-      naturalWidth,
-    });
+    this._size = { aspectRatio: naturalWidth / naturalHeight, naturalWidth };
+    fireEvent(this, "media-size-changed", this._size);
   }
 
   static styles = css`
