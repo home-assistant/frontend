@@ -102,9 +102,6 @@ const childAt = (value: unknown, segment: string | number): unknown => {
   return (value as Record<string | number, unknown>)[segment];
 };
 
-const valueAt = (config: unknown, path: ConfigPath): unknown =>
-  path.reduce<unknown>(childAt, config);
-
 const BLOCK_KEYS = new Set([
   "triggers",
   "conditions",
@@ -165,212 +162,61 @@ export const mapErrorsToConfig = (
     path: configErrorPath(config, error.path),
   }));
 
-// Rows sit at list items that are objects, not at entries of value lists
-// like `entity_id`. A template condition can be written as a string.
-const isRowItem = (value: unknown, path: ConfigPath): boolean =>
-  typeof path[path.length - 1] === "number" &&
-  (isConfigObject(value) ||
-    (typeof value === "string" &&
-      BLOCK_KEYS.has(String(path[path.length - 2]))));
-
-// The editor turns a template condition written as a string into an object,
-// so both have the same content
-const rowContent = (value: unknown): string =>
-  JSON.stringify(
-    typeof value === "string"
-      ? { condition: "template", value_template: value }
-      : value
-  );
-
 // Keys that hold rows. Others, like `data`, are fields of the row.
 const isRowsKey = (key: string): boolean =>
   BLOCK_KEYS.has(key) || key === "repeat";
 
-const errorItemPath = (config: unknown, path: ConfigPath): ConfigPath => {
-  let value = config;
-  let end = 0;
-  for (const [index, segment] of path.entries()) {
-    if (typeof segment === "string" && !isRowsKey(segment)) {
-      break;
-    }
-    value = childAt(value, segment);
-    if (isRowItem(value, path.slice(0, index + 1))) {
-      end = index + 1;
-    }
-  }
-  return path.slice(0, end);
-};
-
-/** A config item with an error, to recognize it after edits. */
-export interface KnownErrorItem {
-  path: ConfigPath;
-  item?: object;
-  content?: string;
-}
-
-const knownItemAt = (config: unknown, path: ConfigPath): KnownErrorItem => {
-  const item = valueAt(config, path);
-  if (isConfigObject(item)) {
-    return { path, item, content: rowContent(item) };
-  }
-  return isRowItem(item, path) ? { path, content: rowContent(item) } : { path };
-};
-
-export const knownErrorItems = (
-  config: unknown,
-  errors: ConfigValidationError[]
-): KnownErrorItem[] => {
-  const known: KnownErrorItem[] = [];
-  errors.forEach((error) => {
-    const path = errorItemPath(config, error.path);
-    if (!known.some((entry) => pathEquals(entry.path, path))) {
-      known.push(knownItemAt(config, path));
-    }
-  });
-  return known;
-};
-
-interface ConfigItem {
-  path: ConfigPath;
-  item?: object;
-}
-
-interface ConfigItems {
-  paths: Map<object, ConfigPath>;
-  contents: Map<string, ConfigItem[]>;
-}
-
-// The items rows show
-const configItems = (config: unknown): ConfigItems => {
-  const items: ConfigItems = { paths: new Map(), contents: new Map() };
-  const walk = (value: unknown, path: ConfigPath) => {
-    if (isRowItem(value, path)) {
-      const item = isConfigObject(value) ? value : undefined;
-      if (item) {
-        items.paths.set(item, path);
-      }
-      const content = rowContent(value);
-      items.contents.set(content, [
-        ...(items.contents.get(content) ?? []),
-        { path, item },
-      ]);
-    }
-    if (typeof value !== "object" || value === null) {
-      return;
-    }
-    Object.entries(value).forEach(([key, child]) => {
-      if (Array.isArray(value)) {
-        walk(child, [...path, Number(key)]);
-        return;
-      }
-      if (!isRowsKey(key)) {
-        return;
-      }
-      // A block written as a single item is its first row
-      walk(
-        child,
-        BLOCK_KEYS.has(key) &&
-          (isConfigObject(child) || typeof child === "string")
-          ? [...path, key, 0]
-          : [...path, key]
-      );
-    });
-  };
-  walk(config, []);
-  return items;
-};
-
-const followItem = (
-  entry: KnownErrorItem,
-  previous: ConfigItems,
-  current: ConfigItems,
-  config: unknown
-): KnownErrorItem | undefined => {
-  // Unchanged or moved
-  const path = entry.item && current.paths.get(entry.item);
-  if (path) {
-    return { ...entry, path };
-  }
-  // Moved after the YAML was parsed again
-  const samePaths = entry.content
-    ? current.contents.get(entry.content)?.map((other) => other.path)
-    : undefined;
-  if (samePaths?.length === 1) {
-    return knownItemAt(config, samePaths[0]);
-  }
-  // Identical items, e.g. two copies of a row, keep their place
-  if (samePaths?.some((other) => pathEquals(other, entry.path))) {
-    return knownItemAt(config, entry.path);
-  }
-  const now = valueAt(config, entry.path);
-  if (!isConfigObject(now) && !isRowItem(now, entry.path)) {
-    return undefined;
-  }
-  // An item that was already there took the place, e.g. after a delete
-  const beforePaths =
-    isConfigObject(now) && previous.paths.has(now)
-      ? [previous.paths.get(now)!]
-      : (previous.contents.get(rowContent(now)) ?? [])
-          // An item still in the config didn't move, it was edited to match
-          .filter(({ item }) => !item || !current.paths.has(item))
-          .map((other) => other.path);
-  if (
-    beforePaths.length &&
-    !beforePaths.some((other) => pathEquals(other, entry.path))
-  ) {
-    return undefined;
-  }
-  // Edited in place
-  return knownItemAt(config, entry.path);
-};
-
-/** Follows known items from `previous` to `config` through moves and edits. */
-export const followKnownErrorItems = (
-  known: KnownErrorItem[],
-  previous: unknown,
-  config: unknown
-): KnownErrorItem[] => {
-  const previousItems = configItems(previous);
-  const currentItems = configItems(config);
-  return known
-    .map((entry) => followItem(entry, previousItems, currentItems, config))
-    .filter((entry): entry is KnownErrorItem => entry !== undefined);
-};
-
 /**
- * Moves errors of `previous` to where their items are in `config`. Errors of
- * items that are gone are dropped.
+ * Whether rows of `previous` may sit at other paths in `current`, so errors
+ * at their paths can point at the wrong rows. An edit replaces one item per
+ * list on its way down, a move, insert or delete changes more.
  */
-export const followErrors = (
-  errors: ConfigValidationError[],
+export const rowPathsShifted = (
   previous: unknown,
-  config: unknown
-): ConfigValidationError[] => {
-  const previousItems = configItems(previous);
-  const currentItems = configItems(config);
-  return errors.flatMap((error) => {
-    const path = errorItemPath(previous, error.path);
-    const moved = followItem(
-      knownItemAt(previous, path),
-      previousItems,
-      currentItems,
-      config
+  current: unknown
+): boolean => {
+  if (previous === current) {
+    return false;
+  }
+  if (Array.isArray(previous) || Array.isArray(current)) {
+    if (
+      !Array.isArray(previous) ||
+      !Array.isArray(current) ||
+      previous.length !== current.length
+    ) {
+      return true;
+    }
+    const changed = previous.flatMap((item, index) =>
+      item === current[index] ? [] : [index]
     );
-    return moved
-      ? [{ ...error, path: [...moved.path, ...error.path.slice(path.length)] }]
-      : [];
-  });
+    return (
+      changed.length > 1 ||
+      rowPathsShifted(previous[changed[0]], current[changed[0]])
+    );
+  }
+  // New blocks don't move other rows, and a template condition written as a
+  // string keeps its path when it becomes an object
+  if (!isConfigObject(previous)) {
+    return false;
+  }
+  if (!isConfigObject(current)) {
+    return true;
+  }
+  // An edit changes one block on its way down, more blocks can swap rows,
+  // like `then` and `else`
+  const changed = Object.keys(previous).filter(
+    (key) =>
+      isRowsKey(key) &&
+      previous[key] !== undefined &&
+      previous[key] !== current[key]
+  );
+  return (
+    changed.length > 1 ||
+    (changed.length === 1 &&
+      (current[changed[0]] === undefined ||
+        rowPathsShifted(previous[changed[0]], current[changed[0]])))
+  );
 };
-
-export const errorsOnKnownItems = (
-  known: KnownErrorItem[],
-  config: unknown,
-  errors: ConfigValidationError[]
-): ConfigValidationError[] =>
-  errors.filter((error) => {
-    const path = errorItemPath(config, error.path);
-    return known.some((entry) => pathEquals(entry.path, path));
-  });
 
 export const targetErrorText = (
   localize: LocalizeFunc,

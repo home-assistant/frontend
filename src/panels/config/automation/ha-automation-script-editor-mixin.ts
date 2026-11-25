@@ -33,13 +33,9 @@ import type { Constructor, HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import {
   errorsEqual,
-  errorsOnKnownItems,
-  followErrors,
-  followKnownErrorItems,
-  knownErrorItems,
   mapErrorsToConfig,
   NO_ERRORS,
-  type KnownErrorItem,
+  rowPathsShifted,
 } from "./automation-errors";
 import { renderErrorsAlert } from "./automation-error-templates";
 import type { EntityRegistryUpdate } from "./automation-save-dialog/show-dialog-automation-save";
@@ -197,7 +193,9 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     // Validation responses of an older run are dropped
     private _validationRun = 0;
 
-    private _knownErrorItems: KnownErrorItem[] = [];
+    // Errors may be hidden for a moment while core checks moved rows, the
+    // editor keeps revalidating until they are fixed or saved
+    private _errorsActive = false;
 
     protected willUpdate(changedProps: PropertyValues): void {
       super.willUpdate(changedProps);
@@ -211,23 +209,24 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       if (
         changedProps.has("config") &&
         !changedProps.has("configErrors") &&
-        this.configErrors.length
+        this._errorsActive
       ) {
-        const previous = changedProps.get("config");
-        const followed = followErrors(this.configErrors, previous, this.config);
-        if (!followed.length) {
-          this.clearConfigErrors();
-          return;
+        // The YAML editor lists errors with their paths, it has no rows
+        if (
+          this.mode === "gui" &&
+          rowPathsShifted(changedProps.get("config"), this.config)
+        ) {
+          // Until core checks the new paths, errors would show on wrong rows
+          const kept = this.config
+            ? this._unvalidatedErrors(this.config, this.configErrors)
+            : NO_ERRORS;
+          if (!errorsEqual(kept, this.configErrors)) {
+            this.configErrors = kept.length ? kept : NO_ERRORS;
+          }
+          this._validateConfig();
+        } else {
+          this._revalidate();
         }
-        if (!errorsEqual(followed, this.configErrors)) {
-          this.configErrors = followed;
-        }
-        this._knownErrorItems = followKnownErrorItems(
-          this._knownErrorItems,
-          previous,
-          this.config
-        );
-        this._revalidate();
       }
     }
 
@@ -248,12 +247,10 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       }
       this._validationRun++;
       const submittedErrors = mapErrorsToConfig(submitted, errors);
-      // Edits made while saving moved or removed some of the items
-      const changed = submitted !== this.config;
+      // Rows moved while saving are checked again before showing their errors
       this._setConfigErrors(
-        this.config,
-        changed
-          ? followErrors(submittedErrors, submitted, this.config)
+        rowPathsShifted(submitted, this.config)
+          ? this._unvalidatedErrors(submitted, submittedErrors)
           : submittedErrors
       );
       // Shown before revalidating, so a later save that succeeds closes it
@@ -265,10 +262,8 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
               { count: errors.length }
             )
       );
-      if (changed) {
-        // Followed errors miss items that were renamed and moved, so check
-        // everything again
-        await this._validateConfig(false);
+      if (submitted !== this.config) {
+        await this._validateConfig();
       }
       await this._revealErrors();
     }
@@ -297,29 +292,46 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
         // The unavailable alert still shows, only the rows stay unmarked
         return;
       }
-      if (run !== this._validationRun) {
+      if (run !== this._validationRun || !errors.length) {
         return;
       }
       const mapped = mapErrorsToConfig(config, errors);
       if (config === this.config) {
-        this._setConfigErrors(config, mapped);
+        this._setConfigErrors(mapped);
         return;
       }
       // The editor changed the config meanwhile, e.g. when it turned a
       // condition written as a string into an object
       this._setConfigErrors(
-        this.config,
-        followErrors(mapped, config, this.config)
+        rowPathsShifted(config, this.config) ? NO_ERRORS : mapped
       );
-      await this._validateConfig(false);
+      await this._validateConfig();
     }
 
-    private _setConfigErrors(
-      config: TConfig | undefined,
+    private _setConfigErrors(errors: ConfigValidationError[]) {
+      this._errorsActive = true;
+      if (!errorsEqual(errors, this.configErrors)) {
+        this.configErrors = errors.length ? errors : NO_ERRORS;
+      }
+    }
+
+    /** Errors revalidating doesn't update, like an invalid mode from saving. */
+    private _unvalidatedErrors(
+      config: TConfig,
       errors: ConfigValidationError[]
-    ) {
-      this.configErrors = errors;
-      this._knownErrorItems = knownErrorItems(config, errors);
+    ): ConfigValidationError[] {
+      const sectionKeys = this.domainHooks.validationSectionKeys ?? {};
+      const sections = Object.entries(
+        this.domainHooks.validationSections(config)
+      ).map(([key, value]) => ({ key: sectionKeys[key] ?? key, value }));
+      return errors.filter((error) => {
+        const section = sections.find(({ key }) => key === error.path[0]);
+        // Core skips missing sections, so errors about one stay, but errors
+        // of its removed rows go
+        return (
+          !section || (section.value === undefined && error.path.length === 1)
+        );
+      });
     }
 
     private async _revealErrors() {
@@ -359,21 +371,18 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       });
     }
 
-    // Updates the errors of the items that had one, so fixed problems clear
-    // while editing. New problems elsewhere, and errors outside the validated
-    // sections like an invalid mode, wait for the next save.
+    // While errors are shown, fixed problems clear and new ones show while
+    // editing. Errors outside the validated sections, like an invalid mode,
+    // wait for the next save.
     private _revalidate = debounce(() => {
-      this._validateConfig(true);
+      this._validateConfig();
     }, REVALIDATE_DELAY);
 
-    /**
-     * Validates the sections of the current config. With `onlyKnown`, only
-     * errors on items that already had one are kept.
-     */
-    private async _validateConfig(onlyKnown: boolean) {
+    /** Validates the sections of the current config. */
+    private async _validateConfig() {
       this._revalidate.cancel();
       const config = this.config;
-      if (!config || (onlyKnown && !this.configErrors.length)) {
+      if (!config || !this._errorsActive) {
         return;
       }
       const sections = this.domainHooks.validationSections(config);
@@ -398,30 +407,19 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       if (run !== this._validationRun || config !== this.config) {
         return;
       }
-      const mapped = mapErrorsToConfig(config, sectionErrors);
-      // Core skips missing sections, so their errors stay
-      const validated = Object.entries(sections)
-        .filter(([, value]) => value !== undefined)
-        .map(([key]) => sectionKeys[key] ?? key);
       const errors = [
-        ...this.configErrors.filter(
-          (error) => !validated.includes(error.path[0] as string)
-        ),
-        ...(onlyKnown
-          ? errorsOnKnownItems(this._knownErrorItems, config, mapped)
-          : mapped),
+        ...this._unvalidatedErrors(config, this.configErrors),
+        ...mapErrorsToConfig(config, sectionErrors),
       ];
       if (!errors.length) {
         this.clearConfigErrors();
         return;
       }
-      this._setConfigErrors(
-        config,
-        errorsEqual(errors, this.configErrors) ? this.configErrors : errors
-      );
+      this._setConfigErrors(errors);
     }
 
     protected clearConfigErrors() {
+      this._errorsActive = false;
       this._validationRun++;
       this._revalidate.cancel();
       this.configErrors = NO_ERRORS;

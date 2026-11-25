@@ -4,14 +4,10 @@ import type { ConfigValidationError } from "../../../../src/data/config";
 import {
   configErrorPath,
   errorOwner,
-  errorsOnKnownItems,
-  followErrors,
-  followKnownErrorItems,
-  knownErrorItems,
-  mapErrorsToConfig,
   errorText,
   fieldErrors,
   ownedErrors,
+  rowPathsShifted,
 } from "../../../../src/panels/config/automation/automation-errors";
 import {
   AutomationRowRegistry,
@@ -118,236 +114,89 @@ describe("automation errors", () => {
       "default",
     ]);
     expect(configErrorPath(config, ["mode"])).toEqual(["mode"]);
-
-    // Editing the single item turns the block into a list, the item keeps
-    // its error
-    const delayError = validationError("bad delay", [
-      "actions",
-      0,
-      "default",
-      0,
-      "delay",
-    ]);
-    const known = knownErrorItems(config, [delayError]);
-    const edited = {
-      actions: [{ ...config.actions[0], default: [{ delay: "abd" }] }],
-    };
-    expect(
-      errorsOnKnownItems(followKnownErrorItems(known, config, edited), edited, [
-        delayError,
-      ])
-    ).toEqual([delayError]);
   });
 
-  it("keep only live errors on items that already had one", () => {
-    const a = { trigger: "state", entity_id: ["sensor.a"], for: "abc" };
-    const b = { trigger: "event", event_type: "b" };
-    const c = { trigger: "state", entity_id: "sensor.c", for: "xyz" };
-    const forError = (index: number) =>
-      validationError("bad for", ["triggers", index, "for"]);
-    const before = { triggers: [a, b, c] };
-    const known = knownErrorItems(before, [forError(0), forError(2)]);
-
-    // Edited in place, the item keeps its errors; a value list entry belongs
-    // to the trigger, and a new error on another item waits for the save
-    const edited = { triggers: [{ ...a, for: "abd" }, b, c] };
-    const valueEntry = validationError("bad entity", [
-      "triggers",
-      0,
-      "entity_id",
-      0,
-    ]);
-    const other = validationError("new", ["triggers", 1, "event_type"]);
-    expect(
-      errorsOnKnownItems(followKnownErrorItems(known, before, edited), edited, [
-        forError(0),
-        valueEntry,
-        other,
-      ])
-    ).toEqual([forError(0), valueEntry]);
-
-    // Deleting a row moves the next error, and the row that takes the old
-    // index doesn't count as known
-    const deleted = { triggers: [b, c] };
-    expect(
-      errorsOnKnownItems(
-        followKnownErrorItems(known, before, deleted),
-        deleted,
-        [forError(0), forError(1)]
-      )
-    ).toEqual([forError(1)]);
-
-    // Moving a row past another doesn't make the other one known
-    const swapped = { triggers: [b, a, c] };
-    expect(
-      errorsOnKnownItems(
-        followKnownErrorItems(known, before, swapped),
-        swapped,
-        [forError(0), forError(1)]
-      )
-    ).toEqual([forError(1)]);
-
-    // YAML is parsed again on every edit, so items are found by content
-    const reparsed = structuredClone(deleted);
-    expect(
-      errorsOnKnownItems(
-        followKnownErrorItems(known, before, reparsed),
-        reparsed,
-        [forError(0), forError(1)]
-      )
-    ).toEqual([forError(1)]);
-
-    // Identical items both keep their errors after the YAML is parsed again
-    const twice = { triggers: [a, { ...a }] };
-    const knownTwice = knownErrorItems(twice, [forError(0), forError(1)]);
-    const reparsedTwice = structuredClone(twice);
-    expect(
-      errorsOnKnownItems(
-        followKnownErrorItems(knownTwice, twice, reparsedTwice),
-        reparsedTwice,
-        [forError(0), forError(1)]
-      )
-    ).toEqual([forError(0), forError(1)]);
-
-    // An item edited and then moved keeps its errors
-    const knownC = knownErrorItems(before, [forError(2)]);
-    const editedC = { ...c, for: "xyy" };
-    const afterEdit = { triggers: [a, b, editedC] };
-    const afterMove = { triggers: [editedC, a, b] };
-    const followed = followKnownErrorItems(
-      followKnownErrorItems(knownC, before, afterEdit),
-      afterEdit,
-      afterMove
-    );
-    expect(
-      errorsOnKnownItems(followed, afterMove, [forError(0), forError(2)])
-    ).toEqual([forError(0)]);
-  });
-
-  it("track template conditions written as a string", () => {
-    const templateError = (index: number) =>
-      validationError("bad template", ["conditions", index]);
-    const before = { conditions: ["{{ a", "{{ b }}"] };
-    const known = knownErrorItems(before, [templateError(0)]);
-
-    // Errors of other conditions written as a string aren't on a known item
-    expect(
-      errorsOnKnownItems(known, before, [templateError(0), templateError(1)])
-    ).toEqual([templateError(0)]);
-
-    // The visual editor turns them into objects
-    const normalized = {
-      conditions: before.conditions.map((value_template) => ({
-        condition: "template",
-        value_template,
-      })),
-    };
-    expect(
-      errorsOnKnownItems(
-        followKnownErrorItems(known, before, normalized),
-        normalized,
-        [templateError(0)]
-      )
-    ).toEqual([templateError(0)]);
-  });
-
-  it("track a template condition written as a single string", () => {
-    const before = { actions: [{ if: "{{ a", then: [] }] };
-    const coreError = validationError("bad template", ["actions", 0, "if"]);
-    const [error] = mapErrorsToConfig(before, [coreError]);
-    expect(error.path).toEqual(["actions", 0, "if", 0]);
-
-    // The visual editor turns it into a list with a template condition
-    const normalized = {
-      actions: [
-        { if: [{ condition: "template", value_template: "{{ a" }], then: [] },
-      ],
-    };
-    const known = knownErrorItems(before, [error]);
-    expect(
-      errorsOnKnownItems(
-        followKnownErrorItems(known, before, normalized),
-        normalized,
-        [error]
-      )
-    ).toEqual([error]);
-  });
-
-  it("only treat lists of rows as rows", () => {
-    // Objects in a list inside `data` belong to the action
-    const notify = {
-      action: "notify.mobile_app",
-      data: { message: "{{ a", data: { actions: [{ title: "{{ b" }] } },
-    };
-    const config = { actions: [notify] };
-    const titleError = validationError("bad title", [
-      "actions",
-      0,
-      "data",
-      "data",
-      "actions",
-      0,
-      "title",
-    ]);
-    const messageError = validationError("bad message", [
-      "actions",
-      0,
-      "data",
-      "message",
-    ]);
-    const known = knownErrorItems(config, [titleError]);
-    expect(errorsOnKnownItems(known, config, [messageError])).toEqual([
-      messageError,
-    ]);
-  });
-
-  it("keep errors of a row edited to match the next one", () => {
-    const a = { delay: "abc" };
-    const b = { delay: "abd" };
-    const delayError = (index: number) =>
-      validationError("bad delay", ["actions", index, "delay"]);
-    const before = { actions: [a, b] };
-    const known = knownErrorItems(before, [delayError(0), delayError(1)]);
-    const edited = { actions: [{ delay: "abd" }, b] };
-    expect(
-      errorsOnKnownItems(followKnownErrorItems(known, before, edited), edited, [
-        delayError(0),
-        delayError(1),
-      ])
-    ).toEqual([delayError(0), delayError(1)]);
-  });
-
-  it("follow save errors to where their items are now", () => {
-    const a = { delay: "abc" };
-    const b = { delay: 1 };
-    const c = { wait_template: "{{ " };
-    const submitted = { actions: [a, b, c] };
-    const errors = [
-      validationError("bad delay", ["actions", 0, "delay"]),
-      validationError("bad template", ["actions", 2, "wait_template"]),
-      validationError("bad mode", ["mode"]),
-    ];
-    // A was deleted and C moved up while saving
-    expect(followErrors(errors, submitted, { actions: [c, b] })).toEqual([
-      validationError("bad template", ["actions", 0, "wait_template"]),
-      validationError("bad mode", ["mode"]),
-    ]);
-
-    // A block written as a single item moves with the action around it
-    const choose = { choose: [], default: { delay: "abc" } };
+  it("tell when rows may sit at other paths", () => {
     const delay = { delay: 1 };
-    const singleton = { actions: [choose, delay] };
-    const defaultError = validationError("bad delay", [
-      "actions",
-      0,
-      "default",
-      0,
-      "delay",
-    ]);
+    const light = { action: "light.turn_on", data: { brightness: 10 } };
+    const option = { conditions: [], sequence: [delay] };
+    const choose = { choose: [option] };
+    const config = { triggers: [], actions: [delay, light, choose] };
+    const withActions = (actions: unknown[]) => ({ ...config, actions });
+
+    // Edits replace one item on their way down
     expect(
-      followErrors([defaultError], singleton, { actions: [delay, choose] })
-    ).toEqual([
-      validationError("bad delay", ["actions", 1, "default", 0, "delay"]),
-    ]);
+      rowPathsShifted(
+        config,
+        withActions([delay, { ...light, data: { brightness: 20 } }, choose])
+      )
+    ).toBe(false);
+    expect(
+      rowPathsShifted(
+        config,
+        withActions([
+          delay,
+          light,
+          { choose: [{ ...option, sequence: [{ delay: 2 }] }] },
+        ])
+      )
+    ).toBe(false);
+    // Lists inside fields like `data` hold no rows
+    expect(
+      rowPathsShifted(
+        config,
+        withActions([
+          delay,
+          { ...light, data: { actions: [{ title: "a" }, { title: "b" }] } },
+          choose,
+        ])
+      )
+    ).toBe(false);
+    // A template condition written as a string keeps its path as an object
+    expect(
+      rowPathsShifted(
+        { conditions: ["{{ a }}"] },
+        { conditions: [{ condition: "template", value_template: "{{ a }}" }] }
+      )
+    ).toBe(false);
+    // A new block moves no other row
+    expect(rowPathsShifted(config, { ...config, conditions: [delay] })).toBe(
+      false
+    );
+
+    // Moves, inserts and deletes
+    expect(rowPathsShifted(config, withActions([light, delay, choose]))).toBe(
+      true
+    );
+    expect(rowPathsShifted(config, withActions([delay, choose]))).toBe(true);
+    expect(
+      rowPathsShifted(config, withActions([delay, delay, light, choose]))
+    ).toBe(true);
+    expect(
+      rowPathsShifted(
+        config,
+        withActions([
+          delay,
+          light,
+          { choose: [{ conditions: [], sequence: [] }] },
+        ])
+      )
+    ).toBe(true);
+    // A removed block takes its rows with it
+    expect(
+      rowPathsShifted(
+        { actions: [{ if: [], then: [delay], else: [light] }] },
+        { actions: [{ if: [], then: [delay] }] }
+      )
+    ).toBe(true);
+    // Rows swapped between blocks
+    expect(
+      rowPathsShifted(
+        { actions: [{ if: [], then: [delay], else: [light] }] },
+        { actions: [{ if: [], then: [light], else: [delay] }] }
+      )
+    ).toBe(true);
+    // Parsed from YAML again, every row is a new object
+    expect(rowPathsShifted(config, structuredClone(config))).toBe(true);
   });
 });

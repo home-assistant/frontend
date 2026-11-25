@@ -39,7 +39,9 @@ import { showToast } from "../../../util/toast";
 import {
   automationErrorsContext,
   errorOwner,
+  errorsEqual,
   NO_ERRORS,
+  ownedErrors,
 } from "./automation-errors";
 import { renderErrorsAlert } from "./automation-error-templates";
 import {
@@ -100,9 +102,19 @@ export const ManualEditorMixin = <TConfig>(
     @provide({ context: automationRowRegistryContext })
     protected rowRegistry = new AutomationRowRegistry();
 
-    @provide({ context: automationErrorsContext })
+    /** The validation errors of the config, paths from its root. */
     @property({ attribute: false })
     public configErrors: ConfigValidationError[] = NO_ERRORS;
+
+    // The errors rows show. A row the user opened without errors gets no new
+    // ones while it is open, so a row being filled in isn't marked yet.
+    @provide({ context: automationErrorsContext })
+    @state()
+    private _shownErrors: ConfigValidationError[] = NO_ERRORS;
+
+    private _sidebarRow?: AutomationPathRow;
+
+    private _sidebarRowHadErrors = false;
 
     declare protected collapsableElements?: NodeListOf<
       Element & {
@@ -141,12 +153,48 @@ export const ManualEditorMixin = <TConfig>(
       super.disconnectedCallback();
     }
 
+    protected willUpdate(changedProps: PropertyValues): void {
+      super.willUpdate(changedProps);
+      // Also runs when rows render, as they decide which row owns an error
+      if (
+        changedProps.has("sidebarConfig") ||
+        this.configErrors.length ||
+        this._shownErrors.length
+      ) {
+        this._updateShownErrors();
+      }
+    }
+
+    private _updateShownErrors() {
+      const selectedPath = this.sidebarConfig
+        ? this.rowRegistry.selectedPath()
+        : undefined;
+      const row = selectedPath
+        ? this.rowRegistry.rowAt(selectedPath)
+        : undefined;
+      if (row !== this._sidebarRow) {
+        this._sidebarRow = row;
+        this._sidebarRowHadErrors =
+          !!row &&
+          ownedErrors(this.rowRegistry, this.configErrors, row).length > 0;
+      }
+      const shown =
+        row && !this._sidebarRowHadErrors
+          ? this.configErrors.filter(
+              (error) => errorOwner(this.rowRegistry, error) !== row
+            )
+          : this.configErrors;
+      if (!errorsEqual(shown, this._shownErrors)) {
+        this._shownErrors = shown.length ? shown : NO_ERRORS;
+      }
+    }
+
     private _renderUnownedErrors() {
       if (!this._rowsRendered) {
         return nothing;
       }
       return renderErrorsAlert(
-        this.configErrors.filter(
+        this._shownErrors.filter(
           (error) => !errorOwner(this.rowRegistry, error)
         )
       );
@@ -351,6 +399,9 @@ export const ManualEditorMixin = <TConfig>(
      * error is open, so the user stays where they are.
      */
     public async revealErrors() {
+      // Errors to reveal also show on the open row
+      this._sidebarRow = undefined;
+      this.requestUpdate();
       await this.updateComplete;
       const errorRows = () =>
         this.configErrors.map((error) =>
