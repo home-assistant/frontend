@@ -1219,10 +1219,19 @@ export class HaMarketplaceDashboard extends LitElement {
   private _integrationCategoryFilterChanged(
     ev: CustomEvent<{ value: string[] }>
   ) {
-    this._filters = {
+    const filters = {
       ...this._filters,
       [INTEGRATION_CATEGORY_FILTER]: ev.detail.value,
     };
+
+    if (this._isUserChange(filters)) {
+      this._storageFilters = {
+        ...this._storageFilters,
+        [INTEGRATION_CATEGORY_FILTER]: ev.detail.value,
+      };
+    }
+
+    this._filters = filters;
     this._writeFilters();
   }
 

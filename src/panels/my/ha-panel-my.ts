@@ -51,6 +51,7 @@ const marketplaceTableParams = {
   type: "string?",
   status: "string?",
   source: "string?",
+  integration_category: "string?",
   sort: "string?",
   direction: "string?",
   group: "string?",

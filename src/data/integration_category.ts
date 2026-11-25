@@ -11,10 +11,8 @@ export const integrationCategoryName = (
 ): string => {
   const [category, subcategory] = slug.split(".");
   return subcategory
-    ? localize(
-        `${TRANSLATION_KEY}.${category}.subcategory.${subcategory}.name` as any
-      )
-    : localize(`${TRANSLATION_KEY}.${category}.name` as any);
+    ? localize(`${TRANSLATION_KEY}.${category}.subcategory.${subcategory}.name`)
+    : localize(`${TRANSLATION_KEY}.${category}.name`);
 };
 
 export const integrationCategoryIcon = (
