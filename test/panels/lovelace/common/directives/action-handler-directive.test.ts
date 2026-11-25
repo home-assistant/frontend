@@ -279,6 +279,53 @@ describe("action-handler touch movement", () => {
   });
 });
 
+describe("action-handler mouseout during a touch", () => {
+  let el: HTMLElement;
+  let actions: string[];
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    el = document.createElement("div");
+    document.body.appendChild(el);
+    actions = actionsOn(el);
+    actionHandlerBind(el, { hasHold: true });
+  });
+
+  afterEach(() => {
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
+    el.remove();
+  });
+
+  it("still holds when the browser sends a mouseout during a touch", () => {
+    // Chromium fires a synthetic mouseout when a long-press changes the
+    // hovered element; it is not the pointer leaving.
+    el.dispatchEvent(touch("touchstart"));
+    vi.advanceTimersByTime(500);
+    document.dispatchEvent(new Event("mouseout", { bubbles: true }));
+    el.dispatchEvent(touch("touchend"));
+    expect(actions).toEqual(["hold"]);
+  });
+
+  it("still drops a mouse press when the pointer leaves", () => {
+    el.dispatchEvent(mouse("mousedown"));
+    document.dispatchEvent(new Event("mouseout", { bubbles: true }));
+    vi.advanceTimersByTime(500);
+    el.dispatchEvent(mouse("click"));
+    expect(actions).not.toContain("hold");
+  });
+
+  it("drops a mouse press on mouseout again once the touch has ended", () => {
+    el.dispatchEvent(touch("touchstart"));
+    el.dispatchEvent(touch("touchend"));
+    el.dispatchEvent(mouse("mousedown"));
+    document.dispatchEvent(new Event("mouseout", { bubbles: true }));
+    vi.advanceTimersByTime(500);
+    el.dispatchEvent(mouse("click"));
+    expect(actions).not.toContain("hold");
+  });
+});
+
 describe("action-handler keyboard-only bindings", () => {
   beforeEach(() => vi.useFakeTimers());
   afterEach(() => {

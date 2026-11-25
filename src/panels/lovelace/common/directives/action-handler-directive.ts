@@ -106,13 +106,38 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
     [
       "touchcancel",
       "pointercancel",
-      "mouseout",
       "mouseup",
       "mousewheel",
       "wheel",
       "scroll",
     ].forEach((ev) => {
       document.addEventListener(ev, cancel, { passive: true });
+    });
+
+    // Chromium fires a synthetic mouseout (and mouseover) when a touch
+    // long-press changes the element it considers hovered. That is not the
+    // pointer leaving, so it must not drop a press while a finger is down.
+    document.addEventListener(
+      "mouseout",
+      () => {
+        if (!this.touchStart) {
+          cancel();
+        }
+      },
+      { passive: true }
+    );
+
+    // The touch is over once the last finger is up.
+    ["touchend", "touchcancel"].forEach((ev) => {
+      document.addEventListener(
+        ev,
+        (touchEv) => {
+          if (activeTouchCount(touchEv) === 0) {
+            this.touchStart = undefined;
+          }
+        },
+        { passive: true }
+      );
     });
 
     // A finger always moves a little while it is down, so only movement past
