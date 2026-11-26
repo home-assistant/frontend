@@ -27,6 +27,10 @@ export interface FormatSelectorValueOptions {
   areas: Record<string, AreaRegistryEntry>;
   floors: Record<string, FloorRegistryEntry>;
   formatEntityName: HomeAssistantFormatters["formatEntityName"];
+  formatEntityState?: HomeAssistantFormatters["formatEntityState"];
+  formatEntityAttributeValue?: HomeAssistantFormatters["formatEntityAttributeValue"];
+  translationDomain?: string;
+  entityId?: string;
 }
 
 export const formatSelectorValue = (
@@ -40,6 +44,50 @@ export const formatSelectorValue = (
 
   if (!selector) {
     return ensureArray(value).join(", ");
+  }
+
+  if ("select" in selector) {
+    return ensureArray(value)
+      .map((item) => {
+        const text = String(item);
+        const key = selector.select?.translation_key;
+        const option = selector.select?.options.find((entry) =>
+          typeof entry === "string" ? entry === text : entry.value === text
+        );
+        return (
+          (key &&
+            options.translationDomain &&
+            options.localize(
+              `component.${options.translationDomain}.selector.${key}.options.${text}`
+            )) ||
+          (typeof option === "object" ? option.label : text)
+        );
+      })
+      .join(", ");
+  }
+
+  if ("state" in selector) {
+    const entityId = ensureArray(
+      selector.state?.entity_id ?? options.entityId ?? []
+    )[0];
+    const entity = entityId ? options.states[entityId] : undefined;
+    return ensureArray(value)
+      .map((item) => {
+        const extra = selector.state?.extra_options?.find(
+          (entry) => entry.value === item
+        );
+        if (extra) return extra.label;
+        const text = String(item);
+        if (!entity) return text;
+        return selector.state?.attribute
+          ? (options.formatEntityAttributeValue?.(
+              entity,
+              selector.state.attribute,
+              item
+            ) ?? text)
+          : (options.formatEntityState?.(entity, text) ?? text);
+      })
+      .join(", ");
   }
 
   if ("text" in selector) {
