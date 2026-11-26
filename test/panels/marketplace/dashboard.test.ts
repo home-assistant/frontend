@@ -692,12 +692,6 @@ describe("a selection sharing its files with an installed repository", () => {
     vi.mocked(uninstallMarketplaceRepository).mockResolvedValue(null);
   });
 
-  const dialogText = (text: unknown) => {
-    const container = document.createElement("div");
-    render(text, container);
-    return container.textContent;
-  };
-
   // Core releases it, the sharer keeps the files and the setup
   it("keeps the setup when the sharer is not selected", async () => {
     const dashboard = await openDashboard([shared, sharer], "installed");
@@ -718,7 +712,7 @@ describe("a selection sharing its files with an installed repository", () => {
     );
   });
 
-  it("explains both when the selection also deletes a setup", async () => {
+  it("deletes only the unshared setup in a mixed selection", async () => {
     const other = {
       id: "3",
       name: "Other",
@@ -726,17 +720,27 @@ describe("a selection sharing its files with an installed repository", () => {
       domain: "other",
       installed: true,
     };
+    vi.mocked(getConfigEntries).mockImplementation(async (_hass, filters) => [
+      { entry_id: `${filters?.domain}-entry` } as unknown as ConfigEntry,
+    ]);
     const dashboard = await openDashboard([shared, sharer, other], "installed");
     selectForBulkUninstall(dashboard, ["1", "3"]);
 
     const dialog = await startBulkUninstall(dashboard);
+    await dialog.action!();
 
-    const text = dialogText(dialog.text);
-    expect(text).toContain(
-      "ui.panel.marketplace.dialog.uninstall.selected_in_use"
+    expect(vi.mocked(deleteConfigEntry)).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(deleteConfigEntry)).toHaveBeenCalledWith(
+      expect.anything(),
+      "other-entry"
     );
-    expect(text).toContain(
-      "ui.panel.marketplace.dialog.uninstall.selected_shared"
+    expect(vi.mocked(uninstallMarketplaceRepository)).toHaveBeenCalledWith(
+      expect.anything(),
+      "1"
+    );
+    expect(vi.mocked(uninstallMarketplaceRepository)).toHaveBeenCalledWith(
+      expect.anything(),
+      "3"
     );
   });
 
