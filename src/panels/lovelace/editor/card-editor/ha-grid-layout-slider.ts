@@ -504,7 +504,7 @@ export class HaGridLayoutSlider extends LitElement {
         left 180ms ease-in-out,
         bottom 180ms ease-in-out;
       --handle-spacing: calc(2 * var(--handle-margin) + var(--handle-size));
-      --slider-tooltip-margin: 0px;
+      --slider-tooltip-margin: var(--ha-space-1);
       --slider-tooltip-range: 100%;
       --slider-tooltip-offset: 0px;
       --slider-tooltip-position: calc(
