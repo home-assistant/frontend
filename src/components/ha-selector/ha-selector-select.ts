@@ -26,6 +26,17 @@ import "../ha-svg-icon";
 import "../radio/ha-radio-group";
 import "../radio/ha-radio-option";
 
+const SEARCH_MIN_OPTIONS = 12;
+
+const SEARCH_KEYS = [{ name: "primary", weight: 1 }];
+
+const EMPTY_OPTION_ID = "___empty___";
+
+export const toPickerId = (value: string | number) =>
+  value === "" ? EMPTY_OPTION_ID : String(value);
+
+export const fromPickerId = (id?: string) => (id === EMPTY_OPTION_ID ? "" : id);
+
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
   @state()
@@ -256,6 +267,23 @@ export class HaSelectSelector extends LitElement {
       `;
     }
 
+    if (options.length > SEARCH_MIN_OPTIONS) {
+      return html`
+        <ha-generic-picker
+          no-sort
+          .label=${this.label}
+          .helper=${this.helper}
+          .disabled=${this.disabled}
+          .required=${this.required}
+          .getItems=${this._getItems(options)}
+          .value=${this._pickerValue(options)}
+          .valueRenderer=${this._valueRenderer(options)}
+          .searchKeys=${SEARCH_KEYS}
+          @value-changed=${this._comboBoxValueChanged}
+        ></ha-generic-picker>
+      `;
+    }
+
     return html`
       <ha-select
         .label=${this.label ?? ""}
@@ -303,11 +331,33 @@ export class HaSelectSelector extends LitElement {
 
       return () =>
         filteredOptions.map((option) => ({
-          id: option.value,
+          id: toPickerId(option.value),
           primary: option.label,
           sorting_label: option.label,
+          disabled: option.disabled,
         }));
     }
+  );
+
+  private _pickerValue(options: SelectOption[]): string | undefined {
+    const value = this.value as string | number | undefined;
+    if (typeof value !== "string" && typeof value !== "number") {
+      return undefined;
+    }
+    if (value === "" && !options.some((option) => option.value === "")) {
+      return undefined;
+    }
+    return toPickerId(value);
+  }
+
+  private _valueRenderer = memoizeOne(
+    (options: SelectOption[]) => (value: string) =>
+      html`<span slot="headline"
+        >${
+          options.find((option) => toPickerId(option.value) === value)?.label ??
+          value
+        }</span
+      >`
   );
 
   private get _mode(): "list" | "dropdown" | "box" {
@@ -386,13 +436,17 @@ export class HaSelectSelector extends LitElement {
 
   private _comboBoxValueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const newValue = ev.detail.value;
 
-    if (this.disabled || newValue === "") {
+    if (this.disabled || ev.detail.value === "") {
       return;
     }
 
+    const newValue = fromPickerId(ev.detail.value);
+
     if (!this.selector.select?.multiple) {
+      if (this.value != null && newValue === String(this.value)) {
+        return;
+      }
       fireEvent(this, "value-changed", {
         value: newValue,
       });
