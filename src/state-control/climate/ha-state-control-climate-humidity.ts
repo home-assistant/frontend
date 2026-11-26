@@ -3,6 +3,7 @@ import { mdiMinus, mdiPlus, mdiWaterPercent } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../common/decorators/consume";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
@@ -224,6 +225,10 @@ export class HaStateControlClimateHumidity extends LitElement {
   }
 
   protected render() {
+    return keyed(this.stateObj.entity_id, this._renderControl());
+  }
+
+  private _renderControl() {
     const supportsTargetHumidity = supportsFeature(
       this.stateObj,
       ClimateEntityFeature.TARGET_HUMIDITY

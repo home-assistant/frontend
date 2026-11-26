@@ -3,6 +3,7 @@ import { mdiMinus, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../common/decorators/consume";
 import { UNIT_F } from "../../common/const";
@@ -243,6 +244,10 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
   }
 
   protected render() {
+    return keyed(this.stateObj.entity_id, this._renderControl());
+  }
+
+  private _renderControl() {
     const supportsTargetTemperature = supportsFeature(
       this.stateObj,
       WaterHeaterEntityFeature.TARGET_TEMPERATURE

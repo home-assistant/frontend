@@ -3,6 +3,7 @@ import { mdiMinus, mdiPlus, mdiThermostat, mdiWaterPercent } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../common/decorators/consume";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
@@ -317,6 +318,10 @@ export class HaStateControlHumidifierHumidity extends LitElement {
   }
 
   protected render() {
+    return keyed(this.stateObj.entity_id, this._renderControl());
+  }
+
+  private _renderControl() {
     const stateColor = stateColorCss(this.stateObj);
     const active = stateActive(this.stateObj);
 

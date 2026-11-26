@@ -4,6 +4,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { keyed } from "lit/directives/keyed";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../common/decorators/consume";
 import { UNIT_F } from "../../common/const";
@@ -522,6 +523,10 @@ export class HaStateControlClimateTemperature extends LitElement {
   }
 
   protected render() {
+    return keyed(this.stateObj.entity_id, this._renderControl());
+  }
+
+  private _renderControl() {
     const mode = this.stateObj.state;
     const action = this.stateObj.attributes.hvac_action;
     const active = stateActive(this.stateObj);
