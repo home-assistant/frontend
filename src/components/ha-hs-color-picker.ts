@@ -45,7 +45,7 @@ function adjustRgb(
   if (wv != null) {
     return rgbw2rgb([...rgb, wv] as [number, number, number, number]);
   }
-  if (cw != null && ww !== null) {
+  if (cw != null && ww != null) {
     return rgbww2rgb(
       [...rgb, cw, ww] as [number, number, number, number, number],
       minKelvin,
