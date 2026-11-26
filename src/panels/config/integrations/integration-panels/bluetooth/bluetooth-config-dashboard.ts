@@ -12,12 +12,15 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import "../../../../../components/animation/ha-fade-in";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/item/ha-list-item-button";
 import "../../../../../components/list/ha-list-nav";
+import "../../../../../components/skeleton/ha-skeleton";
+import "../../../../../components/skeleton/ha-skeleton-text";
 import type {
   BluetoothAllocationsData,
   BluetoothDeviceData,
@@ -47,7 +50,7 @@ export class BluetoothConfigDashboard extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @state() private _configEntries: ConfigEntry[] = [];
+  @state() private _configEntries?: ConfigEntry[];
 
   @state() private _connectionAllocationData: BluetoothAllocationsData[] = [];
 
@@ -137,10 +140,12 @@ export class BluetoothConfigDashboard extends LitElement {
 
   protected render(): TemplateResult {
     // The device registry is null until it has loaded.
-    const adapterCount = this.hass.devices
-      ? this._getBluetoothAdapters(this.hass.devices, this._configEntries)
-          .enabledDevices.length
-      : 0;
+    const adapterCount =
+      this._configEntries && this.hass.devices
+        ? this._getBluetoothAdapters(this.hass.devices, this._configEntries)
+            .enabledDevices.length
+        : undefined;
+    const loading = adapterCount === undefined;
     const totalSlots = this._connectionAllocationData.reduce(
       (sum, a) => sum + a.slots,
       0
@@ -171,13 +176,27 @@ export class BluetoothConfigDashboard extends LitElement {
           <ha-card class="content network-status">
             <div class="card-content">
               <div class="heading">
-                <div class="icon ${status}">
-                  <ha-svg-icon .path=${statusIcon}></ha-svg-icon>
-                </div>
+                ${
+                  loading
+                    ? html`<ha-fade-in .duration=${300} easing="ease-in">
+                        <ha-skeleton
+                          class="status-icon"
+                          role="progressbar"
+                          aria-label=${this.hass.localize("ui.common.loading")}
+                        ></ha-skeleton>
+                      </ha-fade-in>`
+                    : html`<div class="icon ${status}">
+                        <ha-svg-icon .path=${statusIcon}></ha-svg-icon>
+                      </div>`
+                }
                 <div class="details">
-                  ${this.hass.localize(
-                    `ui.panel.config.bluetooth.status_${status}`
-                  )}<br />
+                  ${
+                    loading
+                      ? this._renderTextSkeleton()
+                      : this.hass.localize(
+                          `ui.panel.config.bluetooth.status_${status}`
+                        )
+                  }<br />
                   <small>
                     ${this.hass.localize(
                       "ui.panel.config.bluetooth.connections_summary",
@@ -229,10 +248,14 @@ export class BluetoothConfigDashboard extends LitElement {
                     .path=${mdiAccessPoint}
                   ></ha-svg-icon>
                   <div slot="headline">
-                    ${this.hass.localize(
-                      "ui.panel.config.bluetooth.adapters_count",
-                      { count: adapterCount }
-                    )}
+                    ${
+                      loading
+                        ? this._renderTextSkeleton()
+                        : this.hass.localize(
+                            "ui.panel.config.bluetooth.adapters_count",
+                            { count: adapterCount }
+                          )
+                    }
                   </div>
                   <ha-icon-next slot="end"></ha-icon-next>
                 </ha-list-item-button>
@@ -271,6 +294,15 @@ export class BluetoothConfigDashboard extends LitElement {
         </div>
       </hass-subpage>
     `;
+  }
+
+  private _renderTextSkeleton() {
+    return html`<ha-fade-in .duration=${300} easing="ease-in">
+      <ha-skeleton-text
+        role="progressbar"
+        aria-label=${this.hass.localize("ui.common.loading")}
+      ></ha-skeleton-text>
+    </ha-fade-in>`;
   }
 
   static get styles(): CSSResultGroup {
@@ -329,6 +361,13 @@ export class BluetoothConfigDashboard extends LitElement {
           overflow: hidden;
           flex-shrink: 0;
           --icon-color: var(--primary-color);
+        }
+
+        .network-status div.heading .status-icon {
+          display: block;
+          width: var(--ha-space-10);
+          height: var(--ha-space-10);
+          --ha-skeleton-border-radius: var(--ha-border-radius-2xl);
         }
 
         .network-status div.heading .icon.online {
