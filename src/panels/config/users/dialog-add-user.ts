@@ -143,6 +143,7 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
           <ha-input
             class="username"
             name="username"
+            autocomplete="username"
             .label=${this.hass.localize(
               "ui.panel.config.users.editor.username"
             )}
@@ -160,6 +161,7 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
               "ui.panel.config.users.add_user.password"
             )}
             name="password"
+            autocomplete="new-password"
             .value=${this._password}
             required
             @input=${this._handleValueChanged}
@@ -173,6 +175,7 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
               "ui.panel.config.users.add_user.password_confirm"
             )}
             name="passwordConfirm"
+            autocomplete="new-password"
             .value=${this._passwordConfirm}
             @input=${this._handleValueChanged}
             required
