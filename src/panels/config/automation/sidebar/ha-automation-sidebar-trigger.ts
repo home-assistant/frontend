@@ -93,12 +93,12 @@ export default class HaAutomationSidebarTrigger extends LitElement {
       "ui.panel.config.automation.editor.triggers.trigger"
     );
 
-    const domain =
+    const platform =
       "trigger" in this.config.config &&
-      getTriggerDomain(this.config.config.trigger);
-    const triggerName =
-      "trigger" in this.config.config &&
-      getTriggerObjectId(this.config.config.trigger);
+      typeof this.config.config.trigger === "string" &&
+      this.config.config.trigger;
+    const domain = platform && getTriggerDomain(platform);
+    const triggerName = platform && getTriggerObjectId(platform);
 
     const title =
       this.hass.localize(

@@ -1,6 +1,7 @@
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { live } from "lit/directives/live";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-slider";
 import "../../../components/input/ha-input";
@@ -88,7 +89,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
                     .step=${Number(stateObj.attributes.step)}
                     .min=${Number(stateObj.attributes.min)}
                     .max=${Number(stateObj.attributes.max)}
-                    .value=${Number(stateObj.state)}
+                    .value=${live(Number(stateObj.state))}
                     @change=${this._selectedValueChanged}
                   ></ha-slider>
                   <span class="state">
@@ -111,7 +112,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
                     .step=${Number(stateObj.attributes.step)}
                     .min=${Number(stateObj.attributes.min)}
                     .max=${Number(stateObj.attributes.max)}
-                    .value=${Number(stateObj.state).toString()}
+                    .value=${live(Number(stateObj.state).toString())}
                     type="number"
                     @change=${this._selectedValueChanged}
                   >

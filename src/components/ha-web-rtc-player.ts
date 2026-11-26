@@ -852,6 +852,13 @@ export class HaWebRtcPlayer extends LitElement {
       max-height: var(--video-max-height, calc(100vh - 97px));
     }
 
+    /* Scrolls in a player that is only as high as its picture */
+    ha-alert {
+      display: block;
+      max-height: 100%;
+      overflow: auto;
+    }
+
     .reconnecting {
       position: absolute;
       inset: 0;

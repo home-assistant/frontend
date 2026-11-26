@@ -100,12 +100,9 @@ export default class HaAutomationSidebarCondition extends LitElement {
       "ui.panel.config.automation.editor.conditions.condition"
     );
 
-    const domain =
-      "condition" in this.config.config &&
-      getConditionDomain(this.config.config.condition);
+    const domain = typeof type === "string" && getConditionDomain(type);
     const conditionName =
-      "condition" in this.config.config &&
-      getConditionObjectId(this.config.config.condition);
+      typeof type === "string" && getConditionObjectId(type);
 
     const title =
       this.hass.localize(

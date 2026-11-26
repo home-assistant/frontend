@@ -11,7 +11,6 @@ import {
   FilterPanelController,
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
-import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { arrayWith, arrayWithout } from "../common/array/array-with";
 import type {
   HASSDomCurrentTargetEvent,
@@ -20,7 +19,6 @@ import type {
 import { fireEvent } from "../common/dom/fire_event";
 import { navigate } from "../common/navigate";
 import { stringCompare } from "../common/string/compare";
-import type { LocalizeFunc } from "../common/translations/localize";
 import { internationalizationContext, labelsContext } from "../data/context";
 import type { ListFilterValue } from "../data/data_table_filters";
 import {
@@ -49,10 +47,6 @@ export class HaFilterLabels extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
-
-  @state()
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
 
   @consume({ context: internationalizationContext, subscribe: true })
   @state()
@@ -92,7 +86,9 @@ export class HaFilterLabels extends LitElement {
   protected render() {
     const value = listFilterValue(this.value);
     const count = (value?.ids?.length || 0) + (value?.none ? 1 : 0);
-    const noLabel = this._localize("ui.components.subpage-data-table.no_label");
+    const noLabel = this._i18n.localize(
+      "ui.components.subpage-data-table.no_label"
+    );
     return html`
       <ha-expansion-panel
         left-chevron
@@ -100,13 +96,13 @@ export class HaFilterLabels extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this._localize("ui.panel.config.labels.caption")}
+          ${this._i18n.localize("ui.panel.config.labels.caption")}
           ${
             count
               ? html`<div class="badge">${count}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
-                    .label=${this._localize(
+                    .label=${this._i18n.localize(
                       "ui.components.subpage-data-table.clear_filter"
                     )}
                     @click=${this._clearFilter}
@@ -126,7 +122,7 @@ export class HaFilterLabels extends LitElement {
               </ha-input-search>
               <ha-list-selectable
                 multi
-                aria-label=${this._localize("ui.panel.config.labels.caption")}
+                aria-label=${this._i18n.localize("ui.panel.config.labels.caption")}
                 @ha-list-item-selected=${this._handleItemToggled}
                 @ha-list-item-deselected=${this._handleItemToggled}
               >
@@ -178,7 +174,7 @@ export class HaFilterLabels extends LitElement {
                 <ha-list-item-button @click=${this._manageLabels}>
                   <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
                   <span slot="headline"
-                    >${this._localize("ui.panel.config.labels.manage_labels")}</span
+                    >${this._i18n.localize("ui.panel.config.labels.manage_labels")}</span
                   >
                 </ha-list-item-button>
               </ha-list-base>

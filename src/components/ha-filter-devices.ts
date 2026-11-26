@@ -12,7 +12,6 @@ import {
   FilterPanelController,
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
-import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
 import { stringCompare } from "../common/string/compare";
@@ -55,10 +54,6 @@ interface DeviceLinks {
 
 @customElement("ha-filter-devices")
 export class HaFilterDevices extends LitElement {
-  @state()
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
-
   @consume({ context: devicesContext, subscribe: true })
   @state()
   private _devicesReg!: ContextType<typeof devicesContext>;
@@ -194,13 +189,13 @@ export class HaFilterDevices extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this._localize("ui.panel.config.devices.caption")}
+          ${this._i18n.localize("ui.panel.config.devices.caption")}
           ${
             count
               ? html`<div class="badge">${count}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
-                    .label=${this._localize(
+                    .label=${this._i18n.localize(
                       "ui.components.subpage-data-table.clear_filter"
                     )}
                     @click=${this._clearFilter}
@@ -225,7 +220,7 @@ export class HaFilterDevices extends LitElement {
                 .rows=${this._devices(
                   this._devicesReg,
                   this._filter || "",
-                  this._localize,
+                  this._i18n.localize,
                   this._i18n.locale.language
                 )}
                 .rowRenderer=${this._renderItem}
@@ -270,7 +265,7 @@ export class HaFilterDevices extends LitElement {
     const id = this._devices(
       this._devicesReg,
       this._filter || "",
-      this._localize,
+      this._i18n.localize,
       this._i18n.locale.language
     )[index]?.id;
     if (!id) {

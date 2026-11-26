@@ -16,6 +16,7 @@ export interface HttpConfig {
   server_port?: number;
   ssl_certificate?: string;
   ssl_peer_certificate?: string;
+  ssl_peer_certificate_remote?: boolean;
   ssl_key?: string;
   cors_allowed_origins?: string[];
   use_x_forwarded_for?: boolean;
@@ -56,6 +57,7 @@ export const HTTP_CONFIG_FIELDS: (keyof HttpConfig)[] = [
   "ssl_certificate",
   "ssl_key",
   "ssl_peer_certificate",
+  "ssl_peer_certificate_remote",
   "ssl_profile",
   "cors_allowed_origins",
   "use_x_forwarded_for",

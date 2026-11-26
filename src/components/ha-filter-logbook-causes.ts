@@ -17,11 +17,9 @@ import {
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
 import { consume } from "../common/decorators/consume";
-import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { stringCompare } from "../common/string/compare";
-import type { LocalizeFunc } from "../common/translations/localize";
 import {
   formattersContext,
   internationalizationContext,
@@ -53,10 +51,6 @@ const GROUP_ICONS: Record<LogbookCauseGroup, string> = {
 
 @customElement("ha-filter-logbook-causes")
 export class HaFilterLogbookCauses extends LitElement {
-  @state()
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
-
   @consume({ context: internationalizationContext, subscribe: true })
   @state()
   private _i18n!: ContextType<typeof internationalizationContext>;
@@ -89,13 +83,13 @@ export class HaFilterLogbookCauses extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this._localize("ui.components.logbook.cause_filter.caption")}
+          ${this._i18n.localize("ui.components.logbook.cause_filter.caption")}
           ${
             count
               ? html`<div class="badge">${count}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
-                    .label=${this._localize(
+                    .label=${this._i18n.localize(
                       "ui.components.subpage-data-table.clear_filter"
                     )}
                     @click=${this._clearFilter}
@@ -120,7 +114,7 @@ export class HaFilterLogbookCauses extends LitElement {
       <ha-list-selectable
         multi
         controlled
-        aria-label=${this._localize("ui.components.logbook.cause_filter.caption")}
+        aria-label=${this._i18n.localize("ui.components.logbook.cause_filter.caption")}
         @ha-list-item-selected=${this._handleItemToggled}
         @ha-list-item-deselected=${this._handleItemToggled}
       >
@@ -153,7 +147,7 @@ export class HaFilterLogbookCauses extends LitElement {
                 .path=${GROUP_ICONS[group]}
               ></ha-svg-icon>
               <span slot="headline"
-                >${this._localize(
+                >${this._i18n.localize(
                   `ui.components.logbook.cause_filter.${group}`
                 )}</span
               >

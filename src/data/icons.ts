@@ -245,7 +245,17 @@ type ConditionIcons = Record<
 >;
 
 export type IconCategory =
-  "entity" | "entity_component" | "services" | "triggers" | "conditions";
+  | "entity"
+  | "entity_component"
+  | "services"
+  | "triggers"
+  | "conditions"
+  | "integration_category";
+
+export type IntegrationCategoryIcons = Record<
+  string,
+  { default: string; subcategory?: Record<string, { default: string }> }
+>;
 
 interface CategoryType {
   entity: PlatformIcons;
@@ -253,6 +263,7 @@ interface CategoryType {
   services: ServiceIcons;
   triggers: TriggerIcons;
   conditions: ConditionIcons;
+  integration_category: IntegrationCategoryIcons;
 }
 
 export const getHassIcons = async <T extends IconCategory>(
@@ -321,7 +332,10 @@ export const getComponentIcons = async (
 };
 
 export const getCategoryIcons = async <
-  T extends Exclude<IconCategory, "entity" | "entity_component">,
+  T extends Exclude<
+    IconCategory,
+    "entity" | "entity_component" | "integration_category"
+  >,
 >(
   connection: Connection,
   hassConfig: HomeAssistant["config"],
@@ -739,4 +753,25 @@ export const domainIcon = async (
   }
 
   return undefined;
+};
+
+let integrationCategoryIcons:
+  ReturnType<typeof getHassIcons<"integration_category">> | undefined;
+
+export const getIntegrationCategoryIcons = async (
+  connection: Connection
+): Promise<IntegrationCategoryIcons | undefined> => {
+  // Cache the request itself, so callers while it loads share it
+  integrationCategoryIcons ??= getHassIcons(
+    connection,
+    "integration_category",
+    "homeassistant"
+  );
+  try {
+    const result = await integrationCategoryIcons;
+    return result.resources.homeassistant;
+  } catch (_err) {
+    integrationCategoryIcons = undefined;
+    return undefined;
+  }
 };

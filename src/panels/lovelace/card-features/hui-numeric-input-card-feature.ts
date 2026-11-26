@@ -2,6 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { live } from "lit/directives/live";
 import { consume } from "../../../common/decorators/consume";
 import {
   consumeEntityState,
@@ -139,7 +140,7 @@ class HuiNumericInputCardFeature
       return html`
         <ha-control-number-buttons
           .label=${label}
-          .value=${value}
+          .value=${live(value)}
           .min=${stateObj.attributes.min}
           .max=${stateObj.attributes.max}
           .step=${stateObj.attributes.step}
@@ -153,7 +154,7 @@ class HuiNumericInputCardFeature
     return html`
       <ha-control-slider
         .label=${label}
-        .value=${value}
+        .value=${live(value)}
         .min=${stateObj.attributes.min}
         .max=${stateObj.attributes.max}
         .step=${stateObj.attributes.step}

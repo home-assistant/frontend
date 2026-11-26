@@ -1,18 +1,25 @@
 import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
 import type { HaDurationData } from "../../../../../components/ha-duration-input";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-duration-input";
 import type { DelayAction } from "../../../../../data/script";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { HomeAssistant } from "../../../../../types";
 import type { ActionElement } from "../ha-automation-action-row";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import { errorMessage } from "../../automation-errors";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 
 @customElement("ha-automation-action-delay")
 export class HaDelayAction extends LitElement implements ActionElement {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["delay"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public disabled = false;
@@ -52,16 +59,25 @@ export class HaDelayAction extends LitElement implements ActionElement {
   }
 
   protected render() {
-    return html`<ha-duration-input
-      .label=${this.hass.localize(
-        `ui.panel.config.automation.editor.actions.type.delay.delay`
-      )}
-      .disabled=${this.disabled}
-      .data=${this._timeData}
-      enable-millisecond
-      required
-      @value-changed=${this._valueChanged}
-    ></ha-duration-input>`;
+    const label = this.hass.localize(
+      "ui.panel.config.automation.editor.actions.type.delay.delay"
+    );
+    const error = this._fieldErrors.fieldError("delay");
+    return html`${
+        error
+          ? html`<ha-alert own-margin alert-type="error">
+              ${errorMessage(this.hass.localize, error, label)}
+            </ha-alert>`
+          : nothing
+      }
+      <ha-duration-input
+        .label=${label}
+        .disabled=${this.disabled}
+        .data=${this._timeData}
+        enable-millisecond
+        required
+        @value-changed=${this._valueChanged}
+      ></ha-duration-input>`;
   }
 
   private _valueChanged(ev: CustomEvent) {

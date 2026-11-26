@@ -167,3 +167,9 @@ export const updateDismissedSuggestions = (
     statisticId,
   ];
 };
+
+/** The dismissed statistics without the restored one. */
+export const restoreDismissedSuggestion = (
+  dismissed: string[],
+  statisticId: string
+): string[] => dismissed.filter((id) => id !== statisticId);

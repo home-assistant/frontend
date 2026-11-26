@@ -2372,29 +2372,20 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       margin-inline-start: auto;
       flex-shrink: 0;
       pointer-events: auto;
+      /* Inherited, so buttons nested in slots or dropdowns get the frame too */
+      --ha-icon-button-background: var(--card-background-color);
+      --ha-icon-button-border: 1px solid var(--divider-color);
+      --ha-icon-button-border-radius: var(--ha-border-radius-sm);
+      --ha-icon-button-size: 32px;
+      color: var(--primary-color);
     }
     .top-controls.small {
       top: 0;
     }
     .chart-controls.small {
       flex-direction: row;
-    }
-    .chart-controls ha-icon-button,
-    .chart-controls ::slotted(ha-icon-button) {
-      background: var(--card-background-color);
-      border-radius: var(--ha-border-radius-sm);
-      --ha-icon-button-size: 32px;
-      color: var(--primary-color);
-      border: 1px solid var(--divider-color);
-    }
-    .chart-controls.small ha-icon-button,
-    .chart-controls.small ::slotted(ha-icon-button) {
       --ha-icon-button-size: 22px;
       --mdc-icon-size: 16px;
-    }
-    .chart-controls ha-icon-button.inactive,
-    .chart-controls ::slotted(ha-icon-button.inactive) {
-      color: var(--state-inactive-color);
     }
     .chart-legend {
       max-height: 60%;
