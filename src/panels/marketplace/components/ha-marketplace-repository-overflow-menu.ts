@@ -98,10 +98,10 @@ const confirmUninstallRepository = async (
   localize: LocalizeFunc
 ) => {
   let owner: RepositoryBase | undefined;
+  let entries: ConfigEntry[] = [];
 
   // Its files are what the entries run, core refuses to uninstall it
   if (repository.category === "integration" && repository.domain) {
-    let entries: ConfigEntry[];
     try {
       entries = await getConfigEntries(api, {
         domain: repository.domain,
@@ -111,10 +111,7 @@ const confirmUninstallRepository = async (
       return;
     }
 
-    // Core releases it instead, so another install keeps the files and entries
-    owner = entries.length
-      ? sharingInstall(element.marketplace.repositories, repository)
-      : undefined;
+    owner = sharingInstall(element.marketplace.repositories, repository);
 
     if (entries.length && !owner) {
       showMarketplaceInUseDialog(element, {
@@ -142,10 +139,14 @@ const confirmUninstallRepository = async (
     title: localize("ui.panel.marketplace.dialog.uninstall.title", {
       name: repository.name,
     }),
+    // With entries core releases it, without them it removes the shared files
     text: owner
-      ? localize("ui.panel.marketplace.dialog.uninstall.shared_message", {
-          owner: owner.name,
-        })
+      ? localize(
+          entries.length
+            ? "ui.panel.marketplace.dialog.uninstall.shared_message"
+            : "ui.panel.marketplace.dialog.uninstall.shared_removed_message",
+          { owner: owner.name }
+        )
       : localize("ui.panel.marketplace.dialog.uninstall.message"),
     confirmText: localize("ui.panel.marketplace.common.uninstall"),
     destructive: true,

@@ -303,14 +303,14 @@ describe("repositoryMenuItems", () => {
     );
 
     // Without entries core deletes the files, even the shared ones
-    it("asks the usual way when nothing is set up, even if shared", async () => {
+    it("warns that the sharer loses its files when nothing is set up", async () => {
       await uninstallIntegration(
         pageWith([{ id: "2", installed: true, domain: "example" }])
       );
 
       expect(showMarketplaceInUseDialog).not.toHaveBeenCalled();
       expect(vi.mocked(showConfirmationDialog).mock.lastCall![1].text).toBe(
-        "ui.panel.marketplace.dialog.uninstall.message"
+        "ui.panel.marketplace.dialog.uninstall.shared_removed_message"
       );
     });
 

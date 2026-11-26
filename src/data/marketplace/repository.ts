@@ -52,7 +52,7 @@ export interface MarketplaceRelease {
   prerelease: boolean;
 }
 
-// Uninstalling a repository leaves the files of a sharing install in place
+// With config entries, core releases the repository instead of removing these files
 export const sharingInstall = (
   repositories: RepositoryBase[],
   repository: RepositoryBase,

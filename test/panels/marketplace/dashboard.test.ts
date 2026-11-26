@@ -705,11 +705,8 @@ describe("a selection sharing its files with an installed repository", () => {
 
     const dialog = await startBulkUninstall(dashboard);
 
-    const text = dialogText(dialog.text);
-    expect(text).toContain("ui.panel.marketplace.dialog.uninstall.selected");
-    expect(text).not.toContain("selected_in_use");
-    expect(text).toContain(
-      "ui.panel.marketplace.dialog.uninstall.selected_shared"
+    expect(dialog.text).toBe(
+      "ui.panel.marketplace.dialog.uninstall.selected_released"
     );
 
     await dialog.action!();
@@ -718,6 +715,28 @@ describe("a selection sharing its files with an installed repository", () => {
     expect(vi.mocked(uninstallMarketplaceRepository)).toHaveBeenCalledWith(
       expect.anything(),
       "1"
+    );
+  });
+
+  it("explains both when the selection also deletes a setup", async () => {
+    const other = {
+      id: "3",
+      name: "Other",
+      category: "integration",
+      domain: "other",
+      installed: true,
+    };
+    const dashboard = await openDashboard([shared, sharer, other], "installed");
+    selectForBulkUninstall(dashboard, ["1", "3"]);
+
+    const dialog = await startBulkUninstall(dashboard);
+
+    const text = dialogText(dialog.text);
+    expect(text).toContain(
+      "ui.panel.marketplace.dialog.uninstall.selected_in_use"
+    );
+    expect(text).toContain(
+      "ui.panel.marketplace.dialog.uninstall.selected_shared"
     );
   });
 

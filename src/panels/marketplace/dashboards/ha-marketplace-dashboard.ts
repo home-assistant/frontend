@@ -846,10 +846,13 @@ export class HaMarketplaceDashboard extends LitElement {
       const inUseCount = countIn(entriesByDomain);
       const sharedCount = countIn(releasedDomains);
 
+      const allReleased = sharedCount === selectedRepositories.length;
       const message = this._i18n.localize(
-        inUseCount
-          ? "ui.panel.marketplace.dialog.uninstall.selected_in_use"
-          : "ui.panel.marketplace.dialog.uninstall.selected",
+        allReleased
+          ? "ui.panel.marketplace.dialog.uninstall.selected_released"
+          : inUseCount
+            ? "ui.panel.marketplace.dialog.uninstall.selected_in_use"
+            : "ui.panel.marketplace.dialog.uninstall.selected",
         {
           count: selectedRepositories.length,
           ...(inUseCount ? { in_use: inUseCount } : {}),
@@ -861,17 +864,18 @@ export class HaMarketplaceDashboard extends LitElement {
         title: this._i18n.localize(
           "ui.panel.marketplace.dialog.uninstall.selected_title"
         ),
-        text: sharedCount
-          ? html`
-              <p>${message}</p>
-              <p>
-                ${this._i18n.localize(
-                  "ui.panel.marketplace.dialog.uninstall.selected_shared",
-                  { count: sharedCount }
-                )}
-              </p>
-            `
-          : message,
+        text:
+          sharedCount && !allReleased
+            ? html`
+                <p>${message}</p>
+                <p>
+                  ${this._i18n.localize(
+                    "ui.panel.marketplace.dialog.uninstall.selected_shared",
+                    { count: sharedCount }
+                  )}
+                </p>
+              `
+            : message,
         confirmText: this._i18n.localize(
           "ui.panel.marketplace.common.uninstall"
         ),
