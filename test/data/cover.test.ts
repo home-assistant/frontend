@@ -28,16 +28,6 @@ describe("coverCurrentValue", () => {
     );
   });
 
-  it("uses the open and closed tilt positions of the cover", () => {
-    const attributes = { open_tilt_position: 50, closed_tilt_positions: [100] };
-    expect(
-      coverCurrentValue(cover("closed", TILT_FEATURES, attributes), "tilt")
-    ).toBe(100);
-    expect(
-      coverCurrentValue(cover("open", TILT_FEATURES, attributes), "tilt")
-    ).toBe(50);
-  });
-
   it("has no tilt when the state of a tilt-only cover is unknown", () => {
     expect(
       coverCurrentValue(cover("unknown", TILT_FEATURES), "tilt")

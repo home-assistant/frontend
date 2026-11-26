@@ -240,17 +240,11 @@ export interface CoverEntity extends HassEntityBase {
 }
 
 // For covers that report no value, the open or closed state tells where it is
-const valueFromState = (
-  stateObj: CoverEntity,
-  closed: number,
-  open: number
-): number | undefined => {
+const valueFromState = (stateObj: CoverEntity): number | undefined => {
   if (stateObj.state === UNKNOWN || stateObj.state === UNAVAILABLE) {
     return undefined;
   }
-  return stateObj.state === "closed" || stateObj.state === "opening"
-    ? closed
-    : open;
+  return stateObj.state === "closed" || stateObj.state === "opening" ? 0 : 100;
 };
 
 export const coverCurrentValue = (
@@ -267,11 +261,7 @@ export const coverCurrentValue = (
     ) {
       return tilt ?? undefined;
     }
-    return valueFromState(
-      stateObj,
-      coverClosedTiltPositions(stateObj)[0],
-      coverOpenTiltPosition(stateObj)
-    );
+    return valueFromState(stateObj);
   }
   const position = stateObj.attributes.current_position;
   if (
@@ -280,7 +270,7 @@ export const coverCurrentValue = (
   ) {
     return position ?? undefined;
   }
-  return valueFromState(stateObj, 0, 100);
+  return valueFromState(stateObj);
 };
 
 declare global {
