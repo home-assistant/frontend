@@ -455,6 +455,7 @@ describe("generatePowerSourcesGraphData with separate sources", () => {
       "battery",
       "battery-negative",
       "usage",
+      "zero-line",
     ]);
     expect(separate.legendData!.map((item) => item.id)).toEqual([
       `solar-${RATE_IDS.solar}`,

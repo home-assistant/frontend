@@ -19,6 +19,7 @@ import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
 import type {
+  HASSDomCurrentTargetEvent,
   HASSDomEvent,
   HASSDomTargetEvent,
 } from "../../common/dom/fire_event";
@@ -122,6 +123,8 @@ class HaPanelHistory extends LitElement {
   // The zoom window shared by all charts, in percent of their x-axis
   @state() private _zoomRange: [number, number] = [0, 100];
 
+  @state() private _zoomBarHeld = false;
+
   @state() private _filters: SourceFilters = {};
 
   // Only one filter is expanded at a time, so that it can use the height
@@ -202,7 +205,8 @@ class HaPanelHistory extends LitElement {
       !!this._mungedStateHistory &&
       (this._mungedStateHistory.line.length > 0 ||
         this._mungedStateHistory.timeline.length > 0);
-    const showZoomBar = !loading && hasTargets && hasResults;
+    const hasCharts = !loading && hasTargets && hasResults;
+    const showZoomBar = hasCharts && (this._isZoomed() || this._zoomBarHeld);
     const sourcesLabel = sourceCount
       ? this.hass.localize("ui.panel.history.sources_count", {
           count: entityIds.length,
@@ -337,8 +341,13 @@ class HaPanelHistory extends LitElement {
                 }
               </div>
               ${
-                showZoomBar
-                  ? html`<ha-card class="zoom-bar">
+                hasCharts
+                  ? html`<ha-card
+                      class=${classMap({
+                        "zoom-bar": true,
+                        "keyboard-only": !showZoomBar,
+                      })}
+                    >
                       <ha-icon-button
                         .disabled=${!this._isZoomed()}
                         .label=${this.hass.localize(
@@ -352,6 +361,11 @@ class HaPanelHistory extends LitElement {
                         .end=${this._zoomRange[1]}
                         @zoom-slider-changed=${this._zoomSliderChanged}
                         @zoom-slider-reset=${this._resetZoom}
+                        @pointerdown=${this._holdZoomBar}
+                        @focusin=${this._holdZoomBar}
+                        @pointerup=${this._releaseZoomBar}
+                        @pointercancel=${this._releaseZoomBar}
+                        @focusout=${this._releaseZoomBar}
                       ></ha-chart-zoom-slider>
                     </ha-card>`
                   : nothing
@@ -372,6 +386,7 @@ class HaPanelHistory extends LitElement {
     ev: HASSDomEvent<HASSDomEvents["history-charts-zoom"]>
   ) {
     this._zoomRange = [ev.detail.start, ev.detail.end];
+    this._zoomBarHeld = false;
   }
 
   private _zoomSliderChanged(
@@ -382,7 +397,18 @@ class HaPanelHistory extends LitElement {
     this._stateHistoryCharts?.zoom(start, end);
   }
 
+  private _holdZoomBar() {
+    this._zoomBarHeld = true;
+  }
+
+  private _releaseZoomBar(ev: Event & HASSDomCurrentTargetEvent<HTMLElement>) {
+    // A mouse press focuses the slider, so it is kept until it loses focus
+    this._zoomBarHeld =
+      ev.type !== "focusout" && ev.currentTarget.matches(":focus-within");
+  }
+
   private _resetZoom() {
+    this._zoomBarHeld = false;
     this._zoomRange = [0, 100];
     this._stateHistoryCharts?.zoom(0, 100);
   }
@@ -632,6 +658,7 @@ class HaPanelHistory extends LitElement {
     this._isLoading = true;
     // The charts are rebuilt once loaded, so they start unzoomed.
     this._zoomRange = [0, 100];
+    this._zoomBarHeld = false;
 
     if (this._subscribed) {
       this._unsubscribeHistory();
@@ -1043,6 +1070,11 @@ class HaPanelHistory extends LitElement {
           padding-bottom: calc(
             56px + var(--zoom-bar-bottom) + var(--ha-space-4)
           );
+        }
+
+        /* Kept in the tab order, as zooming from the keyboard starts here */
+        .zoom-bar.keyboard-only {
+          clip-path: inset(50%);
         }
 
         /* Floats like the energy dashboard's date bar */

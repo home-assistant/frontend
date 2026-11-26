@@ -119,6 +119,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route, ServiceCallResponse } from "../../../types";
@@ -267,6 +268,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   private _activeHiddenColumns?: string[];
 
   @query("#overflow-menu") private _overflowMenu!: HaDropdown;
+
+  @query("hass-tabs-subpage-data-table", true)
+  private _dataTable!: HaTabsSubpageDataTable;
 
   private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width,
@@ -760,6 +764,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
               "ui.panel.config.automation.picker.bulk_actions.disable"
             )}
           </ha-dropdown-item>
+          <wa-divider></wa-divider>
+          <ha-dropdown-item value="delete_selected" variant="danger">
+            <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.automation.picker.bulk_actions.delete_selected.button"
+            )}
+          </ha-dropdown-item>
         </ha-dropdown>
         ${
           !this.automations.length
@@ -1171,6 +1182,50 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     }
   }
 
+  private _deleteSelected = () => {
+    // Only rows with an entity registry entry are selectable, so every selected
+    // automation has an ID. The backend still refuses the ones that aren't
+    // stored in automations.yaml, those end up in the failure alert.
+    const automations = this.automations.filter((automation) =>
+      this._selected.includes(automation.entity_id)
+    );
+    let failedCount = 0;
+
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.automation.picker.bulk_actions.delete_selected.confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.automation.picker.bulk_actions.delete_selected.confirm_text",
+        { count: automations.length }
+      ),
+      confirmText: this.hass.localize("ui.common.delete"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
+      action: async () => {
+        const results = await Promise.allSettled(
+          automations.map((automation) =>
+            deleteAutomation(this.hass, automation.attributes.id!)
+          )
+        );
+        failedCount = rejectedItems(results).length;
+        this._dataTable.clearSelection();
+      },
+    }).then((confirmed) => {
+      if (confirmed && failedCount) {
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.automation.picker.bulk_actions.delete_selected.failed_title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.automation.picker.bulk_actions.delete_selected.failed",
+            { count: failedCount }
+          ),
+        });
+      }
+    });
+  };
+
   private _duplicate = async (automation: AutomationItem) => {
     try {
       const config = await fetchAutomationFileConfig(
@@ -1540,6 +1595,10 @@ ${rejected
     }
     if (value === "disable") {
       this._handleBulkDisable();
+      return;
+    }
+    if (value === "delete_selected") {
+      this._deleteSelected();
       return;
     }
 

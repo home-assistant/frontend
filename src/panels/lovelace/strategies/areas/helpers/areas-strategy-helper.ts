@@ -291,6 +291,7 @@ export const getAreaGroupedEntities = (
             "input_number",
             "counter",
             "timer",
+            "timer_list",
           ],
           area: area,
           entity_category: "none",

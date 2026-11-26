@@ -19,7 +19,7 @@ import {
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -110,6 +110,7 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-tabs-subpage-data-table";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
@@ -161,6 +162,9 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @state() private _selected: string[] = [];
+
+  @query("hass-tabs-subpage-data-table", true)
+  private _dataTable!: HaTabsSubpageDataTable;
 
   @state() private _activeFilters?: string[];
 
@@ -626,66 +630,66 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                 }`
             : nothing
         }
-        ${
-          this.narrow || areasInOverflow
-            ? html` <ha-dropdown
-                slot="selection-bar"
-                @wa-select=${this._handleBulkAction}
-              >
-                ${
-                  this.narrow
-                    ? html`<ha-assist-chip
-                        .label=${this.hass.localize(
-                          "ui.panel.config.automation.picker.bulk_action"
-                        )}
-                        slot="trigger"
-                      >
-                        <ha-svg-icon
-                          slot="trailing-icon"
-                          .path=${mdiMenuDown}
-                        ></ha-svg-icon>
-                      </ha-assist-chip>`
-                    : html`<ha-icon-button
-                        .path=${mdiDotsVertical}
-                        .label=${this.hass.localize(
-                          "ui.panel.config.automation.picker.bulk_action"
-                        )}
-                        slot="trigger"
-                      ></ha-icon-button>`
-                }
-                ${
-                  this.narrow
-                    ? html`<ha-dropdown-item>
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.picker.bulk_actions.move_category"
-                        )}
-                        ${this._renderCategoryItems("submenu")}
-                      </ha-dropdown-item>`
-                    : nothing
-                }
-                ${
-                  this.narrow || labelsInOverflow
-                    ? html`<ha-dropdown-item>
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.picker.bulk_actions.add_label"
-                        )}
-                        ${this._renderLabelItems("submenu")}
-                      </ha-dropdown-item>`
-                    : nothing
-                }
-                ${
-                  this.narrow || areasInOverflow
-                    ? html`<ha-dropdown-item>
-                        ${this.hass.localize(
-                          "ui.panel.config.devices.picker.bulk_actions.move_area"
-                        )}
-                        ${this._renderAreaItems("submenu")}
-                      </ha-dropdown-item>`
-                    : nothing
-                }
-              </ha-dropdown>`
-            : nothing
-        }
+        <ha-dropdown slot="selection-bar" @wa-select=${this._handleBulkAction}>
+          ${
+            this.narrow
+              ? html`<ha-assist-chip
+                  .label=${this.hass.localize(
+                    "ui.panel.config.automation.picker.bulk_action"
+                  )}
+                  slot="trigger"
+                >
+                  <ha-svg-icon
+                    slot="trailing-icon"
+                    .path=${mdiMenuDown}
+                  ></ha-svg-icon>
+                </ha-assist-chip>`
+              : html`<ha-icon-button
+                  .path=${mdiDotsVertical}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.automation.picker.bulk_action"
+                  )}
+                  slot="trigger"
+                ></ha-icon-button>`
+          }
+          ${
+            this.narrow
+              ? html`<ha-dropdown-item>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.picker.bulk_actions.move_category"
+                  )}
+                  ${this._renderCategoryItems("submenu")}
+                </ha-dropdown-item>`
+              : nothing
+          }
+          ${
+            this.narrow || labelsInOverflow
+              ? html`<ha-dropdown-item>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.picker.bulk_actions.add_label"
+                  )}
+                  ${this._renderLabelItems("submenu")}
+                </ha-dropdown-item>`
+              : nothing
+          }
+          ${
+            this.narrow || areasInOverflow
+              ? html`<ha-dropdown-item>
+                    ${this.hass.localize(
+                      "ui.panel.config.devices.picker.bulk_actions.move_area"
+                    )}
+                    ${this._renderAreaItems("submenu")}
+                  </ha-dropdown-item>
+                  <wa-divider></wa-divider>`
+              : nothing
+          }
+          <ha-dropdown-item value="delete_selected" variant="danger">
+            <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.script.picker.bulk_actions.delete_selected.button"
+            )}
+          </ha-dropdown-item>
+        </ha-dropdown>
         ${
           !this.scripts.length
             ? html` <div class="empty" slot="empty">
@@ -1137,6 +1141,48 @@ ${rejected
     }
   }
 
+  private _deleteSelected = () => {
+    // Only rows with an entity registry entry are selectable, so every selected
+    // script has a unique ID. The backend still refuses the ones that aren't
+    // stored in scripts.yaml, those end up in the failure alert.
+    const entries = this._entityReg.filter((entry) =>
+      this._selected.includes(entry.entity_id)
+    );
+    let failedCount = 0;
+
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.script.picker.bulk_actions.delete_selected.confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.script.picker.bulk_actions.delete_selected.confirm_text",
+        { count: entries.length }
+      ),
+      confirmText: this.hass.localize("ui.common.delete"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
+      action: async () => {
+        const results = await Promise.allSettled(
+          entries.map((entry) => deleteScript(this.hass, entry.unique_id))
+        );
+        failedCount = rejectedItems(results).length;
+        this._dataTable.clearSelection();
+      },
+    }).then((confirmed) => {
+      if (confirmed && failedCount) {
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.script.picker.bulk_actions.delete_selected.failed_title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.script.picker.bulk_actions.delete_selected.failed",
+            { count: failedCount }
+          ),
+        });
+      }
+    });
+  };
+
   private _bulkCreateCategory = () => {
     showCategoryRegistryDetailDialog(this, {
       scope: "script",
@@ -1300,6 +1346,11 @@ ${rejected
     const value = item.value;
 
     if (!value) {
+      return;
+    }
+
+    if (value === "delete_selected") {
+      this._deleteSelected();
       return;
     }
 

@@ -9,12 +9,21 @@ import {
   stringifyPath,
   type ConfigPath,
 } from "../../../common/util/config-path";
+import type { ConfigValidationError } from "../../../data/config";
+import {
+  automationErrorsContext,
+  errorsEqual,
+  NO_ERRORS,
+  ownedErrors,
+} from "./automation-errors";
 
 export const automationPathContext =
   createContext<ConfigPath>("automation-path");
 
 export interface AutomationPathRow extends HTMLElement {
   readonly selected: boolean;
+  /** Whether the rows inside are hidden. */
+  readonly collapsed?: boolean;
   openSidebar(): void;
   expand(): void;
 }
@@ -34,14 +43,19 @@ export class AutomationRowRegistry {
     { path: ConfigPath; rows: AutomationPathRow[] }
   >();
 
+  private _listeners = new Set<() => void>();
+
+  private _notifyScheduled = false;
+
   public register(path: ConfigPath, row: AutomationPathRow) {
     const key = stringifyPath(path);
     const entry = this._rows.get(key);
     if (!entry) {
       this._rows.set(key, { path, rows: [row] });
-      return;
+    } else {
+      entry.rows = [...entry.rows.filter((claimed) => claimed !== row), row];
     }
-    entry.rows = [...entry.rows.filter((claimed) => claimed !== row), row];
+    this._changed();
   }
 
   public unregister(path: ConfigPath, row: AutomationPathRow) {
@@ -54,10 +68,47 @@ export class AutomationRowRegistry {
     if (!entry.rows.length) {
       this._rows.delete(key);
     }
+    this._changed();
+  }
+
+  /**
+   * Calls `listener` after rows were registered, unregistered, collapsed or
+   * expanded, once for all changes made in the same task. Returns the
+   * function to unsubscribe.
+   */
+  public subscribe(listener: () => void): () => void {
+    this._listeners.add(listener);
+    return () => {
+      this._listeners.delete(listener);
+    };
+  }
+
+  public rowCollapsedChanged() {
+    this._changed();
+  }
+
+  private _changed() {
+    if (this._notifyScheduled || !this._listeners.size) {
+      return;
+    }
+    this._notifyScheduled = true;
+    queueMicrotask(() => {
+      this._notifyScheduled = false;
+      this._listeners.forEach((listener) => listener());
+    });
+  }
+
+  public rowAt(path: ConfigPath): AutomationPathRow | undefined {
+    return owner(this._rows.get(stringifyPath(path))?.rows);
   }
 
   public pathOf(row: AutomationPathRow): ConfigPath | undefined {
     return [...this._rows.values()].find((entry) => owner(entry.rows) === row)
+      ?.path;
+  }
+
+  public selectedPath(): ConfigPath | undefined {
+    return [...this._rows.values()].find((entry) => owner(entry.rows)?.selected)
       ?.path;
   }
 
@@ -83,10 +134,18 @@ interface AutomationPathControllerOptions {
 
 /**
  * Consumes the path of the closest ancestor and provides it extended by the
- * host's own segment to its descendants.
+ * host's own segment to its descendants. For a row, also finds the validation
+ * errors the row owns and updates the host when they change.
  */
 export class AutomationPathController extends ContextController {
   public path: ConfigPath = [];
+
+  public errors: ConfigValidationError[] = NO_ERRORS;
+
+  @consumeContext({ context: automationErrorsContext, subscribe: true })
+  private _configErrors: ConfigValidationError[] = NO_ERRORS;
+
+  private _unsubscribeRegistry?: () => void;
 
   @consumeContext({ context: automationPathContext, subscribe: true })
   private _parentPath: ConfigPath = [];
@@ -97,6 +156,8 @@ export class AutomationPathController extends ContextController {
   private _registeredPath?: ConfigPath;
 
   private _registeredRow?: AutomationPathRow;
+
+  private _collapsed?: boolean;
 
   private readonly _provider: ContextProvider<typeof automationPathContext>;
 
@@ -124,6 +185,12 @@ export class AutomationPathController extends ContextController {
   public hostConnected() {
     // A row moved by a drag reconnects without an update
     this._sync();
+    if (this._options.row && this._registry && !this._unsubscribeRegistry) {
+      // Another row on the path of an error can take it over or give it back
+      this._unsubscribeRegistry = this._registry.subscribe(() =>
+        this._syncErrors()
+      );
+    }
   }
 
   private _sync() {
@@ -133,10 +200,33 @@ export class AutomationPathController extends ContextController {
       this._provider.setValue(path);
     }
     this._syncRegistration();
+    this._syncErrors();
+  }
+
+  public hostUpdated() {
+    // A collapsed row takes over the errors of the rows it hides
+    const collapsed = this._registeredRow?.collapsed;
+    if (collapsed !== this._collapsed) {
+      this._collapsed = collapsed;
+      this._registry?.rowCollapsedChanged();
+    }
   }
 
   public hostDisconnected() {
+    this._unsubscribeRegistry?.();
+    this._unsubscribeRegistry = undefined;
     this._unregister();
+  }
+
+  private _syncErrors() {
+    const errors =
+      this._registeredRow && this._registry && this._configErrors.length
+        ? ownedErrors(this._registry, this._configErrors, this._registeredRow)
+        : NO_ERRORS;
+    if (!errorsEqual(errors, this.errors)) {
+      this.errors = errors;
+      this.host.requestUpdate();
+    }
   }
 
   private _syncRegistration() {

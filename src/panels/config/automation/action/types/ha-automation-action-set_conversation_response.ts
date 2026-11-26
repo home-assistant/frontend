@@ -4,6 +4,7 @@ import "../../../../../components/ha-form/ha-form";
 import type { SetConversationResponseAction } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
 import type { ActionElement } from "../ha-automation-action-row";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 
 const SCHEMA = [
   {
@@ -19,6 +20,10 @@ export class HaSetConversationResponseAction
   extends LitElement
   implements ActionElement
 {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["set_conversation_response"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public action!: SetConversationResponseAction;
@@ -32,6 +37,8 @@ export class HaSetConversationResponseAction
   protected render() {
     return html`
       <ha-form
+        .error=${this._fieldErrors.fields}
+        .computeError=${this._fieldErrors.formError(this._computeLabelCallback)}
         .hass=${this.hass}
         .data=${this.action}
         .schema=${SCHEMA}

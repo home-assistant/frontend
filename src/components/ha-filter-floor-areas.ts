@@ -14,11 +14,9 @@ import {
   FilterPanelController,
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
-import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeRTL } from "../common/util/compute_rtl";
 import { deepEqual } from "../common/util/deep-equal";
-import type { LocalizeFunc } from "../common/translations/localize";
 import type { AreaRegistryEntry } from "../data/area/area_registry";
 import type { FloorAreasFilterValue } from "../data/data_table_filters";
 import {
@@ -53,10 +51,6 @@ import type { HaListSelectable } from "./list/ha-list-selectable";
 
 @customElement("ha-filter-floor-areas")
 export class HaFilterFloorAreas extends LitElement {
-  @state()
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
-
   @consume({ context: areasContext, subscribe: true })
   @state()
   private _areasReg!: ContextType<typeof areasContext>;
@@ -161,13 +155,13 @@ export class HaFilterFloorAreas extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this._localize("ui.panel.config.areas.caption")}
+          ${this._i18n.localize("ui.panel.config.areas.caption")}
           ${
             count
-              ? html`${renderFilterBadge(this._localize, count, this.value?.exclude)}
+              ? html`${renderFilterBadge(this._i18n.localize, count, this.value?.exclude)}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
-                    .label=${this._localize(
+                    .label=${this._i18n.localize(
                       "ui.components.subpage-data-table.clear_filter"
                     )}
                     @click=${this._clearFilter}
@@ -189,7 +183,7 @@ export class HaFilterFloorAreas extends LitElement {
                   multi
                   @ha-list-item-selected=${this._handleAdded}
                   @ha-list-item-deselected=${this._handleRemoved}
-                  aria-label=${this._localize("ui.panel.config.areas.caption")}
+                  aria-label=${this._i18n.localize("ui.panel.config.areas.caption")}
                 >
                   <ha-list-item-option
                     appearance="checkbox"
@@ -199,7 +193,7 @@ export class HaFilterFloorAreas extends LitElement {
                     .selected=${this.value?.no_area || false}
                   >
                     <span slot="headline">
-                      ${this._localize("ui.components.area-picker.no_area")}
+                      ${this._i18n.localize("ui.components.area-picker.no_area")}
                     </span>
                   </ha-list-item-option>
                   ${repeat(
@@ -247,7 +241,7 @@ export class HaFilterFloorAreas extends LitElement {
                             .path=${mdiTextureBox}
                           ></ha-svg-icon>
                           <span slot="headline">
-                            ${this._localize(
+                            ${this._i18n.localize(
                               "ui.panel.config.areas.picker.other_areas"
                             )}
                           </span>

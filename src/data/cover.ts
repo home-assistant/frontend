@@ -124,12 +124,41 @@ export function isFullyClosed(stateObj: CoverEntity) {
   return stateObj.state === "closed";
 }
 
+export function coverOpenTiltPosition(stateObj: CoverEntity): number {
+  return stateObj.attributes.open_tilt_position ?? 100;
+}
+
+export function coverClosedTiltPositions(stateObj: CoverEntity): number[] {
+  return stateObj.attributes.closed_tilt_positions ?? [0];
+}
+
+export function coverTiltAngle(stateObj: CoverEntity, tilt: number): number {
+  const start = stateObj.attributes.tilt_start_angle;
+  const end = stateObj.attributes.tilt_end_angle;
+  if (start != null && end != null) {
+    return start + ((end - start) * tilt) / 100;
+  }
+  const open = coverOpenTiltPosition(stateObj);
+  if (tilt <= open) {
+    return open === 0 ? 0 : (-90 * (open - tilt)) / open;
+  }
+  return (90 * (tilt - open)) / (100 - open);
+}
+
+export function coverTiltOpenness(stateObj: CoverEntity, tilt: number) {
+  return 100 * (1 - Math.min(1, Math.abs(coverTiltAngle(stateObj, tilt)) / 90));
+}
+
 export function isFullyOpenTilt(stateObj: CoverEntity) {
-  return stateObj.attributes.current_tilt_position === 100;
+  return (
+    stateObj.attributes.current_tilt_position ===
+    coverOpenTiltPosition(stateObj)
+  );
 }
 
 export function isFullyClosedTilt(stateObj: CoverEntity) {
-  return stateObj.attributes.current_tilt_position === 0;
+  const tilt = stateObj.attributes.current_tilt_position;
+  return tilt != null && coverClosedTiltPositions(stateObj).includes(tilt);
 }
 
 export function isOpening(stateObj: CoverEntity) {
@@ -199,6 +228,10 @@ export function canStopTilt(stateObj: CoverEntity): boolean {
 interface CoverEntityAttributes extends HassEntityAttributeBase {
   current_position?: number;
   current_tilt_position?: number;
+  open_tilt_position?: number;
+  closed_tilt_positions?: number[];
+  tilt_start_angle?: number;
+  tilt_end_angle?: number;
   supported_speeds?: string[];
 }
 

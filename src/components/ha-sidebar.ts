@@ -775,13 +775,15 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
 
         ha-list-item-button {
           flex-shrink: 0;
-          margin: 0 var(--ha-space-1) var(--ha-space-1);
+          margin: 0 0 var(--ha-space-1);
+          margin-inline-start: var(--ha-space-1);
           border-radius: var(--ha-border-radius-sm);
           --ha-row-item-min-height: var(--ha-space-10);
           --ha-row-item-padding-block: 0;
           --ha-row-item-padding-inline: var(--ha-space-3);
           width: var(--ha-space-12);
           position: relative;
+          overflow: clip;
           transition: width var(--ha-animation-duration-normal) ease;
         }
         ha-list-item-button::part(headline) {

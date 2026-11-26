@@ -21,15 +21,23 @@ describe("watchForNewMatterDevice", () => {
     vi.useRealTimers();
   });
 
+  // Core gives each node a `deviceid_` identifier on the device it joins.
+  const node = (id: string): [string, string] => [
+    "matter",
+    `deviceid_FABRIC-${id}-MatterNodeDevice`,
+  ];
+
   const fakeRegistry = () => {
-    const devices: string[] = ["existing"];
+    const devices = new Map<string, [string, string][]>([
+      ["existing", [node("existing"), ["matter", "serial_SN1"]]],
+    ]);
     const eventCallbacks = new Set<() => void>();
     const connection = {
       connected: true,
       sendMessagePromise: vi.fn(async () =>
-        devices.map((id) => ({
+        [...devices].map(([id, identifiers]) => ({
           id,
-          identifiers: [["matter", id]],
+          identifiers,
           connections: [],
         }))
       ),
@@ -46,11 +54,48 @@ describe("watchForNewMatterDevice", () => {
       connection,
       eventCallbacks,
       addDevice: (id: string) => {
-        devices.push(id);
+        devices.set(id, [node(id)]);
+        eventCallbacks.forEach((callback) => callback());
+      },
+      addIdentifier: (id: string, identifier: [string, string]) => {
+        devices.set(id, [...devices.get(id)!, identifier]);
         eventCallbacks.forEach((callback) => callback());
       },
     };
   };
+
+  const watch = async (registry: ReturnType<typeof fakeRegistry>) => {
+    const found = vi.fn();
+    watchForNewMatterDevice(
+      { connection: registry.connection } as HomeAssistant,
+      found
+    );
+    await vi.advanceTimersByTimeAsync(10);
+    return found;
+  };
+
+  it("reports an existing device that gained a node, as core merges a recommissioned node that shares its serial number", async () => {
+    const registry = fakeRegistry();
+    const found = await watch(registry);
+
+    registry.addIdentifier("existing", node("recommissioned"));
+    await vi.advanceTimersByTimeAsync(600);
+
+    expect(found).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ id: "existing" }),
+      true
+    );
+  });
+
+  it("ignores an existing device that gained no node", async () => {
+    const registry = fakeRegistry();
+    const found = await watch(registry);
+
+    registry.addIdentifier("existing", ["matter", "serial_SN2"]);
+    await vi.advanceTimersByTimeAsync(600);
+
+    expect(found).not.toHaveBeenCalled();
+  });
 
   it("keeps the registry subscribed when the caller unsubscribes after a find", async () => {
     const registry = fakeRegistry();
@@ -64,7 +109,8 @@ describe("watchForNewMatterDevice", () => {
     registry.addDevice("new");
     await vi.advanceTimersByTimeAsync(600);
     expect(found).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({ id: "new" })
+      expect.objectContaining({ id: "new" }),
+      false
     );
 
     // The add device dialog unsubscribes again when it closes.

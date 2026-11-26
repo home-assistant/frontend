@@ -80,6 +80,7 @@ export const DOMAINS_WITH_MORE_INFO = [
   "switch",
   "time",
   "timer",
+  "timer_list",
   "update",
   "vacuum",
   "valve",

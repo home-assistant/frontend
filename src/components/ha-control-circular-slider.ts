@@ -1,5 +1,6 @@
 import {
   DIRECTION_ALL,
+  INPUT_CANCEL,
   Manager,
   Pan,
   Press,
@@ -138,6 +139,13 @@ export class HaControlCircularSlider extends LitElement {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+    if (
+      this._activeSlider &&
+      changedProps.has(this._activeSlider) &&
+      this[this._activeSlider] !== this._lastChanging
+    ) {
+      this._lastChanging = undefined;
+    }
     if (!this._activeSlider) {
       if (changedProps.has("value")) {
         this._localValue = this.value;
@@ -171,9 +179,17 @@ export class HaControlCircularSlider extends LitElement {
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
+    this._destroyListeners();
+    if (this._activeSlider) {
+      this._cancelInteraction();
+    }
   }
 
   private _managers: HammerManager[] = [];
+
+  private _lastChanging?: number;
+
+  private _keyboardChanging = false;
 
   private _getPercentageFromEvent = (e: HammerInput) => {
     const bound = this._slider.getBoundingClientRect();
@@ -236,6 +252,18 @@ export class HaControlCircularSlider extends LitElement {
     return undefined;
   }
 
+  private _cancelInteraction() {
+    if (this._activeSlider) {
+      fireEvent(this, `${this._activeSlider}-changing`, {
+        value: undefined,
+      });
+    }
+    this._activeSlider = undefined;
+    this._localValue = this.value;
+    this._localLow = this.low;
+    this._localHigh = this.high;
+  }
+
   private _setupListeners() {
     if (this._interactions && this._managers.length === 0) {
       this._interactions.forEach((interaction) => {
@@ -265,6 +293,13 @@ export class HaControlCircularSlider extends LitElement {
         mc.add(panRecognizer);
 
         mc.add(new Tap({ event: "singletap" }));
+
+        const cancelInteraction = () => {
+          this._cancelInteraction();
+          if (pressToActivate) {
+            panRecognizer.set({ enable: false });
+          }
+        };
 
         mc.on("press", (e) => {
           e.srcEvent.stopPropagation();
@@ -313,14 +348,12 @@ export class HaControlCircularSlider extends LitElement {
           const raw = this._percentageToValue(percentage);
           this._activeSlider = this._findActiveSlider(raw);
           this._lastSlider = this._activeSlider;
+          this._lastChanging = undefined;
           this.shadowRoot?.getElementById("#slider")?.focus();
         });
         mc.on("pancancel", () => {
           if (this.disabled || this.readonly) return;
-          this._activeSlider = undefined;
-          if (pressToActivate) {
-            panRecognizer.set({ enable: false });
-          }
+          cancelInteraction();
         });
         mc.on("panmove", (e) => {
           if (this.disabled || this.readonly) return;
@@ -329,7 +362,8 @@ export class HaControlCircularSlider extends LitElement {
           const bounded = this._boundedValue(raw);
           this._setActiveValue(bounded);
           const stepped = this._steppedValue(bounded);
-          if (this._activeSlider) {
+          if (this._activeSlider && stepped !== this._lastChanging) {
+            this._lastChanging = stepped;
             fireEvent(this, `${this._activeSlider}-changing`, {
               value: stepped,
             });
@@ -377,6 +411,10 @@ export class HaControlCircularSlider extends LitElement {
           if (pressToActivate) {
             panRecognizer.set({ enable: false });
           }
+        });
+        mc.on("hammer.input", (e) => {
+          if (e.eventType !== INPUT_CANCEL || !this._activeSlider) return;
+          cancelInteraction();
         });
       });
     }
@@ -432,6 +470,7 @@ export class HaControlCircularSlider extends LitElement {
         this._setActiveValue(this._boundedValue(this.max));
         break;
     }
+    this._keyboardChanging = true;
     fireEvent(this, `${this._activeSlider}-changing`, {
       value: this._getActiveValue(),
     });
@@ -440,8 +479,14 @@ export class HaControlCircularSlider extends LitElement {
 
   private _handleKeyUp(e: KeyboardEvent) {
     if (this.disabled || !A11Y_KEY_CODES.has(e.code)) return;
-    this._activeSlider = (e.currentTarget as any).id as ActiveSlider;
     e.preventDefault();
+    this._endKeyboardChange(e);
+  }
+
+  private _endKeyboardChange(e: Event) {
+    if (!this._keyboardChanging) return;
+    this._keyboardChanging = false;
+    this._activeSlider = (e.currentTarget as any).id as ActiveSlider;
     fireEvent(this, `${this._activeSlider}-changing`, {
       value: undefined,
     });
@@ -583,6 +628,7 @@ export class HaControlCircularSlider extends LitElement {
                 )}
                 @keydown=${this._handleKeyDown}
                 @keyup=${this._handleKeyUp}
+                @blur=${this._endKeyboardChange}
               />
             `
             : nothing

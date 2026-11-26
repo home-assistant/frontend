@@ -513,6 +513,7 @@ export class HaConfigDeviceDashboard extends LitElement {
             ? computeDeviceNameDisplay(familyParentDevice, this.hass.localize)
             : undefined,
           firmware_version: device.sw_version || undefined,
+          serial_number: device.serial_number || undefined,
           battery_entity: [
             this._batteryEntity(device.id, deviceEntityLookup),
             this._batteryChargingEntity(device.id, deviceEntityLookup),
@@ -650,6 +651,13 @@ export class HaConfigDeviceDashboard extends LitElement {
       },
       firmware_version: {
         title: localize("ui.panel.config.devices.data_table.firmware_version"),
+        sortable: true,
+        filterable: true,
+        defaultHidden: true,
+        minWidth: "120px",
+      },
+      serial_number: {
+        title: localize("ui.panel.config.devices.data_table.serial_number"),
         sortable: true,
         filterable: true,
         defaultHidden: true,

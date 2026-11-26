@@ -8,14 +8,25 @@ import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import type { SunCondition } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { ConditionElement } from "../ha-automation-condition-row";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 
 type FormType = "before" | "after" | "between";
 
 const BEFORE_DEFAULT = "sunrise";
 const AFTER_DEFAULT = "sunset";
 
+const FORM_FIELDS: Record<FormType, string[]> = {
+  before: ["before", "before_offset"],
+  after: ["after", "after_offset"],
+  between: ["after", "after_offset", "before", "before_offset"],
+};
+
 @customElement("ha-automation-condition-sun")
 export class HaSunCondition extends LitElement implements ConditionElement {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: FORM_FIELDS.before,
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public condition!: SunCondition;
@@ -105,6 +116,10 @@ export class HaSunCondition extends LitElement implements ConditionElement {
       ] as const
   );
 
+  protected willUpdate() {
+    this._fieldErrors.inlineFields = FORM_FIELDS[this._formType];
+  }
+
   protected render() {
     const schema = this._schema(this.hass.localize, this._formType);
     return html`
@@ -137,6 +152,8 @@ export class HaSunCondition extends LitElement implements ConditionElement {
       >
       </ha-select>
       <ha-form
+        .error=${this._fieldErrors.fields}
+        .computeError=${this._fieldErrors.formError(this._computeLabelCallback)}
         .schema=${schema}
         .data=${this.condition}
         .hass=${this.hass}

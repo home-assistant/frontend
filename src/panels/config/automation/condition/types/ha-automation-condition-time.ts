@@ -14,9 +14,14 @@ import type { TimeCondition } from "../../../../../data/automation";
 import type { FrontendLocaleData } from "../../../../../data/translation";
 import type { HomeAssistant } from "../../../../../types";
 import type { ConditionElement } from "../ha-automation-condition-row";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 
 @customElement("ha-automation-condition-time")
 export class HaTimeCondition extends LitElement implements ConditionElement {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["after", "before", "weekday"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public condition!: TimeCondition;
@@ -150,6 +155,8 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
 
     return html`
       <ha-form
+        .error=${this._fieldErrors.fields}
+        .computeError=${this._fieldErrors.formError(this._computeLabelCallback)}
         .hass=${this.hass}
         .data=${data}
         .schema=${schema}

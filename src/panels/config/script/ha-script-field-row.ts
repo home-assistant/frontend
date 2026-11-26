@@ -423,6 +423,7 @@ export default class HaScriptFieldRow extends LitElement {
     const field = fieldValue ?? this.field;
 
     fireEvent(this, "open-sidebar", {
+      type: "script-field",
       save: (value) => {
         fireEvent(this, "value-changed", { value });
       },

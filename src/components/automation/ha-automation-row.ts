@@ -39,6 +39,9 @@ export class HaAutomationRow extends LitElement {
   /** Makes the row a link, with the icons slot outside of it */
   @property() public href?: string;
 
+  @property({ type: Boolean, reflect: true })
+  public error = false;
+
   @query(".row")
   private _rowElement?: HTMLDivElement;
 
@@ -284,6 +287,15 @@ export class HaAutomationRow extends LitElement {
     }
     :host([highlight]) .row:hover {
       background-color: rgba(var(--rgb-primary-color), 0.16);
+    }
+    :host([error]) .row {
+      background-color: var(--ha-color-fill-danger-quiet-resting);
+    }
+    :host([error][selected]) .row,
+    :host([error][selected]) .row:focus {
+      outline: 2px solid var(--ha-color-border-danger-loud);
+      outline-offset: -2px;
+      background-color: var(--ha-color-fill-danger-normal-resting);
     }
 
     .icons,

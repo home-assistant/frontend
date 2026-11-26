@@ -15,6 +15,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { consume } from "../common/decorators/consume";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
+import { setModalOpen } from "../common/dom/open-modals";
 import { withViewTransition } from "../common/util/view-transition";
 import { configContext, internationalizationContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
@@ -64,6 +65,7 @@ type DialogHideEvent = CustomEvent<{ source?: Element }>;
  * @cssprop --dialog-backdrop-filter - Dialog scrim backdrop filter (legacy).
  * @cssprop --mdc-dialog-scrim-color - Dialog scrim color (legacy).
  * @cssprop --dialog-surface-margin-top - Top margin for the dialog surface.
+ * @cssprop --ha-dialog-width-transition - Transition of the dialog surface's width, like when it follows the size of its content. Defaults to none.
  *
  * @attr {boolean} open - Controls the dialog open state.
  * @attr {("alert"|"standard")} type - Dialog type. Defaults to "standard".
@@ -128,6 +130,8 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
   private _open = false;
 
   @query(".body") public bodyContainer!: HTMLDivElement;
+
+  @query("wa-dialog") private _dialog?: WaDialog;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -236,6 +240,7 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
       return;
     }
     this._open = true;
+    setModalOpen(ev.currentTarget as WaDialog, true);
     fireEvent(this, "opened");
 
     await this.updateComplete;
@@ -245,8 +250,8 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
         this._hassConfig?.auth.external &&
         isIosApp(this._hassConfig.auth.external)
       ) {
-        const element = this.querySelector("[autofocus]");
-        if (element !== null) {
+        const element = this._autofocusElement();
+        if (element) {
           if (!element.id) {
             element.id = "ha-dialog-autofocus";
           }
@@ -259,9 +264,29 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
         }
         return;
       }
-      (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
+      this._autofocusElement()?.focus();
     });
   };
+
+  // Wrappers like ha-adaptive-dialog pass their content in through slots
+  private _autofocusElement(): HTMLElement | null {
+    const element = this.querySelector<HTMLElement>("[autofocus]");
+    if (element) {
+      return element;
+    }
+    for (const slot of this.querySelectorAll("slot")) {
+      for (const assigned of slot.assignedElements({ flatten: true })) {
+        if (assigned.matches("[autofocus]")) {
+          return assigned as HTMLElement;
+        }
+        const nested = assigned.querySelector<HTMLElement>("[autofocus]");
+        if (nested) {
+          return nested;
+        }
+      }
+    }
+    return null;
+  }
 
   private _handleAfterShow = (ev: Event) => {
     if (ev.eventPhase !== Event.AT_TARGET) {
@@ -274,6 +299,7 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
     if (ev.eventPhase === Event.AT_TARGET) {
       this._open = false;
       this._setFullscreen(false);
+      setModalOpen(ev.currentTarget as WaDialog, false);
       fireEvent(this, "closed");
     }
   };
@@ -284,6 +310,9 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
       this._handleFullscreenChanged as EventListener
     );
     this._setFullscreen(false);
+    if (this._dialog) {
+      setModalOpen(this._dialog, false);
+    }
     super.disconnectedCallback();
     this._open = false;
   }
@@ -404,6 +433,7 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
           color: var(--primary-text-color);
           min-width: var(--width, var(--full-width));
           max-width: var(--width, var(--full-width));
+          transition: var(--ha-dialog-width-transition, none);
           max-height: var(
             --ha-dialog-max-height,
             calc(var(--safe-height) - var(--ha-space-20))

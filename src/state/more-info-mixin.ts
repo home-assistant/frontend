@@ -12,7 +12,7 @@ import type { MoreInfoDialogParams } from "../dialogs/more-info/ha-more-info-dia
 import type { Constructor } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
 
-const LARGE_MORE_INFO_DOMAINS = ["camera", "image"];
+const LARGE_MORE_INFO_DOMAINS = ["camera"];
 
 declare global {
   // for fire event

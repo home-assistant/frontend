@@ -17,7 +17,6 @@ import {
   FilterPanelController,
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
-import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { computeRTL } from "../common/util/compute_rtl";
 import { fireEvent } from "../common/dom/fire_event";
 import type { ListFilterValue } from "../data/data_table_filters";
@@ -62,10 +61,6 @@ interface TypeRow {
 
 @customElement("ha-filter-entity-types")
 export class HaFilterEntityTypes extends LitElement {
-  @state()
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
-
   @consume({ context: statesContext, subscribe: true })
   @state()
   private _states!: ContextType<typeof statesContext>;
@@ -106,17 +101,17 @@ export class HaFilterEntityTypes extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this._localize("ui.components.filter-entity-types.caption")}
+          ${this._i18n.localize("ui.components.filter-entity-types.caption")}
           ${
             count
               ? html`${renderFilterBadge(
-                    this._localize,
+                    this._i18n.localize,
                     count,
                     listFilterValue(this.value)?.exclude
                   )}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
-                    .label=${this._localize(
+                    .label=${this._i18n.localize(
                       "ui.components.subpage-data-table.clear_filter"
                     )}
                     @click=${this._clearFilter}
@@ -132,7 +127,7 @@ export class HaFilterEntityTypes extends LitElement {
   private _renderContent() {
     const rows = this._rows(
       this._states,
-      this._localize,
+      this._i18n.localize,
       this._i18n.locale.language,
       this._filter,
       this._expandedDomains
@@ -160,7 +155,7 @@ export class HaFilterEntityTypes extends LitElement {
       <ha-list-selectable
         multi
         controlled
-        aria-label=${this._localize("ui.components.filter-entity-types.caption")}
+        aria-label=${this._i18n.localize("ui.components.filter-entity-types.caption")}
         @ha-list-item-selected=${this._handleItemToggled}
         @ha-list-item-deselected=${this._handleItemToggled}
       >
@@ -213,7 +208,7 @@ export class HaFilterEntityTypes extends LitElement {
                 slot="end"
                 data-domain=${row.domain}
                 .path=${row.expanded ? mdiChevronUp : mdiChevronDown}
-                .label=${this._localize(
+                .label=${this._i18n.localize(
                   row.expanded
                     ? "ui.components.filter-entity-types.collapse"
                     : "ui.components.filter-entity-types.expand"

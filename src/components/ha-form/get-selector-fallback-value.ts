@@ -1,3 +1,4 @@
+import { kelvinRangeFromEntityStates } from "../../common/color/color-temp-selector-range";
 import { DEFAULT_MIN_KELVIN } from "../../common/color/convert-light-color";
 import type {
   Selector,
@@ -5,8 +6,12 @@ import type {
   SelectorType,
 } from "../../data/selector";
 
+type EntityStates = Parameters<typeof kelvinRangeFromEntityStates>[0];
+
 type SelectorFallbackValues = {
-  [T in SelectorType]: ((selector: SelectorForType<T>) => unknown) | undefined;
+  [T in SelectorType]:
+    | ((selector: SelectorForType<T>, entityStates?: EntityStates) => unknown)
+    | undefined;
 };
 
 const SELECTOR_FALLBACK_VALUES = {
@@ -64,9 +69,13 @@ const SELECTOR_FALLBACK_VALUES = {
   tts: undefined,
   tts_voice: undefined,
   location: undefined,
-  color_temp: (selector) => {
+  color_temp: (selector, entityStates) => {
     if (selector.color_temp?.unit === "kelvin") {
-      return selector.color_temp.min ?? DEFAULT_MIN_KELVIN;
+      return (
+        kelvinRangeFromEntityStates(entityStates)?.min ??
+        selector.color_temp.min ??
+        DEFAULT_MIN_KELVIN
+      );
     }
 
     return selector.color_temp?.min ?? selector.color_temp?.min_mireds ?? 153;
@@ -83,9 +92,12 @@ const SELECTOR_FALLBACK_VALUES = {
  * Value a selector already displays when no field value is set.
  * Used when enabling an optional service/trigger/condition field.
  */
-export const getSelectorFallbackValue = (selector: Selector): unknown => {
+export const getSelectorFallbackValue = (
+  selector: Selector,
+  entityStates?: EntityStates
+): unknown => {
   const type = Object.keys(selector)[0] as SelectorType;
   const fallbackValue = SELECTOR_FALLBACK_VALUES[type];
 
-  return fallbackValue?.(selector as never);
+  return fallbackValue?.(selector as never, entityStates);
 };

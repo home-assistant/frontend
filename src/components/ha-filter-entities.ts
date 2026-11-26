@@ -11,7 +11,6 @@ import {
   FilterPanelController,
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
-import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { arrayWith, arrayWithout } from "../common/array/array-with";
 import { fireEvent } from "../common/dom/fire_event";
 import type { ListFilterValue } from "../data/data_table_filters";
@@ -22,7 +21,6 @@ import {
 } from "../data/data_table_filters";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { stringCompare } from "../common/string/compare";
-import type { LocalizeFunc } from "../common/translations/localize";
 import { deepEqual } from "../common/util/deep-equal";
 import {
   apiContext,
@@ -49,10 +47,6 @@ interface EntityItem extends HaListVirtualizedItem {
 
 @customElement("ha-filter-entities")
 export class HaFilterEntities extends LitElement {
-  @state()
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
-
   @consume({ context: statesContext, subscribe: true })
   @state()
   private _states!: ContextType<typeof statesContext>;
@@ -125,17 +119,17 @@ export class HaFilterEntities extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this._localize("ui.panel.config.entities.caption")}
+          ${this._i18n.localize("ui.panel.config.entities.caption")}
           ${
             this._count
               ? html`${renderFilterBadge(
-                    this._localize,
+                    this._i18n.localize,
                     this._count,
                     listFilterValue(this.value)?.exclude
                   )}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
-                    .label=${this._localize(
+                    .label=${this._i18n.localize(
                       "ui.components.subpage-data-table.clear_filter"
                     )}
                     @click=${this._clearFilter}
@@ -160,7 +154,7 @@ export class HaFilterEntities extends LitElement {
                 </ha-input-search>
                 <ha-list-selectable-virtualized
                   multi
-                  aria-label=${this._localize("ui.panel.config.entities.caption")}
+                  aria-label=${this._i18n.localize("ui.panel.config.entities.caption")}
                   .rows=${this._currentEntities()}
                   .rowRenderer=${this._renderItem}
                   @ha-list-item-selected=${this._handleItemToggled}

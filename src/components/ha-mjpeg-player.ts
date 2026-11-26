@@ -47,6 +47,14 @@ export class HaMjpegPlayer extends LitElement {
     return this._canCopy ? this._videoEl : undefined;
   }
 
+  /** The size of the stream's frames, undefined until the first one. */
+  public get pictureSize(): { width: number; height: number } | undefined {
+    const image = this._imageEl;
+    return image?.naturalWidth
+      ? { width: image.naturalWidth, height: image.naturalHeight }
+      : undefined;
+  }
+
   /**
    * Starts copying the image into the video and opens it picture in
    * picture. Stops copying again when it can't be opened.
