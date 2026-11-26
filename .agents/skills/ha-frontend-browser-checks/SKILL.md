@@ -27,7 +27,7 @@ When a change adds or changes text, check it in a language with long words or lo
 
 ## Show It In The Pull Request
 
-- When the change alters something that exists already, capture the same screen on `dev` and on your branch, in the same state, and put them side by side. A new screen, or a small change that's easy to see, needs only the after.
+- When the change alters something that exists already, capture the same screen on `dev` and on your branch, in the same state, and put them side by side. Only a new screen, with nothing before it, needs just the after.
 - Keep the size of every capture fixed, screenshots as well as videos. Set the page size before you capture and don't change it in between, and capture the same area each time, so the subject sits in the same place in before and after. For a card or other part of the page, work out a fixed area around it for each size you test, and use that same area on both branches.
 - Say which device, size or mode each capture shows.
 - Make the change easy to see: capture the part of the screen it affects rather than a whole page where it's a few pixels.
