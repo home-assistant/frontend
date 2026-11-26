@@ -10503,7 +10503,13 @@
           },
           "maintenance": {
             "devices": "Devices",
-            "other_devices": "Other devices"
+            "other_devices": "Other devices",
+            "zigbee_health": {
+              "name": "Zigbee",
+              "healthy": "Healthy",
+              "attention": "{count, plural,\n  one {# needs attention}\n  other {# need attention}\n}",
+              "worth_a_look": "{count} worth a look"
+            }
           },
           "home_media_players": {
             "media_players": "Media players",

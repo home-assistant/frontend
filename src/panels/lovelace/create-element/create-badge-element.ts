@@ -16,6 +16,7 @@ const LAZY_LOAD_TYPES = {
   "power-total": () => import("../badges/energy/hui-power-total-badge"),
   "gas-total": () => import("../badges/energy/hui-gas-total-badge"),
   "water-total": () => import("../badges/energy/hui-water-total-badge"),
+  "zigbee-health": () => import("../badges/hui-zigbee-health-badge"),
 };
 
 // This will not return an error card but will throw the error

@@ -9,6 +9,8 @@ import {
   type EntityFilterSources,
 } from "../../../common/entity/entity_filter";
 import { floorDefaultIcon } from "../../../components/ha-floor-icon";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
@@ -288,9 +290,16 @@ export class MaintenanceViewStrategy extends ReactiveElement {
       sections.push(section);
     }
 
+    // The ZHA device list behind the badge is admin only.
+    const badges: LovelaceBadgeConfig[] =
+      isComponentLoaded(hass.config, "zha") && hass.user?.is_admin
+        ? [{ type: "zigbee-health" }]
+        : [];
+
     return {
       type: "sections",
       max_columns: 2,
+      badges,
       sections: sections,
     };
   }
