@@ -23,6 +23,7 @@ import {
   getPanelIcon,
   getPanelIconPath,
   getPanelTitle,
+  getSelectedPanelUrlPath,
 } from "../data/panel";
 import type { PersistentNotification } from "../data/persistent_notification";
 import { subscribeNotifications } from "../data/persistent_notification";
@@ -231,12 +232,36 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       return nothing;
     }
 
-    const selectedPanel = this.hass.panelUrl;
-
     // prettier-ignore
     return html`
       ${this._renderHeader()}
-      ${this._renderAllPanels(selectedPanel)}`;
+      ${this._renderAllPanels()}`;
+  }
+
+  private _computeSidebarPanels(): [PanelInfo[], PanelInfo[]] | undefined {
+    if (!this._panelOrder || !this._hiddenPanels) {
+      return undefined;
+    }
+    return computePanels(
+      this.hass.panels,
+      getDefaultPanelUrlPath(this.hass),
+      this._panelOrder,
+      this._hiddenPanels,
+      this.hass.locale
+    );
+  }
+
+  private _computeSelectedPanel(
+    sidebarPanels: [PanelInfo[], PanelInfo[]] | undefined,
+    route: Route | undefined
+  ): string {
+    if (!route) {
+      return this.hass.panelUrl;
+    }
+    const urlPaths = (sidebarPanels ?? [[], []])
+      .flat()
+      .map((panel) => panel.url_path);
+    return getSelectedPanelUrlPath(urlPaths, route.path);
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -254,7 +279,20 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     ) {
       return true;
     }
-    if (!this.hass || !changedProps.has("hass")) {
+    if (!this.hass) {
+      return false;
+    }
+    if (changedProps.has("route")) {
+      const sidebarPanels = this._computeSidebarPanels();
+      const oldRoute = changedProps.get("route") as Route | undefined;
+      if (
+        this._computeSelectedPanel(sidebarPanels, oldRoute) !==
+        this._computeSelectedPanel(sidebarPanels, this.route)
+      ) {
+        return true;
+      }
+    }
+    if (!changedProps.has("hass")) {
       return false;
     }
     const oldHass = changedProps.get("hass") as HomeAssistant;
@@ -355,7 +393,9 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     </div>`;
   }
 
-  private _renderAllPanels(selectedPanel: string) {
+  private _renderAllPanels() {
+    const sidebarPanels = this._computeSidebarPanels();
+    const selectedPanel = this._computeSelectedPanel(sidebarPanels, this.route);
     const renderList = (content, cls: string, scrollable: boolean) =>
       html`<ha-list-nav
         class=${classMap({
@@ -365,7 +405,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         >${content}</ha-list-nav
       >`;
 
-    if (!this._panelOrder || !this._hiddenPanels) {
+    if (!sidebarPanels) {
       return html`<div class="panels-list">
         <div class="wrapper">
           ${renderList(
@@ -390,15 +430,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       </div>`;
     }
 
-    const defaultPanel = getDefaultPanelUrlPath(this.hass);
-
-    const [beforeSpacer, afterSpacer] = computePanels(
-      this.hass.panels,
-      defaultPanel,
-      this._panelOrder,
-      this._hiddenPanels,
-      this.hass.locale
-    );
+    const [beforeSpacer, afterSpacer] = sidebarPanels;
 
     // prettier-ignore
     return html`<div class="panels-list">
