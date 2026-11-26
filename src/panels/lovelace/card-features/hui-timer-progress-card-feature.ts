@@ -3,6 +3,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../../common/decorators/consume";
 import durationToSeconds from "../../../common/datetime/duration_to_seconds";
 import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -14,6 +15,7 @@ import type {
   TimerProgressCardFeatureConfig,
 } from "./types";
 import { TimerRemainingTimeController } from "../../../common/controllers/timer-remaining-time-controller";
+import { reducedMotionContext } from "../../../data/context";
 
 export const supportsTimerProgressCardFeature = (
   hass: HomeAssistant,
@@ -35,6 +37,10 @@ class HuiTimerProgressCardFeature
   @state()
   @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
   private _stateObj?: HassEntity;
+
+  @state()
+  @consume({ context: reducedMotionContext, subscribe: true })
+  private _reducedMotion = false;
 
   @state() private _config?: TimerProgressCardFeatureConfig;
   private _timeRemaining = new TimerRemainingTimeController(this);
@@ -59,7 +65,9 @@ class HuiTimerProgressCardFeature
     if (this._stateObj) {
       const ratio = this._ratio(this._stateObj);
       this._animate =
-        this._stateObj.state === "active" && ratio <= this._prevRatio;
+        !this._reducedMotion &&
+        this._stateObj.state === "active" &&
+        ratio <= this._prevRatio;
       this._prevRatio = ratio;
     }
     super.update(changedProps);
@@ -113,11 +121,6 @@ class HuiTimerProgressCardFeature
     css`
       :host {
         pointer-events: none !important;
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .bar {
-          transition: none !important;
-        }
       }
       .track {
         height: var(--feature-height);
