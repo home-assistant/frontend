@@ -13,6 +13,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../../../components/animation/ha-fade-in";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
@@ -39,6 +40,7 @@ import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
+import { getWsErrorMessage } from "../../../../../util/ws-error";
 
 @customElement("bluetooth-config-dashboard")
 export class BluetoothConfigDashboard extends LitElement {
@@ -51,6 +53,8 @@ export class BluetoothConfigDashboard extends LitElement {
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @state() private _configEntries?: ConfigEntry[];
+
+  @state() private _configEntriesError?: string;
 
   @state() private _connectionAllocationData: BluetoothAllocationsData[] = [];
 
@@ -74,11 +78,17 @@ export class BluetoothConfigDashboard extends LitElement {
     }
   }
 
-  private async _loadConfigEntries(): Promise<void> {
-    this._configEntries = await getConfigEntries(this.hass, {
-      domain: "bluetooth",
-    });
-  }
+  private _loadConfigEntries = async (): Promise<void> => {
+    this._configEntriesError = undefined;
+    try {
+      this._configEntries = await getConfigEntries(this.hass, {
+        domain: "bluetooth",
+      });
+    } catch (err: unknown) {
+      this._configEntriesError =
+        getWsErrorMessage(err) || this.hass.localize("ui.common.unknown_error");
+    }
+  };
 
   private async _subscribeBluetoothConnectionAllocations(): Promise<void> {
     if (this._unsubConnectionAllocations) {
@@ -145,7 +155,8 @@ export class BluetoothConfigDashboard extends LitElement {
         ? this._getBluetoothAdapters(this.hass.devices, this._configEntries)
             .enabledDevices.length
         : undefined;
-    const loading = adapterCount === undefined;
+    const error = this._configEntriesError;
+    const loading = adapterCount === undefined && !error;
     const totalSlots = this._connectionAllocationData.reduce(
       (sum, a) => sum + a.slots,
       0
@@ -173,54 +184,67 @@ export class BluetoothConfigDashboard extends LitElement {
         back-path="/config/connectivity"
       >
         <div class="container">
-          <ha-card class="content network-status">
-            <div class="card-content">
-              <div class="heading">
-                ${
-                  loading
-                    ? html`<ha-fade-in .duration=${300} easing="ease-in">
-                        <ha-skeleton
-                          class="status-icon"
-                          role="progressbar"
-                          aria-label=${this.hass.localize("ui.common.loading")}
-                        ></ha-skeleton>
-                      </ha-fade-in>`
-                    : html`<div class="icon ${status}">
-                        <ha-svg-icon .path=${statusIcon}></ha-svg-icon>
-                      </div>`
-                }
-                <div class="details">
-                  ${
-                    loading
-                      ? this._renderTextSkeleton()
-                      : this.hass.localize(
-                          `ui.panel.config.bluetooth.status_${status}`
-                        )
-                  }<br />
-                  <small>
-                    ${this.hass.localize(
-                      "ui.panel.config.bluetooth.connections_summary",
-                      { used: usedSlots, total: totalSlots }
-                    )}
-                  </small>
-                </div>
-                <img
-                  class="logo"
-                  alt="Bluetooth"
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                  src=${brandsUrl(
-                    {
-                      domain: "bluetooth",
-                      type: "icon",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    },
-                    this.hass.auth.data.hassUrl
-                  )}
-                />
-              </div>
-            </div>
-          </ha-card>
+          ${
+            error
+              ? html`<ha-alert alert-type="error" class="content">
+                  ${error}
+                  <ha-button
+                    slot="action"
+                    appearance="plain"
+                    @click=${this._loadConfigEntries}
+                  >
+                    ${this.hass.localize("ui.common.retry")}
+                  </ha-button>
+                </ha-alert>`
+              : html`<ha-card class="content network-status">
+                  <div class="card-content">
+                    <div class="heading">
+                      ${
+                        loading
+                          ? html`<ha-fade-in .duration=${300} easing="ease-in">
+                              <ha-skeleton
+                                class="status-icon"
+                                role="progressbar"
+                                aria-label=${this.hass.localize("ui.common.loading")}
+                              ></ha-skeleton>
+                            </ha-fade-in>`
+                          : html`<div class="icon ${status}">
+                              <ha-svg-icon .path=${statusIcon}></ha-svg-icon>
+                            </div>`
+                      }
+                      <div class="details">
+                        ${
+                          loading
+                            ? this._renderTextSkeleton()
+                            : this.hass.localize(
+                                `ui.panel.config.bluetooth.status_${status}`
+                              )
+                        }<br />
+                        <small>
+                          ${this.hass.localize(
+                            "ui.panel.config.bluetooth.connections_summary",
+                            { used: usedSlots, total: totalSlots }
+                          )}
+                        </small>
+                      </div>
+                      <img
+                        class="logo"
+                        alt="Bluetooth"
+                        crossorigin="anonymous"
+                        referrerpolicy="no-referrer"
+                        src=${brandsUrl(
+                          {
+                            domain: "bluetooth",
+                            type: "icon",
+                            darkOptimized: this.hass.themes?.darkMode,
+                          },
+                          this.hass.auth.data.hassUrl
+                        )}
+                      />
+                    </div>
+                  </div>
+                </ha-card>`
+          }
 
           <ha-card class="network-card">
             <div class="card-header">
@@ -251,10 +275,14 @@ export class BluetoothConfigDashboard extends LitElement {
                     ${
                       loading
                         ? this._renderTextSkeleton()
-                        : this.hass.localize(
-                            "ui.panel.config.bluetooth.adapters_count",
-                            { count: adapterCount }
-                          )
+                        : adapterCount === undefined
+                          ? this.hass.localize(
+                              "ui.panel.config.bluetooth.adapter_info_title"
+                            )
+                          : this.hass.localize(
+                              "ui.panel.config.bluetooth.adapters_count",
+                              { count: adapterCount }
+                            )
                     }
                   </div>
                   <ha-icon-next slot="end"></ha-icon-next>
@@ -313,7 +341,9 @@ export class BluetoothConfigDashboard extends LitElement {
           padding: var(--ha-space-2) var(--ha-content-gutter) var(--ha-space-4);
         }
 
-        ha-card {
+        ha-card,
+        ha-alert {
+          display: block;
           margin: 0px auto var(--ha-space-4);
           max-width: var(--ha-content-width-narrow);
         }
