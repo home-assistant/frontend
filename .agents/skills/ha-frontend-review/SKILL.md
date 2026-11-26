@@ -20,7 +20,7 @@ When creating a pull request, use `.github/PULL_REQUEST_TEMPLATE.md` as the body
 - Do not omit, reorder, or rewrite template sections.
 - Check the appropriate "Type of change" box based on the actual change.
 - Do not check checklist items on behalf of the user.
-- If the PR includes UI changes, remind the user to add screenshots or a short video, taken as `ha-frontend-browser-checks` describes.
+- If the PR includes UI changes, add screenshots or a short video, taken as `ha-frontend-browser-checks` describes. Only ask the user to add them when you can't take them yourself.
 - Explain what the change does for users, not only implementation details.
 - Use Markdown.
 
