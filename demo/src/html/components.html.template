@@ -580,8 +580,10 @@ provider.entities = Object.values(provider.hass.states).map((entity) =&gt;
       <ul>
         <li>
           <code>areas</code>: a list of areas, each with an
-          <code>area_id</code> and a <code>name</code>. Without it, each
-          <code>area_id</code> of the entities and devices becomes an area.
+          <code>area_id</code> and a <code>name</code>, and optionally an
+          <code>icon</code> and a <code>picture</code>, the URL of an image.
+          Without it, each <code>area_id</code> of the entities and devices
+          becomes an area.
         </li>
         <li>
           <code>devices</code>: a list of devices, each with an
