@@ -5,6 +5,9 @@ import {
 } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
 import type { DataTableRowData } from "../components/data-table/ha-data-table";
+import type { HomeAssistant } from "../types";
+import type { ConfigEntry } from "./config_entries";
+import type { DeviceRegistryEntry } from "./device/device_registry";
 
 export interface BluetoothDeviceData extends DataTableRowData {
   address: string;
@@ -73,6 +76,54 @@ export interface BluetoothScannerState {
 export const isScannerStateMismatch = (state: BluetoothScannerState): boolean =>
   state.requested_mode !== "auto" &&
   state.current_mode !== state.requested_mode;
+
+export interface BluetoothAdapterDevice {
+  device: DeviceRegistryEntry;
+  entry: ConfigEntry;
+}
+
+/**
+ * Splits the Bluetooth adapters into enabled and disabled ones. An adapter is
+ * a device with a Bluetooth connection that belongs to a `bluetooth` config
+ * entry. Config entries without such a device (for example ignored discoveries
+ * or removed proxies) are not adapters, unless they are disabled, so they can
+ * still be enabled again.
+ */
+export const getBluetoothAdapters = (
+  devices: HomeAssistant["devices"],
+  configEntries: ConfigEntry[]
+) => {
+  const entryMap = new Map(configEntries.map((e) => [e.entry_id, e]));
+
+  const enabledDevices: BluetoothAdapterDevice[] = [];
+  const disabledDevices: BluetoothAdapterDevice[] = [];
+  const matchedEntryIds = new Set<string>();
+
+  for (const device of Object.values(devices)) {
+    const btConnection = device.connections.find((c) => c[0] === "bluetooth");
+    if (!btConnection) {
+      continue;
+    }
+    const entry = device.config_entries
+      .map((id) => entryMap.get(id))
+      .find((e) => e !== undefined);
+    if (!entry) {
+      continue;
+    }
+    matchedEntryIds.add(entry.entry_id);
+    if (entry.disabled_by !== null) {
+      disabledDevices.push({ device, entry });
+    } else {
+      enabledDevices.push({ device, entry });
+    }
+  }
+
+  const disabledEntriesWithoutDevice = configEntries.filter(
+    (e) => e.disabled_by !== null && !matchedEntryIds.has(e.entry_id)
+  );
+
+  return { enabledDevices, disabledDevices, disabledEntriesWithoutDevice };
+};
 
 export const subscribeBluetoothScannersDetailsUpdates = (
   conn: Connection,
