@@ -3,8 +3,11 @@ import {
   mdiImageMultipleOutline,
   mdiLightningBolt,
 } from "@mdi/js";
+import type { ContextType } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { consume } from "../../common/decorators/consume";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { CAMERA_STREAM_TYPE_NAMES } from "../../components/camera/ha-camera-stream-badge";
@@ -21,6 +24,8 @@ import {
   type CameraStreamType,
   type StreamType,
 } from "../../data/camera-streams";
+import { fetchCloudStatus } from "../../data/cloud";
+import { apiContext, configContext } from "../../data/context";
 import { haStyleDialog, haStyleDialogFixedTop } from "../../resources/styles";
 import { DialogMixin } from "../dialog-mixin";
 import type { CameraStreamInfoDialogParams } from "./show-dialog-camera-stream-info";
@@ -39,6 +44,34 @@ class DialogCameraStreamInfo extends DialogMixin<CameraStreamInfoDialogParams>(
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext })
+  private _api!: ContextType<typeof apiContext>;
+
+  @consume({ context: configContext })
+  private _hassConfig!: ContextType<typeof configContext>;
+
+  @state() private _cloudIceServers = false;
+
+  protected firstUpdated() {
+    this._fetchCloudIceServers();
+  }
+
+  // The same check that core uses to add the cloud TURN servers
+  private async _fetchCloudIceServers() {
+    if (!isComponentLoaded(this._hassConfig.config, "cloud")) {
+      return;
+    }
+    try {
+      const status = await fetchCloudStatus(this._api.callWS);
+      this._cloudIceServers =
+        status.logged_in &&
+        status.active_subscription &&
+        status.prefs.cloud_ice_servers_enabled;
+    } catch (_err) {
+      // Without the cloud status the label stays hidden
+    }
+  }
 
   protected render() {
     if (!this.params) {
@@ -125,6 +158,18 @@ class DialogCameraStreamInfo extends DialogMixin<CameraStreamInfoDialogParams>(
       >
         <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
         ${
+          type === STREAM_TYPE_WEB_RTC && this._cloudIceServers
+            ? html`<span slot="headline" class="headline">
+                ${CAMERA_STREAM_TYPE_NAMES[type]}
+                <span class="tag cloud"
+                  >${this._localize(
+                    "ui.dialogs.camera_stream_info.enhanced_by_cloud"
+                  )}</span
+                >
+              </span>`
+            : nothing
+        }
+        ${
           current
             ? html`<span slot="end" class="tag current"
                 >${this._localize("ui.dialogs.camera_stream_info.in_use")}</span
@@ -186,6 +231,20 @@ class DialogCameraStreamInfo extends DialogMixin<CameraStreamInfoDialogParams>(
         border-radius: var(--ha-border-radius-pill);
         background-color: var(--ha-color-fill-neutral-quiet-resting);
         color: var(--secondary-text-color);
+      }
+
+      .headline {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--ha-space-2);
+        /* The row keeps the headline on one line, but a long tag must wrap */
+        white-space: normal;
+      }
+
+      .tag.cloud {
+        background-color: var(--ha-color-fill-primary-quiet-resting);
+        color: var(--ha-color-on-primary-quiet);
       }
 
       .tag.current {
