@@ -239,12 +239,29 @@ export interface CoverEntity extends HassEntityBase {
   attributes: CoverEntityAttributes;
 }
 
+// For covers that report no value, the open or closed state tells where it is
+const valueFromState = (stateObj: CoverEntity): number | undefined => {
+  if (stateObj.state === UNKNOWN || stateObj.state === UNAVAILABLE) {
+    return undefined;
+  }
+  return stateObj.state === "closed" || stateObj.state === "opening" ? 0 : 100;
+};
+
 export const coverCurrentValue = (
   stateObj: CoverEntity,
   mode: CoverControlMode
 ): number | undefined => {
   if (mode === "tilt") {
-    return stateObj.attributes.current_tilt_position ?? undefined;
+    const tilt = stateObj.attributes.current_tilt_position;
+    // The state only describes the slats when the cover can't move up or down
+    if (
+      tilt != null ||
+      coverSupportsTiltPosition(stateObj) ||
+      coverHasPositionControls(stateObj)
+    ) {
+      return tilt ?? undefined;
+    }
+    return valueFromState(stateObj);
   }
   const position = stateObj.attributes.current_position;
   if (
@@ -253,10 +270,7 @@ export const coverCurrentValue = (
   ) {
     return position ?? undefined;
   }
-  if (stateObj.state === UNKNOWN || stateObj.state === UNAVAILABLE) {
-    return undefined;
-  }
-  return stateObj.state === "closed" || stateObj.state === "opening" ? 0 : 100;
+  return valueFromState(stateObj);
 };
 
 declare global {
