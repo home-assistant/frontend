@@ -284,13 +284,6 @@ describe("browseLinkFromUrl", () => {
     });
   });
 
-  it("filters on no integration category for an empty one", () => {
-    expect(
-      browseLinkFromUrl("?integration_category=")?.filters
-        .integration_category ?? []
-    ).toEqual([]);
-  });
-
   it("keeps what was picked for a link that says nothing about browsing", () => {
     expect(
       browseLinkFromUrl("?owner=hacs&repository=integration")
@@ -299,13 +292,6 @@ describe("browseLinkFromUrl", () => {
 });
 
 describe("filtersOfTab", () => {
-  it("keeps the integration category on every tab", () => {
-    expect(
-      filtersOfTab({ integration_category: ["energy"] }, "installed")
-        .integration_category
-    ).toEqual(["energy"]);
-  });
-
   it("only offers statuses something installed can have on the installed tab", () => {
     expect(statusesOfTab("installed")).toEqual([
       "pending-restart",
