@@ -250,8 +250,8 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
         this._hassConfig?.auth.external &&
         isIosApp(this._hassConfig.auth.external)
       ) {
-        const element = this.querySelector("[autofocus]");
-        if (element !== null) {
+        const element = this._autofocusElement();
+        if (element) {
           if (!element.id) {
             element.id = "ha-dialog-autofocus";
           }
@@ -264,9 +264,29 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
         }
         return;
       }
-      (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
+      this._autofocusElement()?.focus();
     });
   };
+
+  // Wrappers like ha-adaptive-dialog pass their content in through slots
+  private _autofocusElement(): HTMLElement | null {
+    const element = this.querySelector<HTMLElement>("[autofocus]");
+    if (element) {
+      return element;
+    }
+    for (const slot of this.querySelectorAll("slot")) {
+      for (const assigned of slot.assignedElements({ flatten: true })) {
+        if (assigned.matches("[autofocus]")) {
+          return assigned as HTMLElement;
+        }
+        const nested = assigned.querySelector<HTMLElement>("[autofocus]");
+        if (nested) {
+          return nested;
+        }
+      }
+    }
+    return null;
+  }
 
   private _handleAfterShow = (ev: Event) => {
     if (ev.eventPhase !== Event.AT_TARGET) {
