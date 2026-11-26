@@ -235,7 +235,7 @@ export class HaCameraPlayer extends LitElement {
     const aspectRatio = this._aspectRatio();
     if (aspectRatio !== this._firedAspectRatio) {
       this._firedAspectRatio = aspectRatio;
-      fireEvent(this, "camera-aspect-ratio-changed", { aspectRatio });
+      fireEvent(this, "media-size-changed", { aspectRatio });
     }
     if (changedProps.has("keepAwake")) {
       if (this.keepAwake) {
@@ -1189,6 +1189,7 @@ declare global {
     "ha-camera-player": HaCameraPlayer;
   }
   interface HASSDomEvents {
-    "camera-aspect-ratio-changed": { aspectRatio: number };
+    /** The natural width limits the picture's width when it is set */
+    "media-size-changed": { aspectRatio: number; naturalWidth?: number };
   }
 }
