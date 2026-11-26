@@ -114,6 +114,35 @@ describe("demo statistics", () => {
     expect(statistic.change).toBeNull();
   });
 
+  it("answers a statistic over a period of many years", async () => {
+    const statistic = await setup().callWS<Statistic>({
+      type: "recorder/statistic_during_period",
+      statistic_id: "sensor.outside_temperature",
+      fixed_period: {
+        start_time: "2000-01-01T00:00:00Z",
+        end_time: "2026-11-26T00:00:00Z",
+      },
+    });
+
+    expect(statistic.max).toBeGreaterThan(statistic.min ?? Infinity);
+  });
+
+  it("leaves out an hour that runs past the end, as Core does", async () => {
+    const statisticUntil = (endTime: string) =>
+      setup().callWS<Statistic>({
+        type: "recorder/statistic_during_period",
+        statistic_id: "sensor.battery_energy",
+        fixed_period: {
+          start_time: "2026-11-25T00:00:00Z",
+          end_time: endTime,
+        },
+      });
+
+    expect(await statisticUntil("2026-11-25T23:59:59.999Z")).toEqual(
+      await statisticUntil("2026-11-25T23:00:00Z")
+    );
+  });
+
   it("answers the change over a rolling window for a meter", async () => {
     const statistic = await setup().callWS<Statistic>({
       type: "recorder/statistic_during_period",
