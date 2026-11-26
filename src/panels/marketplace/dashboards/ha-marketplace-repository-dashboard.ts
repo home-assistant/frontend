@@ -197,13 +197,12 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
   private _settingPreReleases = new Set<string>();
 
+  private _loadingIntegrationCategoryIcons = false;
+
   protected async firstUpdated(
     changedProperties: PropertyValues<this>
   ): Promise<void> {
     super.firstUpdated(changedProperties);
-    getIntegrationCategoryIcons(this._connection.connection).then((icons) => {
-      this._integrationCategoryIcons = icons;
-    });
     await this._loadRepository();
   }
 
@@ -324,24 +323,29 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     this._fetchRepository(existing.id);
   }
 
-  protected willUpdate(changedProps: PropertyValues<this>): void {
+  protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
 
     // The router reuses this element when going from one repository to
     // another, the first one is loaded by firstUpdated.
-    const previousRoute = changedProps.get("route");
+    const previousRoute = changedProps.get("route") as Route | undefined;
     if (
-      !this.hasUpdated ||
-      !previousRoute ||
-      repositoryIdFromRoute(previousRoute) === repositoryIdFromRoute(this.route)
+      this.hasUpdated &&
+      previousRoute &&
+      repositoryIdFromRoute(previousRoute) !== repositoryIdFromRoute(this.route)
     ) {
-      return;
+      this._repository = undefined;
+      this._error = undefined;
+      this._refreshError = undefined;
+      this._loadRepositoryFromRoute();
     }
 
-    this._repository = undefined;
-    this._error = undefined;
-    this._refreshError = undefined;
-    this._loadRepositoryFromRoute();
+    if (
+      changedProps.has("_repository") &&
+      this._repository?.integration_categories?.length
+    ) {
+      this._loadIntegrationCategoryIcons();
+    }
   }
 
   protected updated(changedProps: PropertyValues<this>): void {
@@ -393,6 +397,24 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
     if (this._repository?.id === repositoryId) {
       this._fetchRepository();
+    }
+  }
+
+  // Only integrations have categories, other repositories don't need them
+  private async _loadIntegrationCategoryIcons(): Promise<void> {
+    if (
+      this._integrationCategoryIcons ||
+      this._loadingIntegrationCategoryIcons
+    ) {
+      return;
+    }
+    this._loadingIntegrationCategoryIcons = true;
+    try {
+      this._integrationCategoryIcons = await getIntegrationCategoryIcons(
+        this._connection.connection
+      );
+    } finally {
+      this._loadingIntegrationCategoryIcons = false;
     }
   }
 
