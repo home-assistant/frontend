@@ -267,13 +267,17 @@ export class MockClimateEntity extends MockBaseEntity {
       const current = attrs.current_temperature;
       const lowTarget = attrs.target_temp_low;
       const highTarget = attrs.target_temp_high;
+      // Heat mode can only heat and cool mode only cool, while auto and
+      // heat_cool use both ends of the range
       if (current != null) {
-        if (lowTarget != null && lowTarget > current) {
+        if (state !== "cool" && lowTarget != null && lowTarget > current) {
           return "heating";
         }
-        if (highTarget != null && highTarget < current) {
+
+        if (state !== "heat" && highTarget != null && highTarget < current) {
           return "cooling";
         }
+
         return "idle";
       }
     }
