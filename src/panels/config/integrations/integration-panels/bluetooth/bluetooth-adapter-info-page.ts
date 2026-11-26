@@ -16,12 +16,14 @@ import "../../../../../components/item/ha-list-item-base";
 import "../../../../../components/item/ha-list-item-button";
 import "../../../../../components/list/ha-list-base";
 import type {
+  BluetoothAdapterDevice,
   BluetoothAllocationsData,
   BluetoothScannerState,
   BluetoothScannersDetails,
   HaScannerType,
 } from "../../../../../data/bluetooth";
 import {
+  getBluetoothAdapters,
   isScannerStateMismatch,
   subscribeBluetoothConnectionAllocations,
   subscribeBluetoothScannerState,
@@ -176,52 +178,11 @@ export class BluetoothAdapterInfoPage extends LitElement {
     }
   }
 
-  private _getBluetoothDevices = memoizeOne(
-    (devices: HomeAssistant["devices"], configEntries: ConfigEntry[]) => {
-      const entryMap = new Map(configEntries.map((e) => [e.entry_id, e]));
-
-      const enabledDevices: {
-        device: DeviceRegistryEntry;
-        entry: ConfigEntry;
-      }[] = [];
-      const disabledDevices: {
-        device: DeviceRegistryEntry;
-        entry: ConfigEntry;
-      }[] = [];
-      const matchedEntryIds = new Set<string>();
-
-      for (const device of Object.values(devices)) {
-        const btConnection = device.connections.find(
-          (c) => c[0] === "bluetooth"
-        );
-        if (!btConnection) {
-          continue;
-        }
-        const entry = device.config_entries
-          .map((id) => entryMap.get(id))
-          .find((e) => e !== undefined);
-        if (!entry) {
-          continue;
-        }
-        matchedEntryIds.add(entry.entry_id);
-        if (entry.disabled_by !== null) {
-          disabledDevices.push({ device, entry });
-        } else {
-          enabledDevices.push({ device, entry });
-        }
-      }
-
-      const disabledEntriesWithoutDevice = configEntries.filter(
-        (e) => e.disabled_by !== null && !matchedEntryIds.has(e.entry_id)
-      );
-
-      return { enabledDevices, disabledDevices, disabledEntriesWithoutDevice };
-    }
-  );
+  private _getBluetoothAdapters = memoizeOne(getBluetoothAdapters);
 
   protected render(): TemplateResult {
     const { enabledDevices, disabledDevices, disabledEntriesWithoutDevice } =
-      this._getBluetoothDevices(this.hass.devices, this._configEntries);
+      this._getBluetoothAdapters(this.hass.devices, this._configEntries);
 
     return html`
       <hass-subpage
@@ -301,9 +262,7 @@ export class BluetoothAdapterInfoPage extends LitElement {
     `;
   }
 
-  private _renderAdaptersList(
-    devices: { device: DeviceRegistryEntry; entry: ConfigEntry }[]
-  ) {
+  private _renderAdaptersList(devices: BluetoothAdapterDevice[]) {
     if (devices.length === 0) {
       return html`<ha-list-item-base>
         <div slot="headline">

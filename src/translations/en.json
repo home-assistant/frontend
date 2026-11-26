@@ -2857,6 +2857,7 @@
         "in_use": "In use",
         "connecting": "Connecting",
         "not_supported_count": "Not supported by this camera ({count})",
+        "enhanced_by_cloud": "Enhanced by Home Assistant Link",
         "description": {
           "web_rtc": "Real-time video with the lowest delay, usually below a second. The video takes the most direct way from the camera to your device, which can need extra network setup when you are away from home. Needed to talk to the camera.",
           "hls": "The video is sent in short pieces through Home Assistant. It works on almost every network and device, but is a few seconds behind. Used while WebRTC connects, or when WebRTC is not available.",
@@ -4795,6 +4796,13 @@
             "add": "Add",
             "dismiss": "Dismiss",
             "dismiss_failed": "Couldn't dismiss this meter",
+            "show_dismissed": "Show dismissed meters ({count})",
+            "hide_dismissed": "Hide dismissed meters",
+            "dismissed": "Dismissed",
+            "dismissed_title": "Dismissed meters",
+            "dismissed_sub": "Restore a meter to have it suggested again, or add it right away.",
+            "restore": "Restore",
+            "restore_failed": "Couldn't restore this meter",
             "load_failed": "Couldn't check for meters that aren't in your energy dashboard yet.",
             "slots": {
               "grid_import": "Grid consumption",

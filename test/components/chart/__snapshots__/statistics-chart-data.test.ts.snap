@@ -177,6 +177,7 @@ exports[`generateStatisticsChartData > matches snapshot for a bar chart with sum
   "datasets": [
     {
       "animationDurationUpdate": 0,
+      "barMaxWidth": 50,
       "color": "#4269d07F",
       "cursor": "default",
       "data": [
@@ -347,6 +348,7 @@ exports[`generateStatisticsChartData > matches snapshot for a bar chart with sum
     },
     {
       "animationDurationUpdate": 0,
+      "barMaxWidth": 50,
       "color": "#f4bd4a7F",
       "cursor": "default",
       "data": [
@@ -1380,6 +1382,7 @@ exports[`generateStatisticsChartData > matches snapshot for a stacked bar chart 
   "datasets": [
     {
       "animationDurationUpdate": 0,
+      "barMaxWidth": 50,
       "color": "#4269d07F",
       "cursor": "default",
       "data": [
@@ -1444,6 +1447,7 @@ exports[`generateStatisticsChartData > matches snapshot for a stacked bar chart 
     },
     {
       "animationDurationUpdate": 0,
+      "barMaxWidth": 50,
       "color": "#f4bd4a7F",
       "cursor": "default",
       "data": [

@@ -28,12 +28,20 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     private _startupToastKey?: string;
 
+    private _startupDetailsOpen = false;
+
     private _disconnectedTimeout?: number;
 
     protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       // Need to load in advance because when disconnected, can't dynamically load code.
       setTimeout(() => import("../managers/notification-manager"), 5000);
+      this.addEventListener("dialog-closed", (ev) => {
+        if (ev.detail.dialog === "dialog-startup-progress") {
+          this._startupDetailsOpen = false;
+          this._updateStartupProgress();
+        }
+      });
     }
 
     updated(changedProperties: PropertyValues<this>) {
@@ -135,6 +143,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       // Wait until the translations are available.
       if (
         !this._startupProgressVisible ||
+        this._startupDetailsOpen ||
         !this.hass!.localize("ui.startup_progress.starting")
       ) {
         return;
@@ -163,11 +172,17 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           ? {
               text: { translationKey: "ui.startup_progress.details" },
               icon: mdiInformationOutline,
-              keepOpen: true,
-              action: () => showStartupProgressDialog(this),
+              action: () => this._showStartupDetails(),
             }
           : undefined,
       });
+    }
+
+    // Toasts always show above dialogs, so the toast is hidden while the details are open.
+    private _showStartupDetails() {
+      this._startupDetailsOpen = true;
+      this._startupToastKey = undefined;
+      showStartupProgressDialog(this);
     }
 
     // Keeps the subscription, so the completion toast still reflects late failures.
@@ -193,6 +208,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       );
       this._hideStartupProgress();
       this._unsubscribeBootstrapProgress();
+      if (this._startupDetailsOpen) {
+        return;
+      }
       const issues = failed.length;
       showToast(this, {
         id: SERVER_STARTUP_TOAST_ID,
@@ -205,7 +223,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         action: this.hass!.user?.is_admin
           ? {
               text: this.hass!.localize("ui.notification_toast.details"),
-              action: () => showStartupProgressDialog(this),
+              action: () => this._showStartupDetails(),
             }
           : undefined,
       });
