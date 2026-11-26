@@ -143,6 +143,20 @@ describe("demo statistics", () => {
     );
   });
 
+  it("places the energy tariffs from midnight for a rolling window", async () => {
+    const hass = setup();
+
+    // The demo's high tariff runs from 09:00 to 20:00, so from 06:00 to noon
+    // it has the change of the hours from 09:00
+    const statistic = await hass.callWS<Statistic>({
+      type: "recorder/statistic_during_period",
+      statistic_id: "sensor.energy_consumption_tarif_2",
+      rolling_window: { duration: { hours: 6 } },
+    });
+
+    expect(statistic.change).toBeGreaterThan(0);
+  });
+
   it("answers the change over a rolling window for a meter", async () => {
     const statistic = await setup().callWS<Statistic>({
       type: "recorder/statistic_during_period",

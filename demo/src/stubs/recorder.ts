@@ -636,13 +636,22 @@ export const mockRecorder = (mockHass: MockHomeAssistant) => {
         hass.config.time_zone
       );
 
-      // Like Core, an hour that runs past the end isn't counted, so a day
-      // ending at 23:59:59.999 leaves out the hour from 23:00
+      // The energy demo's tariffs place their phases from the start they're
+      // asked for, as the energy dashboard asks from midnight. So the hours
+      // come from the start of the day, then only those inside the period
+      // count. Like Core, an hour that runs past the end isn't counted, so a
+      // day ending at 23:59:59.999 leaves out the hour from 23:00.
       const values = (
-        getStatistics(hass, [message.statistic_id], start, end, "hour")[
-          message.statistic_id
-        ] ?? []
-      ).filter((value) => value.end <= end.getTime());
+        getStatistics(
+          hass,
+          [message.statistic_id],
+          startOfDay(start),
+          end,
+          "hour"
+        )[message.statistic_id] ?? []
+      ).filter(
+        (value) => value.start >= start.getTime() && value.end <= end.getTime()
+      );
 
       const numbers = (key: "mean" | "min" | "max" | "change") =>
         values.flatMap((value) => (value[key] == null ? [] : [value[key]]));
