@@ -3,6 +3,8 @@ import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
 import { consume } from "../../../../../common/decorators/consume";
 import { storage } from "../../../../../common/decorators/storage";
 import { transform } from "../../../../../common/decorators/transform";
@@ -75,6 +77,11 @@ class MqttTopicMessages extends LitElement {
   })
   private _pretty = true;
 
+  // Every live message renders again, mostly with the same selected payload
+  private _prettyPrint = memoizeOne(prettyPrintJson);
+
+  private _diff = memoizeOne(diffJsonPayloads);
+
   protected willUpdate(changedProps: PropertyValues<this>): void {
     const previous = changedProps.get("topic");
     if (
@@ -99,8 +106,11 @@ class MqttTopicMessages extends LitElement {
       this.messages.findIndex((msg) => msg.id === this._selectedId)
     );
     const selected = this.messages[index];
-    const previous = this.messages[index + 1];
-    const pretty = selected ? prettyPrintJson(selected.payload) : undefined;
+    // A wildcard subscription receives messages of more than one topic
+    const previous = this.messages
+      .slice(index + 1)
+      .find((msg) => msg.topic === selected.topic);
+    const pretty = selected ? this._prettyPrint(selected.payload) : undefined;
     const shownPayload =
       this._pretty && pretty !== undefined ? pretty : selected?.payload;
     const isPublish = this.topic.direction === "publish";
@@ -133,7 +143,9 @@ class MqttTopicMessages extends LitElement {
               })}
               @ha-list-item-selected=${this._selectMessage}
             >
-              ${this.messages.map(
+              ${repeat(
+                this.messages,
+                (msg) => msg.id,
                 (msg, i) => html`
                   <ha-list-item-option .selected=${i === index}>
                     <span slot="headline"
@@ -211,7 +223,7 @@ class MqttTopicMessages extends LitElement {
     if (previous.payload === selected.payload) {
       return html`<p class="secondary">${this._localize("unchanged")}</p>`;
     }
-    const changes = diffJsonPayloads(previous.payload, selected.payload);
+    const changes = this._diff(previous.payload, selected.payload);
     // Parsing hides changes in whitespace or in numbers beyond the safe range
     if (!changes?.length) {
       return html`

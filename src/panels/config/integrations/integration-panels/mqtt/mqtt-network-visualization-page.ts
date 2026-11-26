@@ -23,6 +23,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { formatDateTimeWithSeconds } from "../../../../../common/datetime/format_date_time";
 import { navigate } from "../../../../../common/navigate";
 import type { LocalizeKeys } from "../../../../../common/translations/localize";
+import { deepEqual } from "../../../../../common/util/deep-equal";
 import "../../../../../components/chart/ha-network-graph";
 import "../../../../../components/ha-adaptive-dialog";
 import "../../../../../components/ha-alert";
@@ -79,7 +80,8 @@ const REFRESH_INTERVAL = 30000;
 // Live messages kept for the topic that is shown
 const MAX_LIVE_MESSAGES = 100;
 
-// Messages Home Assistant publishes come back from the broker with this QoS
+// The broker lowers the QoS of a message to that of the subscription, so only
+// QoS 2 shows the QoS Home Assistant published with
 const PUBLISH_TOPIC_QOS = 2;
 
 const SUBENTRY_SOURCE_PREFIX = "subentry:";
@@ -563,6 +565,7 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
         .nodeClickRadius=${NODE_CLICK_RADIUS}
         .fixedLayout=${this._treeLayout}
         .animateStyleChanges=${true}
+        .animateViewChanges=${true}
         .hiddenCategories=${this._legendHiddenCategories()}
         .tooltipFormatter=${this._tooltipFormatter}
         @chart-click=${this._handleChartClick}
@@ -726,9 +729,17 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
     }
     this._refreshing = true;
     try {
-      this._structure = await fetchMQTTExplorerStructure(this.hass);
+      const structure = await fetchMQTTExplorerStructure(this.hass);
+      // A new structure lays out the graph again and fetches the last messages
+      if (!deepEqual(structure, this._structure)) {
+        this._structure = structure;
+      }
       this._error = undefined;
     } catch (err: any) {
+      // A failed refresh, e.g. during a reconnect, keeps the map shown
+      if (this._structure) {
+        return;
+      }
       this._error =
         err?.code === "not_loaded"
           ? this.hass.localize("ui.panel.config.mqtt.visualization.not_loaded")

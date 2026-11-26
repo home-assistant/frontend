@@ -8467,8 +8467,8 @@
               "no_config": "There is no known configuration for this item.",
               "no_unique_id": "The configuration cannot be shown, because this entity has no unique_id in YAML.",
               "yaml_device": "This device is set up in the YAML configuration of its entities.",
-              "subentry_device": "This device is set up in a subentry.",
-              "reconfigure_subentry": "Reconfigure the subentry",
+              "subentry_device": "This device was added in the UI.",
+              "reconfigure_subentry": "Reconfigure device",
               "load_failed": "The configuration could not be loaded."
             },
             "topic_view": {

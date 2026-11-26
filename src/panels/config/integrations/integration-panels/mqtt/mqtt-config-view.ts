@@ -246,9 +246,9 @@ class MqttConfigView extends LitElement {
     if (!yaml || !this.platform) {
       return JSON.stringify(payload, null, 2);
     }
-    // In YAML the platform is the key the config is listed under
+    // In YAML the config is listed under the mqtt key and its platform
     const { platform: _platform, ...config } = payload;
-    return dump({ [this.platform]: [config] });
+    return dump({ mqtt: { [this.platform]: [config] } });
   }
 
   private _handleYaml(ev: Event): void {

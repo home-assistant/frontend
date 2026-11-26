@@ -79,9 +79,13 @@ interface Scenario {
   hiddenCategories: string[];
 }
 
-const chartData = (scenario: Scenario, treeLayout = false) =>
+const chartData = (
+  scenario: Scenario,
+  treeLayout = false,
+  structure = STRUCTURE
+) =>
   createMQTTNetworkChartData(
-    STRUCTURE,
+    structure,
     HASS,
     {} as Element,
     false,
@@ -205,5 +209,49 @@ describe("createMQTTNetworkChartData", () => {
     const entity = data.nodes.find((node) => node.id === HUB_ENTITY)!;
     expect(entity.y).toBe(hub.y);
     expect(entity.x).toBeGreaterThan(hub.x!);
+  });
+
+  it.each([
+    { name: "self", via: { hub: "hub" } },
+    { name: "mutual", via: { hub: "child", child: "hub" } },
+  ] as { name: string; via: Record<string, string> }[])(
+    "links a loop of parent devices to their source: $name",
+    ({ via }) => {
+      const structure: MQTTExplorerStructure = {
+        ...STRUCTURE,
+        devices: STRUCTURE.devices.map((device) => ({
+          ...device,
+          via_device_id: via[device.device_id] ?? device.via_device_id,
+        })),
+      };
+      const data = chartData({ hiddenCategories: [] }, true, structure);
+      expect(data.links).toContainEqual(
+        expect.objectContaining({ source: "source:origin:Z2M", target: HUB })
+      );
+      // The tree only places the nodes it reaches from the broker
+      expect(data.nodes.filter((node) => node.x === undefined)).toEqual([]);
+    }
+  );
+
+  it("places the items of a device with two subentry sources apart", () => {
+    const structure: MQTTExplorerStructure = {
+      ...STRUCTURE,
+      sources: [
+        { id: "subentry:a", type: "subentry", title: "A", sw_version: null },
+        { id: "subentry:b", type: "subentry", title: "B", sw_version: null },
+      ],
+      devices: [
+        { ...STRUCTURE.devices[0], sources: ["subentry:a", "subentry:b"] },
+      ],
+      entities: STRUCTURE.entities.map((entity) => ({
+        ...entity,
+        source: "subentry:a",
+        device_id: "hub",
+      })),
+      artifacts: [],
+    };
+    const data = chartData({ hiddenCategories: [] }, true, structure);
+    const places = data.nodes.map((node) => `${node.x},${node.y}`);
+    expect(new Set(places).size).toBe(places.length);
   });
 });

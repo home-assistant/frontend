@@ -116,7 +116,7 @@ const placeInTree = (
   const order = [BROKER_NODE_ID];
   // The loop also visits the children it adds, breadth first
   for (const parentId of order) {
-    const children = (childIds.get(parentId) ?? []).filter(
+    const children = [...new Set(childIds.get(parentId))].filter(
       (id) => id !== BROKER_NODE_ID && !treeParent.has(id)
     );
     children.forEach((id) => treeParent.set(id, parentId));
@@ -408,6 +408,22 @@ export function createMQTTNetworkChartData(
     d.sources.some((source) => sourceIds.has(source))
   );
   const deviceIds = new Set(devices.map((d) => d.device_id));
+  const viaDeviceIds = new Map(
+    devices.map((d) => [d.device_id, d.via_device_id])
+  );
+  // A device in a loop of parents would never reach a source
+  const inParentLoop = (deviceId: string) => {
+    const seen = new Set<string>();
+    let parentId = viaDeviceIds.get(deviceId);
+    while (parentId && deviceIds.has(parentId) && !seen.has(parentId)) {
+      if (parentId === deviceId) {
+        return true;
+      }
+      seen.add(parentId);
+      parentId = viaDeviceIds.get(parentId);
+    }
+    return false;
+  };
   devices.forEach((device) => {
     const id = `${DEVICE_PREFIX}${device.device_id}`;
     const deviceNodeColor = device.child_device
@@ -427,7 +443,11 @@ export function createMQTTNetworkChartData(
     });
     // A device linked to a parent hangs under that parent, otherwise under
     // each of its sources
-    if (device.via_device_id && deviceIds.has(device.via_device_id)) {
+    if (
+      device.via_device_id &&
+      deviceIds.has(device.via_device_id) &&
+      !inParentLoop(device.device_id)
+    ) {
       links.push({
         source: `${DEVICE_PREFIX}${device.via_device_id}`,
         target: id,
@@ -575,6 +595,16 @@ export function createMQTTNetworkChartData(
   // rest, so the topics of an entity or the items of a device stand out. A
   // search keeps the matches clear instead, with the links between them.
   const focusNodes = new Set<string>();
+  // Links point from parent to child
+  const childIds = new Map<string, string[]>();
+  links.forEach((link) => {
+    const list = childIds.get(link.source);
+    if (list) {
+      list.push(link.target);
+    } else {
+      childIds.set(link.source, [link.target]);
+    }
+  });
   const filter = searchFilter.trim().toLowerCase();
   if (filter) {
     const topicsByNode = new Map([
@@ -597,19 +627,15 @@ export function createMQTTNetworkChartData(
       }
     });
   } else if (focusedNode && nodes.some((node) => node.id === focusedNode)) {
-    // Links point from parent to child, so walk up to the broker and down to
-    // all the children of the focused node
+    // Walk up to the broker and down to all the children of the focused node
     const parents = new Map<string, string[]>();
-    const children = new Map<string, string[]>();
     links.forEach((link) => {
-      parents.set(link.target, [
-        ...(parents.get(link.target) ?? []),
-        link.source,
-      ]);
-      children.set(link.source, [
-        ...(children.get(link.source) ?? []),
-        link.target,
-      ]);
+      const list = parents.get(link.target);
+      if (list) {
+        list.push(link.source);
+      } else {
+        parents.set(link.target, [link.source]);
+      }
     });
     const walk = (start: string, next: Map<string, string[]>) => {
       const queue = [start];
@@ -625,7 +651,7 @@ export function createMQTTNetworkChartData(
     };
     focusNodes.add(focusedNode);
     walk(focusedNode, parents);
-    walk(focusedNode, children);
+    walk(focusedNode, childIds);
   }
   const fadedNodes = new Set<string>();
   const fadeNode = (node: NetworkNode) => {
@@ -697,13 +723,6 @@ export function createMQTTNetworkChartData(
       .map((node) => node.id)
   );
   const nodesById = new Map(nodes.map((node) => [node.id, node]));
-  const childIds = new Map<string, string[]>();
-  links.forEach((link) => {
-    childIds.set(link.source, [
-      ...(childIds.get(link.source) ?? []),
-      link.target,
-    ]);
-  });
   // A focused device shows its own items, also when the legend switches their
   // category off. A focused item shows only itself with its topics, so the
   // other items of its device do not crowd them.

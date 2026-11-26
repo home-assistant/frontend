@@ -218,6 +218,12 @@ export class HaNetworkGraph extends LitElement {
   @property({ attribute: false }) public animateStyleChanges = false;
 
   /**
+   * Glide the wheel and pinch zoom, and the move of the view to a newly
+   * selected node, instead of changing the view at once.
+   */
+  @property({ attribute: false }) public animateViewChanges = false;
+
+  /**
    * Names of the legend categories that are switched off. Keep it up to date
    * with `network-legend-changed`, or leave it out to let the legend keep its
    * own selection.
@@ -307,6 +313,7 @@ export class HaNetworkGraph extends LitElement {
   private _handleWheel = (ev: WheelEvent) => {
     const chart = this._baseChart?.chart;
     if (
+      !this.animateViewChanges ||
       !chart ||
       chart.isDisposed() ||
       this._reducedMotion ||
@@ -556,7 +563,7 @@ export class HaNetworkGraph extends LitElement {
     this._stopZoomAnimation();
     this._followSelectedNode = !!this.selectedNode;
     this._stopSelectAnimation();
-    if (this.selectedNode && !this._reducedMotion) {
+    if (this.selectedNode && this.animateViewChanges && !this._reducedMotion) {
       this._selectAnimationFrame = requestAnimationFrame(this._animateView);
     }
     this._updateFollowing();
