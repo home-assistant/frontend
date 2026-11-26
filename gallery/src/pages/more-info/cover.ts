@@ -71,6 +71,32 @@ const ENTITIES = [
     },
   },
   {
+    entity_id: "cover.tilt_only_closed",
+    state: "closed",
+    attributes: {
+      friendly_name: "Tilt-only blind closed",
+      device_class: "blind",
+      assumed_state: true,
+      supported_features:
+        CoverEntityFeature.OPEN_TILT +
+        CoverEntityFeature.STOP_TILT +
+        CoverEntityFeature.CLOSE_TILT,
+    },
+  },
+  {
+    entity_id: "cover.tilt_only_open",
+    state: "open",
+    attributes: {
+      friendly_name: "Tilt-only blind open",
+      device_class: "blind",
+      assumed_state: true,
+      supported_features:
+        CoverEntityFeature.OPEN_TILT +
+        CoverEntityFeature.STOP_TILT +
+        CoverEntityFeature.CLOSE_TILT,
+    },
+  },
+  {
     entity_id: "cover.tilt_slider_half",
     state: "on",
     attributes: {
