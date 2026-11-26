@@ -607,6 +607,22 @@ export const ENTITY_COMPONENT_ICONS: Record<string, ComponentIcons> = {
     atmospheric_pressure: {
       default: "mdi:thermometer-lines",
     },
+    battery: {
+      default: "mdi:battery-unknown",
+      range: {
+        "0": "mdi:battery-alert",
+        "10": "mdi:battery-10",
+        "20": "mdi:battery-20",
+        "30": "mdi:battery-30",
+        "40": "mdi:battery-40",
+        "50": "mdi:battery-50",
+        "60": "mdi:battery-60",
+        "70": "mdi:battery-70",
+        "80": "mdi:battery-80",
+        "90": "mdi:battery-90",
+        "100": "mdi:battery",
+      },
+    },
     carbon_dioxide: {
       default: "mdi:molecule-co2",
     },
