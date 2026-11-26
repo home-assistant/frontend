@@ -27,6 +27,8 @@ import {
 import { updateHassGroups } from "../data/context/updateContext";
 import type { IconCategory } from "../data/icons";
 import type { EntityRegistryDisplayEntry } from "../data/entity/entity_registry";
+import type { Condition } from "../panels/lovelace/common/validate-condition";
+import { checkConditionsMet } from "../panels/lovelace/common/validate-condition";
 import {
   DateFormat,
   FirstWeekday,
@@ -221,6 +223,8 @@ export const provideHass = (
     return lazyLoaderPromise;
   };
   const eventListeners: Record<string, ((event) => void)[]> = {};
+  // Checks each subscribed condition again, for when the states change.
+  const conditionChecks = new Set<() => void>();
   const entities = {};
   let localResources: Resources = {};
 
@@ -581,6 +585,10 @@ export const provideHass = (
         el.hass = newHass;
       });
       updateContextProviders(newHass);
+
+      if (obj.states) {
+        conditionChecks.forEach((check) => check());
+      }
     },
     updateStates,
     updateTranslations,
@@ -663,6 +671,31 @@ export const provideHass = (
   hassObj.mockWS("frontend/get_icons", ({ category }: MockGetIconsMessage) => ({
     resources: category === "entity_component" ? ENTITY_COMPONENT_ICONS : {},
   }));
+
+  // Core answers the visibility conditions of cards and rows that depend on
+  // states. Here they are checked against the mock states, as the frontend
+  // does itself before Core answers, and again each time the states change.
+  hassObj.mockWS(
+    "subscribe_condition",
+    ({ condition }: { condition: Condition }, _hass, onChange) => {
+      const check = () => {
+        let result = false;
+
+        try {
+          result = checkConditionsMet([condition], hass(), {});
+        } catch {
+          // A condition only Core can check, such as a template
+        }
+
+        onChange?.({ result });
+      };
+
+      conditionChecks.add(check);
+      check();
+
+      return () => conditionChecks.delete(check);
+    }
+  );
 
   // Set hass if required
   if (setHassProperty) {
