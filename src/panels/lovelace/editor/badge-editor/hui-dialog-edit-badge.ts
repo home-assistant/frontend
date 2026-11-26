@@ -1,4 +1,9 @@
-import { mdiClose, mdiHelpCircleOutline } from "@mdi/js";
+import {
+  mdiClose,
+  mdiFullscreen,
+  mdiFullscreenExit,
+  mdiHelpCircleOutline,
+} from "@mdi/js";
 import deepFreeze from "deep-freeze";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -67,6 +72,8 @@ export class HuiDialogEditBadge
   @state() private _params?: EditBadgeDialogParams;
 
   @state() private _open = false;
+
+  @state() private _animateWidth = false;
 
   @state() private _badgeConfig?: LovelaceBadgeConfig;
 
@@ -195,6 +202,8 @@ export class HuiDialogEditBadge
         .open=${this._open}
         .accessibleLabel=${heading}
         .width=${this.large ? "full" : "large"}
+        class=${this._animateWidth ? "animate-width" : ""}
+        @dialog-set-fullscreen=${this._stopWidthAnimation}
         .preventScrimClose=${this.isEffectiveDirtyState}
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
@@ -205,12 +214,18 @@ export class HuiDialogEditBadge
           .label=${this.hass.localize("ui.common.close")}
           .path=${mdiClose}
         ></ha-icon-button>
-        <span
-          slot="headerTitle"
-          class="title-enlargeable"
-          @click=${this._enlarge}
-          >${heading}</span
-        >
+        <span slot="headerTitle">${heading}</span>
+        <ha-icon-button
+          slot="headerActionItems"
+          class="enlarge"
+          .path=${this.large ? mdiFullscreenExit : mdiFullscreen}
+          .label=${this.hass.localize(
+            this.large
+              ? "ui.panel.lovelace.editor.edit_badge.shrink"
+              : "ui.panel.lovelace.editor.edit_badge.enlarge"
+          )}
+          @click=${this._toggleLarge}
+        ></ha-icon-button>
         ${
           this._documentationURL !== undefined
             ? html`
@@ -304,10 +319,14 @@ export class HuiDialogEditBadge
     `;
   }
 
-  private _enlarge() {
-    withViewTransition(() => {
-      this.large = !this.large;
-    });
+  private _toggleLarge() {
+    this._animateWidth = true;
+    this.large = !this.large;
+  }
+
+  // The code editor's fullscreen changes the height at once, so the width must not lag behind
+  private _stopWidthAnimation() {
+    this._animateWidth = false;
   }
 
   private _ignoreKeydown(ev: KeyboardEvent) {
@@ -494,8 +513,18 @@ export class HuiDialogEditBadge
         ha-dialog ha-icon-button[slot="headerActionItems"] {
           color: var(--secondary-text-color);
         }
-        .title-enlargeable {
-          display: block;
+        ha-dialog.animate-width {
+          --ha-dialog-width-transition:
+            min-width var(--ha-animation-duration-normal) ease-out,
+            max-width var(--ha-animation-duration-normal) ease-out;
+        }
+        ha-dialog[fullscreen] .enlarge {
+          display: none;
+        }
+        @media (max-width: 999px) {
+          .enlarge {
+            display: none;
+          }
         }
       `,
     ];
