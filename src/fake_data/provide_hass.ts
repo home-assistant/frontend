@@ -27,8 +27,12 @@ import {
 import { updateHassGroups } from "../data/context/updateContext";
 import type { IconCategory } from "../data/icons";
 import type { EntityRegistryDisplayEntry } from "../data/entity/entity_registry";
-import type { Condition } from "../panels/lovelace/common/validate-condition";
-import { checkConditionsMet } from "../panels/lovelace/common/validate-condition";
+import { evaluateConditionsLocally } from "../common/condition/evaluate-locally";
+import {
+  isLogicalCondition,
+  logicalChildren,
+} from "../common/condition/translate";
+import type { VisibilityCondition } from "../panels/lovelace/common/validate-condition";
 import {
   DateFormat,
   FirstWeekday,
@@ -54,6 +58,24 @@ import type { EntityInput } from "./entities/types";
 
 const ensureArray = <T>(val: T | T[]): T[] =>
   Array.isArray(val) ? val : [val];
+
+// Core's `not` passes when none of its conditions pass, and the frontend's
+// unless all of them pass, so each `not` gets one `or` of its conditions
+const withCoreNot = (condition: VisibilityCondition): VisibilityCondition => {
+  if (!isLogicalCondition(condition) || condition.conditions === undefined) {
+    return condition;
+  }
+
+  const conditions = logicalChildren(condition).map(withCoreNot);
+
+  return {
+    ...condition,
+    conditions:
+      condition.condition === "not"
+        ? [{ condition: "or", conditions }]
+        : conditions,
+  };
+};
 
 type MockServiceCallback = (
   data: Record<string, any> | undefined,
@@ -585,10 +607,6 @@ export const provideHass = (
         el.hass = newHass;
       });
       updateContextProviders(newHass);
-
-      if (obj.states) {
-        conditionChecks.forEach((check) => check());
-      }
     },
     updateStates,
     updateTranslations,
@@ -675,19 +693,28 @@ export const provideHass = (
   // Core answers the visibility conditions of cards and rows that depend on
   // states. Here they are checked against the mock states, as the frontend
   // does itself before Core answers, and again each time the states change.
+  // A condition only Core can check, such as a template, gets an error, so
+  // a `not` around it can't show the card.
   hassObj.mockWS(
     "subscribe_condition",
-    ({ condition }: { condition: Condition }, _hass, onChange) => {
+    ({ condition }: { condition: VisibilityCondition }, _hass, onChange) => {
       const check = () => {
-        let result = false;
+        const result = evaluateConditionsLocally(
+          [withCoreNot(condition)],
+          hass(),
+          {}
+        );
 
-        try {
-          result = checkConditionsMet([condition], hass(), {});
-        } catch {
-          // A condition only Core can check, such as a template
-        }
-
-        onChange?.({ result });
+        onChange?.(
+          result === undefined
+            ? {
+                error: {
+                  code: "not_supported",
+                  message: "The demo can't check this condition",
+                },
+              }
+            : { result }
+        );
       };
 
       conditionChecks.add(check);
@@ -696,6 +723,17 @@ export const provideHass = (
       return () => conditionChecks.delete(check);
     }
   );
+
+  // Check the conditions again after each state update, also when the host
+  // passed its own updateHass, as the demo does
+  const applyUpdate = hassObj.updateHass;
+  hassObj.updateHass = (obj: Partial<MockHomeAssistant>) => {
+    applyUpdate(obj);
+
+    if (obj.states) {
+      conditionChecks.forEach((check) => check());
+    }
+  };
 
   // Set hass if required
   if (setHassProperty) {
