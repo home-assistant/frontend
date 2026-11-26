@@ -27,7 +27,6 @@ import {
   coverCurrentValue,
   coverHasTiltControls,
   coverModeAttribute,
-  coverSupportsPosition,
   coverSupportsSetValue,
   coverSupportsTiltPosition,
   coverTiltOpenness,
@@ -77,6 +76,17 @@ const pillHandle = (cx: number, cy: number, vertical: boolean) =>
 
 const swipeResistance = (distance: number) =>
   SWIPE_RESISTANCE * (1 - Math.exp(-Math.max(0, distance) / 30));
+
+const OPEN_CLOSE_FEATURES: Record<
+  CoverControlMode,
+  Record<CoverSwipe["action"], CoverEntityFeature>
+> = {
+  position: { open: CoverEntityFeature.OPEN, close: CoverEntityFeature.CLOSE },
+  tilt: {
+    open: CoverEntityFeature.OPEN_TILT,
+    close: CoverEntityFeature.CLOSE_TILT,
+  },
+};
 
 const modeSprings = (): ModeSprings => ({
   position: new PercentSpring(),
@@ -190,11 +200,11 @@ export class HaStateControlCover extends LitElement {
   }
 
   private get _openCloseOnly(): boolean {
+    const features = OPEN_CLOSE_FEATURES[this.mode];
     return (
-      this.mode === "position" &&
-      !coverSupportsPosition(this.stateObj) &&
-      (supportsFeature(this.stateObj, CoverEntityFeature.OPEN) ||
-        supportsFeature(this.stateObj, CoverEntityFeature.CLOSE))
+      !this._canSetValue &&
+      (supportsFeature(this.stateObj, features.open) ||
+        supportsFeature(this.stateObj, features.close))
     );
   }
 
@@ -208,7 +218,9 @@ export class HaStateControlCover extends LitElement {
   private get _interactive(): boolean {
     return (
       this.stateObj.state !== UNAVAILABLE &&
-      (this._canSetValue || (this._openCloseOnly && !this._valueUnknown))
+      (this._canSetValue ||
+        (this._openCloseOnly &&
+          coverCurrentValue(this.stateObj, this.mode) !== undefined))
     );
   }
 
@@ -412,11 +424,7 @@ export class HaStateControlCover extends LitElement {
   }
 
   private _swipeAction(): CoverSwipe["action"] {
-    const end =
-      this.request?.mode === "position"
-        ? this.request.value
-        : this._drawingGoal("position");
-    return end >= 50 ? "close" : "open";
+    return this._handleGoal(this.mode) >= 50 ? "close" : "open";
   }
 
   private _startSwipe(
@@ -424,14 +432,10 @@ export class HaStateControlCover extends LitElement {
     shape: CoverShape,
     startPointer: number
   ) {
+    const mode = this.mode;
     const action = this._swipeAction();
     const closing = action === "close";
-    if (
-      !supportsFeature(
-        this.stateObj,
-        closing ? CoverEntityFeature.CLOSE : CoverEntityFeature.OPEN
-      )
-    ) {
+    if (!supportsFeature(this.stateObj, OPEN_CLOSE_FEATURES[mode][action])) {
       return;
     }
     const direction = closing ? -1 : 1;
@@ -462,13 +466,13 @@ export class HaStateControlCover extends LitElement {
         const passedHalfway = Boolean(this._drag?.swipe?.passedHalfway);
         this._setDrag(undefined);
         if (passedHalfway) {
-          fireEvent(this, "cover-command", { mode: "position", action });
+          fireEvent(this, "cover-command", { mode, action });
         }
       },
       tap: (e) => {
         const pointer = this._pointerValue(e, shape);
         if (pointer !== undefined && pointer >= 50 !== closing) {
-          fireEvent(this, "cover-command", { mode: "position", action });
+          fireEvent(this, "cover-command", { mode, action });
         }
       },
       cancel: () => this._setDrag(undefined),
