@@ -36,6 +36,7 @@ import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_reg
 import type { UpdateEntity, UpdateReleaseNotes } from "../../../data/update";
 import {
   latestVersionIsSkipped,
+  localizeUpdateManualAction,
   updateButtonIsDisabled,
   UpdateEntityFeature,
   updateIsInstalling,
@@ -191,6 +192,12 @@ class MoreInfoUpdate extends LitElement {
 
     const releaseUrl = sanitizeHttpUrl(this.stateObj.attributes.release_url);
     const backupInProgressMessage = this._backupInProgressMessage();
+    const manualAction = this.stateObj.attributes.manual_action
+      ? localizeUpdateManualAction(
+          this._localize,
+          this.stateObj.attributes.manual_action
+        )
+      : undefined;
 
     return html`
       <div class="content">
@@ -210,6 +217,13 @@ class MoreInfoUpdate extends LitElement {
           ${
             this._error
               ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : nothing
+          }
+          ${
+            manualAction
+              ? html`<ha-alert class="manual-action" alert-type="warning"
+                  >${manualAction}</ha-alert
+                >`
               : nothing
           }
           <div class="row">
@@ -612,7 +626,8 @@ class MoreInfoUpdate extends LitElement {
       margin-bottom: var(--ha-space-4);
     }
 
-    .release-notes-message {
+    .release-notes-message,
+    .manual-action {
       display: block;
       margin-bottom: var(--ha-space-4);
     }

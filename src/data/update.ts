@@ -25,12 +25,29 @@ export enum UpdateEntityFeature {
   RELEASE_NOTES = 16,
 }
 
+export type UpdateInstallPhase =
+  | "preparing"
+  | "backing_up"
+  | "waiting"
+  | "downloading"
+  | "installing"
+  | "restarting"
+  | "finishing";
+
+export interface UpdateManualAction {
+  translation_domain: string;
+  translation_key: string;
+  translation_placeholders: Record<string, string>;
+}
+
 interface UpdateEntityAttributes extends HassEntityAttributeBase {
   auto_update: boolean | null;
   display_precision: number;
   installed_version: string | null;
+  install_phase: UpdateInstallPhase | null;
   in_progress: boolean;
   latest_version: string | null;
+  manual_action: UpdateManualAction | null;
   release_summary: string | null;
   release_url: string | null;
   skipped_version: string | null;
@@ -78,6 +95,27 @@ export const updateButtonIsDisabled = (entity: UpdateEntity): boolean =>
 
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>
   !!entity.attributes.in_progress;
+
+export const localizeUpdateInstallPhase = (
+  localize: LocalizeFunc,
+  phase: UpdateInstallPhase
+): string =>
+  localize(
+    `component.update.entity_component._.state_attributes.install_phase.state.${phase}`
+  );
+
+// The update integration translates the shared actions, other integrations
+// translate their own under entity.update.
+export const localizeUpdateManualAction = (
+  localize: LocalizeFunc,
+  action: UpdateManualAction
+): string =>
+  localize(
+    action.translation_domain === "update"
+      ? `component.update.entity_component.manual_actions.${action.translation_key}`
+      : `component.${action.translation_domain}.entity.update.manual_actions.${action.translation_key}`,
+    action.translation_placeholders
+  );
 
 export interface UpdateReleaseNotesMessage {
   severity: "info" | "warning" | "error";
@@ -247,6 +285,7 @@ export const checkForEntityUpdates = async (
 };
 
 // When updating, and entity does not support % show "Installing"
+// When updating, and entity reports a phase show the phase, with "(xx%)" if it reports %
 // When updating, and entity does support % but has not reported it yet, show "Preparing"
 // When updating, and entity does support % show "Installing (xx%)"
 // When update available, show "Update available"
@@ -266,26 +305,24 @@ export const computeUpdateStateDisplay = (
   // downgrading firmware (installed_version is newer than latest_version).
   // Show the installing status regardless of state in that case.
   if (updateIsInstalling(stateObj)) {
-    // The install has not started yet, for example while a backup is
-    // created before the update.
-    if (
-      supportsFeature(stateObj, UpdateEntityFeature.PROGRESS) &&
-      attributes.update_percentage == null
-    ) {
-      return localize("ui.card.update.preparing");
+    if (!supportsFeature(stateObj, UpdateEntityFeature.PROGRESS)) {
+      return localize("ui.card.update.installing");
     }
-    const supportsProgress =
-      supportsFeature(stateObj, UpdateEntityFeature.PROGRESS) &&
-      attributes.update_percentage !== null;
-    if (supportsProgress) {
-      return localize("ui.card.update.installing_with_progress", {
-        progress: formatNumber(attributes.update_percentage!, locale, {
-          maximumFractionDigits: attributes.display_precision,
-          minimumFractionDigits: attributes.display_precision,
-        }),
-      });
+    const phase = attributes.install_phase
+      ? localizeUpdateInstallPhase(localize, attributes.install_phase)
+      : undefined;
+    if (attributes.update_percentage == null) {
+      // Without a phase, the install has not started yet, for example while
+      // a backup is created before the update.
+      return phase || localize("ui.card.update.preparing");
     }
-    return localize("ui.card.update.installing");
+    const progress = formatNumber(attributes.update_percentage, locale, {
+      maximumFractionDigits: attributes.display_precision,
+      minimumFractionDigits: attributes.display_precision,
+    });
+    return phase
+      ? localize("ui.card.update.phase_with_progress", { phase, progress })
+      : localize("ui.card.update.installing_with_progress", { progress });
   }
 
   if (state === "off") {

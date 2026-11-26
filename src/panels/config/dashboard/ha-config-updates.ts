@@ -26,6 +26,10 @@ import {
 } from "../../../data/context";
 import { entityRegistryByEntityId } from "../../../data/entity/entity_registry";
 import type { UpdateEntity } from "../../../data/update";
+import {
+  localizeUpdateInstallPhase,
+  localizeUpdateManualAction,
+} from "../../../data/update";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { HomeAssistantFormatters } from "../../../types";
 
@@ -149,6 +153,25 @@ class HaConfigUpdates extends LitElement {
                     ? `(${this._localize("ui.panel.config.updates.skipped")})`
                     : nothing
                 }
+                ${
+                  entity.attributes.install_phase
+                    ? html`⸱
+                      ${localizeUpdateInstallPhase(
+                        this._localize,
+                        entity.attributes.install_phase
+                      )}`
+                    : nothing
+                }
+                ${
+                  entity.attributes.manual_action
+                    ? html`<span class="manual-action"
+                        >${localizeUpdateManualAction(
+                          this._localize,
+                          entity.attributes.manual_action
+                        )}</span
+                      >`
+                    : nothing
+                }
               </span>
               ${
                 !this.narrow
@@ -206,6 +229,11 @@ class HaConfigUpdates extends LitElement {
         }
         state-badge.updating {
           opacity: 0.2;
+        }
+        .manual-action {
+          display: block;
+          white-space: normal;
+          color: var(--ha-color-on-warning-normal);
         }
       `,
     ];
