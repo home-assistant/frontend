@@ -112,6 +112,14 @@ const subscribeSupervisorEventUpdates = (
     }
   );
 
+export const subscribeSupervisorEvents = (
+  conn: Connection,
+  onEvent: (event: SupervisorEvent) => void
+) =>
+  conn.subscribeMessage<SupervisorEvent>(onEvent, {
+    type: "supervisor/subscribe",
+  });
+
 export const getSupervisorEventCollection = (
   conn: Connection,
   key: string,

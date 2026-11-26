@@ -59,6 +59,7 @@ import "../../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../../components/ha-switch";
 import "../../../../../components/item/ha-list-item-switch";
 import "../../../../../components/item/ha-row-item";
+import { ConnectionSubscriptionController } from "../../../../../data/connection-subscription-controller";
 import {
   apiContext,
   internationalizationContext,
@@ -90,6 +91,8 @@ import {
   supervisorUrl,
 } from "../../../../../data/hassio/common";
 import type { StoreAddonDetails } from "../../../../../data/supervisor/store";
+import type { SupervisorEvent } from "../../../../../data/supervisor/supervisor";
+import { subscribeSupervisorEvents } from "../../../../../data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -126,8 +129,6 @@ const RATING_ICON = {
 };
 
 const MAX_RATING = 8;
-
-const POLL_INTERVAL_SECONDS = 5;
 
 @customElement("supervisor-app-info")
 class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
@@ -168,8 +169,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
   })
   private _updateState?: HassEntity;
 
-  private _pollInterval?: number;
-
   protected mobileSizeQuery =
     "all and (max-width: 1120px), all and (max-height: 500px)";
 
@@ -177,9 +176,14 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     return this._addon || this.addon;
   }
 
-  public connectedCallback() {
-    super.connectedCallback();
-    this._startPolling();
+  constructor() {
+    super();
+    new ConnectionSubscriptionController(this, {
+      subscribe: (connection) =>
+        subscribeSupervisorEvents(connection, (event) =>
+          this._handleSupervisorEvent(event)
+        ),
+    });
   }
 
   protected willUpdate(changedProps: PropertyValues<this>) {
@@ -191,11 +195,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       this.registries.entities,
       (this._currentAddon as HassioAddonDetails).slug
     );
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._stopPolling();
   }
 
   private _renderInfoCard() {
@@ -1035,19 +1034,18 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     }
   }
 
-  private _startPolling() {
-    if (this._pollInterval) {
-      return;
-    }
-    this._pollInterval = window.setInterval(() => {
+  private _handleSupervisorEvent(event: SupervisorEvent) {
+    const slug = this._currentAddon.slug;
+    // Supervisor sends "addon" until Core opts in to its v2 websocket API, then "app"
+    const stateChanged =
+      (event.event === "addon" || event.event === "app") && event.slug === slug;
+    // Jobs such as update, rebuild and install change the info without a state change
+    const jobDone =
+      event.event === "job" &&
+      event.data?.reference === slug &&
+      event.data?.done === true;
+    if (stateChanged || jobDone) {
       this._refreshAddonInfo();
-    }, POLL_INTERVAL_SECONDS * 1000);
-  }
-
-  private _stopPolling() {
-    if (this._pollInterval) {
-      clearInterval(this._pollInterval);
-      this._pollInterval = undefined;
     }
   }
 
