@@ -1,7 +1,6 @@
 import type { PropertyValues } from "lit";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
-import { computeDomain } from "../common/entity/compute_domain";
 import { replaceCurrentUrl } from "../common/navigate";
 import {
   createMoreInfoUrl,
@@ -11,8 +10,6 @@ import { showDialog } from "../dialogs/make-dialog-manager";
 import type { MoreInfoDialogParams } from "../dialogs/more-info/ha-more-info-dialog";
 import type { Constructor } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
-
-const LARGE_MORE_INFO_DOMAINS = ["camera"];
 
 declare global {
   // for fire event
@@ -47,13 +44,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         {
           entityId: ev.detail.entityId,
           view,
-          large:
-            ev.detail.large ??
-            (ev.detail.entityId
-              ? LARGE_MORE_INFO_DOMAINS.includes(
-                  computeDomain(ev.detail.entityId)
-                )
-              : false),
+          large: ev.detail.large,
           data: ev.detail.data,
           returnUrl,
         },
