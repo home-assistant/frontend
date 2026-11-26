@@ -273,16 +273,15 @@ export class BluetoothConfigDashboard extends LitElement {
                   ></ha-svg-icon>
                   <div slot="headline">
                     ${
-                      loading
-                        ? this._renderTextSkeleton()
-                        : adapterCount === undefined
-                          ? this.hass.localize(
-                              "ui.panel.config.bluetooth.adapter_info_title"
-                            )
-                          : this.hass.localize(
-                              "ui.panel.config.bluetooth.adapters_count",
-                              { count: adapterCount }
-                            )
+                      // A link needs its name, so no skeleton while loading
+                      adapterCount === undefined
+                        ? this.hass.localize(
+                            "ui.panel.config.bluetooth.adapter_info_title"
+                          )
+                        : this.hass.localize(
+                            "ui.panel.config.bluetooth.adapters_count",
+                            { count: adapterCount }
+                          )
                     }
                   </div>
                   <ha-icon-next slot="end"></ha-icon-next>
