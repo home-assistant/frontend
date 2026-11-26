@@ -1,20 +1,8 @@
 import { supportsFeatureFromAttributes } from "../../common/entity/supports-feature";
-import {
-  CLIMATE_HVAC_ACTION_TO_MODE,
-  ClimateEntityFeature,
-} from "../../data/climate";
+import { ClimateEntityFeature } from "../../data/climate";
 import type { HvacAction } from "../../data/climate";
 import { MockBaseEntity } from "./base-entity";
 import type { EntityAttributes } from "./types";
-
-// Reverse mapping: mode → action (e.g. "cool" → "cooling")
-const HVAC_MODE_TO_ACTION: Partial<Record<string, HvacAction>> =
-  Object.fromEntries(
-    Object.entries(CLIMATE_HVAC_ACTION_TO_MODE).map(([action, mode]) => [
-      mode,
-      action as HvacAction,
-    ])
-  );
 
 export class MockClimateEntity extends MockBaseEntity {
   public async handleService(
@@ -243,10 +231,13 @@ export class MockClimateEntity extends MockBaseEntity {
       return "off";
     }
 
-    // Use the reverse mapping for direct mode → action (e.g. "fan_only" → "fan", "dry" → "drying")
-    const directAction = HVAC_MODE_TO_ACTION[state];
-    if (directAction && directAction !== "idle" && directAction !== "off") {
-      return directAction;
+    // Heat and cool get their action from the temperatures below
+    if (state === "dry") {
+      return "drying";
+    }
+
+    if (state === "fan_only") {
+      return "fan";
     }
 
     if (
