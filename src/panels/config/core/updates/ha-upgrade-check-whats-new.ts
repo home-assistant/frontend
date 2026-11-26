@@ -17,7 +17,6 @@ import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/chips/ha-assist-chip";
 import "../../../../components/chips/ha-chip-set";
 import "../../../../components/ha-expansion-panel";
-import "../../../../components/ha-label";
 import "../../../../components/ha-markdown";
 import "../../../../components/ha-svg-icon";
 import { domainToName } from "../../../../data/integration";
@@ -384,19 +383,20 @@ export class HaUpgradeCheckWhatsNew extends LitElement {
       class="full-row"
       id=${row.anchor}
       .expanded=${row.anchor === this.focusAnchor}
-      .header=${this._rowName(row)}
-      .secondary=${this._rowSummary(row)}
     >
       ${this._rowIcon(row, "leading-icon")}
-      ${
-        row.items.length > 1
-          ? html`<ha-label dense slot="event"
-              >${this._localize(`${PREFIX}.count_changes`, {
-                count: row.items.length,
-              })}</ha-label
-            >`
-          : nothing
-      }
+      <div slot="header">
+        ${this._rowName(row)}${
+          row.items.length > 1
+            ? html`<span class="count"
+                >${this._localize(`${PREFIX}.count_changes`, {
+                  count: row.items.length,
+                })}</span
+              >`
+            : nothing
+        }
+        <div class="summary">${this._rowSummary(row)}</div>
+      </div>
       ${row.items.map((item) => this._renderItem(row.category, item))}
     </ha-expansion-panel>`;
   }
@@ -584,6 +584,25 @@ export class HaUpgradeCheckWhatsNew extends LitElement {
     }
     .general-group .section {
       padding-top: var(--ha-space-3);
+    }
+    .full-row .count,
+    .full-row .summary {
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
+      font-weight: var(--ha-font-weight-normal);
+    }
+    .full-row .count {
+      margin-inline-start: var(--ha-space-2);
+    }
+    /* A preview of the first change; the row lists them all. */
+    .full-row .summary {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+    .full-row[expanded] .summary {
+      display: none;
     }
     .full-row {
       scroll-margin-top: var(--ha-space-4);
