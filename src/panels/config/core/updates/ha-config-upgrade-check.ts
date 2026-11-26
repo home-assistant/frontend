@@ -10,10 +10,12 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-svg-icon";
+import type { UpdateEntity } from "../../../../data/update";
 import type { UpgradeCheckDigest } from "../../../../data/upgrade_check";
 import {
   UPGRADE_CHECK_UNAVAILABLE,
   fetchUpgradeCheckDigest,
+  findCoreUpdateEntityId,
   upgradeCheckBreakingRows,
   upgradeCheckImprovementRows,
   upgradeCheckQualityScaleRows,
@@ -39,6 +41,12 @@ class HaConfigUpgradeCheck extends LitElement {
   // Row the update dialog linked to; it opens and stays open.
   @state() private _focus?: string;
 
+  // Core update state the digest was last asked for.
+  private _fetchedFor?: string;
+
+  // Only the latest request may set the result.
+  private _request = 0;
+
   public connectedCallback(): void {
     super.connectedCallback();
     // The update dialog can link here while this page is already open.
@@ -52,9 +60,30 @@ class HaConfigUpgradeCheck extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
-    if (!this.hasUpdated) {
+    if (!changedProps.has("hass")) {
+      return;
+    }
+    // Not from the digest, which is cleared while it is fetched again.
+    const entityId = findCoreUpdateEntityId(this.hass);
+    const stateObj = entityId ? this.hass.states[entityId] : undefined;
+    const fetchFor = stateObj
+      ? [
+          stateObj.state,
+          stateObj.attributes.installed_version,
+          stateObj.attributes.latest_version,
+        ].join(",")
+      : "";
+    if (fetchFor !== this._fetchedFor) {
+      this._fetchedFor = fetchFor;
       this._fetch();
     }
+  }
+
+  // From the update entity, so it shows without release notes too.
+  private _coreUpdateEntityId(): string | undefined {
+    return (
+      findCoreUpdateEntityId(this.hass) ?? this._digest?.entity_id ?? undefined
+    );
   }
 
   // Wait for the digest: it sets the card's height and so where a row ends up.
@@ -75,6 +104,7 @@ class HaConfigUpgradeCheck extends LitElement {
   };
 
   private async _fetch(): Promise<void> {
+    const request = ++this._request;
     this._digest = undefined;
     this._unavailable = false;
     this._error = undefined;
@@ -87,9 +117,15 @@ class HaConfigUpgradeCheck extends LitElement {
         ...upgradeCheckImprovementRows(digest).flatMap((row) => row.domains),
         ...upgradeCheckQualityScaleRows(digest).flatMap((row) => row.domains),
       ]);
+      if (request !== this._request) {
+        return;
+      }
       this._digest = digest;
       this._scrollIfRequested();
     } catch (err: any) {
+      if (request !== this._request) {
+        return;
+      }
       if (err.code === UPGRADE_CHECK_UNAVAILABLE) {
         this._unavailable = true;
       } else {
@@ -109,8 +145,17 @@ class HaConfigUpgradeCheck extends LitElement {
         <ha-spinner size="small"></ha-spinner>
       </div>`;
     }
-    const entityId = digest?.entity_id;
-    const stateObj = entityId ? this.hass.states[entityId] : undefined;
+    const entityId = this._coreUpdateEntityId();
+    const stateObj = entityId
+      ? (this.hass.states[entityId] as UpdateEntity | undefined)
+      : undefined;
+    const installed =
+      stateObj?.attributes.installed_version ?? digest?.running ?? "";
+    const latest = stateObj
+      ? stateObj.state === "on"
+        ? stateObj.attributes.latest_version
+        : null
+      : digest?.target;
     return html`
       <ha-card outlined>
         <div class="card-content">
@@ -120,14 +165,12 @@ class HaConfigUpgradeCheck extends LitElement {
               <div class="name">${localize(`${PREFIX}.core`)}</div>
               <div class="secondary">
                 ${
-                  digest?.target
+                  latest
                     ? localize(`${PREFIX}.status_available`, {
-                        installed: digest.running,
-                        latest: digest.target,
+                        installed,
+                        latest,
                       })
-                    : localize(`${PREFIX}.status_up_to_date`, {
-                        installed: digest?.running ?? "",
-                      })
+                    : localize(`${PREFIX}.status_up_to_date`, { installed })
                 }
               </div>
             </div>
@@ -138,6 +181,8 @@ class HaConfigUpgradeCheck extends LitElement {
                   full
                   .digest=${digest}
                   .unavailable=${this._unavailable}
+                  .version=${latest}
+                  .releaseUrl=${stateObj?.attributes.release_url ?? undefined}
                   .focusAnchor=${this._focus}
                 ></ha-upgrade-check-whats-new>`
               : nothing
@@ -158,7 +203,9 @@ class HaConfigUpgradeCheck extends LitElement {
 
   // The update dialog is for acting: backup, skip and install.
   private _openUpdate(): void {
-    fireEvent(this, "hass-more-info", { entityId: this._digest!.entity_id! });
+    fireEvent(this, "hass-more-info", {
+      entityId: this._coreUpdateEntityId()!,
+    });
   }
 
   static styles = css`

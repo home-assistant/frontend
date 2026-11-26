@@ -167,6 +167,16 @@ class MoreInfoUpdate extends LitElement {
     );
   }
 
+  // Supervisor and app updates also come from hassio, but only Core has
+  // release notes to check.
+  private _isCoreUpdate(): boolean {
+    return (
+      this._mayBeCoreUpdate() &&
+      (this._entityEntry?.platform !== "hassio" ||
+        this._hassioDeviceId() === "core")
+    );
+  }
+
   private _backupInProgressMessage(): string | undefined {
     // The Supervisor only holds back the updates it manages.
     if (this._entityEntry?.platform !== "hassio") {
@@ -273,6 +283,7 @@ class MoreInfoUpdate extends LitElement {
                   .entityId=${this.stateObj.entity_id}
                   .latestVersion=${this.stateObj.attributes.latest_version}
                   .releaseUrl=${releaseUrl}
+                  .core=${this._isCoreUpdate()}
                 ></ha-more-info-update-upgrade-check>`
               : nothing
           }
@@ -520,21 +531,25 @@ class MoreInfoUpdate extends LitElement {
 
   // Supervisor names the app by its slug in log lines; other hassio devices aren't apps.
   private _appSlug(): string | undefined {
-    const deviceId = this._entityEntry?.device_id;
-
-    if (!deviceId) {
-      return undefined;
-    }
-
-    const id = this._devices[deviceId]?.identifiers.find(
-      ([domain]) => domain === "hassio"
-    )?.[1];
+    const id = this._hassioDeviceId();
 
     if (!id || NON_APP_HASSIO_DEVICES.has(id) || id.startsWith("mount_")) {
       return undefined;
     }
 
     return id;
+  }
+
+  private _hassioDeviceId(): string | undefined {
+    const deviceId = this._entityEntry?.device_id;
+
+    if (!deviceId) {
+      return undefined;
+    }
+
+    return this._devices[deviceId]?.identifiers.find(
+      ([domain]) => domain === "hassio"
+    )?.[1];
   }
 
   private _handleShowSupervisorLogs(): void {

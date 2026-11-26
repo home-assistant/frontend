@@ -28,6 +28,9 @@ export class HaMoreInfoUpdateUpgradeCheck extends LitElement {
 
   @property({ attribute: false }) public releaseUrl?: string;
 
+  // The update is Core's, so a failed check is worth a warning.
+  @property({ type: Boolean }) public core = false;
+
   @consume({ context: apiContext, subscribe: true })
   private _api!: HomeAssistantApi;
 
@@ -38,6 +41,9 @@ export class HaMoreInfoUpdateUpgradeCheck extends LitElement {
 
   @state() private _unavailable = false;
 
+  // Only the latest request may set the result.
+  private _request = 0;
+
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (changedProps.has("entityId") || changedProps.has("latestVersion")) {
@@ -46,6 +52,7 @@ export class HaMoreInfoUpdateUpgradeCheck extends LitElement {
   }
 
   private async _fetch(): Promise<void> {
+    const request = ++this._request;
     this._digest = undefined;
     this._unavailable = false;
     try {
@@ -55,23 +62,31 @@ export class HaMoreInfoUpdateUpgradeCheck extends LitElement {
         "title",
         upgradeCheckBreakingRows(digest).flatMap((row) => row.domains)
       );
-      this._digest = digest;
+      if (request === this._request) {
+        this._digest = digest;
+      }
     } catch (err: any) {
       // Other errors leave the dialog as it was without the check.
-      this._unavailable = err?.code === UPGRADE_CHECK_UNAVAILABLE;
+      if (request === this._request) {
+        this._unavailable = err?.code === UPGRADE_CHECK_UNAVAILABLE;
+      }
     }
   }
 
   protected render() {
-    if (this._unavailable) {
+    if (this._unavailable && this.core) {
       return html`<ha-upgrade-check-whats-new
         unavailable
         .version=${this.latestVersion}
         .releaseUrl=${this.releaseUrl}
       ></ha-upgrade-check-whats-new>`;
     }
-    // Only the core update has release notes to check.
-    if (!this._digest || this._digest.entity_id !== this.entityId) {
+    // Only the core update has release notes to check, for the version it offers.
+    if (
+      !this._digest ||
+      this._digest.entity_id !== this.entityId ||
+      this._digest.target !== this.latestVersion
+    ) {
       return nothing;
     }
     return html`<ha-upgrade-check-whats-new

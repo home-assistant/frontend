@@ -1,3 +1,4 @@
+import { computeDomain } from "../common/entity/compute_domain";
 import type { HomeAssistant } from "../types";
 
 // Page with every breaking change and improvement since the running version.
@@ -57,6 +58,29 @@ export const fetchUpgradeCheckDigest = (hass: Pick<HomeAssistant, "callWS">) =>
     type: "homeassistant_upgrade_check/digest",
   });
 
+// The Core update entity, offered by the Supervisor's core device, so it is
+// known when the release notes cannot be read. A leftover registry entry has
+// no usable state, so it is skipped.
+export const findCoreUpdateEntityId = (
+  hass: Pick<HomeAssistant, "entities" | "devices" | "states">
+): string | undefined =>
+  Object.values(hass.entities).find(
+    (entry) =>
+      computeDomain(entry.entity_id) === "update" &&
+      ![undefined, "unavailable"].includes(
+        hass.states[entry.entity_id]?.state
+      ) &&
+      // Mock: the upgrade check's own core update, where there is no Supervisor.
+      (entry.platform === "homeassistant_upgrade_check" ||
+        (entry.platform === "hassio" &&
+          Boolean(
+            entry.device_id &&
+            hass.devices[entry.device_id]?.identifiers.some(
+              ([domain, id]) => domain === "hassio" && id === "core"
+            )
+          )))
+  )?.entity_id;
+
 export const upgradeCheckItems = (
   digest: UpgradeCheckDigest,
   key: UpgradeCheckCategoryKey
@@ -74,6 +98,22 @@ export interface UpgradeCheckBreakingRow {
   removed: boolean;
   items: UpgradeCheckItem[];
 }
+
+export interface UpgradeCheckBreakingCounts {
+  // Breaking changes, general ones included.
+  changes: number;
+  // Distinct integrations the changes cover.
+  integrations: number;
+  general: number;
+}
+
+export const upgradeCheckBreakingCounts = (
+  rows: UpgradeCheckBreakingRow[]
+): UpgradeCheckBreakingCounts => ({
+  changes: rows.reduce((count, row) => count + row.items.length, 0),
+  integrations: new Set(rows.flatMap((row) => row.domains)).size,
+  general: rows.filter((row) => !row.domains.length).length,
+});
 
 // Integrations you use that a release removes. Not a breaking change: they
 // stop working altogether, so they are listed on their own.

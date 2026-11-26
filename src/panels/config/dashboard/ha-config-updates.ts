@@ -33,6 +33,7 @@ import type { UpdateEntity } from "../../../data/update";
 import type { UpgradeCheckDigest } from "../../../data/upgrade_check";
 import {
   fetchUpgradeCheckDigest,
+  upgradeCheckBreakingCounts,
   upgradeCheckBreakingRows,
 } from "../../../data/upgrade_check";
 import type { LocalizeFunc } from "../../../common/translations/localize";
@@ -97,7 +98,7 @@ class HaConfigUpdates extends LitElement {
     }
   }
 
-  // The core row counts the breaking changes for the integrations you use.
+  // The core row counts the breaking changes for your setup.
   private async _fetchUpgradeCheck(): Promise<void> {
     // Any core update; the digest says which entity it is.
     const versions = (this.updateEntities ?? [])
@@ -107,20 +108,23 @@ class HaConfigUpdates extends LitElement {
       return;
     }
     this._upgradeCheckFor = versions;
+    let digest: UpgradeCheckDigest | undefined;
     try {
-      this._upgradeCheck = await fetchUpgradeCheckDigest(this._api);
+      digest = await fetchUpgradeCheckDigest(this._api);
     } catch (_err) {
       // The row shows without the count.
-      this._upgradeCheck = undefined;
+    }
+    // A request for versions offered since then answers instead.
+    if (versions === this._upgradeCheckFor) {
+      this._upgradeCheck = digest;
     }
   }
 
   private _breakingCount(entity: UpdateEntity): number {
     return this._upgradeCheck?.entity_id === entity.entity_id &&
       this._upgradeCheck.target === entity.attributes.latest_version
-      ? upgradeCheckBreakingRows(this._upgradeCheck).filter(
-          (row) => row.domains.length
-        ).length
+      ? upgradeCheckBreakingCounts(upgradeCheckBreakingRows(this._upgradeCheck))
+          .changes
       : 0;
   }
 

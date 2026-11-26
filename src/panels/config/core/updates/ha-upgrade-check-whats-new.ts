@@ -28,6 +28,7 @@ import type {
 } from "../../../../data/upgrade_check";
 import {
   UPGRADE_CHECK_PATH,
+  upgradeCheckBreakingCounts,
   upgradeCheckBreakingRows,
   upgradeCheckItemLink,
   upgradeCheckImprovementRows,
@@ -110,6 +111,7 @@ export class HaUpgradeCheckWhatsNew extends LitElement {
       return nothing;
     }
     const rows = upgradeCheckBreakingRows(digest);
+    const removed = this.full ? [] : upgradeCheckRemovedRows(digest);
     return html`<div class="card">
       <div>
         <div class="title">
@@ -129,14 +131,31 @@ export class HaUpgradeCheckWhatsNew extends LitElement {
       ${
         this.full
           ? this._renderSections(digest, rows)
-          : rows.length
-            ? html`<div class="section">
-                <div class="section-title">
-                  ${this._localize(`${PREFIX}.breaking_title`)}
-                </div>
-                ${this._renderBreaking(rows)}
-              </div>`
-            : html`<p>${this._localize(`${PREFIX}.no_breaking`)}</p>`
+          : html`${
+              rows.length
+                ? html`<div class="section">
+                    <div class="section-title">
+                      ${this._localize(`${PREFIX}.breaking_title`)}
+                    </div>
+                    ${this._renderBreaking(rows)}
+                  </div>`
+                : nothing
+            }
+            ${
+              removed.length
+                ? html`<div class="section">
+                    <div class="section-title">
+                      ${this._localize(`${PREFIX}.removed_title`)}
+                    </div>
+                    ${this._renderRows(removed)}
+                  </div>`
+                : nothing
+            }
+            ${
+              rows.length || removed.length
+                ? nothing
+                : html`<p>${this._localize(`${PREFIX}.no_breaking`)}</p>`
+            }`
       }
       ${this._renderAnnouncements(digest.releases)}
       ${
@@ -202,7 +221,7 @@ export class HaUpgradeCheckWhatsNew extends LitElement {
           }
           .header=${section.title}
           .secondary=${this._localize(`${PREFIX}.count_items`, {
-            count: section.rows.length,
+            count: section.rows.reduce((n, row) => n + row.items.length, 0),
           })}
         >
           <ha-upgrade-check-icon
@@ -222,28 +241,15 @@ export class HaUpgradeCheckWhatsNew extends LitElement {
   }
 
   private _renderBreaking(rows: UpgradeCheckBreakingRow[]) {
-    const integrations = rows.filter((row) => row.domains.length).length;
-    const general = rows.length - integrations;
-    const parts = [
-      integrations
-        ? this._localize(`${PREFIX}.count_integrations`, {
-            count: integrations,
-          })
-        : undefined,
-      general
-        ? this._localize(`${PREFIX}.count_general`, { count: general })
-        : undefined,
-    ].filter(Boolean);
+    const { integrations, general } = upgradeCheckBreakingCounts(rows);
+    const key =
+      integrations && general
+        ? "breaking_summary_both"
+        : integrations
+          ? "breaking_summary_integrations"
+          : "breaking_summary_general";
     return html`<p>
-        ${this._localize(`${PREFIX}.count`, {
-          changes:
-            parts.length === 2
-              ? this._localize(`${PREFIX}.count_and`, {
-                  first: parts[0]!,
-                  second: parts[1]!,
-                })
-              : parts[0]!,
-        })}
+        ${this._localize(`${PREFIX}.${key}`, { integrations, general })}
       </p>
       ${this.full ? this._renderBreakingRows(rows) : this._renderBreakingChips(rows)}`;
   }
