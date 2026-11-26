@@ -10,6 +10,7 @@ import {
   browseUrl,
   filterRepositories,
   filtersOfTab,
+  paneFilterOfTab,
   marketplaceUpdateEntityIds,
   skippedUpdateRepositories,
   statusesOfTab,
@@ -292,6 +293,33 @@ describe("browseLinkFromUrl", () => {
 });
 
 describe("filtersOfTab", () => {
+  it("leaves out an integration category nothing on the tab is in", () => {
+    const filters = { integration_category: ["energy", "energy.solar"] };
+
+    expect(
+      filtersOfTab(filters, "installed", ["energy"]).integration_category
+    ).toEqual(["energy"]);
+    expect(filtersOfTab(filters, "installed", []).integration_category).toEqual(
+      []
+    );
+    // Without the ones the tab lists, as before the repositories load
+    expect(filtersOfTab(filters, "installed").integration_category).toEqual(
+      filters.integration_category
+    );
+  });
+
+  it("keeps an integration category picked on browse when the installed pane changes", () => {
+    const picked = ["energy.solar", "climate"];
+
+    expect(
+      paneFilterOfTab(picked, ["climate", "lighting"], ["lighting"])
+    ).toEqual(["energy.solar", "lighting"]);
+    // The pane's clear button sends no value
+    expect(paneFilterOfTab(picked, ["climate"], undefined)).toEqual([
+      "energy.solar",
+    ]);
+  });
+
   it("only offers statuses something installed can have on the installed tab", () => {
     expect(statusesOfTab("installed")).toEqual([
       "pending-restart",

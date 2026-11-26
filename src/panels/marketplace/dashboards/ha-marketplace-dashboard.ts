@@ -100,6 +100,7 @@ import {
   filterRepositories,
   filtersOfTab,
   marketplaceUpdateEntityIds,
+  paneFilterOfTab,
   skippedUpdateRepositories,
   SOURCE_FILTER,
   SOURCE_ORDER,
@@ -345,15 +346,7 @@ export class HaMarketplaceDashboard extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const marketplaceRepositories = this._applySkippedUpdates(
-      this.marketplace.repositories,
-      this._skippedUpdateRepositories(
-        this._marketplaceUpdateEntityIds,
-        this._entities,
-        this._devices,
-        this._states ?? {}
-      )
-    );
+    const marketplaceRepositories = this._marketplaceRepositories();
     const tabs = this._tabs(
       this._i18n.localize,
       marketplaceRepositories.filter((repository) => repository.pending_upgrade)
@@ -374,17 +367,20 @@ export class HaMarketplaceDashboard extends LitElement {
       </hass-tabs-subpage>`;
     }
 
-    const filters = this._filtersOfTab(this._filters, this.tab);
+    const tabRepositories = this._repositoriesOfTab(
+      marketplaceRepositories,
+      this.tab
+    );
+    const integrationCategoryStates = this._tabIntegrationCategoryStates();
+    const filters = this._filtersOfTab(
+      this._filters,
+      this.tab,
+      this._stateValues(integrationCategoryStates)
+    );
     const repositories = this._filterRepositories(
-      this._repositoriesOfTab(marketplaceRepositories, this.tab),
+      tabRepositories,
       this._i18n.localize,
       filters
-    );
-
-    const integrationCategoryStates = this._integrationCategoryStates(
-      this.marketplace.repositories,
-      this._i18n.localize,
-      this._integrationCategoryIcons
     );
 
     return html`<hass-tabs-subpage-data-table
@@ -506,7 +502,7 @@ export class HaMarketplaceDashboard extends LitElement {
                 .label=${this._i18n.localize(
                   "ui.panel.marketplace.filters.integration_category"
                 )}
-                .value=${this._filters[INTEGRATION_CATEGORY_FILTER]}
+                .value=${filters[INTEGRATION_CATEGORY_FILTER]}
                 .states=${integrationCategoryStates}
                 .narrow=${this.narrow}
                 @data-table-filter-changed=${this._integrationCategoryFilterChanged}
@@ -591,6 +587,18 @@ export class HaMarketplaceDashboard extends LitElement {
 
   private _tabs = memoize(marketplaceTabs);
 
+  private _marketplaceRepositories(): MarketplaceRepository[] {
+    return this._applySkippedUpdates(
+      this.marketplace.repositories,
+      this._skippedUpdateRepositories(
+        this._marketplaceUpdateEntityIds,
+        this._entities,
+        this._devices,
+        this._states ?? {}
+      )
+    );
+  }
+
   private _repositoriesOfTab = memoize(repositoriesOfTab);
 
   private _skippedUpdateRepositories = memoize(skippedUpdateRepositories);
@@ -606,6 +614,10 @@ export class HaMarketplaceDashboard extends LitElement {
   private _filterRepositories = memoize(filterRepositories);
 
   private _filtersOfTab = memoize(filtersOfTab);
+
+  private _stateValues = memoize((options: { value: string }[]) =>
+    options.map((option) => option.value)
+  );
 
   private _columns = memoize(
     (
@@ -1123,6 +1135,14 @@ export class HaMarketplaceDashboard extends LitElement {
     }
   );
 
+  private _tabIntegrationCategoryStates() {
+    return this._integrationCategoryStates(
+      this._repositoriesOfTab(this._marketplaceRepositories(), this.tab),
+      this._i18n.localize,
+      this._integrationCategoryIcons
+    );
+  }
+
   private _sourceStates = memoize((localize: LocalizeFunc) =>
     SOURCE_ORDER.map((source) => ({
       value: source,
@@ -1219,15 +1239,24 @@ export class HaMarketplaceDashboard extends LitElement {
   private _integrationCategoryFilterChanged(
     ev: CustomEvent<{ value: string[] }>
   ) {
+    const listed = this._stateValues(this._tabIntegrationCategoryStates());
     const filters = {
       ...this._filters,
-      [INTEGRATION_CATEGORY_FILTER]: ev.detail.value,
+      [INTEGRATION_CATEGORY_FILTER]: paneFilterOfTab(
+        this._filters[INTEGRATION_CATEGORY_FILTER],
+        listed,
+        ev.detail.value
+      ),
     };
 
     if (this._isUserChange(filters)) {
       this._storageFilters = {
         ...this._storageFilters,
-        [INTEGRATION_CATEGORY_FILTER]: ev.detail.value,
+        [INTEGRATION_CATEGORY_FILTER]: paneFilterOfTab(
+          this._storageFilters[INTEGRATION_CATEGORY_FILTER],
+          listed,
+          ev.detail.value
+        ),
       };
     }
 
