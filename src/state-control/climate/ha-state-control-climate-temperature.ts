@@ -577,7 +577,7 @@ export class HaStateControlClimateTemperature extends LitElement {
             .preventInteractionOnScroll=${this.preventInteractionOnScroll}
             .inactive=${!active}
             .mode=${sliderMode}
-            .value=${this._targetTemperature.value}
+            .value=${this._displayedTemperature.value}
             .min=${this._min}
             .max=${this._max}
             .step=${this._step}
@@ -613,8 +613,8 @@ export class HaStateControlClimateTemperature extends LitElement {
             .preventInteractionOnScroll=${this.preventInteractionOnScroll}
             .inactive=${!active}
             dual
-            .low=${this._targetTemperature.low}
-            .high=${this._targetTemperature.high}
+            .low=${this._displayedTemperature.low}
+            .high=${this._displayedTemperature.high}
             .min=${this._min}
             .max=${this._max}
             .step=${this._step}
