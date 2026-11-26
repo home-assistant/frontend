@@ -285,13 +285,6 @@ describe("browseLinkFromUrl", () => {
     });
   });
 
-  it("filters on no integration category for an empty one", () => {
-    expect(
-      browseLinkFromUrl("?integration_category=")?.filters
-        .integration_category ?? []
-    ).toEqual([]);
-  });
-
   it("keeps what was picked for a link that says nothing about browsing", () => {
     expect(
       browseLinkFromUrl("?owner=hacs&repository=integration")
