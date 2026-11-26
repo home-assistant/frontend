@@ -17,6 +17,7 @@ import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/chips/ha-assist-chip";
 import "../../../../components/chips/ha-chip-set";
 import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-label";
 import "../../../../components/ha-markdown";
 import "../../../../components/ha-svg-icon";
 import { domainToName } from "../../../../data/integration";
@@ -370,17 +371,12 @@ export class HaUpgradeCheckWhatsNew extends LitElement {
 
   private _rowSummary(row: UpgradeCheckBreakingRow): string {
     const first = row.items[0];
-    const summary =
+    return (
       first.summary ??
       (row.removed
         ? this._localize(`${PREFIX}.removed_in`, { version: first.version })
-        : first.title);
-    return row.items.length > 1
-      ? this._localize(`${PREFIX}.summary_more`, {
-          summary,
-          count: row.items.length - 1,
-        })
-      : summary;
+        : first.title)
+    );
   }
 
   private _renderFullRow(row: UpgradeCheckBreakingRow) {
@@ -392,6 +388,15 @@ export class HaUpgradeCheckWhatsNew extends LitElement {
       .secondary=${this._rowSummary(row)}
     >
       ${this._rowIcon(row, "leading-icon")}
+      ${
+        row.items.length > 1
+          ? html`<ha-label dense slot="event"
+              >${this._localize(`${PREFIX}.count_changes`, {
+                count: row.items.length,
+              })}</ha-label
+            >`
+          : nothing
+      }
       ${row.items.map((item) => this._renderItem(row.category, item))}
     </ha-expansion-panel>`;
   }
