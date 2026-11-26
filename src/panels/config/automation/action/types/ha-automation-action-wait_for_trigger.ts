@@ -15,12 +15,17 @@ import "../../trigger/ha-automation-trigger";
 import type { TimeoutType } from "../../types";
 import type { ActionElement } from "../ha-automation-action-row";
 import { handleChangeEvent } from "../ha-automation-action-row";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 
 @customElement("ha-automation-action-wait_for_trigger")
 export class HaWaitForTriggerAction
   extends LitElement
   implements ActionElement
 {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["timeout", "continue_on_timeout"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public action!: WaitForTriggerAction;
@@ -77,6 +82,10 @@ export class HaWaitForTriggerAction
         this.inSidebar || (!this.inSidebar && !this.indent)
           ? html`
               <ha-form
+                .error=${this._fieldErrors.fields}
+                .computeError=${this._fieldErrors.formError(
+                  this._computeLabelCallback
+                )}
                 .hass=${this.hass}
                 .data=${this.action}
                 .schema=${this._schema(timeoutType, timeout !== undefined)}

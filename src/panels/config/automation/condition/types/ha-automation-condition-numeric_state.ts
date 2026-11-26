@@ -19,6 +19,7 @@ import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { NumericStateCondition } from "../../../../../data/automation";
 import { NON_NUMERIC_ATTRIBUTES } from "../../../../../data/entity/entity_attributes";
 import type { HomeAssistant } from "../../../../../types";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 
 const numericStateConditionStruct = object({
   alias: optional(string()),
@@ -34,6 +35,16 @@ const numericStateConditionStruct = object({
 
 @customElement("ha-automation-condition-numeric_state")
 export default class HaNumericStateCondition extends LitElement {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: [
+      "entity_id",
+      "attribute",
+      "above",
+      "below",
+      "value_template",
+    ],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public condition!: NumericStateCondition;
@@ -227,6 +238,8 @@ export default class HaNumericStateCondition extends LitElement {
 
     return html`
       <ha-form
+        .error=${this._fieldErrors.fields}
+        .computeError=${this._fieldErrors.formError(this._computeLabelCallback)}
         .hass=${this.hass}
         .data=${data}
         .schema=${schema}

@@ -105,6 +105,7 @@ const LAZY_LOAD_TYPES = {
   "recovery-mode": () => import("../cards/hui-recovery-mode-card"),
   "toggle-group": () => import("../cards/hui-toggle-group-card"),
   "todo-list": () => import("../cards/hui-todo-list-card"),
+  "timer-list": () => import("../cards/hui-timer-list-card"),
   "shopping-list": () => import("../cards/hui-shopping-list-card"),
   starting: () => import("../cards/hui-starting-card"),
   "statistics-graph": () => import("../cards/hui-statistics-graph-card"),

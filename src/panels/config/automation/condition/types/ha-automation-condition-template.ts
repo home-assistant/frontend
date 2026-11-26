@@ -5,6 +5,7 @@ import type { HomeAssistant } from "../../../../../types";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-form/ha-form";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 
 const SCHEMA = [
   { name: "value_template", required: true, selector: { template: {} } },
@@ -12,6 +13,10 @@ const SCHEMA = [
 
 @customElement("ha-automation-condition-template")
 export class HaTemplateCondition extends LitElement {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["value_template"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public condition!: TemplateCondition;
@@ -25,6 +30,8 @@ export class HaTemplateCondition extends LitElement {
   protected render() {
     return html`
       <ha-form
+        .error=${this._fieldErrors.fields}
+        .computeError=${this._fieldErrors.formError(this._computeLabelCallback)}
         .hass=${this.hass}
         .data=${this.condition}
         .schema=${SCHEMA}

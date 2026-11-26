@@ -514,6 +514,7 @@ export class HaConfigDeviceDashboard extends LitElement {
             ? computeDeviceNameDisplay(familyParentDevice, this.hass.localize)
             : undefined,
           firmware_version: device.sw_version || undefined,
+          serial_number: device.serial_number || undefined,
           battery_entity: [
             this._batteryEntity(device.id, deviceEntityLookup),
             this._batteryChargingEntity(device.id, deviceEntityLookup),
@@ -656,6 +657,13 @@ export class HaConfigDeviceDashboard extends LitElement {
         defaultHidden: true,
         minWidth: "120px",
       },
+      serial_number: {
+        title: localize("ui.panel.config.devices.data_table.serial_number"),
+        sortable: true,
+        filterable: true,
+        defaultHidden: true,
+        minWidth: "120px",
+      },
       battery_entity: {
         title: localize("ui.panel.config.devices.data_table.battery"),
         showNarrow: true,
@@ -773,12 +781,10 @@ export class HaConfigDeviceDashboard extends LitElement {
           .value=${`label_${label.label_id}`}
           .action=${selected ? "remove" : "add"}
           keep-open
+          type="checkbox"
+          .checked=${selected}
+          .indeterminate=${partial}
         >
-          <ha-checkbox
-            slot="icon"
-            .checked=${selected}
-            .indeterminate=${partial}
-          ></ha-checkbox>
           <ha-label
             .color=${label.color}
             .description=${label.description || undefined}

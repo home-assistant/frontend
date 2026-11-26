@@ -5,7 +5,7 @@ import { consume } from "../common/decorators/consume";
 import { computeDomain } from "../common/entity/compute_domain";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { stringCompare } from "../common/string/compare";
-import { internationalizationContext, statesContext } from "../data/context";
+import { statesContext } from "../data/context";
 import { computeDeviceClassName } from "../data/entity/device_class";
 import { HaFilterStates } from "./ha-filter-states";
 
@@ -14,10 +14,6 @@ export class HaFilterDeviceClasses extends HaFilterStates {
   @state()
   @consume({ context: statesContext, subscribe: true })
   private _entityStates?: ContextType<typeof statesContext>;
-
-  @state()
-  @consume({ context: internationalizationContext, subscribe: true })
-  private _i18n?: ContextType<typeof internationalizationContext>;
 
   private _deviceClasses = memoizeOne(
     (
@@ -47,19 +43,14 @@ export class HaFilterDeviceClasses extends HaFilterStates {
   );
 
   protected firstUpdated() {
-    this._i18n?.loadBackendTranslation("entity_component");
+    this._i18n.loadBackendTranslation("entity_component");
   }
 
   protected willUpdate() {
-    if (
-      this._entityStates &&
-      this._localize &&
-      this._i18n &&
-      (this.expanded || !this.states)
-    ) {
+    if (this._entityStates && this._i18n && (this.expanded || !this.states)) {
       this.states = this._deviceClasses(
         this._entityStates,
-        this._localize,
+        this._i18n.localize,
         this._i18n.locale.language
       );
     }

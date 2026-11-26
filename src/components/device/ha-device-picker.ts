@@ -107,6 +107,10 @@ export class HaDevicePicker extends LitElement {
 
   @property() public helper?: string;
 
+  @property({ type: Boolean }) public invalid = false;
+
+  @property({ attribute: "error-message" }) public errorMessage?: string;
+
   @property() public placeholder?: string;
 
   @property({ type: String, attribute: "search-label" })
@@ -521,6 +525,8 @@ export class HaDevicePicker extends LitElement {
         .autofocus=${this.autofocus}
         .disabled=${this.disabled}
         .helper=${this.helper}
+        .invalid=${this.invalid}
+        .errorMessage=${this.errorMessage}
         .label=${this.label}
         .searchLabel=${this.searchLabel}
         .notFoundLabel=${this._notFoundLabel}

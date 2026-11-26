@@ -10,6 +10,7 @@ import "../../../../../components/ha-icon-button";
 import type { PersistentNotificationTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 
 const DEFAULT_UPDATE_TYPES = ["added", "removed"];
 const DEFAULT_NOTIFICATION_ID = "";
@@ -19,6 +20,10 @@ export class HaPersistentNotificationTrigger
   extends LitElement
   implements TriggerElement
 {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["notification_id", "update_type"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false })
@@ -80,6 +85,8 @@ export class HaPersistentNotificationTrigger
     const schema = this._schema(this.hass.localize);
     return html`
       <ha-form
+        .error=${this._fieldErrors.fields}
+        .computeError=${this._fieldErrors.formError(this._computeLabelCallback)}
         .schema=${schema}
         .data=${this.trigger}
         .hass=${this.hass}

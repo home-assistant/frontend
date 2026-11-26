@@ -692,6 +692,13 @@ export interface TodoListCardConfig extends LovelaceCardConfig {
   };
 }
 
+export interface TimerListCardConfig extends LovelaceCardConfig {
+  title?: string;
+  theme?: string;
+  entity?: string;
+  hide_create?: boolean;
+}
+
 export interface StackCardConfig extends LovelaceCardConfig {
   cards: LovelaceCardConfig[];
   title?: string;

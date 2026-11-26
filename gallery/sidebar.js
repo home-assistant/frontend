@@ -144,6 +144,7 @@ export default [
           "iframe-card",
           "markdown-card",
           "todo-list-card",
+          "timer-list-card",
         ],
       },
     ],
@@ -171,7 +172,7 @@ export default [
       },
       {
         header: "Inputs and values",
-        pages: ["input-number", "input-text", "number", "timer"],
+        pages: ["input-number", "input-text", "number", "timer", "timer-list"],
       },
       {
         header: "Time and schedules",

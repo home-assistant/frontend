@@ -40,4 +40,24 @@ describe("dropInvalidConditions", () => {
     ]);
     expect(nested.conditions).toEqual([screen, undefined, 5]);
   });
+
+  it("wraps a single condition mapping in an array", () => {
+    const condition = state as unknown as VisibilityCondition;
+    expect(dropInvalidConditions(condition)).toEqual([state]);
+  });
+
+  it("drops invalid children of a single condition mapping", () => {
+    const condition = {
+      condition: "or",
+      conditions: [screen, null],
+    } as unknown as VisibilityCondition;
+    expect(dropInvalidConditions(condition)).toEqual([
+      { condition: "or", conditions: [screen] },
+    ]);
+  });
+
+  it("drops a single value that is not a condition object", () => {
+    const condition = "screen" as unknown as VisibilityCondition;
+    expect(dropInvalidConditions(condition)).toEqual([]);
+  });
 });

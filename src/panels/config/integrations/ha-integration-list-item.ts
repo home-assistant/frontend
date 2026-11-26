@@ -1,25 +1,30 @@
-import {
-  mdiDevices,
-  mdiFileCodeOutline,
-  mdiPackageVariant,
-  mdiWeb,
-} from "@mdi/js";
+import { mdiPackageVariant, mdiPlus, mdiWeb } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-domain-icon";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-label";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import { HaListItemButton } from "../../../components/item/ha-list-item-button";
 import { domainToName } from "../../../data/integration";
-import type { IntegrationListItem } from "./dialog-add-integration";
+import type { IntegrationListItem } from "./add-integration-list";
 
 @customElement("ha-integration-list-item")
 export class HaIntegrationListItem extends HaListItemButton {
   @property({ attribute: false }) public integration!: IntegrationListItem;
+
+  // Padding, not margin, so the virtualized list measures it
+  @property({ type: Boolean, reflect: true }) public card = false;
+
+  @property({ type: Boolean, attribute: "opens-flow" }) public opensFlow =
+    false;
+
+  @property({ type: Boolean }) public discovered = false;
 
   @state()
   @consumeLocalize()
@@ -30,11 +35,8 @@ export class HaIntegrationListItem extends HaListItemButton {
     return html`
       <div part="start" class="start">
         ${
-          integration.is_discovered
-            ? html`<ha-svg-icon
-                class="discovered-icon"
-                .path=${mdiDevices}
-              ></ha-svg-icon>`
+          integration.icon
+            ? html`<ha-icon .icon=${integration.icon}></ha-icon>`
             : html`<ha-domain-icon
                 brand-fallback
                 .domain=${integration.domain}
@@ -58,6 +60,13 @@ export class HaIntegrationListItem extends HaListItemButton {
               : nothing
           }
         </div>
+        ${
+          integration.description
+            ? html`<div part="supporting-text" class="supporting">
+                ${integration.description}
+              </div>`
+            : nothing
+        }
       </div>
     `;
   }
@@ -65,14 +74,26 @@ export class HaIntegrationListItem extends HaListItemButton {
   protected override _renderEnd(): TemplateResult {
     const integration = this.integration;
     const yamlOnly =
+      !integration.result &&
       !integration.config_flow &&
       !integration.integrations &&
       !integration.iot_standards;
     return html`
       <div part="end" class="end">
         ${
+          this.discovered
+            ? html`<ha-label dense>
+                ${this._localize("ui.panel.config.integrations.discovered")}
+              </ha-label>`
+            : nothing
+        }
+        ${
           integration.cloud
-            ? html`<ha-svg-icon id="icon-cloud" .path=${mdiWeb}></ha-svg-icon>
+            ? html`<ha-svg-icon
+                  id="icon-cloud"
+                  class="status"
+                  .path=${mdiWeb}
+                ></ha-svg-icon>
                 <ha-tooltip for="icon-cloud" placement="left">
                   ${this._localize(
                     "ui.panel.config.integrations.config_entry.depends_on_cloud"
@@ -84,9 +105,9 @@ export class HaIntegrationListItem extends HaListItemButton {
           !integration.is_built_in
             ? html`<ha-svg-icon
                   id="icon-custom"
-                  class=${
+                  class=${`status ${
                     integration.overwrites_built_in ? "overwrites" : "custom"
-                  }
+                  }`}
                   .path=${mdiPackageVariant}
                 ></ha-svg-icon>
                 <ha-tooltip for="icon-custom" placement="left">
@@ -100,17 +121,25 @@ export class HaIntegrationListItem extends HaListItemButton {
         }
         ${
           yamlOnly
-            ? html`<ha-svg-icon
-                  id="icon-yaml"
-                  .path=${mdiFileCodeOutline}
-                  class="open-in-new"
-                ></ha-svg-icon>
-                <ha-tooltip for="icon-yaml" placement="left">
+            ? html`<ha-label id="label-yaml" class="yaml" dense>
+                  ${this._localize(
+                    "ui.panel.config.integrations.config_entry.yaml_label"
+                  )}
+                </ha-label>
+                <ha-tooltip for="label-yaml" placement="left">
                   ${this._localize(
                     "ui.panel.config.integrations.config_entry.yaml_only"
                   )}
                 </ha-tooltip>`
-            : html`<ha-icon-next></ha-icon-next>`
+            : nothing
+        }
+        ${
+          this.opensFlow && !yamlOnly
+            ? html`<ha-svg-icon
+                class="add action"
+                .path=${mdiPlus}
+              ></ha-svg-icon>`
+            : html`<ha-icon-next class="action"></ha-icon-next>`
         }
       </div>
     `;
@@ -119,31 +148,61 @@ export class HaIntegrationListItem extends HaListItemButton {
   static styles: CSSResultGroup = [
     HaListItemButton.styles,
     css`
+      :host([card]) {
+        padding: 0 var(--ha-space-4) var(--ha-space-2);
+        box-sizing: border-box;
+        --ha-list-item-focus-radius: var(--ha-border-radius-lg);
+      }
+      :host([card]) .base {
+        border: 1px solid var(--ha-color-border-neutral-quiet);
+        border-radius: var(--ha-border-radius-lg);
+        overflow: hidden;
+      }
       .start {
         --mdc-icon-size: 32px;
         height: 32px;
+      }
+      /* The inline image's line box pushes it off center */
+      .start ha-domain-icon {
+        display: flex;
       }
       .end {
         color: var(--ha-color-text-secondary);
         display: flex;
         align-items: center;
-        gap: var(--ha-space-2);
+        gap: var(--ha-space-1);
       }
       /* Raise the icons above the row's hit area so their tooltips open */
       .end ha-svg-icon {
         position: relative;
         z-index: 1;
       }
-      /* The chevron is decorative, keep it below the row's hit area */
+      .end .status {
+        --mdc-icon-size: 20px;
+      }
+      .end .action {
+        margin-inline-start: var(--ha-space-2);
+      }
+      /* Below the row's hit area */
       .end ha-icon-next {
         z-index: -1;
+        color: var(--ha-color-on-neutral-quiet);
       }
-      .discovered-icon {
+      .end ha-label {
+        border: none;
+        --ha-label-background-color: var(
+          --ha-color-fill-primary-normal-resting
+        );
+        --ha-label-text-color: var(--ha-color-on-primary-normal);
+      }
+      .end .add {
         color: var(--primary-color);
       }
-      .open-in-new {
-        --mdc-icon-size: 22px;
-        padding: 1px;
+      .end ha-label.yaml {
+        --ha-label-background-color: var(
+          --ha-color-fill-neutral-normal-resting
+        );
+        --ha-label-text-color: var(--ha-color-on-neutral-normal);
       }
       .end .custom {
         color: var(--warning-color);

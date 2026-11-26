@@ -97,6 +97,7 @@ import "./types/ha-automation-condition-zone";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 import { scrollRowIntoView } from "../scroll-row-into-view";
 import { AutomationPathController } from "../automation-path";
+import { renderRowErrorIcon } from "../automation-error-templates";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -176,6 +177,10 @@ export default class HaAutomationConditionRow extends LitElement {
 
   get selected() {
     return this._selected;
+  }
+
+  get collapsed() {
+    return this._collapsed;
   }
 
   private _renderOverflowLabel(label: string, shortcut?: TemplateResult) {
@@ -262,6 +267,12 @@ export default class HaAutomationConditionRow extends LitElement {
         )}
       </ha-automation-row-event-chip>
 
+      ${renderRowErrorIcon(
+        this.hass.localize,
+        this.pathController.errors,
+        this.pathController.path,
+        this.hass.localize("ui.panel.config.automation.editor.errors.label")
+      )}
       <slot name="icons" slot="icons"></slot>
 
       <ha-dropdown
@@ -529,6 +540,7 @@ export default class HaAutomationConditionRow extends LitElement {
                   this.condition.condition
                 )}
                 .sortSelected=${this.sortSelected}
+                .error=${this.pathController.errors.length > 0}
                 .dim=${this._testing}
                 @click=${this._toggleSidebar}
                 @toggle-collapsed=${this._toggleCollapse}
@@ -980,6 +992,7 @@ export default class HaAutomationConditionRow extends LitElement {
     const sidebarCondition = condition || this.condition;
     this._sidebarCondition = sidebarCondition;
     fireEvent(this, "open-sidebar", {
+      type: "condition",
       save: (value) => {
         this._sidebarCondition = value;
         fireEvent(this, "value-changed", { value });

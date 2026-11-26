@@ -39,7 +39,11 @@ import type { HomeAssistant } from "../../../types";
 const UNLIMITED_LOGIN_ATTEMPTS = -1;
 
 const SCHEMA = memoizeOne(
-  (localize: LocalizeFunc, unlimitedLoginAttempts: boolean) =>
+  (
+    localize: LocalizeFunc,
+    unlimitedLoginAttempts: boolean,
+    hasPeerCertificate: boolean
+  ) =>
     [
       {
         name: "server_port",
@@ -72,6 +76,11 @@ const SCHEMA = memoizeOne(
           {
             name: "ssl_peer_certificate",
             selector: { text: {} },
+          },
+          {
+            name: "ssl_peer_certificate_remote",
+            disabled: !hasPeerCertificate,
+            selector: { boolean: {} },
           },
           {
             name: "ssl_profile",
@@ -239,7 +248,8 @@ class HaConfigHttpForm extends LitElement {
     const formData = this._config ? this._formData(this._config) : undefined;
     const schema = SCHEMA(
       this.hass.localize,
-      !!formData?.login_attempts_unlimited
+      !!formData?.login_attempts_unlimited,
+      !!this._config?.ssl_peer_certificate
     );
 
     const portChanged =
@@ -460,6 +470,9 @@ class HaConfigHttpForm extends LitElement {
       // required field asks the user for one.
       config.login_attempts_threshold = this._lastLoginAttemptsThreshold;
     }
+    if (!config.ssl_peer_certificate && config.ssl_peer_certificate_remote) {
+      config.ssl_peer_certificate_remote = false;
+    }
     this._config = config;
     this._error = undefined;
     this._fieldErrors = {};
@@ -616,11 +629,15 @@ class HaConfigHttpForm extends LitElement {
     const message =
       rawMessage.replace(/\s*@\s*data(\['[^']*'\]|\[\d+\])+/g, "").trim() ||
       rawMessage;
-    const field = [...rawMessage.matchAll(/\['([^']+)'\]/g)]
-      .map((match) => match[1])
-      .reverse()
-      .find((name) => HTTP_CONFIG_FIELDS.includes(name as keyof HttpConfig)) as
-      keyof HttpConfig | undefined;
+    const field =
+      err?.code === "invalid_ssl_peer_certificate"
+        ? "ssl_peer_certificate"
+        : ([...rawMessage.matchAll(/\['([^']+)'\]/g)]
+            .map((match) => match[1])
+            .reverse()
+            .find((name) =>
+              HTTP_CONFIG_FIELDS.includes(name as keyof HttpConfig)
+            ) as keyof HttpConfig | undefined);
 
     if (field) {
       // Show a card-level alert too — the field may sit in a collapsed section.

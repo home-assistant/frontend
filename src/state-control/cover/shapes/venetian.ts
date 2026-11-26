@@ -11,9 +11,9 @@ const CORDS = [0.22, 0.78];
 
 export const venetianShape: CoverShape = {
   ...rollingGeometry,
-  render: ({ position, tilt }) => {
+  render: ({ position, tiltOpenness }) => {
     const { left, top, width, height } = FRAME;
-    const thickness = 9 - (7 * clampPercent(tilt)) / 100;
+    const thickness = 9 - (7 * clampPercent(tiltOpenness)) / 100;
     const count = Math.ceil(height / PITCH) + 1;
     const first = top + thickness / 2;
     const pitch = (top + height - thickness / 2 - first) / (count - 1);

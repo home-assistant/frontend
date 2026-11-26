@@ -2,6 +2,7 @@ import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiAlertCircle,
   mdiCancel,
+  mdiCheckCircle,
   mdiDelete,
   mdiDotsVertical,
   mdiEye,
@@ -74,6 +75,7 @@ import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
+import type { FilterStateOption } from "../../../components/ha-filter-states";
 import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
@@ -317,38 +319,48 @@ export class HaConfigEntities extends LitElement {
     );
   }
 
-  private _states = memoize((localize: LocalizeFunc) => [
+  // The icons of the options match the ones of the status column and of the
+  // actions for the selected entities
+  private _states = memoize((localize: LocalizeFunc): FilterStateOption[] => [
     {
       value: "available",
       label: localize("ui.panel.config.entities.picker.status.available"),
+      iconPath: mdiCheckCircle,
     },
     {
       value: "unavailable",
       label: localize("ui.panel.config.entities.picker.status.unavailable"),
+      iconPath: mdiAlertCircle,
     },
     {
       value: "enabled",
       label: localize("ui.panel.config.entities.picker.status.enabled"),
+      iconPath: mdiToggleSwitch,
     },
     {
       value: "disabled",
       label: localize("ui.panel.config.entities.picker.status.disabled"),
+      iconPath: mdiToggleSwitchOffOutline,
     },
     {
       value: "visible",
       label: localize("ui.panel.config.entities.picker.status.visible"),
+      iconPath: mdiEye,
     },
     {
       value: "hidden",
       label: localize("ui.panel.config.entities.picker.status.hidden"),
+      iconPath: mdiEyeOff,
     },
     {
       value: "readonly",
       label: localize("ui.panel.config.entities.picker.status.unmanageable"),
+      iconPath: mdiPencilOff,
     },
     {
       value: "restored",
       label: localize("ui.panel.config.entities.picker.status.not_provided"),
+      iconPath: mdiRestoreAlert,
     },
   ]);
 
@@ -714,11 +726,14 @@ export class HaConfigEntities extends LitElement {
         const hidden = !!entry.hidden_by;
         const disabled = !!entry.disabled_by;
         const readonly = entry.readonly;
-        const available = entity?.state && entity.state !== UNAVAILABLE;
+        // Entities without a state (disabled ones) count as unavailable too,
+        // so the Available and Unavailable filters are exact opposites. An
+        // empty state, like that of a cleared text helper, is a valid one.
+        const available = !!entity && entity.state !== UNAVAILABLE;
 
         if (!(
           (showAvailable && available) ||
-          (showUnavailable && unavailable) ||
+          (showUnavailable && !available) ||
           (showRestored && restored) ||
           (showVisible && !hidden) ||
           (showHidden && hidden) ||
@@ -784,9 +799,9 @@ export class HaConfigEntities extends LitElement {
                         "ui.panel.config.entities.picker.status.available"
                       ),
           label_entries: labelsEntries,
-          available: unavailable
-            ? localize("ui.panel.config.entities.picker.status.unavailable")
-            : localize("ui.panel.config.entities.picker.status.available"),
+          available: available
+            ? localize("ui.panel.config.entities.picker.status.available")
+            : localize("ui.panel.config.entities.picker.status.unavailable"),
           enabled: disabled
             ? localize("ui.panel.config.entities.picker.status.disabled")
             : localize("ui.panel.config.entities.picker.status.enabled"),
@@ -814,12 +829,10 @@ export class HaConfigEntities extends LitElement {
           .slot=${slot}
           .value=${`label_${label.label_id}`}
           .action=${selected ? "remove" : "add"}
+          type="checkbox"
+          .checked=${selected}
+          .indeterminate=${partial}
         >
-          <ha-checkbox
-            slot="icon"
-            .checked=${selected}
-            .indeterminate=${partial}
-          ></ha-checkbox>
           <ha-label
             .color=${label.color}
             .description=${label.description}

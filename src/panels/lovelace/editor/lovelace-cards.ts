@@ -138,6 +138,9 @@ export const coreCards: Card[] = [
     type: "todo-list",
   },
   {
+    type: "timer-list",
+  },
+  {
     type: "heading",
     showElement: true,
   },

@@ -1040,6 +1040,30 @@ exports[`generatePowerSourcesGraphData > appends current state when showing toda
       "type": "line",
       "z": 5,
     },
+    {
+      "animation": false,
+      "data": [
+        [
+          1704067200000,
+          0,
+        ],
+        [
+          1704153600000,
+          0,
+        ],
+      ],
+      "id": "zero-line",
+      "lineStyle": {
+        "color": "#727272",
+        "width": 1.5,
+      },
+      "silent": true,
+      "tooltip": {
+        "show": false,
+      },
+      "type": "line",
+      "z": 6,
+    },
   ],
   "end": 2024-01-02T00:00:00.000Z,
   "legendData": [
@@ -2087,6 +2111,30 @@ exports[`generatePowerSourcesGraphData > does not append current state when not 
       "type": "line",
       "z": 5,
     },
+    {
+      "animation": false,
+      "data": [
+        [
+          1704067200000,
+          0,
+        ],
+        [
+          1704153600000,
+          0,
+        ],
+      ],
+      "id": "zero-line",
+      "lineStyle": {
+        "color": "#727272",
+        "width": 1.5,
+      },
+      "silent": true,
+      "tooltip": {
+        "show": false,
+      },
+      "type": "line",
+      "z": 6,
+    },
   ],
   "end": 2024-01-02T00:00:00.000Z,
   "legendData": [
@@ -2147,8 +2195,8 @@ exports[`generatePowerSourcesGraphData > large multi-day 5-minute payload digest
     "start",
     "yAxisFractionDigits",
   ],
-  "numberCount": 48435,
-  "numberSum": "4.12394250245e+16",
+  "numberCount": 48441,
+  "numberSum": "4.12428343685e+16",
   "type": "object",
 }
 `;
@@ -3153,6 +3201,30 @@ exports[`generatePowerSourcesGraphData > matches snapshot for grid + solar + bat
       "type": "line",
       "z": 5,
     },
+    {
+      "animation": false,
+      "data": [
+        [
+          1704067200000,
+          0,
+        ],
+        [
+          1704153600000,
+          0,
+        ],
+      ],
+      "id": "zero-line",
+      "lineStyle": {
+        "color": "#727272",
+        "width": 1.5,
+      },
+      "silent": true,
+      "tooltip": {
+        "show": false,
+      },
+      "type": "line",
+      "z": 6,
+    },
   ],
   "end": 2024-01-02T00:00:00.000Z,
   "legendData": [
@@ -3675,6 +3747,30 @@ exports[`generatePowerSourcesGraphData > matches snapshot for grid-only (hour) 1
       "smooth": 0.4,
       "type": "line",
       "z": 5,
+    },
+    {
+      "animation": false,
+      "data": [
+        [
+          1704067200000,
+          0,
+        ],
+        [
+          1704153600000,
+          0,
+        ],
+      ],
+      "id": "zero-line",
+      "lineStyle": {
+        "color": "#727272",
+        "width": 1.5,
+      },
+      "silent": true,
+      "tooltip": {
+        "show": false,
+      },
+      "type": "line",
+      "z": 6,
     },
   ],
   "end": 2024-01-02T00:00:00.000Z,
@@ -4354,6 +4450,30 @@ exports[`generatePowerSourcesGraphData > matches snapshot for solar + battery, n
       "smooth": 0.4,
       "type": "line",
       "z": 5,
+    },
+    {
+      "animation": false,
+      "data": [
+        [
+          1704067200000,
+          0,
+        ],
+        [
+          1704153600000,
+          0,
+        ],
+      ],
+      "id": "zero-line",
+      "lineStyle": {
+        "color": "#727272",
+        "width": 1.5,
+      },
+      "silent": true,
+      "tooltip": {
+        "show": false,
+      },
+      "type": "line",
+      "z": 6,
     },
   ],
   "end": 2024-01-02T00:00:00.000Z,
@@ -5399,6 +5519,30 @@ exports[`generatePowerSourcesGraphData > matches snapshot with compare period 1`
       "smooth": 0.4,
       "type": "line",
       "z": 5,
+    },
+    {
+      "animation": false,
+      "data": [
+        [
+          1704067200000,
+          0,
+        ],
+        [
+          1704153600000,
+          0,
+        ],
+      ],
+      "id": "zero-line",
+      "lineStyle": {
+        "color": "#727272",
+        "width": 1.5,
+      },
+      "silent": true,
+      "tooltip": {
+        "show": false,
+      },
+      "type": "line",
+      "z": 6,
     },
   ],
   "end": 2024-01-02T00:00:00.000Z,

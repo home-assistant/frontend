@@ -65,6 +65,8 @@ export class HaGridLayoutSlider extends LitElement {
 
   private _mc?: HammerManager;
 
+  private _keyboardChanging = false;
+
   private get _range() {
     return this.range ?? this.max;
   }
@@ -186,6 +188,7 @@ export class HaGridLayoutSlider extends LitElement {
 
       this.addEventListener("keydown", this._handleKeyDown);
       this.addEventListener("keyup", this._handleKeyUp);
+      this.addEventListener("blur", this._endKeyboardChange);
     }
   }
 
@@ -196,6 +199,7 @@ export class HaGridLayoutSlider extends LitElement {
     }
     this.removeEventListener("keydown", this._handleKeyDown);
     this.removeEventListener("keyup", this._handleKeyUp);
+    this.removeEventListener("blur", this._endKeyboardChange);
   }
 
   private get _tenPercentStep() {
@@ -231,12 +235,19 @@ export class HaGridLayoutSlider extends LitElement {
         this.value = this.max;
         break;
     }
+    this._keyboardChanging = true;
     fireEvent(this, "slider-moved", { value: this.value });
   }
 
   private _handleKeyUp(e: KeyboardEvent) {
     if (!A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
+    this._endKeyboardChange();
+  }
+
+  private _endKeyboardChange() {
+    if (!this._keyboardChanging) return;
+    this._keyboardChanging = false;
     fireEvent(this, "value-changed", { value: this.value });
   }
 

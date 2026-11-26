@@ -142,7 +142,7 @@ class HaConfigUpdates extends LitElement {
       return html`<ha-spinner
         slot=${ifDefined(slot)}
         size="small"
-        .ariaLabel=${this._localize(
+        .accessibleLabel=${this._localize(
           "ui.panel.config.updates.update_in_progress"
         )}
       ></ha-spinner>`;
