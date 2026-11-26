@@ -294,7 +294,10 @@ export class AssistPipelineDebug extends LitElement {
         box-sizing: border-box;
       }
       .toolbar ha-control-select-menu {
-        min-width: 240px;
+        min-width: min(
+          240px,
+          calc(100% - 2 * var(--ha-icon-button-size, 48px))
+        );
         --control-select-menu-height: 40px;
       }
       .content {
