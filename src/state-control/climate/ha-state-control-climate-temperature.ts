@@ -143,12 +143,12 @@ export class HaStateControlClimateTemperature extends LitElement {
   private _valueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
     const { value } = ev.detail;
     if (typeof value !== "number" || isNaN(value)) return;
-    const target = ev.type.replace("-changed", "");
+    const target = ev.type.replace("-changed", "") as Target;
     this._targetTemperature = {
       ...this._targetTemperature,
-      [target]: value,
+      [target]: this._clampToRange(target, value),
     };
-    this._selectTargetTemperature = target as Target;
+    this._selectTargetTemperature = target;
     this._debouncedCallService.cancel();
     this._callService(target);
   }
@@ -200,19 +200,23 @@ export class HaStateControlClimateTemperature extends LitElement {
     let temp = this._targetTemperature[target] ?? defaultValue;
     temp += step;
     temp = clamp(temp, this._min, this._max);
-    if (target === "high" && this._targetTemperature.low != null) {
-      temp = clamp(temp, this._targetTemperature.low, this._max);
-    }
-    if (target === "low" && this._targetTemperature.high != null) {
-      temp = clamp(temp, this._min, this._targetTemperature.high);
-    }
 
     this._targetTemperature = {
       ...this._targetTemperature,
-      [target]: temp,
+      [target]: this._clampToRange(target, temp),
     };
     this._pendingSync.schedule();
     this._debouncedCallService(target);
+  }
+
+  private _clampToRange(target: Target, temp: number) {
+    if (target === "high" && this._targetTemperature.low != null) {
+      return clamp(temp, this._targetTemperature.low, this._max);
+    }
+    if (target === "low" && this._targetTemperature.high != null) {
+      return clamp(temp, this._min, this._targetTemperature.high);
+    }
+    return temp;
   }
 
   private _handleSelectTemp(ev) {
