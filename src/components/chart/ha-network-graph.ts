@@ -552,6 +552,8 @@ export class HaNetworkGraph extends LitElement {
   }
 
   private _moveToSelectedNode() {
+    // A gliding wheel zoom counts as a roam of the user, which stops following
+    this._stopZoomAnimation();
     this._followSelectedNode = !!this.selectedNode;
     this._stopSelectAnimation();
     if (this.selectedNode && !this._reducedMotion) {
@@ -584,7 +586,8 @@ export class HaNetworkGraph extends LitElement {
   // as the nodes, as ECharts animates the transform of the group they are in
   private _moveViewToLayout() {
     const chart = this._baseChart?.chart;
-    const view = this._getGraphSeries(chart)?.coordinateSystem;
+    const series = this._getGraphSeries(chart);
+    const view = series?.coordinateSystem;
     const roam =
       chart &&
       !chart.isDisposed() &&
@@ -604,8 +607,10 @@ export class HaNetworkGraph extends LitElement {
       (centerX - roam.originX) / zoom + roam.originX - roam.dx,
       (centerY - roam.originY) / zoom + roam.originY - roam.dy,
     ]);
+    // The view keeps its zoom to itself, ECharts syncs it back to the option
+    const currentZoom: number = series.get("zoom") ?? 1;
     chart.setOption({
-      series: [{ id: "network", center, zoom: view.zoom * zoom }],
+      series: [{ id: "network", center, zoom: currentZoom * zoom }],
     });
   }
 
