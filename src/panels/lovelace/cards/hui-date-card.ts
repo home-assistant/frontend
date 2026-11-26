@@ -1,7 +1,8 @@
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
+import { customElement, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { consume } from "../../../common/decorators/consume";
 import { transform } from "../../../common/decorators/transform";
@@ -29,8 +30,21 @@ import {
   isValidTimeZone,
 } from "./hui-date-card-helpers";
 
+// The smallest size the large date shrinks to, in pixels
+const MIN_LARGE_DATE_FONT_SIZE = 12;
+
 @customElement("hui-date-card")
 export class HuiDateCard extends LitElement implements LovelaceCard {
+  // Each resize of the date updates the card, which fits the large date again.
+  // The card itself is inline, which a resize observer can't follow.
+  private _resizeController = new ResizeController(this, { target: null });
+
+  @query(".date-wrapper") private _wrapper?: HTMLElement;
+
+  @query(".date-title") private _title?: HTMLElement;
+
+  @query(".date-text") private _text?: HTMLElement;
+
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-date-card-editor");
     return document.createElement("hui-date-card-editor");
@@ -160,6 +174,63 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
     }
   }
 
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    this._fitLargeDate();
+  }
+
+  // A long date at the large size can be wider and higher than the card, so
+  // it shrinks until it fits, as large as it can be
+  private _fitLargeDate() {
+    const wrapper = this._wrapper;
+    const text = this._text;
+
+    if (!wrapper || !text) {
+      return;
+    }
+
+    text.style.removeProperty("font-size");
+
+    if (this._config?.date_size !== "large") {
+      return;
+    }
+
+    const wrapperStyle = getComputedStyle(wrapper);
+
+    // The full height of the title, as a large date squeezes it
+    const availableHeight =
+      wrapper.clientHeight -
+      parseFloat(wrapperStyle.paddingTop) -
+      parseFloat(wrapperStyle.paddingBottom) -
+      (this._title
+        ? this._title.scrollHeight + parseFloat(wrapperStyle.rowGap)
+        : 0);
+
+    const fits = () =>
+      text.scrollWidth <= text.clientWidth &&
+      text.scrollHeight <= availableHeight;
+
+    if (fits()) {
+      return;
+    }
+
+    let fitting = MIN_LARGE_DATE_FONT_SIZE;
+    let tooLarge = parseFloat(getComputedStyle(text).fontSize);
+
+    while (tooLarge - fitting > 0.5) {
+      const size = (fitting + tooLarge) / 2;
+      text.style.fontSize = `${size}px`;
+
+      if (fits()) {
+        fitting = size;
+      } else {
+        tooLarge = size;
+      }
+    }
+
+    text.style.fontSize = `${fitting}px`;
+  }
+
   private _clearMidnightTimer() {
     if (this._midnightTimer) {
       clearTimeout(this._midnightTimer);
@@ -219,6 +290,7 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
           class="date-wrapper ${
             this._config.date_size ? `size-${this._config.date_size}` : ""
           }"
+          ${this._resizeController.target()}
         >
           ${
             this._config.title !== undefined
