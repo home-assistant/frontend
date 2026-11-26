@@ -395,7 +395,7 @@ export const statisticsMetaHasType = (
 };
 
 export const adjustStatisticsSum = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   statistic_id: string,
   start_time: number,
   adjustment: number,
