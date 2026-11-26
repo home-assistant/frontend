@@ -98,6 +98,7 @@ export class HaTileIcon extends LitElement {
     :host([interactive]) {
       -webkit-tap-highlight-color: transparent;
       pointer-events: auto;
+      cursor: pointer;
     }
     :host([interactive]:active) {
       transform: scale(1.2);
