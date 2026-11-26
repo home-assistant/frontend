@@ -6,9 +6,13 @@ import {
 import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { repeat } from "lit/directives/repeat";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
+import memoizeOne from "memoize-one";
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
+import "../../../../components/ha-control-select-menu";
+import type { SelectOption } from "../../../../components/ha-control-select-menu";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
+import type { FrontendLocaleData } from "../../../../data/translation";
 import type {
   PipelineRunEvent,
   AssistRunListing,
@@ -79,20 +83,20 @@ export class AssistPipelineDebug extends LitElement {
                   @click=${this._pickOlderRun}
                   .path=${mdiRayEndArrow}
                 ></ha-icon-button>
-                <select .value=${this._runId} @change=${this._pickRun}>
-                  ${repeat(
-                    this._runs,
-                    (run) => run.pipeline_run_id,
-                    (run) =>
-                      html`<option value=${run.pipeline_run_id}>
-                        ${formatDateTimeWithSeconds(
-                          new Date(run.timestamp),
-                          this.hass.locale,
-                          this.hass.config
-                        )}
-                      </option>`
+                <ha-control-select-menu
+                  .label=${this.hass.localize(
+                    "ui.panel.config.voice_assistants.debug.run"
                   )}
-                </select>
+                  hide-label
+                  show-arrow
+                  .value=${this._runId}
+                  .options=${this._runOptions(
+                    this._runs,
+                    this.hass.locale,
+                    this.hass.config
+                  )}
+                  @wa-select=${this._pickRun}
+                ></ha-control-select-menu>
                 <ha-icon-button
                   .disabled=${this._runs[0].pipeline_run_id === this._runId}
                   .label=${this.hass.localize(
@@ -254,8 +258,27 @@ export class AssistPipelineDebug extends LitElement {
     this._runId = this._runs![curIndex - 1].pipeline_run_id;
   }
 
-  private _pickRun(ev) {
-    this._runId = ev.target.value;
+  private _runOptions = memoizeOne(
+    (
+      runs: AssistRunListing[],
+      locale: FrontendLocaleData,
+      config: HassConfig
+    ): SelectOption[] =>
+      runs.map((run) => ({
+        value: run.pipeline_run_id,
+        label: formatDateTimeWithSeconds(
+          new Date(run.timestamp),
+          locale,
+          config
+        ),
+      }))
+  );
+
+  private _pickRun(ev: HaDropdownSelectEvent) {
+    const runId = ev.detail.item?.value;
+    if (runId) {
+      this._runId = runId;
+    }
   }
 
   static styles = [
@@ -269,6 +292,10 @@ export class AssistPipelineDebug extends LitElement {
         color: var(--app-header-text-color, white);
         border-bottom: var(--app-header-border-bottom, none);
         box-sizing: border-box;
+      }
+      .toolbar ha-control-select-menu {
+        min-width: 240px;
+        --control-select-menu-height: 40px;
       }
       .content {
         padding: 24px 0 32px;
