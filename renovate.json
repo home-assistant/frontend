@@ -126,9 +126,9 @@
       "matchPackageNames": ["echarts", "zrender"]
     },
     {
-      "description": "Group formatjs monorepo package",
+      "description": "Group formatjs monorepo packages",
       "groupName": "formatjs",
-      "matchPackageNames": ["@formatjs/**"]
+      "matchPackageNames": ["@formatjs/**", "intl-messageformat"]
     },
     {
       "description": "Group Playwright package and CI container updates",
