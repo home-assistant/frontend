@@ -223,7 +223,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         action: this.hass!.user?.is_admin
           ? {
               text: this.hass!.localize("ui.notification_toast.details"),
-              action: () => showStartupProgressDialog(this),
+              action: () => this._showStartupDetails(),
             }
           : undefined,
       });
