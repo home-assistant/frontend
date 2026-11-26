@@ -1,12 +1,13 @@
 import { mdiFire, mdiFlash, mdiLightbulbOnOutline, mdiWater } from "@mdi/js";
 import type { ContextType } from "@lit/context";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../../common/decorators/consume";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { consumeEntityStates } from "../../../../common/decorators/consume-context-entry";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { getEntityAreaId } from "../../../../common/entity/context/get_entity_context";
@@ -35,6 +36,7 @@ import type {
 import {
   computeEnergySuggestions,
   ENERGY_SUGGESTION_EDITORS,
+  restoreDismissedSuggestion,
   updateDismissedSuggestions,
 } from "../../../../data/energy_suggestions";
 import {
@@ -65,12 +67,19 @@ export class EnergySuggestions extends LitElement {
 
   @property() public tab: EnergySuggestionTab = "electricity";
 
+  @property({ type: Boolean, attribute: false }) public showDismissed = false;
+
   @state() private _statistics?: StatisticsMetaData[];
 
   @state() private _dismissed?: string[];
 
   // Dismissals not yet echoed by the subscription, so an older echo can't drop them
   @state() private _pendingDismissed: string[] = [];
+
+  // Restores not yet echoed by the subscription
+  @state() private _pendingRestored: string[] = [];
+
+  private _reportedDismissedCount?: number;
 
   @state() private _slots: Record<string, EnergySuggestionSlot> = {};
 
@@ -114,26 +123,45 @@ export class EnergySuggestions extends LitElement {
     (
       statistics: StatisticsMetaData[],
       preferences: EnergyPreferences,
-      dismissed: string[],
       states: HomeAssistant["states"],
       tab: EnergySuggestionTab
     ) =>
-      computeEnergySuggestions({
-        statistics,
-        preferences,
-        dismissed,
-        states,
-      }).filter((suggestion) => suggestion.tab === tab)
+      computeEnergySuggestions({ statistics, preferences, states }).filter(
+        (suggestion) => suggestion.tab === tab
+      )
   );
 
-  private _allDismissed = memoizeOne((stored: string[], pending: string[]) =>
-    pending.length
-      ? [...stored, ...pending.filter((id) => !stored.includes(id))]
-      : stored
+  private _splitSuggestions = memoizeOne(
+    (all: EnergyMeterSuggestion[], dismissed: string[]) => ({
+      suggestions: all.filter(
+        (suggestion) => !dismissed.includes(suggestion.statisticId)
+      ),
+      dismissedSuggestions: all.filter((suggestion) =>
+        dismissed.includes(suggestion.statisticId)
+      ),
+    })
   );
+
+  private _allDismissed = memoizeOne(
+    (stored: string[], pending: string[], restored: string[]) =>
+      [...stored, ...pending.filter((id) => !stored.includes(id))].filter(
+        (id) => !restored.includes(id)
+      )
+  );
+
+  private get _currentDismissed(): string[] {
+    return this._allDismissed(
+      this._dismissed!,
+      this._pendingDismissed,
+      this._pendingRestored
+    );
+  }
 
   // Kept live so a dismiss in another tab isn't overwritten by this one.
   private _unsubDismissed?: Promise<UnsubscribeFunc>;
+
+  // Each save builds on the list the previous one stored
+  private _saveQueue: Promise<unknown> = Promise.resolve();
 
   connectedCallback() {
     super.connectedCallback();
@@ -160,6 +188,9 @@ export class EnergySuggestions extends LitElement {
         this._dismissed = dismissed;
         this._pendingDismissed = this._pendingDismissed.filter(
           (id) => !dismissed.includes(id)
+        );
+        this._pendingRestored = this._pendingRestored.filter((id) =>
+          dismissed.includes(id)
         );
       }
     );
@@ -203,14 +234,8 @@ export class EnergySuggestions extends LitElement {
     if (!this._statistics || !this._dismissed) {
       return nothing;
     }
-    const suggestions = this._computeSuggestions(
-      this._statistics,
-      this.preferences,
-      this._allDismissed(this._dismissed, this._pendingDismissed),
-      this._states,
-      this.tab
-    );
-    if (!suggestions.length) {
+    const { suggestions, dismissedSuggestions, showDismissed } = this._view()!;
+    if (!suggestions.length && !showDismissed) {
       return nothing;
     }
 
@@ -218,27 +243,67 @@ export class EnergySuggestions extends LitElement {
       <ha-card>
         <h1 class="card-header">
           <ha-svg-icon .path=${mdiLightbulbOnOutline}></ha-svg-icon>
-          ${this._i18n.localize("ui.panel.config.energy.suggestions.title", {
-            count: suggestions.length,
-          })}
+          ${
+            suggestions.length
+              ? this._i18n.localize(
+                  "ui.panel.config.energy.suggestions.title",
+                  {
+                    count: suggestions.length,
+                  }
+                )
+              : this._i18n.localize(
+                  "ui.panel.config.energy.suggestions.dismissed_title"
+                )
+          }
         </h1>
         <div class="card-content">
           <p>
-            ${this._i18n.localize("ui.panel.config.energy.suggestions.sub")}
-          </p>
-          <div class="items-container">
-            ${repeat(
-              suggestions,
-              (suggestion) => suggestion.statisticId,
-              (suggestion) => this._renderSuggestion(suggestion)
+            ${this._i18n.localize(
+              suggestions.length
+                ? "ui.panel.config.energy.suggestions.sub"
+                : "ui.panel.config.energy.suggestions.dismissed_sub"
             )}
-          </div>
+          </p>
+          ${
+            suggestions.length
+              ? html`<div class="items-container">
+                  ${repeat(
+                    suggestions,
+                    (suggestion) => suggestion.statisticId,
+                    (suggestion) => this._renderSuggestion(suggestion, false)
+                  )}
+                </div>`
+              : nothing
+          }
+          ${
+            showDismissed
+              ? html`${
+                    suggestions.length
+                      ? html`<h3>
+                          ${this._i18n.localize(
+                            "ui.panel.config.energy.suggestions.dismissed"
+                          )}
+                        </h3>`
+                      : nothing
+                  }
+                  <div class="items-container">
+                    ${repeat(
+                      dismissedSuggestions,
+                      (suggestion) => suggestion.statisticId,
+                      (suggestion) => this._renderSuggestion(suggestion, true)
+                    )}
+                  </div>`
+              : nothing
+          }
         </div>
       </ha-card>
     `;
   }
 
-  private _renderSuggestion(suggestion: EnergyMeterSuggestion) {
+  private _renderSuggestion(
+    suggestion: EnergyMeterSuggestion,
+    dismissed: boolean
+  ) {
     const slot = this._slotFor(suggestion);
     const label = getStatisticLabel(
       this._states,
@@ -300,9 +365,11 @@ export class EnergySuggestions extends LitElement {
             appearance="plain"
             variant="neutral"
             .suggestion=${suggestion}
-            @click=${this._dismiss}
+            @click=${dismissed ? this._restore : this._dismiss}
             >${this._i18n.localize(
-              "ui.panel.config.energy.suggestions.dismiss"
+              dismissed
+                ? "ui.panel.config.energy.suggestions.restore"
+                : "ui.panel.config.energy.suggestions.dismiss"
             )}</ha-button
           >
         </div>
@@ -341,14 +408,13 @@ export class EnergySuggestions extends LitElement {
       .suggestion;
     const statisticId = suggestion.statisticId;
     this._pendingDismissed = [...this._pendingDismissed, statisticId];
+    this._pendingRestored = this._pendingRestored.filter(
+      (id) => id !== statisticId
+    );
     try {
-      await saveFrontendUserData(this._connection.connection, "energy", {
-        dismissed_suggestions: updateDismissedSuggestions(
-          this._allDismissed(this._dismissed!, this._pendingDismissed),
-          statisticId,
-          this._statistics!
-        ),
-      });
+      await this._saveDismissed((dismissed) =>
+        updateDismissedSuggestions(dismissed, statisticId, this._statistics!)
+      );
     } catch (err: any) {
       this._pendingDismissed = this._pendingDismissed.filter(
         (id) => id !== statisticId
@@ -360,6 +426,70 @@ export class EnergySuggestions extends LitElement {
         text: err.message,
       });
     }
+  }
+
+  private _view() {
+    if (this._loadFailed || !this._statistics || !this._dismissed) {
+      return undefined;
+    }
+    const { suggestions, dismissedSuggestions } = this._splitSuggestions(
+      this._computeSuggestions(
+        this._statistics,
+        this.preferences,
+        this._states,
+        this.tab
+      ),
+      this._currentDismissed
+    );
+    return {
+      suggestions,
+      dismissedSuggestions,
+      showDismissed: this.showDismissed && dismissedSuggestions.length > 0,
+    };
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    const count = this._view()?.dismissedSuggestions.length ?? 0;
+    if (count !== this._reportedDismissedCount) {
+      this._reportedDismissedCount = count;
+      fireEvent(this, "energy-suggestions-dismissed-count", { count });
+    }
+  }
+
+  private async _restore(ev: Event) {
+    const suggestion: EnergyMeterSuggestion = (ev.currentTarget as any)
+      .suggestion;
+    const statisticId = suggestion.statisticId;
+    this._pendingRestored = [...this._pendingRestored, statisticId];
+    this._pendingDismissed = this._pendingDismissed.filter(
+      (id) => id !== statisticId
+    );
+    try {
+      await this._saveDismissed((dismissed) =>
+        restoreDismissedSuggestion(dismissed, statisticId)
+      );
+    } catch (err: any) {
+      this._pendingRestored = this._pendingRestored.filter(
+        (id) => id !== statisticId
+      );
+      showAlertDialog(this, {
+        title: this._i18n.localize(
+          "ui.panel.config.energy.suggestions.restore_failed"
+        ),
+        text: err.message,
+      });
+    }
+  }
+
+  private _saveDismissed(update: (dismissed: string[]) => string[]) {
+    const save = this._saveQueue.then(() =>
+      saveFrontendUserData(this._connection.connection, "energy", {
+        dismissed_suggestions: update(this._dismissed!),
+      })
+    );
+    this._saveQueue = save.catch(() => undefined);
+    return save;
   }
 
   static get styles(): CSSResultGroup {
@@ -406,5 +536,9 @@ export class EnergySuggestions extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-energy-suggestions": EnergySuggestions;
+  }
+
+  interface HASSDomEvents {
+    "energy-suggestions-dismissed-count": { count: number };
   }
 }

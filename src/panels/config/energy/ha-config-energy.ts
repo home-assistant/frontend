@@ -1,6 +1,9 @@
 import "../../../layouts/hass-error-screen";
 import {
+  mdiDotsVertical,
   mdiDownload,
+  mdiEye,
+  mdiEyeOff,
   mdiFire,
   mdiLightningBolt,
   mdiViewDashboardEdit,
@@ -10,6 +13,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import type {
   EnergyPreferencesValidation,
@@ -38,6 +42,9 @@ import "./components/ha-energy-battery-settings";
 import "./components/ha-energy-gas-settings";
 import "./components/ha-energy-water-settings";
 import "./components/ha-energy-suggestions";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import "../../../components/ha-svg-icon";
 import { fileDownload } from "../../../util/file_download";
 import { showToast } from "../../../util/toast";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
@@ -98,6 +105,11 @@ class HaConfigEnergy extends LitElement {
 
   @state() private _statsMetadata?: Record<string, StatisticsMetaData>;
 
+  // Dismissed meters on the current tab, as counted by the suggestions card
+  @state() private _dismissedSuggestions = 0;
+
+  @state() private _showDismissedSuggestions = false;
+
   private get _currTab(): string {
     return this.route.path.split("/")[1] || "electricity";
   }
@@ -105,6 +117,10 @@ class HaConfigEnergy extends LitElement {
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("route")) {
       const [, tab, kind, ...key] = this.route.path.split("/");
+      const oldTab = changedProperties.get("route")?.path.split("/")[1];
+      if (oldTab !== undefined && oldTab !== tab) {
+        this._showDismissedSuggestions = false;
+      }
       if (!tab || !TABS.some((t) => t.path.endsWith(`/${tab}`))) {
         navigate(`${this.route.prefix}/electricity${location.search}`, {
           replace: true,
@@ -175,6 +191,35 @@ class HaConfigEnergy extends LitElement {
             )}
             @click=${this._downloadDiagnostics}
           ></ha-icon-button>
+          ${
+            this._dismissedSuggestions
+              ? html`<ha-dropdown
+                  @wa-select=${this._toggleDismissedSuggestions}
+                >
+                  <ha-icon-button
+                    slot="trigger"
+                    .label=${this.hass.localize("ui.common.menu")}
+                    .path=${mdiDotsVertical}
+                  ></ha-icon-button>
+                  <ha-dropdown-item value="toggle_dismissed">
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${this._showDismissedSuggestions ? mdiEyeOff : mdiEye}
+                    ></ha-svg-icon>
+                    ${
+                      this._showDismissedSuggestions
+                        ? this.hass.localize(
+                            "ui.panel.config.energy.suggestions.hide_dismissed"
+                          )
+                        : this.hass.localize(
+                            "ui.panel.config.energy.suggestions.show_dismissed",
+                            { count: this._dismissedSuggestions }
+                          )
+                    }
+                  </ha-dropdown-item>
+                </ha-dropdown>`
+              : nothing
+          }
         </div>
         <ha-alert>
           ${this.hass.localize("ui.panel.config.energy.new_device_info")}
@@ -184,6 +229,8 @@ class HaConfigEnergy extends LitElement {
             .preferences=${this._preferences!}
             .listPath=${`${this.route.prefix}/${this._currTab}`}
             .tab=${this._currTab}
+            .showDismissed=${this._showDismissedSuggestions}
+            @energy-suggestions-dismissed-count=${this._dismissedSuggestionsChanged}
           ></ha-energy-suggestions>
           ${cache(this._renderTabContent())}
         </div>
@@ -444,6 +491,19 @@ class HaConfigEnergy extends LitElement {
       statsMetadata[x.statistic_id] = x;
     });
     this._statsMetadata = statsMetadata;
+  }
+
+  private _dismissedSuggestionsChanged(
+    ev: HASSDomEvent<HASSDomEvents["energy-suggestions-dismissed-count"]>
+  ) {
+    this._dismissedSuggestions = ev.detail.count;
+    if (!this._dismissedSuggestions) {
+      this._showDismissedSuggestions = false;
+    }
+  }
+
+  private _toggleDismissedSuggestions() {
+    this._showDismissedSuggestions = !this._showDismissedSuggestions;
   }
 
   private _customise() {

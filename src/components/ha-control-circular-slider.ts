@@ -179,6 +179,10 @@ export class HaControlCircularSlider extends LitElement {
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
+    this._destroyListeners();
+    if (this._activeSlider) {
+      this._cancelInteraction();
+    }
   }
 
   private _managers: HammerManager[] = [];
@@ -248,6 +252,18 @@ export class HaControlCircularSlider extends LitElement {
     return undefined;
   }
 
+  private _cancelInteraction() {
+    if (this._activeSlider) {
+      fireEvent(this, `${this._activeSlider}-changing`, {
+        value: undefined,
+      });
+    }
+    this._activeSlider = undefined;
+    this._localValue = this.value;
+    this._localLow = this.low;
+    this._localHigh = this.high;
+  }
+
   private _setupListeners() {
     if (this._interactions && this._managers.length === 0) {
       this._interactions.forEach((interaction) => {
@@ -279,15 +295,7 @@ export class HaControlCircularSlider extends LitElement {
         mc.add(new Tap({ event: "singletap" }));
 
         const cancelInteraction = () => {
-          if (this._activeSlider) {
-            fireEvent(this, `${this._activeSlider}-changing`, {
-              value: undefined,
-            });
-          }
-          this._activeSlider = undefined;
-          this._localValue = this.value;
-          this._localLow = this.low;
-          this._localHigh = this.high;
+          this._cancelInteraction();
           if (pressToActivate) {
             panRecognizer.set({ enable: false });
           }
