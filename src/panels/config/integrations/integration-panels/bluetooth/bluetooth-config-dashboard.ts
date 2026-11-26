@@ -11,6 +11,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
@@ -23,6 +24,7 @@ import type {
   BluetoothScannerState,
 } from "../../../../../data/bluetooth";
 import {
+  getBluetoothAdapters,
   isScannerStateMismatch,
   subscribeBluetoothAdvertisements,
   subscribeBluetoothConnectionAllocations,
@@ -131,11 +133,14 @@ export class BluetoothConfigDashboard extends LitElement {
     }
   }
 
+  private _getBluetoothAdapters = memoizeOne(getBluetoothAdapters);
+
   protected render(): TemplateResult {
-    const enabledEntries = this._configEntries.filter(
-      (e) => e.disabled_by === null
-    );
-    const adapterCount = enabledEntries.length;
+    // The device registry is null until it has loaded.
+    const adapterCount = this.hass.devices
+      ? this._getBluetoothAdapters(this.hass.devices, this._configEntries)
+          .enabledDevices.length
+      : 0;
     const totalSlots = this._connectionAllocationData.reduce(
       (sum, a) => sum + a.slots,
       0
