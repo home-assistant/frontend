@@ -149,8 +149,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
-  @state() private _fill = false;
-
   // The dialog grows with the camera's or image's picture, as high as there
   // is room for
   @state() private _mediaAspectRatio?: number;
@@ -217,7 +215,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._detailsYamlMode = false;
 
     this.large = params.large ?? false;
-    this._fill = false;
     this._open = true;
     this._loadEntityRegistryEntry();
   }
@@ -701,13 +698,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     return html`
       <ha-adaptive-dialog
         .open=${this._open}
-        .width=${
-          this._fill
-            ? "full"
-            : this.large || mediaAspectRatio
-              ? "large"
-              : "medium"
-        }
+        .width=${this.large || mediaAspectRatio ? "large" : "medium"}
         class=${classMap({
           camera: domain === "camera",
           image: domain === "image",
@@ -751,7 +742,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                 ></ha-icon-button-prev>
               `
         }
-        <span slot="headerTitle" @click=${this._enlarge} class="title">
+        <span slot="headerTitle" class="title">
           ${
             breadcrumb.length > 0
               ? !__DEMO__ && isAdmin
@@ -1166,12 +1157,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     ev: HASSDomEvent<HASSDomEvents["camera-controls-height-changed"]>
   ) {
     this._cameraControlsHeight = ev.detail.height;
-  }
-
-  private _enlarge() {
-    withViewTransition(() => {
-      this._fill = !this._fill;
-    });
   }
 
   private _handleOpened() {
