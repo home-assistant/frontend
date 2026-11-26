@@ -10,6 +10,7 @@ import {
 import type { EnergySuggestionInput } from "../../src/data/energy_suggestions";
 import {
   computeEnergySuggestions,
+  restoreDismissedSuggestion,
   updateDismissedSuggestions,
 } from "../../src/data/energy_suggestions";
 import type { StatisticsMetaData } from "../../src/data/recorder";
@@ -228,5 +229,13 @@ describe("updateDismissedSuggestions", () => {
         ]
       )
     ).toEqual(["sensor.kept", "sensor.new"]);
+  });
+});
+
+describe("restoreDismissedSuggestion", () => {
+  it("removes only the restored statistic", () => {
+    expect(
+      restoreDismissedSuggestion(["sensor.a", "sensor.b"], "sensor.a")
+    ).toEqual(["sensor.b"]);
   });
 });
