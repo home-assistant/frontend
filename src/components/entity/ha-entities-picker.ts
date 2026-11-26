@@ -1,6 +1,6 @@
 import { mdiDragHorizontalVariant } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
   fireEvent,
@@ -27,6 +27,9 @@ class HaEntitiesPicker extends LitElement {
   @property() public placeholder?: string;
 
   @property() public helper?: string;
+
+  @query(".entity:last-child ha-entity-picker")
+  private _lastEntityPicker?: HaEntityPicker;
 
   /**
    * Show entities from specific domains.
@@ -208,7 +211,7 @@ class HaEntitiesPicker extends LitElement {
     );
   }
 
-  private _addEntity(
+  private async _addEntity(
     event: ValueChangedEvent<string> & HASSDomCurrentTargetEvent<HaEntityPicker>
   ) {
     event.stopPropagation();
@@ -216,16 +219,27 @@ class HaEntitiesPicker extends LitElement {
     if (!toAdd) {
       return;
     }
-    event.currentTarget.value = "";
-    if (!toAdd) {
-      return;
-    }
+    const sourcePicker = event.currentTarget;
+    sourcePicker.value = "";
     const currentEntities = this._currentEntities;
     if (currentEntities.includes(toAdd)) {
       return;
     }
 
     this._updateEntities([...currentEntities, toAdd]);
+    await this.updateComplete;
+
+    // Closing the picker can remove the focused search field. In that case,
+    // focus the row just added so its entity name is available to the user.
+    if (
+      sourcePicker.matches(":focus-within") ||
+      this.ownerDocument.activeElement === this.ownerDocument.body
+    ) {
+      const addedPicker = this._lastEntityPicker;
+      if (addedPicker?.value === toAdd) {
+        await addedPicker.focus();
+      }
+    }
   }
 
   static override styles = css`

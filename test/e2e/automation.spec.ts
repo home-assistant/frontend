@@ -36,6 +36,36 @@ test.describe("Automation editor", () => {
     expectNoPageErrors(errors);
   });
 
+  test("focuses the added entity after keyboard selection", async ({
+    page,
+  }) => {
+    const editor = automationEditor(page);
+    await editor
+      .getByRole("button", { name: "Add trigger", exact: true })
+      .click();
+    const dialog = page.locator("add-automation-element-dialog");
+    await dialog.locator("ha-input-search input").fill("state changed");
+    await dialog
+      .getByRole("button", { name: /^State changed Triggers/ })
+      .click();
+
+    const entities = editor.locator("ha-entities-picker").first();
+    await entities.getByRole("button", { name: "Select an entity *" }).click();
+    const search = entities.getByRole("textbox", { name: "Search" });
+    await search.fill("battery");
+    await expect(
+      entities.getByRole("option", { name: "Battery Output sensor" })
+    ).toBeVisible();
+    await search.press("ArrowDown");
+    await search.press("ArrowDown");
+    await search.press("Enter");
+
+    await expect(search).toBeHidden();
+    await expect(
+      entities.getByRole("button", { name: "Battery Output" })
+    ).toBeFocused();
+  });
+
   test("creates an automation through the save dialog", async ({ page }) => {
     await addAutomationElement(page, "trigger", "Home Assistant");
     await addAutomationElement(page, "action", "Wait for time to pass (delay)");

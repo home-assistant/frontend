@@ -34,6 +34,7 @@ import type {
   PickerComboBoxSearchFn,
 } from "./ha-picker-combo-box";
 import "./ha-picker-field";
+import type { HaPickerField } from "./ha-picker-field";
 import "./ha-svg-icon";
 import "./skeleton/ha-skeleton";
 
@@ -138,6 +139,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
+  @query("ha-picker-field") private _pickerField?: HaPickerField;
+
   @query("wa-popover") private _popover?: WaPopover;
 
   @state()
@@ -203,6 +206,11 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     }
     // Store initial value to set when opened
     this._initialFieldValue = value;
+  }
+
+  public override async focus() {
+    await this.updateComplete;
+    await this._pickerField?.focus();
   }
 
   protected render() {

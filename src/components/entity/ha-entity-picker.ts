@@ -162,6 +162,11 @@ export class HaEntityPicker extends LitElement {
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
+  public override async focus() {
+    await this.updateComplete;
+    await this._picker?.focus();
+  }
+
   @state() private _pendingEntityId?: string;
 
   @state()
