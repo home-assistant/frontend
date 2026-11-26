@@ -274,6 +274,61 @@ it("shows what to discover on the discover tab, not the table", async () => {
   ).not.toBeNull();
 });
 
+it("offers the integration categories of the tab, leaving out one picked on another", async () => {
+  window.history.replaceState(
+    null,
+    "",
+    "/marketplace/browse?integration_category=energy"
+  );
+  const dashboard = await openDashboard([
+    {
+      id: "1",
+      name: "One",
+      category: "integration",
+      installed: true,
+      integration_categories: ["climate"],
+    },
+    {
+      id: "2",
+      name: "Two",
+      category: "integration",
+      installed: false,
+      integration_categories: ["energy"],
+    },
+  ]);
+  window.history.replaceState(null, "", "/");
+  const table = () =>
+    dashboard.shadowRoot!.querySelector(
+      "hass-tabs-subpage-data-table"
+    ) as unknown as { data: { id: string }[]; filters: number };
+  const categoryFilter = () =>
+    dashboard.shadowRoot!.querySelectorAll(
+      "ha-filter-states"
+    )[3] as unknown as {
+      value?: string[];
+      states: { value: string }[];
+    };
+
+  expect(table().data.map((repository) => repository.id)).toEqual(["2"]);
+
+  dashboard.tab = "installed";
+  await dashboard.updateComplete;
+
+  expect(categoryFilter().states.map((state) => state.value)).toEqual([
+    "climate",
+  ]);
+  expect(categoryFilter().value).toEqual([]);
+  expect(table().filters).toBe(0);
+  expect(table().data.map((repository) => repository.id)).toEqual(["1"]);
+
+  dashboard.tab = "browse";
+  await dashboard.updateComplete;
+
+  expect(categoryFilter().value).toEqual(["energy"]);
+  dashboard.remove();
+  sessionStorage.clear();
+});
+
 it("browses the way the link says", async () => {
   window.history.replaceState(
     null,

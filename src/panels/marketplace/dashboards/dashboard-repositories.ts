@@ -138,10 +138,13 @@ export const statusesOfTab = (
   tab === "installed" ? INSTALLED_STATUS_ORDER : STATUS_ORDER;
 
 // The filters are kept for every tab. A status picked on another tab that this
-// one can't list is left out here, instead of leaving the table empty.
+// one can't list is left out here, instead of leaving the table empty. So is
+// an integration category nothing on this tab is in, when the ones it lists
+// are given. Before the repositories load it lists none, so the URL keeps them.
 export const filtersOfTab = (
   filters: RepositoryFilters,
-  tab: MarketplaceTab
+  tab: MarketplaceTab,
+  integrationCategories?: readonly string[]
 ): RepositoryFilters => {
   const statuses: readonly string[] = statusesOfTab(tab);
 
@@ -150,25 +153,31 @@ export const filtersOfTab = (
     [STATUS_FILTER]: filters[STATUS_FILTER]?.filter((status) =>
       statuses.includes(status)
     ),
+    [INTEGRATION_CATEGORY_FILTER]: integrationCategories
+      ? filters[INTEGRATION_CATEGORY_FILTER]?.filter((slug) =>
+          integrationCategories.includes(slug)
+        )
+      : filters[INTEGRATION_CATEGORY_FILTER],
   };
 };
 
-// The status pane only sends what this tab lists, so statuses picked on another
-// tab that this one can't list are kept for when that tab is opened again
+// A pane only sends what it lists, so what was picked on another tab that this
+// one can't list is kept for when that tab is opened again
+export const paneFilterOfTab = (
+  previous: string[] | undefined,
+  listed: readonly string[],
+  picked: string[] = []
+): string[] => [
+  ...(previous?.filter((value) => !listed.includes(value)) ?? []),
+  ...picked,
+];
+
 export const statusFilterOfTab = (
   filters: RepositoryFilters,
   tab: MarketplaceTab,
-  picked: string[] = []
-): string[] => {
-  const statuses: readonly string[] = statusesOfTab(tab);
-
-  return [
-    ...(filters[STATUS_FILTER]?.filter(
-      (status) => !statuses.includes(status)
-    ) ?? []),
-    ...picked,
-  ];
-};
+  picked?: string[]
+): string[] =>
+  paneFilterOfTab(filters[STATUS_FILTER], statusesOfTab(tab), picked);
 
 const matchesFilters = (
   repository: RepositoryBase,
