@@ -4796,6 +4796,13 @@
             "add": "Add",
             "dismiss": "Dismiss",
             "dismiss_failed": "Couldn't dismiss this meter",
+            "show_dismissed": "Show dismissed meters ({count})",
+            "hide_dismissed": "Hide dismissed meters",
+            "dismissed": "Dismissed",
+            "dismissed_title": "Dismissed meters",
+            "dismissed_sub": "Restore a meter to have it suggested again, or add it right away.",
+            "restore": "Restore",
+            "restore_failed": "Couldn't restore this meter",
             "load_failed": "Couldn't check for meters that aren't in your energy dashboard yet.",
             "slots": {
               "grid_import": "Grid consumption",
