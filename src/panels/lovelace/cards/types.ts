@@ -281,6 +281,14 @@ export interface PowerSourcesGraphCardConfig extends EnergyCardConfig {
   combine_sources?: boolean;
 }
 
+export interface PowerDevicesGraphCardConfig extends EnergyCardConfig {
+  type: "power-devices-graph";
+  max_devices?: number;
+  hide_compound_stats?: boolean;
+  modes?: ("bar" | "pie")[];
+  expand_legend?: boolean;
+}
+
 export interface EnergySankeyCardConfig extends EnergyCardSankeyConfig {
   type: "energy-sankey";
 }
