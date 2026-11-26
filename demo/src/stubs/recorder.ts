@@ -636,22 +636,41 @@ export const mockRecorder = (mockHass: MockHomeAssistant) => {
         hass.config.time_zone
       );
 
+      const id = message.statistic_id;
+
+      // Like Core, an ID without statistics, such as a misspelled one, gets
+      // none, rather than values made up for it
+      const hasStatistics =
+        id in hass.states ||
+        id in statisticsFunctions ||
+        id in derivedCosts ||
+        id in derivedBatteryFlows;
+
       // The energy demo's tariffs place their phases from the start they're
       // asked for, as the energy dashboard asks from midnight. So the hours
-      // come from the start of the day, then only those inside the period
-      // count. Like Core, an hour that runs past the end isn't counted, so a
-      // day ending at 23:59:59.999 leaves out the hour from 23:00.
-      const values = (
-        getStatistics(
-          hass,
-          [message.statistic_id],
-          startOfDay(start),
-          end,
-          "hour"
-        )[message.statistic_id] ?? []
-      ).filter(
-        (value) => value.start >= start.getTime() && value.end <= end.getTime()
-      );
+      // are made up one day at a time from each midnight, then only those
+      // inside the period count. Like Core, an hour that runs past the end
+      // isn't counted, so a day ending at 23:59:59.999 leaves out the hour
+      // from 23:00.
+      const days: Date[] = [];
+
+      for (
+        let day = startOfDay(start);
+        hasStatistics && day < end;
+        day = addDays(day, 1)
+      ) {
+        days.push(day);
+      }
+
+      const values = days
+        .flatMap(
+          (day) =>
+            getStatistics(hass, [id], day, addDays(day, 1), "hour")[id] ?? []
+        )
+        .filter(
+          (value) =>
+            value.start >= start.getTime() && value.end <= end.getTime()
+        );
 
       const numbers = (key: "mean" | "min" | "max" | "change") =>
         values.flatMap((value) => (value[key] == null ? [] : [value[key]]));

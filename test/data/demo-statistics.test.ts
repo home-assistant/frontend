@@ -62,6 +62,7 @@ describe("demo statistics", () => {
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
     vi.useRealTimers();
   });
 
@@ -155,6 +156,36 @@ describe("demo statistics", () => {
     });
 
     expect(statistic.change).toBeGreaterThan(0);
+  });
+
+  it("places the energy tariffs on every day of a longer period", async () => {
+    const hass = setup();
+
+    const changeOver = async (days: number) =>
+      (
+        await hass.callWS<Statistic>({
+          type: "recorder/statistic_during_period",
+          statistic_id: "sensor.energy_consumption_tarif_2",
+          fixed_period: {
+            start_time: "2026-11-20T00:00:00Z",
+            end_time: `2026-11-${20 + days}T00:00:00Z`,
+          },
+        })
+      ).change ?? 0;
+
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+
+    expect(await changeOver(2)).toBeCloseTo(2 * (await changeOver(1)));
+  });
+
+  it("answers no statistic for an ID without statistics", async () => {
+    expect(
+      await setup().callWS<Statistic>({
+        type: "recorder/statistic_during_period",
+        statistic_id: "sensor.missing",
+        calendar: { period: "day" },
+      })
+    ).toEqual({ mean: null, min: null, max: null, change: null });
   });
 
   it("answers the change over a rolling window for a meter", async () => {
