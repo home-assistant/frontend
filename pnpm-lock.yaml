@@ -409,8 +409,8 @@ importers:
         specifier: 18.2.1
         version: 18.2.1
       memoize-one:
-        specifier: 6.0.0
-        version: 6.0.0
+        specifier: 7.0.0
+        version: 7.0.0
       nanoid:
         specifier: 6.0.2
         version: 6.0.2
@@ -6197,8 +6197,8 @@ packages:
   mdn-data@2.27.1:
     resolution: {integrity: sha512-9Yubnt3e8A0OKwxYSXyhLymGW4sCufcLG6VdiDdUGVkPhpqLxlvP5vl1983gQjJl3tqbrM731mjaZaP68AgosQ==}
 
-  memoize-one@6.0.0:
-    resolution: {integrity: sha512-rkpe71W0N0c0Xz6QD0eJETuWAJGnJ9afsl1srmwPrI+yBCkge5EycXXbYRyvL29zZVUWQCY7InPRCv3GDXuZNw==}
+  memoize-one@7.0.0:
+    resolution: {integrity: sha512-2N/rFuzS9eTTDXVmo/PO86KmapXPCOqDgR3eOnmWW1NVW8YXGzXcTWMKiGq/VAsYVl42Pd8rQ2DMsoYunIATLw==}
 
   memory-fs@0.2.0:
     resolution: {integrity: sha512-+y4mDxU4rvXXu5UDSGCGNiesFmwCHuefGMoPCO1WYucNYj7DsLqrFaa2fXVI0H+NNiPTwwzKwspn9yTZqUGqng==}
@@ -14180,7 +14180,7 @@ snapshots:
 
   mdn-data@2.27.1: {}
 
-  memoize-one@6.0.0: {}
+  memoize-one@7.0.0: {}
 
   memory-fs@0.2.0: {}
 
