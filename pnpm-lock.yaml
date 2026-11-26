@@ -316,8 +316,8 @@ importers:
         specifier: 4.5.4
         version: 4.5.4
       '@versatiles/style':
-        specifier: 9.1.0
-        version: 9.1.0(maplibre-gl@6.19.0)
+        specifier: 9.1.1
+        version: 9.1.1(maplibre-gl@6.19.0)
       '@vibrant/color':
         specifier: 4.0.4
         version: 4.0.4
@@ -2353,8 +2353,8 @@ packages:
       leaflet: ^1.9.3
       maplibre-gl: ^2.4.0 || ^3.3.1 || ^4.3.2 || ^5.0.0 || ^6.0.0
 
-  '@maplibre/maplibre-gl-style-spec@26.8.0':
-    resolution: {integrity: sha512-EClj+0m624zGw5gdCOsI5f88bYzkXfgoP2Sj5VGs2AYg9hZaPxvCumX5KDDs6aKFwl2ut+3jAeLhvrSz7hEsBQ==}
+  '@maplibre/maplibre-gl-style-spec@26.9.0':
+    resolution: {integrity: sha512-cQZK2lG3d6I5FjriPZCgJx/LiVMpWqoVibF+cgp2mkQ/P4BIGOsrA3WsvLw1wB28Q9JU9v2fapsQUJUbjjwa6g==}
     hasBin: true
 
   '@maplibre/mlt@1.3.0':
@@ -3838,8 +3838,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@versatiles/style@9.1.0':
-    resolution: {integrity: sha512-P2gLER3/VAOLGCMiumZ1hjHenlsAiI4mz1gPSak9ZAci0BgPYVfY+oo01MIYIfN4A+AvL1gfwZ3eC2vYQVqtlQ==}
+  '@versatiles/style@9.1.1':
+    resolution: {integrity: sha512-JMOuqOq+uOX2PQZORX5rm0fxrvEx5KUvz/Oxr1JIOtuWRjdO5izpXPfg9/s+DeImd3Xpt8BG05X/hL5rkmY+9Q==}
     engines: {node: '>=20'}
     peerDependencies:
       maplibre-gl: '>=5.5.0'
@@ -10228,7 +10228,7 @@ snapshots:
       leaflet: 1.9.4
       maplibre-gl: 6.19.0
 
-  '@maplibre/maplibre-gl-style-spec@26.8.0':
+  '@maplibre/maplibre-gl-style-spec@26.9.0':
     dependencies:
       '@mapbox/jsonlint-lines-primitives': 2.0.3
       '@mapbox/unitbezier': 1.0.0
@@ -11670,9 +11670,9 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.12.2':
     optional: true
 
-  '@versatiles/style@9.1.0(maplibre-gl@6.19.0)':
+  '@versatiles/style@9.1.1(maplibre-gl@6.19.0)':
     dependencies:
-      '@maplibre/maplibre-gl-style-spec': 26.8.0
+      '@maplibre/maplibre-gl-style-spec': 26.9.0
     optionalDependencies:
       maplibre-gl: 6.19.0
 
@@ -14150,7 +14150,7 @@ snapshots:
       '@mapbox/unitbezier': 1.0.0
       '@mapbox/vector-tile': 3.0.0
       '@maplibre/geojson-vt': 6.3.2
-      '@maplibre/maplibre-gl-style-spec': 26.8.0
+      '@maplibre/maplibre-gl-style-spec': 26.9.0
       '@maplibre/mlt': 1.3.0
       '@maplibre/vt-pbf': 4.3.3
       '@types/geojson': 7946.0.16
