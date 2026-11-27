@@ -77,6 +77,23 @@ const CONFIGS = [
       entity: "sensor.invalid_entity",
     },
   },
+  {
+    heading: "With Image URL",
+    config: {
+      type: "button",
+      entity: "light.bed_light",
+      image: "/images/bed.png",
+    },
+  },
+  {
+    heading: "With Image and Custom Height",
+    config: {
+      type: "button",
+      entity: "light.bed_light",
+      image: "/images/bed.png",
+      icon_height: "50px",
+    },
+  },
 ] satisfies DemoCardConfig<ButtonCardConfig>[];
 
 @customElement("demo-lovelace-entity-button-card")
