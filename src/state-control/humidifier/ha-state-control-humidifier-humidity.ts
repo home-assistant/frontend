@@ -3,6 +3,7 @@ import { mdiMinus, mdiPlus, mdiThermostat, mdiWaterPercent } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../common/decorators/consume";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
@@ -57,6 +58,8 @@ export class HaStateControlHumidifierHumidity extends LitElement {
 
   @state() private _targetHumidity?: number;
 
+  @state() private _changingHumidity?: number;
+
   private _sizeController = createStateControlCircularSliderController(this);
 
   private _pendingSync = new PendingValueSync();
@@ -66,7 +69,11 @@ export class HaStateControlHumidifierHumidity extends LitElement {
     if (!changedProp.has("stateObj")) {
       return;
     }
+    if (this.stateObj.state === UNAVAILABLE) {
+      this._changingHumidity = undefined;
+    }
     if (changedProp.get("stateObj")?.entity_id !== this.stateObj.entity_id) {
+      this._changingHumidity = undefined;
       this._debouncedCallService.cancel();
       this._pendingSync.reset();
       this._syncTargetHumidity();
@@ -76,6 +83,9 @@ export class HaStateControlHumidifierHumidity extends LitElement {
   }
 
   private _syncTargetHumidity() {
+    if (this.stateObj.attributes.humidity !== this._targetHumidity) {
+      this._changingHumidity = undefined;
+    }
     this._targetHumidity = this.stateObj.attributes.humidity;
   }
 
@@ -101,8 +111,11 @@ export class HaStateControlHumidifierHumidity extends LitElement {
 
   private _valueChanging(ev: HASSDomEvent<HASSDomEvents["value-changing"]>) {
     const { value } = ev.detail;
-    if (typeof value !== "number" || isNaN(value)) return;
-    this._targetHumidity = value;
+    if (typeof value !== "number" || isNaN(value)) {
+      this._changingHumidity = undefined;
+      return;
+    }
+    this._changingHumidity = value;
   }
 
   private _debouncedCallService = debounce(() => this._callService(), 1000);
@@ -200,7 +213,10 @@ export class HaStateControlHumidifierHumidity extends LitElement {
     }
 
     if (this._targetHumidity != null && !this.showCurrentAsPrimary) {
-      return this._renderTarget(this._targetHumidity!, "big");
+      return this._renderTarget(
+        this._changingHumidity ?? this._targetHumidity,
+        "big"
+      );
     }
 
     if (this.stateObj.state !== UNAVAILABLE) {
@@ -234,7 +250,10 @@ export class HaStateControlHumidifierHumidity extends LitElement {
       return html`
         <p class="label">
           <ha-svg-icon .path=${mdiThermostat}></ha-svg-icon>
-          ${this._renderCurrent(this._targetHumidity, "normal")}
+          ${this._renderCurrent(
+            this._changingHumidity ?? this._targetHumidity,
+            "normal"
+          )}
         </p>
       `;
     }
@@ -299,6 +318,10 @@ export class HaStateControlHumidifierHumidity extends LitElement {
   }
 
   protected render() {
+    return keyed(this.stateObj.entity_id, this._renderControl());
+  }
+
+  private _renderControl() {
     const stateColor = stateColorCss(this.stateObj);
     const active = stateActive(this.stateObj);
 

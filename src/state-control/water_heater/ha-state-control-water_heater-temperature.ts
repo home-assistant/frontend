@@ -3,6 +3,7 @@ import { mdiMinus, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../common/decorators/consume";
 import { UNIT_F } from "../../common/const";
@@ -60,6 +61,8 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
 
   @state() private _targetTemperature?: number;
 
+  @state() private _changingTemperature?: number;
+
   private _sizeController = createStateControlCircularSliderController(this);
 
   private _pendingSync = new PendingValueSync();
@@ -69,7 +72,11 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
     if (!changedProp.has("stateObj")) {
       return;
     }
+    if (this.stateObj.state === UNAVAILABLE) {
+      this._changingTemperature = undefined;
+    }
     if (changedProp.get("stateObj")?.entity_id !== this.stateObj.entity_id) {
+      this._changingTemperature = undefined;
       this._debouncedCallService.cancel();
       this._pendingSync.reset();
       this._syncTargetTemperature();
@@ -79,6 +86,9 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
   }
 
   private _syncTargetTemperature() {
+    if (this.stateObj.attributes.temperature !== this._targetTemperature) {
+      this._changingTemperature = undefined;
+    }
     this._targetTemperature = this.stateObj.attributes.temperature;
   }
 
@@ -107,8 +117,11 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
 
   private _valueChanging(ev: HASSDomEvent<HASSDomEvents["value-changing"]>) {
     const { value } = ev.detail;
-    if (typeof value !== "number" || isNaN(value)) return;
-    this._targetTemperature = value;
+    if (typeof value !== "number" || isNaN(value)) {
+      this._changingTemperature = undefined;
+      return;
+    }
+    this._changingTemperature = value;
   }
 
   private _debouncedCallService = debounce(() => this._callService(), 1000);
@@ -231,6 +244,10 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
   }
 
   protected render() {
+    return keyed(this.stateObj.entity_id, this._renderControl());
+  }
+
+  private _renderControl() {
     const supportsTargetTemperature = supportsFeature(
       this.stateObj,
       WaterHeaterEntityFeature.TARGET_TEMPERATURE
@@ -271,7 +288,9 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
           </ha-control-circular-slider>
           <div class="info">
             ${this._renderLabel()}
-            ${this._renderTargetTemperature(this._targetTemperature)}
+            ${this._renderTargetTemperature(
+              this._changingTemperature ?? this._targetTemperature
+            )}
             ${this._renderCurrentTemperature(
               this.stateObj.attributes.current_temperature
             )}

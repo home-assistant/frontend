@@ -4,6 +4,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { keyed } from "lit/directives/keyed";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../common/decorators/consume";
 import { UNIT_F } from "../../common/const";
@@ -81,6 +82,8 @@ export class HaStateControlClimateTemperature extends LitElement {
 
   @state() private _targetTemperature: Partial<Record<Target, number>> = {};
 
+  @state() private _changingTemperature: Partial<Record<Target, number>> = {};
+
   @state() private _selectTargetTemperature: Target = "low";
 
   private _sizeController = createStateControlCircularSliderController(this);
@@ -92,7 +95,11 @@ export class HaStateControlClimateTemperature extends LitElement {
     if (!changedProp.has("stateObj")) {
       return;
     }
+    if (this.stateObj.state === UNAVAILABLE) {
+      this._changingTemperature = {};
+    }
     if (changedProp.get("stateObj")?.entity_id !== this.stateObj.entity_id) {
+      this._changingTemperature = {};
       this._debouncedCallService.cancel();
       this._pendingSync.reset();
       this._syncTargetTemperature();
@@ -102,11 +109,20 @@ export class HaStateControlClimateTemperature extends LitElement {
   }
 
   private _syncTargetTemperature() {
-    this._targetTemperature = {
+    const targetTemperature: Partial<Record<Target, number>> = {
       value: this.stateObj.attributes.temperature,
       low: this.stateObj.attributes.target_temp_low,
       high: this.stateObj.attributes.target_temp_high,
     };
+    if (
+      (Object.keys(this._changingTemperature) as Target[]).some(
+        (target) =>
+          targetTemperature[target] !== this._targetTemperature[target]
+      )
+    ) {
+      this._changingTemperature = {};
+    }
+    this._targetTemperature = targetTemperature;
   }
 
   private get _step() {
@@ -127,25 +143,29 @@ export class HaStateControlClimateTemperature extends LitElement {
   private _valueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
     const { value } = ev.detail;
     if (typeof value !== "number" || isNaN(value)) return;
-    const target = ev.type.replace("-changed", "");
+    const target = ev.type.replace("-changed", "") as Target;
     this._targetTemperature = {
       ...this._targetTemperature,
-      [target]: value,
+      [target]: this._clampToRange(target, value),
     };
-    this._selectTargetTemperature = target as Target;
+    this._selectTargetTemperature = target;
     this._debouncedCallService.cancel();
     this._callService(target);
   }
 
   private _valueChanging(ev: HASSDomEvent<HASSDomEvents["value-changing"]>) {
     const { value } = ev.detail;
-    if (typeof value !== "number" || isNaN(value)) return;
+    if (typeof value !== "number" || isNaN(value)) {
+      this._changingTemperature = {};
+      return;
+    }
     const target = ev.type.replace("-changing", "");
-    this._targetTemperature = {
-      ...this._targetTemperature,
-      [target]: value,
-    };
+    this._changingTemperature = { [target]: value };
     this._selectTargetTemperature = target as Target;
+  }
+
+  private get _displayedTemperature() {
+    return { ...this._targetTemperature, ...this._changingTemperature };
   }
 
   private _debouncedCallService = debounce(
@@ -180,19 +200,23 @@ export class HaStateControlClimateTemperature extends LitElement {
     let temp = this._targetTemperature[target] ?? defaultValue;
     temp += step;
     temp = clamp(temp, this._min, this._max);
-    if (target === "high" && this._targetTemperature.low != null) {
-      temp = clamp(temp, this._targetTemperature.low, this._max);
-    }
-    if (target === "low" && this._targetTemperature.high != null) {
-      temp = clamp(temp, this._min, this._targetTemperature.high);
-    }
 
     this._targetTemperature = {
       ...this._targetTemperature,
-      [target]: temp,
+      [target]: this._clampToRange(target, temp),
     };
     this._pendingSync.schedule();
     this._debouncedCallService(target);
+  }
+
+  private _clampToRange(target: Target, temp: number) {
+    if (target === "high" && this._targetTemperature.low != null) {
+      return clamp(temp, this._targetTemperature.low, this._max);
+    }
+    if (target === "low" && this._targetTemperature.high != null) {
+      return clamp(temp, this._min, this._targetTemperature.high);
+    }
+    return temp;
   }
 
   private _handleSelectTemp(ev) {
@@ -354,7 +378,7 @@ export class HaStateControlClimateTemperature extends LitElement {
     }
 
     if (this._supportsTargetTemperature && !this.showCurrentAsPrimary) {
-      return this._renderTarget(this._targetTemperature.value!, "big");
+      return this._renderTarget(this._displayedTemperature.value!, "big");
     }
 
     if (this._supportsTargetTemperatureRange && !this.showCurrentAsPrimary) {
@@ -374,7 +398,7 @@ export class HaStateControlClimateTemperature extends LitElement {
                 "target_temp_low"
               )}
             </span>
-            ${this._renderTarget(this._targetTemperature.low!, "big")}
+            ${this._renderTarget(this._displayedTemperature.low!, "big")}
           </button>
           <button
             @click=${this._handleSelectTemp}
@@ -390,7 +414,7 @@ export class HaStateControlClimateTemperature extends LitElement {
                 "target_temp_high"
               )}
             </span>
-            ${this._renderTarget(this._targetTemperature.high!, "big")}
+            ${this._renderTarget(this._displayedTemperature.high!, "big")}
           </button>
         </div>
       `;
@@ -427,7 +451,7 @@ export class HaStateControlClimateTemperature extends LitElement {
       return html`
         <p class="label secondary">
           <ha-svg-icon .path=${mdiThermostat}></ha-svg-icon>
-          ${this._renderTarget(this._targetTemperature.value!, "normal")}
+          ${this._renderTarget(this._displayedTemperature.value!, "normal")}
         </p>
       `;
     }
@@ -450,7 +474,7 @@ export class HaStateControlClimateTemperature extends LitElement {
                 "target_temp_low"
               )}
             </span>
-            ${this._renderTarget(this._targetTemperature.low!, "normal", true)}
+            ${this._renderTarget(this._displayedTemperature.low!, "normal", true)}
           </button>
           <span>·</span>
           <button
@@ -467,7 +491,7 @@ export class HaStateControlClimateTemperature extends LitElement {
                 "target_temp_high"
               )}
             </span>
-            ${this._renderTarget(this._targetTemperature.high!, "normal", true)}
+            ${this._renderTarget(this._displayedTemperature.high!, "normal", true)}
           </button>
         </p>
       `;
@@ -503,6 +527,10 @@ export class HaStateControlClimateTemperature extends LitElement {
   }
 
   protected render() {
+    return keyed(this.stateObj.entity_id, this._renderControl());
+  }
+
+  private _renderControl() {
     const mode = this.stateObj.state;
     const action = this.stateObj.attributes.hvac_action;
     const active = stateActive(this.stateObj);
@@ -549,7 +577,7 @@ export class HaStateControlClimateTemperature extends LitElement {
             .preventInteractionOnScroll=${this.preventInteractionOnScroll}
             .inactive=${!active}
             .mode=${sliderMode}
-            .value=${this._targetTemperature.value}
+            .value=${this._displayedTemperature.value}
             .min=${this._min}
             .max=${this._max}
             .step=${this._step}
@@ -585,8 +613,8 @@ export class HaStateControlClimateTemperature extends LitElement {
             .preventInteractionOnScroll=${this.preventInteractionOnScroll}
             .inactive=${!active}
             dual
-            .low=${this._targetTemperature.low}
-            .high=${this._targetTemperature.high}
+            .low=${this._displayedTemperature.low}
+            .high=${this._displayedTemperature.high}
             .min=${this._min}
             .max=${this._max}
             .step=${this._step}
