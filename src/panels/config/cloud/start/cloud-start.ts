@@ -50,9 +50,7 @@ export class CloudStart extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         back-path="/config"
-        .header=${this.hass.localize(
-          "ui.panel.config.cloud.login.landing_title"
-        )}
+        header="Home Assistant Link"
       >
         <cloud-signed-out-menu
           slot="toolbar-icon"

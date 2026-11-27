@@ -7358,7 +7358,6 @@
           "description_features": "Access your system away from home. Control your home with Google Home and Alexa.",
           "login": {
             "title": "Home Assistant Link login",
-            "landing_title": "[%key:ui::panel::config::cloud::account::onboarding::ha_cloud_title%]",
             "hero_title": "Tools for your home, support for the Open Home",
             "hero_lead": "The easy, secure, and private way to get more out of Home Assistant, and the simplest way to fund its development.",
             "trial_note": "Try free for a month. No payment information required up front.",
