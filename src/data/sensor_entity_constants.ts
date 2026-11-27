@@ -223,6 +223,7 @@ export const SENSOR_DEVICE_CLASS_UNITS: Record<string, (string | null)[]> = {
   voltage: ["kV", "MV", "mV", "V", "μV"],
   volume: ["CCF", "fl. oz.", "ft³", "gal", "L", "MCF", "mL", "m³"],
   volume_flow_rate: [
+    "ft³/h",
     "ft³/min",
     "gal/d",
     "gal/h",
@@ -399,6 +400,7 @@ export const SENSOR_DEVICE_CLASS_CONVERTIBLE_UNITS: Record<
   voltage: ["kV", "MV", "mV", "V", "μV"],
   volume: ["CCF", "fl. oz.", "ft³", "gal", "L", "MCF", "mL", "m³"],
   volume_flow_rate: [
+    "ft³/h",
     "ft³/min",
     "gal/d",
     "gal/h",
