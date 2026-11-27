@@ -13,6 +13,19 @@ export interface FloorAreasFilterValue {
   no_area?: boolean;
 }
 
+/**
+ * Value of a filter that picks from a list, such as labels, devices or
+ * categories.
+ */
+export interface ListFilterValue {
+  ids?: string[];
+  /** Also match the items that have none */
+  none?: boolean;
+}
+
+/** The value of a filter's "No …" option, which no real id can have */
+export const NO_VALUE_ID = "__none__";
+
 /** Whether a floor of the floor and area filter is picked, partly or not. */
 export type FloorSelection = "all" | "some" | "none";
 
@@ -126,6 +139,7 @@ export type DataTableFiltersValue =
   | string[]
   | Record<"key" | string, string[]>
   | FloorAreasFilterValue
+  | ListFilterValue
   | undefined;
 
 export type DataTableFiltersValues = Record<string, DataTableFiltersValue>;
@@ -154,17 +168,77 @@ export const deserializeFilters = (value: DataTableFilters) => {
   return deserializedValue;
 };
 
+/**
+ * The value of a list filter. Filters used to keep their selected ids as a
+ * plain list, which stored filters can still hold.
+ */
+export const listFilterValue = (
+  value: DataTableFiltersValue
+): ListFilterValue | undefined => {
+  if (Array.isArray(value)) {
+    return value.length ? { ids: value } : undefined;
+  }
+  return value && typeof value === "object"
+    ? (value as ListFilterValue)
+    : undefined;
+};
+
+/**
+ * The value a list filter sends to the page. Without "No …" it sends the ids
+ * as a plain list, as filters did before.
+ */
+export const listFilterEventValue = (
+  value: ListFilterValue
+): DataTableFiltersValue => {
+  if (!hasFilterSelection(value)) {
+    return undefined;
+  }
+  return value.none ? value : value.ids;
+};
+
+/** Whether a filter value has anything selected, so it filters the list. */
+export const hasFilterSelection = (value: DataTableFiltersValue): boolean => {
+  if (!value) {
+    return false;
+  }
+  if (Array.isArray(value)) {
+    return value.length > 0;
+  }
+  return Object.values(value).some((val) =>
+    Array.isArray(val) ? val.length > 0 : !!val
+  );
+};
+
+/** The number of filters that have anything selected. */
+export const countActiveFilters = (
+  values: Iterable<DataTableFiltersValue>
+): number => [...values].filter(hasFilterSelection).length;
+
+/**
+ * Whether an item with the given ids (such as its labels) passes a list
+ * filter. Without a selection every item passes.
+ */
+export const matchesListFilter = (
+  value: DataTableFiltersValue,
+  itemIds: readonly (string | null | undefined)[] | undefined
+): boolean => {
+  const filter = listFilterValue(value);
+  if (!filter || !hasFilterSelection(filter)) {
+    return true;
+  }
+  const ids = itemIds?.filter((id): id is string => !!id) ?? [];
+  return (
+    (!!filter.none && !ids.length) || ids.some((id) => filter.ids?.includes(id))
+  );
+};
+
 // returns true when this filter has *selected* options and the filter's name
 // equals the given filterName
 export const isFilterUsed = (
   key: string,
   filter: DataTableFilter,
   filterName: string
-): number | false => {
-  const isUsed =
-    key === filterName && Array.isArray(filter.value) && filter.value.length;
-  return isUsed;
-};
+): boolean => key === filterName && hasFilterSelection(filter.value);
 
 // returns true when this filter has *selected* options
 // which has resulted in a list of items that match these selected opions
@@ -182,7 +256,7 @@ export const isRelatedItemsFilterUsed = (
 
 /**
  * Whether an item with nothing assigned (no area, device, label, category or
- * assistant) passes the filters: only a "No area" selection keeps it, any
+ * assistant) passes the filters: only a "No …" selection keeps it, any
  * selected id leaves it out.
  */
 export const filtersMatchUnassignedItem = (
@@ -195,7 +269,10 @@ export const filtersMatchUnassignedItem = (
     if (Array.isArray(value)) {
       return !value.length;
     }
-    if ((value as FloorAreasFilterValue).no_area) {
+    if (
+      (value as FloorAreasFilterValue).no_area ||
+      (value as ListFilterValue).none
+    ) {
       return true;
     }
     return Object.values(value).every(

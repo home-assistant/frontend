@@ -1,9 +1,15 @@
 import type {
   DataTableFilter,
   DataTableFilters,
-  FloorAreasFilterValue,
 } from "../../data/data_table_filters";
 import { dataTableQueryParamConfig } from "./data-table-query-params";
+import {
+  floorAreasFilterFromParams,
+  floorAreasFilterParams,
+  listFilterFromParams,
+  listFilterIds,
+  listFilterNone,
+} from "./filter-query-params";
 import {
   createQueryString,
   decodeQueryParams,
@@ -26,33 +32,35 @@ export const automationsFilterQueryParamConfig = {
     "assistants",
     "blueprint",
   ],
-  boolean: [{ key: "no_area", trueValue: "1" }],
+  boolean: [
+    { key: "no_area", trueValue: "1" },
+    { key: "no_device", trueValue: "1" },
+    { key: "no_label", trueValue: "1" },
+    { key: "no_category", trueValue: "1" },
+    { key: "no_assistants", trueValue: "1" },
+    { key: "no_blueprint", trueValue: "1" },
+  ],
 } as const satisfies QueryParamConfig;
 
 export type AutomationsFilterQueryParams = QueryParamValues<
   typeof automationsFilterQueryParamConfig
 >;
 
-const list = (filter: DataTableFilter | undefined): string[] | undefined =>
-  Array.isArray(filter?.value) ? filter.value : undefined;
-
-const floorAreas = (
-  filter: DataTableFilter | undefined
-): FloorAreasFilterValue | undefined =>
-  filter?.value && !Array.isArray(filter.value) ? filter.value : undefined;
-
 export const automationsFilterQueryParams = (
   filters: DataTableFilters
 ): AutomationsFilterQueryParams => ({
-  floor: floorAreas(filters["ha-filter-floor-areas"])?.floors,
-  area: floorAreas(filters["ha-filter-floor-areas"])?.areas,
-  no_area: floorAreas(filters["ha-filter-floor-areas"])?.no_area,
-  device: list(filters["ha-filter-devices"]),
-  entity: list(filters["ha-filter-entities"]),
-  label: list(filters["ha-filter-labels"]),
-  category: list(filters["ha-filter-categories"]),
-  assistants: list(filters["ha-filter-voice-assistants"]),
-  blueprint: list(filters["ha-filter-blueprints"]),
+  ...floorAreasFilterParams(filters["ha-filter-floor-areas"]?.value),
+  device: listFilterIds(filters["ha-filter-devices"]?.value),
+  no_device: listFilterNone(filters["ha-filter-devices"]?.value),
+  entity: listFilterIds(filters["ha-filter-entities"]?.value),
+  label: listFilterIds(filters["ha-filter-labels"]?.value),
+  no_label: listFilterNone(filters["ha-filter-labels"]?.value),
+  category: listFilterIds(filters["ha-filter-categories"]?.value),
+  no_category: listFilterNone(filters["ha-filter-categories"]?.value),
+  assistants: listFilterIds(filters["ha-filter-voice-assistants"]?.value),
+  no_assistants: listFilterNone(filters["ha-filter-voice-assistants"]?.value),
+  blueprint: listFilterIds(filters["ha-filter-blueprints"]?.value),
+  no_blueprint: listFilterNone(filters["ha-filter-blueprints"]?.value),
 });
 
 // The filters as the URL holds them, so values that filter the same, such as
@@ -113,16 +121,24 @@ export const automationsLinkFromUrl = (
     search: search ?? "",
     filters: {
       "ha-filter-floor-areas": filter(
-        floors.length || areas.length || params.no_area
-          ? { floors, areas, no_area: params.no_area }
-          : undefined
+        floorAreasFilterFromParams(floors, areas, params.no_area)
       ),
-      "ha-filter-devices": filter(values("device")),
+      "ha-filter-devices": filter(
+        listFilterFromParams(values("device"), params.no_device)
+      ),
       "ha-filter-entities": filter(values("entity")),
-      "ha-filter-labels": filter(values("label")),
-      "ha-filter-categories": filter(values("category")),
-      "ha-filter-voice-assistants": filter(values("assistants")),
-      "ha-filter-blueprints": filter(values("blueprint")),
+      "ha-filter-labels": filter(
+        listFilterFromParams(values("label"), params.no_label)
+      ),
+      "ha-filter-categories": filter(
+        listFilterFromParams(values("category"), params.no_category)
+      ),
+      "ha-filter-voice-assistants": filter(
+        listFilterFromParams(values("assistants"), params.no_assistants)
+      ),
+      "ha-filter-blueprints": filter(
+        listFilterFromParams(values("blueprint"), params.no_blueprint)
+      ),
     },
   };
 };

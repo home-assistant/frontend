@@ -65,7 +65,10 @@ import { getSubEntries, sortConfigEntries } from "../../../data/config_entries";
 import { fullEntitiesContext, labelsContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
+  countActiveFilters,
   deserializeFilters,
+  isFilterUsed,
+  matchesListFilter,
   serializeFilters,
 } from "../../../data/data_table_filters";
 import type {
@@ -393,15 +396,9 @@ export class HaConfigDeviceDashboard extends LitElement {
           (filter.value as string[]).forEach((domain) =>
             filteredDomains.add(domain)
           );
-        } else if (
-          key === "ha-filter-labels" &&
-          Array.isArray(filter.value) &&
-          filter.value.length
-        ) {
+        } else if (isFilterUsed(key, filter, "ha-filter-labels")) {
           outputDevices = outputDevices.filter((device) =>
-            device.labels.some((lbl) =>
-              (filter.value as string[]).includes(lbl)
-            )
+            matchesListFilter(filter.value, device.labels)
           );
         } else if (filter.items) {
           outputDevices = outputDevices.filter((device) =>
@@ -846,16 +843,9 @@ export class HaConfigDeviceDashboard extends LitElement {
         @selection-changed=${this._handleSelectionChanged}
         .filter=${this._tableSettings.search}
         has-filters
-        .filters=${
-          Object.values(this._filters).filter((filter) =>
-            Array.isArray(filter.value)
-              ? filter.value.length
-              : filter.value &&
-                Object.values(filter.value).some((val) =>
-                  Array.isArray(val) ? val.length : val
-                )
-          ).length
-        }
+        .filters=${countActiveFilters(
+          Object.values(this._filters).map((filter) => filter.value)
+        )}
         .initialGroupColumn=${this._tableSettings.grouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._tableSettings.sorting}

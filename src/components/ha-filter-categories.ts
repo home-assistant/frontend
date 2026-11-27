@@ -31,6 +31,11 @@ import {
   updateCategoryRegistryEntry,
 } from "../data/category_registry";
 import { apiContext, connectionContext } from "../data/context";
+import type { ListFilterValue } from "../data/data_table_filters";
+import {
+  listFilterEventValue,
+  listFilterValue,
+} from "../data/data_table_filters";
 import { showConfirmationDialog } from "../dialogs/generic/show-dialog-box";
 import { showCategoryRegistryDetailDialog } from "../panels/config/category/show-dialog-category-registry-detail";
 import { haStyleScrollbar } from "../resources/styles";
@@ -42,7 +47,9 @@ import "./ha-dropdown-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
 import "./item/ha-list-item-option";
+import type { HaListItemOption } from "./item/ha-list-item-option";
 import "./list/ha-list-selectable";
+import type { HaListSelectable } from "./list/ha-list-selectable";
 
 @customElement("ha-filter-categories")
 export class HaFilterCategories extends LitElement {
@@ -59,7 +66,8 @@ export class HaFilterCategories extends LitElement {
   })
   private _connection?: Connection;
 
-  @property({ attribute: false }) public value?: string[];
+  // A plain list of category ids is still accepted from stored filters
+  @property({ attribute: false }) public value?: ListFilterValue | string[];
 
   @property() public scope?: string;
 
@@ -136,7 +144,12 @@ export class HaFilterCategories extends LitElement {
     this._categoriesScope = undefined;
   }
 
+  // The id of the No category option, which can't be a category id
+  private static readonly _noneId = "__none__";
+
   protected render() {
+    const value = listFilterValue(this.value);
+    const count = (value?.ids?.length || 0) + (value?.none ? 1 : 0);
     return html`
       <ha-expansion-panel
         left-chevron
@@ -146,8 +159,8 @@ export class HaFilterCategories extends LitElement {
         <div slot="header" class="header">
           ${this._localize("ui.panel.config.category.caption")}
           ${
-            this.value?.length
-              ? html`<div class="badge">${this.value?.length}</div>
+            count
+              ? html`<div class="badge">${count}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._localize(
@@ -172,6 +185,18 @@ export class HaFilterCategories extends LitElement {
                   @ha-list-item-selected=${this._categoryAdded}
                   @ha-list-item-deselected=${this._categoryRemoved}
                 >
+                  <ha-list-item-option
+                    appearance="checkbox"
+                    selection-position="end"
+                    .value=${HaFilterCategories._noneId}
+                    .selected=${value?.none ?? false}
+                  >
+                    <span slot="headline">
+                      ${this._localize(
+                        "ui.components.subpage-data-table.no_category"
+                      )}
+                    </span>
+                  </ha-list-item-option>
                   ${repeat(
                     this._categories,
                     (category) => category.category_id,
@@ -181,7 +206,7 @@ export class HaFilterCategories extends LitElement {
                         selection-position="end"
                         .value=${category.category_id}
                         .selected=${
-                          this.value?.includes(category.category_id) ?? false
+                          value?.ids?.includes(category.category_id) ?? false
                         }
                       >
                         ${
@@ -282,8 +307,12 @@ export class HaFilterCategories extends LitElement {
     try {
       await deleteCategoryRegistryEntry(this._api.callWS, this.scope!, id);
 
-      if (this.value?.includes(id)) {
-        this._setValue(this.value.filter((categoryId) => categoryId !== id));
+      const value = listFilterValue(this.value);
+      if (value?.ids?.includes(id)) {
+        this._setValue({
+          ...value,
+          ids: value.ids.filter((categoryId) => categoryId !== id),
+        });
       }
     } catch (err: any) {
       alert(`Failed to delete: ${err.message}`);
@@ -314,30 +343,39 @@ export class HaFilterCategories extends LitElement {
   }
 
   private _categoryAdded(ev: CustomEvent<number>) {
-    const categoryId = this._categories[ev.detail]?.category_id;
-
-    if (!categoryId || this.value?.includes(categoryId)) {
-      return;
-    }
-
-    this._setValue([...(this.value || []), categoryId]);
+    this._categoryToggled(ev, true);
   }
 
   private _categoryRemoved(ev: CustomEvent<number>) {
-    const categoryId = this._categories[ev.detail]?.category_id;
+    this._categoryToggled(ev, false);
+  }
+
+  private _categoryToggled(ev: CustomEvent<number>, selected: boolean) {
+    const categoryId = (
+      (ev.currentTarget as HaListSelectable).items[ev.detail] as
+        HaListItemOption | undefined
+    )?.value;
 
     if (!categoryId) {
       return;
     }
 
-    this._setValue((this.value || []).filter((id) => id !== categoryId));
+    const value = listFilterValue(this.value) ?? {};
+
+    if (categoryId === HaFilterCategories._noneId) {
+      this._setValue({ ...value, none: selected });
+      return;
+    }
+
+    const ids = (value.ids ?? []).filter((id) => id !== categoryId);
+    this._setValue({ ...value, ids: selected ? [...ids, categoryId] : ids });
   }
 
-  private _setValue(value: string[]) {
+  private _setValue(value: ListFilterValue) {
     this.value = value;
 
     fireEvent(this, "data-table-filter-changed", {
-      value: value.length ? value : undefined,
+      value: listFilterEventValue(value),
       items: undefined,
     });
   }

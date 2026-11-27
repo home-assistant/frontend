@@ -1,9 +1,12 @@
-import type {
-  DataTableFiltersValue,
-  DataTableFiltersValues,
-  FloorAreasFilterValue,
-} from "../../data/data_table_filters";
+import type { DataTableFiltersValues } from "../../data/data_table_filters";
 import { dataTableQueryParamConfig } from "./data-table-query-params";
+import {
+  floorAreasFilterFromParams,
+  floorAreasFilterParams,
+  listFilterFromParams,
+  listFilterIds,
+  listFilterNone,
+} from "./filter-query-params";
 import {
   createQueryString,
   decodeQueryParams,
@@ -26,31 +29,31 @@ export const helpersFilterQueryParamConfig = {
     // Read until 2027.5, replaced with `assistants` on the next write
     "voice_assistant",
   ],
-  boolean: [{ key: "no_area", trueValue: "1" }],
+  boolean: [
+    { key: "no_area", trueValue: "1" },
+    { key: "no_device", trueValue: "1" },
+    { key: "no_label", trueValue: "1" },
+    { key: "no_category", trueValue: "1" },
+    { key: "no_assistants", trueValue: "1" },
+  ],
 } as const satisfies QueryParamConfig;
 
 export type HelpersFilterQueryParams = QueryParamValues<
   typeof helpersFilterQueryParamConfig
 >;
 
-const list = (value: DataTableFiltersValue): string[] | undefined =>
-  Array.isArray(value) ? value : undefined;
-
-const floorAreas = (
-  value: DataTableFiltersValue
-): FloorAreasFilterValue | undefined =>
-  value && !Array.isArray(value) ? value : undefined;
-
 export const helpersFilterQueryParams = (
   filters: DataTableFiltersValues
 ): HelpersFilterQueryParams => ({
-  floor: floorAreas(filters["ha-filter-floor-areas"])?.floors,
-  area: floorAreas(filters["ha-filter-floor-areas"])?.areas,
-  no_area: floorAreas(filters["ha-filter-floor-areas"])?.no_area,
-  device: list(filters["ha-filter-devices"]),
-  label: list(filters["ha-filter-labels"]),
-  category: list(filters["ha-filter-categories"]),
-  assistants: list(filters["ha-filter-voice-assistants"]),
+  ...floorAreasFilterParams(filters["ha-filter-floor-areas"]),
+  device: listFilterIds(filters["ha-filter-devices"]),
+  no_device: listFilterNone(filters["ha-filter-devices"]),
+  label: listFilterIds(filters["ha-filter-labels"]),
+  no_label: listFilterNone(filters["ha-filter-labels"]),
+  category: listFilterIds(filters["ha-filter-categories"]),
+  no_category: listFilterNone(filters["ha-filter-categories"]),
+  assistants: listFilterIds(filters["ha-filter-voice-assistants"]),
+  no_assistants: listFilterNone(filters["ha-filter-voice-assistants"]),
 });
 
 // The filters as the URL holds them, so values that filter the same, such as
@@ -103,16 +106,27 @@ export const helpersLinkFromUrl = (
   return {
     search: search ?? "",
     filters: {
-      "ha-filter-floor-areas":
-        floors.length || areas.length || params.no_area
-          ? { floors, areas, no_area: params.no_area }
-          : undefined,
-      "ha-filter-devices": values("device"),
-      "ha-filter-labels": values("label"),
-      "ha-filter-categories": values("category"),
-      "ha-filter-voice-assistants": assistants.length
-        ? assistants
-        : values("voice_assistant"),
+      "ha-filter-floor-areas": floorAreasFilterFromParams(
+        floors,
+        areas,
+        params.no_area
+      ),
+      "ha-filter-devices": listFilterFromParams(
+        values("device"),
+        params.no_device
+      ),
+      "ha-filter-labels": listFilterFromParams(
+        values("label"),
+        params.no_label
+      ),
+      "ha-filter-categories": listFilterFromParams(
+        values("category"),
+        params.no_category
+      ),
+      "ha-filter-voice-assistants": listFilterFromParams(
+        assistants.length ? assistants : values("voice_assistant"),
+        params.no_assistants
+      ),
     },
   };
 };

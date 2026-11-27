@@ -85,7 +85,13 @@ import type {
   DataTableFiltersValue,
   DataTableFiltersValues,
 } from "../../../data/data_table_filters";
-import { filtersMatchUnassignedItem } from "../../../data/data_table_filters";
+import {
+  countActiveFilters,
+  filtersMatchUnassignedItem,
+  hasFilterSelection,
+  listFilterValue,
+  matchesListFilter,
+} from "../../../data/data_table_filters";
 import {
   fetchDiagnosticHandlers,
   getConfigEntryDiagnosticsDownloadUrl,
@@ -712,16 +718,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
         has-filters
-        .filters=${
-          Object.values(this._filters).filter((filter) =>
-            Array.isArray(filter)
-              ? filter.length
-              : filter &&
-                Object.values(filter).some((val) =>
-                  Array.isArray(val) ? val.length : val
-                )
-          ).length
-        }
+        .filters=${countActiveFilters(Object.values(this._filters))}
         .columns=${this._columns(this.hass.localize, helpers)}
         .data=${helpers}
         .initialGroupColumn=${this._tableSettings.grouping}
@@ -764,6 +761,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         ></ha-filter-floor-areas>
         <ha-filter-devices
           .type=${"entity"}
+          include-disabled-entities
           .value=${this._filters["ha-filter-devices"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -942,17 +940,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   private _groupActions = memoizeOne(categoryGroupActions);
 
   private _categoryDeleted = (categoryId: string) => {
-    const value = this._filters["ha-filter-categories"];
+    const value = listFilterValue(this._filters["ha-filter-categories"]);
 
-    if (!Array.isArray(value) || !value.includes(categoryId)) {
+    if (!value?.ids?.includes(categoryId)) {
       return;
     }
 
-    const remaining = value.filter((id) => id !== categoryId);
-
     this._setFilter(
       "ha-filter-categories",
-      remaining.length ? remaining : undefined,
+      { ...value, ids: value.ids.filter((id) => id !== categoryId) },
       undefined
     );
   };
@@ -961,111 +957,48 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     if (!this._helperEntities) {
       return;
     }
-    const filters = Object.entries(this._filters);
+
+    const entityReg = entityRegistryByEntityId(this._entityReg || []);
+    const helperIds = new Set([
+      ...this._helperEntities.map((stateItem) => stateItem.entity_id),
+      ...(this._disabledEntityEntries || []).map((entry) => entry.entity_id),
+    ]);
 
     let items: Set<string> | undefined;
 
-    Object.values(this._filteredItems).forEach((itms) => {
-      if (!itms) {
-        return;
-      }
-      if (!items) {
-        items = itms;
-        return;
-      }
-      items =
-        "intersection" in items
-          ? // @ts-ignore
-            items.intersection(itms)
-          : new Set([...items].filter((x) => itms!.has(x)));
-    });
+    // Keep the helpers that pass a filter
+    const restrict = (passes: (entityId: string) => boolean) => {
+      items = new Set([...(items ?? helperIds)].filter(passes));
+    };
 
-    for (const [key, filter] of filters) {
-      if (
-        key === "ha-filter-labels" &&
-        Array.isArray(filter) &&
-        filter.length
-      ) {
-        const labelItems = new Set<string>();
-        this._helperEntities
-          .filter((stateItem) =>
-            entityRegistryByEntityId(this._entityReg || [])[
-              stateItem.entity_id
-            ]?.labels.some((lbl) => filter.includes(lbl))
-          )
-          .forEach((stateItem) => labelItems.add(stateItem.entity_id));
-        (this._disabledEntityEntries || [])
-          .filter((entry) => entry.labels.some((lbl) => filter.includes(lbl)))
-          .forEach((entry) => labelItems.add(entry.entity_id));
-        if (!items) {
-          items = labelItems;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(labelItems)
-            : new Set([...items].filter((x) => labelItems!.has(x)));
-      } else if (
-        key === "ha-filter-categories" &&
-        Array.isArray(filter) &&
-        filter.length
-      ) {
-        const categoryItems = new Set<string>();
-        this._helperEntities
-          .filter((stateItem) => {
-            const category = entityRegistryByEntityId(this._entityReg || [])[
-              stateItem.entity_id
-            ]?.categories.helpers;
-
-            return category !== undefined && filter.includes(category);
-          })
-          .forEach((stateItem) => categoryItems.add(stateItem.entity_id));
-        (this._disabledEntityEntries || [])
-          .filter((entry) => filter.includes(entry.categories.helpers))
-          .forEach((entry) => categoryItems.add(entry.entity_id));
-        if (!items) {
-          items = categoryItems;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(categoryItems)
-            : new Set([...items].filter((x) => categoryItems!.has(x)));
-      } else if (
-        key === "ha-filter-voice-assistants" &&
-        Array.isArray(filter) &&
-        filter.length
-      ) {
-        const assistItems = new Set<string>();
-        this._helperEntities
-          .filter((stateItem) =>
-            getEntityVoiceAssistantsIds(
-              this._entityReg || [],
-              stateItem.entity_id
-            ).some((va) => (filter as string[]).includes(va))
-          )
-          .forEach((stateItem) => assistItems.add(stateItem.entity_id));
-        (this._disabledEntityEntries || [])
-          .filter((entry) =>
-            getEntityVoiceAssistantsIds(
-              this._entityReg || [],
-              entry.entity_id
-            ).some((va) => (filter as string[]).includes(va))
-          )
-          .forEach((entry) => assistItems.add(entry.entity_id));
-        if (!items) {
-          items = assistItems;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(assistItems)
-            : new Set([...items].filter((x) => assistItems!.has(x)));
+    for (const itms of Object.values(this._filteredItems)) {
+      if (itms) {
+        restrict((entityId) => itms.has(entityId));
       }
     }
+
+    for (const [key, filter] of Object.entries(this._filters)) {
+      if (!hasFilterSelection(filter)) {
+        continue;
+      }
+      if (key === "ha-filter-labels") {
+        restrict((entityId) =>
+          matchesListFilter(filter, entityReg[entityId]?.labels)
+        );
+      } else if (key === "ha-filter-categories") {
+        restrict((entityId) =>
+          matchesListFilter(filter, [entityReg[entityId]?.categories.helpers])
+        );
+      } else if (key === "ha-filter-voice-assistants") {
+        restrict((entityId) =>
+          matchesListFilter(
+            filter,
+            getEntityVoiceAssistantsIds(this._entityReg || [], entityId)
+          )
+        );
+      }
+    }
+
     this._filteredHelperEntityIds = items ? [...items] : undefined;
   }
 

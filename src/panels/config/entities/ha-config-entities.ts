@@ -90,6 +90,11 @@ import type {
   DataTableFiltersItems,
   DataTableFiltersValues,
 } from "../../../data/data_table_filters";
+import {
+  countActiveFilters,
+  hasFilterSelection,
+  matchesListFilter,
+} from "../../../data/data_table_filters";
 import { computeDeviceClassName } from "../../../data/entity/device_class";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
@@ -669,13 +674,11 @@ export class HaConfigEntities extends LitElement {
           filter!.forEach((domain) => filteredDomains.add(domain));
         } else if (
           key === "ha-filter-device-classes" &&
-          Array.isArray(filter) &&
-          filter.length
+          hasFilterSelection(filter)
         ) {
-          filteredEntities = filteredEntities.filter((entry) => {
-            const deviceClass = this._getDeviceClass(entry);
-            return deviceClass != null && filter.includes(deviceClass);
-          });
+          filteredEntities = filteredEntities.filter((entry) =>
+            matchesListFilter(filter, [this._getDeviceClass(entry)])
+          );
         } else if (
           key === "ha-filter-domains" &&
           Array.isArray(filter) &&
@@ -684,22 +687,18 @@ export class HaConfigEntities extends LitElement {
           filteredEntities = filteredEntities.filter((entity) =>
             (filter as string[]).includes(computeDomain(entity.entity_id))
           );
-        } else if (
-          key === "ha-filter-labels" &&
-          Array.isArray(filter) &&
-          filter.length
-        ) {
+        } else if (key === "ha-filter-labels" && hasFilterSelection(filter)) {
           filteredEntities = filteredEntities.filter((entity) =>
-            entity.labels.some((lbl) => (filter as string[]).includes(lbl))
+            matchesListFilter(filter, entity.labels)
           );
         } else if (
           key === "ha-filter-voice-assistants" &&
-          Array.isArray(filter) &&
-          filter.length
+          hasFilterSelection(filter)
         ) {
           filteredEntities = filteredEntities.filter((entity) =>
-            getVoiceAssistantIds(exposedEntities, entity.entity_id).some((va) =>
-              (filter as string[]).includes(va)
+            matchesListFilter(
+              filter,
+              getVoiceAssistantIds(exposedEntities, entity.entity_id)
             )
           );
         }
@@ -896,16 +895,7 @@ export class HaConfigEntities extends LitElement {
           { number: filteredEntities.length }
         )}
         has-filters
-        .filters=${
-          Object.values(this._filters).filter((filter) =>
-            Array.isArray(filter)
-              ? filter.length
-              : filter &&
-                Object.values(filter).some((val) =>
-                  Array.isArray(val) ? val.length : val
-                )
-          ).length
-        }
+        .filters=${countActiveFilters(Object.values(this._filters))}
         selectable
         .selected=${this._selected.length}
         .initialGroupColumn=${this._tableSettings.grouping}

@@ -74,6 +74,23 @@ describe("devices query params", () => {
     ).toEqual({ floors: [], areas: [], no_area: true });
   });
 
+  // Without it in the URL, a link drops the "No label" choice
+  it("round trips no label", () => {
+    const filters = {
+      "ha-filter-labels": {
+        value: { ids: ["a"], none: true },
+        items: undefined,
+      },
+    };
+    const query = createQueryString(
+      devicesFilterQueryParams(filters),
+      devicesFilterQueryParamConfig
+    );
+
+    expect(query).toBe("label=a&no_label=1");
+    expect(devicesLinkFromUrl(query)?.filters).toMatchObject(filters);
+  });
+
   it("writes the values, not the items the filters found", () => {
     expect(
       devicesFilterQueryParams({
@@ -88,6 +105,8 @@ describe("devices query params", () => {
       area: ["kitchen"],
       domain: undefined,
       label: undefined,
+      no_area: undefined,
+      no_label: false,
       config_entry: undefined,
       sub_entry: undefined,
     });

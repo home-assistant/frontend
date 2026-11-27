@@ -59,6 +59,23 @@ describe("entities query params", () => {
     ).toBe("historyBack=1&assistants=conversation");
   });
 
+  it("round trips the filters without a value", () => {
+    const filters = {
+      "ha-filter-devices": { ids: [], none: true },
+      "ha-filter-device-classes": { ids: ["problem"], none: true },
+      "ha-filter-voice-assistants": { ids: [], none: true },
+    };
+
+    expect(
+      entitiesLinkFromUrl(
+        createQueryString(
+          entitiesFilterQueryParams(filters),
+          entitiesFilterQueryParamConfig
+        )
+      )?.filters
+    ).toMatchObject(filters);
+  });
+
   it("round trips the filters", () => {
     const filters = {
       "ha-filter-states": ["enabled", "hidden"],
