@@ -34,6 +34,7 @@ import {
 } from "../../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
+import { getExtendedEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { ERROR_WARNING_NOT_ACCEPTED } from "../../../data/marketplace/websocket";
 import type { UpdateEntity, UpdateReleaseNotes } from "../../../data/update";
 import {
@@ -107,7 +108,7 @@ class MoreInfoUpdate extends LitElement {
 
   @state() private _installError?: {
     message: string;
-    marketplaceWarning: boolean;
+    marketplacePath?: string;
   };
 
   @state() private _backupState: ManagerState = "idle";
@@ -196,6 +197,7 @@ class MoreInfoUpdate extends LitElement {
 
     const releaseUrl = sanitizeHttpUrl(this.stateObj.attributes.release_url);
     const backupInProgressMessage = this._backupInProgressMessage();
+    const marketplacePath = this._installError?.marketplacePath;
 
     return html`
       <div class="content">
@@ -335,17 +337,15 @@ class MoreInfoUpdate extends LitElement {
                     { error: this._installError.message }
                   )}
                   ${
-                    this._installError.marketplaceWarning
-                      ? html`<ha-button
-                          slot="action"
-                          appearance="plain"
-                          size="s"
-                          @click=${this._openMarketplace}
+                    marketplacePath
+                      ? html`<a
+                          class="marketplace-link"
+                          href=${marketplacePath}
                         >
                           ${this._localize(
                             "ui.dialogs.more_info_control.update.open_marketplace"
                           )}
-                        </ha-button>`
+                        </a>`
                       : this._canShowSupervisorLogs()
                         ? html`<ha-button
                             slot="action"
@@ -446,8 +446,9 @@ class MoreInfoUpdate extends LitElement {
   }
 
   private async _handleInstall(): Promise<void> {
+    const entityId = this.stateObj!.entity_id;
     const installData: Record<string, any> = {
-      entity_id: this.stateObj!.entity_id,
+      entity_id: entityId,
     };
 
     if (this._backupElement?.createBackup ?? false) {
@@ -475,10 +476,13 @@ class MoreInfoUpdate extends LitElement {
       const marketplaceWarning =
         err?.translation_domain === "marketplace" &&
         err.translation_key === ERROR_WARNING_NOT_ACCEPTED;
-      const message = await this._localizeInstallError(err);
+      const [message, marketplacePath] = await Promise.all([
+        this._localizeInstallError(err),
+        marketplaceWarning ? this._getMarketplacePath(entityId) : undefined,
+      ]);
 
       if (this._isShown()) {
-        this._installError = { message, marketplaceWarning };
+        this._installError = { message, marketplacePath };
 
         return;
       }
@@ -495,12 +499,12 @@ class MoreInfoUpdate extends LitElement {
             { error: message }
           ),
           duration: 10000,
-          action: marketplaceWarning
+          action: marketplacePath
             ? {
                 text: this._localize(
                   "ui.dialogs.more_info_control.update.open_marketplace"
                 ),
-                action: this._openMarketplace,
+                action: () => navigate(marketplacePath),
               }
             : this._canShowSupervisorLogs()
               ? {
@@ -515,8 +519,16 @@ class MoreInfoUpdate extends LitElement {
     }
   }
 
-  private _openMarketplace(): void {
-    navigate("/marketplace");
+  private async _getMarketplacePath(entityId: string): Promise<string> {
+    const entry = await getExtendedEntityRegistryEntry(
+      this._api.callWS,
+      entityId
+    ).catch(() => undefined);
+
+    // Marketplace uses the repository ID as its update entity's unique ID.
+    return entry?.platform === "marketplace" && entry.unique_id
+      ? `/marketplace/repository/${encodeURIComponent(entry.unique_id)}`
+      : "/marketplace";
   }
 
   // Supervisor errors only say "Check Supervisor logs for details".
@@ -679,6 +691,12 @@ class MoreInfoUpdate extends LitElement {
       width: 100%;
       box-sizing: border-box;
       padding: var(--ha-space-2) var(--ha-space-4) 0;
+    }
+
+    .marketplace-link {
+      display: block;
+      width: fit-content;
+      margin-block-start: var(--ha-space-1);
     }
 
     .actions {
