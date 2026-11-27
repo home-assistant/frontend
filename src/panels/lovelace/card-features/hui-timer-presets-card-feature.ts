@@ -21,6 +21,7 @@ import type { HaControlButton } from "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-svg-icon";
+import { SkeletonLoadingController } from "../../../components/skeleton/skeleton-loading-controller";
 import {
   apiContext,
   connectionContext,
@@ -43,6 +44,9 @@ import type {
   LovelaceCardFeatureContext,
   TimerPresetsCardFeatureConfig,
 } from "./types";
+
+/* How long to wait for the entity's settings before showing without them */
+const ENTRY_TIMEOUT = 5000;
 
 const supportsTimerPresetsCardFeatureFromState = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -101,6 +105,14 @@ class HuiTimerPresetsCardFeature
 
   private _unsubEntityRegistry?: UnsubscribeFunc;
 
+  private _entryTimeout?: number;
+
+  // The presets are read from the entity's settings
+  protected readonly _skeletonLoading = new SkeletonLoadingController(
+    this,
+    () => this._unsubEntityRegistry !== undefined && this._entry === undefined
+  );
+
   public connectedCallback() {
     super.connectedCallback();
     this._subscribeEntityEntry();
@@ -112,6 +124,8 @@ class HuiTimerPresetsCardFeature
   }
 
   private _unsubscribeEntityRegistry() {
+    window.clearTimeout(this._entryTimeout);
+
     if (this._unsubEntityRegistry) {
       this._unsubEntityRegistry();
       this._unsubEntityRegistry = undefined;
@@ -131,6 +145,23 @@ class HuiTimerPresetsCardFeature
       } catch (_e) {
         this._entry = null;
       }
+
+      // The registry gives no word when it fails to load, so stop waiting
+      // after a while. The entry still applies if it comes later.
+      window.clearTimeout(this._entryTimeout);
+      this._entryTimeout = window.setTimeout(() => {
+        if (this._entry === undefined) {
+          this._entry = null;
+        }
+      }, ENTRY_TIMEOUT);
+    }
+  }
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    if (changedProps.has("_entry")) {
+      this._presets = normalizeTimerPresets(
+        this._entry?.options?.timer?.presets
+      );
     }
   }
 
@@ -138,12 +169,6 @@ class HuiTimerPresetsCardFeature
     if (changedProps.has("context") || changedProps.has("_connection")) {
       this._unsubscribeEntityRegistry();
       this._subscribeEntityEntry();
-    }
-
-    if (changedProps.has("_entry")) {
-      this._presets = normalizeTimerPresets(
-        this._entry?.options?.timer?.presets
-      );
     }
   }
 
@@ -177,6 +202,11 @@ class HuiTimerPresetsCardFeature
     }
 
     const presets = this._presets;
+
+    // Keep the row while the presets load, so the card keeps its height
+    if (this._entry === undefined && this._unsubEntityRegistry) {
+      return html`<ha-control-button-group></ha-control-button-group>`;
+    }
 
     if (!presets.length) {
       return nothing;

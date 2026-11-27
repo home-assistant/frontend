@@ -673,7 +673,8 @@ export interface EnergyData {
   info: EnergyInfo;
   stats: Statistics;
   statsMetadata: Record<string, StatisticsMetaData>;
-  statsCompare: Statistics;
+  // Only while comparing with an earlier period
+  statsCompare?: Statistics;
   co2SignalEntity?: string;
   fossilEnergyConsumption?: FossilEnergyConsumption;
   fossilEnergyConsumptionCompare?: FossilEnergyConsumption;
@@ -1207,6 +1208,10 @@ export interface EnergyCollection extends Omit<
   compare?: CompareMode;
   combineSources?: boolean;
   prefs?: EnergyPreferences;
+  /** Calls back each time the preferences are fetched, before their data. */
+  subscribePrefs(listener: () => void): () => void;
+  /** Calls back when the current load fails, so nothing waits on it. */
+  subscribeErrors(listener: () => void): () => void;
   clearPrefs(): void;
   setPeriod(newStart: Date, newEnd?: Date): void;
   setCompare(compare: CompareMode): void;
@@ -1475,6 +1480,8 @@ export const getEnergyDataCollection = (
   let publishedSelectionRevision: number | undefined;
   let subscriptionId = 0;
   let store = createStore<EnergyData>();
+  const prefsListeners = new Set<() => void>();
+  const errorListeners = new Set<() => void>();
 
   const refresh = async (): Promise<void> => {
     const requestRevision = ++revision;
@@ -1490,6 +1497,7 @@ export const getEnergyDataCollection = (
           prefs = await getEnergyPreferences(callWS);
           // Preferences are independent of the selected period and comparison.
           collection.prefs = prefs;
+          prefsListeners.forEach((listener) => listener());
         } catch (err: any) {
           if (err.code !== "not_found") {
             throw err;
@@ -1507,6 +1515,7 @@ export const getEnergyDataCollection = (
         : await getEnergyData(options, prefs, start, end, compare);
     } catch (err) {
       if (requestRevision === revision) {
+        errorListeners.forEach((listener) => listener());
         throw err;
       }
       return;
@@ -1674,6 +1683,20 @@ export const getEnergyDataCollection = (
     prefs: options.prefs,
     _active: 0,
     isActive: () => !!collection._active,
+    subscribePrefs(listener) {
+      prefsListeners.add(listener);
+
+      return () => {
+        prefsListeners.delete(listener);
+      };
+    },
+    subscribeErrors(listener) {
+      errorListeners.add(listener);
+
+      return () => {
+        errorListeners.delete(listener);
+      };
+    },
     clearPrefs() {
       revision++;
       selectionRevision++;
@@ -2015,7 +2038,7 @@ const getSummedDataPartial = (
     const totalStats: Record<number, number> = {};
     let sum = 0;
     subStatIds!.forEach((id) => {
-      const stats = compare ? data.statsCompare[id] : data.stats[id];
+      const stats = compare ? data.statsCompare?.[id] : data.stats[id];
       if (!stats) {
         return;
       }

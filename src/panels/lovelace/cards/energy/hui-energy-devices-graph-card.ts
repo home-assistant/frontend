@@ -206,6 +206,7 @@ export class HuiEnergyDevicesGraphCard
             .sonificationLabelFormatter=${this._sonificationLabel}
             .extraComponents=${[PieChart]}
             .expandLegend=${this._config.expand_legend}
+            ?loading=${!this._data}
             click-label-for-more-info
             @chart-click=${this._handleChartClick}
             @dataset-hidden=${this._datasetHidden}

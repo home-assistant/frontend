@@ -9,6 +9,7 @@ import {
   consumeContext,
   ContextController,
 } from "../common/decorators/consume";
+import { SkeletonLoadingController } from "../components/skeleton/skeleton-loading-controller";
 import {
   apiContext,
   configContext,
@@ -19,7 +20,7 @@ import {
   uiContext,
 } from "./context";
 import type { EnergyCollection, EnergyData } from "./energy";
-import { getEnergyDataCollection } from "./energy";
+import { getEnergyDataCollection, hasCombinableEnergySources } from "./energy";
 import type { FrontendLocaleData } from "./translation";
 import type { HomeAssistant } from "../types";
 
@@ -28,6 +29,9 @@ export interface EnergyCollectionControllerOptions {
   config: () => { collection_key?: string } | undefined;
   beforeSubscribe?: (collection: EnergyCollection) => void;
   onData: (data: EnergyData) => void;
+  /** Whether the host still loads once the data came, such as while it
+      fetches more for it. The host shows a skeleton until it's done. */
+  loading?: () => boolean;
 }
 
 /**
@@ -85,7 +89,21 @@ export class EnergyCollectionController extends ContextController {
 
   private _unsub?: UnsubscribeFunc;
 
+  private _unsubPrefs?: () => void;
+
   private _collection?: EnergyCollection;
+
+  /* Whether data has come since subscribing, so the host can show a
+     skeleton until it does */
+  private _hasData = false;
+
+  /* Whether the load failed, as no data would come then and the skeleton
+     would cover the card, and controls that could try again, for good */
+  private _failed = false;
+
+  private _unsubErrors?: () => void;
+
+  private _placeholderData?: EnergyData;
 
   constructor(
     host: ReactiveControllerHost & HTMLElement,
@@ -93,10 +111,60 @@ export class EnergyCollectionController extends ContextController {
   ) {
     super(host);
     this._options = options;
+    new SkeletonLoadingController(
+      host,
+      () =>
+        this._unsub !== undefined &&
+        !this._failed &&
+        (!this._hasData || this._options.loading?.() === true)
+    );
   }
 
   get collection(): EnergyCollection | undefined {
     return this._collection;
+  }
+
+  /**
+   * The data the host is about to get, without its statistics, once the
+   * collection knows the energy preferences. A host can draw its real layout
+   * from it under its skeleton, so the skeleton has the size of what comes.
+   * The host updates when the preferences arrive.
+   */
+  get placeholderData(): EnergyData | undefined {
+    const collection = this._collection;
+    const prefs = collection?.prefs;
+
+    // After a failed load, empty statistics would read as real zeros
+    if (!collection || !prefs || this._hasData || this._failed) {
+      return undefined;
+    }
+
+    // The same object each time, so hosts don't redraw for nothing
+    const cached = this._placeholderData;
+
+    if (
+      cached?.prefs === prefs &&
+      cached.start === collection.start &&
+      cached.end === collection.end
+    ) {
+      return cached;
+    }
+
+    this._placeholderData = {
+      start: collection.start,
+      end: collection.end,
+      prefs,
+      combineSources: hasCombinableEnergySources(prefs)
+        ? collection.combineSources
+        : undefined,
+      info: { cost_sensors: {}, solar_forecast_domains: [] },
+      stats: {},
+      statsMetadata: {},
+      waterUnit: "",
+      gasUnit: "",
+    };
+
+    return this._placeholderData;
   }
 
   hostConnected(): void {
@@ -142,6 +210,8 @@ export class EnergyCollectionController extends ContextController {
     }
     this._unsubscribe();
     this._key = key;
+    this._hasData = false;
+    this._failed = false;
     this._collection = getEnergyDataCollection(this._connection, {
       callWS: this._callWS,
       entities: this._entities,
@@ -152,10 +222,38 @@ export class EnergyCollectionController extends ContextController {
       key,
     });
     this._options.beforeSubscribe?.(this._collection);
-    this._unsub = this._collection.subscribe(this._options.onData);
+
+    // So the host can draw its layout from the preferences before its data
+    this._unsubPrefs = this._collection.subscribePrefs(() => {
+      if (!this._hasData) {
+        this.host.requestUpdate();
+      }
+    });
+
+    this._unsubErrors = this._collection.subscribeErrors(() => {
+      this._failed = true;
+      this.host.requestUpdate();
+    });
+
+    this._unsub = this._collection.subscribe((data) => {
+      this._hasData = true;
+      this._failed = false;
+      this._options.onData(data);
+      // So the skeleton goes even if the host keeps nothing new
+      this.host.requestUpdate();
+    });
+
+    // So the host shows a skeleton until the data comes
+    if (!this._hasData) {
+      this.host.requestUpdate();
+    }
   }
 
   private _unsubscribe(): void {
+    this._unsubPrefs?.();
+    this._unsubPrefs = undefined;
+    this._unsubErrors?.();
+    this._unsubErrors = undefined;
     this._unsub?.();
     this._unsub = undefined;
   }

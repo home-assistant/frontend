@@ -73,6 +73,7 @@ import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import { ensureMapTilesToken } from "../../data/map_tiles";
 import "../ha-tooltip";
+import { SkeletonLoadingController } from "../skeleton/skeleton-loading-controller";
 import type {
   HomeAssistantConfig,
   HomeAssistantConnection,
@@ -715,6 +716,15 @@ export class HaMap extends ReactiveElement {
 
   private _drawnFallback?: number;
 
+  /* No engine could start, so no frame will come */
+  private _mapFailed = false;
+
+  // Until the first frame, which the map fades in with
+  protected readonly _skeletonLoading = new SkeletonLoadingController(
+    this,
+    () => this.isConnected && !this._mapDrawn && !this._mapFailed
+  );
+
   private _markDrawn(attempt: number): void {
     if (attempt !== this._setupAttempt || this._mapDrawn) {
       return;
@@ -722,6 +732,7 @@ export class HaMap extends ReactiveElement {
     clearTimeout(this._drawnFallback);
     this._mapDrawn = true;
     this._updateMapAppearance();
+    this.requestUpdate();
   }
 
   private _loading = false;
@@ -760,7 +771,9 @@ export class HaMap extends ReactiveElement {
         return;
       }
       if (onFallback) {
-        // Already on the fallback; nothing left to try
+        // Already on the fallback; nothing left to try, so stop loading
+        this._mapFailed = true;
+        this.requestUpdate();
         throw err;
       }
       this._forceLeaflet = true;
@@ -780,6 +793,7 @@ export class HaMap extends ReactiveElement {
     this.shadowRoot!.append(map);
     this._loading = true;
     this._mapDrawn = false;
+    this._mapFailed = false;
     clearTimeout(this._drawnFallback);
     const attempt = ++this._setupAttempt;
     let engine: MapEngine | undefined;

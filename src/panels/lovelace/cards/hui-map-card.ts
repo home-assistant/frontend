@@ -453,6 +453,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .scaleRuler=${this._config.scale_ruler || false}
             @map-clicked=${this._handleMapClicked}
             interactive-zones
+            data-skeleton="block"
             .renderPassive=${this.layout !== PANEL_VIEW_LAYOUT}
           ></ha-map>
           <div id="buttons">

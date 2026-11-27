@@ -58,16 +58,25 @@ html`
 `;
 ```
 
-- Turn it on with `loading`, or fire `skeleton-loading` (`{ loading: true }`, later `{ loading: false }`) from inside the content. The event stops at the nearest overlay, so content doesn't need to know what wraps it.
+- Turn it on with `loading`, or fire `skeleton-loading` (`{ loading: true }`, later `{ loading: false }`) from inside the content. The event stops at the nearest overlay, so content doesn't need to know what wraps it. In a Lit component, add a `SkeletonLoadingController` from `src/components/skeleton/skeleton-loading-controller.ts` with a function that says whether it's loading, and it fires the events for you.
 - Give the overlay a `skeleton-key` and it remembers how tall the content was once loaded, then holds that height next time. For content other than cards and badges, make one with `skeletonKey()` from `src/components/skeleton/skeleton-sizes.ts`.
 - Mark parts that shouldn't be read with `data-skeleton`: `none` leaves an element out and showing, `keep` leaves it showing but reads what's inside, and `text`, `round` or `block` force one piece of that kind. Skeletons the content draws itself are left alone.
 - Put your own skeleton in the `skeleton` slot to replace the reading altogether.
-- Call `refresh()` when the content changes without changing size.
+- Call `refresh()` when the content changes without changing size. From inside the content, call `refresh()` on its `SkeletonLoadingController` instead, such as after a calendar draws its month by itself.
 - It gives the skeleton the `progressbar` role and the translated label itself.
 
 ## Cards And Badges
 
-`hui-card` and `hui-badge` already wrap every card and badge in an overlay, with a `skeleton-key` from the card's config, and show a plain wave while the card's code loads. Don't add another overlay or a hand-drawn skeleton inside a card. A card that fetches data only has to say when it's loading.
+`hui-card` and `hui-badge` already wrap every card and badge in an overlay, with a `skeleton-key` from the card's config, and show a plain wave while the card's code loads. Don't add another overlay or a hand-drawn skeleton inside a card. A card that fetches data only needs a `SkeletonLoadingController`, as `hui-calendar-card` and the history and statistics charts do. Energy cards pass `loading` to `EnergyCollectionController` instead, for when they fetch more after the collection's data arrives.
+
+## First Visit Sizes
+
+Remembered heights only help from the second visit. For the first, render placeholders as big as the content will be, so it doesn't jump when the data arrives:
+
+- Set `loading` on `ha-chart-base` to have the chart read as one block and its legend as one line, or as its items when the legend has them already.
+- Before a chart exists, use `chartPlaceholderStyles` from `src/components/chart/chart-placeholder.ts`.
+- Lists of a known length, such as the to-do list from its entity's state, draw that many hidden rows. Lists of an unknown length draw a typical few, as `ha-logbook` does with `placeholder-rows`.
+- Energy cards whose layout follows the energy preferences, such as the sources table and the devices detail graph, draw it from `EnergyCollectionController.placeholderData` until their data comes. The controller updates the card when the preferences arrive. The energy dashboard itself waits for the data before it builds its cards, so check these on a regular dashboard.
 
 While a card's code loads, its wave holds the card's remembered height, else the latest height of a card of the same type (`skeleton-type-key`), else a typical height for its type from `LAZY_LOAD_HEIGHTS` in `src/panels/lovelace/create-element/create-card-element.ts`. When you add a card type that loads its own code and is taller than one row, add its height there, measured in a section column with a short config.
 
@@ -98,7 +107,8 @@ Check a loading state in the browser, not only by reading the code. These work o
   ```
 
 - **Cards and badges in the gallery.** The gallery's Card skeletons page (`gallery/src/pages/lovelace/card-skeletons.ts`) shows cards and badges with their skeletons, and "Simulate loading" replays the arrival. Add a card there when you change how it loads.
-- **Clear remembered heights** with `localStorage.removeItem("skeletonHeights")` and reload, to see a first visit again.
+- **Clear remembered heights** with `localStorage.removeItem("skeletonHeights")` and reload, to see a first visit again. They're read when the page loads, so clear them before reloading, not after.
+- **Check a first visit.** Clear remembered heights, reload on a screen without the content, hold the data back, then open the content from inside the app. Measure each card's height while it loads and once it has loaded: they should match. Do it at a phone width and a desktop width, as rows and legends wrap differently.
 - **Compare the skeleton with the content.** It should take the same space, so nothing moves when the content arrives. Measure the wrapper's height while loading and once loaded (`element.getBoundingClientRect().height` in the console), or take a screenshot of each at the same size and flick between them. Look for pieces that are missing, extra or in the wrong place, and fix those with `data-skeleton`.
 - **Compare before and after.** Take screenshots of the same screen on `dev` and on your branch, at the same viewport size, both loading and loaded, and put them side by side. In a pull request, show both.
 - **Check every look.** Light and dark themes, a right-to-left language (the wave starts from the right), reduced motion (DevTools, Rendering, "Emulate CSS media feature prefers-reduced-motion": the wave stops), and a phone width (DevTools device toolbar).

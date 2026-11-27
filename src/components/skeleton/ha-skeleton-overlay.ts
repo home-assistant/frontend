@@ -25,6 +25,9 @@ const SETTLE_TIME = 2000;
 
 export interface SkeletonLoadingDetail {
   loading: boolean;
+  /* Set by the overlay that takes a loading source: lets go of it, for a
+     source removed with no event path left to say it's done */
+  release?: () => void;
 }
 
 interface ArrivingParts {
@@ -389,6 +392,7 @@ export class HaSkeletonOverlay extends LitElement {
 
     if (ev.detail.loading) {
       sources.add(source);
+      ev.detail.release = () => this._releaseSource(source);
     } else {
       sources.delete(source);
     }
@@ -396,6 +400,16 @@ export class HaSkeletonOverlay extends LitElement {
     this._loadingSources = sources;
     this._scheduleMeasure();
   };
+
+  private _releaseSource(source: EventTarget) {
+    if (!this._loadingSources.has(source)) {
+      return;
+    }
+
+    const sources = new Set(this._loadingSources);
+    sources.delete(source);
+    this._loadingSources = sources;
+  }
 
   /* Sizes and visibility only matter while loading, so an overlay around
      content that has loaded costs nothing */

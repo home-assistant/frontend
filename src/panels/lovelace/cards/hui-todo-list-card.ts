@@ -29,6 +29,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { calcDate } from "../../../common/datetime/calc_date";
@@ -58,6 +59,7 @@ import "../../../components/list/ha-list-selectable";
 import type { HaListSelectable } from "../../../components/list/ha-list-selectable";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
+import { SkeletonLoadingController } from "../../../components/skeleton/skeleton-loading-controller";
 import {
   apiContext,
   configContext,
@@ -177,6 +179,33 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   private _api!: HomeAssistantApi;
 
   @state() private _items?: TodoItem[];
+
+  @state() private _itemsFailed = false;
+
+  private _wasUnavailable = false;
+
+  protected readonly _skeletonLoading = new SkeletonLoadingController(
+    this,
+    () =>
+      this._stateObj !== undefined &&
+      // An unavailable list may never send its items
+      this._stateObj.state !== UNAVAILABLE &&
+      this._stateObj.state !== UNKNOWN &&
+      this._items === undefined &&
+      !this._itemsFailed
+  );
+
+  /* Stand-ins for the items while they load, as many as the list's state
+     says are still to do. They're drawn hidden, so a skeleton over the card
+     takes the space the items will. */
+  private _placeholderItems = memoizeOne((count: number): TodoItem[] =>
+    Array.from({ length: count }, (_, index) => ({
+      uid: `placeholder-${index}`,
+      // Hidden, only their length counts
+      summary: "x".repeat([14, 9, 18, 11][index % 4]),
+      status: TodoItemStatus.NeedsAction,
+    }))
+  );
 
   @state() private _reordering = false;
 
@@ -422,12 +451,30 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   }
 
   public willUpdate(changedProperties: PropertyValues): void {
+    // A missing entity counts too, so its return is a way back
+    const unavailable =
+      this._stateObj === undefined ||
+      this._stateObj.state === UNAVAILABLE ||
+      this._stateObj.state === UNKNOWN;
+
+    // The list is back after being unavailable
+    const cameBack = this._wasUnavailable && !unavailable;
+
+    this._wasUnavailable = unavailable;
+
     if (!this.hasUpdated) {
       if (!this._entityId) {
         this._entityId = this.getEntityId();
       }
       this._subscribeItems();
-    } else if (changedProperties.has("_entityId") || !this._items) {
+    } else if (
+      changedProperties.has("_entityId") ||
+      // A failed subscription isn't retried on every update, which would
+      // loop, only when the entity changes, the card connects again, or the
+      // list comes back after being unavailable
+      (!this._items && !this._itemsFailed) ||
+      (this._itemsFailed && cameBack)
+    ) {
       this._items = undefined;
       this._subscribeItems();
     }
@@ -472,8 +519,27 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     const unavailable =
       stateObj.state === UNAVAILABLE || stateObj.state === UNKNOWN;
 
+    // While the items load, as many hidden rows as the list says are to do
+    const toDo = Number(stateObj.state);
+
+    const placeholders =
+      this._items === undefined &&
+      // Stand-ins are only for loading, not after the items failed
+      !this._itemsFailed &&
+      Number.isInteger(toDo) &&
+      toDo > 0
+        ? this._placeholderItems(Math.min(toDo, 50))
+        : undefined;
+
+    const items = this._items ?? placeholders;
+
+    // Stand-ins have no due date, so a due date filter would drop them all
+    const dueDatePeriod = placeholders
+      ? undefined
+      : this._config.due_date_period;
+
     // Discard memoization when we rollover to a new day, so filters can be recalculated
-    const memoTime = this._config.due_date_period
+    const memoTime = dueDatePeriod
       ? calcDate(
           new Date(),
           endOfDay,
@@ -483,30 +549,30 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       : 0;
 
     const checkedItems = this._getCheckedItems(
-      this._items,
+      items,
       this._config.display_order,
-      this._config.due_date_period,
+      dueDatePeriod,
       memoTime
     );
     const uncheckedItems = this._getUncheckedItems(
-      this._items,
+      items,
       this._config.display_order,
-      this._config.due_date_period,
+      dueDatePeriod,
       memoTime
     );
 
     const itemsWithoutStatus = this._getItemsWithoutStatus(
-      this._items,
+      items,
       this._config.display_order,
-      this._config.due_date_period,
+      dueDatePeriod,
       memoTime
     );
 
     const reorderableItems = this._reordering
       ? this._getUncheckedAndItemsWithoutStatus(
-          this._items,
+          items,
           this._config.display_order,
-          this._config.due_date_period,
+          dueDatePeriod,
           memoTime
         )
       : undefined;
@@ -548,6 +614,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             : nothing
         }
         <ha-sortable
+          class=${classMap({ placeholder: placeholders !== undefined })}
+          ?inert=${placeholders !== undefined}
+          aria-hidden=${ifDefined(placeholders ? "true" : undefined)}
           handle-selector="ha-svg-icon"
           draggable-selector=".draggable"
           .disabled=${!this._reordering}
@@ -845,13 +914,26 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     if (!(this._entityId in this._states)) {
       return;
     }
-    this._unsubItems = subscribeItems(
+
+    this._itemsFailed = false;
+
+    const subscription = subscribeItems(
       this._connection,
       this._entityId,
       (update) => {
         this._items = update.items;
       }
     );
+
+    // Without items to wait for, the card stops loading, so its controls
+    // aren't left covered. Only the current request decides.
+    subscription.catch(() => {
+      if (this._unsubItems === subscription) {
+        this._itemsFailed = true;
+      }
+    });
+
+    this._unsubItems = subscription;
   }
 
   private _getItem(itemId: string) {
@@ -1117,6 +1199,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     .addRow ha-icon-button {
       --ha-icon-button-size: 32px;
+    }
+
+    ha-sortable.placeholder {
+      opacity: 0;
     }
 
     .addRow,

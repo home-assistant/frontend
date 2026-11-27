@@ -197,9 +197,10 @@ export class HuiEnergyWaterGraphCard
               this._yAxisFractionDigits
             )}
             chart-type="bar"
+            ?loading=${!this._data}
           ></ha-chart-base>
           ${
-            !this._chartData.length
+            this._data && !this._chartData.length
               ? html`<div class="no-data">
                   ${
                     isToday(this._start)

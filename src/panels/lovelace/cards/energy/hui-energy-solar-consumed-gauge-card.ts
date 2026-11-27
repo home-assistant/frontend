@@ -21,6 +21,7 @@ import type {
 import type { LovelaceCard } from "../../types";
 import { severityMap } from "../hui-gauge-card";
 import type { EnergySolarGaugeCardConfig } from "../types";
+import { renderEnergyGaugeLoading } from "./common/gauge-loading";
 
 const FORMAT_OPTIONS = {
   maximumFractionDigits: 0,
@@ -78,7 +79,12 @@ class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
     }
 
     if (!this._data) {
-      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
+      return html`<ha-card>
+        ${renderEnergyGaugeLoading(
+          this._i18n.locale,
+          this._i18n.localize("ui.panel.lovelace.cards.energy.loading")
+        )}
+      </ha-card>`;
     }
 
     const { summedData, compareSummedData: _ } = getSummedData(this._data);

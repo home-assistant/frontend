@@ -212,7 +212,13 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
     }
 
     if (!this._data) {
-      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
+      return html`<ha-card .header=${this._config.title}>
+        <div class="card-content">
+          <div class="loading" data-skeleton="block">
+            ${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}
+          </div>
+        </div>
+      </ha-card>`;
     }
 
     const prefs = this._data.prefs;
@@ -968,6 +974,11 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
     .card-content {
       position: relative;
       direction: ltr;
+    }
+    /* The usual layout: a row of sources over the grid and home. Others are
+       remembered once seen. */
+    .loading {
+      height: 230px;
     }
     .lines {
       position: absolute;

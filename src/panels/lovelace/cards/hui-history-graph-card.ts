@@ -370,6 +370,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                   <state-history-charts
                     .isLoadingData=${!this._history}
                     .historyData=${this._history}
+                    .loadingEntityIds=${this._entityIds}
+                    ?split-device-classes=${this._config.split_device_classes}
                     .names=${this._names}
                     up-to-now
                     .hoursToShow=${this._hoursToShow}

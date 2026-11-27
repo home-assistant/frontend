@@ -15,6 +15,7 @@ import {
 import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import { SkeletonLoadingController } from "../../../components/skeleton/skeleton-loading-controller";
 import { apiContext, connectionContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
@@ -44,6 +45,9 @@ import { getMoreInfoHintCardFeatureEditor } from "./get-more-info-hint-card-feat
 
 const PILL_GAP = 8;
 const PILL_MIN_SIZE = 32;
+
+/* How long to wait for the entity's settings before showing without them */
+const ENTRY_TIMEOUT = 5000;
 
 const supportsLightColorFavoritesCardFeatureFromState = (
   stateObj: HassEntity
@@ -97,6 +101,14 @@ class HuiLightColorFavoritesCardFeature
 
   private _unsubEntityRegistry?: UnsubscribeFunc;
 
+  private _entryTimeout?: number;
+
+  // The favourites are read from the entity's settings
+  protected readonly _skeletonLoading = new SkeletonLoadingController(
+    this,
+    () => this._unsubEntityRegistry !== undefined && this._entry === undefined
+  );
+
   private _resizeController = new ResizeController(this, {
     callback: (entries) => {
       const width = entries[0]?.contentRect.width;
@@ -118,6 +130,8 @@ class HuiLightColorFavoritesCardFeature
   }
 
   private _unsubscribeEntityRegistry() {
+    window.clearTimeout(this._entryTimeout);
+
     if (this._unsubEntityRegistry) {
       this._unsubEntityRegistry();
       this._unsubEntityRegistry = undefined;
@@ -131,15 +145,22 @@ class HuiLightColorFavoritesCardFeature
         this._unsubEntityRegistry = subscribeEntityRegistry(
           this._connection,
           (entries) => {
-            const entry = entries.find((e) => e.entity_id === id);
-            if (entry) {
-              this._entry = entry;
-            }
+            // Without an entry, there are no favourites to wait for
+            this._entry = entries.find((e) => e.entity_id === id) ?? null;
           }
         );
       } catch (_e) {
         this._entry = null;
       }
+
+      // The registry gives no word when it fails to load, so stop waiting
+      // after a while. The entry still applies if it comes later.
+      window.clearTimeout(this._entryTimeout);
+      this._entryTimeout = window.setTimeout(() => {
+        if (this._entry === undefined) {
+          this._entry = null;
+        }
+      }, ENTRY_TIMEOUT);
     }
   }
 
@@ -147,12 +168,7 @@ class HuiLightColorFavoritesCardFeature
     return this._resizeController.value ?? 0;
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("context") || changedProps.has("_connection")) {
-      this._unsubscribeEntityRegistry();
-      this._subscribeEntityEntry();
-    }
-
+  protected willUpdate(changedProps: PropertyValues): void {
     if (changedProps.has("_entry")) {
       if (this._entry?.options?.light?.favorite_colors) {
         this._favoriteColors = this._entry.options.light.favorite_colors;
@@ -161,6 +177,13 @@ class HuiLightColorFavoritesCardFeature
       } else {
         this._favoriteColors = [];
       }
+    }
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("context") || changedProps.has("_connection")) {
+      this._unsubscribeEntityRegistry();
+      this._subscribeEntityEntry();
     }
   }
 

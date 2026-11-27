@@ -78,6 +78,12 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   @state() private _statistics?: Statistics;
 
+  /* The last fetch failed, so nothing is loading until the next one */
+  @state() private _statisticsFailed = false;
+
+  /* Counts statistics fetches, so only the latest one decides on failure */
+  private _statisticsRequest = 0;
+
   @state() private _metadata?: Record<string, StatisticsMetaData>;
 
   @state() private _unit?: string;
@@ -365,7 +371,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
           })}"
         >
           <statistics-chart
-            .isLoadingData=${!this._statistics}
+            .isLoadingData=${!this._statistics && !this._statisticsFailed}
             .statisticsData=${this._statistics}
             .metadata=${this._metadata}
             .period=${this._period}
@@ -408,10 +414,23 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   }
 
   private async _getStatisticsMetaData(statisticIds: string[] | undefined) {
-    const statsMetadataArray = await getStatisticMetadata(
-      this._api.callWS,
-      statisticIds
-    );
+    let statsMetadataArray: Awaited<ReturnType<typeof getStatisticMetadata>>;
+    const request = this._statisticsRequest;
+
+    try {
+      statsMetadataArray = await getStatisticMetadata(
+        this._api.callWS,
+        statisticIds
+      );
+    } catch (err) {
+      // The statistics won't be fetched after this, so stop loading, unless
+      // another fetch started meanwhile and is still going
+      if (request === this._statisticsRequest) {
+        this._statisticsFailed = true;
+      }
+      throw err;
+    }
+
     const statisticsMetaData = {};
     statsMetadataArray.forEach((x) => {
       statisticsMetaData[x.statistic_id] = x;
@@ -427,6 +446,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         24 * (this._config!.days_to_show || DEFAULT_DAYS_TO_SHOW) + 1
       );
     const endDate = this._energyEnd;
+    const request = ++this._statisticsRequest;
+    this._statisticsFailed = false;
     try {
       let unitClass: string | undefined | null;
       if (this._config!.unit && this._metadata) {
@@ -473,7 +494,15 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         }
       });
     } catch (_err) {
+      // A newer fetch is still going, so it decides instead
+      if (request !== this._statisticsRequest) {
+        return;
+      }
+
       this._statistics = undefined;
+      // No request is pending, so the card stops loading rather than staying
+      // covered until a later fetch works
+      this._statisticsFailed = true;
     }
   }
 

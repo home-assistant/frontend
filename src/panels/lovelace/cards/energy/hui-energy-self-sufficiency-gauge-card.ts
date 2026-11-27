@@ -22,6 +22,7 @@ import type {
 import type { LovelaceCard } from "../../types";
 import { severityMap } from "../hui-gauge-card";
 import type { EnergySelfSufficiencyGaugeCardConfig } from "../types";
+import { renderEnergyGaugeLoading } from "./common/gauge-loading";
 
 const FORMAT_OPTIONS = {
   maximumFractionDigits: 0,
@@ -82,7 +83,12 @@ class HuiEnergySelfSufficiencyGaugeCard
     }
 
     if (!this._data) {
-      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
+      return html`<ha-card>
+        ${renderEnergyGaugeLoading(
+          this._i18n.locale,
+          this._i18n.localize("ui.panel.lovelace.cards.energy.loading")
+        )}
+      </ha-card>`;
     }
 
     // The strategy only includes this card if we have a grid.

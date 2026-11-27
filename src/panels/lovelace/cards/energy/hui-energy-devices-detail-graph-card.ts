@@ -81,6 +81,9 @@ export class HuiEnergyDevicesDetailGraphCard
 
   @state() private _data?: EnergyData;
 
+  // The data the chart was last built from
+  private _processedData?: EnergyData;
+
   @state() private _legendData?: CustomLegendOption["data"];
 
   @state() private _start = startOfToday();
@@ -122,15 +125,12 @@ export class HuiEnergyDevicesDetailGraphCard
   @consume({ context: uiContext, subscribe: true })
   private _ui!: HomeAssistantUI;
 
-  constructor() {
-    super();
-    new EnergyCollectionController(this, {
-      config: () => this._config,
-      onData: (data) => {
-        this._data = data;
-      },
-    });
-  }
+  private _energy = new EnergyCollectionController(this, {
+    config: () => this._config,
+    onData: (data) => {
+      this._data = data;
+    },
+  });
 
   public getCardSize(): Promise<number> | number {
     return 3;
@@ -144,12 +144,17 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   protected willUpdate(changedProps: PropertyValues) {
+    // Until the data comes, the legend lists the configured devices so the
+    // skeleton has as many legend rows as the chart will
+    const energyData = this._data ?? this._energy.placeholderData;
+
     if (
       changedProps.has("_config") ||
-      changedProps.has("_data") ||
-      changedProps.has("_i18n")
+      changedProps.has("_i18n") ||
+      energyData !== this._processedData
     ) {
-      this._processStatistics();
+      this._processedData = energyData;
+      this._processStatistics(energyData);
     }
   }
 
@@ -184,6 +189,7 @@ export class HuiEnergyDevicesDetailGraphCard
               this._legendData
             )}
             .expandLegend=${this._config.expand_legend}
+            ?loading=${!this._data}
             click-label-for-more-info
             @dataset-hidden=${this._datasetHidden}
             @dataset-unhidden=${this._datasetUnhidden}
@@ -310,11 +316,10 @@ export class HuiEnergyDevicesDetailGraphCard
     }
   );
 
-  private _processStatistics() {
-    if (!this._data) {
+  private _processStatistics(energyData?: EnergyData) {
+    if (!energyData) {
       return;
     }
-    const energyData = this._data;
 
     const {
       chartData,

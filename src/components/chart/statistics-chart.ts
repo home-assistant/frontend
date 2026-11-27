@@ -57,10 +57,12 @@ import type {
   ZoomSliderMode,
 } from "./ha-chart-base";
 import "./ha-chart-base";
+import { chartPlaceholderStyles } from "./chart-placeholder";
 import { sideTooltipPosition } from "./chart-tooltip-position";
 import "./ha-chart-tooltip-marker";
 import { generateStatisticsChartData } from "./statistics-chart-data";
 import { createYAxisPrecisionBounds } from "./y-axis-fraction-digits";
+import { SkeletonLoadingController } from "../skeleton/skeleton-loading-controller";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -120,6 +122,14 @@ export class StatisticsChart extends LitElement {
 
   @property({ attribute: "is-loading-data", type: Boolean })
   public isLoadingData = false;
+
+  protected readonly _skeletonLoading = new SkeletonLoadingController(
+    this,
+    () =>
+      isComponentLoaded(this._hassConfig, "history") &&
+      this.isLoadingData &&
+      !this.statisticsData
+  );
 
   @property({ attribute: "click-for-more-info", type: Boolean })
   public clickForMoreInfo = true;
@@ -242,10 +252,23 @@ export class StatisticsChart extends LitElement {
     }
 
     if (this.isLoadingData && !this.statisticsData) {
-      return html`<div class="info">
-        ${this._i18n.localize(
-          "ui.components.statistics_charts.loading_statistics"
-        )}
+      const label = this._i18n.localize(
+        "ui.components.statistics_charts.loading_statistics"
+      );
+
+      // A chart given a height holds its space already
+      if (this.height) {
+        return html`<div class="info" data-skeleton="block">${label}</div>`;
+      }
+
+      // Takes the space the chart will, so nothing moves when it arrives
+      return html`<div class="placeholder-container">
+        <div class="info placeholder" data-skeleton="block">${label}</div>
+        ${
+          this.hideLegend
+            ? nothing
+            : html`<div class="legend-placeholder" data-skeleton="text"></div>`
+        }
       </div>`;
     }
 
@@ -697,6 +720,7 @@ export class StatisticsChart extends LitElement {
       line-height: 60px;
       color: var(--secondary-text-color);
     }
+    ${chartPlaceholderStyles}
   `;
 }
 
