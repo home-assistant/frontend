@@ -3,9 +3,10 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
-import { formatDate } from "../../../common/datetime/format_date";
-import { relativeTime } from "../../../common/datetime/relative_time";
+import { formatDateVeryShort } from "../../../common/datetime/format_date";
+import { formatDateTime } from "../../../common/datetime/format_date_time";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
@@ -13,6 +14,7 @@ import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon";
 import "../../../components/ha-label";
 import "../../../components/ha-spinner";
+import "../../../components/ha-tooltip";
 import "../../../components/item/ha-list-item-base";
 import "../../../components/list/ha-list-base";
 import {
@@ -37,6 +39,7 @@ import {
   forgetDeletedEntityRegistryEntry,
 } from "../../../data/entity/entity_registry";
 import { domainToName } from "../../../data/integration";
+import type { FrontendLocaleData } from "../../../data/translation";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../resources/styles";
@@ -47,6 +50,27 @@ import type { RecentlyRemovedDialogParams } from "./show-dialog-recently-removed
 const ORPHANED_KEEP_SECONDS = 30 * 86400;
 
 const MAX_IDENTIFIER_LENGTH = 24;
+
+const relativeTimeFormat = memoizeOne(
+  (language: string) =>
+    new Intl.RelativeTimeFormat(language, { numeric: "always" })
+);
+
+// Days instead of weeks or months, so the age reads the same in every row.
+const relativeTimeInDays = (from: Date, locale: FrontendLocaleData) => {
+  const minutes = Math.max(
+    1,
+    Math.round((Date.now() - from.getTime()) / 60000)
+  );
+  const format = relativeTimeFormat(locale.language);
+  if (minutes < 60) {
+    return format.format(-minutes, "minute");
+  }
+  if (minutes < 24 * 60) {
+    return format.format(-Math.floor(minutes / 60), "hour");
+  }
+  return format.format(-Math.floor(minutes / (24 * 60)), "day");
+};
 
 interface RemovedItem {
   id: string;
@@ -265,8 +289,9 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
         : undefined,
       area?.name,
     ].filter(Boolean);
+    const removedAt = new Date(item.removedAt * 1000);
     const removed = this._i18n.localize(`${key}.removed`, {
-      time: relativeTime(new Date(item.removedAt * 1000), locale),
+      time: relativeTimeInDays(removedAt, locale),
     });
 
     return html`<ha-list-item-base>
@@ -294,11 +319,11 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
       <div slot="supporting-text">
         ${details.length ? html`<div>${details.join(" · ")}</div>` : nothing}
         <div>
-          ${removed}${
+          <span id="removed-${item.id}">${removed}</span>${
             item.orphanedAt !== null
               ? html` ·
                 ${this._i18n.localize(`${key}.kept_until`, {
-                  date: formatDate(
+                  date: formatDateVeryShort(
                     new Date((item.orphanedAt + ORPHANED_KEEP_SECONDS) * 1000),
                     locale,
                     this._hassConfig.config
@@ -306,6 +331,9 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
                 })}`
               : nothing
           }
+          <ha-tooltip for="removed-${item.id}" placement="top">
+            ${formatDateTime(removedAt, locale, this._hassConfig.config)}
+          </ha-tooltip>
         </div>
         ${
           labels.length
@@ -348,18 +376,37 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
       return;
     }
     const key = "ui.panel.config.recently_removed";
+    let text = this._i18n.localize(
+      this._isDevice
+        ? `${key}.forget_device_text`
+        : `${key}.forget_entity_text`,
+      { name: item.headline }
+    );
+    if (this._isDevice) {
+      let entities: DeletedEntityRegistryEntry[];
+      try {
+        entities = await fetchDeletedEntityRegistryEntries(this._api.callWS);
+      } catch (err: any) {
+        this._forgetError =
+          err?.message || this._i18n.localize(`${key}.load_failed`);
+        return;
+      }
+      const count = entities.filter(
+        (entity) => entity.device_id === item.id
+      ).length;
+      if (count) {
+        text += ` ${this._i18n.localize(`${key}.forget_device_entities`, {
+          count,
+        })}`;
+      }
+    }
     const confirmed = await showConfirmationDialog(this, {
       title: this._i18n.localize(
         this._isDevice
           ? `${key}.forget_device_title`
           : `${key}.forget_entity_title`
       ),
-      text: this._i18n.localize(
-        this._isDevice
-          ? `${key}.forget_device_text`
-          : `${key}.forget_entity_text`,
-        { name: item.headline }
-      ),
+      text,
       confirmText: this._i18n.localize(`${key}.forget`),
       dismissText: this._i18n.localize("ui.common.cancel"),
       destructive: true,
