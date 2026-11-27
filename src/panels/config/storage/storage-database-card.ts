@@ -1,3 +1,4 @@
+import { mdiArrowDown, mdiArrowUp, mdiMenuDown } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,7 +9,10 @@ import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
-import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { formatNumber } from "../../../common/number/format_number";
@@ -17,13 +21,20 @@ import "../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
+  SortingChangedEvent,
+  SortingDirection,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-segmented-bar";
 import type { Segment } from "../../../components/ha-segmented-bar";
 import "../../../components/ha-spinner";
+import "../../../components/ha-svg-icon";
 import {
   configContext,
   fullEntitiesContext,
@@ -167,6 +178,10 @@ export class StorageDatabaseCard extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   private _entityRegistry: EntityRegistryEntry[] = [];
 
+  @state() private _sortColumn?: string;
+
+  @state() private _sortDirection: SortingDirection = null;
+
   protected render(): TemplateResult {
     const usage = this.usage;
     return html`
@@ -204,6 +219,7 @@ export class StorageDatabaseCard extends LitElement {
                 : nothing
           }
         </div>
+        ${usage ? this._renderTable(usage) : nothing}
         <div class="card-actions">
           <ha-button
             appearance="plain"
@@ -270,15 +286,25 @@ export class StorageDatabaseCard extends LitElement {
             ></ha-segmented-bar>`
           : nothing
       }
+    `;
+  }
+
+  private _renderTable(usage: RecorderDatabaseUsage) {
+    const columns = this._columns(
+      this._localize,
+      this._locale,
+      this.narrow,
+      usage.tables !== null,
+      this._sortColumn
+    );
+    return html`
       <div class="table">
         <ha-data-table
           .narrow=${this.narrow}
-          .columns=${this._columns(
-            this._localize,
-            this._locale,
-            this.narrow,
-            usage.tables !== null
-          )}
+          .columns=${columns}
+          .sortColumn=${this._sortColumn}
+          .sortDirection=${this._sortDirection}
+          @sorting-changed=${this._sortingChanged}
           .data=${this._rows(usage, this._entityRegistry, this._localize)}
           .searchLabel=${this._localize(
             "ui.panel.config.storage.database.search"
@@ -286,7 +312,9 @@ export class StorageDatabaseCard extends LitElement {
           .noDataText=${this._localize(
             "ui.panel.config.storage.database.no_entities"
           )}
-        ></ha-data-table>
+        >
+          ${this.narrow ? this._renderSortMenu(columns) : nothing}
+        </ha-data-table>
       </div>
     `;
   }
@@ -371,84 +399,157 @@ export class StorageDatabaseCard extends LitElement {
       localize: LocalizeFunc,
       locale: FrontendLocaleData,
       narrow: boolean,
-      hasSizes: boolean
-    ): DataTableColumnContainer<EntityUsageRow> => ({
-      name: {
-        title: localize("ui.panel.config.storage.database.columns.entity"),
-        main: true,
-        sortable: true,
-        filterable: true,
-        flex: 3,
-        template: (row) => {
-          const content = html`${row.name}
-          ${
-            row.id !== UNKNOWN_ROW_ID && row.name !== row.id
-              ? html`<div class="secondary">${row.id}</div>`
-              : nothing
-          }`;
-          // Rendered inside the data table, which styles .row-button.
-          return row.hasSettings
-            ? html`<button
-                type="button"
-                class="row-button"
-                data-entity-id=${row.id}
-                @click=${this._openSettings}
-              >
-                ${content}
-              </button>`
-            : content;
+      hasSizes: boolean,
+      sortColumn: string | undefined
+    ): DataTableColumnContainer<EntityUsageRow> => {
+      // Narrow screens show one number beside the name: the sorted one.
+      const narrowColumn =
+        sortColumn && sortColumn !== "name"
+          ? sortColumn
+          : hasSizes
+            ? "bytes"
+            : "states";
+      return {
+        name: {
+          title: localize("ui.panel.config.storage.database.columns.entity"),
+          main: true,
+          sortable: true,
+          filterable: true,
+          flex: 3,
+          template: (row) => {
+            const content = html`${row.name}
+            ${
+              row.id !== UNKNOWN_ROW_ID && row.name !== row.id
+                ? html`<div class="secondary">${row.id}</div>`
+                : nothing
+            }`;
+            // Rendered inside the data table, which styles .row-button.
+            return row.hasSettings
+              ? html`<button
+                  type="button"
+                  class="row-button"
+                  data-entity-id=${row.id}
+                  @click=${this._openSettings}
+                >
+                  ${content}
+                </button>`
+              : content;
+          },
         },
-      },
-      id: {
-        title: localize("ui.panel.config.storage.database.columns.entity_id"),
-        filterable: true,
-        hidden: true,
-      },
-      states: {
-        title: localize("ui.panel.config.storage.database.columns.states"),
-        type: "numeric",
-        minWidth: "100px",
-        maxWidth: "100px",
-        sortable: true,
-        // Without sizes the rows are sorted by states instead.
-        direction: hasSizes ? undefined : "desc",
-        hidden: narrow && hasSizes,
-        showNarrow: !hasSizes,
-        template: (row) => formatNumber(row.states, locale),
-      },
-      statistics: {
-        title: localize("ui.panel.config.storage.database.columns.statistics"),
-        type: "numeric",
-        minWidth: "100px",
-        maxWidth: "100px",
-        sortable: true,
-        hidden: narrow,
-        template: (row) => formatNumber(row.statistics, locale),
-      },
-      statistics_short_term: {
-        title: localize(
-          "ui.panel.config.storage.database.columns.statistics_short_term"
-        ),
-        type: "numeric",
-        minWidth: "130px",
-        maxWidth: "130px",
-        sortable: true,
-        hidden: narrow,
-        template: (row) => formatNumber(row.statistics_short_term, locale),
-      },
-      bytes: {
-        title: localize("ui.panel.config.storage.database.columns.size"),
-        type: "numeric",
-        minWidth: "100px",
-        maxWidth: "100px",
-        sortable: true,
-        direction: hasSizes ? "desc" : undefined,
-        hidden: !hasSizes,
-        showNarrow: hasSizes,
-        template: (row) => bytesToString(row.bytes ?? 0),
-      },
-    })
+        id: {
+          title: localize("ui.panel.config.storage.database.columns.entity_id"),
+          filterable: true,
+          hidden: true,
+        },
+        states: {
+          title: localize("ui.panel.config.storage.database.columns.states"),
+          type: "numeric",
+          minWidth: "100px",
+          maxWidth: "100px",
+          sortable: true,
+          // Without sizes the rows are sorted by states instead.
+          direction: hasSizes ? undefined : "desc",
+          showNarrow: narrow && narrowColumn === "states",
+          template: (row) => formatNumber(row.states, locale),
+        },
+        statistics: {
+          title: localize(
+            "ui.panel.config.storage.database.columns.statistics"
+          ),
+          type: "numeric",
+          minWidth: "100px",
+          maxWidth: "100px",
+          sortable: true,
+          showNarrow: narrow && narrowColumn === "statistics",
+          template: (row) => formatNumber(row.statistics, locale),
+        },
+        statistics_short_term: {
+          title: localize(
+            "ui.panel.config.storage.database.columns.statistics_short_term"
+          ),
+          type: "numeric",
+          minWidth: "130px",
+          maxWidth: "130px",
+          sortable: true,
+          showNarrow: narrow && narrowColumn === "statistics_short_term",
+          template: (row) => formatNumber(row.statistics_short_term, locale),
+        },
+        bytes: {
+          title: localize("ui.panel.config.storage.database.columns.size"),
+          type: "numeric",
+          minWidth: "100px",
+          maxWidth: "100px",
+          sortable: true,
+          direction: hasSizes ? "desc" : undefined,
+          hidden: !hasSizes,
+          showNarrow: narrow && narrowColumn === "bytes",
+          template: (row) => bytesToString(row.bytes ?? 0),
+        },
+      };
+    }
   );
+
+  // Replaces the column headers on narrow screens, like the list pages do.
+  private _renderSortMenu(columns: DataTableColumnContainer<EntityUsageRow>) {
+    const sortColumn = this._sortColumn ? columns[this._sortColumn] : undefined;
+    return html`
+      <div slot="header-row" class="narrow-header-row">
+        <ha-dropdown @wa-select=${this._handleSortBy}>
+          <ha-assist-chip
+            slot="trigger"
+            .label=${this._localize(
+              "ui.components.subpage-data-table.sort_by",
+              {
+                sortColumn: sortColumn ? ` ${sortColumn.title}` : "",
+              }
+            )}
+          >
+            <ha-svg-icon
+              slot="trailing-icon"
+              .path=${mdiMenuDown}
+            ></ha-svg-icon>
+          </ha-assist-chip>
+          ${Object.entries(columns).map(([id, column]) =>
+            column.sortable && !column.hidden
+              ? html`<ha-dropdown-item
+                  .value=${id}
+                  .selected=${id === this._sortColumn}
+                >
+                  ${
+                    id === this._sortColumn
+                      ? html`<ha-svg-icon
+                          slot="details"
+                          .path=${
+                            this._sortDirection === "desc"
+                              ? mdiArrowDown
+                              : mdiArrowUp
+                          }
+                        ></ha-svg-icon>`
+                      : nothing
+                  }
+                  ${column.title}
+                </ha-dropdown-item>`
+              : nothing
+          )}
+        </ha-dropdown>
+      </div>
+    `;
+  }
+
+  private _sortingChanged(ev: HASSDomEvent<SortingChangedEvent>) {
+    this._sortDirection = ev.detail.direction;
+    this._sortColumn = ev.detail.direction ? ev.detail.column : undefined;
+  }
+
+  private _handleSortBy(ev: HaDropdownSelectEvent) {
+    ev.preventDefault(); // keep the dropdown open
+    const column = ev.detail.item.value;
+    this._sortDirection =
+      column === this._sortColumn && this._sortDirection === "asc"
+        ? "desc"
+        : "asc";
+    this._sortColumn = column;
+  }
 
   private _analyze() {
     fireEvent(this, "database-analyze");
@@ -507,6 +608,17 @@ export class StorageDatabaseCard extends LitElement {
       --data-table-row-border-width: 0;
       --data-table-row-height: 44px;
       height: 100%;
+    }
+    .narrow-header-row {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding-inline: var(--ha-space-4);
+    }
+    ha-assist-chip {
+      --ha-assist-chip-container-shape: 10px;
+      --ha-assist-chip-container-color: var(--card-background-color);
+      --ha-assist-chip-trailing-space: 8px;
     }
   `;
 }
