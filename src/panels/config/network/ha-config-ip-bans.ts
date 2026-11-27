@@ -1,6 +1,7 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { currentPath } from "../../../common/url/current-path";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -10,13 +11,34 @@ import "../../../components/ha-spinner";
 import "../../../components/ha-tooltip";
 import "../../../components/item/ha-list-item-base";
 import "../../../components/list/ha-list-base";
+import type { HttpConfig, HttpConfigState } from "../../../data/http";
 import { fetchHttpConfig } from "../../../data/http";
 import { fetchIpBans, removeIpBan } from "../../../data/http_ip_bans";
 import type { IpBan } from "../../../data/http_ip_bans";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { FOCUS_TARGET } from "../../../dialogs/make-dialog-manager";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
+
+// The config the running HTTP server was started with; after a change that is
+// the pending one until it is confirmed.
+const runningHttpConfig = ({
+  active_config_type: activeType,
+  stable,
+  pending,
+  default: defaultConfig,
+}: HttpConfigState): HttpConfig => {
+  switch (activeType) {
+    case "pending":
+      return pending ?? stable;
+    case "default":
+    case "default_legacy_port":
+      return defaultConfig ?? stable;
+    default:
+      return stable;
+  }
+};
 
 @customElement("ha-config-ip-bans")
 class HaConfigIpBans extends LitElement {
@@ -30,11 +52,29 @@ class HaConfigIpBans extends LitElement {
 
   @state() private _removing?: string;
 
+  // The dialog manager falls back to focusing this card when the Unban button
+  // that opened the confirmation is gone; see focus().
+  public readonly [FOCUS_TARGET] = true;
+
+  private _unbannedIndex?: number;
+
   private _onConfigResolved = () => this._fetchBanningEnabled();
+
+  private _path?: string;
+
+  // There is no subscription for bans, so reload whenever this page is
+  // navigated to again, e.g. from the link in the ban notification.
+  private _locationChanged = () => {
+    if (currentPath() === this._path) {
+      this._load();
+    }
+  };
 
   public override connectedCallback() {
     super.connectedCallback();
+    this._path = currentPath();
     window.addEventListener("http-config-resolved", this._onConfigResolved);
+    window.addEventListener("location-changed", this._locationChanged);
     if (this.hasUpdated) {
       this._load();
     }
@@ -43,6 +83,7 @@ class HaConfigIpBans extends LitElement {
   public override disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("http-config-resolved", this._onConfigResolved);
+    window.removeEventListener("location-changed", this._locationChanged);
   }
 
   protected override firstUpdated(changedProps: PropertyValues<this>) {
@@ -99,7 +140,7 @@ class HaConfigIpBans extends LitElement {
     }
     if (!this._bans.length) {
       return html`
-        <p class="empty">
+        <p class="empty" tabindex="-1">
           ${this.hass.localize("ui.panel.config.network.ip_bans.empty")}
         </p>
       `;
@@ -146,7 +187,10 @@ class HaConfigIpBans extends LitElement {
                 appearance="plain"
                 size="s"
                 data-address=${ban.ip_address}
-                .disabled=${this._removing !== undefined}
+                .disabled=${
+                  this._removing !== undefined &&
+                  this._removing !== ban.ip_address
+                }
                 .loading=${this._removing === ban.ip_address}
                 @click=${this._unban}
               >
@@ -174,8 +218,9 @@ class HaConfigIpBans extends LitElement {
 
   private async _fetchBanningEnabled(): Promise<void> {
     try {
-      const { stable } = await fetchHttpConfig(this.hass);
-      this._banningDisabled = stable.ip_ban_enabled === false;
+      this._banningDisabled =
+        runningHttpConfig(await fetchHttpConfig(this.hass)).ip_ban_enabled ===
+        false;
     } catch (_err: unknown) {
       // The HTTP form card shows this error; the list works without it.
     }
@@ -196,6 +241,9 @@ class HaConfigIpBans extends LitElement {
     if (!confirmed) {
       return;
     }
+    this._unbannedIndex = this._bans!.findIndex(
+      (ban) => ban.ip_address === address
+    );
     this._removing = address;
     this._error = undefined;
     try {
@@ -207,6 +255,7 @@ class HaConfigIpBans extends LitElement {
           err?.message ||
           this.hass.localize("ui.panel.config.network.ip_bans.unban_error");
         this._removing = undefined;
+        this._unbannedIndex = undefined;
         return;
       }
     }
@@ -217,6 +266,25 @@ class HaConfigIpBans extends LitElement {
       }),
     });
     await this._load();
+    await this.updateComplete;
+    // The dialog may already have put focus back on the removed button.
+    this.focus();
+  }
+
+  // Keep focus in the list after an unban: on the row that took the removed
+  // one's place, else the one before it, else the empty state.
+  public override focus(options?: FocusOptions): void {
+    if (this._unbannedIndex === undefined) {
+      super.focus(options);
+      return;
+    }
+    const buttons = this.shadowRoot!.querySelectorAll<HTMLElement>(
+      "ha-button[data-address]"
+    );
+    const target =
+      buttons[Math.min(this._unbannedIndex, buttons.length - 1)] ??
+      this.shadowRoot!.querySelector<HTMLElement>(".empty");
+    target?.focus(options);
   }
 
   static get styles(): CSSResultGroup {
