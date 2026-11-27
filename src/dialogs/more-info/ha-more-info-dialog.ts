@@ -220,16 +220,23 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   }
 
   private async _loadEntityRegistryEntry() {
-    if (!this._entityId) {
+    const entityId = this._entityId;
+    if (!entityId) {
       return;
     }
+    // Don't show the previous entity's entry while the new one loads.
+    if (this._entry?.entity_id !== entityId) {
+      this._entry = undefined;
+    }
+    let entry: ExtEntityRegistryEntry | null;
     try {
-      this._entry = await getExtendedEntityRegistryEntry(
-        this.hass.callWS,
-        this._entityId
-      );
+      entry = await getExtendedEntityRegistryEntry(this.hass.callWS, entityId);
     } catch (_e) {
-      this._entry = null;
+      entry = null;
+    }
+    // Ignore a late response for an entity that is no longer shown.
+    if (this._entityId === entityId) {
+      this._entry = entry;
     }
   }
 
@@ -520,7 +527,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       favoritesContext.stateObj
     );
 
-    if (!favoritesHandler) {
+    if (!favoritesHandler?.getResetOptions) {
       return;
     }
 
@@ -546,7 +553,10 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
         options: favoritesHandler.getResetOptions(favoritesContext.stateObj),
       }
     );
-    this._entry = result.entity_entry;
+    // The dialog may have switched entity during the confirmation or request.
+    if (result.entity_entry.entity_id === this._entityId) {
+      this._entry = result.entity_entry;
+    }
   }
 
   private async _copyFavorites() {
@@ -843,16 +853,22 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                                         : favoritesLabels?.editMode
                                     }
                                   </ha-dropdown-item>
-                                  <ha-dropdown-item
-                                    value="reset_favorites"
-                                    .disabled=${resetFavoritesDisabled}
-                                  >
-                                    <ha-svg-icon
-                                      slot="icon"
-                                      .path=${mdiBackupRestore}
-                                    ></ha-svg-icon>
-                                    ${favoritesLabels?.reset}
-                                  </ha-dropdown-item>
+                                  ${
+                                    favoritesHandler?.getResetOptions
+                                      ? html`
+                                          <ha-dropdown-item
+                                            value="reset_favorites"
+                                            .disabled=${resetFavoritesDisabled}
+                                          >
+                                            <ha-svg-icon
+                                              slot="icon"
+                                              .path=${mdiBackupRestore}
+                                            ></ha-svg-icon>
+                                            ${favoritesLabels?.reset}
+                                          </ha-dropdown-item>
+                                        `
+                                      : nothing
+                                  }
                                   <ha-dropdown-item
                                     value="copy_favorites"
                                     .disabled=${copyFavoritesDisabled}
@@ -1142,7 +1158,13 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     }
   }
 
-  private _entryUpdated(ev: CustomEvent<ExtEntityRegistryEntry>) {
+  private _entryUpdated(
+    ev: HASSDomEvent<HASSDomEvents["entity-entry-updated"]>
+  ) {
+    // A late save response can bubble from the subtree of a previous entity.
+    if (ev.detail.entity_id !== this._entityId) {
+      return;
+    }
     this._entry = ev.detail;
   }
 
