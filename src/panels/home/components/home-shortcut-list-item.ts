@@ -30,6 +30,8 @@ export class HomeShortcutListItem extends LitElement {
 
   @property({ type: Number }) public index = 0;
 
+  @property({ type: Boolean }) public disabled = false;
+
   private _navInfo = new NavigationPathInfoController(this);
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
@@ -70,11 +72,13 @@ export class HomeShortcutListItem extends LitElement {
         <ha-icon-button
           .path=${mdiPencil}
           .label=${this.hass.localize("ui.common.edit")}
+          .disabled=${this.disabled}
           @click=${this._edit}
         ></ha-icon-button>
         <ha-icon-button
           .path=${mdiDelete}
           .label=${this.hass.localize("ui.common.delete")}
+          .disabled=${this.disabled}
           @click=${this._delete}
         ></ha-icon-button>
       </ha-settings-row>
@@ -82,10 +86,12 @@ export class HomeShortcutListItem extends LitElement {
   }
 
   private _edit() {
+    if (this.disabled) return;
     fireEvent(this, "edit-shortcut", { index: this.index });
   }
 
   private _delete() {
+    if (this.disabled) return;
     fireEvent(this, "delete-shortcut", { index: this.index });
   }
 

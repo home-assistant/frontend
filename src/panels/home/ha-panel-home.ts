@@ -52,6 +52,8 @@ class PanelHome extends SubscribeMixin(LitElement) {
 
   @state() private _config?: HomeFrontendSystemData;
 
+  @state() private _previewConfig?: HomeFrontendSystemData;
+
   @state() private _securityConfig: SecurityFrontendSystemData = {};
 
   @state() private _extraActionItems?: ExtraActionItem[];
@@ -59,6 +61,8 @@ class PanelHome extends SubscribeMixin(LitElement) {
   @query(".banner") private _banner?: HTMLElement;
 
   private _loadConfigPromise?: Promise<void>;
+
+  private _lovelaceGeneration = 0;
 
   private _securityConfigRevision = 0;
 
@@ -261,10 +265,28 @@ class PanelHome extends SubscribeMixin(LitElement) {
   private _editHome = () => {
     showEditHomeDialog(this, {
       config: this._config ?? {},
-      saveConfig: async (config) => {
-        await this._saveConfig(config);
-      },
+      saveConfig: (config) => this._saveConfig(config),
+      previewConfig: this._setPreviewConfig,
     });
+  };
+
+  private _setPreviewConfig = (config: HomeFrontendSystemData | undefined) => {
+    if (deepEqual(config, this._previewConfig)) {
+      // No-op for the value already previewed, whether the same reference
+      // (e.g. previewConfig(undefined) when cancelling without any edit) or
+      // a new object with identical content. Bumping the generation would
+      // discard an in-flight regeneration and rebuild the whole dashboard
+      // for nothing.
+      return;
+    }
+    this._previewConfig = config;
+    // Preview at once: the debounce only batches registry updates, and
+    // regenerating now also covers one still pending. _setLovelace() bumps
+    // the generation synchronously, so older in-flight results are dropped.
+    // Unlike _regenerateStrategyConfig(), this skips the deleted area view
+    // redirect: the home editor only opens from the overview.
+    this._debounceRegenerateStrategy.cancel();
+    this._setLovelace();
   };
 
   private _editArea = async () => {
@@ -396,20 +418,22 @@ class PanelHome extends SubscribeMixin(LitElement) {
   }
 
   private get _strategyConfig(): LovelaceDashboardStrategyConfig {
+    const config = this._previewConfig ?? this._config;
     return {
       strategy: {
         type: "home",
         alert_entities: this._securityConfig.alert_entities,
-        favorite_entities: this._config?.favorite_entities,
+        favorite_entities: config?.favorite_entities,
         home_panel: true,
-        hide_welcome_message: this._config?.hide_welcome_message,
-        hide_suggested_entities: this._config?.hide_suggested_entities,
-        shortcuts: this._config?.shortcuts,
+        hide_welcome_message: config?.hide_welcome_message,
+        hide_suggested_entities: config?.hide_suggested_entities,
+        shortcuts: config?.shortcuts,
       },
     };
   }
 
   private async _setLovelace() {
+    const generation = ++this._lovelaceGeneration;
     if (this._loadConfigPromise) {
       await this._loadConfigPromise;
     }
@@ -417,6 +441,13 @@ class PanelHome extends SubscribeMixin(LitElement) {
       this._strategyConfig,
       this.hass
     );
+
+    if (generation !== this._lovelaceGeneration) {
+      // A newer call to _setLovelace() started (and may have already
+      // finished) while this one was still generating. Discard this
+      // stale result instead of overwriting a more recent one.
+      return;
+    }
 
     this._lovelace = {
       config: config,
@@ -433,10 +464,14 @@ class PanelHome extends SubscribeMixin(LitElement) {
     };
   }
 
-  private async _saveConfig(config: HomeFrontendSystemData): Promise<void> {
+  private async _saveConfig(config: HomeFrontendSystemData): Promise<boolean> {
     try {
       await saveFrontendSystemData(this.hass.connection, "home", config);
       this._config = config || {};
+      // The saved config replaces the preview. No newer draft can exist:
+      // dialog-edit-home disables its editors while saving. Clearing it
+      // here also keeps it out of a later _setup() or a reopened dialog.
+      this._previewConfig = undefined;
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("Failed to save home configuration:", err);
@@ -445,12 +480,16 @@ class PanelHome extends SubscribeMixin(LitElement) {
         duration: 0,
         dismissable: true,
       });
-      return;
+      return false;
     }
     showToast(this, {
       message: this.hass.localize("ui.common.successfully_saved"),
     });
+    // A registry change may still have a debounced regeneration pending;
+    // the immediate refresh below already covers it.
+    this._debounceRegenerateStrategy.cancel();
     this._setLovelace();
+    return true;
   }
 
   static readonly styles: CSSResultGroup = css`

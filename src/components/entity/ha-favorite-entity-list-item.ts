@@ -30,6 +30,8 @@ export class HaFavoriteEntityListItem extends LitElement {
 
   @property({ type: Number }) public index = 0;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state()
   @consumeEntityState({ entityIdPath: ["entityId"] })
   private _stateObj?: HassEntity;
@@ -70,6 +72,7 @@ export class HaFavoriteEntityListItem extends LitElement {
         <ha-icon-button
           .path=${mdiDelete}
           .label=${this._i18n.localize("ui.common.delete")}
+          .disabled=${this.disabled}
           @click=${this._delete}
         ></ha-icon-button>
       </ha-settings-row>
@@ -77,6 +80,7 @@ export class HaFavoriteEntityListItem extends LitElement {
   }
 
   private _delete() {
+    if (this.disabled) return;
     fireEvent(this, "delete-favorite-entity", { index: this.index });
   }
 
