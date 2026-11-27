@@ -76,6 +76,10 @@ export class StateHistoryChartLine extends LitElement {
 
   @property() public unit?: string;
 
+  @property({ attribute: false }) public secondaryUnit?: string;
+
+  @property({ attribute: false }) public secondaryData?: LineChartEntity[];
+
   @property() public identifier?: string;
 
   @property({ attribute: "show-names", type: Boolean })
@@ -121,11 +125,19 @@ export class StateHistoryChartLine extends LitElement {
 
   @state() private _yWidth = 0;
 
+  @state() private _ySecondaryWidth = 0;
+
   @state() private _visualMap?: VisualMapComponentOption[];
 
   private _chartTime: Date = new Date();
 
   private _yAxisFractionDigits = 1;
+
+  private _secondaryYAxisFractionDigits = 1;
+
+  // Combined primary + secondary entities, indexed the same way as
+  // `_datasetToDataIndex` so tooltip lookups work across both axes.
+  private _combinedData: LineChartEntity[] = [];
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -228,7 +240,7 @@ export class StateHistoryChartLine extends LitElement {
             getNumberFormatOptions(undefined, entry)
           );
       const dataIndex = this._datasetToDataIndex[param.seriesIndex];
-      const data = this.data[dataIndex];
+      const data = this._combinedData[dataIndex];
       let statSuffix: TemplateResult | typeof nothing = nothing;
       if (data.statistics && data.statistics.length > 0) {
         const source =
@@ -294,6 +306,7 @@ export class StateHistoryChartLine extends LitElement {
   public willUpdate(changedProps: PropertyValues) {
     if (
       changedProps.has("data") ||
+      changedProps.has("secondaryData") ||
       changedProps.has("startTime") ||
       changedProps.has("endTime") ||
       this._chartTime <
@@ -310,6 +323,7 @@ export class StateHistoryChartLine extends LitElement {
       changedProps.has("startTime") ||
       changedProps.has("endTime") ||
       changedProps.has("unit") ||
+      changedProps.has("secondaryUnit") ||
       changedProps.has("logarithmicScale") ||
       changedProps.has("minYAxis") ||
       changedProps.has("maxYAxis") ||
@@ -317,6 +331,7 @@ export class StateHistoryChartLine extends LitElement {
       changedProps.has("paddingYAxis") ||
       changedProps.has("_visualMap") ||
       changedProps.has("_yWidth") ||
+      changedProps.has("_ySecondaryWidth") ||
       changedProps.has("_i18n") ||
       changedProps.has("_hassConfig") ||
       this._hasEntityStatesChanged()
@@ -357,42 +372,64 @@ export class StateHistoryChartLine extends LitElement {
           return this._roundYAxis(value, Math.ceil);
         };
       }
+      const hasSecondary = Boolean(this.secondaryData?.length);
+      const primaryYAxis = {
+        type: this.logarithmicScale ? "log" : "value",
+        name: this.unit,
+        ...createYAxisPrecisionBounds({
+          min: this._clampYAxis(minYAxis),
+          max: this._clampYAxis(maxYAxis),
+          unit: this.unit,
+          onFractionDigits: (digits) => {
+            if (digits !== this._yAxisFractionDigits) {
+              this._yAxisFractionDigits = digits;
+              // Re-measure the gutter for the new precision so it can shrink
+              // again when zooming back out (_yWidth otherwise only grows).
+              this._yWidth = 0;
+            }
+          },
+        }),
+        position: rtl ? "right" : "left",
+        scale: true,
+        nameGap: 2,
+        nameTextStyle: {
+          align: "left",
+        },
+        axisLine: {
+          show: false,
+        },
+        axisLabel: {
+          margin: 5,
+          formatter: this._formatYAxisLabel,
+        },
+      } as YAXisOption;
+      // The secondary axis always auto-scales (no log/min/max support):
+      // it exists to show an independently-ranged unit on the same chart,
+      // not to replicate every primary-axis option.
+      const secondaryYAxis = {
+        type: "value",
+        name: this.secondaryUnit,
+        position: rtl ? "left" : "right",
+        scale: true,
+        nameGap: 2,
+        nameTextStyle: {
+          align: "left",
+        },
+        axisLine: {
+          show: false,
+        },
+        axisLabel: {
+          margin: 5,
+          formatter: this._formatSecondaryYAxisLabel,
+        },
+      } as YAXisOption;
       this._chartOptions = {
         xAxis: {
           type: "time",
           min: this.startTime,
           max: this.endTime,
         },
-        yAxis: {
-          type: this.logarithmicScale ? "log" : "value",
-          name: this.unit,
-          ...createYAxisPrecisionBounds({
-            min: this._clampYAxis(minYAxis),
-            max: this._clampYAxis(maxYAxis),
-            unit: this.unit,
-            onFractionDigits: (digits) => {
-              if (digits !== this._yAxisFractionDigits) {
-                this._yAxisFractionDigits = digits;
-                // Re-measure the gutter for the new precision so it can shrink
-                // again when zooming back out (_yWidth otherwise only grows).
-                this._yWidth = 0;
-              }
-            },
-          }),
-          position: rtl ? "right" : "left",
-          scale: true,
-          nameGap: 2,
-          nameTextStyle: {
-            align: "left",
-          },
-          axisLine: {
-            show: false,
-          },
-          axisLabel: {
-            margin: 5,
-            formatter: this._formatYAxisLabel,
-          },
-        } as YAXisOption,
+        yAxis: hasSecondary ? [primaryYAxis, secondaryYAxis] : primaryYAxis,
         legend: {
           type: "custom",
           show: this.showNames,
@@ -450,8 +487,16 @@ export class StateHistoryChartLine extends LitElement {
         },
         grid: {
           top: 15,
-          left: rtl ? 1 : Math.max(this.paddingYAxis, this._yWidth),
-          right: rtl ? Math.max(this.paddingYAxis, this._yWidth) : 1,
+          left: rtl
+            ? hasSecondary
+              ? Math.max(this._ySecondaryWidth, 1)
+              : 1
+            : Math.max(this.paddingYAxis, this._yWidth),
+          right: rtl
+            ? Math.max(this.paddingYAxis, this._yWidth)
+            : hasSecondary
+              ? Math.max(this._ySecondaryWidth, 1)
+              : 1,
           bottom: 20,
         },
         visualMap: this._visualMap,
@@ -474,33 +519,78 @@ export class StateHistoryChartLine extends LitElement {
   }
 
   private _generateData() {
-    if (this.data.length === 0) {
+    const hasSecondary = Boolean(this.secondaryData?.length);
+    if (this.data.length === 0 && !hasSecondary) {
       return;
     }
 
     this._chartTime = new Date();
 
-    const data = generateStateHistoryChartLineData({
-      localize: this._i18n.localize,
-      states: this._states ?? {},
-      data: this.data,
-      endTime: this.endTime,
-      names: this.names,
-      colors: this.colors,
-      showNames: this.showNames,
-      computedStyles: getComputedStyle(this),
-      now: new Date(),
-    });
+    const data = this.data.length
+      ? generateStateHistoryChartLineData({
+          localize: this._i18n.localize,
+          states: this._states ?? {},
+          data: this.data,
+          endTime: this.endTime,
+          names: this.names,
+          colors: this.colors,
+          showNames: this.showNames,
+          computedStyles: getComputedStyle(this),
+          now: new Date(),
+        })
+      : undefined;
 
-    if (!data) {
+    const secondary = hasSecondary
+      ? generateStateHistoryChartLineData({
+          localize: this._i18n.localize,
+          states: this._states ?? {},
+          data: this.secondaryData!,
+          endTime: this.endTime,
+          names: this.names,
+          colors: this.colors,
+          showNames: this.showNames,
+          computedStyles: getComputedStyle(this),
+          now: new Date(),
+        })
+      : undefined;
+
+    if (!data && !secondary) {
       return;
     }
 
-    this._yAxisFractionDigits = data.yAxisFractionDigits;
-    this._chartData = data.datasets;
-    this._entityIds = data.entityIds;
-    this._datasetToDataIndex = data.datasetToDataIndex;
-    this._visualMap = data.visualMap;
+    const chartData = data ? [...data.datasets] : [];
+    const entityIds = data ? [...data.entityIds] : [];
+    const datasetToDataIndex = data ? [...data.datasetToDataIndex] : [];
+    const visualMap = data?.visualMap ? [...data.visualMap] : [];
+    this._combinedData = data ? [...this.data] : [];
+
+    if (secondary) {
+      const seriesOffset = chartData.length;
+      const dataOffset = this._combinedData.length;
+      secondary.datasets.forEach((dataset) =>
+        chartData.push({ ...dataset, yAxisIndex: 1 })
+      );
+      entityIds.push(...secondary.entityIds);
+      datasetToDataIndex.push(
+        ...secondary.datasetToDataIndex.map((i) => i + dataOffset)
+      );
+      if (secondary.visualMap) {
+        visualMap.push(
+          ...secondary.visualMap.map((vm) => ({
+            ...vm,
+            seriesIndex: (vm.seriesIndex as number) + seriesOffset,
+          }))
+        );
+      }
+      this._combinedData.push(...this.secondaryData!);
+    }
+
+    this._yAxisFractionDigits = data?.yAxisFractionDigits ?? 1;
+    this._secondaryYAxisFractionDigits = secondary?.yAxisFractionDigits ?? 1;
+    this._chartData = chartData;
+    this._entityIds = entityIds;
+    this._datasetToDataIndex = datasetToDataIndex;
+    this._visualMap = visualMap.length ? visualMap : undefined;
   }
 
   private _formatYAxisLabel = (value: number) => {
@@ -515,6 +605,19 @@ export class StateHistoryChartLine extends LitElement {
         value: this._yWidth,
         chartIndex: this.chartIndex,
       });
+    }
+    return label;
+  };
+
+  private _formatSecondaryYAxisLabel = (value: number) => {
+    const label = formatNumber(value, this._i18n.locale, {
+      minimumFractionDigits:
+        value === 0 ? 0 : this._secondaryYAxisFractionDigits,
+      maximumFractionDigits: this._secondaryYAxisFractionDigits,
+    });
+    const width = Math.max(measureTextWidth(label, 12) + 5, MIN_Y_AXIS_WIDTH);
+    if (width > this._ySecondaryWidth) {
+      this._ySecondaryWidth = width;
     }
     return label;
   };
