@@ -122,7 +122,7 @@ export const localizeUpdateManualAction = (
   );
 
 // Resolves to true when the install can go ahead. Pass formatEntityName to
-// name each update in the list.
+// name each update.
 export const confirmUpdateManualActions = async (
   element: HTMLElement,
   localize: LocalizeFunc,
@@ -136,29 +136,23 @@ export const confirmUpdateManualActions = async (
     return true;
   }
   const count = needAction.length;
-  const description = (entity: UpdateEntity) =>
-    localizeUpdateManualAction(
-      localize,
-      entity.attributes.manual_action!,
-      "description"
-    );
   return showConfirmationDialog(element, {
     title: localize("ui.dialogs.update_manual_action.title", { count }),
-    text: html`${
-      formatEntityName
-        ? html`<ul>
-            ${needAction.map(
-              (entity) =>
-                html`<li>
-                  ${localize("ui.dialogs.update_manual_action.item", {
-                    name: formatEntityName(entity),
-                    description: description(entity),
-                  })}
-                </li>`
-            )}
-          </ul>`
-        : needAction.map((entity) => html`${description(entity)}<br /><br />`)
-    }${localize("ui.dialogs.update_manual_action.warning", { count })}`,
+    text: html`${needAction.map((entity) => {
+      const description = localizeUpdateManualAction(
+        localize,
+        entity.attributes.manual_action!,
+        "description"
+      );
+      return html`${
+          formatEntityName
+            ? localize("ui.dialogs.update_manual_action.item", {
+                name: formatEntityName(entity),
+                description,
+              })
+            : description
+        }<br /><br />`;
+    })}${localize("ui.dialogs.update_manual_action.warning", { count })}`,
     confirmText: localize("ui.common.update"),
     warning: true,
   });

@@ -186,7 +186,7 @@ describe("confirmUpdateManualActions", () => {
       expectedText: `ui.dialogs.update_manual_action.item: ${JSON.stringify({
         name: "update.bulb",
         description: DESCRIPTION,
-      })} ${WARNING}`,
+      })}${WARNING}`,
     },
   ])(
     "describes the updates that need a manual action $scenario",
@@ -222,9 +222,7 @@ describe("confirmUpdateManualActions", () => {
           .text as TemplateResult,
         container
       );
-      expect(container.textContent!.replace(/\s+/g, " ").trim()).toBe(
-        expectedText
-      );
+      expect(container.textContent).toBe(expectedText);
     }
   );
 });
