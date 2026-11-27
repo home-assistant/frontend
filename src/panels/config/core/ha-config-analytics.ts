@@ -32,6 +32,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
+import { showAnalyticsPreviewDialog } from "./show-dialog-analytics-preview";
 
 @customElement("ha-config-analytics")
 class ConfigAnalytics extends SubscribeMixin(LitElement) {
@@ -40,6 +41,8 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
   @state() private _analyticsDetails?: Analytics;
 
   @state() private _error?: string;
+
+  @state() private _pendingSaves = 0;
 
   @state() private _snapshotsLabEnabled = false;
 
@@ -80,6 +83,18 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
             @analytics-preferences-changed=${this._preferencesChanged}
             .analytics=${this._analyticsDetails}
           ></ha-analytics>
+        </div>
+        <div class="card-actions">
+          <ha-button
+            size="s"
+            appearance="plain"
+            .disabled=${
+              this._analyticsDetails === undefined || this._pendingSaves > 0
+            }
+            @click=${this._showPreview}
+          >
+            ${this.hass.localize("ui.panel.config.analytics.show_preview")}
+          </ha-button>
         </div>
       </ha-card>
       ${
@@ -274,6 +289,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
 
   private async _save() {
     this._error = undefined;
+    this._pendingSaves++;
     try {
       await setAnalyticsPreferences(
         this.hass,
@@ -281,7 +297,13 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
       );
     } catch (err: any) {
       this._error = err.message || err;
+    } finally {
+      this._pendingSaves--;
     }
+  }
+
+  private _showPreview() {
+    showAnalyticsPreviewDialog(this);
   }
 
   private _handleDeviceRowClick(ev: HASSDomTargetEvent<HaListItemSwitch>) {
