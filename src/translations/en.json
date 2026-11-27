@@ -332,7 +332,6 @@
         "option": "Option"
       },
       "update": {
-        "action_required": "Action required",
         "installing": "Installing",
         "installing_with_progress": "Installing ({progress}%)",
         "phase_with_progress": "{phase} ({progress}%)",
@@ -2065,6 +2064,8 @@
             "backups_link": "View backups"
           },
           "install_failed": "The update could not be started: {error}",
+          "needs_help_title": "This update needs your help",
+          "help_needed_now_title": "Your help is needed now",
           "supervisor_logs": "[%key:ui::panel::config::logs::supervisor_logs%]",
           "create_backup": {
             "automatic": "Automatic backup before update",
@@ -2781,10 +2782,9 @@
         "create": "Create"
       },
       "update_manual_action": {
-        "title": "Action required during the update",
-        "text": "{count, plural,\n one {Someone has to do this during the update:}\n other {Someone has to do this during the updates:}\n}",
-        "item": "{name}: {action}",
-        "warning": "{count, plural,\n one {The update can't finish until then, and the device might not work in the meantime. Only start it if someone is there to do this.}\n other {The updates can't finish until then, and the devices might not work in the meantime. Only start them if someone is there to do this.}\n}"
+        "title": "{count, plural,\n one {This update needs your help}\n other {Some updates need your help}\n}",
+        "item": "{name}: {description}",
+        "warning": "{count, plural,\n one {The update can't finish until someone does this, and the device might not work in the meantime. Only start it when someone is there to help.}\n other {The updates can't finish until someone does this, and the devices might not work in the meantime. Only start them when someone is there to help.}\n}"
       },
       "matter-add-device": {
         "add_device": "Add device",
@@ -3300,6 +3300,8 @@
           "join_beta": "Join beta channel",
           "leave_beta": "Leave beta channel",
           "skipped": "Skipped",
+          "needs_help": "Needs your help during the update",
+          "help_needed_now": "Your help is needed now",
           "update_in_progress": "Update in progress",
           "no_area": "No area",
           "backup_in_progress": {

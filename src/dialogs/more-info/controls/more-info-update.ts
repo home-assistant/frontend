@@ -42,7 +42,6 @@ import {
   UpdateEntityFeature,
   updateIsInstalling,
   updateReleaseNotes,
-  updateUsesProgress,
 } from "../../../data/update";
 import type {
   CurrentUser,
@@ -194,8 +193,7 @@ class MoreInfoUpdate extends LitElement {
 
     const releaseUrl = sanitizeHttpUrl(this.stateObj.attributes.release_url);
     const backupInProgressMessage = this._backupInProgressMessage();
-    const inProgress = this.stateObj.attributes.in_progress;
-    // The progress bar stays still while the install waits for a person.
+    // The alert replaces the progress bar while the install waits for someone.
     const waitingForUser =
       this.stateObj.attributes.install_phase === "waiting_for_user";
 
@@ -203,30 +201,31 @@ class MoreInfoUpdate extends LitElement {
       <div class="content">
         <div class="summary">
           ${
-            inProgress && updateUsesProgress(this.stateObj)
-              ? html`<ha-progress-bar
-                  class=${classMap({ "waiting-for-user": waitingForUser })}
-                  ?loading=${!waitingForUser}
-                  .value=${this.stateObj.attributes.update_percentage}
-                ></ha-progress-bar>`
-              : inProgress && !waitingForUser
-                ? html`<ha-progress-bar indeterminate></ha-progress-bar>`
-                : nothing
+            this.stateObj.attributes.in_progress && !waitingForUser
+              ? supportsFeature(this.stateObj, UpdateEntityFeature.PROGRESS) &&
+                this.stateObj.attributes.update_percentage !== null
+                ? html`<ha-progress-bar
+                    loading
+                    .value=${this.stateObj.attributes.update_percentage}
+                  ></ha-progress-bar>`
+                : html`<ha-progress-bar indeterminate></ha-progress-bar>`
+              : nothing
           }
           ${
             this.stateObj.attributes.manual_action
               ? html`<ha-alert
                   class="manual-action"
-                  alert-type=${inProgress && !waitingForUser ? "info" : "warning"}
+                  alert-type="warning"
                   .title=${this._localize(
                     waitingForUser
-                      ? "ui.card.update.action_required"
-                      : "ui.dialogs.update_manual_action.title"
+                      ? "ui.dialogs.more_info_control.update.help_needed_now_title"
+                      : "ui.dialogs.more_info_control.update.needs_help_title"
                   )}
                 >
                   ${localizeUpdateManualAction(
                     this._localize,
-                    this.stateObj.attributes.manual_action
+                    this.stateObj.attributes.manual_action,
+                    waitingForUser ? "instruction" : "description"
                   )}
                 </ha-alert>`
               : nothing
@@ -653,10 +652,6 @@ class MoreInfoUpdate extends LitElement {
 
     ha-progress-bar + .manual-action {
       margin-top: var(--ha-space-4);
-    }
-
-    ha-progress-bar.waiting-for-user {
-      --ha-progress-bar-indicator-color: var(--ha-color-on-warning-normal);
     }
 
     .row {

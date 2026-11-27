@@ -109,16 +109,15 @@ export const localizeUpdateInstallPhase = (
     `component.update.entity_component._.state_attributes.install_phase.state.${phase}`
   );
 
-// The update integration translates the shared actions, other integrations
-// translate their own under entity.update.
+// The description says what someone will have to do, the instruction what to
+// do now, while the install phase is waiting_for_user.
 export const localizeUpdateManualAction = (
   localize: LocalizeFunc,
-  action: UpdateManualAction
+  action: UpdateManualAction,
+  text: "description" | "instruction"
 ): string =>
   localize(
-    action.translation_domain === "update"
-      ? `component.update.entity_component.manual_actions.${action.translation_key}`
-      : `component.${action.translation_domain}.entity.update.manual_actions.${action.translation_key}`,
+    `component.${action.translation_domain}.entity.update.manual_actions.${action.translation_key}.${text}`,
     action.translation_placeholders
   );
 
@@ -137,28 +136,29 @@ export const confirmUpdateManualActions = async (
     return true;
   }
   const count = needAction.length;
+  const description = (entity: UpdateEntity) =>
+    localizeUpdateManualAction(
+      localize,
+      entity.attributes.manual_action!,
+      "description"
+    );
   return showConfirmationDialog(element, {
-    title: localize("ui.dialogs.update_manual_action.title"),
-    text: html`${localize("ui.dialogs.update_manual_action.text", { count })}
-      <ul>
-        ${needAction.map((entity) => {
-          const action = localizeUpdateManualAction(
-            localize,
-            entity.attributes.manual_action!
-          );
-          return html`<li>
-            ${
-              formatEntityName
-                ? localize("ui.dialogs.update_manual_action.item", {
+    title: localize("ui.dialogs.update_manual_action.title", { count }),
+    text: html`${
+      formatEntityName
+        ? html`<ul>
+            ${needAction.map(
+              (entity) =>
+                html`<li>
+                  ${localize("ui.dialogs.update_manual_action.item", {
                     name: formatEntityName(entity),
-                    action,
-                  })
-                : action
-            }
-          </li>`;
-        })}
-      </ul>
-      ${localize("ui.dialogs.update_manual_action.warning", { count })}`,
+                    description: description(entity),
+                  })}
+                </li>`
+            )}
+          </ul>`
+        : needAction.map((entity) => html`${description(entity)}<br /><br />`)
+    }${localize("ui.dialogs.update_manual_action.warning", { count })}`,
     confirmText: localize("ui.common.update"),
     warning: true,
   });

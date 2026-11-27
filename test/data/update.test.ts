@@ -131,41 +131,28 @@ describe("computeUpdateStateDisplay", () => {
   );
 });
 
+const CONFIRM_ON_DEVICE: UpdateManualAction = {
+  translation_domain: "demo",
+  translation_key: "confirm_on_device",
+  translation_placeholders: { screen: "touch" },
+};
+const ACTION_KEY =
+  "component.demo.entity.update.manual_actions.confirm_on_device";
+
 describe("localizeUpdateManualAction", () => {
-  it.each<{ scenario: string; action: UpdateManualAction; expected: string }>([
-    {
-      scenario: "a shared action",
-      action: {
-        translation_domain: "update",
-        translation_key: "confirm_on_device",
-        translation_placeholders: {},
-      },
-      expected:
-        "component.update.entity_component.manual_actions.confirm_on_device: {}",
-    },
-    {
-      scenario: "an integration action",
-      action: {
-        translation_domain: "demo",
-        translation_key: "power_cycle",
-        translation_placeholders: { device_name: "Bulb" },
-      },
-      expected:
-        'component.demo.entity.update.manual_actions.power_cycle: {"device_name":"Bulb"}',
-    },
-  ])("localizes $scenario", ({ action, expected }) => {
-    expect(localizeUpdateManualAction(mockLocalize, action)).toBe(expected);
-  });
+  it.each(["description", "instruction"] as const)(
+    "localizes the %s",
+    (text) => {
+      expect(
+        localizeUpdateManualAction(mockLocalize, CONFIRM_ON_DEVICE, text)
+      ).toBe(`${ACTION_KEY}.${text}: {"screen":"touch"}`);
+    }
+  );
 });
 
 describe("confirmUpdateManualActions", () => {
-  const CONFIRM_ON_DEVICE: UpdateManualAction = {
-    translation_domain: "update",
-    translation_key: "confirm_on_device",
-    translation_placeholders: {},
-  };
-  const ACTION_TEXT =
-    "component.update.entity_component.manual_actions.confirm_on_device: {}";
+  const DESCRIPTION = `${ACTION_KEY}.description: {"screen":"touch"}`;
+  const WARNING = 'ui.dialogs.update_manual_action.warning: {"count":1}';
   const element = document.createElement("div");
 
   beforeEach(() => {
@@ -190,22 +177,20 @@ describe("confirmUpdateManualActions", () => {
       scenario: "without names",
       formatEntityName: undefined,
       confirmed: true,
-      expectedItems: [ACTION_TEXT],
+      expectedText: `${DESCRIPTION}${WARNING}`,
     },
     {
       scenario: "with names",
       formatEntityName: (entity: UpdateEntity) => entity.entity_id,
       confirmed: false,
-      expectedItems: [
-        `ui.dialogs.update_manual_action.item: ${JSON.stringify({
-          name: "update.bulb",
-          action: ACTION_TEXT,
-        })}`,
-      ],
+      expectedText: `ui.dialogs.update_manual_action.item: ${JSON.stringify({
+        name: "update.bulb",
+        description: DESCRIPTION,
+      })} ${WARNING}`,
     },
   ])(
-    "lists the updates that need a manual action $scenario",
-    async ({ formatEntityName, confirmed, expectedItems }) => {
+    "describes the updates that need a manual action $scenario",
+    async ({ formatEntityName, confirmed, expectedText }) => {
       vi.mocked(showConfirmationDialog).mockResolvedValue(confirmed);
       const entities = [
         createMockEntityState("update.bulb", "on", {
@@ -226,7 +211,7 @@ describe("confirmUpdateManualActions", () => {
       expect(showConfirmationDialog).toHaveBeenCalledExactlyOnceWith(
         element,
         expect.objectContaining({
-          title: "ui.dialogs.update_manual_action.title",
+          title: 'ui.dialogs.update_manual_action.title: {"count":1}',
           confirmText: "ui.common.update",
           warning: true,
         })
@@ -237,11 +222,9 @@ describe("confirmUpdateManualActions", () => {
           .text as TemplateResult,
         container
       );
-      expect(
-        [...container.querySelectorAll("li")].map((item) =>
-          item.textContent!.trim()
-        )
-      ).toEqual(expectedItems);
+      expect(container.textContent!.replace(/\s+/g, " ").trim()).toBe(
+        expectedText
+      );
     }
   );
 });

@@ -3,7 +3,6 @@ import { mdiAccountAlert } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
@@ -73,7 +72,7 @@ class HaConfigUpdates extends LitElement {
         slot=${ifDefined(slot)}
         class="waiting-for-user"
         role="img"
-        aria-label=${this._localize("ui.card.update.action_required")}
+        aria-label=${this._localize("ui.panel.config.updates.help_needed_now")}
         .path=${mdiAccountAlert}
       ></ha-svg-icon>`;
     }
@@ -176,22 +175,21 @@ class HaConfigUpdates extends LitElement {
                     : nothing
                 }
                 ${
-                  entity.attributes.manual_action
-                    ? html`<span
-                        class=${classMap({
-                          "manual-action": true,
-                          // Quiet while other install phases run.
-                          warning:
-                            !entity.attributes.in_progress ||
-                            entity.attributes.install_phase ===
-                              "waiting_for_user",
-                        })}
-                        >${localizeUpdateManualAction(
-                          this._localize,
-                          entity.attributes.manual_action
-                        )}</span
-                      >`
-                    : nothing
+                  !entity.attributes.manual_action
+                    ? nothing
+                    : entity.attributes.install_phase === "waiting_for_user"
+                      ? html`<span class="manual-action warning"
+                          >${localizeUpdateManualAction(
+                            this._localize,
+                            entity.attributes.manual_action,
+                            "instruction"
+                          )}</span
+                        >`
+                      : html`<span class="manual-action"
+                          >${this._localize(
+                            "ui.panel.config.updates.needs_help"
+                          )}</span
+                        >`
                 }
               </span>
               ${
