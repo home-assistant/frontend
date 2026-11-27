@@ -2,11 +2,13 @@ import type { ContextType } from "@lit/context";
 import { mdiDelete, mdiDotsVertical, mdiPlus, mdiReload } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { customElement, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
 import { navigate } from "../../../common/navigate";
+import { debounce } from "../../../common/util/debounce";
 import { formatDateVeryShort } from "../../../common/datetime/format_date";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import "../../../components/ha-alert";
@@ -23,7 +25,10 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import "../../../components/item/ha-list-item-base";
 import "../../../components/list/ha-list-base";
-import { reloadConfigEntry } from "../../../data/config_entries";
+import {
+  canReloadConfigEntry,
+  reloadConfigEntry,
+} from "../../../data/config_entries";
 import {
   apiContext,
   areasContext,
@@ -153,9 +158,22 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
     text: string;
   };
 
+  private _unsubRegistry?: Promise<UnsubscribeFunc>;
+
   connectedCallback() {
     super.connectedCallback();
     this._load();
+    // Restoring or removing an item changes the deleted list, which is not pushed.
+    this._unsubRegistry = this._connection.connection.subscribeEvents(
+      debounce(() => this._load(), 500),
+      this._isDevice ? "device_registry_updated" : "entity_registry_updated"
+    );
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubRegistry?.then((unsub) => unsub());
+    this._unsubRegistry = undefined;
   }
 
   private get _isDevice() {
@@ -179,6 +197,7 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
         this._i18n.localize("ui.panel.config.recently_removed.load_failed");
       return;
     }
+    this._error = undefined;
     const domains = new Set(
       (this._devices ?? []).map((device) => device.domain).filter(Boolean)
     );
@@ -189,6 +208,21 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
       ] as string[]);
       this.requestUpdate();
     }
+  }
+
+  // Orphaned items have no config entry, which also happens for removed
+  // subentries and entities set up from YAML, so only an integration that can be
+  // added from the UI and has no config entry left counts as removed.
+  private _integrationRemoved(item: RemovedItem) {
+    if (
+      !item.domain ||
+      item.configEntryId ||
+      !this._configEntries ||
+      !this._manifests?.[item.domain]?.config_flow
+    ) {
+      return false;
+    }
+    return !this._configEntries.some((entry) => entry.domain === item.domain);
   }
 
   private _integrationName(domain: string) {
@@ -319,6 +353,15 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
           (entry) => entry.entry_id === item.configEntryId
         )
       : undefined;
+    const integrationRemoved = this._integrationRemoved(item);
+    const keptUntil =
+      item.orphanedAt !== null
+        ? formatDateVeryShort(
+            new Date((item.orphanedAt + ORPHANED_KEEP_SECONDS) * 1000),
+            locale,
+            this._hassConfig.config
+          )
+        : undefined;
 
     return html`<ha-list-item-base>
       ${
@@ -351,24 +394,25 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
           </ha-tooltip>
         </div>
         ${
-          item.orphanedAt !== null
-            ? html`<div>
-                <span class="nowrap"
-                  >${this._i18n.localize(`${key}.integration_removed`)} ·</span
-                >
-                <span class="nowrap"
-                  >${this._i18n.localize(`${key}.kept_until`, {
-                    date: formatDateVeryShort(
-                      new Date(
-                        (item.orphanedAt + ORPHANED_KEEP_SECONDS) * 1000
-                      ),
-                      locale,
-                      this._hassConfig.config
-                    ),
-                  })}</span
-                >
-              </div>`
-            : nothing
+          keptUntil === undefined
+            ? nothing
+            : integrationRemoved
+              ? html`<div>
+                  <span class="nowrap"
+                    >${this._i18n.localize(`${key}.integration_removed`)}
+                    ·</span
+                  >
+                  <span class="nowrap"
+                    >${this._i18n.localize(`${key}.kept_until`, {
+                      date: keptUntil,
+                    })}</span
+                  >
+                </div>`
+              : html`<div>
+                  ${this._i18n.localize(`${key}.orphaned_kept_until`, {
+                    date: keptUntil,
+                  })}
+                </div>`
         }
         ${
           labels.length
@@ -402,14 +446,12 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
           .path=${mdiDotsVertical}
         ></ha-icon-button>
         ${
-          configEntry
-            ? configEntry.disabled_by
-              ? nothing
-              : html`<ha-dropdown-item value="reload">
-                  <ha-svg-icon slot="icon" .path=${mdiReload}></ha-svg-icon>
-                  ${this._i18n.localize(`${key}.reload_integration`)}
-                </ha-dropdown-item>`
-            : item.domain
+          configEntry && canReloadConfigEntry(configEntry)
+            ? html`<ha-dropdown-item value="reload">
+                <ha-svg-icon slot="icon" .path=${mdiReload}></ha-svg-icon>
+                ${this._i18n.localize(`${key}.reload_integration`)}
+              </ha-dropdown-item>`
+            : integrationRemoved
               ? html`<ha-dropdown-item value="add">
                   <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
                   ${this._i18n.localize(`${key}.add_integration`)}
@@ -474,8 +516,6 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
           this._i18n.localize(`${key}.reload_failed`, { integration }),
       };
     }
-    // Restored items leave the deleted list, which is not pushed.
-    await this._load();
   }
 
   private _addIntegration(item: RemovedItem) {

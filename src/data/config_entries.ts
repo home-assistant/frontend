@@ -95,6 +95,12 @@ export const RECOVERABLE_STATES: ConfigEntry["state"][] = [
   "setup_retry",
 ];
 
+export const canReloadConfigEntry = (entry: ConfigEntry) =>
+  !entry.disabled_by &&
+  RECOVERABLE_STATES.includes(entry.state) &&
+  entry.supports_unload &&
+  entry.source !== "system";
+
 export interface ConfigEntryUpdate {
   // null means no update as is the current state
   type: null | "added" | "removed" | "updated";

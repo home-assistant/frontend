@@ -40,11 +40,11 @@ import {
 import { getSignedPath } from "../../../data/auth";
 import type { DisableConfigEntryResult } from "../../../data/config_entries";
 import {
+  canReloadConfigEntry,
   deleteConfigEntry,
   disableConfigEntry,
   enableConfigEntry,
   ERROR_STATES,
-  RECOVERABLE_STATES,
   reloadConfigEntry,
   updateConfigEntry,
 } from "../../../data/config_entries";
@@ -347,10 +347,7 @@ export class HaConfigEntryRow extends LitElement {
             )}
           </ha-dropdown-item>
           ${
-            !item.disabled_by &&
-            RECOVERABLE_STATES.includes(item.state) &&
-            item.supports_unload &&
-            item.source !== "system"
+            canReloadConfigEntry(item)
               ? html`
                   <ha-dropdown-item value="reload">
                     <ha-svg-icon slot="icon" .path=${mdiReload}></ha-svg-icon>
