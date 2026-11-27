@@ -12,6 +12,7 @@ import {
 } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { sanitizeHttpUrl } from "../../../common/url/sanitize-http-url";
 import { estimateDirection } from "../../../common/util/estimate-direction";
@@ -33,6 +34,8 @@ import {
 } from "../../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
+import { getExtendedEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { ERROR_WARNING_NOT_ACCEPTED } from "../../../data/marketplace/websocket";
 import type { UpdateEntity, UpdateReleaseNotes } from "../../../data/update";
 import {
   latestVersionIsSkipped,
@@ -103,7 +106,10 @@ class MoreInfoUpdate extends LitElement {
 
   @state() private _error?: string;
 
-  @state() private _installError?: string;
+  @state() private _installError?: {
+    message: string;
+    marketplacePath?: string;
+  };
 
   @state() private _backupState: ManagerState = "idle";
 
@@ -191,6 +197,7 @@ class MoreInfoUpdate extends LitElement {
 
     const releaseUrl = sanitizeHttpUrl(this.stateObj.attributes.release_url);
     const backupInProgressMessage = this._backupInProgressMessage();
+    const marketplacePath = this._installError?.marketplacePath;
 
     return html`
       <div class="content">
@@ -327,21 +334,30 @@ class MoreInfoUpdate extends LitElement {
               ? html`<ha-alert alert-type="error">
                   ${this._localize(
                     "ui.dialogs.more_info_control.update.install_failed",
-                    { error: this._installError }
+                    { error: this._installError.message }
                   )}
                   ${
-                    this._canShowSupervisorLogs()
-                      ? html`<ha-button
-                          slot="action"
-                          appearance="plain"
-                          size="small"
-                          @click=${this._handleShowSupervisorLogs}
+                    marketplacePath
+                      ? html`<a
+                          class="marketplace-link"
+                          href=${marketplacePath}
                         >
                           ${this._localize(
-                            "ui.dialogs.more_info_control.update.supervisor_logs"
+                            "ui.dialogs.more_info_control.update.open_marketplace"
                           )}
-                        </ha-button>`
-                      : nothing
+                        </a>`
+                      : this._canShowSupervisorLogs()
+                        ? html`<ha-button
+                            slot="action"
+                            appearance="plain"
+                            size="small"
+                            @click=${this._handleShowSupervisorLogs}
+                          >
+                            ${this._localize(
+                              "ui.dialogs.more_info_control.update.supervisor_logs"
+                            )}
+                          </ha-button>`
+                        : nothing
                   }
                 </ha-alert>`
               : nothing
@@ -430,8 +446,9 @@ class MoreInfoUpdate extends LitElement {
   }
 
   private async _handleInstall(): Promise<void> {
+    const entityId = this.stateObj!.entity_id;
     const installData: Record<string, any> = {
-      entity_id: this.stateObj!.entity_id,
+      entity_id: entityId,
     };
 
     if (this._backupElement?.createBackup ?? false) {
@@ -456,10 +473,16 @@ class MoreInfoUpdate extends LitElement {
         false
       );
     } catch (err: any) {
-      const message = await this._localizeInstallError(err);
+      const marketplaceWarning =
+        err?.translation_domain === "marketplace" &&
+        err.translation_key === ERROR_WARNING_NOT_ACCEPTED;
+      const [message, marketplacePath] = await Promise.all([
+        this._localizeInstallError(err),
+        marketplaceWarning ? this._getMarketplacePath(entityId) : undefined,
+      ]);
 
       if (this._isShown()) {
-        this._installError = message;
+        this._installError = { message, marketplacePath };
 
         return;
       }
@@ -476,17 +499,36 @@ class MoreInfoUpdate extends LitElement {
             { error: message }
           ),
           duration: 10000,
-          action: this._canShowSupervisorLogs()
+          action: marketplacePath
             ? {
                 text: this._localize(
-                  "ui.dialogs.more_info_control.update.supervisor_logs"
+                  "ui.dialogs.more_info_control.update.open_marketplace"
                 ),
-                action: () => this._showSupervisorLogs(toastHost, filter),
+                action: () => navigate(marketplacePath),
               }
-            : undefined,
+            : this._canShowSupervisorLogs()
+              ? {
+                  text: this._localize(
+                    "ui.dialogs.more_info_control.update.supervisor_logs"
+                  ),
+                  action: () => this._showSupervisorLogs(toastHost, filter),
+                }
+              : undefined,
         });
       }
     }
+  }
+
+  private async _getMarketplacePath(entityId: string): Promise<string> {
+    const entry = await getExtendedEntityRegistryEntry(
+      this._api.callWS,
+      entityId
+    ).catch(() => undefined);
+
+    // Marketplace uses the repository ID as its update entity's unique ID.
+    return entry?.platform === "marketplace" && entry.unique_id
+      ? `/marketplace/repository/${encodeURIComponent(entry.unique_id)}`
+      : "/marketplace";
   }
 
   // Supervisor errors only say "Check Supervisor logs for details".
@@ -649,6 +691,12 @@ class MoreInfoUpdate extends LitElement {
       width: 100%;
       box-sizing: border-box;
       padding: var(--ha-space-2) var(--ha-space-4) 0;
+    }
+
+    .marketplace-link {
+      display: block;
+      width: fit-content;
+      margin-block-start: var(--ha-space-1);
     }
 
     .actions {
