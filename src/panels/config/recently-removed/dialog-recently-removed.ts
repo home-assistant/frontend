@@ -259,7 +259,10 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
       .filter((label) => label !== undefined);
     const details = [
       ...item.details,
-      item.domain ? this._integrationName(item.domain) : undefined,
+      // An unnamed device already has the integration in its headline.
+      item.domain && !item.unnamed
+        ? this._integrationName(item.domain)
+        : undefined,
       area?.name,
     ].filter(Boolean);
     const removed = this._i18n.localize(`${key}.removed`, {
@@ -329,7 +332,7 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
         slot="end"
         appearance="plain"
         variant="danger"
-        size="small"
+        size="s"
         data-id=${item.id}
         @click=${this._forget}
       >
