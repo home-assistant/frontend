@@ -14,6 +14,7 @@ import {
 import { transform } from "../../../common/decorators/transform";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { createSearchParam } from "../../../common/url/search-params";
+import "../../../components/chart/statistics-chart";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-tooltip";

@@ -6,6 +6,8 @@ export interface DemoArea {
   name: string;
   floor_id?: string;
   icon?: string;
+  // An image URL, such as for an area card with `display_type: picture`
+  picture?: string;
   temperature_entity_id?: string;
   humidity_entity_id?: string;
 }
@@ -21,7 +23,7 @@ export const toAreaRegistryEntry = (area: DemoArea): AreaRegistryEntry => ({
   humidity_entity_id: area.humidity_entity_id ?? null,
   aliases: [],
   labels: [],
-  picture: null,
+  picture: area.picture ?? null,
   created_at: 0,
   modified_at: 0,
 });
