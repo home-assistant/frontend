@@ -139,12 +139,17 @@ export class HaControlCircularSlider extends LitElement {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+    const activeValue = this._getActiveValue();
     if (
       this._activeSlider &&
+      activeValue != null &&
       changedProps.has(this._activeSlider) &&
       this[this._activeSlider] !== this._lastChanging
     ) {
-      this._lastChanging = undefined;
+      this._lastChanging = this._steppedValue(activeValue);
+      fireEvent(this, `${this._activeSlider}-changing`, {
+        value: this._lastChanging,
+      });
     }
     if (!this._activeSlider) {
       if (changedProps.has("value")) {
