@@ -58,7 +58,7 @@ import type { UpdateEntity } from "../../../data/update";
 import { latestVersionIsSkipped } from "../../../data/update";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
+import { showRestartConfirmation } from "../../../dialogs/restart/show-restart-confirmation";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
@@ -174,6 +174,8 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
   @consume({ context: connectionContext, subscribe: true })
   private _connection!: ContextType<typeof connectionContext>;
+
+  @state() private _confirmingRestart = false;
 
   @state() private _integrationCategoryIcons?: IntegrationCategoryIcons;
 
@@ -755,6 +757,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         action: html`<ha-button
           variant="warning"
           appearance="filled"
+          .loading=${this._confirmingRestart}
           @click=${this._restart}
         >
           <ha-svg-icon slot="start" .path=${mdiRestart}></ha-svg-icon>
@@ -1092,8 +1095,20 @@ type: module</pre>`,
     this._installRepositoryDialog();
   }
 
-  private _restart() {
-    showRestartDialog(this);
+  private async _restart() {
+    if (this._confirmingRestart) {
+      return;
+    }
+    this._confirmingRestart = true;
+    try {
+      await showRestartConfirmation(this, {
+        localize: this._i18n.localize,
+        connection: this._connection.connection,
+        callService: this._api.callService,
+      });
+    } finally {
+      this._confirmingRestart = false;
+    }
   }
 
   private _setUp() {

@@ -13,7 +13,6 @@ import { fireEvent } from "../../common/dom/fire_event";
 import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import "../../components/animation/ha-fade-in";
 import "../../components/ha-adaptive-dialog";
-import "../../components/ha-alert";
 import "../../components/ha-expansion-panel";
 import "../../components/ha-icon-next";
 import "../../components/ha-spinner";
@@ -21,10 +20,6 @@ import "../../components/item/ha-list-item-button";
 import type { HaListItemButton } from "../../components/item/ha-list-item-button";
 import "../../components/list/ha-list-base";
 import "../../components/progress/ha-progress-bar";
-import {
-  getBackupState,
-  type BackupManagerState,
-} from "../../data/backup_manager";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
@@ -36,14 +31,14 @@ import {
   shutdownHost,
 } from "../../data/hassio/host";
 import { haStyle, haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant, ServiceCallRequest } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { HOST_ACTION_TOAST_ID, showToast } from "../../util/toast";
+import { showAlertDialog } from "../generic/show-dialog-box";
 import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../generic/show-dialog-box";
-import { showRestartWaitDialog } from "./show-dialog-restart";
-import "./automation-restart-status";
+  confirmRestartAction,
+  showRestartConfirmation,
+  type RestartAction,
+} from "./show-restart-confirmation";
 
 @customElement("dialog-restart")
 class DialogRestart extends LitElement {
@@ -71,15 +66,6 @@ class DialogRestart extends LitElement {
 
     if (isHassioLoaded && !this._hostInfo) {
       this._loadHostInfo();
-    }
-  }
-
-  private async _loadBackupState() {
-    try {
-      return await getBackupState(this.hass);
-    } catch (_err) {
-      // Do nothing
-      return "idle";
     }
   }
 
@@ -273,44 +259,15 @@ class DialogRestart extends LitElement {
       duration: 1000,
     });
 
-    this._restartAction(
-      "homeassistant",
-      "reload_all",
-      this.hass.localize("ui.dialogs.restart.reload.failed")
-    )();
-  }
-
-  private _getBackupProgressMessage(backupState: BackupManagerState) {
-    switch (backupState) {
-      case "create_backup":
-        return this.hass.localize("ui.dialogs.restart.backup_in_progress");
-      case "receive_backup":
-        return this.hass.localize("ui.dialogs.restart.upload_in_progress");
-      case "restore_backup":
-        return this.hass.localize("ui.dialogs.restart.restore_in_progress");
-      default:
-        return "";
+    try {
+      await this.hass.callService("homeassistant", "reload_all");
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.dialogs.restart.reload.failed"),
+        text: err.message,
+      });
     }
   }
-
-  private _restartAction =
-    (
-      domain: ServiceCallRequest["domain"],
-      service: ServiceCallRequest["service"],
-      errorTitle: string,
-
-      serviceData?: ServiceCallRequest["serviceData"]
-    ) =>
-    async () => {
-      try {
-        await this.hass.callService(domain, service, serviceData);
-      } catch (err: any) {
-        showAlertDialog(this, {
-          title: errorTitle,
-          text: err.message,
-        });
-      }
-    };
 
   private _hostAction =
     (toastMessage: string, action: "reboot" | "shutdown") => async () => {
@@ -343,75 +300,32 @@ class DialogRestart extends LitElement {
     };
 
   private async _handleAction(
-    ev: HASSDomCurrentTargetEvent<
-      HaListItemButton & {
-        action: "restart" | "reboot" | "shutdown" | "restart-safe-mode";
-      }
-    >
+    ev: HASSDomCurrentTargetEvent<HaListItemButton & { action: RestartAction }>
   ) {
     if (this._loadingBackupInfo) {
       return;
     }
     this._loadingBackupInfo = true;
     const action = ev.currentTarget.action;
-
-    const backupState = await this._loadBackupState();
-
-    const backupProgressMessage = this._getBackupProgressMessage(backupState);
-
-    this._loadingBackupInfo = false;
-
-    const confirmed = await showConfirmationDialog(this, {
-      title: this.hass.localize(`ui.dialogs.restart.${action}.confirm_title`),
-      text: html`${this.hass.localize(
-          `ui.dialogs.restart.${action}.confirm_description`
-        )}${
-          backupProgressMessage
-            ? html`<br /><br /><ha-alert>${backupProgressMessage}</ha-alert>`
-            : nothing
-        } <br /><br /><automation-restart-status></automation-restart-status>`,
-      confirmText: this.hass.localize(
-        `ui.dialogs.restart.${action}.confirm_action${backupState === "idle" ? "" : "_backup"}`
-      ),
-      destructive: true,
-    });
-
-    if (!confirmed) {
-      return;
+    try {
+      const confirmed =
+        action === "restart" || action === "restart-safe-mode"
+          ? await showRestartConfirmation(this, this.hass, action)
+          : await confirmRestartAction(
+              this,
+              this.hass,
+              action,
+              this._hostAction(
+                this.hass.localize(`ui.dialogs.restart.${action}.action_toast`),
+                action
+              )
+            );
+      if (confirmed) {
+        this._dialogOpen = false;
+      }
+    } finally {
+      this._loadingBackupInfo = false;
     }
-
-    this._dialogOpen = false;
-
-    let actionFunc: () => Promise<void>;
-
-    if (["restart", "restart-safe-mode"].includes(action)) {
-      const serviceData =
-        action === "restart-safe-mode" ? { safe_mode: true } : undefined;
-      actionFunc = this._restartAction(
-        "homeassistant",
-        "restart",
-        this.hass.localize(`ui.dialogs.restart.${action}.failed`),
-        serviceData
-      );
-    } else {
-      actionFunc = this._hostAction(
-        this.hass.localize(
-          `ui.dialogs.restart.${action as "reboot" | "shutdown"}.action_toast`
-        ),
-        action as "reboot" | "shutdown"
-      );
-    }
-
-    if (backupState !== "idle") {
-      showRestartWaitDialog(this, {
-        title: this.hass.localize(`ui.dialogs.restart.${action}.title`),
-        initialBackupState: backupState,
-        action: actionFunc,
-      });
-      return;
-    }
-
-    actionFunc();
   }
 
   static get styles(): CSSResultGroup {
