@@ -2839,6 +2839,59 @@ describe("computeEnergyDeviceLabels", () => {
       );
     });
   });
+
+  describe("devices that share a name", () => {
+    const LIGHT_STATES = {
+      "sensor.hall_light_energy": createMockEntityState(
+        "sensor.hall_light_energy",
+        "1",
+        { friendly_name: "Ceiling light Energy" }
+      ),
+      "sensor.stairs_light_energy": createMockEntityState(
+        "sensor.stairs_light_energy",
+        "1",
+        { friendly_name: "Ceiling light Energy" }
+      ),
+    };
+
+    const lightHass = createMockHass(LIGHT_STATES, {
+      entities: {
+        "sensor.hall_light_energy": {
+          entity_id: "sensor.hall_light_energy",
+          labels: [],
+          name: "Energy",
+          device_id: "hall",
+        },
+        "sensor.stairs_light_energy": {
+          entity_id: "sensor.stairs_light_energy",
+          labels: [],
+          name: "Energy",
+          device_id: "stairs",
+        },
+      } as unknown as Record<string, EntityRegistryDisplayEntry>,
+      devices: {
+        hall: { id: "hall", name: "Ceiling light", name_by_user: null },
+        stairs: { id: "stairs", name: "Ceiling light", name_by_user: null },
+      } as unknown as Record<string, DeviceRegistryEntry>,
+    });
+
+    it("does not add an entity name that does not tell them apart", () => {
+      assert.deepEqual(
+        computeEnergyDeviceLabels(
+          lightHass.states,
+          lightHass.formatEntityName,
+          [
+            { stat_consumption: "sensor.hall_light_energy" },
+            { stat_consumption: "sensor.stairs_light_energy" },
+          ]
+        ),
+        {
+          "sensor.hall_light_energy": "Ceiling light",
+          "sensor.stairs_light_energy": "Ceiling light",
+        }
+      );
+    });
+  });
 });
 
 describe("computeConsumptionData with a home meter", () => {

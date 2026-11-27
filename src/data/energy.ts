@@ -567,7 +567,9 @@ export const computeEnergyStatisticArea = (
  * device in the same list, which happens when one device has several meters of
  * the same type. Those are named with the entity name as well, so they stay
  * apart in the charts. Lists hold one type of device, so an energy meter and a
- * water meter of one device never collide.
+ * water meter of one device never collide. Separate devices that only share
+ * a name usually share the entity name too, so it is only added where it
+ * tells the labels apart.
  */
 export const computeAmbiguousEnergyDevices = (
   states: HomeAssistant["states"],
@@ -606,9 +608,23 @@ export const computeAmbiguousEnergyDevices = (
   const ambiguous = new Set<string>();
   for (const statisticIds of statisticIdsByLabel.values()) {
     if (statisticIds.size > 1) {
+      const statisticIdsByEntityLabel = new Map<string, string[]>();
       for (const statisticId of statisticIds) {
-        if (!named.has(statisticId)) {
-          ambiguous.add(statisticId);
+        if (named.has(statisticId)) {
+          continue;
+        }
+        const entityLabel = formatEntityName(
+          states[statisticId],
+          ENERGY_DEVICE_ENTITY_NAME
+        );
+        statisticIdsByEntityLabel.set(entityLabel, [
+          ...(statisticIdsByEntityLabel.get(entityLabel) ?? []),
+          statisticId,
+        ]);
+      }
+      for (const entityStatisticIds of statisticIdsByEntityLabel.values()) {
+        if (entityStatisticIds.length === 1) {
+          ambiguous.add(entityStatisticIds[0]);
         }
       }
     }
