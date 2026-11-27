@@ -13,26 +13,9 @@ import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
 import "../badges/hui-view-badges";
 import type { HuiCard } from "../cards/hui-card";
-import { computeCardSize } from "../common/compute-card-size";
 import type { Lovelace } from "../types";
-
-// Find column with < 5 size, else smallest column
-const getColumnIndex = (columnSizes: number[], size: number) => {
-  let minIndex = 0;
-  for (let i = 0; i < columnSizes.length; i++) {
-    if (columnSizes[i] < 5) {
-      minIndex = i;
-      break;
-    }
-    if (columnSizes[i] < columnSizes[minIndex]) {
-      minIndex = i;
-    }
-  }
-
-  columnSizes[minIndex] += size;
-
-  return minIndex;
-};
+import type { ColumnsDecision } from "./masonry-columns";
+import { assignColumns, decideColumns } from "./masonry-columns";
 
 @customElement("hui-masonry-view")
 export class MasonryView extends LitElement implements LovelaceViewElement {
@@ -180,103 +163,197 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     }
 
     const root = this.shadowRoot!.getElementById("columns") as HTMLDivElement;
+    const cards = this.cards;
+    const editMode = this.lovelace!.editMode;
 
     // Remove old columns, unless only card sizes changed. Then the columns are
     // reused, so cards that keep their place are not removed from the DOM.
-    if (this.lovelace!.editMode || this._columns !== this._renderedColumns) {
+    if (editMode || this._columns !== this._renderedColumns) {
       while (root.lastChild) {
         root.removeChild(root.lastChild);
       }
     }
     this._renderedColumns = this._columns;
 
-    // Remove cards that are no longer in the view, and edit mode wrappers
-    const cards = new Set<Element>(this.cards);
+    // Remove cards that are no longer in the view and edit mode wrappers
+    const cardSet = new Set<Element>(cards);
     for (const column of root.children) {
       for (const child of Array.from(column.children)) {
-        if (!cards.has(child)) {
+        if (!cardSet.has(child)) {
           child.remove();
         }
       }
     }
 
-    // Track the total height of cards in a columns
-    const columnSizes: number[] = [];
-    const columnElements: HTMLDivElement[] = [];
-    // Track the number of cards placed in a column
-    const columnCardCounts: number[] = [];
-    // Add columns to DOM, limit number of columns to the number of cards
-    for (let i = 0; i < Math.min(this._columns, this.cards.length); i++) {
-      let columnEl = root.children[i] as HTMLDivElement | undefined;
-      if (!columnEl) {
-        columnEl = document.createElement("div");
-        columnEl.classList.add("column");
-        root.appendChild(columnEl);
-      }
-      columnSizes.push(0);
-      columnElements.push(columnEl);
-      columnCardCounts.push(0);
-    }
-
     if (
-      this.cards.length === 0 ||
-      columnElements.some((column) => column.lastChild)
+      cards.length === 0 ||
+      Array.from(root.children).some((column) => column.lastChild)
     ) {
       this._resolveInitialRender?.();
       this._resolveInitialRender = undefined;
     }
 
+    // Limit the number of columns to the number of cards
+    const maxColumns = Math.min(this._columns, cards.length);
+    // In edit mode, every card is shown inside a wrapper
+    const shown = cards.map(
+      (card) => (editMode && !this.isStrategy) || !card.hidden
+    );
+
+    // Whether a frame could render before the first card is added
+    let framePassed = false;
+    nextRender().then(() => {
+      framePassed = true;
+    });
+
+    // Request every card size at once, so slow sizes don't add up
+    const sizes: (number | undefined)[] = new Array(cards.length);
+    let sizeKnown: (() => void) | undefined;
+    const setSize = (index: number, size: number) => {
+      if (sizes[index] === undefined) {
+        sizes[index] = Number(size);
+        sizeKnown?.();
+      }
+    };
+    // Not computeCardSize(), whose 500 ms timeout would start now for every
+    // card. hui-card already falls back to size 1 when a size fails.
+    cards.forEach((card, index) => {
+      Promise.resolve(card.getCardSize()).then((size) => setSize(index, size));
+    });
+    let nextCard = -1;
+    let nextCardTimeout: number | undefined;
+
+    let columnElements: HTMLDivElement[] | undefined;
+    // Track the number of cards placed in a column
+    const columnCardCounts: number[] = [];
+    let placedCards = 0;
+
+    const addColumns = ({ count, held }: ColumnsDecision) => {
+      columnElements = [];
+      for (let i = 0; i < count; i++) {
+        let columnEl = root.children[i] as HTMLDivElement | undefined;
+        if (!columnEl) {
+          columnEl = document.createElement("div");
+          columnEl.classList.add("column");
+          root.appendChild(columnEl);
+        }
+        columnElements.push(columnEl);
+        columnCardCounts.push(0);
+      }
+      // Columns that get a shown card keep their width while placing. The
+      // marks of an earlier placement stay until this decision.
+      Array.from(root.children).forEach((column, i) => {
+        column.classList.toggle("placing", held.includes(i));
+      });
+    };
+
     let tillNextRender: Promise<unknown> | undefined;
     let start: Date | undefined;
+    // On an empty view, when sizes were slow, render the first card on its
+    // own: slow sizes often arrive together. With sizes known right away, a
+    // pause would let other startup work delay the next cards.
+    let paintFirstCard = !root.querySelector(
+      ":scope > .column > :not([hidden])"
+    );
+    let firstCardRender: Promise<unknown> | undefined;
 
-    // Calculate the size of every card and determine in what column it should go
-    for (const [index, el] of this.cards.entries()) {
-      if (tillNextRender === undefined) {
-        tillNextRender = nextRender().then(() => {
-          tillNextRender = undefined;
-          start = undefined;
-        });
+    // Add the cards with a known column to the DOM. Returns false when
+    // another placement has started meanwhile.
+    const placeCards = async (columns: number[]): Promise<boolean> => {
+      while (placedCards < columns.length) {
+        if (tillNextRender === undefined) {
+          tillNextRender = nextRender().then(() => {
+            tillNextRender = undefined;
+            start = undefined;
+          });
+        }
+        let waitProm: Promise<unknown> | undefined;
+        // We should work for max 16ms (60fps) before allowing a frame to render
+        if (start === undefined) {
+          // Save the time we start for this frame, no need to wait yet
+          start = new Date();
+        } else if (new Date().getTime() - start.getTime() > 16) {
+          // We are working too long, we will prevent a render, wait to allow for a render
+          waitProm = tillNextRender;
+        }
+        // Like awaiting a card size, this also lets the previously added
+        // card update before the next time check
+        // eslint-disable-next-line no-await-in-loop
+        await Promise.all([waitProm, firstCardRender]);
+        if (iteration !== this._createColumnsIteration) {
+          return false;
+        }
+        const index = placedCards++;
+        const columnIndex = columns[index];
+        this._addCardToColumn(
+          columnElements![columnIndex],
+          index,
+          editMode,
+          columnCardCounts[columnIndex]++
+        );
+        if (paintFirstCard && shown[index]) {
+          paintFirstCard = false;
+          if (framePassed) {
+            firstCardRender = nextRender();
+          }
+        }
+        if (columnElements!.some((column) => column.isConnected)) {
+          this._resolveInitialRender?.();
+          this._resolveInitialRender = undefined;
+        }
       }
+      return true;
+    };
 
-      let waitProm: Promise<unknown> | undefined;
-
-      // We should work for max 16ms (60fps) before allowing a frame to render
-      if (start === undefined) {
-        // Save the time we start for this frame, no need to wait yet
-        start = new Date();
-      } else if (new Date().getTime() - start.getTime() > 16) {
-        // We are working too long, we will prevent a render, wait to allow for a render
-        waitProm = tillNextRender;
+    try {
+      for (;;) {
+        // In which column every card goes, as far as the sizes are known
+        const columns = assignColumns(sizes, maxColumns);
+        if (!columnElements) {
+          const decision = decideColumns(sizes, shown, maxColumns);
+          if (decision) {
+            addColumns(decision);
+          }
+        }
+        if (columnElements) {
+          // eslint-disable-next-line no-await-in-loop
+          if (!(await placeCards(columns))) {
+            return;
+          }
+          if (placedCards === cards.length) {
+            break;
+          }
+        }
+        if (sizes[columns.length] === undefined) {
+          if (nextCard !== columns.length) {
+            // As before, wait at most 500 ms for the next card's size
+            nextCard = columns.length;
+            clearTimeout(nextCardTimeout);
+            const index = nextCard;
+            nextCardTimeout = window.setTimeout(() => setSize(index, 1), 500);
+          }
+          // Wait for any size: it can allow deciding the columns
+          // eslint-disable-next-line no-await-in-loop
+          await new Promise<void>((resolve) => {
+            sizeKnown = resolve;
+          });
+          sizeKnown = undefined;
+        }
+        if (iteration !== this._createColumnsIteration) {
+          return;
+        }
       }
-
-      const cardSizeProm = computeCardSize(el);
-      // @ts-ignore
-      // eslint-disable-next-line no-await-in-loop
-      const [cardSize] = await Promise.all([cardSizeProm, waitProm]);
-
-      if (iteration !== this._createColumnsIteration) {
-        // An other create columns is started, abort this one
-        return;
-      }
-      // Calculate in which column the card should go based on the size and the cards already in there
-      const columnIndex = getColumnIndex(columnSizes, cardSize as number);
-      this._addCardToColumn(
-        columnElements[columnIndex],
-        index,
-        this.lovelace!.editMode,
-        columnCardCounts[columnIndex]++
-      );
-      if (columnElements.some((column) => column.isConnected)) {
-        this._resolveInitialRender?.();
-        this._resolveInitialRender = undefined;
-      }
+    } finally {
+      clearTimeout(nextCardTimeout);
     }
 
-    // Remove empty columns
+    // Remove empty columns. Only a finished placement removes the placing
+    // marks: a newer one keeps them until it has decided its columns.
     Array.from(root.children).forEach((column) => {
       if (!column.lastChild) {
         root.removeChild(column);
       }
+      column.classList.remove("placing");
     });
   }
 
@@ -355,6 +432,12 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
     .column:not(:has(> *:not([hidden]))) {
       flex-grow: 0;
+    }
+
+    /* While cards are being placed, a column keeps its share as soon as it
+       has a visible card, before the card is rendered */
+    #columns > .column.placing {
+      flex-grow: 1;
     }
 
     .column > *:not([hidden]) {
