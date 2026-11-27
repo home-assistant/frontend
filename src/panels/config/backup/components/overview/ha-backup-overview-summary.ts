@@ -16,6 +16,8 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/item/ha-list-item-base";
 import "../../../../../components/list/ha-list-base";
+import "../../../../../components/skeleton/ha-skeleton-text";
+import { skeletonOr } from "../../../../../components/skeleton/skeleton-arrival";
 import type { BackupConfig, BackupContent } from "../../../../../data/backup";
 import {
   BACKUP_OVERDUE_MARGIN_HOURS,
@@ -67,9 +69,11 @@ class HaBackupOverviewBackups extends LitElement {
         <ha-list-base>
           <ha-list-item-base wrap-headline>
             <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
-            <span slot="headline" class=${headline === null ? "skeleton" : ""}
-              >${headline}</span
-            >
+            ${skeletonOr(
+              headline === null,
+              html`<ha-skeleton-text slot="headline"></ha-skeleton-text>`,
+              () => html`<span slot="headline">${headline}</span>`
+            )}
           </ha-list-item-base>
           ${
             description || description === null
@@ -79,12 +83,13 @@ class HaBackupOverviewBackups extends LitElement {
                       slot="start"
                       .path=${mdiCalendar}
                     ></ha-svg-icon>
-                    <span
-                      slot="headline"
-                      class=${description === null ? "skeleton" : ""}
-                      >${description}</span
-                    >
-
+                    ${skeletonOr(
+                      description === null,
+                      html`<ha-skeleton-text
+                        slot="headline"
+                      ></ha-skeleton-text>`,
+                      () => html`<span slot="headline">${description}</span>`
+                    )}
                     ${
                       lastCompletedDate
                         ? html`
@@ -370,34 +375,8 @@ class HaBackupOverviewBackups extends LitElement {
         ha-list-item-base::part(start) {
           color: var(--ha-color-text-secondary);
         }
-        span.skeleton {
-          position: relative;
-          display: block;
-          width: 160px;
-          animation-fill-mode: forwards;
-          animation-iteration-count: infinite;
-          animation-name: loading;
-          animation-timing-function: linear;
-          animation-duration: 1.2s;
-          border-radius: var(--ha-border-radius-sm);
-          height: 16px;
-          margin: 2px 0;
-          background: linear-gradient(
-              to right,
-              var(--card-background-color) 8%,
-              var(--secondary-background-color) 18%,
-              var(--card-background-color) 33%
-            )
-            0% 0% / 936px 104px;
-        }
-
-        @keyframes loading {
-          0% {
-            background-position: -468px 0;
-          }
-          100% {
-            background-position: 468px 0;
-          }
+        ha-skeleton-text {
+          --ha-skeleton-text-width: 160px;
         }
       `,
     ];

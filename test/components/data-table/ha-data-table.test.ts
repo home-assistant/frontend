@@ -61,6 +61,9 @@ describe("ha-data-table search", () => {
 
   beforeEach(() => {
     vi.stubGlobal("ResizeObserver", MockResizeObserver);
+
+    // jsdom has no Web Animations, which rows fade in with after a skeleton
+    Element.prototype.animate = vi.fn();
   });
 
   afterEach(() => {

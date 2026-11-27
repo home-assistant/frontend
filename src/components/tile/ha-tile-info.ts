@@ -1,6 +1,7 @@
 import "../skeleton/ha-skeleton-text";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { skeletonOr } from "../skeleton/skeleton-arrival";
 
 /**
  * Home Assistant tile info component
@@ -46,15 +47,16 @@ export class HaTileInfo extends LitElement {
         <slot name="primary" class="primary">
           <span part="primary">${this.primary}</span>
         </slot>
-        ${
-          this.secondaryLoading
-            ? html`<div class="secondary">
-                <ha-skeleton-text></ha-skeleton-text>
-              </div>`
-            : html`<slot name="secondary" class="secondary">
-                <span>${this.secondary}</span>
-              </slot>`
-        }
+        ${skeletonOr(
+          this.secondaryLoading,
+          html`<div class="secondary">
+            <ha-skeleton-text></ha-skeleton-text>
+          </div>`,
+          () =>
+            html`<slot name="secondary" class="secondary">
+              <span>${this.secondary}</span>
+            </slot>`
+        )}
       </div>
     `;
   }

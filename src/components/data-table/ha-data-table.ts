@@ -14,6 +14,7 @@ import {
   query,
   state,
 } from "lit/decorators";
+import type { DirectiveResult } from "lit/directive";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { join } from "lit/directives/join";
@@ -45,6 +46,7 @@ import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../skeleton/ha-skeleton-icon";
 import "../skeleton/ha-skeleton-text";
+import { skeletonOr } from "../skeleton/skeleton-arrival";
 import "../ha-svg-icon";
 import "../input/ha-input-search";
 import { filterData, sortData } from "./sort-filter";
@@ -104,7 +106,9 @@ export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
     | "overflow"
     | "overflow-menu"
     | "flex";
-  template?: (row: T) => TemplateResult | string | typeof nothing;
+  template?: (
+    row: T
+  ) => TemplateResult | DirectiveResult | string | typeof nothing;
   extraTemplate?: (row: T) => TemplateResult | string | typeof nothing;
   minWidth?: string;
   maxWidth?: string;
@@ -504,6 +508,14 @@ export class HaDataTable extends LitElement {
 
     const filteredDataLength = this._filteredData?.length || 0;
 
+    const showSkeleton =
+      !filteredDataLength &&
+      Boolean(
+        this.loading ||
+        !this._filteredData ||
+        (this.data.length && !this._filteredDataSourceLength)
+      );
+
     const items = this._filteredData
       ? this._groupData(
           this._filteredData,
@@ -682,11 +694,14 @@ export class HaDataTable extends LitElement {
               : nothing
           }
           ${
-            !this._filteredData?.length
-              ? this.loading ||
-                !this._filteredData ||
-                (this.data.length && !this._filteredDataSourceLength)
-                ? html`
+            // Only what takes the skeleton rows' place fades in, not rows
+            // that come back after a filter matched nothing
+            skeletonOr(
+              showSkeleton,
+              // Only built while it shows, so loaded tables skip the work
+              !showSkeleton
+                ? nothing
+                : html`
                     <div class="mdc-data-table__content" role="row">
                       <ha-fade-in .duration=${300} easing="ease-in">
                         <div role="cell">
@@ -746,73 +761,83 @@ export class HaDataTable extends LitElement {
                         </div>
                       </ha-fade-in>
                     </div>
-                  `
-                : this.loadError
-                  ? nothing
-                  : html`
-                      <div class="mdc-data-table__content">
-                        <div class="mdc-data-table__row" role="row">
-                          <div
-                            class="mdc-data-table__cell grows center"
-                            role="cell"
-                          >
-                            ${
-                              this.data.length
-                                ? this._i18n?.localize?.(
-                                    "ui.components.data-table.no_match_filter"
-                                  ) || "No rows matching current filters"
-                                : this.noDataText ||
-                                  this._i18n?.localize?.(
-                                    "ui.components.data-table.no-data"
-                                  ) ||
-                                  "No data"
-                            }
+                  `,
+              () =>
+                !this._filteredData?.length
+                  ? this.loadError
+                    ? nothing
+                    : html`
+                        <div class="mdc-data-table__content">
+                          <div class="mdc-data-table__row" role="row">
+                            <div
+                              class="mdc-data-table__cell grows center"
+                              role="cell"
+                            >
+                              ${
+                                this.data.length
+                                  ? this._i18n?.localize?.(
+                                      "ui.components.data-table.no_match_filter"
+                                    ) || "No rows matching current filters"
+                                  : this.noDataText ||
+                                    this._i18n?.localize?.(
+                                      "ui.components.data-table.no-data"
+                                    ) ||
+                                    "No data"
+                              }
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      `
+                  : html`
+                      ${
+                        this.groupColumn &&
+                        !this.autoHeight &&
+                        this._stickyGroup !== undefined
+                          ? html`<div
+                              class="mdc-data-table__row sticky-group-header"
+                              role="row"
+                              aria-rowindex=${ifDefined(
+                                stickyGroupIndex === -1
+                                  ? undefined
+                                  : stickyGroupIndex + (this.loadError ? 3 : 2)
+                              )}
+                              .group=${this._stickyGroup}
+                              @click=${this._collapseStickyGroup}
+                            >
+                              ${keyed(
+                                this._stickyGroup,
+                                this._renderGroupHeader(
+                                  this._stickyGroup,
+                                  this._collapsedGroups.includes(
+                                    this._stickyGroup
+                                  ),
+                                  this._i18n?.localize,
+                                  this.renderGroupActions,
+                                  true
+                                )
+                              )}
+                            </div>`
+                          : nothing
+                      }
+                      <!-- The list fades in as a whole; rows made later as it
+                    scrolls show at once -->
+                      <lit-virtualizer
+                        scroller
+                        class="mdc-data-table__content scroller ha-scrollbar ${classMap(
+                          {
+                            grouped:
+                              Boolean(this.groupColumn) && !this.autoHeight,
+                          }
+                        )}"
+                        tabindex=${ifDefined(!this.autoHeight ? "0" : undefined)}
+                        @scroll=${this._saveScrollPos}
+                        @visibilityChanged=${this._handleVisibilityChanged}
+                        .items=${items}
+                        .keyFunction=${this._keyFunction}
+                        .renderItem=${renderRow}
+                      ></lit-virtualizer>
                     `
-              : html`
-                  ${
-                    this.groupColumn &&
-                    !this.autoHeight &&
-                    this._stickyGroup !== undefined
-                      ? html`<div
-                          class="mdc-data-table__row sticky-group-header"
-                          role="row"
-                          aria-rowindex=${ifDefined(
-                            stickyGroupIndex === -1
-                              ? undefined
-                              : stickyGroupIndex + (this.loadError ? 3 : 2)
-                          )}
-                          .group=${this._stickyGroup}
-                          @click=${this._collapseStickyGroup}
-                        >
-                          ${keyed(
-                            this._stickyGroup,
-                            this._renderGroupHeader(
-                              this._stickyGroup,
-                              this._collapsedGroups.includes(this._stickyGroup),
-                              this._i18n?.localize,
-                              this.renderGroupActions,
-                              true
-                            )
-                          )}
-                        </div>`
-                      : nothing
-                  }
-                  <lit-virtualizer
-                    scroller
-                    class="mdc-data-table__content scroller ha-scrollbar ${classMap(
-                      { grouped: Boolean(this.groupColumn) && !this.autoHeight }
-                    )}"
-                    tabindex=${ifDefined(!this.autoHeight ? "0" : undefined)}
-                    @scroll=${this._saveScrollPos}
-                    @visibilityChanged=${this._handleVisibilityChanged}
-                    .items=${items}
-                    .keyFunction=${this._keyFunction}
-                    .renderItem=${renderRow}
-                  ></lit-virtualizer>
-                `
+            )
           }
         </div>
       </div>

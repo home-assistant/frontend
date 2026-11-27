@@ -42,6 +42,9 @@ const connection = {
 
 beforeEach(() => {
   vi.useFakeTimers();
+
+  // jsdom has no Web Animations, which the log fades in with
+  Element.prototype.animate = vi.fn();
 });
 
 afterEach(() => {

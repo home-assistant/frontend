@@ -14,6 +14,7 @@ import {
   state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../../common/decorators/consume";
@@ -27,6 +28,7 @@ import "../../../../components/item/ha-list-item-button";
 import "../../../../components/list/ha-list-base";
 import "../../../../components/skeleton/ha-skeleton";
 import "../../../../components/skeleton/ha-skeleton-text";
+import { skeletonOr } from "../../../../components/skeleton/skeleton-arrival";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import {
   configEntriesContext,
@@ -135,39 +137,39 @@ export class HaAutomationAddItems extends LitElement {
         })}
         @scroll=${this._onItemsScroll}
       >
-        ${
-          this.loadingLabel
-            ? html`<ha-fade-in .duration=${300} easing="ease-in">
-                <div
-                  class="skeletons"
-                  role="progressbar"
-                  aria-label=${this.loadingLabel}
-                >
-                  <ha-skeleton-text></ha-skeleton-text>
-                  <ha-skeleton></ha-skeleton>
-                  <ha-skeleton></ha-skeleton>
-                  <ha-skeleton></ha-skeleton>
-                </div>
-              </ha-fade-in>`
-            : !this.items && !this.error
+        ${skeletonOr(
+          Boolean(this.loadingLabel),
+          html`<ha-fade-in .duration=${300} easing="ease-in">
+            <div
+              class="skeletons"
+              role="progressbar"
+              aria-label=${ifDefined(this.loadingLabel)}
+            >
+              <ha-skeleton-text></ha-skeleton-text>
+              <ha-skeleton></ha-skeleton>
+              <ha-skeleton></ha-skeleton>
+              <ha-skeleton></ha-skeleton>
+            </div>
+          </ha-fade-in>`,
+          () =>
+            !this.items && !this.error
               ? this.selectLabel
               : this.error
-                ? html`${this.error}
+                ? html`<span>${this.error}</span>
                     <div>${this._renderCurrentTarget()}</div>`
                 : this.items && !this.items.length
-                  ? html`${this.emptyLabel}
-                    ${
-                      this.target
-                        ? html`<div>${this._renderCurrentTarget()}</div>`
-                        : nothing
-                    }`
+                  ? html`<span>${this.emptyLabel}</span> ${
+                        this.target
+                          ? html`<div>${this._renderCurrentTarget()}</div>`
+                          : nothing
+                      }`
                   : repeat(
                       this.items,
                       (_, index) => `item-group-${index}`,
                       (itemGroup) =>
                         this._renderItemList(itemGroup.title, itemGroup.items)
                     )
-        }
+        )}
       </div>
       <slot></slot>`;
   }

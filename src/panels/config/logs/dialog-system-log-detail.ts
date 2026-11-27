@@ -5,6 +5,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { skeletonOr } from "../../../components/skeleton/skeleton-arrival";
 import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -190,62 +191,58 @@ class DialogSystemLogDetail extends LitElement {
           .label=${this._i18n.localize("ui.panel.config.logs.copy")}
           .path=${mdiContentCopy}
         ></ha-icon-button>
-        ${
-          integration &&
-          this._manifest === undefined &&
-          reportTarget !== "frontend"
-            ? html`<ha-alert
-                alert-type=${this.isCustomIntegration ? "warning" : "info"}
-              >
-                <ha-skeleton-text></ha-skeleton-text>
-              </ha-alert>`
-            : html`<ha-alert
-                alert-type=${this.isCustomIntegration ? "warning" : "info"}
-              >
-                <p>
-                  ${this._i18n.localize(
-                    `ui.panel.config.logs.detail.report_issue.${reportMessage}.introduction`,
-                    {
-                      integration:
-                        this._manifest?.name ??
-                        (integration
-                          ? domainToName(this._i18n.localize, integration)
-                          : new URL(reportUrl).hostname),
-                    }
-                  )}
-                </p>
-                <p>
-                  ${this._i18n.localize(
-                    `ui.panel.config.logs.detail.report_issue.${reportMessage}.report`,
-                    {
-                      report_link: html`<a
-                        href=${reportUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        >${this._i18n.localize(`ui.panel.config.logs.detail.report_issue.${reportTarget}.link_text`)}</a
-                      >`,
-                    }
-                  )}
-                </p>
-                ${
-                  reportMessage !== "custom"
-                    ? html`<p>
-                        ${this._i18n.localize(
-                          `ui.panel.config.logs.detail.report_issue.${reportMessage}.guidance`,
-                          {
-                            guide_link: html`<a
-                              href=${`${DOCUMENTATION_URL}/help/reporting_issues/`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              >${this._i18n.localize("ui.panel.config.logs.detail.report_issue.guide_link_text")}</a
-                            >`,
-                          }
-                        )}
-                      </p>`
-                    : nothing
-                }
-              </ha-alert>`
-        }
+        <ha-alert alert-type=${this.isCustomIntegration ? "warning" : "info"}>
+          ${skeletonOr(
+            Boolean(integration) &&
+              this._manifest === undefined &&
+              reportTarget !== "frontend",
+            html`<ha-skeleton-text></ha-skeleton-text>`,
+            () => html`
+              <p>
+                ${this._i18n.localize(
+                  `ui.panel.config.logs.detail.report_issue.${reportMessage}.introduction`,
+                  {
+                    integration:
+                      this._manifest?.name ??
+                      (integration
+                        ? domainToName(this._i18n.localize, integration)
+                        : new URL(reportUrl).hostname),
+                  }
+                )}
+              </p>
+              <p>
+                ${this._i18n.localize(
+                  `ui.panel.config.logs.detail.report_issue.${reportMessage}.report`,
+                  {
+                    report_link: html`<a
+                      href=${reportUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >${this._i18n.localize(`ui.panel.config.logs.detail.report_issue.${reportTarget}.link_text`)}</a
+                    >`,
+                  }
+                )}
+              </p>
+              ${
+                reportMessage !== "custom"
+                  ? html`<p>
+                      ${this._i18n.localize(
+                        `ui.panel.config.logs.detail.report_issue.${reportMessage}.guidance`,
+                        {
+                          guide_link: html`<a
+                            href=${`${DOCUMENTATION_URL}/help/reporting_issues/`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >${this._i18n.localize("ui.panel.config.logs.detail.report_issue.guide_link_text")}</a
+                          >`,
+                        }
+                      )}
+                    </p>`
+                  : nothing
+              }
+            `
+          )}
+        </ha-alert>
         <div class="contents">
           <p>
             ${this._i18n.localize("ui.panel.config.logs.detail.logger")}:

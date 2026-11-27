@@ -10,6 +10,7 @@ import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-alert";
 import "../../../components/skeleton/ha-skeleton";
 import "../../../components/skeleton/ha-skeleton-text";
+import { skeletonOr } from "../../../components/skeleton/skeleton-arrival";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
@@ -267,15 +268,13 @@ export abstract class HuiElementEditor<
                   class="gui-editor"
                   @edit-sub-element=${this._editSubElement}
                 >
-                  ${
-                    this._loading
-                      ? this._renderLoading()
-                      : cache(
-                          this._subElementEditorConfig
-                            ? this._renderSubElement()
-                            : this.renderConfigElement()
-                        )
-                  }
+                  ${skeletonOr(this._loading, this._renderLoading(), () =>
+                    cache(
+                      this._subElementEditorConfig
+                        ? this._renderSubElement()
+                        : this.renderConfigElement()
+                    )
+                  )}
                 </div>
               `
             : html`
