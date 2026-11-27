@@ -1,3 +1,4 @@
+import type { Connection } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
 
 export interface MQTTMessage {
@@ -60,4 +61,60 @@ export const fetchMQTTDebugInfo = (
   hass.callWS<MQTTDeviceDebugInfo>({
     type: "mqtt/device/debug_info",
     device_id: deviceId,
+  });
+
+export interface MQTTExplorerTopic {
+  topic: string;
+  messages: number;
+  bytes: number;
+  message_rate: number;
+  byte_rate: number;
+  // Unix timestamp in seconds, server clock
+  last_received: number;
+  retained: boolean;
+  qos: number;
+  // Home Assistant subscriptions receiving the topic, the explorer excluded
+  subscriptions: number;
+}
+
+export interface MQTTExplorerMessage {
+  topic: string;
+  payload: string;
+  truncated: boolean;
+  size: number;
+  // Unix timestamp in seconds, server clock
+  timestamp: number;
+  retain: boolean;
+  qos: number;
+}
+
+export interface MQTTExplorerTotals {
+  topics: number;
+  messages: number;
+  bytes: number;
+  message_rate: number;
+  byte_rate: number;
+  dropped_messages: number;
+  // Messages counted without their payload because a snapshot was too large.
+  dropped_payloads?: number;
+}
+
+// Each event only holds the topics and messages that changed since the previous one.
+export interface MQTTExplorerEvent {
+  interval: number;
+  now: number;
+  started: number;
+  total: MQTTExplorerTotals;
+  topics: MQTTExplorerTopic[];
+  messages: MQTTExplorerMessage[];
+}
+
+export const subscribeMQTTExplorer = (
+  connection: Connection,
+  callback: (event: MQTTExplorerEvent) => void,
+  topic: string
+) =>
+  connection.subscribeMessage<MQTTExplorerEvent>(callback, {
+    type: "mqtt/explorer/subscribe",
+    topic,
   });
