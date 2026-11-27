@@ -9,7 +9,10 @@ import { consumeLocalize } from "../../../common/decorators/consume-context-entr
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { ADAPTIVE_DIALOG_MEDIA_QUERY } from "../../../components/ha-adaptive-dialog";
+import {
+  adaptiveDialogModeContext,
+  type DialogSheetMode,
+} from "../../../components/ha-adaptive-dialog";
 import "../../../components/ha-button";
 import "../../../components/camera/ha-camera-player";
 import type { HaCameraPlayer } from "../../../components/camera/ha-camera-player";
@@ -51,8 +54,9 @@ class MoreInfoCamera extends LitElement {
 
   @state() private _attached = false;
 
-  // Like the dialog, which picks the bottom sheet once when it opens
-  @state() private _inBottomSheet = false;
+  @state()
+  @consume({ context: adaptiveDialogModeContext, subscribe: true })
+  private _dialogMode?: DialogSheetMode;
 
   @state() private _microphoneState: WebRtcMicrophoneState = "off";
 
@@ -76,9 +80,6 @@ class MoreInfoCamera extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     this._attached = true;
-    this._inBottomSheet = window.matchMedia(
-      ADAPTIVE_DIALOG_MEDIA_QUERY
-    ).matches;
   }
 
   public disconnectedCallback() {
@@ -140,7 +141,7 @@ class MoreInfoCamera extends LitElement {
         .stateObj=${this.stateObj}
         allow-exoplayer
         keep-awake
-        ?fill=${this._inBottomSheet}
+        ?fill=${this._dialogMode === "bottom-sheet"}
         @microphone-changed=${this._microphoneChanged}
         @stream-type-changed=${this._streamTypeChanged}
         @camera-capabilities-changed=${this._capabilitiesChanged}

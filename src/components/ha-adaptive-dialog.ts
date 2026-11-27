@@ -1,5 +1,6 @@
 import { mdiClose } from "@mdi/js";
 import type { ContextType } from "@lit/context";
+import { createContext, provide } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../common/decorators/consume";
@@ -11,7 +12,10 @@ import "./ha-icon-button";
 import "./ha-dialog";
 import type { DialogWidth } from "./ha-dialog";
 
-type DialogSheetMode = "dialog" | "bottom-sheet";
+export type DialogSheetMode = "dialog" | "bottom-sheet";
+
+export const adaptiveDialogModeContext =
+  createContext<DialogSheetMode>("adaptiveDialogMode");
 
 export const ADAPTIVE_DIALOG_MEDIA_QUERY =
   "(max-width: 870px), (max-height: 500px)";
@@ -125,7 +129,9 @@ export class HaAdaptiveDialog extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
   public flexContent = false;
 
-  @state() public mode: DialogSheetMode = "dialog";
+  @provide({ context: adaptiveDialogModeContext })
+  @state()
+  public mode: DialogSheetMode = "dialog";
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
