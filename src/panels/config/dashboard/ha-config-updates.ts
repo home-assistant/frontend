@@ -1,4 +1,5 @@
 import type { ContextType } from "@lit/context";
+import { mdiAccountAlert } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -14,6 +15,7 @@ import "../../../components/entity/state-badge";
 import "../../../components/ha-alert";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-spinner";
+import "../../../components/ha-svg-icon";
 import type { HaListItemButton } from "../../../components/item/ha-list-item-button";
 import "../../../components/item/ha-list-item-button";
 import "../../../components/list/ha-list-base";
@@ -26,6 +28,10 @@ import {
 } from "../../../data/context";
 import { entityRegistryByEntityId } from "../../../data/entity/entity_registry";
 import type { UpdateEntity } from "../../../data/update";
+import {
+  localizeUpdateInstallPhase,
+  localizeUpdateManualAction,
+} from "../../../data/update";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { HomeAssistantFormatters } from "../../../types";
 
@@ -61,6 +67,16 @@ class HaConfigUpdates extends LitElement {
   private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
 
   private _renderUpdateProgress(entity: UpdateEntity, slot?: string) {
+    if (entity.attributes.install_phase === "waiting_for_user") {
+      return html`<ha-svg-icon
+        slot=${ifDefined(slot)}
+        class="waiting-for-user"
+        role="img"
+        aria-label=${this._localize("ui.panel.config.updates.help_needed_now")}
+        .path=${mdiAccountAlert}
+      ></ha-svg-icon>`;
+    }
+
     if (entity.attributes.update_percentage != null) {
       return html`<ha-progress-ring
         slot=${ifDefined(slot)}
@@ -149,6 +165,32 @@ class HaConfigUpdates extends LitElement {
                     ? `(${this._localize("ui.panel.config.updates.skipped")})`
                     : nothing
                 }
+                ${
+                  entity.attributes.install_phase
+                    ? html`⸱
+                      ${localizeUpdateInstallPhase(
+                        this._localize,
+                        entity.attributes.install_phase
+                      )}`
+                    : nothing
+                }
+                ${
+                  !entity.attributes.manual_action
+                    ? nothing
+                    : entity.attributes.install_phase === "waiting_for_user"
+                      ? html`<span class="manual-action warning"
+                          >${localizeUpdateManualAction(
+                            this._localize,
+                            entity.attributes.manual_action,
+                            "instruction"
+                          )}</span
+                        >`
+                      : html`<span class="manual-action"
+                          >${this._localize(
+                            "ui.panel.config.updates.needs_help"
+                          )}</span
+                        >`
+                }
               </span>
               ${
                 !this.narrow
@@ -206,6 +248,17 @@ class HaConfigUpdates extends LitElement {
         }
         state-badge.updating {
           opacity: 0.2;
+        }
+        .manual-action {
+          display: block;
+          white-space: normal;
+        }
+        ha-svg-icon.waiting-for-user,
+        .manual-action.warning {
+          color: var(--ha-color-on-warning-normal);
+        }
+        ha-svg-icon.waiting-for-user {
+          --mdc-icon-size: 28px;
         }
       `,
     ];

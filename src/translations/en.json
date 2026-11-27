@@ -334,6 +334,7 @@
       "update": {
         "installing": "Installing",
         "installing_with_progress": "Installing ({progress}%)",
+        "phase_with_progress": "{phase} ({progress}%)",
         "preparing": "Preparing",
         "up_to_date": "Up-to-date"
       },
@@ -2063,6 +2064,8 @@
             "backups_link": "View backups"
           },
           "install_failed": "The update could not be started: {error}",
+          "needs_help_title": "This update needs your help",
+          "help_needed_now_title": "Your help is needed now",
           "supervisor_logs": "[%key:ui::panel::config::logs::supervisor_logs%]",
           "create_backup": {
             "automatic": "Automatic backup before update",
@@ -2778,6 +2781,11 @@
         "text": "This will create a backup before installing.",
         "create": "Create"
       },
+      "update_manual_action": {
+        "title": "{count, plural,\n one {This update needs your help}\n other {Some updates need your help}\n}",
+        "item": "{name}: {description}",
+        "warning": "{count, plural,\n one {The update can't finish until someone does this, and the device might not work in the meantime. Only start it when someone is there to help.}\n other {The updates can't finish until someone does this, and the devices might not work in the meantime. Only start them when someone is there to help.}\n}"
+      },
       "matter-add-device": {
         "add_device": "Add device",
         "add_device_failed": "Failed to add the device",
@@ -3292,6 +3300,8 @@
           "join_beta": "Join beta channel",
           "leave_beta": "Leave beta channel",
           "skipped": "Skipped",
+          "needs_help": "Needs your help during the update",
+          "help_needed_now": "Your help is needed now",
           "update_in_progress": "Update in progress",
           "no_area": "No area",
           "backup_in_progress": {

@@ -35,7 +35,9 @@ import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import type { UpdateEntity, UpdateReleaseNotes } from "../../../data/update";
 import {
+  confirmUpdateManualActions,
   latestVersionIsSkipped,
+  localizeUpdateManualAction,
   updateButtonIsDisabled,
   UpdateEntityFeature,
   updateIsInstalling,
@@ -191,12 +193,16 @@ class MoreInfoUpdate extends LitElement {
 
     const releaseUrl = sanitizeHttpUrl(this.stateObj.attributes.release_url);
     const backupInProgressMessage = this._backupInProgressMessage();
+    // The alert replaces the progress bar while the install waits for someone.
+    const waitingForUser =
+      this.stateObj.attributes.install_phase === "waiting_for_user" &&
+      !!this.stateObj.attributes.manual_action;
 
     return html`
       <div class="content">
         <div class="summary">
           ${
-            this.stateObj.attributes.in_progress
+            this.stateObj.attributes.in_progress && !waitingForUser
               ? supportsFeature(this.stateObj, UpdateEntityFeature.PROGRESS) &&
                 this.stateObj.attributes.update_percentage !== null
                 ? html`<ha-progress-bar
@@ -204,6 +210,25 @@ class MoreInfoUpdate extends LitElement {
                     .value=${this.stateObj.attributes.update_percentage}
                   ></ha-progress-bar>`
                 : html`<ha-progress-bar indeterminate></ha-progress-bar>`
+              : nothing
+          }
+          ${
+            this.stateObj.attributes.manual_action
+              ? html`<ha-alert
+                  class="manual-action"
+                  alert-type="warning"
+                  .title=${this._localize(
+                    waitingForUser
+                      ? "ui.dialogs.more_info_control.update.help_needed_now_title"
+                      : "ui.dialogs.more_info_control.update.needs_help_title"
+                  )}
+                >
+                  ${localizeUpdateManualAction(
+                    this._localize,
+                    this.stateObj.attributes.manual_action,
+                    waitingForUser ? "instruction" : "description"
+                  )}
+                </ha-alert>`
               : nothing
           }
           <h3>${this.stateObj.attributes.title}</h3>
@@ -430,6 +455,14 @@ class MoreInfoUpdate extends LitElement {
   }
 
   private async _handleInstall(): Promise<void> {
+    if (
+      !(await confirmUpdateManualActions(this, this._localize, [
+        this.stateObj!,
+      ]))
+    ) {
+      return;
+    }
+
     const installData: Record<string, any> = {
       entity_id: this.stateObj!.entity_id,
     };
@@ -612,9 +645,14 @@ class MoreInfoUpdate extends LitElement {
       margin-bottom: var(--ha-space-4);
     }
 
-    .release-notes-message {
+    .release-notes-message,
+    .manual-action {
       display: block;
       margin-bottom: var(--ha-space-4);
+    }
+
+    ha-progress-bar + .manual-action {
+      margin-top: var(--ha-space-4);
     }
 
     .row {

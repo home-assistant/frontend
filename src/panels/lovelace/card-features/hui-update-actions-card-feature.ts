@@ -16,7 +16,11 @@ import "../../../components/ha-control-button-group";
 import { apiContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { UpdateEntity } from "../../../data/update";
-import { UpdateEntityFeature, updateIsInstalling } from "../../../data/update";
+import {
+  confirmUpdateManualActions,
+  UpdateEntityFeature,
+  updateIsInstalling,
+} from "../../../data/update";
 import { showUpdateBackupDialogParams } from "../../../dialogs/update_backup/show-update-backup-dialog";
 import type { HomeAssistant, HomeAssistantApi } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
@@ -117,6 +121,14 @@ class HuiUpdateActionsCardFeature
   }
 
   private async _install(): Promise<void> {
+    if (
+      !(await confirmUpdateManualActions(this, this._localize, [
+        this._stateObj!,
+      ]))
+    ) {
+      return;
+    }
+
     const supportsBackup = supportsFeature(
       this._stateObj!,
       UpdateEntityFeature.BACKUP

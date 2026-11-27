@@ -42,6 +42,7 @@ import { domainToName } from "../../../data/integration";
 import type { UpdateEntity } from "../../../data/update";
 import {
   checkForEntityUpdates,
+  confirmUpdateManualActions,
   filterUpdateEntities,
   filterUpdateEntitiesParameterized,
   installUpdates,
@@ -460,12 +461,21 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
 
   private async _updateGroup(ev: Event) {
     const group = (ev.currentTarget as any).group as UpdateGroup;
-    const entityIds = group.entities
-      .filter((entity) => !updateIsInstalling(entity))
-      .map((entity) => entity.entity_id);
-    if (!entityIds.length) {
+    const entities = group.entities.filter(
+      (entity) => !updateIsInstalling(entity)
+    );
+    if (
+      !entities.length ||
+      !(await confirmUpdateManualActions(
+        this,
+        this.hass.localize,
+        entities,
+        this.hass.formatEntityName
+      ))
+    ) {
       return;
     }
+    const entityIds = entities.map((entity) => entity.entity_id);
     try {
       await installUpdates(this.hass, entityIds, false);
     } catch (err: any) {
