@@ -414,7 +414,41 @@
         "hourly": "Hourly",
         "twice_daily": "Twice daily",
         "high": "High",
-        "low": "Low"
+        "low": "Low",
+        "now": "Now",
+        "today": "Today",
+        "feels_like": "Feels like {temperature}",
+        "high_low": "High {high} · Low {low}",
+        "next_hours": "Next hours",
+        "hourly_modes": {
+          "temperature": "Temperature",
+          "precipitation": "Rain",
+          "wind": "Wind"
+        },
+        "sunrise": "Sunrise",
+        "sunset": "Sunset",
+        "daily_forecast": "{count} day forecast",
+        "sun": "Sun",
+        "daylight": "{hours}h {minutes}m of daylight",
+        "dawn": "Dawn",
+        "solar_noon": "Solar noon",
+        "dusk": "Dusk",
+        "moon": "Moon",
+        "moon_phase": {
+          "new_moon": "New moon",
+          "waxing_crescent": "Waxing crescent",
+          "first_quarter": "First quarter",
+          "waxing_gibbous": "Waxing gibbous",
+          "full_moon": "Full moon",
+          "waning_gibbous": "Waning gibbous",
+          "last_quarter": "Last quarter",
+          "waning_crescent": "Waning crescent"
+        },
+        "phase_illumination": "{phase} · {illumination}",
+        "moonrise": "Moonrise",
+        "moonset": "Moonset",
+        "next_full_moon": "Next full moon",
+        "days": "{count, plural,\n  one {# day}\n  other {# days}\n}"
       }
     },
     "card_features": {
