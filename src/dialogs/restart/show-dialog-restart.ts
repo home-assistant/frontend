@@ -1,22 +1,16 @@
 import { fireEvent } from "../../common/dom/fire_event";
 import type { ManagerState } from "../../data/backup_manager";
 
-export interface RestartDialogParams {
-  confirmRestart?: boolean;
-}
+export interface RestartDialogParams {}
 
 export const loadRestartDialog = () => import("./dialog-restart");
 export const loadRestartWaitDialog = () => import("./dialog-restart-wait");
 
-export const showRestartDialog = (
-  element: HTMLElement,
-  dialogParams: RestartDialogParams = {}
-): void => {
+export const showRestartDialog = (element: HTMLElement): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-restart",
     dialogImport: loadRestartDialog,
-    dialogParams,
-    addHistory: !dialogParams.confirmRestart,
+    dialogParams: {},
   });
 };
 
