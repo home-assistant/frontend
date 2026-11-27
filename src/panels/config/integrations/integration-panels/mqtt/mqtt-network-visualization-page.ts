@@ -61,6 +61,7 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import {
   ARTIFACT_PREFIX,
   BROKER_NODE_ID,
+  CATEGORY_KEYS,
   createMQTTNetworkChartData,
   DEVICE_PREFIX,
   ENTITY_PREFIX,
@@ -184,9 +185,10 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
   // The details dialog of a narrow screen is sliding away
   @state() private _closingDetails = false;
 
-  // The legend categories that are switched off, whose nodes are faded.
-  // Until the legend is used, the entities, triggers and tags are off.
-  @state() private _hiddenCategories?: string[];
+  // The keys of the legend categories that are switched off, as their names
+  // change with the language. Until the legend is used, the entities,
+  // triggers and tags are off.
+  @state() private _hiddenCategories?: readonly string[];
 
   @state() private _selectedTopic?: SelectedTopic;
 
@@ -200,6 +202,8 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
   @state() private _configs?: MQTTExplorerConfig[];
 
   @state() private _configFailed = false;
+
+  private _configRequest?: Promise<MQTTExplorerDetails>;
 
   // The last stored message per topic of the focused entity, for the tooltips
   // of its topic nodes, keyed by `<direction>:<topic>`
@@ -294,6 +298,17 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
+    // The side panel replaces a dialog that was sliding away, whose closed
+    // event then never comes
+    if (
+      changedProperties.has("narrow") &&
+      !this.narrow &&
+      this._closingDetails
+    ) {
+      this._closingDetails = false;
+      this._closeTopic();
+      this._closeConfig();
+    }
     // The shown configuration follows the focus
     if (
       this._showConfig &&
@@ -348,16 +363,16 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
     this._configNode = nodeId;
     this._configs = undefined;
     this._configFailed = false;
+    // A reopened panel fetches the same node again
+    const request = fetchMQTTExplorerDetails(this.hass, configItem(nodeId)!);
+    this._configRequest = request;
     try {
-      const details = await fetchMQTTExplorerDetails(
-        this.hass,
-        configItem(nodeId)!
-      );
-      if (this._configNode === nodeId) {
+      const details = await request;
+      if (this._configRequest === request) {
         this._configs = details.configs;
       }
     } catch (_err) {
-      if (this._configNode === nodeId) {
+      if (this._configRequest === request) {
         this._configFailed = true;
       }
     }
@@ -700,15 +715,15 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
   );
 
   private _legendHiddenCategories(): string[] {
-    return (
-      this._hiddenCategories ??
-      this._defaultHiddenCategories(this.hass.localize)
+    return this._categoryNames(
+      this._hiddenCategories ?? DEFAULT_HIDDEN_CATEGORIES,
+      this.hass.localize
     );
   }
 
-  private _defaultHiddenCategories = memoizeOne(
-    (localize: HomeAssistant["localize"]) =>
-      DEFAULT_HIDDEN_CATEGORIES.map((key) =>
+  private _categoryNames = memoizeOne(
+    (keys: readonly string[], localize: HomeAssistant["localize"]) =>
+      keys.map((key) =>
         localize(`ui.panel.config.mqtt.visualization.${key}` as LocalizeKeys)
       )
   );
@@ -720,7 +735,13 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
   private _handleLegendChange(
     ev: HASSDomEvent<HASSDomEvents["network-legend-changed"]>
   ): void {
-    this._hiddenCategories = ev.detail.hidden;
+    this._hiddenCategories = CATEGORY_KEYS.filter((key) =>
+      ev.detail.hidden.includes(
+        this.hass.localize(
+          `ui.panel.config.mqtt.visualization.${key}` as LocalizeKeys
+        )
+      )
+    );
   }
 
   private _fetchData = async (): Promise<void> => {

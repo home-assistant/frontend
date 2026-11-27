@@ -160,6 +160,19 @@ export const enum MQTTNodeCategory {
   PublishTopic = 8,
 }
 
+// The translation keys of the categories, in the order of MQTTNodeCategory
+export const CATEGORY_KEYS = [
+  "broker",
+  "source",
+  "device",
+  "child_device",
+  "entity",
+  "artifact_device_trigger",
+  "artifact_tag",
+  "subscribe_topic",
+  "publish_topic",
+] as const;
+
 export const sourceName = (
   source: MQTTExplorerSource,
   localize: LocalizeFunc
@@ -278,52 +291,25 @@ export function createMQTTNetworkChartData(
   const localize = (key: string) =>
     hass.localize(`ui.panel.config.mqtt.visualization.${key}` as LocalizeKeys);
   const categories = [
+    { symbol: "roundRect", itemStyle: { color: brokerColor } },
+    { symbol: "roundRect", itemStyle: { color: sourceColor } },
+    { symbol: "circle", itemStyle: { color: deviceColor } },
+    { symbol: "circle", itemStyle: { color: childDeviceColor } },
+    { symbol: ENTITY_SYMBOL, itemStyle: { color: entityColor } },
     {
-      name: localize("broker"),
-      symbol: "roundRect",
-      itemStyle: { color: brokerColor },
-    },
-    {
-      name: localize("source"),
-      symbol: "roundRect",
-      itemStyle: { color: sourceColor },
-    },
-    {
-      name: localize("device"),
-      symbol: "circle",
-      itemStyle: { color: deviceColor },
-    },
-    {
-      name: localize("child_device"),
-      symbol: "circle",
-      itemStyle: { color: childDeviceColor },
-    },
-    {
-      name: localize("entity"),
-      symbol: ENTITY_SYMBOL,
-      itemStyle: { color: entityColor },
-    },
-    {
-      name: localize("artifact_device_trigger"),
       symbol: artifactStyles.device_trigger.symbol,
       itemStyle: { color: artifactStyles.device_trigger.color },
     },
     {
-      name: localize("artifact_tag"),
       symbol: artifactStyles.tag.symbol,
       itemStyle: { color: artifactStyles.tag.color },
     },
-    {
-      name: localize("subscribe_topic"),
-      symbol: "diamond",
-      itemStyle: { color: subscribeColor },
-    },
-    {
-      name: localize("publish_topic"),
-      symbol: "diamond",
-      itemStyle: { color: publishColor },
-    },
-  ];
+    { symbol: "diamond", itemStyle: { color: subscribeColor } },
+    { symbol: "diamond", itemStyle: { color: publishColor } },
+  ].map((category, index) => ({
+    name: localize(CATEGORY_KEYS[index]),
+    ...category,
+  }));
 
   nodes.push({
     id: BROKER_NODE_ID,
