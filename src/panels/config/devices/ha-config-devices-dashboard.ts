@@ -876,6 +876,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         <ha-integration-overflow-menu
           .hass=${this.hass}
           slot="toolbar-icon"
+          recently-removed="device"
         ></ha-integration-overflow-menu>
         <ha-button slot="fab" size="l" @click=${this._addDevice}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>

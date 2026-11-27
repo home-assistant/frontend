@@ -241,6 +241,36 @@ export const updateDeviceRegistryEntry = (
     ...updates,
   });
 
+export interface DeletedDeviceRegistryEntry extends RegistryEntry {
+  id: string;
+  domain: string | null;
+  config_entry_id: string | null;
+  config_subentry_id: string | null;
+  area_id: string | null;
+  labels: string[];
+  name_by_user: string | null;
+  identifiers: [string, string][];
+  connections: [string, string][];
+  disabled_by: DeviceDisabler | null;
+  orphaned_timestamp: number | null;
+}
+
+export const fetchDeletedDeviceRegistryEntries = (
+  callWS: HomeAssistantApi["callWS"]
+) =>
+  callWS<DeletedDeviceRegistryEntry[]>({
+    type: "config/device_registry/list_deleted",
+  });
+
+export const forgetDeletedDeviceRegistryEntry = (
+  callWS: HomeAssistantApi["callWS"],
+  deletedId: string
+) =>
+  callWS<null>({
+    type: "config/device_registry/forget_deleted",
+    deleted_id: deletedId,
+  });
+
 export const removeDeviceFromRegistry = (
   hass: HomeAssistant,
   deviceId: string

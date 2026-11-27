@@ -8045,6 +8045,26 @@
             }
           }
         },
+        "recently_removed": {
+          "menu": "Recently removed",
+          "title_devices": "Recently removed devices",
+          "title_entities": "Recently removed entities",
+          "intro_devices": "Home Assistant remembers these devices, so their name, area and labels come back when they are added again.",
+          "intro_entities": "Home Assistant remembers these entities, so their name, area, labels and entity ID come back when they are added again.",
+          "empty_devices": "No recently removed devices.",
+          "empty_entities": "No recently removed entities.",
+          "unnamed_integration_device": "Unnamed {integration} device",
+          "unnamed_device": "Unnamed device",
+          "removed": "Removed {time}",
+          "kept_until": "Integration removed, kept until {date}",
+          "forget": "Forget",
+          "forget_device_title": "Forget device?",
+          "forget_device_text": "{name} will start with default settings when it is added again.",
+          "forget_entity_title": "Forget entity?",
+          "forget_entity_text": "{name} will start with default settings and a new entity ID when it is added again.",
+          "load_failed": "Could not load the recently removed items.",
+          "forget_failed": "Could not forget {name}."
+        },
         "domains": {
           "caption": "Domains"
         },

@@ -294,6 +294,39 @@ export const updateEntityRegistryEntry = (
     ...updates,
   });
 
+export interface DeletedEntityRegistryEntry extends RegistryEntry {
+  id: string;
+  entity_id: string;
+  platform: string;
+  config_entry_id: string | null;
+  config_subentry_id: string | null;
+  area_id: string | null;
+  labels: string[];
+  categories: Record<string, string>;
+  name: string | null;
+  icon: string | null;
+  aliases: string[];
+  disabled_by: EntityRegistryEntry["disabled_by"];
+  hidden_by: EntityRegistryEntry["hidden_by"];
+  orphaned_timestamp: number | null;
+}
+
+export const fetchDeletedEntityRegistryEntries = (
+  callWS: HomeAssistantApi["callWS"]
+) =>
+  callWS<DeletedEntityRegistryEntry[]>({
+    type: "config/entity_registry/list_deleted",
+  });
+
+export const forgetDeletedEntityRegistryEntry = (
+  callWS: HomeAssistantApi["callWS"],
+  deletedId: string
+) =>
+  callWS<null>({
+    type: "config/entity_registry/forget_deleted",
+    deleted_id: deletedId,
+  });
+
 export const removeEntityRegistryEntry = (
   hass: HomeAssistant,
   entityId: string
