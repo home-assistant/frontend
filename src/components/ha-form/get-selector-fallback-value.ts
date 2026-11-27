@@ -61,6 +61,7 @@ const SELECTOR_FALLBACK_VALUES = {
   text: undefined,
   time: undefined,
   icon: undefined,
+  image_region: undefined,
   media: undefined,
   theme: undefined,
   timezone: undefined,
