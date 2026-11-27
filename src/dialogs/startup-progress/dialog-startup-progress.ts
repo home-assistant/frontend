@@ -296,6 +296,15 @@ class DialogStartupProgress extends DialogMixin(LitElement) {
         display: flex;
         flex-direction: column;
         gap: var(--ha-space-1);
+        /* Keeps the progress in view while the active list scrolls. */
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        padding-bottom: var(--ha-space-4);
+        background: var(
+          --ha-dialog-surface-background,
+          var(--card-background-color, var(--ha-color-surface-default))
+        );
       }
       .phase {
         font-weight: var(--ha-font-weight-medium);
@@ -311,6 +320,9 @@ class DialogStartupProgress extends DialogMixin(LitElement) {
         margin: var(--ha-space-4) 0 0;
         font-size: var(--ha-font-size-m);
         font-weight: var(--ha-font-weight-medium);
+      }
+      .status + h3 {
+        margin-top: 0;
       }
       ha-svg-icon {
         flex-shrink: 0;
