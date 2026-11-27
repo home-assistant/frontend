@@ -57,6 +57,8 @@ const TAB_ICONS: Record<EnergySuggestionTab, string> = {
   water: mdiWater,
 };
 
+const DISMISS_ALL_THRESHOLD = 3;
+
 @customElement("ha-energy-suggestions")
 export class EnergySuggestions extends LitElement {
   @property({ attribute: false })
@@ -257,13 +259,28 @@ export class EnergySuggestions extends LitElement {
           }
         </h1>
         <div class="card-content">
-          <p>
-            ${this._i18n.localize(
-              suggestions.length
-                ? "ui.panel.config.energy.suggestions.sub"
-                : "ui.panel.config.energy.suggestions.dismissed_sub"
-            )}
-          </p>
+          <div class="intro">
+            <p>
+              ${this._i18n.localize(
+                suggestions.length
+                  ? "ui.panel.config.energy.suggestions.sub"
+                  : "ui.panel.config.energy.suggestions.dismissed_sub"
+              )}
+            </p>
+            ${
+              suggestions.length > DISMISS_ALL_THRESHOLD
+                ? html`<ha-button
+                    size="s"
+                    appearance="plain"
+                    variant="neutral"
+                    @click=${this._dismissAll}
+                    >${this._i18n.localize(
+                      "ui.panel.config.energy.suggestions.dismiss_all"
+                    )}</ha-button
+                  >`
+                : nothing
+            }
+          </div>
           ${
             suggestions.length
               ? html`<div class="items-container">
@@ -403,25 +420,38 @@ export class EnergySuggestions extends LitElement {
     })}`;
   }
 
-  private async _dismiss(ev: Event) {
+  private _dismiss(ev: Event) {
     const suggestion: EnergyMeterSuggestion = (ev.currentTarget as any)
       .suggestion;
-    const statisticId = suggestion.statisticId;
-    this._pendingDismissed = [...this._pendingDismissed, statisticId];
+    this._dismissStatistics([suggestion.statisticId], "dismiss_failed");
+  }
+
+  private _dismissAll() {
+    this._dismissStatistics(
+      this._view()!.suggestions.map((suggestion) => suggestion.statisticId),
+      "dismiss_all_failed"
+    );
+  }
+
+  private async _dismissStatistics(
+    statisticIds: string[],
+    failedKey: "dismiss_failed" | "dismiss_all_failed"
+  ) {
+    this._pendingDismissed = [...this._pendingDismissed, ...statisticIds];
     this._pendingRestored = this._pendingRestored.filter(
-      (id) => id !== statisticId
+      (id) => !statisticIds.includes(id)
     );
     try {
       await this._saveDismissed((dismissed) =>
-        updateDismissedSuggestions(dismissed, statisticId, this._statistics!)
+        updateDismissedSuggestions(dismissed, statisticIds, this._statistics!)
       );
     } catch (err: any) {
       this._pendingDismissed = this._pendingDismissed.filter(
-        (id) => id !== statisticId
+        (id) => !statisticIds.includes(id)
       );
       showAlertDialog(this, {
         title: this._i18n.localize(
-          "ui.panel.config.energy.suggestions.dismiss_failed"
+          `ui.panel.config.energy.suggestions.${failedKey}`
         ),
         text: err.message,
       });
@@ -497,6 +527,15 @@ export class EnergySuggestions extends LitElement {
       haStyle,
       energyCardStyles,
       css`
+        .intro {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 0 var(--ha-space-4);
+        }
+        .intro ha-button {
+          margin-inline-start: auto;
+        }
         .suggestion {
           display: flex;
           flex-wrap: wrap;

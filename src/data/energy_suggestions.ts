@@ -153,18 +153,18 @@ export const computeEnergySuggestions = (
 };
 
 /**
- * The dismissed statistics with the new one added, dropping statistics that
+ * The dismissed statistics with the new ones added, dropping statistics that
  * no longer exist.
  */
 export const updateDismissedSuggestions = (
   dismissed: string[],
-  statisticId: string,
+  statisticIds: string[],
   statistics: StatisticsMetaData[]
 ): string[] => {
   const existing = new Set(statistics.map((meta) => meta.statistic_id));
   return [
-    ...dismissed.filter((id) => id !== statisticId && existing.has(id)),
-    statisticId,
+    ...dismissed.filter((id) => !statisticIds.includes(id) && existing.has(id)),
+    ...statisticIds,
   ];
 };
 

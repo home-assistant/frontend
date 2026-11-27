@@ -4796,6 +4796,8 @@
             "add": "Add",
             "dismiss": "Dismiss",
             "dismiss_failed": "Couldn't dismiss this meter",
+            "dismiss_all": "Dismiss all",
+            "dismiss_all_failed": "Couldn't dismiss these meters",
             "show_dismissed": "Show dismissed meters ({count})",
             "hide_dismissed": "Hide dismissed meters",
             "dismissed": "Dismissed",
