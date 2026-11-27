@@ -10172,10 +10172,24 @@
               "use_x_forwarded_for": "Trust the X-Forwarded-For header behind a reverse proxy. Requires the trusted proxies list below.",
               "trusted_proxies": "Reverse-proxy IP addresses or CIDR networks allowed to set X-Forwarded-For. Use a network address, not a host.",
               "use_x_frame_options": "Send the X-Frame-Options header to help prevent clickjacking.",
-              "ip_ban_enabled": "Automatically ban IP addresses after repeated failed logins. IP bans do not expire automatically. To remove a ban, delete the IP address from ip_bans.yaml in your configuration directory, then restart Home Assistant.",
+              "ip_ban_enabled": "Automatically ban IP addresses after repeated failed logins. IP bans do not expire automatically. You can unblock an address in the banned IP addresses list below.",
               "login_attempts_unlimited": "Never ban an IP address, no matter how many login attempts fail.",
               "login_attempts_threshold": "Failed login attempts before an IP address is banned."
             }
+          },
+          "ip_bans": {
+            "caption": "Banned IP addresses",
+            "description": "When IP banning is enabled, an address is banned after repeated failed logins. Unblocking an address applies immediately, without a restart.",
+            "banning_disabled": "IP banning is turned off in the HTTP server settings, so the addresses below are not blocked right now.",
+            "empty": "No addresses are blocked.",
+            "banned_at": "Banned {time}",
+            "banned_at_unknown": "Ban time unknown",
+            "unblock": "Unblock",
+            "confirm_title": "Unblock IP address?",
+            "confirm_text": "{address} will be able to reach Home Assistant again. If logins from it keep failing, it will be banned again.",
+            "unblocked": "{address} is unblocked",
+            "load_error": "Could not load the banned IP addresses.",
+            "unblock_error": "Could not unblock the IP address."
           },
           "network_adapter": "Network adapter",
           "network_adapter_info": "Configure which network adapters integrations will use. A restart is required for these settings to apply.",

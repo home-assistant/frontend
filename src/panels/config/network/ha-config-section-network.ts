@@ -9,6 +9,7 @@ import "../../../components/list/ha-list-nav";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
 import "./ha-config-http-form";
+import "./ha-config-ip-bans";
 import "./ha-config-network";
 import "./ha-config-url-form";
 import "./supervisor-hostname";
@@ -44,6 +45,7 @@ class HaConfigSectionNetwork extends LitElement {
           }
           <ha-config-url-form .hass=${this.hass}></ha-config-url-form>
           <ha-config-http-form .hass=${this.hass}></ha-config-http-form>
+          <ha-config-ip-bans .hass=${this.hass}></ha-config-ip-bans>
           <ha-config-network .hass=${this.hass}></ha-config-network>
           ${
             NETWORK_BROWSERS.some((component) =>
@@ -103,6 +105,7 @@ class HaConfigSectionNetwork extends LitElement {
     supervisor-network,
     ha-config-url-form,
     ha-config-http-form,
+    ha-config-ip-bans,
     ha-config-network,
     .discovery-card {
       display: block;
