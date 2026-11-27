@@ -41,6 +41,7 @@ export type Selector =
   | ButtonToggleSelector
   | ChooseSelector
   | ColorRGBSelector
+  | ColorRGBWSelector
   | ColorTempSelector
   | ConditionSelector
   | ConversationAgentSelector
@@ -180,6 +181,10 @@ export interface ChooseSelector {
 
 export interface ColorRGBSelector {
   color_rgb: {} | null;
+}
+
+export interface ColorRGBWSelector {
+  color_rgbw: {} | null;
 }
 
 export interface ColorTempSelector {

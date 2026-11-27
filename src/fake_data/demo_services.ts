@@ -748,6 +748,11 @@ export const demoServices = {
           example: "[255, 100, 100]",
           selector: { color_rgb: null },
         },
+        rgbw_color: {
+          filter: { attribute: { supported_color_modes: ["rgbw"] } },
+          example: "[255, 100, 100, 50]",
+          selector: { color_rgbw: null },
+        },
         color_temp_kelvin: {
           filter: {
             attribute: {
@@ -804,15 +809,6 @@ export const demoServices = {
         additional_fields: {
           collapsed: true,
           fields: {
-            rgbw_color: {
-              filter: {
-                attribute: {
-                  supported_color_modes: ["hs", "xy", "rgb", "rgbw", "rgbww"],
-                },
-              },
-              example: "[255, 100, 100, 50]",
-              selector: { object: null },
-            },
             rgbww_color: {
               filter: {
                 attribute: {
@@ -1095,6 +1091,11 @@ export const demoServices = {
           example: "[255, 100, 100]",
           selector: { color_rgb: null },
         },
+        rgbw_color: {
+          filter: { attribute: { supported_color_modes: ["rgbw"] } },
+          example: "[255, 100, 100, 50]",
+          selector: { color_rgbw: null },
+        },
         color_temp_kelvin: {
           filter: {
             attribute: {
@@ -1133,15 +1134,6 @@ export const demoServices = {
         additional_fields: {
           collapsed: true,
           fields: {
-            rgbw_color: {
-              filter: {
-                attribute: {
-                  supported_color_modes: ["hs", "xy", "rgb", "rgbw", "rgbww"],
-                },
-              },
-              example: "[255, 100, 100, 50]",
-              selector: { object: null },
-            },
             rgbww_color: {
               filter: {
                 attribute: {

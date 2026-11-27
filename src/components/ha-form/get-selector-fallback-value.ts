@@ -26,6 +26,7 @@ const SELECTOR_FALLBACK_VALUES = {
   boolean: () => false,
   choose: undefined,
   color_rgb: undefined,
+  color_rgbw: undefined,
   condition: undefined,
   config_entry: undefined,
   conversation_agent: undefined,
