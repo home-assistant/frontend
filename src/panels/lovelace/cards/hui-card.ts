@@ -3,14 +3,22 @@ import { ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-svg-icon";
+import "../../../components/skeleton/ha-skeleton-overlay";
+import { skeletonKey } from "../../../components/skeleton/skeleton-sizes";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import { migrateLayoutToGridOptions } from "../common/compute-card-grid-size";
 import { computeCardSize } from "../common/compute-card-size";
 import { getConfigEntityId } from "../common/get-config-entity-id";
-import { tryCreateCardElement } from "../create-element/create-card-element";
-import { createErrorCardElement } from "../create-element/create-element-base";
+import {
+  estimatedCardHeight,
+  tryCreateCardElement,
+} from "../create-element/create-card-element";
+import {
+  createErrorCardElement,
+  lovelaceElementPending,
+} from "../create-element/create-element-base";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 
 declare global {
@@ -62,6 +70,16 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
   }
 
   private _element?: LovelaceCard;
+
+  /* Holds the card, and draws its skeleton while its code loads */
+  private _overlay = document.createElement("ha-skeleton-overlay");
+
+  constructor() {
+    super();
+    this._overlay.style.height = "100%";
+    this._overlay.style.borderRadius =
+      "var(--ha-card-border-radius, var(--ha-border-radius-lg))";
+  }
 
   protected createRenderRoot() {
     return this;
@@ -134,7 +152,17 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
     }
     this._element.setConfig(config);
     this._elementConfig = config;
+    this._setSkeletonKeys(config);
     fireEvent(this, "card-updated");
+  }
+
+  /* Where the overlay remembers the card's size, which previews don't */
+  private _setSkeletonKeys(config: LovelaceCardConfig) {
+    this._overlay.skeletonKey = this.preview
+      ? undefined
+      : skeletonKey(JSON.stringify(config));
+    this._overlay.skeletonTypeKey =
+      this.preview || !config.type ? undefined : `type:${config.type}`;
   }
 
   private _loadElement(config: LovelaceCardConfig) {
@@ -183,6 +211,34 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
     while (this.lastChild) {
       this.removeChild(this.lastChild);
     }
+
+    this._overlay.replaceChildren();
+    this._setSkeletonKeys(config);
+    this.appendChild(this._overlay);
+
+    // A card whose code is still loading has nothing to show yet, so its
+    // wave holds the height it had last time, the height of the last card of
+    // its type, or a typical height for its type, and at least a row
+    const element = this._element;
+    const pending = lovelaceElementPending(element, config.type);
+    this._overlay.loading = pending !== undefined;
+    this._overlay.estimating = pending !== undefined;
+    this._overlay.estimatedHeight = pending
+      ? estimatedCardHeight(config.type)
+      : undefined;
+    this._overlay.style.minHeight = pending
+      ? "var(--row-height, var(--ha-section-grid-row-height, 56px))"
+      : "";
+
+    pending?.then(() => {
+      if (this._element === element) {
+        this._overlay.loading = false;
+        this._overlay.estimating = false;
+        this._overlay.estimatedHeight = undefined;
+        this._overlay.style.minHeight = "";
+      }
+    });
+
     this._updateVisibility();
   }
 
@@ -219,6 +275,11 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
         }
       }
       if (changedProps.has("preview")) {
+        // Sizes are remembered outside edit mode only, which this changes
+        if (this.config) {
+          this._setSkeletonKeys(this.config);
+        }
+
         try {
           this._element.preview = this.preview;
           // For backwards compatibility
@@ -285,12 +346,12 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
 
     if (this._element.connectedWhileHidden === true) {
       if (!this._element.parentElement) {
-        this.appendChild(this._element);
+        this._overlay.appendChild(this._element);
       }
     } else if (!visible && this._element.parentElement) {
-      this.removeChild(this._element);
+      this._overlay.removeChild(this._element);
     } else if (visible && !this._element.parentElement) {
-      this.appendChild(this._element);
+      this._overlay.appendChild(this._element);
     }
   }
 }

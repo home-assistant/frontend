@@ -23,7 +23,11 @@ const isOverride = (value: string | null): value is SkeletonOverride =>
   value !== null && OVERRIDES.has(value);
 
 const skeletonOverride = (element: Element): SkeletonOverride | undefined => {
-  if (element.localName.startsWith("ha-skeleton")) {
+  // An overlay only wraps content, so what it wraps is read
+  if (
+    element.localName.startsWith("ha-skeleton") &&
+    element.localName !== "ha-skeleton-overlay"
+  ) {
     return "none";
   }
 

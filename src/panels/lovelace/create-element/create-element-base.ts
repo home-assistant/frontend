@@ -228,6 +228,56 @@ const _lazyCreate = <T extends keyof CreateElementConfigTypes>(
 const _getCustomTag = (type: string) =>
   isCustomType(type) ? stripCustomPrefix(type) : undefined;
 
+/**
+ * For an element made for `type` that is still waiting for its code, a
+ * promise for when it has something to show: once its code has loaded, or
+ * once a custom one gives up and shows its error. Undefined when it already
+ * has.
+ */
+export const lovelaceElementPending = (
+  element: HTMLElement,
+  type: string | undefined
+): Promise<void> | undefined => {
+  // A config from YAML can hold anything, such as `type: 42`, which shows
+  // its error straight away
+  if (type !== undefined && typeof type !== "string") {
+    return undefined;
+  }
+
+  const customTag = type ? _getCustomTag(type) : undefined;
+  const tag = customTag ?? element.localName;
+
+  // A custom type without a dash can't name an element, so it shows its
+  // error straight away, as _customCreate does
+  if (customTag !== undefined && !customTag.includes("-")) {
+    return undefined;
+  }
+
+  if (customElements.get(tag)) {
+    return undefined;
+  }
+
+  // A name that's still not valid, such as one with capitals, makes this
+  // reject. Its error shows once the timeout passes, as for any custom
+  // element that never loads, so it waits for that instead.
+  const defined = customElements.whenDefined(tag).then(
+    () => undefined,
+    () =>
+      new Promise<void>((resolve) => {
+        setTimeout(resolve, TIMEOUT);
+      })
+  );
+
+  return customTag
+    ? Promise.race([
+        defined,
+        new Promise<void>((resolve) => {
+          setTimeout(resolve, TIMEOUT);
+        }),
+      ])
+    : defined;
+};
+
 export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   tagSuffix: T,
   config: CreateElementConfigTypes[T]["config"],
