@@ -148,9 +148,9 @@ class HaConfigIpBans extends LitElement {
                 data-address=${ban.ip_address}
                 .disabled=${this._removing !== undefined}
                 .loading=${this._removing === ban.ip_address}
-                @click=${this._unblock}
+                @click=${this._unban}
               >
-                ${this.hass.localize("ui.panel.config.network.ip_bans.unblock")}
+                ${this.hass.localize("ui.panel.config.network.ip_bans.unban")}
               </ha-button>
             </ha-list-item-base>
           `
@@ -181,7 +181,7 @@ class HaConfigIpBans extends LitElement {
     }
   }
 
-  private async _unblock(ev: Event): Promise<void> {
+  private async _unban(ev: Event): Promise<void> {
     const address = (ev.currentTarget as HTMLElement).dataset.address!;
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(
@@ -190,9 +190,7 @@ class HaConfigIpBans extends LitElement {
       text: this.hass.localize("ui.panel.config.network.ip_bans.confirm_text", {
         address,
       }),
-      confirmText: this.hass.localize(
-        "ui.panel.config.network.ip_bans.unblock"
-      ),
+      confirmText: this.hass.localize("ui.panel.config.network.ip_bans.unban"),
       destructive: false,
     });
     if (!confirmed) {
@@ -203,18 +201,18 @@ class HaConfigIpBans extends LitElement {
     try {
       await removeIpBan(this.hass, address);
     } catch (err: any) {
-      // Someone else unblocked it in the meantime; the result is the same.
+      // Someone else unbanned it in the meantime; the result is the same.
       if (err?.code !== "not_found") {
         this._error =
           err?.message ||
-          this.hass.localize("ui.panel.config.network.ip_bans.unblock_error");
+          this.hass.localize("ui.panel.config.network.ip_bans.unban_error");
         this._removing = undefined;
         return;
       }
     }
     this._removing = undefined;
     showToast(this, {
-      message: this.hass.localize("ui.panel.config.network.ip_bans.unblocked", {
+      message: this.hass.localize("ui.panel.config.network.ip_bans.unbanned", {
         address,
       }),
     });
