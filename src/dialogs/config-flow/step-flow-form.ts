@@ -1,3 +1,4 @@
+import { mdiBugPlay } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -7,7 +8,9 @@ import { consume } from "../../common/decorators/consume";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
+import { stopKeydownEnterSpacePropagation } from "../../common/dom/stop_propagation";
 import "../../components/ha-alert";
+import "../../components/ha-button";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
 import { getHiddenSchemaFields } from "../../components/ha-form/conditions";
 import "../../components/ha-form/ha-form";
@@ -17,12 +20,23 @@ import type {
 } from "../../components/ha-form/types";
 import "../../components/ha-markdown";
 import "../../components/ha-spinner";
+import "../../components/ha-svg-icon";
 import { autocompleteLoginFields } from "../../data/auth";
 import {
   dirtyStateContext,
   type DirtyStateContext,
 } from "../../data/context/dirty-state";
 import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
+import type { IntegrationLogInfo } from "../../data/integration";
+import {
+  fetchIntegrationLogInfo,
+  LogSeverity,
+  setIntegrationLogLevel,
+} from "../../data/integration";
+import {
+  checkDebugLogDownloadAvailable,
+  downloadIntegrationDebugLog,
+} from "../../data/integration_debug_log";
 import { previewModule } from "../../data/preview";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
@@ -54,6 +68,9 @@ class StepFlowForm extends LitElement {
   @state() private _submitErrors?: Record<string, string>;
 
   @state() private _errorMsg?: string;
+
+  // Undefined until the current log level of the integration is known
+  @state() private _debugLogging?: boolean;
 
   @consume({ context: dirtyStateContext, subscribe: true })
   @state()
@@ -129,6 +146,7 @@ class StepFlowForm extends LitElement {
               ></ha-form>`
             : nothing
         }
+        ${this._renderDebugLogging()}
       </div>
       ${
         step.preview
@@ -151,6 +169,99 @@ class StepFlowForm extends LitElement {
           : nothing
       }
     `;
+  }
+
+  // A base error is a failure of the setup itself, like a device that cannot
+  // be reached, where debug logs can show the cause. Field errors are not.
+  private get _offerDebugLogging(): boolean {
+    return (
+      this.flowConfig.flowType === "config_flow" &&
+      !!this.domain &&
+      !!this.step.errors?.base
+    );
+  }
+
+  private _renderDebugLogging() {
+    if (!this._offerDebugLogging || this._debugLogging === undefined) {
+      return nothing;
+    }
+    if (!this._debugLogging) {
+      return html`<ha-alert
+        alert-type="info"
+        class="debug-logging"
+        @keydown=${stopKeydownEnterSpacePropagation}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.integrations.config_flow.debug_logging_suggestion"
+        )}
+        <ha-button slot="action" size="s" @click=${this._enableDebugLogging}>
+          ${this.hass.localize("ui.common.enable")}
+        </ha-button>
+      </ha-alert>`;
+    }
+    return html`<ha-alert
+      alert-type="warning"
+      class="debug-logging"
+      .narrow=${this.narrow}
+      .title=${this.hass.localize(
+        "ui.panel.config.integrations.config_entry.debug_logging_enabled"
+      )}
+      @keydown=${stopKeydownEnterSpacePropagation}
+    >
+      <ha-svg-icon slot="icon" .path=${mdiBugPlay}></ha-svg-icon>
+      ${this.hass.localize(
+        "ui.panel.config.integrations.config_flow.debug_logging_on"
+      )}
+      <ha-button
+        slot="action"
+        size="s"
+        variant="warning"
+        appearance="filled"
+        @click=${this._disableAndDownloadDebugLog}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.integrations.config_flow.disable_and_download_log"
+        )}
+      </ha-button>
+    </ha-alert>`;
+  }
+
+  private async _fetchDebugLogging() {
+    try {
+      const logInfos: IntegrationLogInfo[] = await fetchIntegrationLogInfo(
+        this.hass.connection
+      );
+      this._debugLogging = logInfos.some(
+        (logInfo) =>
+          logInfo.domain === this.domain && logInfo.level === LogSeverity.DEBUG
+      );
+    } catch (_err) {
+      // Without the current level, the suggestion is not shown
+    }
+  }
+
+  private async _enableDebugLogging() {
+    await setIntegrationLogLevel(
+      this.hass,
+      this.domain!,
+      LogSeverity[LogSeverity.DEBUG],
+      "once"
+    );
+    this._debugLogging = true;
+  }
+
+  private async _disableAndDownloadDebugLog() {
+    const domain = this.domain!;
+    await setIntegrationLogLevel(
+      this.hass,
+      domain,
+      LogSeverity[LogSeverity.NOTSET],
+      "once"
+    );
+    this._debugLogging = false;
+    if (checkDebugLogDownloadAvailable(this, this.hass)) {
+      await downloadIntegrationDebugLog(this.hass, domain);
+    }
   }
 
   private _setError(ev: HASSDomEvent<DataEntryFlowStepForm["errors"]>) {
@@ -180,6 +291,9 @@ class StepFlowForm extends LitElement {
     super.willUpdate(changedProps);
     if (changedProps.has("step") && this.step?.preview) {
       import(`./previews/flow-preview-${previewModule(this.step.preview)}`);
+    }
+    if (changedProps.has("step") && this._offerDebugLogging) {
+      this._fetchDebugLogging();
     }
 
     if (
@@ -372,6 +486,10 @@ class StepFlowForm extends LitElement {
         ha-form {
           margin-top: var(--ha-space-6);
           display: block;
+        }
+
+        ha-alert.debug-logging ha-button::part(label) {
+          white-space: nowrap;
         }
       `,
     ];
