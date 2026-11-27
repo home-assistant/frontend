@@ -8044,6 +8044,34 @@
             }
           }
         },
+        "recently_removed": {
+          "menu": "Recently removed",
+          "title_devices": "Recently removed devices",
+          "title_entities": "Recently removed entities",
+          "intro_devices": "Home Assistant remembers these devices, so their name, area, and labels come back when they are added again.",
+          "intro_entities": "Home Assistant remembers these entities, so their name, area, labels, and entity ID come back when they are added again.",
+          "intro_found_again": "This happens automatically when their integration finds them again.",
+          "empty_devices": "No recently removed devices.",
+          "empty_entities": "No recently removed entities.",
+          "unnamed_device": "Unnamed device",
+          "removed": "Removed {time}",
+          "removed_just_now": "Removed just now",
+          "integration_removed": "Integration removed",
+          "kept_until": "kept until {date}",
+          "orphaned_kept_until": "Kept until {date}",
+          "reload_integration": "Reload integration",
+          "reloaded": "{integration} reloaded.",
+          "reload_failed": "Could not reload {integration}.",
+          "add_integration": "Add integration",
+          "forget": "Forget",
+          "forget_device_title": "Forget device?",
+          "forget_device_text": "{name} will start with default settings when it is added again.",
+          "forget_device_entities": "{count, plural, one {Its removed entity is forgotten too.} other {Its # removed entities are forgotten too.}}",
+          "forget_entity_title": "Forget entity?",
+          "forget_entity_text": "{name} will start with default settings and a new entity ID when it is added again.",
+          "load_failed": "Could not load the recently removed items.",
+          "forget_failed": "Could not forget {name}."
+        },
         "domains": {
           "caption": "Domains"
         },
@@ -8258,7 +8286,7 @@
             "known_issues": "Known issues",
             "delete": "Delete",
             "delete_confirm_title": "Delete {title}?",
-            "delete_confirm_text": "Its devices and entities will be permanently deleted.",
+            "delete_confirm_text": "Its devices and entities are removed. Their settings are kept for 30 days in case you add it again.",
             "enable_debug_logging": "Enable debug logging",
             "reconfigure": "Reconfigure",
             "reload": "Reload",

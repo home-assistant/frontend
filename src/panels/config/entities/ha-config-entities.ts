@@ -931,6 +931,7 @@ export class HaConfigEntities extends LitElement {
         <ha-integration-overflow-menu
           .hass=${this.hass}
           slot="toolbar-icon"
+          recently-removed="entity"
         ></ha-integration-overflow-menu>
 
         ${

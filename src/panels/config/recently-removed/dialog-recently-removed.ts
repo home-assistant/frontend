@@ -1,0 +1,629 @@
+import type { ContextType } from "@lit/context";
+import { mdiDelete, mdiDotsVertical, mdiPlus, mdiReload } from "@mdi/js";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { customElement, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
+import { navigate } from "../../../common/navigate";
+import { debounce } from "../../../common/util/debounce";
+import { formatDateVeryShort } from "../../../common/datetime/format_date";
+import { formatDateTime } from "../../../common/datetime/format_date_time";
+import "../../../components/ha-alert";
+import "../../../components/ha-button";
+import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import "../../../components/ha-icon";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-label";
+import "../../../components/ha-spinner";
+import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
+import "../../../components/item/ha-list-item-base";
+import "../../../components/list/ha-list-base";
+import {
+  canReloadConfigEntry,
+  reloadConfigEntry,
+} from "../../../data/config_entries";
+import {
+  apiContext,
+  areasContext,
+  brandsAccessTokenContext,
+  configContext,
+  configEntriesContext,
+  connectionContext,
+  internationalizationContext,
+  labelsContext,
+  manifestsContext,
+  uiContext,
+} from "../../../data/context";
+import type { DeletedDeviceRegistryEntry } from "../../../data/device/device_registry";
+import {
+  fetchDeletedDeviceRegistryEntries,
+  forgetDeletedDeviceRegistryEntry,
+} from "../../../data/device/device_registry";
+import type { DeletedEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import {
+  fetchDeletedEntityRegistryEntries,
+  forgetDeletedEntityRegistryEntry,
+} from "../../../data/entity/entity_registry";
+import { domainToName } from "../../../data/integration";
+import type { FrontendLocaleData } from "../../../data/translation";
+import { DialogMixin } from "../../../dialogs/dialog-mixin";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { haStyleDialog } from "../../../resources/styles";
+import { brandsUrl } from "../../../util/brands-url";
+import type { RecentlyRemovedDialogParams } from "./show-dialog-recently-removed";
+
+// Matches ORPHANED_DEVICE_KEEP_SECONDS / ORPHANED_ENTITY_KEEP_SECONDS in core.
+const ORPHANED_KEEP_SECONDS = 30 * 86400;
+
+const MAX_IDENTIFIER_LENGTH = 24;
+
+const relativeTimeFormat = memoizeOne(
+  (language: string) =>
+    new Intl.RelativeTimeFormat(language, { numeric: "always" })
+);
+
+// Days instead of weeks or months, so the age reads the same in every row.
+const relativeTimeInDays = (from: Date, locale: FrontendLocaleData) => {
+  const minutes = Math.round((Date.now() - from.getTime()) / 60000);
+  const format = relativeTimeFormat(locale.language);
+  if (minutes < 60) {
+    return format.format(-minutes, "minute");
+  }
+  if (minutes < 24 * 60) {
+    return format.format(-Math.floor(minutes / 60), "hour");
+  }
+  return format.format(-Math.floor(minutes / (24 * 60)), "day");
+};
+
+interface RemovedItem {
+  id: string;
+  headline: string;
+  unnamed: boolean;
+  details: string[];
+  domain: string | null;
+  configEntryId: string | null;
+  areaId: string | null;
+  labels: string[];
+  removedAt: number;
+  orphanedAt: number | null;
+}
+
+const shortIdentifier = (device: DeletedDeviceRegistryEntry) => {
+  const value = device.identifiers[0]?.[1] ?? device.connections[0]?.[1];
+  if (!value) {
+    return undefined;
+  }
+  return value.length > MAX_IDENTIFIER_LENGTH
+    ? `${value.slice(0, MAX_IDENTIFIER_LENGTH - 1)}…`
+    : value;
+};
+
+@customElement("dialog-recently-removed")
+class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
+  LitElement
+) {
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
+
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig!: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  private _ui!: ContextType<typeof uiContext>;
+
+  @state()
+  @consume({ context: areasContext, subscribe: true })
+  private _areas!: ContextType<typeof areasContext>;
+
+  @state()
+  @consume({ context: labelsContext, subscribe: true })
+  private _labels?: ContextType<typeof labelsContext>;
+
+  @state()
+  @consume({ context: manifestsContext, subscribe: true })
+  private _manifests?: ContextType<typeof manifestsContext>;
+
+  @state()
+  @consume({ context: configEntriesContext, subscribe: true })
+  private _configEntries?: ContextType<typeof configEntriesContext>;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  // @ts-ignore re-render trigger only, its value is never read
+  private _brandsAccessToken?: string;
+
+  @state() private _devices?: DeletedDeviceRegistryEntry[];
+
+  @state() private _entities?: DeletedEntityRegistryEntry[];
+
+  @state() private _error?: string;
+
+  @state() private _actionResult?: {
+    type: "success" | "warning" | "error";
+    text: string;
+  };
+
+  private _unsubRegistry?: Promise<UnsubscribeFunc>;
+
+  connectedCallback() {
+    super.connectedCallback();
+    this._load();
+    // Restoring or removing an item changes the deleted list, which is not pushed.
+    this._unsubRegistry = this._connection.connection.subscribeEvents(
+      debounce(() => this._load(), 500),
+      this._isDevice ? "device_registry_updated" : "entity_registry_updated"
+    );
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubRegistry?.then((unsub) => unsub());
+    this._unsubRegistry = undefined;
+  }
+
+  private get _isDevice() {
+    return this.params!.type === "device";
+  }
+
+  private async _load(): Promise<void> {
+    try {
+      if (this._isDevice) {
+        this._devices = await fetchDeletedDeviceRegistryEntries(
+          this._api.callWS
+        );
+      } else {
+        this._entities = await fetchDeletedEntityRegistryEntries(
+          this._api.callWS
+        );
+      }
+    } catch (err: any) {
+      this._error =
+        err?.message ||
+        this._i18n.localize("ui.panel.config.recently_removed.load_failed");
+      return;
+    }
+    this._error = undefined;
+    const domains = new Set(
+      (this._devices ?? []).map((device) => device.domain).filter(Boolean)
+    );
+    this._entities?.forEach((entity) => domains.add(entity.platform));
+    if (domains.size) {
+      await this._i18n.loadBackendTranslation("title", [
+        ...domains,
+      ] as string[]);
+      this.requestUpdate();
+    }
+  }
+
+  // Orphaned items have no config entry, which also happens for removed
+  // subentries and entities set up from YAML, so only an integration that can be
+  // added from the UI and has no config entry left counts as removed.
+  private _integrationRemoved(item: RemovedItem) {
+    if (
+      !item.domain ||
+      item.configEntryId ||
+      !this._configEntries ||
+      !this._manifests?.[item.domain]?.config_flow
+    ) {
+      return false;
+    }
+    return !this._configEntries.some((entry) => entry.domain === item.domain);
+  }
+
+  private _integrationName(domain: string) {
+    return domainToName(this._i18n.localize, domain, this._manifests?.[domain]);
+  }
+
+  private _items(): RemovedItem[] | undefined {
+    const key = "ui.panel.config.recently_removed";
+    const items = this._isDevice
+      ? this._devices?.map((device): RemovedItem => {
+          const identifier = shortIdentifier(device);
+          const fallback = [
+            device.domain
+              ? this._integrationName(device.domain)
+              : this._i18n.localize(`${key}.unnamed_device`),
+            identifier,
+          ]
+            .filter(Boolean)
+            .join(" · ");
+          return {
+            id: device.id,
+            headline: device.name_by_user ?? fallback,
+            unnamed: !device.name_by_user,
+            details: [],
+            domain: device.domain,
+            configEntryId: device.config_entry_id,
+            areaId: device.area_id,
+            labels: device.labels,
+            removedAt: device.modified_at,
+            orphanedAt: device.orphaned_timestamp,
+          };
+        })
+      : this._entities?.map((entity): RemovedItem => ({
+          id: entity.id,
+          headline: entity.name ?? entity.entity_id,
+          unnamed: false,
+          details: entity.name ? [entity.entity_id] : [],
+          domain: entity.platform,
+          configEntryId: entity.config_entry_id,
+          areaId: entity.area_id,
+          labels: entity.labels,
+          removedAt: entity.modified_at,
+          orphanedAt: entity.orphaned_timestamp,
+        }));
+    return items?.sort((a, b) => b.removedAt - a.removedAt);
+  }
+
+  protected render() {
+    if (!this.params) {
+      return nothing;
+    }
+    const key = "ui.panel.config.recently_removed";
+    const items = this._items();
+    return html`
+      <ha-dialog
+        open
+        header-title=${this._i18n.localize(
+          this._isDevice ? `${key}.title_devices` : `${key}.title_entities`
+        )}
+      >
+        <p class="intro">
+          ${this._i18n.localize(
+            this._isDevice ? `${key}.intro_devices` : `${key}.intro_entities`
+          )}
+          ${this._i18n.localize(`${key}.intro_found_again`)}
+        </p>
+        ${
+          this._actionResult
+            ? html`<ha-alert .alertType=${this._actionResult.type}>
+                ${this._actionResult.text}
+              </ha-alert>`
+            : nothing
+        }
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : !items
+              ? html`<ha-spinner></ha-spinner>`
+              : !items.length
+                ? html`<p class="empty">
+                    ${this._i18n.localize(
+                      this._isDevice
+                        ? `${key}.empty_devices`
+                        : `${key}.empty_entities`
+                    )}
+                  </p>`
+                : html`<ha-list-base>
+                    ${repeat(
+                      items,
+                      (item) => item.id,
+                      (item) => this._renderItem(item)
+                    )}
+                  </ha-list-base>`
+        }
+        <ha-dialog-footer slot="footer">
+          <ha-button slot="primaryAction" @click=${this.closeDialog}>
+            ${this._i18n.localize("ui.common.close")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-dialog>
+    `;
+  }
+
+  private _renderItem(item: RemovedItem) {
+    const key = "ui.panel.config.recently_removed";
+    const locale = this._i18n.locale;
+    const area = item.areaId ? this._areas?.[item.areaId] : undefined;
+    const labels = item.labels
+      .map((labelId) => this._labels?.find((l) => l.label_id === labelId))
+      .filter((label) => label !== undefined);
+    const details = [
+      ...item.details,
+      // An unnamed device already has the integration in its headline.
+      item.domain && !item.unnamed
+        ? this._integrationName(item.domain)
+        : undefined,
+      area?.name,
+    ].filter(Boolean);
+    const removedAt = new Date(item.removedAt * 1000);
+    const removed =
+      Date.now() - removedAt.getTime() < 60000
+        ? this._i18n.localize(`${key}.removed_just_now`)
+        : this._i18n.localize(`${key}.removed`, {
+            time: relativeTimeInDays(removedAt, locale),
+          });
+    const configEntry = item.configEntryId
+      ? this._configEntries?.find(
+          (entry) => entry.entry_id === item.configEntryId
+        )
+      : undefined;
+    const integrationRemoved = this._integrationRemoved(item);
+    const keptUntil =
+      item.orphanedAt !== null
+        ? formatDateVeryShort(
+            new Date((item.orphanedAt + ORPHANED_KEEP_SECONDS) * 1000),
+            locale,
+            this._hassConfig.config
+          )
+        : undefined;
+
+    return html`<ha-list-item-base>
+      ${
+        item.domain
+          ? html`<img
+              slot="start"
+              alt=""
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"
+              src=${brandsUrl(
+                {
+                  domain: item.domain,
+                  type: "icon",
+                  darkOptimized: this._ui.themes.darkMode,
+                },
+                this._connection.hassUrl()
+              )}
+            />`
+          : nothing
+      }
+      <span slot="headline" class=${item.unnamed ? "unnamed" : ""}
+        >${item.headline}</span
+      >
+      <div slot="supporting-text">
+        ${details.length ? html`<div>${details.join(" · ")}</div>` : nothing}
+        <div>
+          <span id="removed-${item.id}">${removed}</span>
+          <ha-tooltip for="removed-${item.id}" placement="right">
+            ${formatDateTime(removedAt, locale, this._hassConfig.config)}
+          </ha-tooltip>
+        </div>
+        ${
+          keptUntil === undefined
+            ? nothing
+            : integrationRemoved
+              ? html`<div>
+                  <span class="nowrap"
+                    >${this._i18n.localize(`${key}.integration_removed`)}
+                    ·</span
+                  >
+                  <span class="nowrap"
+                    >${this._i18n.localize(`${key}.kept_until`, {
+                      date: keptUntil,
+                    })}</span
+                  >
+                </div>`
+              : html`<div>
+                  ${this._i18n.localize(`${key}.orphaned_kept_until`, {
+                    date: keptUntil,
+                  })}
+                </div>`
+        }
+        ${
+          labels.length
+            ? html`<div class="labels">
+                ${labels.map(
+                  (label) =>
+                    html`<ha-label dense .color=${label.color ?? undefined}>
+                      ${
+                        label.icon
+                          ? html`<ha-icon
+                              slot="icon"
+                              .icon=${label.icon}
+                            ></ha-icon>`
+                          : nothing
+                      }
+                      ${label.name}
+                    </ha-label>`
+                )}
+              </div>`
+            : nothing
+        }
+      </div>
+      <ha-dropdown
+        slot="end"
+        data-id=${item.id}
+        @wa-select=${this._handleMenuAction}
+      >
+        <ha-icon-button
+          slot="trigger"
+          .label=${this._i18n.localize("ui.common.menu")}
+          .path=${mdiDotsVertical}
+        ></ha-icon-button>
+        ${
+          configEntry && canReloadConfigEntry(configEntry)
+            ? html`<ha-dropdown-item value="reload">
+                <ha-svg-icon slot="icon" .path=${mdiReload}></ha-svg-icon>
+                ${this._i18n.localize(`${key}.reload_integration`)}
+              </ha-dropdown-item>`
+            : integrationRemoved
+              ? html`<ha-dropdown-item value="add">
+                  <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                  ${this._i18n.localize(`${key}.add_integration`)}
+                </ha-dropdown-item>`
+              : nothing
+        }
+        <ha-dropdown-item variant="danger" value="forget">
+          <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
+          ${this._i18n.localize(`${key}.forget`)}
+        </ha-dropdown-item>
+      </ha-dropdown>
+    </ha-list-item-base>`;
+  }
+
+  private _handleMenuAction(ev: CustomEvent) {
+    const id = (ev.currentTarget as HTMLElement).dataset.id;
+    const item = this._items()?.find((removed) => removed.id === id);
+    if (!item) {
+      return;
+    }
+    switch (ev.detail.item.value) {
+      case "reload":
+        this._reload(item);
+        break;
+      case "add":
+        this._addIntegration(item);
+        break;
+      case "forget":
+        this._forget(item);
+        break;
+    }
+  }
+
+  private async _reload(item: RemovedItem) {
+    const entry = this._configEntries?.find(
+      (configEntry) => configEntry.entry_id === item.configEntryId
+    );
+    if (!entry) {
+      return;
+    }
+    const key = "ui.panel.config.recently_removed";
+    const integration = this._integrationName(entry.domain);
+    this._actionResult = undefined;
+    try {
+      const result = await reloadConfigEntry(this._api, entry.entry_id);
+      this._actionResult = result.require_restart
+        ? {
+            type: "warning",
+            text: this._i18n.localize(
+              "ui.panel.config.integrations.config_entry.reload_restart_confirm"
+            ),
+          }
+        : {
+            type: "success",
+            text: this._i18n.localize(`${key}.reloaded`, { integration }),
+          };
+    } catch (err: any) {
+      this._actionResult = {
+        type: "error",
+        text:
+          err?.message ||
+          this._i18n.localize(`${key}.reload_failed`, { integration }),
+      };
+    }
+  }
+
+  private _addIntegration(item: RemovedItem) {
+    this.closeDialog();
+    navigate(`/config/integrations/dashboard/add?domain=${item.domain}`);
+  }
+
+  private async _forget(item: RemovedItem) {
+    const key = "ui.panel.config.recently_removed";
+    let text = this._i18n.localize(
+      this._isDevice
+        ? `${key}.forget_device_text`
+        : `${key}.forget_entity_text`,
+      { name: item.headline }
+    );
+    if (this._isDevice) {
+      let entities: DeletedEntityRegistryEntry[];
+      try {
+        entities = await fetchDeletedEntityRegistryEntries(this._api.callWS);
+      } catch (err: any) {
+        this._actionResult = {
+          type: "error",
+          text: err?.message || this._i18n.localize(`${key}.load_failed`),
+        };
+        return;
+      }
+      const count = entities.filter(
+        (entity) => entity.device_id === item.id
+      ).length;
+      if (count) {
+        text += ` ${this._i18n.localize(`${key}.forget_device_entities`, {
+          count,
+        })}`;
+      }
+    }
+    const confirmed = await showConfirmationDialog(this, {
+      title: this._i18n.localize(
+        this._isDevice
+          ? `${key}.forget_device_title`
+          : `${key}.forget_entity_title`
+      ),
+      text,
+      confirmText: this._i18n.localize(`${key}.forget`),
+      dismissText: this._i18n.localize("ui.common.cancel"),
+      destructive: true,
+    });
+    if (!confirmed) {
+      return;
+    }
+    this._actionResult = undefined;
+    try {
+      await (this._isDevice
+        ? forgetDeletedDeviceRegistryEntry(this._api.callWS, item.id)
+        : forgetDeletedEntityRegistryEntry(this._api.callWS, item.id));
+    } catch (err: any) {
+      this._actionResult = {
+        type: "error",
+        text:
+          err?.message ||
+          this._i18n.localize(`${key}.forget_failed`, { name: item.headline }),
+      };
+    }
+    // Forgetting fires no registry event, so the list is not pushed.
+    await this._load();
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyleDialog,
+      css`
+        .intro {
+          margin-top: 0;
+          color: var(--secondary-text-color);
+        }
+        .empty {
+          text-align: center;
+        }
+        ha-spinner {
+          display: block;
+          margin: var(--ha-space-6) auto;
+        }
+        img {
+          width: 32px;
+          height: 32px;
+        }
+        .unnamed {
+          font-style: italic;
+        }
+        .nowrap {
+          white-space: nowrap;
+        }
+        [slot="headline"],
+        [slot="supporting-text"] {
+          white-space: normal;
+        }
+        .labels {
+          display: flex;
+          flex-wrap: wrap;
+          gap: var(--ha-space-1);
+          margin-top: var(--ha-space-1);
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "dialog-recently-removed": DialogRecentlyRemoved;
+  }
+}
