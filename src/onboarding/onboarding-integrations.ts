@@ -1,7 +1,7 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
@@ -43,6 +43,10 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
 
   @state() private _discoveredDomainsReceived = false;
 
+  @state() private _entriesReceived = false;
+
+  @query("h1") private _heading?: HTMLElement;
+
   public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
       subscribeConfigFlowInProgress(this.hass, (messages) => {
@@ -64,6 +68,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
       subscribeConfigEntries(
         this.hass,
         (messages) => {
+          this._entriesReceived = true;
           let fullUpdate = false;
           const newEntries: ConfigEntry[] = [];
           const integrations = new Set<string>();
@@ -104,7 +109,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
-    if (!this._discoveredDomainsReceived) {
+    if (!this._discoveredDomainsReceived || !this._entriesReceived) {
       return nothing;
     }
     // Render discovered and existing entries together sorted by localized title.
@@ -127,7 +132,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
     if (foundIntegrations === 0) {
       return html`
         <div class="all-set-icon">🎉</div>
-        <h1>
+        <h1 tabindex="-1">
           ${this._localize("ui.panel.page-onboarding.integration.all_set")}
         </h1>
         <p>
@@ -146,7 +151,9 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
     }
 
     return html`
-      <h1>${this._localize("ui.panel.page-onboarding.integration.header")}</h1>
+      <h1 tabindex="-1">
+        ${this._localize("ui.panel.page-onboarding.integration.header")}
+      </h1>
       <p>${this._localize("ui.panel.page-onboarding.integration.intro")}</p>
       <div class="badges">
         ${domains.map(
@@ -180,6 +187,18 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
     this._scanUSBDevices();
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (
+      (changedProps.has("_discoveredDomainsReceived") ||
+        changedProps.has("_entriesReceived")) &&
+      this._discoveredDomainsReceived &&
+      this._entriesReceived
+    ) {
+      this._heading?.focus();
+    }
   }
 
   private async _scanUSBDevices() {

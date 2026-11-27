@@ -13313,6 +13313,7 @@
           "address_label": "Search address",
           "search_results": "Search results",
           "selected_location": "Selected {location}",
+          "location_detected": "Detected your location by IP address",
           "button_detect": "Detect",
           "finish": "Next"
         },

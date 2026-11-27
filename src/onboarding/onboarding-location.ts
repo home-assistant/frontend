@@ -408,6 +408,7 @@ class OnboardingLocation extends LitElement {
   private _detectLocation() {
     if (window.isSecureContext && navigator.geolocation) {
       this._working = true;
+      this._status = undefined;
       const options = {
         enableHighAccuracy: true,
         timeout: 5000,
@@ -459,6 +460,7 @@ class OnboardingLocation extends LitElement {
       return;
     }
     this._working = true;
+    this._status = undefined;
     try {
       const values = await detectCoreConfig(this.hass);
 
@@ -473,6 +475,9 @@ class OnboardingLocation extends LitElement {
           }
         );
         this._location = [Number(values.latitude), Number(values.longitude)];
+        this._status = this._localize(
+          "ui.panel.page-onboarding.core-config.location_detected"
+        );
       }
       if (values.elevation) {
         this._elevation = String(values.elevation);
