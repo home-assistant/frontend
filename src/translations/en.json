@@ -8259,6 +8259,7 @@
             "delete": "Delete",
             "delete_confirm_title": "Delete {title}?",
             "delete_confirm_text": "Its devices and entities will be permanently deleted.",
+            "delete_confirm_dependents": "{integrations} {count, plural,\n  one {depends}\n  other {depend}\n} on {name} and may stop working.",
             "enable_debug_logging": "Enable debug logging",
             "reconfigure": "Reconfigure",
             "reload": "Reload",

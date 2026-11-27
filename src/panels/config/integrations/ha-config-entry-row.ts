@@ -26,6 +26,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { navigate } from "../../../common/navigate";
+import { formatListWithAnds } from "../../../common/string/format-list";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -94,6 +95,9 @@ export class HaConfigEntryRow extends LitElement {
   @property({ attribute: false }) public entities!: EntityRegistryEntry[];
 
   @property({ attribute: false }) public data!: ConfigEntryData;
+
+  /** The loaded integrations that lose this integration with this entry. */
+  @property({ attribute: false }) public dependents?: IntegrationManifest[];
 
   @state() private _expanded = true;
 
@@ -812,14 +816,33 @@ export class HaConfigEntryRow extends LitElement {
     const applicationCredentialsId =
       await this._applicationCredentialForRemove(entryId);
 
+    const text = this.hass.localize(
+      "ui.panel.config.integrations.config_entry.delete_confirm_text"
+    );
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.integrations.config_entry.delete_confirm_title",
         { title: this.data.entry.title }
       ),
-      text: this.hass.localize(
-        "ui.panel.config.integrations.config_entry.delete_confirm_text"
-      ),
+      text: this.dependents?.length
+        ? html`${text}<br /><br />${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.delete_confirm_dependents",
+              {
+                count: this.dependents.length,
+                integrations: formatListWithAnds(
+                  this.hass.locale,
+                  this.dependents.map((manifest) =>
+                    domainToName(this.hass.localize, manifest.domain, manifest)
+                  )
+                ),
+                name: domainToName(
+                  this.hass.localize,
+                  this.data.entry.domain,
+                  this.manifest
+                ),
+              }
+            )}`
+        : text,
       confirmText: this.hass!.localize("ui.common.delete"),
       dismissText: this.hass!.localize("ui.common.cancel"),
       destructive: true,

@@ -21,7 +21,7 @@ import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { QueryParamsController } from "../../../common/controllers/query-params-controller";
-import { ContextSubscriptionController } from "../../../common/decorators/consume";
+import { consume } from "../../../common/decorators/consume";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import {
@@ -176,9 +176,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   @state() private _manifest?: IntegrationManifest;
 
   /** The manifests of all loaded integrations, to find the dependents. */
-  @state() private _loadedManifests?: DomainManifestLookup;
-
-  private _manifestsConsumer?: ContextSubscriptionController<DomainManifestLookup>;
+  @consume({ context: manifestsContext, subscribe: true })
+  @state()
+  private _loadedManifests?: DomainManifestLookup;
 
   @state() private _extraConfigEntries?: ConfigEntry[];
 
@@ -432,17 +432,23 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.domain
     );
 
+    const dependents = this._getDependents(
+      this.domain,
+      this._loadedManifests,
+      this.hass.localize,
+      this.hass.locale.language
+    );
     // Without the dependents, a dependency looks like a YAML integration.
-    const dependents =
-      this._manifest && !this._manifest.config_flow
-        ? this._getDependents(
-            this.domain,
-            this._loadedManifests,
-            this.hass.localize,
-            this.hass.locale.language
-          )
-        : [];
-    const showDependents = normalEntries.length === 0 && dependents.length > 0;
+    const dependencyOnly =
+      normalEntries.length === 0 &&
+      dependents.length > 0 &&
+      !this._manifest?.config_flow;
+    // Deleting the last entry in use leaves the dependents without it.
+    const entriesInUse = configEntries.filter(
+      (entry) => entry.source !== "ignore" && !entry.disabled_by
+    );
+    const lastEntryId =
+      entriesInUse.length === 1 ? entriesInUse[0].entry_id : undefined;
     // Hold back the YAML texts and "Add entry" until the manifest and the
     // dependents are known. Entries do not wait, so a failed request cannot
     // hide them.
@@ -461,7 +467,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
     const showAddEntry =
       this._manifest?.integration_type !== "hardware" &&
-      !showDependents &&
+      !dependencyOnly &&
       !dependentsLoading &&
       !setUpInPanel &&
       (!this._manifest?.single_config_entry ||
@@ -653,7 +659,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   }
                   ${
                     normalEntries.length === 0 &&
-                    !showDependents &&
+                    !dependencyOnly &&
                     !dependentsLoading &&
                     !setUpInPanel &&
                     this._manifest &&
@@ -1010,6 +1016,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           .diagnosticHandler=${this._diagnosticHandler}
                           .entities=${this._entities}
                           .data=${data}
+                          .dependents=${
+                            data.entry.entry_id === lastEntryId
+                              ? dependents
+                              : undefined
+                          }
                           data-entry-id=${data.entry.entry_id}
                         ></ha-config-entry-row>`
                     )}
@@ -1018,19 +1029,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               : nothing
           }
           ${
-            showDependents
-              ? html`<div class="section">
-                  <h3 class="section-header">
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.integration_page.used_by"
-                    )}
-                  </h3>
-                  ${this._renderDependents(dependents)}
-                </div>`
-              : nothing
-          }
-          ${
-            showDependents ||
+            dependencyOnly ||
             dependentsLoading ||
             (setUpInPanel && normalEntries.length === 0)
               ? nothing
@@ -1077,6 +1076,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                                 .diagnosticHandler=${this._diagnosticHandler}
                                 .entities=${this._entities}
                                 .data=${data}
+                                .dependents=${
+                                  data.entry.entry_id === lastEntryId
+                                    ? dependents
+                                    : undefined
+                                }
                                 data-entry-id=${data.entry.entry_id}
                               ></ha-config-entry-row>`
                           )}
@@ -1084,24 +1088,21 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   }
                 </div>`
           }
+          ${
+            dependents.length
+              ? html`<div class="section">
+                  <h3 class="section-header">
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.integration_page.used_by"
+                    )}
+                  </h3>
+                  ${this._renderDependents(dependents)}
+                </div>`
+              : nothing
+          }
         </div>
       </hass-subpage>
     `;
-  }
-
-  // Only an integration without a config flow needs the loaded manifests, so
-  // other integration pages do not make the context fetch them.
-  private _watchLoadedManifests(): void {
-    if (this._manifestsConsumer) {
-      return;
-    }
-    this._manifestsConsumer = new ContextSubscriptionController(
-      this,
-      manifestsContext,
-      (manifests) => {
-        this._loadedManifests = manifests;
-      }
-    );
   }
 
   private _getDependents = memoizeOne(
@@ -1199,9 +1200,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       return;
     }
     this._manifest = await fetchIntegrationManifest(this.hass, this.domain);
-    if (!this._manifest.config_flow) {
-      this._watchLoadedManifests();
-    }
     if (
       this._manifest.integration_type &&
       !["device", "hub", "service"].includes(this._manifest.integration_type)
