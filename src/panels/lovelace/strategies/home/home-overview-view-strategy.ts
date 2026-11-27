@@ -98,6 +98,9 @@ const computeAreaCard = (
   if (area?.temperature_entity_id) {
     sensorClasses.push("temperature");
   }
+  if (area?.co2_entity_id) {
+    sensorClasses.push("carbon_dioxide");
+  }
 
   return {
     type: "area",

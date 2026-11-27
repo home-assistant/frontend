@@ -122,6 +122,17 @@ export const demoEntitiesHome: DemoConfig["entities"] = () => [
     },
   },
   {
+    entity_id: "sensor.living_room_carbon_dioxide",
+    state: "612",
+    area_id: "living_room",
+    attributes: {
+      state_class: "measurement",
+      unit_of_measurement: "ppm",
+      device_class: "carbon_dioxide",
+      friendly_name: "Carbon dioxide",
+    },
+  },
+  {
     entity_id: "light.kitchen_spotlights",
     state: "on",
     area_id: "kitchen",

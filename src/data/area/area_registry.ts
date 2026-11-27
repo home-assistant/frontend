@@ -11,6 +11,7 @@ export { subscribeAreaRegistry } from "../ws-area_registry";
 export interface AreaRegistryEntry extends RegistryEntry {
   aliases: string[];
   area_id: string;
+  co2_entity_id: string | null;
   floor_id: string | null;
   humidity_entity_id: string | null;
   icon: string | null;
@@ -29,6 +30,7 @@ export type AreaDeviceLookup = Record<string, DeviceRegistryEntry[]>;
 
 export interface AreaRegistryEntryMutableParams {
   aliases?: string[];
+  co2_entity_id?: string | null;
   floor_id?: string | null;
   humidity_entity_id?: string | null;
   icon?: string | null;

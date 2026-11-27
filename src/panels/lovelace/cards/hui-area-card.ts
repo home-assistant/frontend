@@ -469,7 +469,11 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     const sensorStates = sensorClasses
       .map((sensorClass) => {
-        if (sensorClass === "temperature" && area.temperature_entity_id) {
+        if (
+          sensorClass === "temperature" &&
+          area.temperature_entity_id &&
+          !excludeEntities?.includes(area.temperature_entity_id)
+        ) {
           const stateObj = this.hass.states[area.temperature_entity_id] as
             HassEntity | undefined;
           return !stateObj ||
@@ -478,8 +482,25 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
             ? ""
             : this.hass.formatEntityState(stateObj);
         }
-        if (sensorClass === "humidity" && area.humidity_entity_id) {
+        if (
+          sensorClass === "humidity" &&
+          area.humidity_entity_id &&
+          !excludeEntities?.includes(area.humidity_entity_id)
+        ) {
           const stateObj = this.hass.states[area.humidity_entity_id] as
+            HassEntity | undefined;
+          return !stateObj ||
+            stateObj.state === UNAVAILABLE ||
+            stateObj.state === UNKNOWN
+            ? ""
+            : this.hass.formatEntityState(stateObj);
+        }
+        if (
+          sensorClass === "carbon_dioxide" &&
+          area.co2_entity_id &&
+          !excludeEntities?.includes(area.co2_entity_id)
+        ) {
+          const stateObj = this.hass.states[area.co2_entity_id] as
             HassEntity | undefined;
           return !stateObj ||
             stateObj.state === UNAVAILABLE ||

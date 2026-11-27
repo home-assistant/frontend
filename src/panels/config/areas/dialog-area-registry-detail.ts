@@ -34,6 +34,7 @@ import {
   ROOM_ICONS,
 } from "../../../data/area_icon_suggestions";
 import {
+  SENSOR_DEVICE_CLASS_CO2,
   SENSOR_DEVICE_CLASS_HUMIDITY,
   SENSOR_DEVICE_CLASS_TEMPERATURE,
 } from "../../../data/sensor";
@@ -59,6 +60,7 @@ const cropOptions: CropOptions = {
 const SENSOR_DOMAINS = ["sensor"];
 const TEMPERATURE_DEVICE_CLASSES = [SENSOR_DEVICE_CLASS_TEMPERATURE];
 const HUMIDITY_DEVICE_CLASSES = [SENSOR_DEVICE_CLASS_HUMIDITY];
+const CO2_DEVICE_CLASSES = [SENSOR_DEVICE_CLASS_CO2];
 
 interface AreaFormState {
   name: string;
@@ -69,6 +71,7 @@ interface AreaFormState {
   floor: string | null;
   temperatureEntity: string | null;
   humidityEntity: string | null;
+  carbonDioxideEntity: string | null;
 }
 
 @customElement("dialog-area-registry-detail")
@@ -93,6 +96,8 @@ class DialogAreaDetail
   @state() private _temperatureEntity!: string | null;
 
   @state() private _humidityEntity!: string | null;
+
+  @state() private _carbon_dioxideEntity!: string | null;
 
   @state() private _error?: string;
 
@@ -126,6 +131,7 @@ class DialogAreaDetail
       this._floor = this._params.entry.floor_id;
       this._temperatureEntity = this._params.entry.temperature_entity_id;
       this._humidityEntity = this._params.entry.humidity_entity_id;
+      this._carbon_dioxideEntity = this._params.entry.co2_entity_id;
     } else {
       this._name = this._params.suggestedName || "";
       this._aliases = [];
@@ -135,6 +141,7 @@ class DialogAreaDetail
       this._floor = null;
       this._temperatureEntity = null;
       this._humidityEntity = null;
+      this._carbon_dioxideEntity = null;
     }
     this._iconFollowsName = !this._params.entry;
     this._open = true;
@@ -152,6 +159,7 @@ class DialogAreaDetail
       floor: this._floor,
       temperatureEntity: this._temperatureEntity,
       humidityEntity: this._humidityEntity,
+      carbonDioxideEntity: this._carbon_dioxideEntity,
     };
   }
 
@@ -312,6 +320,20 @@ class DialogAreaDetail
             .value=${this._humidityEntity}
             .includeDomains=${SENSOR_DOMAINS}
             .includeDeviceClasses=${HUMIDITY_DEVICE_CLASSES}
+            .entityFilter=${this._areaEntityFilter}
+            @value-changed=${this._sensorChanged}
+          ></ha-entity-picker>
+
+          <ha-entity-picker
+            .label=${this.hass.localize(
+              "ui.panel.config.areas.editor.co2_entity"
+            )}
+            .helper=${this.hass.localize(
+              "ui.panel.config.areas.editor.co2_entity_description"
+            )}
+            .value=${this._carbon_dioxideEntity}
+            .includeDomains=${SENSOR_DOMAINS}
+            .includeDeviceClasses=${CO2_DEVICE_CLASSES}
             .entityFilter=${this._areaEntityFilter}
             @value-changed=${this._sensorChanged}
           ></ha-entity-picker>
@@ -549,6 +571,7 @@ class DialogAreaDetail
         aliases: this._aliases,
         temperature_entity_id: this._temperatureEntity,
         humidity_entity_id: this._humidityEntity,
+        co2_entity_id: this._carbon_dioxideEntity,
       };
       if (create) {
         await this._params!.createEntry!(values);

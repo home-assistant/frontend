@@ -120,6 +120,9 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
           if (area.humidity_entity_id) {
             sensorClasses.push("humidity");
           }
+          if (area.co2_entity_id) {
+            sensorClasses.push("carbon_dioxide");
+          }
 
           const isLarge = areaOptions.card_size === "large";
           return {
