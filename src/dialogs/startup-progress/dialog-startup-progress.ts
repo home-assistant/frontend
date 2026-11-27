@@ -281,6 +281,13 @@ class DialogStartupProgress extends DialogMixin(LitElement) {
   static styles = [
     haStyleDialog,
     css`
+      @media (min-width: 451px) and (min-height: 501px) {
+        ha-dialog {
+          /* Fixed height so the dialog keeps its size as setups change. */
+          --ha-dialog-min-height: calc(var(--safe-height) / 2);
+          --ha-dialog-max-height: var(--ha-dialog-min-height);
+        }
+      }
       ha-spinner {
         display: block;
         margin: var(--ha-space-6) auto;
