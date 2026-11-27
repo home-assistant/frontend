@@ -11,6 +11,7 @@ import type {
   HASSDomTargetEvent,
 } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { renderMoveShortcutHint } from "../../../../common/keyboard/render-move-shortcut-hint";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
@@ -18,6 +19,7 @@ import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import { ICON_CONDITION } from "../../common/icon-condition";
 import type {
@@ -177,6 +179,8 @@ export class HaCardConditionsEditor extends LitElement {
               >
                 <div
                   slot="drag-handle"
+                  id="move-condition-${idx}"
+                  aria-keyshortcuts="Alt+ArrowUp Alt+ArrowDown"
                   class="handle ${
                     this._rowSortSelected === idx ? "active" : ""
                   }"
@@ -189,6 +193,16 @@ export class HaCardConditionsEditor extends LitElement {
                   @keydown=${this._handleDragKeydown}
                 >
                   <ha-svg-icon .path=${mdiDragHorizontalVariant}></ha-svg-icon>
+                  <ha-tooltip
+                    trigger="focus"
+                    describe-anchor
+                    for="move-condition-${idx}"
+                  >
+                    ${renderMoveShortcutHint(
+                      this.hass.localize("ui.common.move_up"),
+                      this.hass.localize("ui.common.move_down")
+                    )}
+                  </ha-tooltip>
                 </div>
               </ha-card-condition-editor>
             `
