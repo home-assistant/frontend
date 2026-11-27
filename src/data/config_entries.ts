@@ -169,7 +169,10 @@ export const deleteConfigEntry = (
     require_restart: boolean;
   }>("DELETE", `config/config_entries/entry/${configEntryId}`);
 
-export const reloadConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
+export const reloadConfigEntry = (
+  hass: Pick<HomeAssistant, "callApi">,
+  configEntryId: string
+) =>
   hass.callApi<{
     require_restart: boolean;
   }>("POST", `config/config_entries/entry/${configEntryId}/reload`);

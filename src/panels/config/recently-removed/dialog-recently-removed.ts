@@ -1,27 +1,35 @@
 import type { ContextType } from "@lit/context";
+import { mdiDelete, mdiDotsVertical, mdiPlus, mdiReload } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
+import { navigate } from "../../../common/navigate";
 import { formatDateVeryShort } from "../../../common/datetime/format_date";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-label";
 import "../../../components/ha-spinner";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import "../../../components/item/ha-list-item-base";
 import "../../../components/list/ha-list-base";
+import { reloadConfigEntry } from "../../../data/config_entries";
 import {
   apiContext,
   areasContext,
   brandsAccessTokenContext,
   configContext,
+  configEntriesContext,
   connectionContext,
   internationalizationContext,
   labelsContext,
@@ -58,10 +66,7 @@ const relativeTimeFormat = memoizeOne(
 
 // Days instead of weeks or months, so the age reads the same in every row.
 const relativeTimeInDays = (from: Date, locale: FrontendLocaleData) => {
-  const minutes = Math.max(
-    1,
-    Math.round((Date.now() - from.getTime()) / 60000)
-  );
+  const minutes = Math.round((Date.now() - from.getTime()) / 60000);
   const format = relativeTimeFormat(locale.language);
   if (minutes < 60) {
     return format.format(-minutes, "minute");
@@ -78,6 +83,7 @@ interface RemovedItem {
   unnamed: boolean;
   details: string[];
   domain: string | null;
+  configEntryId: string | null;
   areaId: string | null;
   labels: string[];
   removedAt: number;
@@ -128,6 +134,10 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
   private _manifests?: ContextType<typeof manifestsContext>;
 
   @state()
+  @consume({ context: configEntriesContext, subscribe: true })
+  private _configEntries?: ContextType<typeof configEntriesContext>;
+
+  @state()
   @consume({ context: brandsAccessTokenContext, subscribe: true })
   // @ts-ignore re-render trigger only, its value is never read
   private _brandsAccessToken?: string;
@@ -138,7 +148,10 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
 
   @state() private _error?: string;
 
-  @state() private _forgetError?: string;
+  @state() private _actionResult?: {
+    type: "success" | "warning" | "error";
+    text: string;
+  };
 
   connectedCallback() {
     super.connectedCallback();
@@ -201,6 +214,7 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
             unnamed: !device.name_by_user,
             details: [],
             domain: device.domain,
+            configEntryId: device.config_entry_id,
             areaId: device.area_id,
             labels: device.labels,
             removedAt: device.modified_at,
@@ -213,6 +227,7 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
           unnamed: false,
           details: entity.name ? [entity.entity_id] : [],
           domain: entity.platform,
+          configEntryId: entity.config_entry_id,
           areaId: entity.area_id,
           labels: entity.labels,
           removedAt: entity.modified_at,
@@ -238,10 +253,13 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
           ${this._i18n.localize(
             this._isDevice ? `${key}.intro_devices` : `${key}.intro_entities`
           )}
+          ${this._i18n.localize(`${key}.intro_found_again`)}
         </p>
         ${
-          this._forgetError
-            ? html`<ha-alert alert-type="error">${this._forgetError}</ha-alert>`
+          this._actionResult
+            ? html`<ha-alert .alertType=${this._actionResult.type}>
+                ${this._actionResult.text}
+              </ha-alert>`
             : nothing
         }
         ${
@@ -290,9 +308,17 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
       area?.name,
     ].filter(Boolean);
     const removedAt = new Date(item.removedAt * 1000);
-    const removed = this._i18n.localize(`${key}.removed`, {
-      time: relativeTimeInDays(removedAt, locale),
-    });
+    const removed =
+      Date.now() - removedAt.getTime() < 60000
+        ? this._i18n.localize(`${key}.removed_just_now`)
+        : this._i18n.localize(`${key}.removed`, {
+            time: relativeTimeInDays(removedAt, locale),
+          });
+    const configEntry = item.configEntryId
+      ? this._configEntries?.find(
+          (entry) => entry.entry_id === item.configEntryId
+        )
+      : undefined;
 
     return html`<ha-list-item-base>
       ${
@@ -319,22 +345,31 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
       <div slot="supporting-text">
         ${details.length ? html`<div>${details.join(" · ")}</div>` : nothing}
         <div>
-          <span id="removed-${item.id}">${removed}</span>${
-            item.orphanedAt !== null
-              ? html` ·
-                ${this._i18n.localize(`${key}.kept_until`, {
-                  date: formatDateVeryShort(
-                    new Date((item.orphanedAt + ORPHANED_KEEP_SECONDS) * 1000),
-                    locale,
-                    this._hassConfig.config
-                  ),
-                })}`
-              : nothing
-          }
-          <ha-tooltip for="removed-${item.id}" placement="top">
+          <span id="removed-${item.id}">${removed}</span>
+          <ha-tooltip for="removed-${item.id}" placement="right">
             ${formatDateTime(removedAt, locale, this._hassConfig.config)}
           </ha-tooltip>
         </div>
+        ${
+          item.orphanedAt !== null
+            ? html`<div>
+                <span class="nowrap"
+                  >${this._i18n.localize(`${key}.integration_removed`)} ·</span
+                >
+                <span class="nowrap"
+                  >${this._i18n.localize(`${key}.kept_until`, {
+                    date: formatDateVeryShort(
+                      new Date(
+                        (item.orphanedAt + ORPHANED_KEEP_SECONDS) * 1000
+                      ),
+                      locale,
+                      this._hassConfig.config
+                    ),
+                  })}</span
+                >
+              </div>`
+            : nothing
+        }
         ${
           labels.length
             ? html`<div class="labels">
@@ -356,25 +391,99 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
             : nothing
         }
       </div>
-      <ha-button
+      <ha-dropdown
         slot="end"
-        appearance="plain"
-        variant="danger"
-        size="s"
         data-id=${item.id}
-        @click=${this._forget}
+        @wa-select=${this._handleMenuAction}
       >
-        ${this._i18n.localize(`${key}.forget`)}
-      </ha-button>
+        <ha-icon-button
+          slot="trigger"
+          .label=${this._i18n.localize("ui.common.menu")}
+          .path=${mdiDotsVertical}
+        ></ha-icon-button>
+        ${
+          configEntry
+            ? configEntry.disabled_by
+              ? nothing
+              : html`<ha-dropdown-item value="reload">
+                  <ha-svg-icon slot="icon" .path=${mdiReload}></ha-svg-icon>
+                  ${this._i18n.localize(`${key}.reload_integration`)}
+                </ha-dropdown-item>`
+            : item.domain
+              ? html`<ha-dropdown-item value="add">
+                  <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                  ${this._i18n.localize(`${key}.add_integration`)}
+                </ha-dropdown-item>`
+              : nothing
+        }
+        <ha-dropdown-item variant="danger" value="forget">
+          <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
+          ${this._i18n.localize(`${key}.forget`)}
+        </ha-dropdown-item>
+      </ha-dropdown>
     </ha-list-item-base>`;
   }
 
-  private async _forget(ev: Event) {
+  private _handleMenuAction(ev: CustomEvent) {
     const id = (ev.currentTarget as HTMLElement).dataset.id;
     const item = this._items()?.find((removed) => removed.id === id);
     if (!item) {
       return;
     }
+    switch (ev.detail.item.value) {
+      case "reload":
+        this._reload(item);
+        break;
+      case "add":
+        this._addIntegration(item);
+        break;
+      case "forget":
+        this._forget(item);
+        break;
+    }
+  }
+
+  private async _reload(item: RemovedItem) {
+    const entry = this._configEntries?.find(
+      (configEntry) => configEntry.entry_id === item.configEntryId
+    );
+    if (!entry) {
+      return;
+    }
+    const key = "ui.panel.config.recently_removed";
+    const integration = this._integrationName(entry.domain);
+    this._actionResult = undefined;
+    try {
+      const result = await reloadConfigEntry(this._api, entry.entry_id);
+      this._actionResult = result.require_restart
+        ? {
+            type: "warning",
+            text: this._i18n.localize(
+              "ui.panel.config.integrations.config_entry.reload_restart_confirm"
+            ),
+          }
+        : {
+            type: "success",
+            text: this._i18n.localize(`${key}.reloaded`, { integration }),
+          };
+    } catch (err: any) {
+      this._actionResult = {
+        type: "error",
+        text:
+          err?.message ||
+          this._i18n.localize(`${key}.reload_failed`, { integration }),
+      };
+    }
+    // Restored items leave the deleted list, which is not pushed.
+    await this._load();
+  }
+
+  private _addIntegration(item: RemovedItem) {
+    this.closeDialog();
+    navigate(`/config/integrations/dashboard/add?domain=${item.domain}`);
+  }
+
+  private async _forget(item: RemovedItem) {
     const key = "ui.panel.config.recently_removed";
     let text = this._i18n.localize(
       this._isDevice
@@ -387,8 +496,10 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
       try {
         entities = await fetchDeletedEntityRegistryEntries(this._api.callWS);
       } catch (err: any) {
-        this._forgetError =
-          err?.message || this._i18n.localize(`${key}.load_failed`);
+        this._actionResult = {
+          type: "error",
+          text: err?.message || this._i18n.localize(`${key}.load_failed`),
+        };
         return;
       }
       const count = entities.filter(
@@ -414,15 +525,18 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
     if (!confirmed) {
       return;
     }
-    this._forgetError = undefined;
+    this._actionResult = undefined;
     try {
       await (this._isDevice
         ? forgetDeletedDeviceRegistryEntry(this._api.callWS, item.id)
         : forgetDeletedEntityRegistryEntry(this._api.callWS, item.id));
     } catch (err: any) {
-      this._forgetError =
-        err?.message ||
-        this._i18n.localize(`${key}.forget_failed`, { name: item.headline });
+      this._actionResult = {
+        type: "error",
+        text:
+          err?.message ||
+          this._i18n.localize(`${key}.forget_failed`, { name: item.headline }),
+      };
     }
     // Forgetting fires no registry event, so the list is not pushed.
     await this._load();
@@ -449,6 +563,9 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
         }
         .unnamed {
           font-style: italic;
+        }
+        .nowrap {
+          white-space: nowrap;
         }
         [slot="headline"],
         [slot="supporting-text"] {
