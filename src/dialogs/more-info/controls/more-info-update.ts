@@ -12,6 +12,7 @@ import {
 } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { sanitizeHttpUrl } from "../../../common/url/sanitize-http-url";
 import { estimateDirection } from "../../../common/util/estimate-direction";
@@ -33,6 +34,7 @@ import {
 } from "../../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
+import { ERROR_WARNING_NOT_ACCEPTED } from "../../../data/marketplace/websocket";
 import type { UpdateEntity, UpdateReleaseNotes } from "../../../data/update";
 import {
   latestVersionIsSkipped,
@@ -103,7 +105,10 @@ class MoreInfoUpdate extends LitElement {
 
   @state() private _error?: string;
 
-  @state() private _installError?: string;
+  @state() private _installError?: {
+    message: string;
+    marketplaceWarning: boolean;
+  };
 
   @state() private _backupState: ManagerState = "idle";
 
@@ -327,21 +332,32 @@ class MoreInfoUpdate extends LitElement {
               ? html`<ha-alert alert-type="error">
                   ${this._localize(
                     "ui.dialogs.more_info_control.update.install_failed",
-                    { error: this._installError }
+                    { error: this._installError.message }
                   )}
                   ${
-                    this._canShowSupervisorLogs()
+                    this._installError.marketplaceWarning
                       ? html`<ha-button
                           slot="action"
                           appearance="plain"
-                          size="small"
-                          @click=${this._handleShowSupervisorLogs}
+                          size="s"
+                          @click=${this._openMarketplace}
                         >
                           ${this._localize(
-                            "ui.dialogs.more_info_control.update.supervisor_logs"
+                            "ui.dialogs.more_info_control.update.open_marketplace"
                           )}
                         </ha-button>`
-                      : nothing
+                      : this._canShowSupervisorLogs()
+                        ? html`<ha-button
+                            slot="action"
+                            appearance="plain"
+                            size="small"
+                            @click=${this._handleShowSupervisorLogs}
+                          >
+                            ${this._localize(
+                              "ui.dialogs.more_info_control.update.supervisor_logs"
+                            )}
+                          </ha-button>`
+                        : nothing
                   }
                 </ha-alert>`
               : nothing
@@ -456,10 +472,13 @@ class MoreInfoUpdate extends LitElement {
         false
       );
     } catch (err: any) {
+      const marketplaceWarning =
+        err?.translation_domain === "marketplace" &&
+        err.translation_key === ERROR_WARNING_NOT_ACCEPTED;
       const message = await this._localizeInstallError(err);
 
       if (this._isShown()) {
-        this._installError = message;
+        this._installError = { message, marketplaceWarning };
 
         return;
       }
@@ -476,17 +495,28 @@ class MoreInfoUpdate extends LitElement {
             { error: message }
           ),
           duration: 10000,
-          action: this._canShowSupervisorLogs()
+          action: marketplaceWarning
             ? {
                 text: this._localize(
-                  "ui.dialogs.more_info_control.update.supervisor_logs"
+                  "ui.dialogs.more_info_control.update.open_marketplace"
                 ),
-                action: () => this._showSupervisorLogs(toastHost, filter),
+                action: this._openMarketplace,
               }
-            : undefined,
+            : this._canShowSupervisorLogs()
+              ? {
+                  text: this._localize(
+                    "ui.dialogs.more_info_control.update.supervisor_logs"
+                  ),
+                  action: () => this._showSupervisorLogs(toastHost, filter),
+                }
+              : undefined,
         });
       }
     }
+  }
+
+  private _openMarketplace(): void {
+    navigate("/marketplace");
   }
 
   // Supervisor errors only say "Check Supervisor logs for details".
