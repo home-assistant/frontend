@@ -377,6 +377,10 @@ export class DemoHaDialog extends LitElement {
               <td>Hide animation duration.</td>
             </tr>
             <tr>
+              <td><code>--ha-dialog-resize-duration</code></td>
+              <td>Width resize animation duration.</td>
+            </tr>
+            <tr>
               <td><code>--ha-dialog-surface-background</code></td>
               <td>Dialog background color.</td>
             </tr>
