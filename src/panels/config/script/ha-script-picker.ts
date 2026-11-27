@@ -37,7 +37,6 @@ import {
   scriptsFilterQueryString,
   scriptsLinkFromUrl,
 } from "../../../common/url/scripts-query-params";
-import { deepEqual } from "../../../common/util/deep-equal";
 import {
   hasRejectedItems,
   rejectedItems,
@@ -84,6 +83,7 @@ import {
   listFilterValue,
   matchesFilterItems,
   matchesListFilter,
+  sameFilterValue,
   serializeFilters,
 } from "../../../data/data_table_filters";
 import { UNAVAILABLE } from "../../../data/entity/entity";
@@ -875,7 +875,9 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
 
         return [
           key,
-          current && deepEqual(filter.value, current.value) ? current : filter,
+          current && sameFilterValue(key, filter.value, current.value)
+            ? current
+            : filter,
         ];
       })
     );

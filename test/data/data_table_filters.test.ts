@@ -6,6 +6,7 @@ import {
   matchesFilterItems,
   filtersMatchUnassignedItem,
   matchesListFilter,
+  sameFilterValue,
   sameListFilterValue,
 } from "../../src/data/data_table_filters";
 
@@ -210,6 +211,38 @@ describe("sameListFilterValue", () => {
     expect(sameListFilterValue(["a"], ["a", "b"])).toBe(false);
     expect(sameListFilterValue(["a"], { ids: ["a"], none: true })).toBe(false);
     expect(sameListFilterValue(["a"], { ids: ["a"], exclude: true })).toBe(
+      false
+    );
+  });
+});
+
+// The automation, script and scene tables keep a filter's items when a link
+// or stored filter gives it the same value. They have to compare as the filter
+// does: a filter that sees no change doesn't look up its items again, so a
+// table that drops them stops applying the filter.
+describe("sameFilterValue", () => {
+  it("keeps the items of only No device, however it's written", () => {
+    expect(
+      sameFilterValue(
+        "ha-filter-devices",
+        { none: true },
+        { ids: [], none: true }
+      )
+    ).toBe(true);
+    expect(sameFilterValue("ha-filter-blueprints", ["a"], { ids: ["a"] })).toBe(
+      true
+    );
+  });
+
+  it("compares the other filters exactly", () => {
+    expect(
+      sameFilterValue(
+        "ha-filter-floor-areas",
+        { floors: ["ground"] },
+        { floors: ["first"] }
+      )
+    ).toBe(false);
+    expect(sameFilterValue("ha-filter-labels", ["a"], { ids: ["a"] })).toBe(
       false
     );
   });

@@ -35,7 +35,6 @@ import {
   scenesFilterQueryString,
   scenesLinkFromUrl,
 } from "../../../common/url/scenes-query-params";
-import { deepEqual } from "../../../common/util/deep-equal";
 import {
   hasRejectedItems,
   rejectedItems,
@@ -82,6 +81,7 @@ import {
   listFilterValue,
   matchesFilterItems,
   matchesListFilter,
+  sameFilterValue,
   serializeFilters,
 } from "../../../data/data_table_filters";
 import type {
@@ -468,7 +468,9 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
         return [
           key,
-          current && deepEqual(filter.value, current.value) ? current : filter,
+          current && sameFilterValue(key, filter.value, current.value)
+            ? current
+            : filter,
         ];
       })
     );

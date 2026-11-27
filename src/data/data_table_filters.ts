@@ -234,6 +234,26 @@ export const sameListFilterValue = (
   );
 };
 
+// The filters that only look up their items again when their value filters
+// on something else, as `sameListFilterValue` compares it
+const LIST_LOOKUP_FILTERS = new Set([
+  "ha-filter-blueprints",
+  "ha-filter-devices",
+  "ha-filter-entities",
+]);
+
+/**
+ * Whether a table can keep the items of a filter whose value it gets again,
+ * like from a link. It compares the value as the filter does, which only
+ * works out its items again when it sees a change.
+ */
+export const sameFilterValue = (
+  filter: string,
+  a: DataTableFiltersValue,
+  b: DataTableFiltersValue
+): boolean =>
+  LIST_LOOKUP_FILTERS.has(filter) ? sameListFilterValue(a, b) : deepEqual(a, b);
+
 /** Whether a filter value shows the items that don't match its selection. */
 export const isExcludeFilter = (value: DataTableFiltersValue): boolean =>
   !!value && !Array.isArray(value) && "exclude" in value && !!value.exclude;
