@@ -1,12 +1,18 @@
+import type { TemplateResult } from "lit";
+import { render } from "lit";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { UpdateEntity, UpdateManualAction } from "../../src/data/update";
 import {
   checkForEntityUpdates,
   computeUpdateStateDisplay,
+  confirmUpdateManualActions,
   localizeUpdateManualAction,
   UpdateEntityFeature,
 } from "../../src/data/update";
-import { showAlertDialog } from "../../src/dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../src/dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../src/types";
 import {
   createMockEntityState,
@@ -17,6 +23,7 @@ import {
 
 vi.mock("../../src/dialogs/generic/show-dialog-box", () => ({
   showAlertDialog: vi.fn(),
+  showConfirmationDialog: vi.fn(),
 }));
 
 describe("checkForEntityUpdates", () => {
@@ -90,8 +97,11 @@ describe("computeUpdateStateDisplay", () => {
     {
       scenario: "with a phase",
       features: UpdateEntityFeature.PROGRESS,
-      attributes: { install_phase: "backing_up", update_percentage: null },
-      expected: `${PHASE_KEY}.backing_up`,
+      attributes: {
+        install_phase: "waiting_for_user",
+        update_percentage: null,
+      },
+      expected: `${PHASE_KEY}.waiting_for_user`,
     },
     {
       scenario: "with a phase and progress",
@@ -146,4 +156,92 @@ describe("localizeUpdateManualAction", () => {
   ])("localizes $scenario", ({ action, expected }) => {
     expect(localizeUpdateManualAction(mockLocalize, action)).toBe(expected);
   });
+});
+
+describe("confirmUpdateManualActions", () => {
+  const CONFIRM_ON_DEVICE: UpdateManualAction = {
+    translation_domain: "update",
+    translation_key: "confirm_on_device",
+    translation_placeholders: {},
+  };
+  const ACTION_TEXT =
+    "component.update.entity_component.manual_actions.confirm_on_device: {}";
+  const element = document.createElement("div");
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("does not ask when no update needs a manual action", async () => {
+    const entities = [
+      createMockEntityState("update.demo", "on", {
+        manual_action: null,
+      }) as UpdateEntity,
+    ];
+
+    await expect(
+      confirmUpdateManualActions(element, mockLocalize, entities)
+    ).resolves.toBe(true);
+    expect(showConfirmationDialog).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    {
+      scenario: "without names",
+      formatEntityName: undefined,
+      confirmed: true,
+      expectedItems: [ACTION_TEXT],
+    },
+    {
+      scenario: "with names",
+      formatEntityName: (entity: UpdateEntity) => entity.entity_id,
+      confirmed: false,
+      expectedItems: [
+        `ui.dialogs.update_manual_action.item: ${JSON.stringify({
+          name: "update.bulb",
+          action: ACTION_TEXT,
+        })}`,
+      ],
+    },
+  ])(
+    "lists the updates that need a manual action $scenario",
+    async ({ formatEntityName, confirmed, expectedItems }) => {
+      vi.mocked(showConfirmationDialog).mockResolvedValue(confirmed);
+      const entities = [
+        createMockEntityState("update.bulb", "on", {
+          manual_action: CONFIRM_ON_DEVICE,
+        }),
+        createMockEntityState("update.hub", "on", { manual_action: null }),
+      ] as UpdateEntity[];
+
+      await expect(
+        confirmUpdateManualActions(
+          element,
+          mockLocalize,
+          entities,
+          formatEntityName
+        )
+      ).resolves.toBe(confirmed);
+
+      expect(showConfirmationDialog).toHaveBeenCalledExactlyOnceWith(
+        element,
+        expect.objectContaining({
+          title: "ui.dialogs.update_manual_action.title",
+          confirmText: "ui.common.update",
+          warning: true,
+        })
+      );
+      const container = document.createElement("div");
+      render(
+        vi.mocked(showConfirmationDialog).mock.calls[0][1]
+          .text as TemplateResult,
+        container
+      );
+      expect(
+        [...container.querySelectorAll("li")].map((item) =>
+          item.textContent!.trim()
+        )
+      ).toEqual(expectedItems);
+    }
+  );
 });

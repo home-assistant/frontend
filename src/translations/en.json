@@ -332,6 +332,7 @@
         "option": "Option"
       },
       "update": {
+        "action_required": "Action required",
         "installing": "Installing",
         "installing_with_progress": "Installing ({progress}%)",
         "phase_with_progress": "{phase} ({progress}%)",
@@ -2778,6 +2779,12 @@
         "title": "Create backup?",
         "text": "This will create a backup before installing.",
         "create": "Create"
+      },
+      "update_manual_action": {
+        "title": "Action required during the update",
+        "text": "{count, plural,\n one {Someone has to do this during the update:}\n other {Someone has to do this during the updates:}\n}",
+        "item": "{name}: {action}",
+        "warning": "{count, plural,\n one {The update can't finish until then, and the device might not work in the meantime. Only start it if someone is there to do this.}\n other {The updates can't finish until then, and the devices might not work in the meantime. Only start them if someone is there to do this.}\n}"
       },
       "matter-add-device": {
         "add_device": "Add device",

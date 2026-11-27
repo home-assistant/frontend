@@ -4,6 +4,7 @@ import type {
   HassEntityBase,
   HassEvent,
 } from "home-assistant-js-websocket";
+import { html } from "lit";
 import { BINARY_STATE_OFF, BINARY_STATE_ON } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
@@ -11,8 +12,11 @@ import { supportsFeature } from "../common/entity/supports-feature";
 import { formatNumber } from "../common/number/format_number";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
-import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../types";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../dialogs/generic/show-dialog-box";
+import type { HomeAssistant, HomeAssistantFormatters } from "../types";
 import { showToast } from "../util/toast";
 import type { EntitySources } from "./entity/entity_sources";
 import type { FrontendLocaleData } from "./translation";
@@ -29,6 +33,7 @@ export type UpdateInstallPhase =
   | "preparing"
   | "backing_up"
   | "waiting"
+  | "waiting_for_user"
   | "downloading"
   | "installing"
   | "restarting"
@@ -116,6 +121,48 @@ export const localizeUpdateManualAction = (
       : `component.${action.translation_domain}.entity.update.manual_actions.${action.translation_key}`,
     action.translation_placeholders
   );
+
+// Resolves to true when the install can go ahead. Pass formatEntityName to
+// name each update in the list.
+export const confirmUpdateManualActions = async (
+  element: HTMLElement,
+  localize: LocalizeFunc,
+  entities: UpdateEntity[],
+  formatEntityName?: HomeAssistantFormatters["formatEntityName"]
+): Promise<boolean> => {
+  const needAction = entities.filter(
+    (entity) => entity.attributes.manual_action
+  );
+  if (!needAction.length) {
+    return true;
+  }
+  const count = needAction.length;
+  return showConfirmationDialog(element, {
+    title: localize("ui.dialogs.update_manual_action.title"),
+    text: html`${localize("ui.dialogs.update_manual_action.text", { count })}
+      <ul>
+        ${needAction.map((entity) => {
+          const action = localizeUpdateManualAction(
+            localize,
+            entity.attributes.manual_action!
+          );
+          return html`<li>
+            ${
+              formatEntityName
+                ? localize("ui.dialogs.update_manual_action.item", {
+                    name: formatEntityName(entity),
+                    action,
+                  })
+                : action
+            }
+          </li>`;
+        })}
+      </ul>
+      ${localize("ui.dialogs.update_manual_action.warning", { count })}`,
+    confirmText: localize("ui.common.update"),
+    warning: true,
+  });
+};
 
 export interface UpdateReleaseNotesMessage {
   severity: "info" | "warning" | "error";

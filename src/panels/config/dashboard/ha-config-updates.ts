@@ -1,7 +1,9 @@
 import type { ContextType } from "@lit/context";
+import { mdiAccountAlert } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
@@ -14,6 +16,7 @@ import "../../../components/entity/state-badge";
 import "../../../components/ha-alert";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-spinner";
+import "../../../components/ha-svg-icon";
 import type { HaListItemButton } from "../../../components/item/ha-list-item-button";
 import "../../../components/item/ha-list-item-button";
 import "../../../components/list/ha-list-base";
@@ -65,6 +68,16 @@ class HaConfigUpdates extends LitElement {
   private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
 
   private _renderUpdateProgress(entity: UpdateEntity, slot?: string) {
+    if (entity.attributes.install_phase === "waiting_for_user") {
+      return html`<ha-svg-icon
+        slot=${ifDefined(slot)}
+        class="waiting-for-user"
+        role="img"
+        aria-label=${this._localize("ui.card.update.action_required")}
+        .path=${mdiAccountAlert}
+      ></ha-svg-icon>`;
+    }
+
     if (entity.attributes.update_percentage != null) {
       return html`<ha-progress-ring
         slot=${ifDefined(slot)}
@@ -164,7 +177,15 @@ class HaConfigUpdates extends LitElement {
                 }
                 ${
                   entity.attributes.manual_action
-                    ? html`<span class="manual-action"
+                    ? html`<span
+                        class=${classMap({
+                          "manual-action": true,
+                          // Quiet while other install phases run.
+                          warning:
+                            !entity.attributes.in_progress ||
+                            entity.attributes.install_phase ===
+                              "waiting_for_user",
+                        })}
                         >${localizeUpdateManualAction(
                           this._localize,
                           entity.attributes.manual_action
@@ -233,7 +254,13 @@ class HaConfigUpdates extends LitElement {
         .manual-action {
           display: block;
           white-space: normal;
+        }
+        ha-svg-icon.waiting-for-user,
+        .manual-action.warning {
           color: var(--ha-color-on-warning-normal);
+        }
+        ha-svg-icon.waiting-for-user {
+          --mdc-icon-size: 28px;
         }
       `,
     ];

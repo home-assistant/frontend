@@ -35,12 +35,14 @@ import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import type { UpdateEntity, UpdateReleaseNotes } from "../../../data/update";
 import {
+  confirmUpdateManualActions,
   latestVersionIsSkipped,
   localizeUpdateManualAction,
   updateButtonIsDisabled,
   UpdateEntityFeature,
   updateIsInstalling,
   updateReleaseNotes,
+  updateUsesProgress,
 } from "../../../data/update";
 import type {
   CurrentUser,
@@ -192,38 +194,47 @@ class MoreInfoUpdate extends LitElement {
 
     const releaseUrl = sanitizeHttpUrl(this.stateObj.attributes.release_url);
     const backupInProgressMessage = this._backupInProgressMessage();
-    const manualAction = this.stateObj.attributes.manual_action
-      ? localizeUpdateManualAction(
-          this._localize,
-          this.stateObj.attributes.manual_action
-        )
-      : undefined;
+    const inProgress = this.stateObj.attributes.in_progress;
+    // The progress bar stays still while the install waits for a person.
+    const waitingForUser =
+      this.stateObj.attributes.install_phase === "waiting_for_user";
 
     return html`
       <div class="content">
         <div class="summary">
           ${
-            this.stateObj.attributes.in_progress
-              ? supportsFeature(this.stateObj, UpdateEntityFeature.PROGRESS) &&
-                this.stateObj.attributes.update_percentage !== null
-                ? html`<ha-progress-bar
-                    loading
-                    .value=${this.stateObj.attributes.update_percentage}
-                  ></ha-progress-bar>`
-                : html`<ha-progress-bar indeterminate></ha-progress-bar>`
+            inProgress && updateUsesProgress(this.stateObj)
+              ? html`<ha-progress-bar
+                  class=${classMap({ "waiting-for-user": waitingForUser })}
+                  ?loading=${!waitingForUser}
+                  .value=${this.stateObj.attributes.update_percentage}
+                ></ha-progress-bar>`
+              : inProgress && !waitingForUser
+                ? html`<ha-progress-bar indeterminate></ha-progress-bar>`
+                : nothing
+          }
+          ${
+            this.stateObj.attributes.manual_action
+              ? html`<ha-alert
+                  class="manual-action"
+                  alert-type=${inProgress && !waitingForUser ? "info" : "warning"}
+                  .title=${this._localize(
+                    waitingForUser
+                      ? "ui.card.update.action_required"
+                      : "ui.dialogs.update_manual_action.title"
+                  )}
+                >
+                  ${localizeUpdateManualAction(
+                    this._localize,
+                    this.stateObj.attributes.manual_action
+                  )}
+                </ha-alert>`
               : nothing
           }
           <h3>${this.stateObj.attributes.title}</h3>
           ${
             this._error
               ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-              : nothing
-          }
-          ${
-            manualAction
-              ? html`<ha-alert class="manual-action" alert-type="warning"
-                  >${manualAction}</ha-alert
-                >`
               : nothing
           }
           <div class="row">
@@ -444,6 +455,14 @@ class MoreInfoUpdate extends LitElement {
   }
 
   private async _handleInstall(): Promise<void> {
+    if (
+      !(await confirmUpdateManualActions(this, this._localize, [
+        this.stateObj!,
+      ]))
+    ) {
+      return;
+    }
+
     const installData: Record<string, any> = {
       entity_id: this.stateObj!.entity_id,
     };
@@ -630,6 +649,14 @@ class MoreInfoUpdate extends LitElement {
     .manual-action {
       display: block;
       margin-bottom: var(--ha-space-4);
+    }
+
+    ha-progress-bar + .manual-action {
+      margin-top: var(--ha-space-4);
+    }
+
+    ha-progress-bar.waiting-for-user {
+      --ha-progress-bar-indicator-color: var(--ha-color-on-warning-normal);
     }
 
     .row {
