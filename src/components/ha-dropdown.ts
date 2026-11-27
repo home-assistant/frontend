@@ -73,6 +73,15 @@ export class HaDropdown extends Dropdown {
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/naming-convention
   private override async showMenu() {
+    // Flip away from the safe areas instead of opening into them, where the
+    // max-height below would squeeze the menu.
+    const styles = getComputedStyle(this);
+    // @ts-ignore flipPadding is typed as a number, floating-ui accepts sides
+    this.popup.flipPadding = {
+      top: parseFloat(styles.getPropertyValue("--safe-area-inset-top")) || 0,
+      bottom:
+        parseFloat(styles.getPropertyValue("--safe-area-inset-bottom")) || 0,
+    };
     // @ts-ignore
     await super.showMenu();
     const triggerElement = this.getTrigger();
