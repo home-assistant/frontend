@@ -2852,6 +2852,11 @@ describe("computeEnergyDeviceLabels", () => {
         "1",
         { friendly_name: "Ceiling light Energy" }
       ),
+      "sensor.hall_light_total": createMockEntityState(
+        "sensor.hall_light_total",
+        "1",
+        { friendly_name: "Ceiling light Total energy" }
+      ),
     };
 
     const lightHass = createMockHass(LIGHT_STATES, {
@@ -2868,6 +2873,12 @@ describe("computeEnergyDeviceLabels", () => {
           name: "Energy",
           device_id: "stairs",
         },
+        "sensor.hall_light_total": {
+          entity_id: "sensor.hall_light_total",
+          labels: [],
+          name: "Total energy",
+          device_id: "hall",
+        },
       } as unknown as Record<string, EntityRegistryDisplayEntry>,
       devices: {
         hall: { id: "hall", name: "Ceiling light", name_by_user: null },
@@ -2875,7 +2886,7 @@ describe("computeEnergyDeviceLabels", () => {
       } as unknown as Record<string, DeviceRegistryEntry>,
     });
 
-    it("does not add an entity name that does not tell them apart", () => {
+    it("leaves devices that only share a name alone", () => {
       assert.deepEqual(
         computeEnergyDeviceLabels(
           lightHass.states,
@@ -2888,6 +2899,25 @@ describe("computeEnergyDeviceLabels", () => {
         {
           "sensor.hall_light_energy": "Ceiling light",
           "sensor.stairs_light_energy": "Ceiling light",
+        }
+      );
+    });
+
+    it("adds the entity names when one of them has several meters", () => {
+      assert.deepEqual(
+        computeEnergyDeviceLabels(
+          lightHass.states,
+          lightHass.formatEntityName,
+          [
+            { stat_consumption: "sensor.hall_light_energy" },
+            { stat_consumption: "sensor.stairs_light_energy" },
+            { stat_consumption: "sensor.hall_light_total" },
+          ]
+        ),
+        {
+          "sensor.hall_light_energy": "Ceiling light Energy",
+          "sensor.stairs_light_energy": "Ceiling light Energy",
+          "sensor.hall_light_total": "Ceiling light Total energy",
         }
       );
     });
