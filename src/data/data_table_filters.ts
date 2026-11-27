@@ -1,4 +1,5 @@
 import { arrayWith, arrayWithout } from "../common/array/array-with";
+import { deepEqual } from "../common/util/deep-equal";
 
 export interface DataTableFilter {
   value: DataTableFiltersValue;
@@ -212,6 +213,24 @@ export const hasFilterSelection = (value: DataTableFiltersValue): boolean => {
   // The mode only applies to a selection, on its own it filters nothing
   return Object.entries(value).some(([key, val]) =>
     key === "exclude" ? false : Array.isArray(val) ? val.length > 0 : !!val
+  );
+};
+
+/**
+ * Whether two list filter values filter the same items in the same mode. A
+ * filter keeps its value as an object but can send it as a plain list, which
+ * the page then binds back.
+ */
+export const sameListFilterValue = (
+  a: DataTableFiltersValue,
+  b: DataTableFiltersValue
+): boolean => {
+  const valueA = listFilterValue(a);
+  const valueB = listFilterValue(b);
+  return (
+    deepEqual(valueA?.ids ?? [], valueB?.ids ?? []) &&
+    !!valueA?.none === !!valueB?.none &&
+    !!valueA?.exclude === !!valueB?.exclude
   );
 };
 

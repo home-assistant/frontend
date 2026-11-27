@@ -31,6 +31,7 @@ import {
   hasFilterSelection,
   listFilterEventValue,
   listFilterValue,
+  sameListFilterValue,
 } from "../data/data_table_filters";
 import type { RelatedResult } from "../data/search";
 import { findRelated, RELATED_SEARCH_CONCURRENCY } from "../data/search";
@@ -156,7 +157,7 @@ export class HaFilterDevices extends LitElement {
 
     if (
       (properties.has("value") &&
-        !deepEqual(this.value, properties.get("value"))) ||
+        !sameListFilterValue(this.value, properties.get("value"))) ||
       // Items without a device are worked out from the registries and states
       (listFilterValue(this.value)?.none &&
         (properties.has("_devicesReg") ||

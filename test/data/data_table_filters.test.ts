@@ -6,6 +6,7 @@ import {
   matchesFilterItems,
   filtersMatchUnassignedItem,
   matchesListFilter,
+  sameListFilterValue,
 } from "../../src/data/data_table_filters";
 
 // Every config table filters labels and categories with these, and areas and
@@ -190,5 +191,26 @@ describe("filtersMatchUnassignedItem", () => {
         "ha-filter-categories": ["lights"],
       })
     ).toBe(false);
+  });
+});
+
+// The device, blueprint and entity filters look up their items again when
+// their value changes. They send a plain list but keep an object, so the page
+// binding the list back must not count as a change.
+describe("sameListFilterValue", () => {
+  it("treats a plain list and its object as the same", () => {
+    expect(sameListFilterValue(["a", "b"], { ids: ["a", "b"] })).toBe(true);
+    expect(sameListFilterValue(undefined, { ids: [] })).toBe(true);
+    expect(
+      sameListFilterValue({ ids: ["a"] }, { ids: ["a"], none: false })
+    ).toBe(true);
+  });
+
+  it("sees a change of selection, none option or mode", () => {
+    expect(sameListFilterValue(["a"], ["a", "b"])).toBe(false);
+    expect(sameListFilterValue(["a"], { ids: ["a"], none: true })).toBe(false);
+    expect(sameListFilterValue(["a"], { ids: ["a"], exclude: true })).toBe(
+      false
+    );
   });
 });

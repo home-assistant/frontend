@@ -24,6 +24,7 @@ import {
   hasFilterSelection,
   listFilterEventValue,
   listFilterValue,
+  sameListFilterValue,
 } from "../data/data_table_filters";
 import { computeDomain } from "../common/entity/compute_domain";
 import { deepEqual } from "../common/util/deep-equal";
@@ -130,7 +131,7 @@ export class HaFilterBlueprints extends LitElement {
 
     if (
       (properties.has("value") &&
-        !deepEqual(this.value, properties.get("value"))) ||
+        !sameListFilterValue(this.value, properties.get("value"))) ||
       // Items without a blueprint are worked out from the states
       (listFilterValue(this.value)?.none &&
         (properties.has("_stateIds") || reconnected))

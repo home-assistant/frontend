@@ -18,10 +18,10 @@ import {
   hasFilterSelection,
   listFilterEventValue,
   listFilterValue,
+  sameListFilterValue,
 } from "../data/data_table_filters";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { stringCompare } from "../common/string/compare";
-import { deepEqual } from "../common/util/deep-equal";
 import {
   apiContext,
   formattersContext,
@@ -96,7 +96,7 @@ export class HaFilterEntities extends LitElement {
 
     if (
       properties.has("value") &&
-      !deepEqual(this.value, properties.get("value"))
+      !sameListFilterValue(this.value, properties.get("value"))
     ) {
       this._findRelated();
     }
