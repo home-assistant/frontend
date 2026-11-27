@@ -163,17 +163,19 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
     const items = this._isDevice
       ? this._devices?.map((device): RemovedItem => {
           const identifier = shortIdentifier(device);
+          const fallback = [
+            device.domain
+              ? this._integrationName(device.domain)
+              : this._i18n.localize(`${key}.unnamed_device`),
+            identifier,
+          ]
+            .filter(Boolean)
+            .join(" · ");
           return {
             id: device.id,
-            headline:
-              device.name_by_user ??
-              (device.domain
-                ? this._i18n.localize(`${key}.unnamed_integration_device`, {
-                    integration: this._integrationName(device.domain),
-                  })
-                : this._i18n.localize(`${key}.unnamed_device`)),
+            headline: device.name_by_user ?? fallback,
             unnamed: !device.name_by_user,
-            details: identifier ? [identifier] : [],
+            details: [],
             domain: device.domain,
             areaId: device.area_id,
             labels: device.labels,
@@ -364,18 +366,16 @@ class DialogRecentlyRemoved extends DialogMixin<RecentlyRemovedDialogParams>(
     }
     this._forgetError = undefined;
     try {
-      if (this._isDevice) {
-        await forgetDeletedDeviceRegistryEntry(this._api.callWS, item.id);
-        this._devices = this._devices?.filter((d) => d.id !== item.id);
-      } else {
-        await forgetDeletedEntityRegistryEntry(this._api.callWS, item.id);
-        this._entities = this._entities?.filter((e) => e.id !== item.id);
-      }
+      await (this._isDevice
+        ? forgetDeletedDeviceRegistryEntry(this._api.callWS, item.id)
+        : forgetDeletedEntityRegistryEntry(this._api.callWS, item.id));
     } catch (err: any) {
       this._forgetError =
         err?.message ||
         this._i18n.localize(`${key}.forget_failed`, { name: item.headline });
     }
+    // Forgetting fires no registry event, so the list is not pushed.
+    await this._load();
   }
 
   static get styles(): CSSResultGroup {

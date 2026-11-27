@@ -305,7 +305,7 @@ export interface DeletedEntityRegistryEntry extends RegistryEntry {
   categories: Record<string, string>;
   name: string | null;
   icon: string | null;
-  aliases: string[];
+  aliases: (string | null)[];
   disabled_by: EntityRegistryEntry["disabled_by"];
   hidden_by: EntityRegistryEntry["hidden_by"];
   orphaned_timestamp: number | null;

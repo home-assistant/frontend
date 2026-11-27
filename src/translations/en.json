@@ -8053,7 +8053,6 @@
           "intro_entities": "Home Assistant remembers these entities, so their name, area, labels and entity ID come back when they are added again.",
           "empty_devices": "No recently removed devices.",
           "empty_entities": "No recently removed entities.",
-          "unnamed_integration_device": "Unnamed {integration} device",
           "unnamed_device": "Unnamed device",
           "removed": "Removed {time}",
           "kept_until": "Integration removed, kept until {date}",
