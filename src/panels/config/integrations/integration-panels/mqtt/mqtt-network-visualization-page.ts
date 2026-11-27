@@ -733,6 +733,9 @@ export class MQTTNetworkVisualizationPage extends MobileAwareMixin(LitElement) {
       // A new structure lays out the graph again and fetches the last messages
       if (!deepEqual(structure, this._structure)) {
         this._structure = structure;
+      } else if (this._lastMessagesNode) {
+        // The structure has no messages, so the tooltips would show old ones
+        this._fetchLastMessages(this._lastMessagesNode);
       }
       this._error = undefined;
     } catch (err: any) {
