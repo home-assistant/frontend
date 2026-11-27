@@ -57,6 +57,19 @@ const getNumberFormatter = (
 };
 
 /**
+ * Formats a value to parts, without the minus sign Intl keeps when a negative
+ * value rounds to zero (-0.4 with no fraction digits gives "-0", not "0").
+ * `signDisplay: "negative"` would do the same, but throws in older browsers.
+ */
+const formatToParts = (
+  formatter: Intl.NumberFormat,
+  value: number
+): Intl.NumberFormatPart[] =>
+  formatter.formatToParts(
+    value <= 0 && formatter.format(-value) === formatter.format(0) ? 0 : value
+  );
+
+/**
  * Formats a number based on the user's preference with thousands separator(s) and decimal character for better legibility.
  *
  * @param num The number to format
@@ -112,10 +125,10 @@ export const formatNumberToParts = (
     localeOptions?.number_format !== NumberFormat.none &&
     !Number.isNaN(Number(num))
   ) {
-    return getNumberFormatter(
-      locale,
-      getDefaultFormatOptions(num, options)
-    ).formatToParts(Number(num));
+    return formatToParts(
+      getNumberFormatter(locale, getDefaultFormatOptions(num, options)),
+      Number(num)
+    );
   }
 
   if (
@@ -124,13 +137,16 @@ export const formatNumberToParts = (
     localeOptions?.number_format === NumberFormat.none
   ) {
     // If NumberFormat is none, use en-US format without grouping.
-    return getNumberFormatter(
-      "en-US",
-      getDefaultFormatOptions(num, {
-        ...options,
-        useGrouping: false,
-      })
-    ).formatToParts(Number(num));
+    return formatToParts(
+      getNumberFormatter(
+        "en-US",
+        getDefaultFormatOptions(num, {
+          ...options,
+          useGrouping: false,
+        })
+      ),
+      Number(num)
+    );
   }
 
   return [{ type: "literal", value: num }];

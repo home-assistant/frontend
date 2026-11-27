@@ -64,6 +64,35 @@ describe("formatNumber", () => {
     assert.strictEqual(formatNumber("", defaultLocale), "0");
   });
 
+  it("Drops the minus sign when a negative number rounds to zero", () => {
+    const noDecimals = { maximumFractionDigits: 0 };
+    assert.strictEqual(formatNumber(-0.4, defaultLocale, noDecimals), "0");
+    assert.strictEqual(formatNumber("-0.4", defaultLocale, noDecimals), "0");
+    assert.strictEqual(formatNumber(-0, defaultLocale), "0");
+    assert.strictEqual(
+      formatNumber(-0.04, defaultLocale, {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+      }),
+      "0.0"
+    );
+    assert.strictEqual(
+      formatNumber(
+        -0.4,
+        { ...defaultLocale, number_format: NumberFormat.none },
+        noDecimals
+      ),
+      "0"
+    );
+  });
+
+  it("Keeps the minus sign when a negative number does not round to zero", () => {
+    const noDecimals = { maximumFractionDigits: 0 };
+    assert.strictEqual(formatNumber(-0.6, defaultLocale, noDecimals), "-1");
+    assert.strictEqual(formatNumber(-0.04, defaultLocale), "-0.04");
+    assert.strictEqual(formatNumber(-1234.5, defaultLocale), "-1,234.5");
+  });
+
   it("Returns consistent results for interleaved calls with different options (formatter cache)", () => {
     // Exercises the cached Intl.NumberFormat instances: alternating option
     // shapes must each keep producing their own correct output.
