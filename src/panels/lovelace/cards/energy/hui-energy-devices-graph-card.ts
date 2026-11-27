@@ -14,6 +14,7 @@ import { consume } from "../../../../common/decorators/consume";
 import { formatNumberWithUnit } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/chart/ha-chart-tooltip-marker";
+import { wrapLitTooltipFormatter } from "../../../../components/chart/lit-tooltip-formatter";
 import {
   formattersContext,
   internationalizationContext,
@@ -251,6 +252,23 @@ export class HuiEnergyDevicesGraphCard
       <div style="direction:ltr; display: inline;">${value}</div>`;
   };
 
+  private _renderLabelTooltip = wrapLitTooltipFormatter(
+    (params: { value: string }) => {
+      const series = this._chartData[0];
+      const item = (series?.data as any[] | undefined)?.find(
+        (d) => d.id === params.value
+      );
+      return item
+        ? this._renderTooltip({
+            name: item.name,
+            value: item.value,
+            color: item.itemStyle.color,
+            seriesName: series.name,
+          })
+        : nothing;
+    }
+  );
+
   private _createOptions = memoizeOne(
     (
       data: (BarSeriesOption | PieSeriesOption)[],
@@ -287,6 +305,12 @@ export class HuiEnergyDevicesGraphCard
           type: "category",
           inverse: true,
           triggerEvent: true,
+          // ECharts types only list `show`, but the label tooltip takes the
+          // formatter too
+          tooltip: {
+            show: true,
+            formatter: this._renderLabelTooltip,
+          } as { show: boolean },
           // take order from data
           data: data[0]?.data?.map((d: any) => d.name),
           axisLabel: {
