@@ -3304,6 +3304,56 @@
             "receive_backup": "[%key:ui::dialogs::more_info_control::update::backup_in_progress::receive_backup%]",
             "restore_backup": "[%key:ui::dialogs::more_info_control::update::backup_in_progress::restore_backup%]",
             "backups_link": "[%key:ui::dialogs::more_info_control::update::backup_in_progress::backups_link%]"
+          },
+          "installed": {
+            "title": "Recently installed",
+            "what_changed": "What changed since updating to {version}"
+          },
+          "attention": {
+            "none": "Everything works as before",
+            "pending": "Still checking",
+            "repairs": "{count} new {count, plural,\n  one {repair}\n  other {repairs}\n}"
+          },
+          "details": {
+            "not_found": "This update could not be found.",
+            "installed_version": "Installed version {version}",
+            "update_available": "Version {version} available",
+            "versions": "{from_version} to {to_version}",
+            "recent": {
+              "title": "Recent updates",
+              "automatic": "Automatic",
+              "manual": "Manual",
+              "no_reports": "There is nothing to compare yet. A report becomes available after the next update.",
+              "show_all": "Show all {count} updates",
+              "load_failed": "Unable to load the recent updates: {error}"
+            },
+            "report": {
+              "title": "Update of {date}",
+              "installed": "Installed {date}",
+              "installed_automatically": "Installed automatically {date}",
+              "checked": "Checked {time}",
+              "result": {
+                "repairs": "{count} new {count, plural,\n  one {repair}\n  other {repairs}\n} since this update",
+                "repairs_description": "Fix them below. Everything else works as before."
+              },
+              "whats_new": "What's new in {version}",
+              "release_notes": "Read release announcement",
+              "repairs": "New repairs",
+              "issue_resolved": "Resolved",
+              "timeline": {
+                "title": "What happened",
+                "backup": "Backup made before the update",
+                "installed": "{version} installed",
+                "started": "Home Assistant restarted",
+                "started_in": "Home Assistant restarted in {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+                "finished_repairs": "Check finished: {count} new {count, plural,\n  one {repair}\n  other {repairs}\n}",
+                "finished_ok": "Check finished: everything works",
+                "checking": "Checking integrations and entities…",
+                "show_logs": "Show logs"
+              },
+              "not_found": "This report could not be found. It may have been replaced by a newer one.",
+              "load_failed": "Unable to load the report: {error}"
+            }
           }
         },
         "repairs": {
