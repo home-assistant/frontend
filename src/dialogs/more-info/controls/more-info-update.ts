@@ -195,7 +195,8 @@ class MoreInfoUpdate extends LitElement {
     const backupInProgressMessage = this._backupInProgressMessage();
     // The alert replaces the progress bar while the install waits for someone.
     const waitingForUser =
-      this.stateObj.attributes.install_phase === "waiting_for_user";
+      this.stateObj.attributes.install_phase === "waiting_for_user" &&
+      !!this.stateObj.attributes.manual_action;
 
     return html`
       <div class="content">
