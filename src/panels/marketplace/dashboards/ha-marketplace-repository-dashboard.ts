@@ -1093,7 +1093,7 @@ type: module</pre>`,
   }
 
   private _restart() {
-    showRestartDialog(this);
+    showRestartDialog(this, { confirmRestart: true });
   }
 
   private _setUp() {
