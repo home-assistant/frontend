@@ -76,6 +76,7 @@ const helpersTableParams = {
   label: "string?",
   category: "string?",
   assistants: "string?",
+  exclude: "string?",
 } satisfies Redirect["params"];
 
 // The LoRaWAN devices table reads these from the link
@@ -100,6 +101,7 @@ const scenesTableParams = {
   label: "string?",
   category: "string?",
   assistants: "string?",
+  exclude: "string?",
 } satisfies Redirect["params"];
 
 // The scripts table reads these from the link
@@ -116,6 +118,7 @@ const scriptsTableParams = {
   category: "string?",
   assistants: "string?",
   blueprint: "string?",
+  exclude: "string?",
 } satisfies Redirect["params"];
 
 // The blueprints table reads these from the link
@@ -161,6 +164,7 @@ const devicesTableParams = {
   label: "string?",
   config_entry: "string?",
   sub_entry: "string?",
+  exclude: "string?",
 } satisfies Redirect["params"];
 
 // The entities table reads these from the link
@@ -180,6 +184,7 @@ const entitiesTableParams = {
   assistants: "string?",
   config_entry: "string?",
   sub_entry: "string?",
+  exclude: "string?",
 } satisfies Redirect["params"];
 
 // The automations table reads these from the link
@@ -196,6 +201,7 @@ const automationsTableParams = {
   category: "string?",
   assistants: "string?",
   blueprint: "string?",
+  exclude: "string?",
 } satisfies Redirect["params"];
 
 export const getMyRedirects = (): Redirects => ({
@@ -522,6 +528,7 @@ export const getMyRedirects = (): Redirects => ({
       integration: "string?",
       level: "string?",
       raw: "string?",
+      exclude: "string?",
     },
   },
   repairs: {
@@ -724,6 +731,7 @@ const backupsTableParams = {
   group: "string?",
   type: "string?",
   location: "string?",
+  exclude: "string?",
 } satisfies Redirect["params"];
 
 export type ParamType = "url" | "string" | "string?";

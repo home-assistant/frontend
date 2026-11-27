@@ -18,6 +18,11 @@ import {
 } from "../common/controllers/filter-panel-controller";
 import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
+import type { ListFilterValue } from "../data/data_table_filters";
+import {
+  listFilterEventValue,
+  listFilterValue,
+} from "../data/data_table_filters";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { stringCompare } from "../common/string/compare";
 import {
@@ -29,6 +34,7 @@ import type { LogbookCauseGroup } from "../data/logbook";
 import { LOGBOOK_CAUSE_GROUPS, logbookUserCauseKey } from "../data/logbook";
 import type { User } from "../data/user";
 import "./ha-expansion-panel";
+import { filterBadgeStyles, renderFilterBadge } from "./ha-filter-mode";
 import "./ha-icon-button";
 import "./ha-svg-icon";
 import "./item/ha-list-item-option";
@@ -63,7 +69,8 @@ export class HaFilterLogbookCauses extends LitElement {
   @state()
   private _formatters!: ContextType<typeof formattersContext>;
 
-  @property({ attribute: false }) public value?: string[];
+  // A plain list of causes is still accepted
+  @property({ attribute: false }) public value?: string[] | ListFilterValue;
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
@@ -74,7 +81,7 @@ export class HaFilterLogbookCauses extends LitElement {
   private _panel = new FilterPanelController(this, this._content);
 
   protected render() {
-    const count = this.value?.length ?? 0;
+    const count = listFilterValue(this.value)?.ids?.length ?? 0;
 
     return html`
       <ha-expansion-panel
@@ -86,7 +93,11 @@ export class HaFilterLogbookCauses extends LitElement {
           ${this._i18n.localize("ui.components.logbook.cause_filter.caption")}
           ${
             count
-              ? html`<div class="badge">${count}</div>
+              ? html`${renderFilterBadge(
+                    this._i18n.localize,
+                    count,
+                    listFilterValue(this.value)?.exclude
+                  )}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._i18n.localize(
@@ -108,9 +119,13 @@ export class HaFilterLogbookCauses extends LitElement {
       this._formatters,
       this._i18n.locale.language
     );
-    const value = this.value ?? [];
+    const value = listFilterValue(this.value)?.ids ?? [];
 
     return html`<div class="content" ${ref(this._content)}>
+      <ha-filter-mode
+        .exclude=${listFilterValue(this.value)?.exclude ?? false}
+        @filter-mode-changed=${this._modeChanged}
+      ></ha-filter-mode>
       <ha-list-selectable
         multi
         controlled
@@ -186,13 +201,24 @@ export class HaFilterLogbookCauses extends LitElement {
     if (!key) {
       return;
     }
-    const value = new Set(this.value ?? []);
+    const value = new Set(listFilterValue(this.value)?.ids);
     if (!value.delete(key)) {
       value.add(key);
     }
-    this.value = [...value];
+    this._setValue({ ...listFilterValue(this.value), ids: [...value] });
+  }
+
+  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
+    this._setValue({
+      ...listFilterValue(this.value),
+      exclude: ev.detail.exclude,
+    });
+  }
+
+  private _setValue(value: ListFilterValue) {
+    this.value = value;
     fireEvent(this, "data-table-filter-changed", {
-      value: this.value.length ? this.value : undefined,
+      value: listFilterEventValue(value),
       items: undefined,
     });
   }
@@ -209,6 +235,7 @@ export class HaFilterLogbookCauses extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       filterPanelStyles,
+      filterBadgeStyles,
       css`
         ha-list-selectable {
           display: flex;

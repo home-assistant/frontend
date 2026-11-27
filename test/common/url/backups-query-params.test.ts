@@ -61,4 +61,21 @@ describe("backups query params", () => {
       backupsFilterQueryString({})
     );
   });
+
+  // Without it in the URL, a link shows the backups in the location instead
+  // of the ones that aren't
+  it("round trips a location that is excluded", () => {
+    const filters = {
+      [BACKUP_LOCATIONS_FILTER]: { ids: ["backup.local"], exclude: true },
+    };
+
+    expect(
+      backupsLinkFromUrl(
+        createQueryString(
+          backupsFilterQueryParams(filters),
+          backupsFilterQueryParamConfig
+        )
+      )?.filters
+    ).toMatchObject(filters);
+  });
 });

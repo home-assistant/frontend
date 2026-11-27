@@ -5,7 +5,9 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { createRef, ref } from "lit/directives/ref";
 import memoizeOne from "memoize-one";
+import { computeDomain } from "../common/entity/compute_domain";
 import { consume } from "../common/decorators/consume";
+import { transform } from "../common/decorators/transform";
 import {
   FilterPanelController,
   filterPanelStyles,
@@ -15,14 +17,26 @@ import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
 import { stringCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { deepEqual } from "../common/util/deep-equal";
+import { mapWithConcurrency } from "../common/util/map-with-concurrency";
 import {
   apiContext,
+  connectionContext,
   devicesContext,
+  fullEntitiesContext,
   internationalizationContext,
+  statesContext,
 } from "../data/context";
+import type { ListFilterValue } from "../data/data_table_filters";
+import {
+  hasFilterSelection,
+  listFilterEventValue,
+  listFilterValue,
+  sameListFilterValue,
+} from "../data/data_table_filters";
 import type { RelatedResult } from "../data/search";
-import { findRelated } from "../data/search";
+import { findRelated, RELATED_SEARCH_CONCURRENCY } from "../data/search";
 import "./ha-expansion-panel";
+import { filterBadgeStyles, renderFilterBadge } from "./ha-filter-mode";
 import "./input/ha-input-search";
 import type { HaInputSearch } from "./input/ha-input-search";
 import "./item/ha-list-item-option";
@@ -32,6 +46,12 @@ import type { HaListVirtualizedItem } from "./list/ha-list-virtualized";
 
 interface HaFilterDevicesItem extends HaListVirtualizedItem {
   name: string;
+}
+
+interface DeviceLinks {
+  deviceIds: string[];
+  /** The device of each entity that has one, by entity id */
+  entityDevices: Record<string, string>;
 }
 
 @customElement("ha-filter-devices")
@@ -47,7 +67,33 @@ export class HaFilterDevices extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
-  @property({ attribute: false }) public value?: string[];
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  @state()
+  private _entities?: ContextType<typeof fullEntitiesContext>;
+
+  // Only a state being added or removed can change the items without a
+  // device, so plain state updates keep the previous set and don't rerender
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<ContextType<typeof statesContext>, Set<string>>({
+    transformer: function (this: HaFilterDevices, states) {
+      const ids = new Set(Object.keys(states));
+      return deepEqual(ids, this._stateIds) ? this._stateIds : ids;
+    },
+  })
+  private _stateIds?: Set<string>;
+
+  // Home Assistant may have restarted with edited items while the connection
+  // was down, which nothing else here tells
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<ContextType<typeof connectionContext>, boolean>({
+    transformer: ({ connected }) => connected,
+  })
+  private _connected?: boolean;
+
+  // A plain list of device ids is still accepted from stored filters
+  @property({ attribute: false }) public value?: ListFilterValue | string[];
 
   @property() public type?: keyof RelatedResult;
 
@@ -69,21 +115,55 @@ export class HaFilterDevices extends LitElement {
 
   private _relatedRequestId = 0;
 
+  // The last lookup of the automations, scripts or scenes without a device,
+  // reused while nothing it depends on changed, such as when only the
+  // selection changes
+  private _withoutDevice?: {
+    type: keyof RelatedResult;
+    includeDisabledEntities: boolean;
+    itemIds: string[];
+    links: DeviceLinks;
+    items: Promise<string[]>;
+    controller: AbortController;
+  };
+
   public connectedCallback() {
     super.connectedCallback();
     // The config pages are cached, so an item may have been edited while this
     // filter was not on screen
-    if (this.hasUpdated && this.value?.length) {
+    this._dropWithoutDevice();
+    if (this.hasUpdated && hasFilterSelection(this.value)) {
       this._findRelated();
     }
   }
 
-  public willUpdate(properties: PropertyValues<this>) {
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    // Stop a lookup that's still running, as connectedCallback starts a new
+    // one. The newer request id makes the lookup drop its result.
+    this._relatedRequestId++;
+    this._dropWithoutDevice();
+  }
+
+  // Untyped, as it also checks private state
+  public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
 
+    const reconnected =
+      properties.get("_connected") === false && !!this._connected;
+    if (reconnected) {
+      this._dropWithoutDevice();
+    }
+
     if (
-      properties.has("value") &&
-      !deepEqual(this.value, properties.get("value"))
+      (properties.has("value") &&
+        !sameListFilterValue(this.value, properties.get("value"))) ||
+      // Items without a device are worked out from the registries and states
+      (listFilterValue(this.value)?.none &&
+        (properties.has("_devicesReg") ||
+          properties.has("_entities") ||
+          properties.has("_stateIds") ||
+          reconnected))
     ) {
       this._findRelated();
     }
@@ -98,7 +178,12 @@ export class HaFilterDevices extends LitElement {
     }
   }
 
+  // The id of the No device option, which can't be a device id
+  private static readonly _noneId = "__none__";
+
   protected render() {
+    const value = listFilterValue(this.value);
+    const count = (value?.ids?.length || 0) + (value?.none ? 1 : 0);
     return html`
       <ha-expansion-panel
         left-chevron
@@ -108,8 +193,8 @@ export class HaFilterDevices extends LitElement {
         <div slot="header" class="header">
           ${this._i18n.localize("ui.panel.config.devices.caption")}
           ${
-            this.value?.length
-              ? html`<div class="badge">${this.value?.length}</div>
+            count
+              ? html`${renderFilterBadge(this._i18n.localize, count, value?.exclude)}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._i18n.localize(
@@ -125,6 +210,10 @@ export class HaFilterDevices extends LitElement {
       ${
         this._panel.showContent
           ? html`<div class="content" ${ref(this._content)}>
+              <ha-filter-mode
+                .exclude=${value?.exclude ?? false}
+                @filter-mode-changed=${this._modeChanged}
+              ></ha-filter-mode>
               <ha-input-search
                 appearance="outlined"
                 .value=${this._filter}
@@ -158,31 +247,47 @@ export class HaFilterDevices extends LitElement {
           appearance="checkbox"
           selection-position="end"
           .value=${item.id}
-          .selected=${this.value?.includes(item.id) ?? false}
+          .selected=${this._isSelected(item.id)}
         >
           <span slot="headline">${item.name}</span>
         </ha-list-item-option>`;
 
+  private _isSelected(id: string): boolean {
+    const value = listFilterValue(this.value);
+    return id === HaFilterDevices._noneId
+      ? (value?.none ?? false)
+      : (value?.ids?.includes(id) ?? false);
+  }
+
   private _handleAdded(ev: CustomEvent<number>) {
-    this.value = [
-      ...(this.value ?? []),
-      this._devices(
-        this._devicesReg,
-        this._filter || "",
-        this._i18n.localize,
-        this._i18n.locale.language
-      )[ev.detail].id,
-    ];
+    this._toggle(ev.detail, true);
   }
 
   private _handleRemoved(ev: CustomEvent<number>) {
+    this._toggle(ev.detail, false);
+  }
+
+  private _toggle(index: number, selected: boolean) {
     const id = this._devices(
       this._devicesReg,
       this._filter || "",
       this._i18n.localize,
       this._i18n.locale.language
-    )[ev.detail].id;
-    this.value = (this.value ?? []).filter((deviceId) => deviceId !== id);
+    )[index]?.id;
+    if (!id) {
+      return;
+    }
+    const value = listFilterValue(this.value) ?? {};
+    if (id === HaFilterDevices._noneId) {
+      this.value = { ...value, none: selected };
+      return;
+    }
+    const ids = (value.ids ?? []).filter((deviceId) => deviceId !== id);
+    this.value = { ...value, ids: selected ? [...ids, id] : ids };
+  }
+
+  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
+    this.value = { ...listFilterValue(this.value), exclude: ev.detail.exclude };
   }
 
   private _expandedChanged(ev) {
@@ -209,66 +314,201 @@ export class HaFilterDevices extends LitElement {
       language: string | undefined
     ): HaFilterDevicesItem[] => {
       const values = Object.values(devices);
-      return values
-        .map((device) => ({
-          id: device.id,
-          interactive: true,
-          name: computeDeviceNameDisplay(device, localize),
-        }))
-        .filter(
-          ({ name }) =>
-            !filter || name.toLowerCase().includes(filter.toLowerCase())
-        )
-        .sort((a, b) => stringCompare(a.name, b.name, language));
+      const noDevice: HaFilterDevicesItem = {
+        id: HaFilterDevices._noneId,
+        interactive: true,
+        name: localize("ui.components.subpage-data-table.no_device"),
+      };
+      return [
+        noDevice,
+        ...values
+          .map((device) => ({
+            id: device.id,
+            interactive: true,
+            name: computeDeviceNameDisplay(device, localize),
+          }))
+          .sort((a, b) => stringCompare(a.name, b.name, language)),
+      ].filter(
+        ({ name }) =>
+          !filter || name.toLowerCase().includes(filter.toLowerCase())
+      );
     }
   );
 
   private async _findRelated() {
     const requestId = ++this._relatedRequestId;
-    const relatedPromises: Promise<RelatedResult>[] = [];
+    const value = listFilterValue(this.value);
 
-    if (!this.value?.length) {
-      this.value = [];
+    if (!value || !hasFilterSelection(value)) {
       fireEvent(this, "data-table-filter-changed", {
-        value: [],
+        value: listFilterEventValue(value ?? {}),
         items: undefined,
       });
       return;
     }
 
-    const value: string[] = [];
+    const type = this.type;
 
-    for (const deviceId of this.value) {
-      value.push(deviceId);
-      if (this.type) {
-        relatedPromises.push(
-          findRelated(
-            this._api,
-            "device",
-            deviceId,
-            this.includeDisabledEntities
-          )
-        );
+    let results: RelatedResult[];
+    let withoutDevice: string[];
+    try {
+      [results, withoutDevice] = await Promise.all([
+        type
+          ? Promise.all(
+              (value.ids ?? []).map((deviceId) =>
+                findRelated(
+                  this._api,
+                  "device",
+                  deviceId,
+                  this.includeDisabledEntities
+                )
+              )
+            )
+          : [],
+        type && value.none ? this._itemsWithoutDevice(type) : [],
+      ]);
+    } catch (err) {
+      // A newer lookup took over and stopped this one
+      if (requestId !== this._relatedRequestId) {
+        return;
       }
+      throw err;
     }
-    const results = await Promise.all(relatedPromises);
 
     // The value changed while this lookup ran
     if (requestId !== this._relatedRequestId) {
       return;
     }
 
-    const items = new Set<string>();
+    const items = new Set<string>(withoutDevice);
     for (const result of results) {
-      if (result[this.type!]) {
-        result[this.type!]!.forEach((item) => items.add(item));
-      }
+      result[type!]?.forEach((item) => items.add(item));
     }
 
     fireEvent(this, "data-table-filter-changed", {
-      value,
-      items: this.type ? items : undefined,
+      value: listFilterEventValue(value),
+      items: type ? items : undefined,
     });
+  }
+
+  private async _itemsWithoutDevice(
+    type: keyof RelatedResult
+  ): Promise<string[]> {
+    if (type === "entity") {
+      const entities = this._entities || [];
+      const items = entities
+        .filter(
+          (entity) =>
+            (this.includeDisabledEntities || !entity.disabled_by) &&
+            !(entity.device_id && entity.device_id in this._devicesReg)
+        )
+        .map((entity) => entity.entity_id);
+      // Entities without a registry entry can't have a device
+      const registered = new Set(entities.map((entity) => entity.entity_id));
+      for (const entityId of this._stateIds || []) {
+        if (!registered.has(entityId)) {
+          items.push(entityId);
+        }
+      }
+      return items;
+    }
+
+    // Most registry updates, like renaming an entity, don't change which
+    // devices the items use, so only search again when these links change
+    const links = this._deviceLinks(
+      this._devicesReg,
+      this._entities,
+      this.includeDisabledEntities
+    );
+    // Only items of this type count, so another entity being added or removed
+    // doesn't search them all again
+    const itemIds = this._itemIds(this._stateIds, type);
+    const cached = this._withoutDevice;
+    if (
+      cached?.type === type &&
+      cached.includeDisabledEntities === this.includeDisabledEntities &&
+      deepEqual(cached.itemIds, itemIds) &&
+      deepEqual(cached.links, links)
+    ) {
+      return cached.items;
+    }
+
+    // Stop the lookup this one replaces from starting more searches
+    this._dropWithoutDevice();
+    const controller = new AbortController();
+    const items = this._searchItemsWithoutDevice(
+      type,
+      itemIds,
+      controller.signal
+    );
+    const lookup = {
+      type,
+      includeDisabledEntities: this.includeDisabledEntities,
+      itemIds,
+      links,
+      items,
+      controller,
+    };
+    this._withoutDevice = lookup;
+    // Look them up again next time when this lookup fails
+    items.catch(() => {
+      if (this._withoutDevice === lookup) {
+        this._withoutDevice = undefined;
+      }
+    });
+    return items;
+  }
+
+  private _dropWithoutDevice() {
+    this._withoutDevice?.controller.abort();
+    this._withoutDevice = undefined;
+  }
+
+  // The ids of the items of a type, such as the automations
+  private _itemIds = memoizeOne(
+    (stateIds: Set<string> | undefined, type: keyof RelatedResult) =>
+      [...(stateIds ?? [])]
+        .filter((entityId) => computeDomain(entityId) === type)
+        .sort()
+  );
+
+  // The devices that exist and the device of each entity the search uses,
+  // which is what a search for an item's devices depends on
+  private _deviceLinks = memoizeOne(
+    (
+      devices: ContextType<typeof devicesContext>,
+      entities: ContextType<typeof fullEntitiesContext> | undefined,
+      includeDisabledEntities: boolean
+    ): DeviceLinks => {
+      const entityDevices: Record<string, string> = {};
+      for (const entity of entities ?? []) {
+        if (
+          entity.device_id &&
+          (includeDisabledEntities || !entity.disabled_by)
+        ) {
+          entityDevices[entity.entity_id] = entity.device_id;
+        }
+      }
+      return { deviceIds: Object.keys(devices).sort(), entityDevices };
+    }
+  );
+
+  // Automations, scripts and scenes use a device when they reference it or one
+  // of its entities, which only a search for each of them tells. This matches
+  // the items a search for each device finds.
+  private async _searchItemsWithoutDevice(
+    type: keyof RelatedResult,
+    itemIds: string[],
+    signal: AbortSignal
+  ): Promise<string[]> {
+    const results = await mapWithConcurrency(
+      itemIds,
+      RELATED_SEARCH_CONCURRENCY,
+      (itemId) =>
+        findRelated(this._api, type, itemId, this.includeDisabledEntities),
+      signal
+    );
+    return itemIds.filter((_itemId, index) => !results[index].device?.length);
   }
 
   private _handleClearFilterKeydown(ev: KeyboardEvent) {
@@ -289,6 +529,7 @@ export class HaFilterDevices extends LitElement {
 
   static styles = [
     filterPanelStyles,
+    filterBadgeStyles,
     css`
       ha-list-selectable-virtualized {
         flex: 1;
@@ -320,7 +561,7 @@ export class HaFilterDevices extends LitElement {
       }
       ha-input-search {
         display: block;
-        padding: var(--ha-space-1) var(--ha-space-2) 0;
+        padding: var(--ha-space-1) var(--ha-space-2) var(--ha-space-2);
       }
     `,
   ];

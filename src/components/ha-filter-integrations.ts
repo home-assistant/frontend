@@ -18,6 +18,11 @@ import type {
   HASSDomEvent,
 } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
+import type { ListFilterValue } from "../data/data_table_filters";
+import {
+  listFilterEventValue,
+  listFilterValue,
+} from "../data/data_table_filters";
 import { stringCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { internationalizationContext, manifestsContext } from "../data/context";
@@ -25,6 +30,7 @@ import type { IntegrationManifest } from "../data/integration";
 import { domainToName } from "../data/integration";
 import "./ha-domain-icon";
 import "./ha-expansion-panel";
+import { filterBadgeStyles, renderFilterBadge } from "./ha-filter-mode";
 import "./ha-badge";
 import "./ha-svg-icon";
 import "./ha-tooltip";
@@ -45,7 +51,15 @@ export interface IntegrationFilterCount {
 
 @customElement("ha-filter-integrations")
 export class HaFilterIntegrations extends LitElement {
-  @property({ attribute: false }) public value?: string[];
+  /** Show the mode toggle, so the filter can show the items that don't match */
+  @property({ type: Boolean }) public excludable = false;
+
+  /** Shows the mode, but doesn't let it be changed */
+  @property({ type: Boolean, attribute: "mode-disabled" })
+  public modeDisabled = false;
+
+  // A plain list of ids is still accepted
+  @property({ attribute: false }) public value?: string[] | ListFilterValue;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -90,8 +104,12 @@ export class HaFilterIntegrations extends LitElement {
         <div slot="header" class="header">
           ${this._i18n.localize("ui.panel.config.integrations.caption")}
           ${
-            this.value?.length
-              ? html`<div class="badge">${this.value?.length}</div>
+            this._count
+              ? html`${renderFilterBadge(
+                    this._i18n.localize,
+                    this._count,
+                    this._listValue?.exclude
+                  )}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._i18n.localize(
@@ -106,6 +124,15 @@ export class HaFilterIntegrations extends LitElement {
       ${
         this._panel.showContent
           ? html`<div class="content" ${ref(this._content)}>
+              ${
+                this.excludable
+                  ? html`<ha-filter-mode
+                      .exclude=${this._listValue?.exclude ?? false}
+                      .disabled=${this.modeDisabled}
+                      @filter-mode-changed=${this._modeChanged}
+                    ></ha-filter-mode>`
+                  : nothing
+              }
               ${
                 manifests
                   ? html`<ha-input-search
@@ -136,8 +163,9 @@ export class HaFilterIntegrations extends LitElement {
                               selection-position="end"
                               .value=${integration.domain}
                               .selected=${
-                                this.value?.includes(integration.domain) ??
-                                false
+                                this._listValue?.ids?.includes(
+                                  integration.domain
+                                ) ?? false
                               }
                             >
                               <ha-domain-icon
@@ -184,6 +212,27 @@ export class HaFilterIntegrations extends LitElement {
     </span>`;
   }
 
+  private get _listValue(): ListFilterValue | undefined {
+    return listFilterValue(this.value);
+  }
+
+  private get _count(): number {
+    const value = this._listValue;
+    return (value?.ids?.length || 0) + (value?.none ? 1 : 0);
+  }
+
+  private _setValue(value: ListFilterValue) {
+    this.value = value;
+    fireEvent(this, "data-table-filter-changed", {
+      value: listFilterEventValue(value),
+      items: undefined,
+    });
+  }
+
+  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
+    this._setValue({ ...this._listValue, exclude: ev.detail.exclude });
+  }
+
   private _expandedChanged(ev) {
     this.expanded = ev.detail.expanded;
   }
@@ -227,14 +276,13 @@ export class HaFilterIntegrations extends LitElement {
       return;
     }
 
-    this.value =
-      ev.type === "ha-list-item-selected"
-        ? arrayWith(this.value, domain)
-        : arrayWithout(this.value, domain);
-
-    fireEvent(this, "data-table-filter-changed", {
-      value: this.value.length ? this.value : undefined,
-      items: undefined,
+    const value = this._listValue ?? {};
+    this._setValue({
+      ...value,
+      ids:
+        ev.type === "ha-list-item-selected"
+          ? arrayWith(value.ids, domain)
+          : arrayWithout(value.ids, domain),
     });
   }
 
@@ -255,6 +303,7 @@ export class HaFilterIntegrations extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       filterPanelStyles,
+      filterBadgeStyles,
       css`
         ha-list-selectable {
           display: flex;
@@ -291,7 +340,7 @@ export class HaFilterIntegrations extends LitElement {
         }
         ha-input-search {
           display: block;
-          padding: var(--ha-space-1) var(--ha-space-2) 0;
+          padding: var(--ha-space-1) var(--ha-space-2) var(--ha-space-2);
         }
         .counts {
           display: flex;

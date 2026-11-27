@@ -17,7 +17,17 @@ import type {
 import { fireEvent } from "../common/dom/fire_event";
 import { consume } from "../common/decorators/consume";
 import { internationalizationContext } from "../data/context";
+import type { ListFilterValue } from "../data/data_table_filters";
+import {
+  listFilterEventValue,
+  listFilterValue,
+} from "../data/data_table_filters";
 import "./ha-expansion-panel";
+import {
+  filterBadgeStyles,
+  NO_VALUE_ID,
+  renderFilterBadge,
+} from "./ha-filter-mode";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-svg-icon";
@@ -43,7 +53,14 @@ export class HaFilterStates extends LitElement {
 
   @property() public label?: string;
 
-  @property({ attribute: false }) public value?: string[];
+  /** Show the mode toggle, so the filter can show the items that don't match */
+  @property({ type: Boolean }) public excludable = false;
+
+  /** Adds an option for the items without any value, labelled with this */
+  @property({ attribute: "none-label" }) public noneLabel?: string;
+
+  // A plain list of ids is still accepted
+  @property({ attribute: false }) public value?: string[] | ListFilterValue;
 
   @property({ attribute: false }) public states?: FilterStateOption[];
 
@@ -68,8 +85,12 @@ export class HaFilterStates extends LitElement {
         <div slot="header" class="header">
           ${this.label}
           ${
-            this.value?.length
-              ? html`<div class="badge">${this.value?.length}</div>
+            this._count
+              ? html`${renderFilterBadge(
+                    this._i18n.localize,
+                    this._count,
+                    this._listValue?.exclude
+                  )}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._i18n.localize(
@@ -85,19 +106,39 @@ export class HaFilterStates extends LitElement {
         this._panel.showContent
           ? html`
               <div class="content" ${ref(this._content)}>
+                ${
+                  this.excludable
+                    ? html`<ha-filter-mode
+                        .exclude=${this._listValue?.exclude ?? false}
+                        @filter-mode-changed=${this._modeChanged}
+                      ></ha-filter-mode>`
+                    : nothing
+                }
                 <ha-list-selectable
                   multi
                   aria-label=${ifDefined(this.label)}
                   @ha-list-item-selected=${this._handleItemToggled}
                   @ha-list-item-deselected=${this._handleItemToggled}
                 >
+                  ${
+                    this.noneLabel
+                      ? html`<ha-list-item-option
+                          appearance="checkbox"
+                          selection-position="end"
+                          .value=${NO_VALUE_ID}
+                          .selected=${this._listValue?.none ?? false}
+                        >
+                          <span slot="headline">${this.noneLabel}</span>
+                        </ha-list-item-option>`
+                      : nothing
+                  }
                   ${this.states.map(
                     (item) =>
                       html`<ha-list-item-option
                         appearance="checkbox"
                         selection-position="end"
                         .value=${item.value}
-                        .selected=${this.value?.includes(item.value) ?? false}
+                        .selected=${this._listValue?.ids?.includes(item.value) ?? false}
                       >
                         ${
                           item.iconPath
@@ -123,6 +164,27 @@ export class HaFilterStates extends LitElement {
     `;
   }
 
+  private get _listValue(): ListFilterValue | undefined {
+    return listFilterValue(this.value);
+  }
+
+  private get _count(): number {
+    const value = this._listValue;
+    return (value?.ids?.length || 0) + (value?.none ? 1 : 0);
+  }
+
+  private _setValue(value: ListFilterValue) {
+    this.value = value;
+    fireEvent(this, "data-table-filter-changed", {
+      value: listFilterEventValue(value),
+      items: undefined,
+    });
+  }
+
+  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
+    this._setValue({ ...this._listValue, exclude: ev.detail.exclude });
+  }
+
   private _expandedChanged(ev) {
     this.expanded = ev.detail.expanded;
   }
@@ -137,14 +199,21 @@ export class HaFilterStates extends LitElement {
       return;
     }
 
-    this.value =
-      ev.type === "ha-list-item-selected"
-        ? arrayWith(this.value, itemValue)
-        : arrayWithout(this.value, itemValue);
+    if (itemValue === NO_VALUE_ID) {
+      this._setValue({
+        ...this._listValue,
+        none: ev.type === "ha-list-item-selected",
+      });
+      return;
+    }
 
-    fireEvent(this, "data-table-filter-changed", {
-      value: this.value,
-      items: undefined,
+    const value = this._listValue ?? {};
+    this._setValue({
+      ...value,
+      ids:
+        ev.type === "ha-list-item-selected"
+          ? arrayWith(value.ids, itemValue)
+          : arrayWithout(value.ids, itemValue),
     });
   }
 
@@ -160,6 +229,7 @@ export class HaFilterStates extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       filterPanelStyles,
+      filterBadgeStyles,
       css`
         ha-list-selectable {
           display: flex;

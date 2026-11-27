@@ -17,6 +17,11 @@ import type {
   HASSDomEvent,
 } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
+import type { ListFilterValue } from "../data/data_table_filters";
+import {
+  listFilterEventValue,
+  listFilterValue,
+} from "../data/data_table_filters";
 import { computeDomain } from "../common/entity/compute_domain";
 import { stringCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
@@ -24,6 +29,7 @@ import { internationalizationContext, statesContext } from "../data/context";
 import { domainToName } from "../data/integration";
 import "./ha-domain-icon";
 import "./ha-expansion-panel";
+import { filterBadgeStyles, renderFilterBadge } from "./ha-filter-mode";
 import "./item/ha-list-item-option";
 import type { HaListItemOption } from "./item/ha-list-item-option";
 import "./list/ha-list-selectable";
@@ -41,7 +47,8 @@ export class HaFilterDomains extends LitElement {
   @state()
   private _i18n!: ContextType<typeof internationalizationContext>;
 
-  @property({ attribute: false }) public value?: string[];
+  // A plain list of ids is still accepted
+  @property({ attribute: false }) public value?: string[] | ListFilterValue;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -63,8 +70,12 @@ export class HaFilterDomains extends LitElement {
         <div slot="header" class="header">
           ${this._i18n.localize("ui.panel.config.domains.caption")}
           ${
-            this.value?.length
-              ? html`<div class="badge">${this.value?.length}</div>
+            this._count
+              ? html`${renderFilterBadge(
+                    this._i18n.localize,
+                    this._count,
+                    this._listValue?.exclude
+                  )}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._i18n.localize(
@@ -79,6 +90,10 @@ export class HaFilterDomains extends LitElement {
       ${
         this._panel.showContent
           ? html`<div class="content" ${ref(this._content)}>
+              <ha-filter-mode
+                .exclude=${this._listValue?.exclude ?? false}
+                @filter-mode-changed=${this._modeChanged}
+              ></ha-filter-mode>
               <ha-input-search
                 appearance="outlined"
                 .value=${this._filter}
@@ -104,7 +119,7 @@ export class HaFilterDomains extends LitElement {
                       appearance="checkbox"
                       selection-position="end"
                       .value=${domain}
-                      .selected=${this.value?.includes(domain) ?? false}
+                      .selected=${this._listValue?.ids?.includes(domain) ?? false}
                     >
                       <ha-domain-icon
                         slot="start"
@@ -151,6 +166,27 @@ export class HaFilterDomains extends LitElement {
     }
   );
 
+  private get _listValue(): ListFilterValue | undefined {
+    return listFilterValue(this.value);
+  }
+
+  private get _count(): number {
+    const value = this._listValue;
+    return (value?.ids?.length || 0) + (value?.none ? 1 : 0);
+  }
+
+  private _setValue(value: ListFilterValue) {
+    this.value = value;
+    fireEvent(this, "data-table-filter-changed", {
+      value: listFilterEventValue(value),
+      items: undefined,
+    });
+  }
+
+  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
+    this._setValue({ ...this._listValue, exclude: ev.detail.exclude });
+  }
+
   private _expandedChanged(ev) {
     this.expanded = ev.detail.expanded;
   }
@@ -165,14 +201,13 @@ export class HaFilterDomains extends LitElement {
       return;
     }
 
-    this.value =
-      ev.type === "ha-list-item-selected"
-        ? arrayWith(this.value, domain)
-        : arrayWithout(this.value, domain);
-
-    fireEvent(this, "data-table-filter-changed", {
-      value: this.value.length ? this.value : undefined,
-      items: undefined,
+    const value = this._listValue ?? {};
+    this._setValue({
+      ...value,
+      ids:
+        ev.type === "ha-list-item-selected"
+          ? arrayWith(value.ids, domain)
+          : arrayWithout(value.ids, domain),
     });
   }
 
@@ -193,6 +228,7 @@ export class HaFilterDomains extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       filterPanelStyles,
+      filterBadgeStyles,
       css`
         ha-list-selectable {
           display: flex;
@@ -229,7 +265,7 @@ export class HaFilterDomains extends LitElement {
         }
         ha-input-search {
           display: block;
-          padding: var(--ha-space-1) var(--ha-space-2) 0;
+          padding: var(--ha-space-1) var(--ha-space-2) var(--ha-space-2);
         }
       `,
     ];

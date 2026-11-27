@@ -8,7 +8,16 @@ import { ensureArray } from "../common/array/ensure-array";
 import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { entitiesContext, statesContext } from "../data/context";
-import type { DataTableFiltersValue } from "../data/data_table_filters";
+import type {
+  DataTableFiltersValue,
+  ListFilterValue,
+} from "../data/data_table_filters";
+import {
+  countActiveFilters,
+  hasFilterSelection,
+  isExcludeFilter,
+  listFilterValue,
+} from "../data/data_table_filters";
 import type { HaEntityPickerEntityFilterFunc } from "../data/entity/entity";
 import { entityTypeFilterFunc } from "../data/entity/entity_type";
 import type { EntitySources } from "../data/entity/entity_sources";
@@ -21,8 +30,8 @@ import "./ha-target-picker";
  */
 export interface SourceFilters {
   /** Domains (`sensor`) and domains narrowed to a device class (`sensor/power`). */
-  types?: string[];
-  integrations?: string[];
+  types?: string[] | ListFilterValue;
+  integrations?: string[] | ListFilterValue;
 }
 
 const TARGET_KEYS = [
@@ -47,12 +56,14 @@ export const setSourceFilter = <T extends SourceFilters>(
   value: DataTableFiltersValue
 ): T => ({
   ...filters,
-  [key]: Array.isArray(value) && value.length ? value : undefined,
+  // A mode without a selection is kept, so it stays picked in the filter
+  [key]:
+    hasFilterSelection(value) || isExcludeFilter(value) ? value : undefined,
 });
 
 /** Number of filters that have at least one option selected. */
 export const countSourceFilters = (filters: SourceFilters): number =>
-  Object.values(filters).filter((value) => value?.length).length;
+  countActiveFilters(Object.values(filters));
 
 /**
  * Matches an entity against the selected filters: it is kept when it matches
@@ -64,25 +75,30 @@ export const sourceFilterFunc = (
   entities: HomeAssistant["entities"],
   entitySources?: EntitySources
 ): ((entityId: string) => boolean) | undefined => {
-  const matchesType = filters.types?.length
-    ? entityTypeFilterFunc(filters.types, states)
+  const types = listFilterValue(filters.types);
+  const matchesType = types?.ids?.length
+    ? entityTypeFilterFunc(types.ids, states)
     : undefined;
-  const integrations = filters.integrations?.length
-    ? filters.integrations
+  const integrations = listFilterValue(filters.integrations);
+  const integrationIds = integrations?.ids?.length
+    ? integrations.ids
     : undefined;
 
-  if (!matchesType && !integrations) {
+  if (!matchesType && !integrationIds) {
     return undefined;
   }
 
   return (entityId: string) => {
-    if (matchesType && !matchesType(entityId)) {
+    if (matchesType && matchesType(entityId) === !!types?.exclude) {
       return false;
     }
-    if (integrations) {
+    if (integrationIds) {
       const integration =
         entities[entityId]?.platform ?? entitySources?.[entityId]?.domain;
-      if (!integration || !integrations.includes(integration)) {
+      if (
+        (!!integration && integrationIds.includes(integration)) ===
+        !!integrations?.exclude
+      ) {
         return false;
       }
     }

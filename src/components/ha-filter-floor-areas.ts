@@ -37,6 +37,7 @@ import { getFloorAreaLookup } from "../data/floor_registry";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
 import "./ha-expansion-panel";
+import { filterBadgeStyles, renderFilterBadge } from "./ha-filter-mode";
 import "./ha-floor-icon";
 import "./ha-icon";
 import "./ha-icon-button";
@@ -157,7 +158,7 @@ export class HaFilterFloorAreas extends LitElement {
           ${this._i18n.localize("ui.panel.config.areas.caption")}
           ${
             count
-              ? html`<div class="badge">${count}</div>
+              ? html`${renderFilterBadge(this._i18n.localize, count, this.value?.exclude)}
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
                     .label=${this._i18n.localize(
@@ -174,6 +175,10 @@ export class HaFilterFloorAreas extends LitElement {
         this._panel.showContent
           ? html`
               <div class="content" ${ref(this._content)}>
+                <ha-filter-mode
+                  .exclude=${this.value?.exclude ?? false}
+                  @filter-mode-changed=${this._modeChanged}
+                ></ha-filter-mode>
                 <ha-list-selectable
                   multi
                   @ha-list-item-selected=${this._handleAdded}
@@ -350,6 +355,10 @@ export class HaFilterFloorAreas extends LitElement {
       )
   );
 
+  private _modeChanged(ev: CustomEvent<{ exclude: boolean }>) {
+    this.value = { ...this.value, exclude: ev.detail.exclude };
+  }
+
   private _expandedChanged(ev) {
     this.expanded = ev.detail.expanded;
   }
@@ -385,9 +394,11 @@ export class HaFilterFloorAreas extends LitElement {
         !this.value.floors?.length &&
         !this.value.no_area)
     ) {
-      this.value = {};
+      // The mode is kept, so it stays picked when the selection is cleared
+      const value = this.value?.exclude ? { exclude: true } : {};
+      this.value = value;
       fireEvent(this, "data-table-filter-changed", {
-        value: {},
+        value,
         items: undefined,
       });
       return;
@@ -490,6 +501,7 @@ export class HaFilterFloorAreas extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       filterPanelStyles,
+      filterBadgeStyles,
       css`
         /* Only the list's own container scrolls, not the list as well */
         ha-list-selectable {
