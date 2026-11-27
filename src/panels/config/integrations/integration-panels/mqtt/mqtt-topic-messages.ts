@@ -228,8 +228,16 @@ class MqttTopicMessages extends LitElement {
     if (!changes?.length) {
       return html`
         <div class="changes" dir="ltr">
-          ${this._renderChange("removed", "previous", previous.payload)}
-          ${this._renderChange("added", "current", selected.payload)}
+          ${this._renderChange(
+            "removed",
+            "previous",
+            html`<span class="raw">${previous.payload}</span>`
+          )}
+          ${this._renderChange(
+            "added",
+            "current",
+            html`<span class="raw">${selected.payload}</span>`
+          )}
         </div>
       `;
     }
@@ -359,6 +367,10 @@ class MqttTopicMessages extends LitElement {
     }
     .changes {
       position: relative;
+    }
+    /* Payloads that only differ in whitespace would look the same */
+    .raw {
+      white-space: pre-wrap;
     }
     .sign {
       display: inline-block;
