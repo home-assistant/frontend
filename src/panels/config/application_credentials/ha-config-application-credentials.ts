@@ -30,6 +30,7 @@ import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../config-sections";
 import { showAddApplicationCredentialDialog } from "./show-dialog-add-application-credential";
+import { renderAddShortcutTooltip } from "../../../mixins/keyboard-shortcut-mixin";
 
 @customElement("ha-config-application-credentials")
 export class HaConfigApplicationCredentials extends LitElement {
@@ -205,12 +206,18 @@ export class HaConfigApplicationCredentials extends LitElement {
                 `
           }
         </div>
-        <ha-button slot="fab" size="l" @click=${this._addApplicationCredential}>
+        <ha-button
+          slot="fab"
+          id="fab"
+          size="l"
+          @click=${this._addApplicationCredential}
+        >
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize(
             "ui.panel.config.application_credentials.picker.add_application_credential"
           )}
         </ha-button>
+        ${renderAddShortcutTooltip(this.hass, "fab")}
       </hass-tabs-subpage-data-table>
     `;
   }

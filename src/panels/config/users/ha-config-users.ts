@@ -27,6 +27,7 @@ import { configSections } from "../config-sections";
 import { showAddUserDialog } from "./show-dialog-add-user";
 import { showUserDetailDialog } from "./show-dialog-user-detail";
 import { storage } from "../../../common/decorators/storage";
+import { renderAddShortcutTooltip } from "../../../mixins/keyboard-shortcut-mixin";
 
 @customElement("ha-config-users")
 export class HaConfigUsers extends LitElement {
@@ -200,10 +201,11 @@ export class HaConfigUsers extends LitElement {
         has-fab
         clickable
       >
-        <ha-button slot="fab" size="l" @click=${this._addUser}>
+        <ha-button slot="fab" id="fab" size="l" @click=${this._addUser}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.users.picker.add_user")}
         </ha-button>
+        ${renderAddShortcutTooltip(this.hass, "fab")}
       </hass-tabs-subpage-data-table>
     `;
   }

@@ -56,6 +56,7 @@ import "../ha-config-section";
 import { configSections } from "../config-sections";
 import { showHomeZoneDetailDialog } from "./show-dialog-home-zone-detail";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
+import { renderAddShortcutTooltip } from "../../../mixins/keyboard-shortcut-mixin";
 
 interface PendingEdit {
   latitude?: number;
@@ -397,10 +398,11 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
               `
             : ""
         }
-        <ha-button slot="fab" size="l" @click=${this._createZone}>
+        <ha-button slot="fab" id="fab" size="l" @click=${this._createZone}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${hass.localize("ui.panel.config.zone.create_zone")}
         </ha-button>
+        ${renderAddShortcutTooltip(hass, "fab")}
       </hass-tabs-subpage>
     `;
   }

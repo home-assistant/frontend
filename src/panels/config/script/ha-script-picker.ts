@@ -130,6 +130,7 @@ import {
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import { renderAddShortcutTooltip } from "../../../mixins/keyboard-shortcut-mixin";
 
 type ScriptItem = ScriptEntity & {
   name: string;
@@ -719,10 +720,11 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
               </div>`
             : nothing
         }
-        <ha-button slot="fab" size="l" @click=${this._createNew}>
+        <ha-button slot="fab" id="fab" size="l" @click=${this._createNew}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.script.picker.add_script")}
         </ha-button>
+        ${renderAddShortcutTooltip(this.hass, "fab")}
       </hass-tabs-subpage-data-table>
     `;
   }

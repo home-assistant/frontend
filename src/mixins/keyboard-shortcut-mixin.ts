@@ -1,9 +1,11 @@
-import type { LitElement } from "lit";
-import type { Constructor } from "../types";
+import { html, nothing, type ReactiveElement } from "lit";
+import type { Constructor, HomeAssistant } from "../types";
 import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
 import { deepActiveElement } from "../common/dom/deep-active-element";
 import { nextRender } from "../common/util/render-status";
 import { getTopOpenDialogTag } from "../dialogs/make-dialog-manager";
+import { isMac } from "../util/is_mac";
+import "../components/ha-tooltip";
 
 declare global {
   type SupportedShortcuts = Record<string, () => void>;
@@ -24,11 +26,43 @@ const isModalBoundary = (el: EventTarget): boolean =>
     el.getAttribute("role") === "dialog" ||
     el.getAttribute("aria-modal") === "true");
 
-export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
+export const renderAddShortcutTooltip = (hass: HomeAssistant, forId: string) =>
+  hass.enableShortcuts
+    ? html`<ha-tooltip slot="fab" for=${forId} placement="left">
+        ${
+          isMac
+            ? "⌘ ⌥ N"
+            : `${hass.localize("ui.dialogs.shortcuts.keys.ctrl")} + Alt + N`
+        }
+      </ha-tooltip>`
+    : nothing;
+
+export const KeyboardShortcutMixin = <T extends Constructor<ReactiveElement>>(
   superClass: T
 ) =>
   class extends superClass {
     private _keydownEvent = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.altKey && !event.shiftKey) {
+        const altShortcuts = this.supportedAltShortcuts();
+        const logicalKey = normalizeShortcutKey(event).toUpperCase();
+        const code = event.code.replace("Key", "");
+        const key =
+          logicalKey in altShortcuts
+            ? logicalKey
+            : !/^[A-Z]$/.test(logicalKey) && code in altShortcuts
+              ? code
+              : undefined;
+        if (
+          key &&
+          !getTopOpenDialogTag() &&
+          this._isEventInScope(event) &&
+          canOverrideAlphanumericInput(event.composedPath())
+        ) {
+          event.preventDefault();
+          altShortcuts[key]();
+        }
+        return;
+      }
       const supportedShortcuts = this.supportedShortcuts();
       const key =
         event.shiftKey && event.key.length > 1
@@ -174,6 +208,13 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
      * Shortcuts that also work while an input or code editor is focused.
      */
     protected supportedShortcutsInInput(): SupportedShortcuts {
+      return {};
+    }
+
+    /**
+     * Ctrl/Cmd+Alt shortcuts, keyed by the physical letter. Ignored while a dialog is open.
+     */
+    protected supportedAltShortcuts(): SupportedShortcuts {
       return {};
     }
 

@@ -45,6 +45,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../config-sections";
 import { showTagDetailDialog } from "./show-dialog-tag-detail";
 import "./tag-image";
+import { renderAddShortcutTooltip } from "../../../mixins/keyboard-shortcut-mixin";
 
 export interface TagRowData extends Tag {
   display_name: string;
@@ -238,10 +239,11 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           .disabled=${!this._selected.length}
           @click=${this._removeSelected}
         ></ha-assist-chip>
-        <ha-button slot="fab" size="l" @click=${this._addTag}>
+        <ha-button slot="fab" id="fab" size="l" @click=${this._addTag}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.tag.add_tag")}
         </ha-button>
+        ${renderAddShortcutTooltip(this.hass, "fab")}
       </hass-tabs-subpage-data-table>
     `;
   }

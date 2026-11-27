@@ -139,6 +139,7 @@ import {
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
+import { renderAddShortcutTooltip } from "../../../mixins/keyboard-shortcut-mixin";
 
 const renderIconBadge = (path: string, color: string) => html`
   <div
@@ -807,12 +808,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
               </div>`
             : nothing
         }
-        <ha-button slot="fab" size="l" @click=${this._createNew}>
+        <ha-button slot="fab" id="fab" size="l" @click=${this._createNew}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize(
             "ui.panel.config.automation.picker.add_automation"
           )}
         </ha-button>
+        ${renderAddShortcutTooltip(this.hass, "fab")}
       </hass-tabs-subpage-data-table>
       <ha-dropdown
         id="overflow-menu"

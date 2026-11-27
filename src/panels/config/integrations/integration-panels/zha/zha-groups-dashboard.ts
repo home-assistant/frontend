@@ -20,6 +20,7 @@ import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex, sortZHAGroups } from "./functions";
+import { renderAddShortcutTooltip } from "../../../../../mixins/keyboard-shortcut-mixin";
 
 const groupsTab: PageNavigation[] = [
   {
@@ -136,10 +137,11 @@ export class ZHAGroupsDashboard extends LitElement {
         has-fab
         sync-url
       >
-        <ha-button href="/config/zha/group-add" slot="fab" size="l">
+        <ha-button href="/config/zha/group-add" slot="fab" id="fab" size="l">
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass!.localize("ui.panel.config.zha.groups.add_group")}
         </ha-button>
+        ${renderAddShortcutTooltip(this.hass!, "fab")}
       </hass-tabs-subpage-data-table>
     `;
   }

@@ -85,6 +85,7 @@ import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup"
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
 import { downloadBackup } from "./helper/download_backup";
+import { renderAddShortcutTooltip } from "../../../mixins/keyboard-shortcut-mixin";
 
 interface BackupRow extends DataTableRowData, BackupContent {
   formatted_type: string;
@@ -542,6 +543,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
             ? html`
                 <ha-button
                   slot="fab"
+                  id="fab"
                   size="l"
                   ?disabled=${backupInProgress}
                   @click=${this._newBackup}
@@ -560,6 +562,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                     "ui.panel.config.backup.backups.new_backup"
                   )}
                 </ha-button>
+                ${renderAddShortcutTooltip(this.hass, "fab")}
               `
             : nothing
         }

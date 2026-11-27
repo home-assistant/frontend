@@ -126,6 +126,7 @@ import {
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import { showSceneSaveDialog } from "./scene-save-dialog/show-dialog-scene-save";
+import { renderAddShortcutTooltip } from "../../../mixins/keyboard-shortcut-mixin";
 
 type SceneItem = SceneEntity & {
   name: string;
@@ -771,10 +772,11 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
               </div>`
             : nothing
         }
-        <ha-button href="/config/scene/edit/new" size="l" slot="fab">
+        <ha-button href="/config/scene/edit/new" size="l" slot="fab" id="fab">
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.scene.picker.add_scene")}
         </ha-button>
+        ${renderAddShortcutTooltip(this.hass, "fab")}
       </hass-tabs-subpage-data-table>
     `;
   }

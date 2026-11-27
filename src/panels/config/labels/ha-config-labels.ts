@@ -64,6 +64,7 @@ import {
 } from "../common/data-table-columns";
 import { configSections } from "../config-sections";
 import { showLabelDetailDialog } from "./show-dialog-label-detail";
+import { renderAddShortcutTooltip } from "../../../mixins/keyboard-shortcut-mixin";
 
 type ConfigTranslationKey = FlattenObjectKeys<
   TranslationDict["ui"]["panel"]["config"]
@@ -289,10 +290,11 @@ export class HaConfigLabels extends LitElement {
           .disabled=${!this._selected.length}
           @click=${this._deleteSelected}
         ></ha-assist-chip>
-        <ha-button slot="fab" size="l" @click=${this._addLabel}>
+        <ha-button slot="fab" id="fab" size="l" @click=${this._addLabel}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.labels.add_label")}
         </ha-button>
+        ${renderAddShortcutTooltip(this.hass, "fab")}
       </hass-tabs-subpage-data-table>
       <ha-dropdown
         id="overflow-menu"

@@ -33,6 +33,7 @@ import {
   loadPersonDetailDialog,
   showPersonDetailDialog,
 } from "./show-dialog-person-detail";
+import { renderAddShortcutTooltip } from "../../../mixins/keyboard-shortcut-mixin";
 
 @customElement("ha-config-person")
 export class HaConfigPerson extends LitElement {
@@ -156,10 +157,11 @@ export class HaConfigPerson extends LitElement {
               : nothing
           }
         </ha-config-section>
-        <ha-button slot="fab" size="l" @click=${this._createPerson}>
+        <ha-button slot="fab" id="fab" size="l" @click=${this._createPerson}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${hass.localize("ui.panel.config.person.add_person")}
         </ha-button>
+        ${renderAddShortcutTooltip(hass, "fab")}
       </hass-tabs-subpage>
     `;
   }

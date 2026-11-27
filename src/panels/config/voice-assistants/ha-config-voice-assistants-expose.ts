@@ -60,6 +60,7 @@ import { getAvailableAssistants } from "./expose/available-assistants";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";
 import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
+import { renderAddShortcutTooltip } from "../../../mixins/keyboard-shortcut-mixin";
 
 @customElement("ha-config-voice-assistants-expose")
 export class VoiceAssistantsExpose extends LitElement {
@@ -581,10 +582,11 @@ export class VoiceAssistantsExpose extends LitElement {
               `
             : ""
         }
-        <ha-button slot="fab" size="l" @click=${this._addEntry}>
+        <ha-button slot="fab" id="fab" size="l" @click=${this._addEntry}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.voice_assistants.expose.add")}
         </ha-button>
+        ${renderAddShortcutTooltip(this.hass, "fab")}
       </hass-tabs-subpage-data-table>
     `;
   }
