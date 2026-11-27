@@ -55,6 +55,23 @@ export interface MarketplaceRelease {
   prerelease: boolean;
 }
 
+// With config entries, core releases the repository instead of removing these files
+export const sharingInstall = (
+  repositories: RepositoryBase[],
+  repository: RepositoryBase,
+  excluded: string[] = []
+): RepositoryBase | undefined =>
+  repository.category === "integration" && repository.domain
+    ? repositories.find(
+        (other) =>
+          other.id !== repository.id &&
+          !excluded.includes(other.id) &&
+          other.installed &&
+          other.category === "integration" &&
+          other.domain === repository.domain
+      )
+    : undefined;
+
 export const fetchMarketplaceRepositories = (hass: CallWS) =>
   hass.callWS<RepositoryBase[]>({ type: "marketplace/repositories/list" });
 

@@ -90,6 +90,7 @@ import type {
 import { marketplaceErrorMessage } from "../../../data/marketplace/websocket";
 import {
   dismissNewMarketplaceRepositories,
+  sharingInstall,
   uninstallMarketplaceRepository,
 } from "../../../data/marketplace/repository";
 import { haStyle } from "../../../resources/styles";
@@ -863,34 +864,96 @@ export class HaMarketplaceDashboard extends LitElement {
         return;
       }
 
+      // An installed sharer outside the selection keeps the files, so core
+      // releases these repositories and the entries stay. The selection is
+      // the one taken before the wait, the table stays selectable meanwhile
+      const selectedIds = selectedRepositories.map(
+        (repository) => repository.id
+      );
+      const sharedOutsideSelection = (domain: string) =>
+        selectedRepositories.some(
+          (repository) =>
+            repository.domain === domain &&
+            sharingInstall(
+              this.marketplace.repositories,
+              repository,
+              selectedIds
+            )
+        );
       const entriesByDomain = new Map<string, ConfigEntry[]>();
+      const releasedDomains = new Set<string>();
+      // Without entries core removes the files the sharer uses too
+      const removedDomains = new Set<string>();
       domains.forEach((domain, index) => {
         const check = entriesChecks[index];
-        if (check.status === "fulfilled" && check.value.length) {
+        if (check.status !== "fulfilled") {
+          return;
+        }
+        if (!check.value.length) {
+          if (sharedOutsideSelection(domain)) {
+            removedDomains.add(domain);
+          }
+        } else if (sharedOutsideSelection(domain)) {
+          releasedDomains.add(domain);
+        } else {
           entriesByDomain.set(domain, check.value);
         }
       });
-      const inUseCount = selectedRepositories.filter(
-        (repository) =>
-          repository.category === "integration" &&
-          repository.domain &&
-          entriesByDomain.has(repository.domain)
-      ).length;
+      const countIn = (domainsToCount: { has: (domain: string) => boolean }) =>
+        selectedRepositories.filter(
+          (repository) =>
+            repository.category === "integration" &&
+            repository.domain &&
+            domainsToCount.has(repository.domain)
+        ).length;
+      const inUseCount = countIn(entriesByDomain);
+      const sharedCount = countIn(releasedDomains);
+      const removedCount = countIn(removedDomains);
+
+      const allReleased = sharedCount === selectedRepositories.length;
+      const message = this._i18n.localize(
+        allReleased
+          ? "ui.panel.marketplace.dialog.uninstall.selected_released"
+          : inUseCount
+            ? "ui.panel.marketplace.dialog.uninstall.selected_in_use"
+            : "ui.panel.marketplace.dialog.uninstall.selected",
+        {
+          count: selectedRepositories.length,
+          ...(inUseCount ? { in_use: inUseCount } : {}),
+        }
+      );
 
       const failures: string[] = [];
       showConfirmationDialog(this, {
         title: this._i18n.localize(
           "ui.panel.marketplace.dialog.uninstall.selected_title"
         ),
-        text: this._i18n.localize(
-          inUseCount
-            ? "ui.panel.marketplace.dialog.uninstall.selected_in_use"
-            : "ui.panel.marketplace.dialog.uninstall.selected",
-          {
-            count: selectedRepositories.length,
-            ...(inUseCount ? { in_use: inUseCount } : {}),
-          }
-        ),
+        text:
+          (sharedCount && !allReleased) || removedCount
+            ? html`
+                <p>${message}</p>
+                ${
+                  sharedCount && !allReleased
+                    ? html`<p>
+                        ${this._i18n.localize(
+                          "ui.panel.marketplace.dialog.uninstall.selected_shared",
+                          { count: sharedCount }
+                        )}
+                      </p>`
+                    : nothing
+                }
+                ${
+                  removedCount
+                    ? html`<p>
+                        ${this._i18n.localize(
+                          "ui.panel.marketplace.dialog.uninstall.selected_shared_removed",
+                          { count: removedCount }
+                        )}
+                      </p>`
+                    : nothing
+                }
+              `
+            : message,
         confirmText: this._i18n.localize(
           "ui.panel.marketplace.common.uninstall"
         ),
