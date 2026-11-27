@@ -217,18 +217,18 @@ describe("computeEnergySuggestions", () => {
 });
 
 describe("updateDismissedSuggestions", () => {
-  it("adds the statistic and drops statistics that no longer exist", () => {
+  it("adds the statistics and drops statistics that no longer exist", () => {
     expect(
       updateDismissedSuggestions(
         ["sensor.removed", "sensor.kept", "sensor.new"],
-        "sensor.new",
+        ["sensor.new", "sensor.other"],
         [
           statistic("sensor.kept"),
           statistic("sensor.new"),
           statistic("sensor.other"),
         ]
       )
-    ).toEqual(["sensor.kept", "sensor.new"]);
+    ).toEqual(["sensor.kept", "sensor.new", "sensor.other"]);
   });
 });
 
