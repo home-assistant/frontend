@@ -100,7 +100,7 @@ const confirmUninstallRepository = async (
   let owner: RepositoryBase | undefined;
   let entries: ConfigEntry[] = [];
 
-  // Its files are what the entries run, core refuses to uninstall it
+  // Its files are what the entries run, core refuses unless another install keeps them
   if (repository.category === "integration" && repository.domain) {
     try {
       entries = await getConfigEntries(api, {

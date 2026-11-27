@@ -870,24 +870,30 @@ export class HaMarketplaceDashboard extends LitElement {
       const selectedIds = selectedRepositories.map(
         (repository) => repository.id
       );
+      const sharedOutsideSelection = (domain: string) =>
+        selectedRepositories.some(
+          (repository) =>
+            repository.domain === domain &&
+            sharingInstall(
+              this.marketplace.repositories,
+              repository,
+              selectedIds
+            )
+        );
       const entriesByDomain = new Map<string, ConfigEntry[]>();
       const releasedDomains = new Set<string>();
+      // Without entries core removes the files the sharer uses too
+      const removedDomains = new Set<string>();
       domains.forEach((domain, index) => {
         const check = entriesChecks[index];
-        if (check.status !== "fulfilled" || !check.value.length) {
+        if (check.status !== "fulfilled") {
           return;
         }
-        if (
-          selectedRepositories.some(
-            (repository) =>
-              repository.domain === domain &&
-              sharingInstall(
-                this.marketplace.repositories,
-                repository,
-                selectedIds
-              )
-          )
-        ) {
+        if (!check.value.length) {
+          if (sharedOutsideSelection(domain)) {
+            removedDomains.add(domain);
+          }
+        } else if (sharedOutsideSelection(domain)) {
           releasedDomains.add(domain);
         } else {
           entriesByDomain.set(domain, check.value);
@@ -902,6 +908,7 @@ export class HaMarketplaceDashboard extends LitElement {
         ).length;
       const inUseCount = countIn(entriesByDomain);
       const sharedCount = countIn(releasedDomains);
+      const removedCount = countIn(removedDomains);
 
       const allReleased = sharedCount === selectedRepositories.length;
       const message = this._i18n.localize(
@@ -922,15 +929,29 @@ export class HaMarketplaceDashboard extends LitElement {
           "ui.panel.marketplace.dialog.uninstall.selected_title"
         ),
         text:
-          sharedCount && !allReleased
+          (sharedCount && !allReleased) || removedCount
             ? html`
                 <p>${message}</p>
-                <p>
-                  ${this._i18n.localize(
-                    "ui.panel.marketplace.dialog.uninstall.selected_shared",
-                    { count: sharedCount }
-                  )}
-                </p>
+                ${
+                  sharedCount && !allReleased
+                    ? html`<p>
+                        ${this._i18n.localize(
+                          "ui.panel.marketplace.dialog.uninstall.selected_shared",
+                          { count: sharedCount }
+                        )}
+                      </p>`
+                    : nothing
+                }
+                ${
+                  removedCount
+                    ? html`<p>
+                        ${this._i18n.localize(
+                          "ui.panel.marketplace.dialog.uninstall.selected_shared_removed",
+                          { count: removedCount }
+                        )}
+                      </p>`
+                    : nothing
+                }
               `
             : message,
         confirmText: this._i18n.localize(

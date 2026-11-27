@@ -799,6 +799,29 @@ describe("a selection sharing its files with an installed repository", () => {
     );
   });
 
+  // Without entries core removes the files, the sharer loses them too
+  it("warns that an unselected sharer loses its files when nothing is set up", async () => {
+    vi.mocked(getConfigEntries).mockResolvedValue([]);
+    const dashboard = await openDashboard([shared, sharer], "installed");
+    selectForBulkUninstall(dashboard, ["1"]);
+
+    const dialog = await startBulkUninstall(dashboard);
+
+    const container = document.createElement("div");
+    render(dialog.text, container);
+    expect(container.textContent).toContain(
+      "ui.panel.marketplace.dialog.uninstall.selected_shared_removed"
+    );
+
+    await dialog.action!();
+
+    expect(vi.mocked(deleteConfigEntry)).not.toHaveBeenCalled();
+    expect(vi.mocked(uninstallMarketplaceRepository)).toHaveBeenCalledWith(
+      expect.anything(),
+      "1"
+    );
+  });
+
   it("deletes the setup when every sharer is selected", async () => {
     const dashboard = await openDashboard([shared, sharer], "installed");
     selectForBulkUninstall(dashboard, ["1", "2"]);
