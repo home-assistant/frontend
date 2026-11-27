@@ -2921,6 +2921,28 @@ describe("computeEnergyDeviceLabels", () => {
         }
       );
     });
+
+    it("adds the entity names when a custom name takes the same label", () => {
+      assert.deepEqual(
+        computeEnergyDeviceLabels(
+          lightHass.states,
+          lightHass.formatEntityName,
+          [
+            { stat_consumption: "sensor.hall_light_energy" },
+            { stat_consumption: "sensor.stairs_light_energy" },
+            {
+              stat_consumption: "sensor.hall_light_total",
+              name: "Ceiling light",
+            },
+          ]
+        ),
+        {
+          "sensor.hall_light_energy": "Ceiling light Energy",
+          "sensor.stairs_light_energy": "Ceiling light Energy",
+          "sensor.hall_light_total": "Ceiling light",
+        }
+      );
+    });
   });
 });
 
