@@ -97,6 +97,9 @@ export class HaCameraPlayer extends LitElement {
   @property({ type: Boolean, attribute: "keep-awake" })
   public keepAwake = false;
 
+  /** Fills the height it is given, with the picture in the middle. */
+  @property({ type: Boolean, reflect: true }) public fill = false;
+
   @state() private _status: CameraStreamStatus = {
     connecting: true,
     hasAudio: false,
@@ -284,9 +287,10 @@ export class HaCameraPlayer extends LitElement {
             gesture: this._gesture,
           })}
           style=${styleMap({
-            aspectRatio: this._fullscreen
-              ? undefined
-              : String(this._aspectRatio()),
+            aspectRatio:
+              this._fullscreen || this.fill
+                ? undefined
+                : String(this._aspectRatio()),
           })}
           @pointerdown=${this._pointerDown}
           @pointerup=${this._pointerUp}
@@ -303,6 +307,9 @@ export class HaCameraPlayer extends LitElement {
             mjpeg-video
             measure-poster
             style=${styleMap({
+              "--picture-aspect-ratio": this.fill
+                ? String(this._aspectRatio())
+                : undefined,
               transform: zoomed
                 ? `translate(${this._zoom.x}px, ${this._zoom.y}px) scale(${this._zoom.scale})`
                 : undefined,
@@ -1028,6 +1035,38 @@ export class HaCameraPlayer extends LitElement {
 
     .player.fullscreen.idle {
       cursor: none;
+    }
+
+    :host([fill]) {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+    }
+
+    :host([fill]) .player {
+      position: absolute;
+      inset: 0;
+    }
+
+    :host([fill]) .viewport {
+      height: 100%;
+      max-height: none;
+      container-type: size;
+      --video-max-height: 100%;
+    }
+
+    /* As large as the picture fits in the middle, zoomed from the corner of
+       the viewport like a stream that fills it */
+    :host([fill]) ha-camera-stream {
+      --picture-width: min(100cqw, 100cqh * var(--picture-aspect-ratio));
+      --picture-height: min(100cqh, 100cqw / var(--picture-aspect-ratio));
+      position: absolute;
+      top: calc((100cqh - var(--picture-height)) / 2);
+      left: calc((100cqw - var(--picture-width)) / 2);
+      width: var(--picture-width);
+      height: var(--picture-height);
+      transform-origin: calc((var(--picture-width) - 100cqw) / 2)
+        calc((var(--picture-height) - 100cqh) / 2);
     }
 
     .viewport {

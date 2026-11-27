@@ -9,6 +9,10 @@ import { consumeLocalize } from "../../../common/decorators/consume-context-entr
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import {
+  adaptiveDialogModeContext,
+  type DialogSheetMode,
+} from "../../../components/ha-adaptive-dialog";
 import "../../../components/ha-button";
 import "../../../components/camera/ha-camera-player";
 import type { HaCameraPlayer } from "../../../components/camera/ha-camera-player";
@@ -49,6 +53,10 @@ class MoreInfoCamera extends LitElement {
   @property({ attribute: false }) public stateObj?: CameraEntity;
 
   @state() private _attached = false;
+
+  @state()
+  @consume({ context: adaptiveDialogModeContext, subscribe: true })
+  private _dialogMode?: DialogSheetMode;
 
   @state() private _microphoneState: WebRtcMicrophoneState = "off";
 
@@ -133,6 +141,7 @@ class MoreInfoCamera extends LitElement {
         .stateObj=${this.stateObj}
         allow-exoplayer
         keep-awake
+        ?fill=${this._dialogMode === "bottom-sheet"}
         @microphone-changed=${this._microphoneChanged}
         @stream-type-changed=${this._streamTypeChanged}
         @camera-capabilities-changed=${this._capabilitiesChanged}
@@ -334,7 +343,9 @@ class MoreInfoCamera extends LitElement {
 
   static styles = css`
     :host {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
     }
 
     .buttons {
