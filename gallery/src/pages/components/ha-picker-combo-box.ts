@@ -27,6 +27,10 @@ const LOCALIZE_KEYS: Record<string, string> = {
   "ui.common.search": "Search",
   "ui.components.combo-box.no_match": "No matching items found",
   "ui.components.combo-box.no_items": "No items available",
+  "ui.components.combo-box.active_option":
+    "Option {index} of {count}: {option}",
+  "ui.components.combo-box.selected_option":
+    "Selected option {index} of {count}: {option}",
   "ui.components.combo-box.result_count":
     "{count} {count, plural,\n one {result}\n other {results}\n} for {term}",
   "ui.components.combo-box.no_results": "No results for {term}",

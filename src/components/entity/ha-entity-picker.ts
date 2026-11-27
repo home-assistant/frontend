@@ -37,7 +37,10 @@ import "../ha-combo-box-item";
 import "../ha-generic-picker";
 import "../ha-icon";
 import type { HaGenericPicker } from "../ha-generic-picker";
-import type { PickerComboBoxSearchFn } from "../ha-picker-combo-box";
+import type {
+  PickerComboBoxItem,
+  PickerComboBoxSearchFn,
+} from "../ha-picker-combo-box";
 import type { PickerValueRenderer } from "../ha-picker-field";
 import "../ha-svg-icon";
 import "./state-badge";
@@ -158,6 +161,11 @@ export class HaEntityPicker extends LitElement {
   @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
+
+  public override async focus() {
+    await this.updateComplete;
+    await this._picker?.focus();
+  }
 
   @state() private _pendingEntityId?: string;
 
@@ -326,6 +334,16 @@ export class HaEntityPicker extends LitElement {
     `;
   };
 
+  // Match the supplementary text actually rendered for each entity row.
+  // Entity names are not unique: include the ID or localized domain so a
+  // screen-reader user can distinguish similarly named entities.
+  private _getOptionAnnouncementDetail = (item: PickerComboBoxItem) => {
+    const entityItem = item as EntityComboBoxItem;
+    return this._showEntityId
+      ? entityItem.stateObj?.entity_id
+      : entityItem.domain_name;
+  };
+
   private _getAdditionalItems = () =>
     this._getCreateItems(this._i18n.localize, this.createDomains);
 
@@ -461,6 +479,7 @@ export class HaEntityPicker extends LitElement {
         .searchLabel=${this.searchLabel}
         .notFoundLabel=${this._notFoundLabel}
         .rowRenderer=${this._rowRenderer}
+        .getOptionAnnouncementDetail=${this._getOptionAnnouncementDetail}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .hideClearIcon=${this.hideClearIcon || this._shouldHideClearIcon()}

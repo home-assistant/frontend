@@ -34,6 +34,7 @@ import type {
   PickerComboBoxSearchFn,
 } from "./ha-picker-combo-box";
 import "./ha-picker-field";
+import type { HaPickerField } from "./ha-picker-field";
 import "./ha-svg-icon";
 import "./skeleton/ha-skeleton";
 
@@ -60,6 +61,11 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   @property({ attribute: false })
   public rowRenderer?: RenderItemFunction<PickerComboBoxItem>;
+
+  @property({ attribute: false })
+  public getOptionAnnouncementDetail?: (
+    item: PickerComboBoxItem
+  ) => string | undefined;
 
   @property({ attribute: false })
   public searchFn?: PickerComboBoxSearchFn<PickerComboBoxItem>;
@@ -133,6 +139,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
+  @query("ha-picker-field") private _pickerField?: HaPickerField;
+
   @query("wa-popover") private _popover?: WaPopover;
 
   @state()
@@ -198,6 +206,11 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     }
     // Store initial value to set when opened
     this._initialFieldValue = value;
+  }
+
+  public override async focus() {
+    await this.updateComplete;
+    await this._pickerField?.focus();
   }
 
   protected render() {
@@ -336,9 +349,11 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .shown=${this._opened}
         .allowCustomValue=${this.allowCustomValue}
         .label=${this.searchLabel}
+        .ariaLabel=${this.ariaLabel || this.label}
         .value=${this._selectedValue ?? this.value}
         @value-changed=${this._valueChanged}
         .rowRenderer=${this.rowRenderer}
+        .getOptionAnnouncementDetail=${this.getOptionAnnouncementDetail}
         .notFoundLabel=${this.notFoundLabel}
         .emptyLabel=${this.emptyLabel}
         .getItems=${this.getItems}
