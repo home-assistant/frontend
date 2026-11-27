@@ -5140,6 +5140,35 @@
               "flow_rate_energy_sources": "[%key:ui::panel::config::energy::gas::dialog::flow_rate_energy_sources%]"
             }
           },
+          "fixed_costs": {
+            "title": "Fixed costs",
+            "sub": "Track costs that don't depend on how much you use, like a standing charge. Each one is added at the start of its period.",
+            "add_fixed_cost": "Add fixed cost",
+            "delete_fixed_cost": "Delete fixed cost",
+            "delete_confirm_title": "Delete fixed cost?",
+            "delete_confirm_text": "{name} will be permanently deleted.",
+            "amount_per_period": {
+              "day": "{amount} per day",
+              "month": "{amount} per month",
+              "year": "{amount} per year"
+            },
+            "dialog": {
+              "header": "Configure fixed cost",
+              "name": "[%key:ui::common::name%]",
+              "amount_type": "Amount",
+              "amount_number": "Use a fixed amount",
+              "amount_entity": "Use an entity with the current amount",
+              "amount_number_label": "Fixed amount",
+              "amount_number_helper": "Use a negative amount for a rebate or credit.",
+              "amount_entity_label": "Entity with the current amount",
+              "amount_entity_helper": "The state of this entity is the amount for each period. Its unit must be `{currency}` or `{currency}/{period}`.",
+              "period": "Period",
+              "period_day": "Every day",
+              "period_month": "Every month",
+              "period_year": "Every year",
+              "period_helper": "The amount is added at the start of each period, for example at midnight for a daily cost or on the first of the month for a monthly cost."
+            }
+          },
           "integral": {
             "energy": {
               "create_title": "{count, plural,\n one {Create energy sensor?}\n other {Create energy sensors?}\n}",

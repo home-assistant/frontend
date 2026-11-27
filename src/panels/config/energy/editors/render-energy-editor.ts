@@ -2,6 +2,7 @@ import { html, nothing } from "lit";
 import type { EnergyEditorConfig } from "./energy-editor";
 import "./ha-energy-battery-source-editor";
 import "./ha-energy-device-editor";
+import "./ha-energy-fixed-cost-editor";
 import "./ha-energy-gas-source-editor";
 import "./ha-energy-grid-source-editor";
 import "./ha-energy-home-source-editor";
@@ -51,6 +52,11 @@ export const renderEnergyEditor = (config: EnergyEditorConfig) => {
         class="energy-editor"
         .params=${config.params}
       ></ha-energy-water-gas-device-editor>`;
+    case "fixed_cost":
+      return html`<ha-energy-fixed-cost-editor
+        class="energy-editor"
+        .params=${config.params}
+      ></ha-energy-fixed-cost-editor>`;
     default:
       return nothing;
   }

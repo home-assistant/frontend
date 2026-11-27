@@ -19,6 +19,7 @@ import type {
   EnergyPreferencesValidation,
   EnergyInfo,
   EnergyPreferences,
+  FixedCostType,
 } from "../../../data/energy";
 import {
   getEnergyPreferenceValidation,
@@ -35,6 +36,7 @@ import type { HomeAssistant, Route } from "../../../types";
 import "../../../components/ha-alert";
 import "./components/ha-energy-device-settings";
 import "./components/ha-energy-device-settings-water-gas";
+import "./components/ha-energy-fixed-cost-settings";
 import "./components/ha-energy-grid-settings";
 import "./components/ha-energy-solar-settings";
 import "./components/ha-energy-home-settings";
@@ -55,6 +57,7 @@ const INITIAL_CONFIG: EnergyPreferences = {
   device_consumption: [],
   device_consumption_water: [],
   device_consumption_gas: [],
+  fixed_costs: [],
 };
 
 const TABS: PageNavigation[] = [
@@ -80,9 +83,15 @@ const TABS: PageNavigation[] = [
 
 // Editor pages are at <tab>/<kind>/<key>, with `new` as the key of a new item
 const EDITOR_KINDS: Record<string, string[]> = {
-  electricity: ["grid", "solar", "home", "battery", "device"],
-  gas: ["gas", "device"],
-  water: ["water", "device"],
+  electricity: ["grid", "solar", "home", "battery", "device", "fixed_cost"],
+  gas: ["gas", "device", "fixed_cost"],
+  water: ["water", "device", "fixed_cost"],
+};
+
+const FIXED_COST_TYPES: Record<string, FixedCostType> = {
+  electricity: "grid",
+  gas: "gas",
+  water: "water",
 };
 
 @customElement("ha-config-energy")
@@ -251,6 +260,7 @@ class HaConfigEnergy extends LitElement {
             .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-grid-settings>
+          ${this._renderFixedCostSettings("grid", listPath)}
           <ha-energy-solar-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
@@ -294,6 +304,7 @@ class HaConfigEnergy extends LitElement {
             .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-gas-settings>
+          ${this._renderFixedCostSettings("gas", listPath)}
           <ha-energy-device-settings-water-gas
             .hass=${this.hass}
             .resource=${"gas"}
@@ -314,6 +325,7 @@ class HaConfigEnergy extends LitElement {
             .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-water-settings>
+          ${this._renderFixedCostSettings("water", listPath)}
           <ha-energy-device-settings-water-gas
             .hass=${this.hass}
             .resource=${"water"}
@@ -327,6 +339,26 @@ class HaConfigEnergy extends LitElement {
       default:
         return nothing;
     }
+  }
+
+  private _renderFixedCostSettings(type: FixedCostType, listPath: string) {
+    const prefs = this._preferences!;
+    // The dashboard only shows fixed costs next to a source of their type,
+    // without one the card stays so existing costs can be deleted
+    if (
+      !prefs.energy_sources.some((source) => source.type === type) &&
+      !prefs.fixed_costs.some((cost) => cost.type === type)
+    ) {
+      return nothing;
+    }
+    return html`<ha-energy-fixed-cost-settings
+      .hass=${this.hass}
+      .type=${type}
+      .preferences=${prefs}
+      .listPath=${listPath}
+      .validationResult=${this._validationResult}
+      @value-changed=${this._prefsChanged}
+    ></ha-energy-fixed-cost-settings>`;
   }
 
   private _renderEditorPage(kind: string, key: string) {
@@ -433,6 +465,19 @@ class HaConfigEnergy extends LitElement {
           .editKey=${key}
           @value-changed=${this._prefsChanged}
         ></ha-energy-device-settings-water-gas>`;
+      case "electricity/fixed_cost":
+      case "gas/fixed_cost":
+      case "water/fixed_cost":
+        return html`<ha-energy-fixed-cost-settings
+          class="editor-page"
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .type=${FIXED_COST_TYPES[this._currTab]}
+          .preferences=${this._preferences!}
+          .listPath=${listPath}
+          .editKey=${key}
+          @value-changed=${this._prefsChanged}
+        ></ha-energy-fixed-cost-settings>`;
       default:
         return nothing;
     }
@@ -574,7 +619,8 @@ class HaConfigEnergy extends LitElement {
         ha-energy-gas-settings,
         ha-energy-water-settings,
         ha-energy-device-settings,
-        ha-energy-device-settings-water-gas {
+        ha-energy-device-settings-water-gas,
+        ha-energy-fixed-cost-settings {
           display: block;
           margin-bottom: 12px;
         }

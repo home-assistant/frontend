@@ -207,6 +207,7 @@ export class HaEmbedProvider extends LitElement {
     }));
     hass.mockWS("energy/info", (): EnergyInfo => ({
       cost_sensors: {},
+      fixed_cost_sensors: {},
       solar_forecast_domains: [],
     }));
     this._applyColorScheme();

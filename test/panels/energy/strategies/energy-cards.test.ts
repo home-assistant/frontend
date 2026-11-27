@@ -27,6 +27,7 @@ const makePrefs = (
   device_consumption: [],
   device_consumption_water: [],
   device_consumption_gas: [],
+  fixed_costs: [],
   ...prefs,
 });
 

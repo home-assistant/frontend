@@ -9,6 +9,8 @@ import type {
   DeviceConsumptionEnergyPreference,
   EnergyGasUnitClass,
   EnergyInfo,
+  FixedCostEnergyPreference,
+  FixedCostType,
   GasSourceTypeEnergyPreference,
   GridSourceTypeEnergyPreference,
   HomeSourceTypeEnergyPreference,
@@ -77,6 +79,12 @@ export interface EnergyWaterGasDeviceEditorParams extends EnergyDeviceEditorPara
   allowedUnitClass?: EnergyGasUnitClass;
 }
 
+export interface EnergyFixedCostEditorParams {
+  cost?: FixedCostEnergyPreference;
+  type: FixedCostType;
+  saveCallback: (cost: FixedCostEnergyPreference) => Promise<void>;
+}
+
 export type EnergyEditorConfig =
   | { kind: "grid"; params: EnergyGridSourceEditorParams }
   | { kind: "solar"; params: EnergySolarSourceEditorParams }
@@ -85,7 +93,8 @@ export type EnergyEditorConfig =
   | { kind: "device"; params: EnergyDeviceEditorParams }
   | { kind: "gas"; params: EnergyGasSourceEditorParams }
   | { kind: "water"; params: EnergyWaterSourceEditorParams }
-  | { kind: "water_gas_device"; params: EnergyWaterGasDeviceEditorParams };
+  | { kind: "water_gas_device"; params: EnergyWaterGasDeviceEditorParams }
+  | { kind: "fixed_cost"; params: EnergyFixedCostEditorParams };
 
 type PreselectedStatistic =
   (typeof energyEditorQueryParamConfig)["string"][number];

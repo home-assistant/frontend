@@ -32,6 +32,7 @@ import type { EntityNameItem } from "../common/entity/entity_name_config";
 import { formatNumberWithUnit } from "../common/number/format_number";
 import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import { groupBy } from "../common/util/group-by";
+import { generateUuidV4 } from "../common/util/uuid";
 import type { HomeAssistant, HomeAssistantRegistries } from "../types";
 import { fileDownload } from "../util/file_download";
 import type {
@@ -343,6 +344,31 @@ export interface WaterSourceTypeEnergyPreference {
   name?: string;
 }
 
+export type FixedCostType = "grid" | "gas" | "water";
+
+export type FixedCostPeriod = "day" | "month" | "year";
+
+export interface FixedCostEnergyPreference {
+  id: string;
+  type: FixedCostType;
+  name: string;
+  // Charged at the start of each period, exactly one of these is set
+  number_amount: number | null;
+  entity_amount: string | null;
+  period: FixedCostPeriod;
+}
+
+export const emptyFixedCostEnergyPreference = (
+  type: FixedCostType
+): FixedCostEnergyPreference => ({
+  id: generateUuidV4(),
+  type,
+  name: "",
+  number_amount: null,
+  entity_amount: null,
+  period: "day",
+});
+
 export type EnergySource =
   | SolarSourceTypeEnergyPreference
   | HomeSourceTypeEnergyPreference
@@ -356,6 +382,7 @@ export interface EnergyPreferences {
   device_consumption: DeviceConsumptionEnergyPreference[];
   device_consumption_water: DeviceConsumptionEnergyPreference[];
   device_consumption_gas: DeviceConsumptionEnergyPreference[];
+  fixed_costs: FixedCostEnergyPreference[];
 }
 
 export const EMPTY_PREFERENCES: EnergyPreferences = {
@@ -363,10 +390,13 @@ export const EMPTY_PREFERENCES: EnergyPreferences = {
   device_consumption: [],
   device_consumption_water: [],
   device_consumption_gas: [],
+  fixed_costs: [],
 };
 
 export interface EnergyInfo {
   cost_sensors: Record<string, string>;
+  // Fixed cost id to the entity ID of its cost sensor
+  fixed_cost_sensors: Record<string, string>;
   solar_forecast_domains: string[];
 }
 
@@ -381,6 +411,7 @@ export interface EnergyPreferencesValidation {
   device_consumption: EnergyValidationIssue[][];
   device_consumption_water: EnergyValidationIssue[][];
   device_consumption_gas: EnergyValidationIssue[][];
+  fixed_costs: EnergyValidationIssue[][];
 }
 
 export const getEnergyInfo = (callWS: HomeAssistant["callWS"]) =>
@@ -442,6 +473,30 @@ export interface EnergySourceByType {
 
 export const energySourcesByType = (prefs: EnergyPreferences) =>
   groupBy(prefs.energy_sources, (item) => item.type) as EnergySourceByType;
+
+export type FixedCostsByType = Partial<
+  Record<FixedCostType, FixedCostEnergyPreference[]>
+>;
+
+export const fixedCostsByType = (prefs: EnergyPreferences) =>
+  groupBy(prefs.fixed_costs, (item) => item.type) as FixedCostsByType;
+
+/** Sum of the fixed costs, or undefined without cost data. */
+export const calculateFixedCostTotal = (
+  fixedCosts: FixedCostEnergyPreference[],
+  info: EnergyInfo,
+  stats: Statistics
+): number | undefined => {
+  let total: number | undefined;
+  for (const fixedCost of fixedCosts) {
+    const statId = info.fixed_cost_sensors[fixedCost.id];
+    const cost = statId ? calculateStatisticSumGrowth(stats[statId]) : null;
+    if (cost !== null) {
+      total = (total ?? 0) + cost;
+    }
+  }
+  return total;
+};
 
 /** Import cost minus export compensation, or undefined without cost data. */
 export const calculateGridNetCost = (
@@ -757,6 +812,15 @@ export const getReferencedStatisticIds = (
     statIDs.push(
       ...prefs.device_consumption_gas.map((d) => d.stat_consumption)
     );
+  }
+  for (const fixedCost of prefs.fixed_costs) {
+    if (includeTypes && !includeTypes.includes(fixedCost.type)) {
+      continue;
+    }
+    const costStatId = info.fixed_cost_sensors[fixedCost.id];
+    if (costStatId) {
+      statIDs.push(costStatId);
+    }
   }
 
   return statIDs;
@@ -2937,6 +3001,13 @@ export const downloadEnergyData = (
 
     printCategory("device_consumption_gas", gasDevices, state.gasUnit);
   }
+
+  energyData.prefs.fixed_costs.forEach((fixedCost) => {
+    const costId = state.info.fixed_cost_sensors[fixedCost.id];
+    if (costId) {
+      processStat(costId, `${fixedCost.type}_fixed_cost`, currency);
+    }
+  });
 
   const { summedData } = getSummedData(state);
   const { consumption } = computeConsumptionData(summedData, undefined);
