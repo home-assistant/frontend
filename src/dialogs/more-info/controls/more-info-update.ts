@@ -51,6 +51,7 @@ import { showAlertDialog } from "../../generic/show-dialog-box";
 import { showToast } from "../../../util/toast";
 import { showLogsDialog } from "../../../panels/config/logs/show-dialog-logs";
 import "../components/update/ha-more-info-update-backup";
+import "../components/update/ha-more-info-update-upgrade-check";
 import type { HaMoreInfoUpdateBackup } from "../components/update/ha-more-info-update-backup";
 
 // Dialogs that reflect their open state to the `open` attribute.
@@ -154,6 +155,28 @@ class MoreInfoUpdate extends LitElement {
     this._backupEventsUnsub = backupEventsUnsub;
   }
 
+  // Core says which update is the core one; skip asking for any other kind.
+  private _mayBeCoreUpdate(): boolean {
+    return (
+      isComponentLoaded(this._config, "homeassistant_upgrade_check") &&
+      [
+        "hassio",
+        // Mock: the upgrade check's own core update, where there is no Supervisor.
+        "homeassistant_upgrade_check",
+      ].includes(this._entityEntry?.platform ?? "")
+    );
+  }
+
+  // Supervisor and app updates also come from hassio, but only Core has
+  // release notes to check.
+  private _isCoreUpdate(): boolean {
+    return (
+      this._mayBeCoreUpdate() &&
+      (this._entityEntry?.platform !== "hassio" ||
+        this._hassioDeviceId() === "core")
+    );
+  }
+
   private _backupInProgressMessage(): string | undefined {
     // The Supervisor only holds back the updates it manages.
     if (this._entityEntry?.platform !== "hassio") {
@@ -252,6 +275,16 @@ class MoreInfoUpdate extends LitElement {
                     </a>
                   </div>
                 </div>`
+              : nothing
+          }
+          ${
+            this._mayBeCoreUpdate() && this.stateObj.state === "on"
+              ? html`<ha-more-info-update-upgrade-check
+                  .entityId=${this.stateObj.entity_id}
+                  .latestVersion=${this.stateObj.attributes.latest_version}
+                  .releaseUrl=${releaseUrl}
+                  .core=${this._isCoreUpdate()}
+                ></ha-more-info-update-upgrade-check>`
               : nothing
           }
         </div>
@@ -498,21 +531,25 @@ class MoreInfoUpdate extends LitElement {
 
   // Supervisor names the app by its slug in log lines; other hassio devices aren't apps.
   private _appSlug(): string | undefined {
-    const deviceId = this._entityEntry?.device_id;
-
-    if (!deviceId) {
-      return undefined;
-    }
-
-    const id = this._devices[deviceId]?.identifiers.find(
-      ([domain]) => domain === "hassio"
-    )?.[1];
+    const id = this._hassioDeviceId();
 
     if (!id || NON_APP_HASSIO_DEVICES.has(id) || id.startsWith("mount_")) {
       return undefined;
     }
 
     return id;
+  }
+
+  private _hassioDeviceId(): string | undefined {
+    const deviceId = this._entityEntry?.device_id;
+
+    if (!deviceId) {
+      return undefined;
+    }
+
+    return this._devices[deviceId]?.identifiers.find(
+      ([domain]) => domain === "hassio"
+    )?.[1];
   }
 
   private _handleShowSupervisorLogs(): void {
