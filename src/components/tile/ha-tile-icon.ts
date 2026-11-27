@@ -1,9 +1,9 @@
-import type { TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import type { ActionHandlerOptions } from "../../data/lovelace/action_handler";
-import { actionHandler } from "../../panels/lovelace/common/directives/action-handler-directive";
+import { actionHandlerBind } from "../../panels/lovelace/common/directives/action-handler-directive";
 import "../ha-icon";
 import "../ha-svg-icon";
 
@@ -56,6 +56,11 @@ export class HaTileIcon extends LitElement {
     return nothing;
   }
 
+  protected updated(changedProps: PropertyValues<this>): void {
+    super.updated(changedProps);
+    actionHandlerBind(this, this.actionHandlerOptions);
+  }
+
   protected render(): TemplateResult {
     const hasImage = Boolean(this.imageUrl);
 
@@ -67,7 +72,6 @@ export class HaTileIcon extends LitElement {
         aria-label=${ifDefined(
           this.interactive ? this.accessibleLabel : undefined
         )}
-        .actionHandler=${actionHandler(this.actionHandlerOptions)}
       >
         <slot name="icon">${this._renderIcon()}</slot>
       </div>
@@ -94,6 +98,7 @@ export class HaTileIcon extends LitElement {
     :host([interactive]) {
       -webkit-tap-highlight-color: transparent;
       pointer-events: auto;
+      cursor: pointer;
     }
     :host([interactive]:active) {
       transform: scale(1.2);
@@ -141,6 +146,9 @@ export class HaTileIcon extends LitElement {
       display: flex;
       color: var(--tile-icon-color);
       transition: color 180ms ease-in-out;
+      pointer-events: none;
+    }
+    ::slotted(:not([slot])) {
       pointer-events: none;
     }
     .container img {

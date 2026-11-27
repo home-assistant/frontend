@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing, unsafeCSS } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../../common/decorators/consume";
@@ -16,7 +16,10 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-slider";
 import type { CoverEntity } from "../../../data/cover";
-import { coverSupportsTiltPosition } from "../../../data/cover";
+import {
+  coverSupportsTiltPosition,
+  coverTiltOpenness,
+} from "../../../data/cover";
 import {
   apiContext,
   entitiesContext,
@@ -37,34 +40,29 @@ import type {
   LovelaceCardFeatureContext,
 } from "./types";
 
-function generateTiltSliderTrackBackgroundGradient() {
-  const count = 24;
-  const minStrokeWidth = 0.2;
-  const gradient: [number, string][] = [];
+const SLAT_COUNT = 24;
+const MIN_SLAT_WIDTH = 0.2;
 
-  for (let i = 0; i < count; i++) {
-    const stopOffset1 = i / count;
-    const stopOffset2 =
-      stopOffset1 +
-      (i / count ** 2) * (1 - minStrokeWidth) +
-      minStrokeWidth / count;
+const computeTiltGradient = (stateObj: CoverEntity) => {
+  const stops: string[] = [];
 
-    if (i !== 0) {
-      gradient.push([stopOffset1, "transparent"]);
-    }
-    gradient.push([stopOffset1, "var(--control-slider-color)"]);
-    gradient.push([stopOffset2, "var(--control-slider-color)"]);
-    gradient.push([stopOffset2, "transparent"]);
+  for (let i = 0; i < SLAT_COUNT; i++) {
+    const tilt = ((i + 0.5) / SLAT_COUNT) * 100;
+    const closedness = 1 - coverTiltOpenness(stateObj, tilt) / 100;
+    const width = MIN_SLAT_WIDTH + (1 - MIN_SLAT_WIDTH) * closedness;
+    const slatStart = ((i + (1 - width) / 2) / SLAT_COUNT) * 100;
+    const slatEnd = ((i + (1 + width) / 2) / SLAT_COUNT) * 100;
+
+    stops.push(
+      `transparent ${slatStart}%`,
+      `var(--control-slider-color) ${slatStart}%`,
+      `var(--control-slider-color) ${slatEnd}%`,
+      `transparent ${slatEnd}%`
+    );
   }
 
-  return unsafeCSS(
-    gradient
-      .map(([stop, color]) => `${color} ${(stop as number) * 100}%`)
-      .join(", ")
-  );
-}
-
-const GRADIENT = generateTiltSliderTrackBackgroundGradient();
+  return stops.join(", ");
+};
 
 const supportsCoverTiltPositionCardFeatureFromState = (
   stateObj: HassEntity
@@ -159,6 +157,10 @@ class HuiCoverTiltPositionCardFeature
       "--state-cover-inactive-color": openColor,
     };
 
+    const gradientStyle = {
+      "--tilt-gradient": computeTiltGradient(this._stateObj),
+    };
+
     return html`
       <ha-control-slider
         style=${styleMap(style)}
@@ -178,7 +180,11 @@ class HuiCoverTiltPositionCardFeature
         .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_tilt_position}
         .locale=${this._locale}
       >
-        <div slot="background" class="gradient"></div
+        <div
+          slot="background"
+          class="gradient"
+          style=${styleMap(gradientStyle)}
+        ></div
       ></ha-control-slider>
     `;
   }
@@ -198,8 +204,11 @@ class HuiCoverTiltPositionCardFeature
       cardFeatureStyles,
       css`
         .gradient {
-          background: linear-gradient(to right, ${GRADIENT});
+          background: linear-gradient(to left, var(--tilt-gradient));
           opacity: 0.6;
+        }
+        .gradient:dir(rtl) {
+          background: linear-gradient(to right, var(--tilt-gradient));
         }
       `,
     ];

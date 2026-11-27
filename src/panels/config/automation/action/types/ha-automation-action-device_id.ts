@@ -27,9 +27,18 @@ import {
 } from "../../../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../../types";
+import {
+  deviceAutomationErrorText,
+  deviceErrorText,
+} from "../../automation-errors";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 
 @customElement("ha-automation-action-device_id")
 export class HaDeviceAction extends LitElement {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["device_id", "domain"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public disabled = false;
@@ -131,12 +140,20 @@ export class HaDeviceAction extends LitElement {
   }
 
   protected render() {
+    const deviceError = this._fieldErrors.fieldError("device_id");
+    const automationError = this._fieldErrors.fieldError("domain");
     const deviceId = this._deviceId || this.action.device_id;
 
     return html`
       <ha-device-picker
         .value=${deviceId}
         .replacementDeviceIds=${this._replacementDeviceIds}
+        .invalid=${!!deviceError}
+        .errorMessage=${
+          deviceError
+            ? deviceErrorText(this.hass.localize, deviceError)
+            : undefined
+        }
         .disabled=${this.disabled}
         @value-changed=${this._devicePicked}
         label=${this.hass.localize(
@@ -144,6 +161,16 @@ export class HaDeviceAction extends LitElement {
         )}
       ></ha-device-picker>
       <ha-device-action-picker
+        .invalid=${!!automationError}
+        .errorMessage=${
+          automationError
+            ? deviceAutomationErrorText(
+                this.hass.localize,
+                "actions",
+                automationError
+              )
+            : undefined
+        }
         .value=${this.action}
         .deviceId=${deviceId}
         .disabled=${this.disabled}

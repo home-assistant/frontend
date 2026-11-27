@@ -238,6 +238,7 @@ export class HaGridSizeEditor extends LitElement {
         grid-template-rows: auto auto;
         grid-template-columns: auto 1fr;
         gap: var(--ha-space-2);
+        padding-left: var(--ha-space-4);
       }
       .precise {
         grid-area: precise;

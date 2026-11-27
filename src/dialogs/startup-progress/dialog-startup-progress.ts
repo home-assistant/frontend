@@ -95,6 +95,23 @@ class DialogStartupProgress extends DialogMixin(LitElement) {
           .slice(0, MAX_SLOWEST);
       });
     }
+    if (changedProps.has("_progress") || changedProps.has("_setups")) {
+      this._loadTitles();
+    }
+  }
+
+  private _loadTitles() {
+    const progress = this._progress
+      ? this._computeProgress(this._progress, this._config.config.state)
+      : undefined;
+    const domains = [
+      ...(progress?.active.map(([domain]) => domain) ?? []),
+      ...(progress?.failed ?? []),
+      ...(this._setups?.map((setup) => setup.domain) ?? []),
+    ];
+    if (domains.length) {
+      this._i18n.loadBackendTranslation("title", domains);
+    }
   }
 
   protected render() {

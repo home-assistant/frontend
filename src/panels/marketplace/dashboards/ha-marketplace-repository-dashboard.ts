@@ -26,6 +26,8 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { formatNumber } from "../../../common/number/format_number";
 import { extractSearchParamsObject } from "../../../common/url/search-params";
 import { deepEqual } from "../../../common/util/deep-equal";
+import "../../../components/chips/ha-assist-chip";
+import "../../../components/chips/ha-chip-set";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-button";
@@ -34,13 +36,21 @@ import "@home-assistant/webawesome/dist/components/divider/divider";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { getConfigEntries } from "../../../data/config_entries";
+import type { IntegrationCategoryIcons } from "../../../data/icons";
+import { getIntegrationCategoryIcons } from "../../../data/icons";
+import {
+  integrationCategoryIcon,
+  integrationCategoryName,
+} from "../../../data/integration_category";
 import {
   apiContext,
   brandsAccessTokenContext,
   configContext,
+  connectionContext,
   internationalizationContext,
   uiContext,
 } from "../../../data/context";
@@ -92,11 +102,16 @@ import { marketplaceBrandsUrl } from "../../../util/brands-url";
 import { generateFrontendResourceURL } from "../tools/frontend-resource";
 import { installBlockedReason } from "../tools/install-blocked-reason";
 import { typeIcon } from "../tools/type-icon";
+import {
+  browseUrl,
+  INTEGRATION_CATEGORY_FILTER,
+} from "./dashboard-repositories";
 import { isCommunityOrganization, repositoryAuthors } from "../tools/authors";
 import {
   markdownWithRepositoryContext,
   repositoryUrl,
 } from "../tools/markdown";
+import { MARKETPLACE_NAME } from "../../../common/translations/name-placeholders";
 
 // Repository pages live at /<id> below /repository, my links at /repository itself.
 const repositoryIdFromRoute = (route: Route): string => route.path.substring(1);
@@ -157,6 +172,11 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
+
+  @state() private _integrationCategoryIcons?: IntegrationCategoryIcons;
+
   @state()
   @consumeEntityState({ entityIdPath: ["_repository", "update_entity_id"] })
   private _updateEntity?: UpdateEntity;
@@ -176,6 +196,8 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   private _request = 0;
 
   private _settingPreReleases = new Set<string>();
+
+  private _loadingIntegrationCategoryIcons = false;
 
   protected async firstUpdated(
     changedProperties: PropertyValues<this>
@@ -301,24 +323,29 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     this._fetchRepository(existing.id);
   }
 
-  protected willUpdate(changedProps: PropertyValues<this>): void {
+  protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
 
     // The router reuses this element when going from one repository to
     // another, the first one is loaded by firstUpdated.
-    const previousRoute = changedProps.get("route");
+    const previousRoute = changedProps.get("route") as Route | undefined;
     if (
-      !this.hasUpdated ||
-      !previousRoute ||
-      repositoryIdFromRoute(previousRoute) === repositoryIdFromRoute(this.route)
+      this.hasUpdated &&
+      previousRoute &&
+      repositoryIdFromRoute(previousRoute) !== repositoryIdFromRoute(this.route)
     ) {
-      return;
+      this._repository = undefined;
+      this._error = undefined;
+      this._refreshError = undefined;
+      this._loadRepositoryFromRoute();
     }
 
-    this._repository = undefined;
-    this._error = undefined;
-    this._refreshError = undefined;
-    this._loadRepositoryFromRoute();
+    if (
+      changedProps.has("_repository") &&
+      this._repository?.integration_categories?.length
+    ) {
+      this._loadIntegrationCategoryIcons();
+    }
   }
 
   protected updated(changedProps: PropertyValues<this>): void {
@@ -370,6 +397,24 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
     if (this._repository?.id === repositoryId) {
       this._fetchRepository();
+    }
+  }
+
+  // Only integrations have categories, other repositories don't need them
+  private async _loadIntegrationCategoryIcons(): Promise<void> {
+    if (
+      this._integrationCategoryIcons ||
+      this._loadingIntegrationCategoryIcons
+    ) {
+      return;
+    }
+    this._loadingIntegrationCategoryIcons = true;
+    try {
+      this._integrationCategoryIcons = await getIntegrationCategoryIcons(
+        this._connection.connection
+      );
+    } finally {
+      this._loadingIntegrationCategoryIcons = false;
     }
   }
 
@@ -495,7 +540,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
       <hass-subpage
         .narrow=${this.narrow}
         back-path="/marketplace"
-        .header=${this._i18n.localize("ui.panel.marketplace.title")}
+        .header=${MARKETPLACE_NAME}
       >
         <ha-dropdown
           slot="toolbar-icon"
@@ -595,9 +640,44 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
             ? html`<p class="description">${repository.description}</p>`
             : nothing
         }
+        ${this._renderIntegrationCategories(repository)}
       </div>
       ${this._renderStatus(repository)}
     </ha-card>`;
+  }
+
+  // Each links to the other integrations in that category
+  private _renderIntegrationCategories(repository: RepositoryInfo) {
+    const categories = (repository.integration_categories ?? [])
+      .map((slug) => ({
+        slug,
+        name: integrationCategoryName(this._i18n.localize, slug),
+        icon: integrationCategoryIcon(this._integrationCategoryIcons, slug),
+      }))
+      // Ones this Home Assistant doesn't know are left out
+      .filter((category) => category.name);
+
+    if (!categories.length) {
+      return nothing;
+    }
+
+    return html`<ha-chip-set class="categories">
+      ${categories.map(
+        (category) =>
+          html`<ha-assist-chip
+            .label=${category.name}
+            .href=${browseUrl({
+              filters: { [INTEGRATION_CATEGORY_FILTER]: [category.slug] },
+            })}
+          >
+            ${
+              category.icon
+                ? html`<ha-icon slot="icon" .icon=${category.icon}></ha-icon>`
+                : nothing
+            }
+          </ha-assist-chip>`
+      )}
+    </ha-chip-set>`;
   }
 
   // Where it stands, and the one thing to do next
@@ -1080,6 +1160,9 @@ type: module</pre>`,
         }
         .description {
           margin-block: var(--ha-space-4) 0;
+        }
+        .categories {
+          margin-block-start: var(--ha-space-4);
         }
         .status {
           display: flex;

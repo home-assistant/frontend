@@ -4,6 +4,7 @@ import { html } from "lit";
 import { customElement, state } from "lit/decorators";
 import { storage } from "../common/decorators/storage";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
+import { whenDocumentVisible } from "../common/dom/when-document-visible";
 import { handleHistoryPop, navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { decodeMoreInfoUrl } from "../common/url/more-info-query-params";
@@ -77,6 +78,8 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   private _hiddenTimeout?: number;
 
   private _visiblePromiseResolve?: () => void;
+
+  private _cancelVisibilityRecovery?: () => void;
 
   constructor() {
     super();
@@ -426,7 +429,9 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
         }
       }, 300000);
     }
-    window.addEventListener("focus", () => this._onVisible(), { once: true });
+    this._cancelVisibilityRecovery = whenDocumentVisible(() =>
+      this._onVisible()
+    );
   }
 
   private _suspendApp() {
@@ -438,6 +443,8 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   }
 
   private _onVisible() {
+    this._cancelVisibilityRecovery?.();
+    this._cancelVisibilityRecovery = undefined;
     // Clear timer to close the connection
     if (this._hiddenTimeout) {
       clearTimeout(this._hiddenTimeout);

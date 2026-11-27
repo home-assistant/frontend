@@ -5,7 +5,6 @@ import {
   mdiNas,
   mdiPencil,
   mdiPlayBox,
-  mdiRefresh,
   mdiReload,
 } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -136,19 +135,6 @@ class HaConfigSectionStorage extends LitElement {
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.storage.caption")}
       >
-        ${
-          hasRecorder
-            ? html`<ha-icon-button
-                slot="toolbar-icon"
-                .disabled=${this._databaseLoading || this._databaseAnalyzing}
-                .path=${mdiRefresh}
-                .label=${this.hass.localize(
-                  "ui.panel.config.storage.database.analyze"
-                )}
-                @click=${this._analyzeDatabase}
-              ></ha-icon-button>`
-            : nothing
-        }
         <div class="content">
           ${
             this._error
@@ -195,18 +181,20 @@ class HaConfigSectionStorage extends LitElement {
               : ""
           }
           ${
+            isComponentLoaded(this.hass.config, "hassio")
+              ? this._renderMounts(validMounts, isHAOS)
+              : nothing
+          }
+          ${
             hasRecorder
               ? html`<storage-database-card
                   .narrow=${this.narrow}
                   .usage=${this._databaseUsage}
+                  .loading=${this._databaseLoading}
                   .analyzing=${this._databaseAnalyzing}
                   .error=${this._databaseError}
+                  @database-analyze=${this._analyzeDatabase}
                 ></storage-database-card>`
-              : nothing
-          }
-          ${
-            isComponentLoaded(this.hass.config, "hassio")
-              ? this._renderMounts(validMounts, isHAOS)
               : nothing
           }
         </div>

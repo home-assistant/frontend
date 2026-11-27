@@ -14,6 +14,10 @@ import {
   type SearchParamsSource,
 } from "../../../common/url/query-params";
 import type { DataTableRowData } from "../../../components/data-table/ha-data-table";
+import {
+  inIntegrationCategory,
+  integrationCategoryName,
+} from "../../../data/integration_category";
 import type { RepositoryBase } from "../../../data/marketplace/repository";
 import type { HomeAssistant } from "../../../types";
 import type { MarketplaceTab } from "./ha-marketplace-dashboard";
@@ -38,6 +42,9 @@ export const TYPE_FILTER = "type";
 
 export const SOURCE_FILTER = "source";
 
+// Like `energy`, which takes in its subcategories, or `energy.solar`
+export const INTEGRATION_CATEGORY_FILTER = "integration_category";
+
 // Where a repository comes from, the community catalog or added from a link
 export const SOURCE_ORDER = ["catalog", "custom"] as const;
 
@@ -49,7 +56,10 @@ const repositorySource = (repository: RepositoryBase): RepositorySource =>
 // What the filter panes picked, nothing picked in a pane shows everything
 export type RepositoryFilters = Partial<
   Record<
-    typeof STATUS_FILTER | typeof TYPE_FILTER | typeof SOURCE_FILTER,
+    | typeof STATUS_FILTER
+    | typeof TYPE_FILTER
+    | typeof SOURCE_FILTER
+    | typeof INTEGRATION_CATEGORY_FILTER,
     string[]
   >
 >;
@@ -128,10 +138,13 @@ export const statusesOfTab = (
   tab === "installed" ? INSTALLED_STATUS_ORDER : STATUS_ORDER;
 
 // The filters are kept for every tab. A status picked on another tab that this
-// one can't list is left out here, instead of leaving the table empty.
+// one can't list is left out here, instead of leaving the table empty. So is
+// an integration category nothing on this tab is in, when the ones it lists
+// are given. Before the repositories load it lists none, so the URL keeps them.
 export const filtersOfTab = (
   filters: RepositoryFilters,
-  tab: MarketplaceTab
+  tab: MarketplaceTab,
+  integrationCategories?: readonly string[]
 ): RepositoryFilters => {
   const statuses: readonly string[] = statusesOfTab(tab);
 
@@ -140,25 +153,31 @@ export const filtersOfTab = (
     [STATUS_FILTER]: filters[STATUS_FILTER]?.filter((status) =>
       statuses.includes(status)
     ),
+    [INTEGRATION_CATEGORY_FILTER]: integrationCategories
+      ? filters[INTEGRATION_CATEGORY_FILTER]?.filter((slug) =>
+          integrationCategories.includes(slug)
+        )
+      : filters[INTEGRATION_CATEGORY_FILTER],
   };
 };
 
-// The status pane only sends what this tab lists, so statuses picked on another
-// tab that this one can't list are kept for when that tab is opened again
+// A pane only sends what it lists, so what was picked on another tab that this
+// one can't list is kept for when that tab is opened again
+export const paneFilterOfTab = (
+  previous: string[] | undefined,
+  listed: readonly string[],
+  picked: string[] = []
+): string[] => [
+  ...(previous?.filter((value) => !listed.includes(value)) ?? []),
+  ...picked,
+];
+
 export const statusFilterOfTab = (
   filters: RepositoryFilters,
   tab: MarketplaceTab,
-  picked: string[] = []
-): string[] => {
-  const statuses: readonly string[] = statusesOfTab(tab);
-
-  return [
-    ...(filters[STATUS_FILTER]?.filter(
-      (status) => !statuses.includes(status)
-    ) ?? []),
-    ...picked,
-  ];
-};
+  picked?: string[]
+): string[] =>
+  paneFilterOfTab(filters[STATUS_FILTER], statusesOfTab(tab), picked);
 
 const matchesFilters = (
   repository: RepositoryBase,
@@ -182,6 +201,17 @@ const matchesFilters = (
   const sources = filters[SOURCE_FILTER];
 
   if (sources?.length && !sources.includes(repositorySource(repository))) {
+    return false;
+  }
+
+  const integrationCategories = filters[INTEGRATION_CATEGORY_FILTER];
+
+  if (
+    integrationCategories?.length &&
+    !integrationCategories.some((slug) =>
+      inIntegrationCategory(repository.integration_categories, slug)
+    )
+  ) {
     return false;
   }
 
@@ -226,6 +256,13 @@ export const filterRepositories = (
       translated_source: localize(
         `ui.panel.marketplace.repository_source.${repositorySource(repository)}`
       ),
+      // Ones this Home Assistant doesn't know are left out
+      translated_integration_categories: (
+        repository.integration_categories ?? []
+      )
+        .map((slug) => integrationCategoryName(localize, slug))
+        .filter(Boolean)
+        .join(", "),
       // A date as text or 0 without one, only numbers sort among each other
       last_updated_timestamp: timestamp(repository.last_updated),
     }));
@@ -289,6 +326,8 @@ export const browseLinkFromUrl = (
       [STATUS_FILTER]: lists.status?.filter(Boolean),
       [TYPE_FILTER]: lists.type?.filter(Boolean),
       [SOURCE_FILTER]: lists.source?.filter(Boolean),
+      [INTEGRATION_CATEGORY_FILTER]:
+        lists.integration_category?.filter(Boolean),
     },
   };
 };

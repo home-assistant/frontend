@@ -29,14 +29,21 @@ export interface TimelineSegment {
   end: number;
 }
 
-/** Resolves each frame of a run to the state covering most of that frame. */
+/**
+ * Resolves each frame of a run to the state covering most of that frame. The
+ * first and last frames prefer any other state over the state of the
+ * neighbour they touch, so a run never disappears into its neighbours.
+ */
 function collapseRun(
   segments: TimelineSegment[],
   from: number,
   to: number,
   frameMs: number,
+  before: string | undefined,
+  after: string | undefined,
   push: (segment: TimelineSegment) => void
 ) {
+  const runStart = segments[from].start;
   const runEnd = segments[to - 1].end;
   const frameStates = new Map<
     string,
@@ -85,6 +92,22 @@ function collapseRun(
     }
     while (index < to && segments[index].end <= frameEnd) {
       index++;
+    }
+    const avoidBefore = frameStart === runStart ? before : undefined;
+    const avoidAfter = frameEnd === runEnd ? after : undefined;
+    if (bestState === avoidBefore || bestState === avoidAfter) {
+      let otherDuration = 0;
+      for (const [state, entry] of frameStates) {
+        if (
+          state !== avoidBefore &&
+          state !== avoidAfter &&
+          entry.duration > otherDuration
+        ) {
+          otherDuration = entry.duration;
+          bestState = state;
+          bestLocState = entry.locState;
+        }
+      }
     }
     if (bestState !== null) {
       push({
@@ -138,7 +161,17 @@ export function downSampleTimelineSegments(
     ) {
       index++;
     }
-    collapseRun(segments, from, index, frameMs, push);
+    const last = result[result.length - 1];
+    const next = segments[index];
+    collapseRun(
+      segments,
+      from,
+      index,
+      frameMs,
+      last?.end === segments[from].start ? last.state : undefined,
+      next?.start === segments[index - 1].end ? next.state : undefined,
+      push
+    );
   }
   return result;
 }

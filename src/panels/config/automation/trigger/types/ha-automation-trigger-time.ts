@@ -30,6 +30,9 @@ import type { FrontendLocaleData } from "../../../../../data/translation";
 import type { HomeAssistant } from "../../../../../types";
 import { baseTriggerStruct } from "../../structs";
 import type { TriggerElement } from "../ha-automation-trigger-row";
+import type { ConfigValidationError } from "../../../../../data/config";
+import { errorMessage } from "../../automation-errors";
+import { AutomationFieldErrorsController } from "../../automation-field-errors";
 
 const MODE_TIME = "time";
 const MODE_ENTITY = "entity";
@@ -53,6 +56,10 @@ const timeTriggerStruct = assign(
 
 @customElement("ha-automation-trigger-time")
 export class HaTimeTrigger extends LitElement implements TriggerElement {
+  private readonly _fieldErrors = new AutomationFieldErrorsController(this, {
+    inlineFields: ["at", "weekday"],
+  });
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public trigger!: TimeTrigger;
@@ -189,6 +196,42 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     }
   );
 
+  // The form shows `at` as a time, or as an entity and its offset
+  private _formFieldError = (
+    field: string
+  ): ConfigValidationError | undefined => {
+    if (field === "offset") {
+      return this._fieldErrors.errorsAt(["at", "offset"])[0];
+    }
+    if (field === "time" || field === "entity") {
+      return this._fieldErrors
+        .errorsAt(["at"])
+        .find(
+          (error) => error.path[this._fieldErrors.path.length + 1] !== "offset"
+        );
+    }
+    return this._fieldErrors.fieldError(field);
+  };
+
+  private _formErrors(mode: typeof MODE_TIME | typeof MODE_ENTITY) {
+    const { at, ...fields } = this._fieldErrors.fields;
+    if (at === undefined) {
+      return this._fieldErrors.fields;
+    }
+    const atField = mode === MODE_TIME ? "time" : "entity";
+    const atError = this._formFieldError(atField);
+    const offsetError = this._formFieldError("offset");
+    return {
+      ...fields,
+      ...(atError
+        ? { [atField]: errorMessage(this.hass.localize, atError) }
+        : {}),
+      ...(offsetError
+        ? { offset: errorMessage(this.hass.localize, offsetError) }
+        : {}),
+    };
+  }
+
   protected render() {
     const at = this.trigger.at;
 
@@ -205,6 +248,11 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
 
     return html`
       <ha-form
+        .error=${this._formErrors(data.mode)}
+        .computeError=${this._fieldErrors.formError(
+          this._computeLabelCallback,
+          this._formFieldError
+        )}
         .hass=${this.hass}
         .data=${data}
         .schema=${schema}

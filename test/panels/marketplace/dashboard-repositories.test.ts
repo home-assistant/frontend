@@ -10,6 +10,7 @@ import {
   browseUrl,
   filterRepositories,
   filtersOfTab,
+  paneFilterOfTab,
   marketplaceUpdateEntityIds,
   skippedUpdateRepositories,
   statusesOfTab,
@@ -89,6 +90,68 @@ describe("filterRepositories", () => {
         )
       )
     ).toEqual(expected);
+  });
+
+  it.each([
+    // A category takes in its subcategories, a subcategory only itself
+    [{ integration_category: ["energy"] }, ["Prices", "Solar"]],
+    [{ integration_category: ["energy.solar_batteries"] }, ["Solar"]],
+    [
+      { integration_category: ["energy", "lighting"] },
+      ["Lamps", "Prices", "Solar"],
+    ],
+    [{ integration_category: ["water"] }, []],
+    [{ integration_category: [] }, ["Lamps", "Plain", "Prices", "Solar"]],
+  ])(
+    "keeps the integration category that matches %j",
+    (activeFilters, expected) => {
+      expect(
+        names(
+          filterRepositories(
+            [
+              repository("Plain"),
+              repository("Lamps", { integration_categories: ["lighting"] }),
+              repository("Prices", {
+                integration_categories: ["energy.energy_prices"],
+              }),
+              repository("Solar", {
+                integration_categories: [
+                  "energy.solar_batteries",
+                  "weather_alerts",
+                ],
+              }),
+            ],
+            localize,
+            activeFilters
+          )
+        )
+      ).toEqual(expected);
+    }
+  );
+
+  it("adds the names of the integration categories, without unknown ones", () => {
+    const categoryNames = {
+      "component.homeassistant.integration_category.energy.subcategory.solar_batteries.name":
+        "Solar & batteries",
+      "component.homeassistant.integration_category.weather_alerts.name":
+        "Weather & alerts",
+    };
+    const [row] = filterRepositories(
+      [
+        repository("Solar", {
+          integration_categories: [
+            "energy.solar_batteries",
+            "weather_alerts",
+            "unknown",
+          ],
+        }),
+      ],
+      ((key: string) => categoryNames[key] ?? "") as unknown as LocalizeFunc
+    );
+
+    expect(row.translated_integration_categories).toBe(
+      "Solar & batteries, Weather & alerts"
+    );
   });
 
   it("puts installed first, then new, then the most starred, then by name", () => {
@@ -174,7 +237,12 @@ describe("browseUrl", () => {
       browseUrl({
         search: "mushroom card",
         sorting: { column: "stars", direction: "desc" },
-        filters: { status: ["new"], type: ["theme"], source: ["custom"] },
+        filters: {
+          status: ["new"],
+          type: ["theme"],
+          source: ["custom"],
+          integration_category: ["energy.solar_batteries"],
+        },
       }),
       "http://localhost"
     );
@@ -184,7 +252,12 @@ describe("browseUrl", () => {
     expect(url.searchParams.get("direction")).toBe("desc");
     expect(browseLinkFromUrl(url.search)).toEqual({
       search: "mushroom card",
-      filters: { status: ["new"], type: ["theme"], source: ["custom"] },
+      filters: {
+        status: ["new"],
+        type: ["theme"],
+        source: ["custom"],
+        integration_category: ["energy.solar_batteries"],
+      },
     });
   });
 
@@ -203,6 +276,15 @@ describe("browseLinkFromUrl", () => {
     });
   });
 
+  it("reads a link that only filters on an integration category", () => {
+    expect(
+      browseLinkFromUrl("?integration_category=energy.solar_batteries")
+    ).toEqual({
+      search: "",
+      filters: { integration_category: ["energy.solar_batteries"] },
+    });
+  });
+
   it("keeps what was picked for a link that says nothing about browsing", () => {
     expect(
       browseLinkFromUrl("?owner=hacs&repository=integration")
@@ -211,6 +293,33 @@ describe("browseLinkFromUrl", () => {
 });
 
 describe("filtersOfTab", () => {
+  it("leaves out an integration category nothing on the tab is in", () => {
+    const filters = { integration_category: ["energy", "energy.solar"] };
+
+    expect(
+      filtersOfTab(filters, "installed", ["energy"]).integration_category
+    ).toEqual(["energy"]);
+    expect(filtersOfTab(filters, "installed", []).integration_category).toEqual(
+      []
+    );
+    // Without the ones the tab lists, as before the repositories load
+    expect(filtersOfTab(filters, "installed").integration_category).toEqual(
+      filters.integration_category
+    );
+  });
+
+  it("keeps an integration category picked on browse when the installed pane changes", () => {
+    const picked = ["energy.solar", "climate"];
+
+    expect(
+      paneFilterOfTab(picked, ["climate", "lighting"], ["lighting"])
+    ).toEqual(["energy.solar", "lighting"]);
+    // The pane's clear button sends no value
+    expect(paneFilterOfTab(picked, ["climate"], undefined)).toEqual([
+      "energy.solar",
+    ]);
+  });
+
   it("only offers statuses something installed can have on the installed tab", () => {
     expect(statusesOfTab("installed")).toEqual([
       "pending-restart",

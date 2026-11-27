@@ -21,6 +21,11 @@ export class HaIconButtonPrev extends LitElement {
 
   @property() download?: string;
 
+  static shadowRootOptions: ShadowRootInit = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
   @state() private _icon =
     mainWindow.document.dir === "rtl" ? mdiChevronRight : mdiChevronLeft;
 

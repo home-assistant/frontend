@@ -17,7 +17,6 @@
     "climate": "Climate",
     "home": "Overview",
     "maintenance": "Maintenance",
-    "marketplace": "Marketplace",
     "notfound": "Page not found"
   },
   "state": {
@@ -629,7 +628,13 @@
           "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
           "longitude": "[%key:ui::panel::config::zone::detail::longitude%]",
           "radius": "[%key:ui::panel::config::zone::detail::radius%]",
-          "radius_meters": "[%key:ui::panel::config::core::section::core::core_config::elevation_meters%]"
+          "radius_meters": "[%key:ui::panel::config::core::section::core::core_config::elevation_meters%]",
+          "address_label": "[%key:ui::panel::page-onboarding::core-config::address_label%]",
+          "search_disclosure": "Searches are sent directly to {openstreetmap}, which may receive your IP address. See its {osm_privacy_policy}.",
+          "osm_privacy_policy": "privacy policy",
+          "search_error": "Unable to search for this location. Try again.",
+          "search_results_label": "Search results",
+          "selected_location": "[%key:ui::panel::page-onboarding::core-config::selected_location%]"
         },
         "period": {
           "periods": {
@@ -1378,6 +1383,21 @@
         "select_row": "Select {name}",
         "select_row_generic": "Select row"
       },
+      "camera-player": {
+        "play": "Play",
+        "mute": "Mute",
+        "unmute": "Unmute",
+        "picture_in_picture": "Picture in picture",
+        "exit_picture_in_picture": "Exit picture in picture",
+        "fullscreen": "Full screen",
+        "exit_fullscreen": "Exit full screen",
+        "reset_zoom": "Reset zoom",
+        "zoom_hint": "Use {modifier} + scroll to zoom",
+        "connecting": "Connecting",
+        "stream_info": "Streaming with {type}. Show connection details",
+        "stream_info_connecting": "Connecting to the camera. Show connection details",
+        "stream_info_upgrading": "Streaming with {type}, connecting with {upgrading} in the background. Show connection details"
+      },
       "web-rtc-player": {
         "not_supported": "WebRTC is not supported in this browser.",
         "start_failed": "Failed to start the WebRTC stream: {message}",
@@ -1479,6 +1499,21 @@
         "auto": "Auto",
         "grid": "Grid",
         "list": "List"
+      },
+      "timer-list": {
+        "name": "Name",
+        "start": "Start",
+        "add_timer": "Add timer",
+        "duration": "[%key:ui::dialogs::helper_settings::timer::duration%]",
+        "pause": "Pause",
+        "resume": "Resume",
+        "cancel": "Cancel",
+        "add_minute": "Add 1 minute",
+        "add_minute_short": "+1:00",
+        "remove": "Remove",
+        "paused_name": "{name} (paused)",
+        "finished_name": "{name} (finished)",
+        "no_timers": "No active timers"
       },
       "todo": {
         "item": {
@@ -1734,6 +1769,9 @@
       "items-display-editor": {
         "show": "Show {label}",
         "hide": "Hide {label}"
+      },
+      "list-item-option": {
+        "partly_selected": "Partly selected"
       },
       "form-optional-actions": {
         "add": "Add interaction"
@@ -2811,6 +2849,21 @@
           "skip": "Skip and finish"
         }
       },
+      "camera_stream_info": {
+        "title": "Stream connection",
+        "intro": "Home Assistant starts with the connection that works most reliably and switches to a faster one as soon as it is ready.",
+        "still_images_only": "This camera has no video stream, so it shows a series of still images.",
+        "fallback_in_use": "The video streams of this camera could not be started, so still images are shown instead.",
+        "in_use": "In use",
+        "connecting": "Connecting",
+        "not_supported_count": "Not supported by this camera ({count})",
+        "enhanced_by_cloud": "Enhanced by Home Assistant Link",
+        "description": {
+          "web_rtc": "Real-time video with the lowest delay, usually below a second. The video takes the most direct way from the camera to your device, which can need extra network setup when you are away from home. Needed to talk to the camera.",
+          "hls": "The video is sent in short pieces through Home Assistant. It works on almost every network and device, but is a few seconds behind. Used while WebRTC connects, or when WebRTC is not available.",
+          "mjpeg": "A series of still images, used when the camera has no video stream or the other connections failed. It has no sound."
+        }
+      },
       "shortcuts": {
         "title": "Shortcuts",
         "enable_shortcuts_hint": "For keyboard shortcuts to work, make sure you have them enabled in your {user_profile}.",
@@ -2941,7 +2994,6 @@
       "started_with_issues": "Home Assistant has started. {count, plural,\n  one {# integration needs}\n  other {# integrations need}\n} attention.",
       "details": "Details",
       "triggered": "Triggered {name}",
-      "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}",
       "new_version_available": "A new version of the frontend is available. This page will update in {seconds, plural, one {# second} other {# seconds}}.",
       "new_version_available_reload": "A new version of the frontend is available. It will be applied once you have finished what you are working on.",
@@ -3085,7 +3137,6 @@
             "secondary": "Run extra applications next to Home Assistant"
           },
           "marketplace": {
-            "main": "Marketplace",
             "secondary": "Install community integrations, dashboard content, themes, and templates"
           },
           "dashboards": {
@@ -3943,7 +3994,8 @@
             "location_settings": "Location settings",
             "retention_all": "Keep all backups",
             "retention_backups": "Keep {count} {count, plural,\n one {backup}\n other {backups}\n}",
-            "retention_days": "Keep {count} {count, plural,\n one {day}\n other {days}\n}"
+            "retention_days": "Keep {count} {count, plural,\n one {day}\n other {days}\n}",
+            "retention_inactive": "Retention paused"
           },
           "data": {
             "ha_settings": "Home Assistant settings",
@@ -3999,7 +4051,7 @@
             "retention": "Retention",
             "custom_retention": "Custom retention",
             "custom_retention_label": "Keep only",
-            "retention_description": "Based on the maximum number of backups or how many days they should be kept.",
+            "retention_description": "Based on the maximum number of backups or how many days they should be kept. Only applies to automatic backups, in the locations they are stored in.",
             "retention_presets": {
               "global": "Use global settings",
               "copies_3": "3 backups",
@@ -4274,6 +4326,7 @@
             "save_error": "Error saving configuration: {error}",
             "retention_for_this_system": "Retention for this system",
             "retention_for_location": "Retention for {location}",
+            "retention_inactive": "Automatic backups aren't stored in this location, so its retention settings are paused. Backups already in this location are kept until you delete them. Retention applies again when you turn the location back on for automatic backups.",
             "not_found": "Not found",
             "not_found_description": "Location matching ''{backupId}'' not found",
             "error": "Could not fetch location details",
@@ -4743,6 +4796,13 @@
             "add": "Add",
             "dismiss": "Dismiss",
             "dismiss_failed": "Couldn't dismiss this meter",
+            "show_dismissed": "Show dismissed meters ({count})",
+            "hide_dismissed": "Hide dismissed meters",
+            "dismissed": "Dismissed",
+            "dismissed_title": "Dismissed meters",
+            "dismissed_sub": "Restore a meter to have it suggested again, or add it right away.",
+            "restore": "Restore",
+            "restore_failed": "Couldn't restore this meter",
             "load_failed": "Couldn't check for meters that aren't in your energy dashboard yet.",
             "slots": {
               "grid_import": "Grid consumption",
@@ -5884,7 +5944,14 @@
               "no_category": "No category",
               "add_label": "Add label",
               "enable": "Enable",
-              "disable": "Disable"
+              "disable": "Disable",
+              "delete_selected": {
+                "button": "[%key:ui::panel::config::entities::picker::delete_selected::button%]",
+                "confirm_title": "Delete selected automations?",
+                "confirm_text": "{count, plural,\n  one {The selected automation will be permanently deleted.}\n  other {The {count} selected automations will be permanently deleted.}\n}",
+                "failed_title": "[%key:ui::panel::config::devices::picker::bulk_actions::delete_selected::partial_failure_title%]",
+                "failed": "{count, plural,\n  one {1 automation could not be deleted.}\n  other {{count} automations could not be deleted.}\n} Only automations stored in automations.yaml can be deleted."
+              }
             },
             "empty_header": "Start automating",
             "empty_text_1": "Automations make Home Assistant automatically respond to things happening in and around your home.",
@@ -5913,6 +5980,36 @@
             "disabled": "Automation is disabled",
             "read_only": "This automation cannot be edited from the UI, because it is not stored in the automations.yaml file, or doesn't have an ID.",
             "unavailable": "Automation is unavailable",
+            "errors": {
+              "label": "Problem",
+              "problems_found": "{count, plural,\n  one {# problem found}\n  other {# problems found}\n}",
+              "save_failed": "Saving failed: {problems}",
+              "target_required": "Choose at least one target.",
+              "target_invalid": "Some targets aren't valid. Remove or replace them.",
+              "device_required": "Choose a device.",
+              "field_message": "{field}: {message}",
+              "validation": {
+                "allowed_at_most_one_of": "Use only one of these options: {keys}.",
+                "allowed_one_of": "Use exactly one of these options: {keys}.",
+                "expected_boolean": "Choose on or off.",
+                "expected_duration": "Enter a duration.",
+                "expected_duration_detailed": "Enter a duration, like 0:05:00.",
+                "invalid_value": "[%key:ui::panel::config::automation::editor::errors::validation::not_a_valid_value%]",
+                "key_not_allowed": "[%key:ui::panel::config::automation::editor::errors::validation::not_a_valid_option%]",
+                "not_a_valid_option": "This option isn't supported here.",
+                "not_a_valid_value": "This value isn't valid.",
+                "range_max": "Enter a value of {max} or lower.",
+                "range_max_exclusive": "Enter a value lower than {max}.",
+                "range_min": "Enter a value of {min} or higher.",
+                "range_min_exclusive": "Enter a value higher than {min}.",
+                "required": "This field is required.",
+                "required_field": "{field} is required.",
+                "required_any_of": "Fill in at least one of these options: {keys}.",
+                "required_one_of": "Fill in exactly one of these options: {keys}.",
+                "value_not_empty": "This field can't be empty.",
+                "value_one_of": "Choose one of these values: {values}."
+              }
+            },
             "deprecated_migrated": {
               "title": "Deprecated options updated",
               "description": "This automation used deprecated options that have been automatically updated to their new equivalents. Save the automation to apply the changes."
@@ -7069,6 +7166,15 @@
             "no_category_entity_reg": "To assign a category to a script it needs to have a unique ID.",
             "delete": "[%key:ui::common::delete%]",
             "duplicate": "[%key:ui::common::duplicate%]",
+            "bulk_actions": {
+              "delete_selected": {
+                "button": "[%key:ui::panel::config::entities::picker::delete_selected::button%]",
+                "confirm_title": "Delete selected scripts?",
+                "confirm_text": "{count, plural,\n  one {The selected script will be permanently deleted.}\n  other {The {count} selected scripts will be permanently deleted.}\n}",
+                "failed_title": "[%key:ui::panel::config::devices::picker::bulk_actions::delete_selected::partial_failure_title%]",
+                "failed": "{count, plural,\n  one {1 script could not be deleted.}\n  other {{count} scripts could not be deleted.}\n} Only scripts stored in scripts.yaml can be deleted."
+              }
+            },
             "empty_header": "Create your first script",
             "empty_text": "A script is a sequence of actions that can be run from a dashboard, an automation, or be triggered by voice. For example, a ''Wake-up routine'' script that gradually turns on the light in the bedroom and opens the blinds after a delay.",
             "search": "Search {number} {number, plural,\n  one {script}\n  other {scripts}\n}",
@@ -7704,15 +7810,21 @@
             },
             "triggers": {
               "no_triggers": "No triggers",
-              "unknown_trigger": "Unknown trigger"
+              "unknown_trigger": "Unknown trigger",
+              "required": "Choose a trigger.",
+              "not_supported": "This device has no triggers. Choose another device."
             },
             "conditions": {
               "no_conditions": "No conditions",
-              "unknown_condition": "Unknown condition"
+              "unknown_condition": "Unknown condition",
+              "required": "Choose a condition.",
+              "not_supported": "This device has no conditions. Choose another device."
             },
             "actions": {
               "no_actions": "No actions",
-              "unknown_action": "Unknown action"
+              "unknown_action": "Unknown action",
+              "required": "Choose an action.",
+              "not_supported": "This device has no actions. Choose another device."
             }
           },
           "script": {
@@ -7764,6 +7876,7 @@
             "part_of_device": "Part of {name}",
             "connected_via": "[%key:ui::panel::config::integrations::config_entry::via%]",
             "firmware_version": "Firmware",
+            "serial_number": "[%key:ui::panel::config::serial::fields::serial_number%]",
             "battery": "Battery",
             "disabled_by": "Disabled",
             "no_devices": "No devices",
@@ -7873,9 +7986,6 @@
               "hidden": "Hidden",
               "not_provided": "Not provided",
               "unmanageable": "Unmanageable"
-            },
-            "status_pairs": {
-              "activation": "Activation"
             },
             "headers": {
               "state_icon": "State icon",
@@ -8009,7 +8119,6 @@
           "description": "Manage integrations with services or devices",
           "integration": "integration",
           "discovered": "Discovered",
-          "discovered_devices": "{count, plural,\n one {# discovered device}\n other {# discovered devices}\n}",
           "manage_discovered": "Manage discovered devices",
           "manage_discovered_description": "Ignore or configure previously discovered devices",
           "disabled": "Disabled",
@@ -8017,7 +8126,7 @@
           "new_flow": "Set up another instance of {integration}",
           "attention": "Attention required",
           "configured": "Configured",
-          "new": "Select brand",
+          "add_device_or_integration": "Add device or integration",
           "confirm_new": "Do you want to set up {integration}?",
           "add_integration": "Add integration",
           "no_integrations": "Seems like you don't have any integrations configured yet. Press the button below to add your first integration!",
@@ -8038,7 +8147,31 @@
           "search": "Search integrations",
           "filters": "[%key:ui::components::subpage-data-table::filters%]",
           "filters_disabled_hidden": "Filters, {number} disabled {number, plural,\n one {integration}\n other {integrations}\n} hidden",
-          "search_brand": "Search for a brand name",
+          "all_integrations": "All integrations",
+          "add_a_device": "Add a device",
+          "browse": "Browse",
+          "browse_by": {
+            "label": "Browse by: {value}",
+            "brand": "Brand",
+            "category": "Category"
+          },
+          "all_brands": "All brands",
+          "search_all": "Search all brands and integrations",
+          "search_section": {
+            "brand": "Brands",
+            "category": "Categories",
+            "integration": "Integrations",
+            "helper": "Helpers"
+          },
+          "search_show_more": "Show {count} more",
+          "subcategories": "Subcategories",
+          "connection": {
+            "label": "Connection: {value}",
+            "all": "All",
+            "local": "Local",
+            "cloud": "Cloud"
+          },
+          "search_no_results": "No results for “{term}”",
           "search_helper": "Search for a helper",
           "add_zwave_js_device": "Add Z-Wave device",
           "add_zha_device": "Add Zigbee device",
@@ -8153,7 +8286,7 @@
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "marketplace_uninstall": {
               "title": "Also uninstall {name}?",
-              "text": "{name} came from the Marketplace. Its files stay on your system, and the Marketplace keeps checking for updates until you uninstall it.",
+              "text": "{name} came from the {marketplace}. Its files stay on your system, and the {marketplace} keeps checking for updates until you uninstall it.",
               "confirm": "Uninstall",
               "dismiss": "Keep",
               "failed": "Uninstall failed. Check the Home Assistant logs for details."
@@ -8194,6 +8327,7 @@
             "custom_overwrites_core": "Custom integration that replaces a Core component",
             "depends_on_cloud": "Requires Internet",
             "yaml_only": "This integration cannot be set up from the UI",
+            "yaml_label": "YAML",
             "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
             "debug_logging_enabled": "Debug logging enabled",
@@ -8674,6 +8808,9 @@
             "options_description": "Configure device behavior and network timeouts",
             "network_info_title": "Network information",
             "network_info_description": "View channel and coordinator details",
+            "network_health_title": "Network health",
+            "network_health_description": "Check signal strength and reachability of your devices",
+            "network_health_attention": "{count, plural,\n  one {# device needs}\n  other {# devices need}\n} attention",
             "backup_restore_title": "Backup and restore",
             "backup_restore_description_short": "Download or migrate your Zigbee network backup",
             "backup_restore_description": "Back up or restore your Zigbee adapter. The backup only contains your network information.",
@@ -8704,6 +8841,37 @@
               "title": "Multiprotocol app in use",
               "text": "Zigbee and Thread share the same adapter and must use the same channel. Change the channel of both networks by reconfiguring multiprotocol from the hardware menu."
             }
+          },
+          "network_health": {
+            "title": "Network health",
+            "loading_error": "Failed to load the device list",
+            "network_title": "Your Zigbee network",
+            "snapshot": "Snapshot of your Zigbee network. Signal strength changes often, so a single weak value is not a problem.",
+            "signal_strong": "{count} strong",
+            "signal_fair": "{count} fair",
+            "signal_weak": "{count} weak",
+            "signal_offline": "{count} offline",
+            "updated": "Updated {relative_time}",
+            "lqi_value": "LQI {lqi}",
+            "attention_title": "{count, plural,\n  one {# device needs attention}\n  other {# devices need attention}\n}",
+            "worth_a_look": "Worth a look",
+            "no_devices": "No devices",
+            "via_router": "via {router}",
+            "last_seen": "last seen {time}",
+            "joined": "joined {time}",
+            "power_mains": "mains",
+            "power_battery": "battery",
+            "offline": "Offline",
+            "setup_unfinished": "Setup not finished",
+            "weak_signal": "Weak signal",
+            "weak_signal_count": "{count, plural,\n  one {# device with a weak signal}\n  other {# devices with a weak signal}\n}",
+            "weak_signal_advice": "Usually harmless. A mains-powered device in between helps.",
+            "weak_signal_tip": "Usually harmless. A mains-powered device between a weak device and its router steadies the link.",
+            "low_battery": "Low battery",
+            "low_battery_count": "{count, plural,\n  one {# device with a low battery}\n  other {# devices with a low battery}\n}",
+            "low_battery_advice": "Replace the battery before the device goes offline.",
+            "low_battery_tip": "Battery levels can drop suddenly. A weak signal drains them faster.",
+            "show_map": "Show map"
           },
           "add_device_page": {
             "spinner": "Waiting for Zigbee devices to join…",
@@ -9980,6 +10148,7 @@
               "ssl_certificate": "SSL certificate path",
               "ssl_key": "SSL key path",
               "ssl_peer_certificate": "SSL peer certificate path",
+              "ssl_peer_certificate_remote": "Require client certificates for remote access",
               "ssl_profile": "SSL profile",
               "cors_allowed_origins": "CORS allowed origins",
               "use_x_forwarded_for": "Trust X-Forwarded-For",
@@ -9994,7 +10163,8 @@
               "server_host": "IP addresses or hostnames to bind to. Leave empty to listen on all interfaces.",
               "ssl_certificate": "Absolute path to your TLS certificate (for example, /ssl/fullchain.pem).",
               "ssl_key": "Absolute path to your TLS private key (for example, /ssl/privkey.pem).",
-              "ssl_peer_certificate": "Absolute path to a client certificate Home Assistant should require for secure connections.",
+              "ssl_peer_certificate": "Absolute path to the certificate authority that signs your client certificates. Home Assistant requires them on local connections when SSL is set up.",
+              "ssl_peer_certificate_remote": "Require client certificates on remote access through Home Assistant Link. Needs an SSL peer certificate.",
               "ssl_profile": "Mozilla server side TLS profile, named after the guideline version it follows.",
               "cors_allowed_origins": "Origins that may make cross-origin requests. Include the scheme, for example https://example.com.",
               "use_x_forwarded_for": "Trust the X-Forwarded-For header behind a reverse proxy. Requires the trusted proxies list below.",
@@ -10040,9 +10210,10 @@
           "change_chart_type": "Change chart type",
           "database": {
             "title": "Database",
-            "description": "Use the refresh button to analyze the database and see which tables, entities and statistics use the most space.",
+            "description": "See which tables, entities and statistics use the most space in the database.",
             "analyzing": "Analyzing the database, this can take a while on a large database...",
-            "analyze": "Analyze database",
+            "calculate": "Calculate",
+            "recalculate": "Recalculate",
             "as_of": "as of {time}",
             "tables": "Tables",
             "other_tables": "Other tables",
@@ -10427,6 +10598,7 @@
             "energy_usage_graph": {
               "total_consumed": "Total {num} kWh",
               "total_usage": "{num} kWh",
+              "total_cost": "Net grid cost {cost}",
               "combined_from_grid": "Grid",
               "consumed_solar": "Solar",
               "consumed_battery": "Battery",
@@ -10586,7 +10758,7 @@
           "exit_edit_mode": "Done",
           "close": "Close",
           "add": "Add to Home Assistant",
-          "add_device": "Add device",
+          "add_device_or_integration": "Add device or integration",
           "create_automation": "Create automation",
           "create_area": "Create area",
           "create_area_success": "Area created",
@@ -10780,6 +10952,8 @@
             "pick_card": "Add to dashboard",
             "pick_card_title": "Which card would you like to add to {name}",
             "toggle_editor": "Toggle editor",
+            "enlarge": "Enlarge",
+            "shrink": "Shrink",
             "unsaved_changes": "You have unsaved changes",
             "confirm_cancel": "Are you sure you want to cancel?",
             "show_visual_editor": "Show visual editor",
@@ -10828,6 +11002,8 @@
             "pick_badge": "Which badge would you like to add?",
             "pick_badge_title": "Which badge would you like to add to \"{name}\"?",
             "toggle_editor": "[%key:ui::panel::lovelace::editor::edit_card::toggle_editor%]",
+            "enlarge": "[%key:ui::panel::lovelace::editor::edit_card::enlarge%]",
+            "shrink": "[%key:ui::panel::lovelace::editor::edit_card::shrink%]",
             "unsaved_changes": "[%key:ui::panel::lovelace::editor::edit_card::unsaved_changes%]",
             "confirm_cancel": "[%key:ui::panel::lovelace::editor::edit_card::confirm_cancel%]",
             "show_visual_editor": "[%key:ui::panel::lovelace::editor::edit_card::show_visual_editor%]",
@@ -11919,6 +12095,11 @@
               "limit_min": "Minimum value",
               "limit_max": "Maximum value"
             },
+            "timer-list": {
+              "name": "Timer list",
+              "description": "This card allows you to start, pause, and cancel the timers in a timer list.",
+              "hide_create": "Hide the add timer button"
+            },
             "todo-list": {
               "name": "To-do list",
               "description": "This card allows you to add, edit, check-off, and remove items from your to-do list.",
@@ -12272,6 +12453,9 @@
                   "buttons": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons%]",
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]"
                 }
+              },
+              "timer-progress": {
+                "label": "Timer progress"
               },
               "fan-preset-modes": {
                 "label": "Fan preset modes",
@@ -12785,7 +12969,17 @@
           "migrate_success": "Theme settings migrated.",
           "migrate_failed": "Failed to migrate theme settings.",
           "theme_mode": "Theme mode",
+          "mode_set_by_theme": {
+            "light": "\"{theme}\" only has a light mode.",
+            "dark": "\"{theme}\" only has a dark mode.",
+            "none": "\"{theme}\" has fixed colors and doesn't switch between light and dark mode."
+          },
           "colors": "Custom colors",
+          "colors_set_by_theme": {
+            "both": "Both colors are set by \"{theme}\".",
+            "primary": "The primary color is set by \"{theme}\".",
+            "accent": "The accent color is set by \"{theme}\"."
+          },
           "dark_mode": {
             "auto": "Auto",
             "light": "Light",
@@ -13350,12 +13544,11 @@
         "error_no_data": "You need to select some data sources first."
       },
       "marketplace": {
-        "title": "Marketplace",
-        "not_loaded": "The Marketplace is not available. It does not load in recovery mode or when it failed to start, check the Home Assistant logs for more information.",
-        "load_failed": "The Marketplace could not load its data: {error}",
+        "not_loaded": "The {marketplace} is not available. It does not load in recovery mode or when it failed to start, check the Home Assistant logs for more information.",
+        "load_failed": "The {marketplace} could not load its data: {error}",
         "warning": {
-          "title": "Before you install from the Marketplace",
-          "intro": "Marketplace items are made by community contributors and are not reviewed by the Home\u00a0Assistant project. Treat them like plugins for any other software.",
+          "title": "Before you install from the {marketplace}",
+          "intro": "{marketplace} items are made by community contributors and are not reviewed by the Home\u00a0Assistant project. Treat them like plugins for any other software.",
           "risks_title": "Anything you install can",
           "risks": {
             "access": "Access and control everything in Home\u00a0Assistant",
@@ -13391,23 +13584,23 @@
         },
         "dashboard": {
           "search": "Search {number} {number, plural,\n  one {repository}\n  other {repositories}\n}",
-          "empty_header": "Nothing in the Marketplace yet",
-          "empty_text": "The Marketplace gets its list from the community catalog, which could not be reached yet. The list shows up here once it loads.",
+          "empty_header": "Nothing in the {marketplace} yet",
+          "empty_text": "The {marketplace} gets its list from the community catalog, which could not be reached yet. The list shows up here once it loads.",
           "no_data": "No repositories matching search and filters",
           "repository_not_found": "Repository not found"
         },
         "entry": {
-          "disabled": "The Marketplace is disabled. Enable it on the integration page to use it.",
+          "disabled": "The {marketplace} is disabled. Enable it on the integration page to use it.",
           "open_integration": "Open integration page",
-          "failed": "The Marketplace could not be loaded, check the Home Assistant logs for more information.",
-          "failed_reason": "The Marketplace could not be loaded: {reason}",
-          "retrying": "The Marketplace could not start yet, retrying in a moment"
+          "failed": "The {marketplace} could not be loaded, check the Home Assistant logs for more information.",
+          "failed_reason": "The {marketplace} could not be loaded: {reason}",
+          "retrying": "The {marketplace} could not start yet, retrying in a moment"
         },
         "github": {
           "connect": "Connect GitHub",
           "add_repository_needs_github": "Connect GitHub to add the custom repository {repository}, then open the link again.",
           "rate_limited_title": "GitHub limit reached",
-          "rate_limited": "GitHub limits how often the Marketplace can reach it without a GitHub connection. Try again later, or connect GitHub for a higher limit."
+          "rate_limited": "GitHub limits how often the {marketplace} can reach it without a GitHub connection. Try again later, or connect GitHub for a higher limit."
         },
         "column": {
           "name": "Repository name",
@@ -13419,6 +13612,7 @@
           "status": "Status",
           "type": "Type",
           "source": "Source",
+          "integration_categories": "Categories",
           "last_updated": "Activity",
           "actions": "Actions"
         },
@@ -13428,16 +13622,17 @@
           "error": "An unknown error occurred",
           "repository_not_found": "Repository {repository} not found",
           "add_repository_title": "Add custom repository",
-          "add_repository_description": "Add the custom repository {repository} to the Marketplace?"
+          "add_repository_description": "Add the custom repository {repository} to the {marketplace}?"
         },
         "filters": {
           "status": "Status",
           "type": "Type",
-          "source": "Source"
+          "source": "Source",
+          "integration_category": "Category"
         },
         "dialog_custom_repositories": {
           "title": "Add from a GitHub link",
-          "intro": "Add something that is not in the Marketplace yet, straight from its page on GitHub. Like everything in the Marketplace, it is made by the community and not tested or reviewed by the Home Assistant project.",
+          "intro": "Add something that is not in the {marketplace} yet, straight from its page on GitHub. Like everything in the {marketplace}, it is made by the community and not tested or reviewed by the Home Assistant project.",
           "link": "GitHub link",
           "link_helper": "The address of its page on GitHub, like https://github.com/owner/name",
           "type": "Type",
@@ -13452,10 +13647,10 @@
           "github": "GitHub repository",
           "no_repositories": "You have not added any repositories from a link yet.",
           "remove_title": "Remove {name} from the list?",
-          "remove_text": "It no longer shows in the Marketplace. You can add it again later.",
+          "remove_text": "It no longer shows in the {marketplace}. You can add it again later.",
           "remove_installed": "Uninstall it first",
           "remove_selected_title": "Remove selected repositories?",
-          "remove_selected_text": "{count, plural,\n  one {The selected repository no longer shows in the Marketplace. You can add it again later.}\n  other {The {count} selected repositories no longer show in the Marketplace. You can add them again later.}\n}",
+          "remove_selected_text": "{count, plural,\n  one {The selected repository no longer shows in the {marketplace}. You can add it again later.}\n  other {The {count} selected repositories no longer show in the {marketplace}. You can add them again later.}\n}",
           "remove_failed_title": "Remove failed",
           "remove_failed": "Some repositories could not be removed."
         },
@@ -13589,11 +13784,11 @@
           },
           "uninstall": {
             "title": "Uninstall {name}?",
-            "message": "This removes the files the Marketplace installed for it.",
+            "message": "This removes the files the {marketplace} installed for it.",
             "shared_message": "{owner} uses the same files, so they stay in place along with the integration's setup.",
-            "shared_removed_message": "This removes the files the Marketplace installed for it. {owner} uses the same files, so it loses them too.",
+            "shared_removed_message": "This removes the files the {marketplace} installed for it. {owner} uses the same files, so it loses them too.",
             "selected_title": "Uninstall selected repositories?",
-            "selected": "{count, plural,\n  one {The selected repository will be uninstalled. This removes the files the Marketplace installed for it.}\n  other {The {count} selected repositories will be uninstalled. This removes the files the Marketplace installed for them.}\n}",
+            "selected": "{count, plural,\n  one {The selected repository will be uninstalled. This removes the files the {marketplace} installed for it.}\n  other {The {count} selected repositories will be uninstalled. This removes the files the {marketplace} installed for them.}\n}",
             "selected_in_use": "{count, plural, one {The selected repository} other {The {count} selected repositories}} will be uninstalled. {in_use, plural, one {The setup of one of them} other {The setups of # of them}} will be deleted with their devices and entities. This cannot be undone.",
             "selected_released": "{count, plural,\n  one {The selected repository will be uninstalled. An installed repository that is not selected uses the same files, so the files and setup stay in place.}\n  other {The {count} selected repositories will be uninstalled. Installed repositories that are not selected use the same files, so the files and setups stay in place.}\n}",
             "selected_shared": "{count, plural,\n  one {One of them shares its files with an installed repository that is not selected, so its files and setup stay in place.}\n  other {# of them share their files with installed repositories that are not selected, so their files and setups stay in place.}\n}",
@@ -13603,17 +13798,17 @@
             "failed": "Some repositories could not be uninstalled."
           },
           "disabled": {
-            "title": "The Marketplace is disabled",
+            "title": "The {marketplace} is disabled",
             "reason": {
-              "invalid_token": "The GitHub connection no longer works. Reconfigure the Marketplace integration to connect GitHub again.",
-              "rate_limit": "The GitHub API rate limit has been reached. The Marketplace works again once the limit resets.",
-              "removed": "The Marketplace integration has been removed.",
-              "unknown": "The Marketplace is unavailable, check the Home Assistant logs for more information."
+              "invalid_token": "The GitHub connection no longer works. Reconfigure the {marketplace} integration to connect GitHub again.",
+              "rate_limit": "The GitHub API rate limit has been reached. The {marketplace} works again once the limit resets.",
+              "removed": "The {marketplace} integration has been removed.",
+              "unknown": "The {marketplace} is unavailable, check the Home Assistant logs for more information."
             }
           },
           "in_use": {
             "title": "{name} is in use",
-            "message": "{name} is still set up, and that setup runs on the files the Marketplace installed. Without them it would fail to load and leave its devices and entities behind. Delete it first, or let the Marketplace delete it and uninstall {name} for you.",
+            "message": "{name} is still set up, and that setup runs on the files the {marketplace} installed. Without them it would fail to load and leave its devices and entities behind. Delete it first, or let the {marketplace} delete it and uninstall {name} for you.",
             "ignored": "Ignored",
             "view_integration": "View integration",
             "delete_and_uninstall": "Delete and uninstall",

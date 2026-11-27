@@ -11,6 +11,8 @@ import { provideHass } from "../../../src/fake_data/provide_hass";
 import { deferred } from "./dialog-host";
 import { markdownWithRepositoryContext } from "../../../src/panels/marketplace/tools/markdown";
 import type * as MarkdownModule from "../../../src/panels/marketplace/tools/markdown";
+import { getIntegrationCategoryIcons } from "../../../src/data/icons";
+import type * as IconsModule from "../../../src/data/icons";
 
 // The real components need more browser than jsdom has, the page only hands
 // them properties.
@@ -39,6 +41,10 @@ vi.mock(
     };
   }
 );
+vi.mock("../../../src/data/icons", async (importOriginal) => ({
+  ...(await importOriginal<typeof IconsModule>()),
+  getIntegrationCategoryIcons: vi.fn(async () => ({})),
+}));
 vi.mock("../../../src/components/chips/ha-assist-chip", () =>
   stubElement("ha-assist-chip")
 );
@@ -210,6 +216,30 @@ describe("ha-marketplace-repository-dashboard", () => {
       repository_id: "2",
     });
     expect(getInternals(page)._repository.id).toBe("2");
+  });
+
+  it("loads the category icons once, only for repositories with categories", async () => {
+    const { page } = await openRepositoryPage(
+      async (repositoryId) =>
+        repositoryInfo(
+          repositoryId,
+          repositoryId === "theme"
+            ? { category: "theme" }
+            : { category: "integration", integration_categories: ["energy"] }
+        ),
+      repositoryRoute("theme")
+    );
+    await settle(page);
+    expect(getIntegrationCategoryIcons).not.toHaveBeenCalled();
+
+    page.route = repositoryRoute("1");
+    await settle(page);
+    page.route = repositoryRoute("2");
+    await settle(page);
+    page.reloadRepository();
+    await settle(page);
+
+    expect(getIntegrationCategoryIcons).toHaveBeenCalledTimes(1);
   });
 
   it("clears the error of the previous repository", async () => {
@@ -809,7 +839,7 @@ describe("ha-marketplace-repository-dashboard", () => {
 
       const subpage = page.shadowRoot!.querySelector("hass-subpage") as
         (HTMLElement & { header: string }) | null;
-      expect(subpage!.header).toBe("ui.panel.marketplace.title");
+      expect(subpage!.header).toBe("Marketplace");
       expect(page.shadowRoot!.querySelector(".summary h1")!.textContent).toBe(
         "Repository 1"
       );

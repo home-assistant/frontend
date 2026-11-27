@@ -186,6 +186,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @state() private _logInfo?: IntegrationLogInfo;
 
+  @state() private _logInfoLoaded = false;
+
   @state() private _debugLogReady = false;
 
   private _debugLogRequest = 0;
@@ -255,17 +257,18 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         this._entities = entities;
       }),
       subscribeLogInfo(this.hass.connection, (log_infos) => {
-        for (const log_info of log_infos) {
-          if (log_info.domain === this.domain) {
-            if (
-              log_info.level === LogSeverity.DEBUG &&
-              this._logInfo?.level !== LogSeverity.DEBUG
-            ) {
-              this._resetDebugLogReady();
-            }
-            this._logInfo = log_info;
-          }
+        // Core leaves out integrations that are not loaded and have no custom level
+        const logInfo = log_infos.find(
+          (log_info) => log_info.domain === this.domain
+        );
+        if (
+          logInfo?.level === LogSeverity.DEBUG &&
+          this._logInfo?.level !== LogSeverity.DEBUG
+        ) {
+          this._resetDebugLogReady();
         }
+        this._logInfo = logInfo;
+        this._logInfoLoaded = true;
       }),
     ];
   }
@@ -494,7 +497,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             : nothing
         }
         ${
-          this._manifest?.config_flow || this._logInfo
+          this._manifest || this._logInfo
             ? html`<ha-dropdown slot="toolbar-icon">
                 <ha-icon-button
                   slot="trigger"
@@ -528,7 +531,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     : nothing
                 }
                 ${
-                  this._logInfo
+                  // Integrations that are not set up are not listed in the log info yet
+                  this._logInfoLoaded && (this._logInfo || this._manifest)
                     ? html`<a
                           href=${`/config/logs?search=${encodeURIComponent(this.domain)}`}
                         >
@@ -542,27 +546,27 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           </ha-dropdown-item>
                         </a>
                         <ha-dropdown-item
+                          .variant=${
+                            this._logInfo?.level === LogSeverity.DEBUG
+                              ? "danger"
+                              : "default"
+                          }
                           @click=${
-                            this._logInfo.level === LogSeverity.DEBUG
+                            this._logInfo?.level === LogSeverity.DEBUG
                               ? this._handleDisableDebugLogging
                               : this._handleEnableDebugLogging
                           }
                         >
                           <ha-svg-icon
                             slot="icon"
-                            .variant=${
-                              this._logInfo.level === LogSeverity.DEBUG
-                                ? "danger"
-                                : "default"
-                            }
                             .path=${
-                              this._logInfo.level === LogSeverity.DEBUG
+                              this._logInfo?.level === LogSeverity.DEBUG
                                 ? mdiBugStop
                                 : mdiBugPlay
                             }
                           ></ha-svg-icon>
                           ${
-                            this._logInfo.level === LogSeverity.DEBUG
+                            this._logInfo?.level === LogSeverity.DEBUG
                               ? this.hass.localize(
                                   "ui.panel.config.integrations.config_entry.disable_debug_logging"
                                 )

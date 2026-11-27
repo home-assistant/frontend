@@ -328,6 +328,11 @@ export function generateStatisticsChartData(
               : undefined,
           color: chartType === "bar" ? backgroundColor : borderColor,
         };
+        if (chartType === "bar") {
+          // echarts sizes bars from the smallest gap between points, so sparse
+          // data (one point, or points far apart) gets huge bars without a cap
+          (series as BarSeriesOption).barMaxWidth = 50;
+        }
         if (chartStacked) {
           series.stack = `band-stacked`;
           series.stackStrategy = "samesign";

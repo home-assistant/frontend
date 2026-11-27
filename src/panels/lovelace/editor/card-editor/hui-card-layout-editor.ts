@@ -420,7 +420,7 @@ export class HuiCardLayoutEditor extends LitElement {
       }
       ha-grid-size-picker {
         display: block;
-        margin: 16px auto;
+        margin: var(--ha-space-4) auto;
         direction: ltr;
       }
     `,

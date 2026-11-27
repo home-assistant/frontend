@@ -7,13 +7,12 @@ import { watchAudioLevel } from "../../../common/audio/watch-audio-level";
 import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-button";
-import "../../../components/ha-camera-stream";
-import type {
-  CameraStreamType,
-  HaCameraStream,
-} from "../../../components/ha-camera-stream";
+import "../../../components/camera/ha-camera-player";
+import type { HaCameraPlayer } from "../../../components/camera/ha-camera-player";
+import type { CameraStreamType } from "../../../components/ha-camera-stream";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
@@ -33,6 +32,9 @@ import type {
   WebRtcStreamStopped,
 } from "../../../external_app/external_messaging";
 import { showToast } from "../../../util/toast";
+
+// The padding of the microphone row around its 40px button
+const MICROPHONE_ROW_HEIGHT = "calc(var(--ha-space-4) * 2 + 40px)";
 
 @customElement("more-info-camera")
 class MoreInfoCamera extends LitElement {
@@ -54,7 +56,7 @@ class MoreInfoCamera extends LitElement {
 
   @state() private _supportsTwoWayAudio = false;
 
-  @query("ha-camera-stream") private _cameraStream?: HaCameraStream;
+  @query("ha-camera-player") private _cameraStream?: HaCameraPlayer;
 
   @query(".microphone-meter") private _microphoneMeter?: HTMLElement;
 
@@ -95,6 +97,11 @@ class MoreInfoCamera extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
+    if (changedProps.has("_supportsTwoWayAudio")) {
+      fireEvent(this, "camera-controls-height-changed", {
+        height: this._supportsTwoWayAudio ? MICROPHONE_ROW_HEIGHT : undefined,
+      });
+    }
     if (changedProps.has("_microphoneState")) {
       this._stopMicrophoneMeter();
       const track = this._cameraStream?.microphoneTrack;
@@ -122,14 +129,14 @@ class MoreInfoCamera extends LitElement {
     }
 
     return html`
-      <ha-camera-stream
+      <ha-camera-player
         .stateObj=${this.stateObj}
         allow-exoplayer
-        controls
+        keep-awake
         @microphone-changed=${this._microphoneChanged}
         @stream-type-changed=${this._streamTypeChanged}
         @camera-capabilities-changed=${this._capabilitiesChanged}
-      ></ha-camera-stream>
+      ></ha-camera-player>
       ${this._supportsTwoWayAudio ? this._renderMicrophoneButton() : nothing}
     `;
   }
@@ -391,5 +398,8 @@ class MoreInfoCamera extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "more-info-camera": MoreInfoCamera;
+  }
+  interface HASSDomEvents {
+    "camera-controls-height-changed": { height?: string };
   }
 }

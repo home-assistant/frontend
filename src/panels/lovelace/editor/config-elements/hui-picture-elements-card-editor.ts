@@ -26,7 +26,11 @@ import {
   PICTURE_ELEMENTS_EDITOR_BRIDGE,
   PictureElementsEditorBridge,
 } from "../../cards/picture-elements/editor-bridge";
-import { isMovableElement } from "../../cards/picture-elements/movable-element";
+import type { ElementPosition } from "../../cards/picture-elements/movable-element";
+import {
+  isMovableElement,
+  movedStyle,
+} from "../../cards/picture-elements/movable-element";
 import type { PictureElementsCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
@@ -81,16 +85,7 @@ export class HuiPictureElementsCardEditor
 
   private _bridge = new PictureElementsEditorBridge({
     selectElement: (index) => this._selectElement(index),
-    moveElement: (index, left, top) =>
-      this._setElementPosition(index, left, top),
-    clickImage: (x, y) => {
-      if (
-        this._subElementEditorConfig?.type === "element" &&
-        this._subElementEditorConfig.index !== undefined
-      ) {
-        this._setElementPosition(this._subElementEditorConfig.index, x, y);
-      }
-    },
+    moveElement: (index, position) => this._setElementPosition(index, position),
   });
 
   public connectedCallback(): void {
@@ -147,21 +142,14 @@ export class HuiPictureElementsCardEditor
     this._subElementEditorConfig = { index, type: "element", elementConfig };
   }
 
-  // left/top are in percent of the image.
-  private _setElementPosition(index: number, left: number, top: number): void {
+  // The position is in percent of the image.
+  private _setElementPosition(index: number, position: ElementPosition): void {
     const elementConfig = this._config?.elements[index];
-    if (!elementConfig || !isMovableElement(elementConfig)) {
+    const style = elementConfig && movedStyle(elementConfig, position);
+    if (!elementConfig || !style) {
       return;
     }
-    const round = (value: number) => Math.round(value * 10) / 10;
-    const newElement: LovelaceElementConfig = {
-      ...elementConfig,
-      style: {
-        ...elementConfig.style,
-        left: `${round(left)}%`,
-        top: `${round(top)}%`,
-      },
-    };
+    const newElement: LovelaceElementConfig = { ...elementConfig, style };
     const elements = this._config!.elements.concat();
     elements[index] = newElement;
     this._config = { ...this._config!, elements };

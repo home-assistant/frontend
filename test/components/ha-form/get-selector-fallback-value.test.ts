@@ -35,6 +35,46 @@ describe("getSelectorFallbackValue", () => {
     );
   });
 
+  it("uses the targeted lights' Kelvin minimum when they report a range", () => {
+    const selector = {
+      color_temp: { unit: "kelvin" as const, min: 2000, max: 6500 },
+    };
+    const states = {
+      "light.warm": {
+        attributes: {
+          min_color_temp_kelvin: 1600,
+          max_color_temp_kelvin: 4000,
+        },
+      },
+      "light.other": {
+        attributes: {},
+      },
+    };
+
+    expect(getSelectorFallbackValue(selector, states)).toBe(1600);
+    expect(
+      getSelectorFallbackValue(selector, {
+        "light.warm": {
+          attributes: {
+            min_color_temp_kelvin: 1600,
+            max_color_temp_kelvin: 4000,
+          },
+        },
+        "light.daylight": {
+          attributes: {
+            min_color_temp_kelvin: 2000,
+            max_color_temp_kelvin: 6500,
+          },
+        },
+      })
+    ).toBe(2000);
+    expect(
+      getSelectorFallbackValue(selector, {
+        "light.bulb": { attributes: {} },
+      })
+    ).toBe(2000);
+  });
+
   it("returns mired min for color_temp, including legacy min_mireds", () => {
     expect(
       getSelectorFallbackValue({

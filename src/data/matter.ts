@@ -204,38 +204,48 @@ export const startExternalCommissioning = async (hass: HomeAssistant) => {
   });
 };
 
+// Core's ID_TYPE_DEVICE_ID: each Matter node adds a `deviceid_` identifier
+// to its device, next to an optional `serial_` one.
+const MATTER_NODE_IDENTIFIER_PREFIX = "deviceid_";
+
+const matterNodeIdentifiers = (device: DeviceRegistryEntry) =>
+  device.identifiers
+    .filter(
+      ([domain, id]) =>
+        domain === "matter" && id.startsWith(MATTER_NODE_IDENTIFIER_PREFIX)
+    )
+    .map(([, id]) => id);
+
 export const watchForNewMatterDevice = (
   hass: HomeAssistant,
-  callback: (device: DeviceRegistryEntry) => void
+  callback: (device: DeviceRegistryEntry, existing: boolean) => void
 ): UnsubscribeFunc => {
-  let curMatterDevices: Set<string> | undefined;
+  let knownNodes: Set<string> | undefined;
+  let knownDevices: Set<string> | undefined;
   let unsubDeviceReg: UnsubscribeFunc | undefined;
   // Callers also unsubscribe after a find. The registry collection counts its
   // subscribers, so a second unsubscribe would stop its updates for everyone.
   const unsubscribe = () => {
     unsubDeviceReg?.();
     unsubDeviceReg = undefined;
-    curMatterDevices = undefined;
+    knownNodes = undefined;
+    knownDevices = undefined;
   };
+  // Watch for a new node rather than a new device: core merges a
+  // recommissioned node into the existing device that shares its serial number.
   unsubDeviceReg = subscribeDeviceRegistry(hass.connection, (entries) => {
-    if (!curMatterDevices) {
-      curMatterDevices = new Set(
-        Object.values(entries)
-          .filter((device) =>
-            device.identifiers.find((identifier) => identifier[0] === "matter")
-          )
-          .map((device) => device.id)
-      );
+    if (!knownNodes) {
+      knownNodes = new Set(entries.flatMap(matterNodeIdentifiers));
+      knownDevices = new Set(entries.map((entry) => entry.id));
       return;
     }
-    const newMatterDevices = Object.values(entries).filter(
-      (device) =>
-        device.identifiers.find((identifier) => identifier[0] === "matter") &&
-        !curMatterDevices!.has(device.id)
+    const device = entries.find((entry) =>
+      matterNodeIdentifiers(entry).some((id) => !knownNodes!.has(id))
     );
-    if (newMatterDevices.length) {
+    if (device) {
+      const existing = knownDevices!.has(device.id);
       unsubscribe();
-      callback(newMatterDevices[0]);
+      callback(device, existing);
     }
   });
   return unsubscribe;

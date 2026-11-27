@@ -1,4 +1,5 @@
 import type { ContextType } from "@lit/context";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type HlsType from "hls.js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -23,7 +24,7 @@ type HlsLite = Omit<
 const HIDDEN_CLEANUP_DELAY = 60000;
 
 @customElement("ha-hls-player")
-class HaHLSPlayer extends LitElement {
+export class HaHLSPlayer extends LitElement {
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
@@ -78,6 +79,14 @@ class HaHLSPlayer extends LitElement {
 
   private _exoPlayer = false;
 
+  // The app's player only follows the video when told, also when the video
+  // changes size without the window, like in a dialog that grows
+  private _exoPlayerResize = new ResizeController(this, {
+    target: null,
+    skipInitial: true,
+    callback: () => this._resizeExoPlayer(),
+  });
+
   private static streamCount = 0;
 
   private _hiddenCleanupTimeout?: number;
@@ -110,6 +119,11 @@ class HaHLSPlayer extends LitElement {
       this._restartHls();
     }
   };
+
+  /** The video that plays the stream, undefined while the app plays it. */
+  public get videoElement(): HTMLVideoElement | undefined {
+    return this._exoPlayer ? undefined : (this._videoEl ?? undefined);
+  }
 
   public connectedCallback() {
     super.connectedCallback();
@@ -309,7 +323,9 @@ class HaHLSPlayer extends LitElement {
 
   private async _renderHLSExoPlayer(url: string) {
     this._exoPlayer = true;
+    fireEvent(this, "exoplayer-changed", { active: true });
     window.addEventListener("resize", this._resizeExoPlayer);
+    this._exoPlayerResize.observe(this._videoEl);
     this.updateComplete.then(() => nextRender()).then(this._resizeExoPlayer);
     this._videoEl.style.visibility = "hidden";
     await this._config.auth.external!.fireMessage({
@@ -442,8 +458,10 @@ class HaHLSPlayer extends LitElement {
     }
     if (this._exoPlayer) {
       window.removeEventListener("resize", this._resizeExoPlayer);
+      this._exoPlayerResize.unobserve(this._videoEl);
       this._config.auth.external!.fireMessage({ type: "exoplayer/stop" });
       this._exoPlayer = false;
+      fireEvent(this, "exoplayer-changed", { active: false });
     }
     if (this._videoEl) {
       this._videoEl.removeAttribute("src");
@@ -493,8 +511,12 @@ class HaHLSPlayer extends LitElement {
       max-height: var(--video-max-height, calc(100vh - 97px));
     }
 
+    /* Scrolls in a player that is only as high as its picture */
     .fatal {
       display: block;
+      box-sizing: border-box;
+      max-height: 100%;
+      overflow: auto;
       padding: 100px 16px;
     }
 
@@ -505,6 +527,10 @@ class HaHLSPlayer extends LitElement {
 }
 
 declare global {
+  interface HASSDomEvents {
+    "exoplayer-changed": { active: boolean };
+  }
+
   interface HTMLElementTagNameMap {
     "ha-hls-player": HaHLSPlayer;
   }

@@ -9,6 +9,7 @@ import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { formatNumber } from "../../../common/number/format_number";
 import type { LocalizeFunc } from "../../../common/translations/localize";
@@ -18,6 +19,7 @@ import type {
   DataTableRowData,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-segmented-bar";
 import type { Segment } from "../../../components/ha-segmented-bar";
@@ -125,6 +127,8 @@ export class StorageDatabaseCard extends LitElement {
   // Undefined until loaded, null when no recent report exists.
   @property({ attribute: false }) public usage?: RecorderDatabaseUsage | null;
 
+  @property({ type: Boolean }) public loading = false;
+
   @property({ type: Boolean }) public analyzing = false;
 
   @property() public error?: string;
@@ -199,6 +203,19 @@ export class StorageDatabaseCard extends LitElement {
                   </p>`
                 : nothing
           }
+        </div>
+        <div class="card-actions">
+          <ha-button
+            appearance="plain"
+            .disabled=${this.loading || this.analyzing}
+            @click=${this._analyze}
+          >
+            ${this._localize(
+              usage
+                ? "ui.panel.config.storage.database.recalculate"
+                : "ui.panel.config.storage.database.calculate"
+            )}
+          </ha-button>
         </div>
       </ha-card>
     `;
@@ -433,6 +450,10 @@ export class StorageDatabaseCard extends LitElement {
     })
   );
 
+  private _analyze() {
+    fireEvent(this, "database-analyze");
+  }
+
   // Arrow function: the data table renders the template, not this card.
   private _openSettings = (
     ev: HASSDomCurrentTargetEvent<HTMLButtonElement>
@@ -451,6 +472,10 @@ export class StorageDatabaseCard extends LitElement {
       display: flex;
       flex-direction: column;
       gap: var(--ha-space-4);
+    }
+    .card-actions {
+      display: flex;
+      justify-content: flex-end;
     }
     .loading {
       display: flex;
@@ -480,6 +505,7 @@ export class StorageDatabaseCard extends LitElement {
     ha-data-table {
       --data-table-border-width: 0;
       --data-table-row-border-width: 0;
+      --data-table-row-height: 44px;
       height: 100%;
     }
   `;
@@ -488,5 +514,8 @@ export class StorageDatabaseCard extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "storage-database-card": StorageDatabaseCard;
+  }
+  interface HASSDomEvents {
+    "database-analyze": undefined;
   }
 }

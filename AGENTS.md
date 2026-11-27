@@ -40,7 +40,8 @@ Never run `tsc` or `pnpm lint:types` with file arguments. When `tsc` receives fi
 Detailed guidance lives in `.agents/skills/<name>/SKILL.md`. Load every matching skill before detailed implementation or review. For reviews, load `ha-frontend-review` alongside all companions that apply to the changed code or behavior:
 
 - `ha-frontend-contexts`: Lit contexts, `hass` migration, and rerender-sensitive state access.
-- `ha-frontend-components`: dialogs, forms, alerts, loading states, shortcuts, tooltips, panels, and Lovelace cards.
+- `ha-frontend-components`: dialogs, forms, alerts, shortcuts, tooltips, panels, and Lovelace cards.
+- `ha-frontend-loading`: loading states, skeletons, spinners, loading fades, and checking how a screen looks while it loads.
 - `ha-frontend-events`: event handler typing, custom event dispatch, and event-map declarations.
 - `ha-frontend-types`: backend data contracts, optional schemas, shared types, assertions, and lifecycle types.
 - `ha-frontend-lit`: reactive fields, DOM queries, lifecycle behavior, and render-derived state.
@@ -52,10 +53,11 @@ Detailed guidance lives in `.agents/skills/<name>/SKILL.md`. Load every matching
 - `ha-frontend-ux-readiness`: UI/UX routing that complements frontend review for new user experiences.
 - `ha-frontend-gallery`: gallery pages, demos, sidebar structure, content, and verification.
 - `ha-frontend-demo`: standalone demo structure, configurations, navigation, shared stubs, and verification.
+- `ha-frontend-browser-checks`: checking a change in a browser at real device sizes, in light and dark mode, right to left (RTL) and with long translations, and screenshots and recorded demos for pull requests.
 
 ## Pull Requests
 
-When creating a pull request, use `.github/PULL_REQUEST_TEMPLATE.md` as the PR body. Preserve template sections, check only the appropriate type-of-change boxes, and do not check checklist items on behalf of the user. If the PR includes UI changes, remind the user to add screenshots or a short video.
+When creating a pull request, use `.github/PULL_REQUEST_TEMPLATE.md` as the PR body. Preserve template sections, check only the appropriate type-of-change boxes, and do not check checklist items on behalf of the user. If the PR includes UI changes, add screenshots or a short video, taken as `ha-frontend-browser-checks` describes. Only ask the user to add them when you can't take them yourself.
 
 ## AI policy
 

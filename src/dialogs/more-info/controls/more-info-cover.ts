@@ -22,7 +22,6 @@ import {
   coverHasPositionControls,
   coverHasTiltControls,
   coverModeAttribute,
-  coverSupportsPosition,
   coverSupportsSetValue,
   defaultCoverMode,
 } from "../../../data/cover";
@@ -164,7 +163,7 @@ class MoreInfoCover extends LitElement {
     if (!request || this._drag) {
       return undefined;
     }
-    if (request.mode === "position" && !coverSupportsPosition(this.stateObj!)) {
+    if (!coverSupportsSetValue(this.stateObj!, request.mode)) {
       return this._hint(request.value ? "requested_open" : "requested_closed");
     }
     return this._hint("requested", {
