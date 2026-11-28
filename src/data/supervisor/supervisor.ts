@@ -120,6 +120,28 @@ export const subscribeSupervisorEvents = (
     type: "supervisor/subscribe",
   });
 
+/**
+ * Return the slug of the app whose info a Supervisor event changes, if any.
+ */
+export const supervisorEventAppSlug = (
+  event: SupervisorEvent
+): string | undefined => {
+  // Supervisor sends "addon" until Core opts in to its v2 websocket API, then "app"
+  if (event.event === "addon" || event.event === "app") {
+    return event.slug;
+  }
+  // Jobs such as update, rebuild and install change the info without a state
+  // change. Child jobs of one action share the slug, so only count the root job.
+  if (
+    event.event === "job" &&
+    event.data?.done === true &&
+    !event.data.parent_id
+  ) {
+    return event.data.reference ?? undefined;
+  }
+  return undefined;
+};
+
 export const getSupervisorEventCollection = (
   conn: Connection,
   key: string,

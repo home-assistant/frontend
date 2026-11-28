@@ -18,11 +18,16 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/input/ha-input-search";
+import { ConnectionSubscriptionController } from "../../../data/connection-subscription-controller";
 import type {
   HassioAddonInfo,
   HassioAddonsInfo,
 } from "../../../data/hassio/addon";
 import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
+import {
+  subscribeSupervisorEvents,
+  supervisorEventAppSlug,
+} from "../../../data/supervisor/supervisor";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
@@ -48,6 +53,18 @@ export class HaConfigAppsInstalled extends LitElement {
   @state() private _error?: string;
 
   @state() private _checkingUpdates = false;
+
+  constructor() {
+    super();
+    new ConnectionSubscriptionController(this, {
+      subscribe: (connection) =>
+        subscribeSupervisorEvents(connection, (event) => {
+          if (supervisorEventAppSlug(event)) {
+            this._loadData();
+          }
+        }),
+    });
+  }
 
   protected firstUpdated() {
     this._loadData();

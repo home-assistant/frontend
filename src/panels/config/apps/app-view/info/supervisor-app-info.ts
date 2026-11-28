@@ -91,8 +91,10 @@ import {
   supervisorUrl,
 } from "../../../../../data/hassio/common";
 import type { StoreAddonDetails } from "../../../../../data/supervisor/store";
-import type { SupervisorEvent } from "../../../../../data/supervisor/supervisor";
-import { subscribeSupervisorEvents } from "../../../../../data/supervisor/supervisor";
+import {
+  subscribeSupervisorEvents,
+  supervisorEventAppSlug,
+} from "../../../../../data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -180,9 +182,11 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     super();
     new ConnectionSubscriptionController(this, {
       subscribe: (connection) =>
-        subscribeSupervisorEvents(connection, (event) =>
-          this._handleSupervisorEvent(event)
-        ),
+        subscribeSupervisorEvents(connection, (event) => {
+          if (supervisorEventAppSlug(event) === this._currentAddon.slug) {
+            this._refreshAddonInfo();
+          }
+        }),
     });
   }
 
@@ -1035,23 +1039,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     super.updated(changedProps);
     if (changedProps.has("addon")) {
       this._loadMetrics();
-    }
-  }
-
-  private _handleSupervisorEvent(event: SupervisorEvent) {
-    const slug = this._currentAddon.slug;
-    // Supervisor sends "addon" until Core opts in to its v2 websocket API, then "app"
-    const stateChanged =
-      (event.event === "addon" || event.event === "app") && event.slug === slug;
-    // Jobs such as update, rebuild and install change the info without a state
-    // change. Child jobs of one action share the slug, so only count the root job.
-    const jobDone =
-      event.event === "job" &&
-      event.data?.reference === slug &&
-      event.data?.done === true &&
-      !event.data?.parent_id;
-    if (stateChanged || jobDone) {
-      this._refreshAddonInfo();
     }
   }
 
