@@ -1,7 +1,7 @@
 import type { Connection } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
-import type { HassioAddonsInfo } from "../hassio/addon";
+import type { AddonState, HassioAddonsInfo } from "../hassio/addon";
 import type { HassioHassOSInfo, HassioHostInfo } from "../hassio/host";
 import type { NetworkInfo } from "../hassio/network";
 import type { HassioResolution } from "../hassio/resolution";
@@ -120,26 +120,43 @@ export const subscribeSupervisorEvents = (
     type: "supervisor/subscribe",
   });
 
+export type SupervisorAppEvent =
+  | { type: "state"; slug: string; state: AddonState }
+  | {
+      type: "job";
+      slug: string;
+      // install, uninstall, update, rebuild or restore
+      operation: string;
+      failed: boolean;
+    };
+
 /**
- * Return the slug of the app whose info a Supervisor event changes, if any.
+ * Parse a Supervisor event that changes the info of an app.
  */
-export const supervisorEventAppSlug = (
+export const parseSupervisorAppEvent = (
   event: SupervisorEvent
-): string | undefined => {
+): SupervisorAppEvent | undefined => {
   // Supervisor sends "addon" until Core opts in to its v2 websocket API, then "app"
   if (event.event === "addon" || event.event === "app") {
-    return event.slug;
+    return { type: "state", slug: event.slug, state: event.state };
   }
-  // Jobs such as update, rebuild and install change the info without a state
-  // change. Child jobs of one action share the slug, so only count the root job.
-  if (
-    event.event === "job" &&
-    event.data?.done === true &&
-    !event.data.parent_id
-  ) {
-    return event.data.reference ?? undefined;
+  const job = event.event === "job" ? event.data : undefined;
+  // Child jobs of one action share the slug, so only the root job counts.
+  // Start, stop and restart jobs change nothing beyond the state events.
+  // Older Supervisors name the manager jobs addon_manager_*.
+  if (!job?.done || job.parent_id || !job.reference) {
+    return undefined;
   }
-  return undefined;
+  const operation = /^(?:addon|app)_manager_(\w+)$/.exec(job.name)?.[1];
+  if (!operation) {
+    return undefined;
+  }
+  return {
+    type: "job",
+    slug: job.reference,
+    operation,
+    failed: job.errors?.length > 0,
+  };
 };
 
 export const getSupervisorEventCollection = (

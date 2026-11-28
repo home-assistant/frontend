@@ -23,10 +23,14 @@ import type {
   HassioAddonInfo,
   HassioAddonsInfo,
 } from "../../../data/hassio/addon";
-import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
 import {
+  fetchHassioAddonInfo,
+  fetchHassioAddonsInfo,
+} from "../../../data/hassio/addon";
+import type { SupervisorAppEvent } from "../../../data/supervisor/supervisor";
+import {
+  parseSupervisorAppEvent,
   subscribeSupervisorEvents,
-  supervisorEventAppSlug,
 } from "../../../data/supervisor/supervisor";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
@@ -59,8 +63,9 @@ export class HaConfigAppsInstalled extends LitElement {
     new ConnectionSubscriptionController(this, {
       subscribe: (connection) =>
         subscribeSupervisorEvents(connection, (event) => {
-          if (supervisorEventAppSlug(event)) {
-            this._loadData();
+          const appEvent = parseSupervisorAppEvent(event);
+          if (appEvent) {
+            this._handleAppEvent(appEvent);
           }
         }),
     });
@@ -218,6 +223,54 @@ export class HaConfigAppsInstalled extends LitElement {
       this._error =
         err.message || this.hass.localize("ui.panel.config.apps.error_loading");
     }
+  }
+
+  private _handleAppEvent(appEvent: SupervisorAppEvent) {
+    const addons = this._addonInfo?.addons;
+    if (!addons) {
+      return;
+    }
+    if (appEvent.type === "state") {
+      this._addonInfo = {
+        addons: addons.map((addon) =>
+          addon.slug === appEvent.slug
+            ? { ...addon, state: appEvent.state }
+            : addon
+        ),
+      };
+      return;
+    }
+    if (appEvent.operation === "uninstall" && !appEvent.failed) {
+      this._removeApp(appEvent.slug);
+      return;
+    }
+    this._loadApp(appEvent.slug);
+  }
+
+  private async _loadApp(slug: string): Promise<void> {
+    let app: HassioAddonInfo;
+    try {
+      app = await fetchHassioAddonInfo(this.hass.callWS, slug);
+    } catch (_err: any) {
+      return;
+    }
+    // Supervisor answers with the store info when the app is not installed
+    if (!app.version) {
+      this._removeApp(slug);
+      return;
+    }
+    this._addonInfo = {
+      addons: [
+        ...this._addonInfo!.addons.filter((addon) => addon.slug !== slug),
+        app,
+      ],
+    };
+  }
+
+  private _removeApp(slug: string) {
+    this._addonInfo = {
+      addons: this._addonInfo!.addons.filter((addon) => addon.slug !== slug),
+    };
   }
 
   private async _handleCheckUpdates() {

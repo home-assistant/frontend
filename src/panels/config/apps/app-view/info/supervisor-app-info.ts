@@ -91,9 +91,10 @@ import {
   supervisorUrl,
 } from "../../../../../data/hassio/common";
 import type { StoreAddonDetails } from "../../../../../data/supervisor/store";
+import type { SupervisorAppEvent } from "../../../../../data/supervisor/supervisor";
 import {
+  parseSupervisorAppEvent,
   subscribeSupervisorEvents,
-  supervisorEventAppSlug,
 } from "../../../../../data/supervisor/supervisor";
 import {
   showAlertDialog,
@@ -183,8 +184,9 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     new ConnectionSubscriptionController(this, {
       subscribe: (connection) =>
         subscribeSupervisorEvents(connection, (event) => {
-          if (supervisorEventAppSlug(event) === this._currentAddon.slug) {
-            this._refreshAddonInfo();
+          const appEvent = parseSupervisorAppEvent(event);
+          if (appEvent?.slug === this._currentAddon.slug) {
+            this._handleAppEvent(appEvent);
           }
         }),
     });
@@ -1040,6 +1042,17 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     if (changedProps.has("addon")) {
       this._loadMetrics();
     }
+  }
+
+  private _handleAppEvent(appEvent: SupervisorAppEvent) {
+    if (appEvent.type === "state") {
+      this._addon = {
+        ...this._currentAddon,
+        state: appEvent.state,
+      } as HassioAddonDetails;
+      return;
+    }
+    this._refreshAddonInfo();
   }
 
   private async _refreshAddonInfo(): Promise<void> {
