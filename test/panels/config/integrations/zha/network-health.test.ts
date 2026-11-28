@@ -6,6 +6,7 @@ import {
   attentionCount,
   countBands,
   findings,
+  healthSummary,
   isSetupUnfinished,
   lastSeenAt,
   linkQuality,
@@ -346,6 +347,32 @@ describe("attentionCount", () => {
     );
 
     expect(attentionCount(found)).toBe(2);
+  });
+});
+
+describe("healthSummary", () => {
+  it("puts devices that need attention before ones worth a look", () => {
+    const found = findings(
+      [device({ ieee: "a", available: false }), device({ ieee: "b", lqi: 5 })],
+      noReadings
+    );
+
+    expect(healthSummary(found)).toEqual({ status: "attention", count: 1 });
+  });
+
+  it("counts a device with a weak signal and a low battery once", () => {
+    const found = findings(
+      [device({ ieee: "a", lqi: 5 }), device({ ieee: "b", lqi: 6 })],
+      { ...noReadings, batteryLevel: () => 5 }
+    );
+
+    expect(healthSummary(found)).toEqual({ status: "worth_a_look", count: 2 });
+  });
+
+  it("reads healthy when nothing is found", () => {
+    const found = findings([device({ ieee: "a" })], noReadings);
+
+    expect(healthSummary(found)).toEqual({ status: "healthy", count: 0 });
   });
 });
 

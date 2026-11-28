@@ -59,6 +59,8 @@ import {
   attentionCount,
   BAR_BANDS,
   countBands,
+  batteryLevel,
+  deviceEntityIds,
   devicesWithEntities,
   findings,
   lastSeenAt,
@@ -170,11 +172,7 @@ class ZHANetworkHealthPage extends LitElement {
   private async _loadDevices(): Promise<void> {
     const devices = await fetchDevices(this._api);
     this._devices = devices;
-    this._entityIds = devices.flatMap((device) =>
-      device.entities
-        .map((entity) => entity.entity_id)
-        .filter((entityId): entityId is string => Boolean(entityId))
-    );
+    this._entityIds = deviceEntityIds(devices);
     this._updatedAt = new Date();
   }
 
@@ -241,20 +239,7 @@ class ZHANetworkHealthPage extends LitElement {
   );
 
   private _readings: DeviceReadings = {
-    batteryLevel: (device) => {
-      for (const entity of device.entities) {
-        const stateObj = entity.entity_id
-          ? this._states?.[entity.entity_id]
-          : undefined;
-        if (stateObj?.attributes.device_class === "battery") {
-          const level = Number(stateObj.state);
-          if (!isNaN(level)) {
-            return level;
-          }
-        }
-      }
-      return null;
-    },
+    batteryLevel: (device) => batteryLevel(device, this._states),
     isDisabled: (device) =>
       Boolean(this._haDevices[device.device_reg_id]?.disabled_by),
     hasRegisteredEntities: (device) =>

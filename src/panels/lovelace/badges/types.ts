@@ -93,3 +93,7 @@ export interface WaterTotalBadgeConfig extends EnergyTotalBadgeConfig {
 export interface GasTotalBadgeConfig extends EnergyTotalBadgeConfig {
   type: "gas-total";
 }
+
+export interface ZigbeeHealthBadgeConfig extends LovelaceBadgeConfig {
+  type: "zigbee-health";
+}

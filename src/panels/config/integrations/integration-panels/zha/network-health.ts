@@ -1,3 +1,4 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { ZHADevice } from "../../../../../data/zha";
 import { ZHADeviceType } from "../../../../../data/zha";
 
@@ -77,6 +78,58 @@ export const devicesWithEntities = (
 /** The devices the page reports on: everything except the coordinator. */
 export const managedDevices = (devices: ZHADevice[]): ZHADevice[] =>
   devices.filter((device) => !device.active_coordinator);
+
+/** The entity ids of the given devices, whose states hold their readings. */
+export const deviceEntityIds = (devices: ZHADevice[]): string[] =>
+  devices.flatMap((device) =>
+    device.entities
+      .map((entity) => entity.entity_id)
+      .filter((entityId): entityId is string => Boolean(entityId))
+  );
+
+/** Battery percentage of a device, or null when it has no battery sensor. */
+export const batteryLevel = (
+  device: ZHADevice,
+  states: Record<string, HassEntity> | undefined
+): number | null => {
+  for (const entity of device.entities) {
+    const stateObj = entity.entity_id ? states?.[entity.entity_id] : undefined;
+    if (stateObj?.attributes.device_class === "battery") {
+      const level = Number(stateObj.state);
+      if (!isNaN(level)) {
+        return level;
+      }
+    }
+  }
+  return null;
+};
+
+/** How the network reads at a glance, worst finding first. */
+export type HealthStatus = "attention" | "worth_a_look" | "healthy";
+
+export interface HealthSummary {
+  status: HealthStatus;
+  /** Devices behind the status; 0 when healthy. */
+  count: number;
+}
+
+/**
+ * Sums up the findings in one status, for places that only have room for a
+ * single line, such as a badge.
+ */
+export const healthSummary = (found: Findings): HealthSummary => {
+  const attention = attentionCount(found);
+  if (attention > 0) {
+    return { status: "attention", count: attention };
+  }
+  const worthALook = new Set(
+    WORTH_A_LOOK.flatMap((key) => found[key]).map((device) => device.ieee)
+  ).size;
+  if (worthALook > 0) {
+    return { status: "worth_a_look", count: worthALook };
+  }
+  return { status: "healthy", count: 0 };
+};
 
 /** Link quality per device IEEE, as reported by its neighbours. */
 export type LinkQualities = Record<string, number>;
