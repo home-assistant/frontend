@@ -1052,7 +1052,9 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       } as HassioAddonDetails;
       return;
     }
-    this._refreshAddonInfo();
+    if (appEvent.done) {
+      this._refreshAddonInfo();
+    }
   }
 
   private async _refreshAddonInfo(): Promise<void> {

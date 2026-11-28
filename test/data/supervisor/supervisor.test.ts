@@ -32,6 +32,7 @@ describe("parseSupervisorAppEvent", () => {
         type: "job",
         slug: "core_ssh",
         operation: "update",
+        done: true,
         failed: false,
       });
     }
@@ -45,8 +46,17 @@ describe("parseSupervisorAppEvent", () => {
     ).toMatchObject({ operation: "uninstall", failed: true });
   });
 
-  it("ignores running, child, start and unrelated jobs", () => {
-    expect(parseSupervisorAppEvent(jobEvent({ done: false }))).toBeUndefined();
+  it("parses running manager jobs once they have a reference", () => {
+    expect(parseSupervisorAppEvent(jobEvent({ done: false }))).toMatchObject({
+      operation: "install",
+      done: false,
+    });
+    expect(
+      parseSupervisorAppEvent(jobEvent({ done: false, reference: null }))
+    ).toBeUndefined();
+  });
+
+  it("ignores child, start and unrelated jobs", () => {
     expect(
       parseSupervisorAppEvent(jobEvent({ parent_id: "abc" }))
     ).toBeUndefined();

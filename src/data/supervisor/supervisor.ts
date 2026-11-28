@@ -1,6 +1,7 @@
 import type { Connection } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
+import type { CallWS } from "../../types";
 import type { AddonState, HassioAddonsInfo } from "../hassio/addon";
 import type { HassioHassOSInfo, HassioHostInfo } from "../hassio/host";
 import type { NetworkInfo } from "../hassio/network";
@@ -127,8 +128,19 @@ export type SupervisorAppEvent =
       slug: string;
       // install, uninstall, update, rebuild or restore
       operation: string;
+      done: boolean;
       failed: boolean;
     };
+
+interface SupervisorJob {
+  name: string;
+  reference: string | null;
+  done: boolean;
+}
+
+// Older Supervisors name the app manager jobs addon_manager_*
+const appManagerOperation = (jobName: string | undefined) =>
+  /^(?:addon|app)_manager_(\w+)$/.exec(jobName ?? "")?.[1];
 
 /**
  * Parse a Supervisor event that changes the info of an app.
@@ -143,11 +155,11 @@ export const parseSupervisorAppEvent = (
   const job = event.event === "job" ? event.data : undefined;
   // Child jobs of one action share the slug, so only the root job counts.
   // Start, stop and restart jobs change nothing beyond the state events.
-  // Older Supervisors name the manager jobs addon_manager_*.
-  if (!job?.done || job.parent_id || !job.reference) {
+  // The first event of a job comes before Supervisor sets its reference.
+  if (!job || job.parent_id || !job.reference) {
     return undefined;
   }
-  const operation = /^(?:addon|app)_manager_(\w+)$/.exec(job.name)?.[1];
+  const operation = appManagerOperation(job.name);
   if (!operation) {
     return undefined;
   }
@@ -155,8 +167,31 @@ export const parseSupervisorAppEvent = (
     type: "job",
     slug: job.reference,
     operation,
+    done: job.done === true,
     failed: job.errors?.length > 0,
   };
+};
+
+/**
+ * Return the app manager operations that run now, keyed by app slug.
+ */
+export const fetchAppOperations = async (
+  callWS: CallWS
+): Promise<Record<string, string>> => {
+  // Only root jobs are listed at the top level; child jobs are nested
+  const { jobs } = await callWS<{ jobs: SupervisorJob[] }>({
+    type: "supervisor/api",
+    endpoint: "/jobs/info",
+    method: "get",
+  });
+  const operations: Record<string, string> = {};
+  for (const job of jobs) {
+    const operation = appManagerOperation(job.name);
+    if (operation && job.reference && !job.done) {
+      operations[job.reference] = operation;
+    }
+  }
+  return operations;
 };
 
 export const getSupervisorEventCollection = (

@@ -29,6 +29,7 @@ import {
 } from "../../../data/hassio/addon";
 import type { SupervisorAppEvent } from "../../../data/supervisor/supervisor";
 import {
+  fetchAppOperations,
   parseSupervisorAppEvent,
   subscribeSupervisorEvents,
 } from "../../../data/supervisor/supervisor";
@@ -57,6 +58,11 @@ export class HaConfigAppsInstalled extends LitElement {
   @state() private _error?: string;
 
   @state() private _checkingUpdates = false;
+
+  // Installs and uninstalls that run now, keyed by app slug
+  @state() private _operations: Record<string, "install" | "uninstall"> = {};
+
+  private _queuedEvents?: SupervisorAppEvent[];
 
   constructor() {
     super();
@@ -158,6 +164,7 @@ export class HaConfigAppsInstalled extends LitElement {
                           available
                           .tags=${this._getAppTags(addon)}
                           .state=${addon.state}
+                          .operation=${this._operations[addon.slug]}
                           .icon=${
                             addon.update_available
                               ? mdiArrowUpBoldCircle
@@ -217,15 +224,46 @@ export class HaConfigAppsInstalled extends LitElement {
   }
 
   private async _loadData(): Promise<void> {
+    // Events can arrive before or after the responses they changed, so hold
+    // them until the list is in and apply them on top of it
+    const queuedEvents: SupervisorAppEvent[] = [];
+    this._queuedEvents = queuedEvents;
+    let operations: Record<string, string> = {};
     try {
-      this._addonInfo = await fetchHassioAddonsInfo(this.hass);
+      [this._addonInfo, operations] = await Promise.all([
+        fetchHassioAddonsInfo(this.hass),
+        // Operations only decorate the list, so they must not fail the page
+        fetchAppOperations(this.hass.callWS).catch(() => ({})),
+      ]);
     } catch (err: any) {
       this._error =
         err.message || this.hass.localize("ui.panel.config.apps.error_loading");
+    } finally {
+      if (this._queuedEvents === queuedEvents) {
+        this._queuedEvents = undefined;
+      }
     }
+    if (!this._addonInfo) {
+      return;
+    }
+    this._operations = {};
+    for (const [slug, operation] of Object.entries(operations)) {
+      this._handleAppEvent({
+        type: "job",
+        slug,
+        operation,
+        done: false,
+        failed: false,
+      });
+    }
+    queuedEvents.forEach((appEvent) => this._handleAppEvent(appEvent));
   }
 
   private _handleAppEvent(appEvent: SupervisorAppEvent) {
+    if (this._queuedEvents) {
+      this._queuedEvents.push(appEvent);
+      return;
+    }
     const addons = this._addonInfo?.addons;
     if (!addons) {
       return;
@@ -240,11 +278,46 @@ export class HaConfigAppsInstalled extends LitElement {
       };
       return;
     }
-    if (appEvent.operation === "uninstall" && !appEvent.failed) {
-      this._removeApp(appEvent.slug);
+    const { slug, operation } = appEvent;
+    if (!appEvent.done) {
+      if (
+        (operation === "install" || operation === "uninstall") &&
+        this._operations[slug] !== operation
+      ) {
+        this._operations = { ...this._operations, [slug]: operation };
+        if (operation === "install") {
+          this._addInstallingApp(slug);
+        }
+      }
       return;
     }
-    this._loadApp(appEvent.slug);
+    const { [slug]: _done, ...operations } = this._operations;
+    this._operations = operations;
+    if (operation === "uninstall" && !appEvent.failed) {
+      this._removeApp(slug);
+      return;
+    }
+    this._loadApp(slug);
+  }
+
+  private async _addInstallingApp(slug: string): Promise<void> {
+    if (this._addonInfo!.addons.some((addon) => addon.slug === slug)) {
+      return;
+    }
+    let app: HassioAddonInfo;
+    try {
+      app = await fetchHassioAddonInfo(this.hass.callWS, slug);
+    } catch (_err: any) {
+      return;
+    }
+    // The install can finish while the fetch runs
+    if (
+      this._operations[slug] !== "install" ||
+      this._addonInfo!.addons.some((addon) => addon.slug === slug)
+    ) {
+      return;
+    }
+    this._addonInfo = { addons: [...this._addonInfo!.addons, app] };
   }
 
   private async _loadApp(slug: string): Promise<void> {
