@@ -335,6 +335,139 @@ describe("computeHistory entity names", () => {
       "Bedroom ▸ Climate sensor ▸ Humidity",
     ]);
   });
+
+  it("includes areas across different unit groups", () => {
+    const firstEntityId = "sensor.living_room_humidity";
+    const secondEntityId = "sensor.bedroom_humidity";
+
+    const result = computeHistory(
+      createMockHass(
+        {
+          [firstEntityId]: createMockEntityState(firstEntityId, "50", {
+            unit_of_measurement: "%",
+          }),
+          [secondEntityId]: createMockEntityState(secondEntityId, "22", {
+            unit_of_measurement: "°C",
+          }),
+        },
+        {
+          entities: {
+            [firstEntityId]: mockEntity({
+              entity_id: firstEntityId,
+              name: "Humidity",
+              device_id: "device_1",
+            }),
+            [secondEntityId]: mockEntity({
+              entity_id: secondEntityId,
+              name: "Humidity",
+              device_id: "device_2",
+            }),
+          },
+          devices: {
+            device_1: mockDevice({
+              id: "device_1",
+              name: "Climate sensor",
+              area_id: "living_room",
+            }),
+            device_2: mockDevice({
+              id: "device_2",
+              name: "Climate sensor",
+              area_id: "bedroom",
+            }),
+          },
+          areas: {
+            living_room: mockArea({
+              area_id: "living_room",
+              name: "Living Room",
+            }),
+            bedroom: mockArea({
+              area_id: "bedroom",
+              name: "Bedroom",
+            }),
+          },
+        }
+      ),
+      {
+        [firstEntityId]: [
+          { s: "50", a: { unit_of_measurement: "%" }, lu: 1_700_000_000 },
+        ],
+        [secondEntityId]: [
+          { s: "22", a: { unit_of_measurement: "°C" }, lu: 1_700_000_000 },
+        ],
+      },
+      [],
+      mockLocalize
+    );
+
+    expect(
+      result.line.flatMap((line) => line.data.map(({ name }) => name))
+    ).toEqual([
+      "Living Room ▸ Climate sensor ▸ Humidity",
+      "Bedroom ▸ Climate sensor ▸ Humidity",
+    ]);
+  });
+
+  it("includes areas for timeline entities from different areas", () => {
+    const firstEntityId = "binary_sensor.living_room_door";
+    const secondEntityId = "binary_sensor.bedroom_door";
+
+    const result = computeHistory(
+      createMockHass(
+        {
+          [firstEntityId]: createMockEntityState(firstEntityId, "on"),
+          [secondEntityId]: createMockEntityState(secondEntityId, "on"),
+        },
+        {
+          entities: {
+            [firstEntityId]: mockEntity({
+              entity_id: firstEntityId,
+              name: "Door",
+              device_id: "device_1",
+            }),
+            [secondEntityId]: mockEntity({
+              entity_id: secondEntityId,
+              name: "Door",
+              device_id: "device_2",
+            }),
+          },
+          devices: {
+            device_1: mockDevice({
+              id: "device_1",
+              name: "Door sensor",
+              area_id: "living_room",
+            }),
+            device_2: mockDevice({
+              id: "device_2",
+              name: "Door sensor",
+              area_id: "bedroom",
+            }),
+          },
+          areas: {
+            living_room: mockArea({
+              area_id: "living_room",
+              name: "Living Room",
+            }),
+            bedroom: mockArea({
+              area_id: "bedroom",
+              name: "Bedroom",
+            }),
+          },
+        }
+      ),
+      {
+        ...binaryHistory(firstEntityId),
+        ...binaryHistory(secondEntityId),
+      },
+      [],
+      mockLocalize
+    );
+
+    expect(result.timeline.map(({ name }) => name)).toEqual([
+      "Living Room ▸ Door sensor ▸ Door",
+      "Bedroom ▸ Door sensor ▸ Door",
+    ]);
+  });
+
   it("omits the area when all entities are from the same area", () => {
     const firstEntityId = "sensor.living_room_humidity";
     const secondEntityId = "sensor.living_room_temperature";
