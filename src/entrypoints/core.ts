@@ -11,7 +11,6 @@ import {
 import { loadTokens, saveTokens } from "../common/auth/token_storage";
 import { hassUrl } from "../data/auth";
 import { isExternal } from "../data/external";
-import { subscribeFrontendUserData } from "../data/frontend";
 import { fetchConfig } from "../data/lovelace/config/types";
 import { fetchResources } from "../data/lovelace/resource";
 import { MAIN_WINDOW_NAME } from "../data/main_window";
@@ -188,7 +187,6 @@ window.hassConnection.then(({ conn }) => {
   subscribePanels(conn, noop);
   subscribeThemes(conn, noop);
   subscribeUser(conn, noop);
-  subscribeFrontendUserData(conn, "core", noop);
   subscribeRepairsIssueRegistry(conn, noop);
 
   const preloadWindow = window as WindowWithPreloads;
