@@ -236,8 +236,10 @@ class HaConfigAppDashboard extends LitElement {
     }
 
     if (path === "uninstall") {
-      // Navigate back to installed apps after uninstall
-      goBack(this._fromStore ? "/config/apps/available" : "/config/apps");
+      // The user can leave the page while the uninstall runs
+      if (this.isConnected) {
+        goBack(this._fromStore ? "/config/apps/available" : "/config/apps");
+      }
     } else {
       // Reload app info
       await this._loadAddon();
