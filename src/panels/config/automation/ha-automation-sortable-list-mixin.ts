@@ -153,6 +153,9 @@ export const AutomationSortableListMixin = <T extends object>(
     protected async itemAdded(ev: CustomEvent): Promise<void> {
       ev.stopPropagation();
       const { index, data } = ev.detail;
+      if (!ev.detail.item) {
+        return;
+      }
       const selected = (ev.detail.item as any).selected;
 
       let items = [
