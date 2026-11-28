@@ -5,7 +5,9 @@ import type {
   MessageBase,
 } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
+import { getEntityAreaId } from "../common/entity/context/get_entity_context";
 import { DEFAULT_ENTITY_NAME } from "../common/entity/compute_entity_name_display";
+import type { EntityNameItem } from "../common/entity/entity_name_config";
 import { computeStateDisplayFromEntityAttributes } from "../common/entity/compute_state_display";
 import { computeStateNameFromEntityAttributes } from "../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../common/translations/localize";
@@ -435,6 +437,22 @@ const processLineChartEntities = (
     : " ▸ ";
 
   const entityIds = Object.keys(entities);
+  const areaIds = new Set(
+    entityIds
+      .map((entityId) => getEntityAreaId(entityId, hass.entities, hass.devices))
+      .filter((areaId): areaId is string => !!areaId)
+  );
+
+  const entityName = (
+    areaIds.size > 1
+      ? [
+          { type: "area" },
+          { type: "parent_device" },
+          { type: "device" },
+          { type: "entity" },
+        ]
+      : DEFAULT_ENTITY_NAME
+  ) satisfies EntityNameItem[];
   entityIds.forEach((entityId) => {
     const states = entities[entityId];
     const first: EntityHistoryState = states[0];
@@ -481,7 +499,7 @@ const processLineChartEntities = (
 
     const name =
       entityId in hass.states
-        ? hass.formatEntityName(hass.states[entityId], DEFAULT_ENTITY_NAME, {
+        ? hass.formatEntityName(hass.states[entityId], entityName, {
             separator: nameSeparator,
           }) || entityId
         : computeStateNameFromEntityAttributes(
