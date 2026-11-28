@@ -188,6 +188,10 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
+    // The parent reloads the app after each action; let that data replace ours
+    if (changedProps.has("addon")) {
+      this._addon = undefined;
+    }
     // Registries load asynchronously and change over time; resolve the update
     // entity reactively instead of only once on connect.
     this._updateEntityId = this._findUpdateEntityId(
@@ -1039,11 +1043,13 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     // Supervisor sends "addon" until Core opts in to its v2 websocket API, then "app"
     const stateChanged =
       (event.event === "addon" || event.event === "app") && event.slug === slug;
-    // Jobs such as update, rebuild and install change the info without a state change
+    // Jobs such as update, rebuild and install change the info without a state
+    // change. Child jobs of one action share the slug, so only count the root job.
     const jobDone =
       event.event === "job" &&
       event.data?.reference === slug &&
-      event.data?.done === true;
+      event.data?.done === true &&
+      !event.data?.parent_id;
     if (stateChanged || jobDone) {
       this._refreshAddonInfo();
     }
@@ -1322,7 +1328,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       });
     }
     button.progress = false;
-    this._refreshAddonInfo();
   }
 
   private async _stopClicked(ev: CustomEvent): Promise<void> {
@@ -1351,7 +1356,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       });
     }
     button.progress = false;
-    this._refreshAddonInfo();
   }
 
   private async _restartClicked(ev: CustomEvent): Promise<void> {
@@ -1380,7 +1384,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       });
     }
     button.progress = false;
-    this._refreshAddonInfo();
   }
 
   private async _rebuildClicked(ev: CustomEvent): Promise<void> {
@@ -1400,7 +1403,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       });
     }
     button.progress = false;
-    this._refreshAddonInfo();
   }
 
   private async _startClicked(ev: CustomEvent): Promise<void> {
@@ -1442,7 +1444,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
     try {
       await startHassioAddon(this.api.callWS, addon.slug);
-      this._addon = await fetchHassioAddonInfo(this.api.callWS, addon.slug);
       const eventdata = {
         success: true,
         response: undefined,
@@ -1462,7 +1463,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     }
     button.actionSuccess();
     button.progress = false;
-    this._refreshAddonInfo();
   }
 
   private _openConfiguration(): void {
@@ -1535,7 +1535,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       });
     } finally {
       this._uninstalling = false;
-      this._refreshAddonInfo();
     }
   }
 
