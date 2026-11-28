@@ -122,6 +122,8 @@ const subscribeSupervisorEvents = (
   });
 
 export type SupervisorAppEvent =
+  // A store reload can change the latest version of any app
+  | { type: "store" }
   | { type: "state"; slug: string; state: AddonState }
   | {
       type: "job";
@@ -152,6 +154,9 @@ export const parseSupervisorAppEvent = (
   // Supervisor sends "addon" until Core opts in to its v2 websocket API, then "app"
   if (event.event === "addon" || event.event === "app") {
     return { type: "state", slug: event.slug, state: event.state };
+  }
+  if (event.event === "store_reloaded") {
+    return { type: "store" };
   }
   const job = event.event === "job" ? event.data : undefined;
   // Only manager jobs count: their child jobs share the slug, and start, stop

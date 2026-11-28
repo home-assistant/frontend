@@ -63,6 +63,8 @@ export class HaConfigAppsInstalled extends LitElement {
 
   private _queuedEvents?: SupervisorAppEvent[];
 
+  private _loads = 0;
+
   // Events per app slug, to detect ones that arrive while a fetch runs
   private _appEvents: Record<string, number> = {};
 
@@ -225,28 +227,35 @@ export class HaConfigAppsInstalled extends LitElement {
   }
 
   private async _loadData(): Promise<void> {
+    // A reconnect can start a load while another one runs; the newest wins
+    const load = ++this._loads;
     // Events can arrive before or after the responses they changed, so hold
     // them until the list is in and apply them on top of it
     const queuedEvents: SupervisorAppEvent[] = [];
     this._queuedEvents = queuedEvents;
-    let operations: Record<string, string> = {};
+    let addonInfo: HassioAddonsInfo;
+    let operations: Record<string, string>;
     try {
-      [this._addonInfo, operations] = await Promise.all([
+      [addonInfo, operations] = await Promise.all([
         fetchHassioAddonsInfo(this.hass),
         // Operations only decorate the list, so they must not fail the page
         fetchAppOperations(this.hass.callWS).catch(() => ({})),
       ]);
     } catch (err: any) {
-      this._error =
-        err.message || this.hass.localize("ui.panel.config.apps.error_loading");
-    } finally {
-      if (this._queuedEvents === queuedEvents) {
+      if (load === this._loads) {
         this._queuedEvents = undefined;
+        this._error =
+          err.message ||
+          this.hass.localize("ui.panel.config.apps.error_loading");
       }
-    }
-    if (!this._addonInfo) {
       return;
     }
+    if (load !== this._loads) {
+      return;
+    }
+    this._queuedEvents = undefined;
+    this._error = undefined;
+    this._addonInfo = addonInfo;
     this._operations = {};
     for (const [slug, operation] of Object.entries(operations)) {
       this._handleAppEvent({
@@ -267,6 +276,10 @@ export class HaConfigAppsInstalled extends LitElement {
     }
     const addons = this._addonInfo?.addons;
     if (!addons) {
+      return;
+    }
+    if (appEvent.type === "store") {
+      this._loadData();
       return;
     }
     this._appEvents[appEvent.slug] = (this._appEvents[appEvent.slug] ?? 0) + 1;

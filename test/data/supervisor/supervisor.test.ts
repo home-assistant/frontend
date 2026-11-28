@@ -26,6 +26,12 @@ describe("parseSupervisorAppEvent", () => {
     }
   });
 
+  it("parses store reloads", () => {
+    expect(
+      parseSupervisorAppEvent({ event: "store_reloaded", data: {} })
+    ).toEqual({ type: "store" });
+  });
+
   it("parses finished manager jobs with the legacy and the current name", () => {
     for (const name of ["app_manager_update", "addon_manager_update"]) {
       expect(parseSupervisorAppEvent(jobEvent({ name }))).toEqual({

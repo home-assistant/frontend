@@ -188,7 +188,10 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
         const unsub = await subscribeSupervisorAppEvents(
           connection,
           (appEvent) => {
-            if (appEvent.slug === this._currentAddon.slug) {
+            if (
+              appEvent.type === "store" ||
+              appEvent.slug === this._currentAddon.slug
+            ) {
               this._handleAppEvent(appEvent);
             }
           },
@@ -207,6 +210,8 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     // The parent reloads the app after each action; let that data replace ours
     if (changedProps.has("addon")) {
       this._addon = undefined;
+      // A refresh that is still running can be older than the parent's data
+      this._refreshes++;
     }
     // Registries load asynchronously and change over time; resolve the update
     // entity reactively instead of only once on connect.
@@ -1063,7 +1068,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       } as HassioAddonDetails;
       return;
     }
-    if (appEvent.done) {
+    if (appEvent.type === "store" || appEvent.done) {
       this._refreshAddonInfo();
     }
   }
