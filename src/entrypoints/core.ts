@@ -15,7 +15,10 @@ import { subscribeFrontendUserData } from "../data/frontend";
 import { fetchConfig } from "../data/lovelace/config/types";
 import { fetchResources } from "../data/lovelace/resource";
 import { MAIN_WINDOW_NAME } from "../data/main_window";
-import type { WindowWithPreloads } from "../data/preloads";
+import {
+  getPreloadDashboardUrlPath,
+  type WindowWithPreloads,
+} from "../data/preloads";
 import { getRecorderInfo } from "../data/recorder";
 import { subscribeRepairsIssueRegistry } from "../data/repairs";
 import { subscribeAreaRegistry } from "../data/ws-area_registry";
@@ -195,14 +198,16 @@ window.hassConnection.then(({ conn }) => {
   preloadWindow.recorderInfoProm = getRecorderInfo(conn);
 
   // "/" opens the default panel, which is not known yet, so only preload the
-  // config when the "lovelace" dashboard is opened directly.
-  if (location.pathname.startsWith("/lovelace/")) {
-    preloadWindow.llConfProm = fetchConfig(conn, "lovelace", false);
+  // config when a dashboard is opened directly.
+  const dashboardUrlPath = getPreloadDashboardUrlPath(location.pathname);
+  if (dashboardUrlPath) {
+    preloadWindow.llConfUrlPath = dashboardUrlPath;
+    preloadWindow.llConfProm = fetchConfig(conn, dashboardUrlPath, false);
     preloadWindow.llConfProm.catch(() => {
       // Ignore it, it is handled by Lovelace panel.
     });
   }
-  if (location.pathname === "/" || location.pathname.startsWith("/lovelace/")) {
+  if (location.pathname === "/" || dashboardUrlPath) {
     preloadWindow.llResProm = fetchResources(conn);
   }
 });

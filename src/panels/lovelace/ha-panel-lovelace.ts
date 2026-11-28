@@ -315,14 +315,19 @@ export class LovelacePanel extends LitElement {
 
     // On first load, we speed up loading page by having LL promise ready
     if (preloadWindow.llConfProm) {
-      confProm = preloadWindow.llConfProm;
+      if (preloadWindow.llConfUrlPath === this.urlPath) {
+        confProm = preloadWindow.llConfProm;
+      }
       preloadWindow.llConfProm = undefined;
     }
     if (!resourcesLoaded) {
       resourcesLoaded = true;
-      (preloadWindow.llResProm || fetchResources(this.hass!.connection)).then(
-        (resources) => loadLovelaceResources(resources, this.hass!)
-      );
+      const fetchDashboardResources = () =>
+        fetchResources(this.hass!.connection);
+      (
+        preloadWindow.llResProm?.catch(fetchDashboardResources) ??
+        fetchDashboardResources()
+      ).then((resources) => loadLovelaceResources(resources, this.hass!));
     }
     // Refreshing a YAML config can trigger an update event. We will ignore
     // all update events while fetching the config and for 2 seconds after the config is back.
@@ -333,12 +338,9 @@ export class LovelacePanel extends LitElement {
 
     const fetchDashboardConfig = () =>
       fetchConfig(this.hass!.connection, this.urlPath, forceDiskRefresh);
-    // The preload is the config of the "lovelace" dashboard. Fetch it again if
+    // The preload is the config of the dashboard in the URL. Fetch it again if
     // it failed, for example because the connection dropped before it came back.
-    confProm =
-      confProm && this.urlPath === "lovelace"
-        ? confProm.catch(fetchDashboardConfig)
-        : fetchDashboardConfig();
+    confProm = confProm?.catch(fetchDashboardConfig) ?? fetchDashboardConfig();
 
     try {
       rawConf = await confProm;
