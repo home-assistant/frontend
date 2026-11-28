@@ -172,6 +172,8 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
   // Detect state events that arrive while a refresh runs
   private _stateEvents = 0;
 
+  private _stateEventsAtParentReload = 0;
+
   private _refreshes = 0;
 
   protected mobileSizeQuery =
@@ -183,6 +185,10 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
   constructor() {
     super();
+    // The parent reloads the app when this event reaches it
+    this.addEventListener("hass-api-called", () => {
+      this._stateEventsAtParentReload = this._stateEvents;
+    });
     new ConnectionSubscriptionController(this, {
       subscribe: async (connection) => {
         const unsub = await subscribeSupervisorAppEvents(
@@ -212,6 +218,11 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       this._addon = undefined;
       // A refresh that is still running can be older than the parent's data
       this._refreshes++;
+      // The parent's data can be older than a state event that came in while
+      // it reloaded
+      if (this._stateEvents !== this._stateEventsAtParentReload) {
+        this._refreshAddonInfo();
+      }
     }
     // Registries load asynchronously and change over time; resolve the update
     // entity reactively instead of only once on connect.

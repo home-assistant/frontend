@@ -336,11 +336,16 @@ export class HaConfigAppsInstalled extends LitElement {
   }
 
   private async _loadApp(slug: string): Promise<void> {
+    const loads = this._loads;
     const events = this._appEvents[slug];
     let app: HassioAddonInfo;
     try {
       app = await fetchHassioAddonInfo(this.hass.callWS, slug);
     } catch (_err: any) {
+      return;
+    }
+    // A full load that started after this fetch has newer data
+    if (loads !== this._loads) {
       return;
     }
     // The response can be older than an event that came in meanwhile
@@ -370,12 +375,9 @@ export class HaConfigAppsInstalled extends LitElement {
   private async _handleCheckUpdates() {
     this._checkingUpdates = true;
     try {
-      const info = await checkForAppUpdates(this, this.hass);
-      if (info) {
-        this._addonInfo = info;
-      } else {
-        this._loadData();
-      }
+      await checkForAppUpdates(this, this.hass);
+      // A full load keeps the cards of apps that are still installing
+      this._loadData();
     } finally {
       this._checkingUpdates = false;
     }
