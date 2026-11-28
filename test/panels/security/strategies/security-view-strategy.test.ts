@@ -25,6 +25,20 @@ describe("security-view-strategy", () => {
     ).toBe(true);
   });
 
+  it.each(["off", "on"])("includes heat binary sensors when %s", (state) => {
+    const hass = createMockHass();
+    const stateObj = createMockEntityState(
+      "binary_sensor.kitchen_heat",
+      state,
+      {
+        device_class: "heat",
+      }
+    );
+    hass.states[stateObj.entity_id] = stateObj;
+
+    expect(isSecurityPanelEntity(hass, stateObj)).toBe(true);
+  });
+
   it("renders active alerts as individual cards in a visible section", async () => {
     const hass = createMockHass();
     hass.config = { ...hass.config, components: [] };
