@@ -3398,6 +3398,8 @@
           "state": {
             "update_available": "Update available",
             "updating": "Updating...",
+            "installing": "Installing...",
+            "uninstalling": "Uninstalling...",
             "installed": "Installed",
             "not_installed": "Not installed",
             "not_available": "Not available"

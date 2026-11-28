@@ -4,6 +4,7 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-svg-icon";
 import { internationalizationContext } from "../../../../data/context";
 import type { AddonState } from "../../../../data/hassio/addon";
@@ -12,11 +13,25 @@ import type { AddonState } from "../../../../data/hassio/addon";
 class SupervisorAppsState extends LitElement {
   @property() public state: Exclude<AddonState, null> = "unknown";
 
+  @property() public operation?: "install" | "uninstall";
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
 
   protected render(): TemplateResult {
+    if (this.operation) {
+      return html`
+        <ha-spinner size="tiny"></ha-spinner>
+        <span
+          >${this._i18n.localize(
+            this.operation === "install"
+              ? "ui.panel.config.apps.state.installing"
+              : "ui.panel.config.apps.state.uninstalling"
+          )}</span
+        >
+      `;
+    }
     return html`
       ${
         this.state === "unknown"

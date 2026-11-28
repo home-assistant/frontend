@@ -28,6 +28,8 @@ class SupervisorAppsCardContent extends LitElement {
 
   @property() public state?: AddonState;
 
+  @property() public operation?: "install" | "uninstall";
+
   @property({ type: Boolean }) public installed = false;
 
   @property() public description?: string;
@@ -97,6 +99,7 @@ class SupervisorAppsCardContent extends LitElement {
                   this.state !== undefined
                     ? html`<supervisor-apps-state
                         .state=${this.state || "unknown"}
+                        .operation=${this.operation}
                       ></supervisor-apps-state>`
                     : this.installed
                       ? html`<div class="installed">

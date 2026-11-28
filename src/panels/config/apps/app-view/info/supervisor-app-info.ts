@@ -59,6 +59,7 @@ import "../../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../../components/ha-switch";
 import "../../../../../components/item/ha-list-item-switch";
 import "../../../../../components/item/ha-row-item";
+import { ConnectionSubscriptionController } from "../../../../../data/connection-subscription-controller";
 import {
   apiContext,
   internationalizationContext,
@@ -90,6 +91,8 @@ import {
   supervisorUrl,
 } from "../../../../../data/hassio/common";
 import type { StoreAddonDetails } from "../../../../../data/supervisor/store";
+import type { SupervisorAppEvent } from "../../../../../data/supervisor/supervisor";
+import { subscribeSupervisorAppEvents } from "../../../../../data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -126,8 +129,6 @@ const RATING_ICON = {
 };
 
 const MAX_RATING = 8;
-
-const POLL_INTERVAL_SECONDS = 5;
 
 @customElement("supervisor-app-info")
 class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
@@ -168,7 +169,12 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
   })
   private _updateState?: HassEntity;
 
-  private _pollInterval?: number;
+  // Detect state events that arrive while a refresh runs
+  private _stateEvents = 0;
+
+  private _stateEventsAtParentReload = 0;
+
+  private _refreshes = 0;
 
   protected mobileSizeQuery =
     "all and (max-width: 1120px), all and (max-height: 500px)";
@@ -177,13 +183,47 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     return this._addon || this.addon;
   }
 
-  public connectedCallback() {
-    super.connectedCallback();
-    this._startPolling();
+  constructor() {
+    super();
+    // The parent reloads the app when this event reaches it
+    this.addEventListener("hass-api-called", () => {
+      this._stateEventsAtParentReload = this._stateEvents;
+    });
+    new ConnectionSubscriptionController(this, {
+      subscribe: async (connection) => {
+        const unsub = await subscribeSupervisorAppEvents(
+          connection,
+          (appEvent) => {
+            if (
+              appEvent.type === "store" ||
+              appEvent.slug === this._currentAddon.slug
+            ) {
+              this._handleAppEvent(appEvent);
+            }
+          },
+          () => this._refreshAddonInfo()
+        );
+        // The parent loaded the app before this page subscribed, for example
+        // before a switch to another tab and back
+        this._refreshAddonInfo();
+        return unsub;
+      },
+    });
   }
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
+    // The parent reloads the app after each action; let that data replace ours
+    if (changedProps.has("addon")) {
+      this._addon = undefined;
+      // A refresh that is still running can be older than the parent's data
+      this._refreshes++;
+      // The parent's data can be older than a state event that came in while
+      // it reloaded
+      if (this._stateEvents !== this._stateEventsAtParentReload) {
+        this._refreshAddonInfo();
+      }
+    }
     // Registries load asynchronously and change over time; resolve the update
     // entity reactively instead of only once on connect.
     this._updateEntityId = this._findUpdateEntityId(
@@ -191,11 +231,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       this.registries.entities,
       (this._currentAddon as HassioAddonDetails).slug
     );
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._stopPolling();
   }
 
   private _renderInfoCard() {
@@ -1035,19 +1070,17 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     }
   }
 
-  private _startPolling() {
-    if (this._pollInterval) {
+  private _handleAppEvent(appEvent: SupervisorAppEvent) {
+    if (appEvent.type === "state") {
+      this._stateEvents++;
+      this._addon = {
+        ...this._currentAddon,
+        state: appEvent.state,
+      } as HassioAddonDetails;
       return;
     }
-    this._pollInterval = window.setInterval(() => {
+    if (appEvent.type === "store" || appEvent.done) {
       this._refreshAddonInfo();
-    }, POLL_INTERVAL_SECONDS * 1000);
-  }
-
-  private _stopPolling() {
-    if (this._pollInterval) {
-      clearInterval(this._pollInterval);
-      this._pollInterval = undefined;
     }
   }
 
@@ -1056,8 +1089,19 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     if (!addon?.slug) {
       return;
     }
+    const refresh = ++this._refreshes;
+    const stateEvents = this._stateEvents;
     try {
-      this._addon = await fetchHassioAddonInfo(this.api.callWS, addon.slug);
+      const info = await fetchHassioAddonInfo(this.api.callWS, addon.slug);
+      if (refresh !== this._refreshes) {
+        return;
+      }
+      // The response can be older than a state event that came in meanwhile
+      if (stateEvents !== this._stateEvents) {
+        this._refreshAddonInfo();
+        return;
+      }
+      this._addon = info;
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("Failed to fetch addon info", err);
@@ -1324,7 +1368,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       });
     }
     button.progress = false;
-    this._refreshAddonInfo();
   }
 
   private async _stopClicked(ev: CustomEvent): Promise<void> {
@@ -1353,7 +1396,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       });
     }
     button.progress = false;
-    this._refreshAddonInfo();
   }
 
   private async _restartClicked(ev: CustomEvent): Promise<void> {
@@ -1382,7 +1424,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       });
     }
     button.progress = false;
-    this._refreshAddonInfo();
   }
 
   private async _rebuildClicked(ev: CustomEvent): Promise<void> {
@@ -1402,7 +1443,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       });
     }
     button.progress = false;
-    this._refreshAddonInfo();
   }
 
   private async _startClicked(ev: CustomEvent): Promise<void> {
@@ -1444,7 +1484,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
     try {
       await startHassioAddon(this.api.callWS, addon.slug);
-      this._addon = await fetchHassioAddonInfo(this.api.callWS, addon.slug);
       const eventdata = {
         success: true,
         response: undefined,
@@ -1464,7 +1503,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     }
     button.actionSuccess();
     button.progress = false;
-    this._refreshAddonInfo();
   }
 
   private _openConfiguration(): void {
@@ -1537,7 +1575,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       });
     } finally {
       this._uninstalling = false;
-      this._refreshAddonInfo();
     }
   }
 

@@ -1,7 +1,8 @@
-import type { Connection } from "home-assistant-js-websocket";
+import type { Connection, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
-import type { HassioAddonsInfo } from "../hassio/addon";
+import type { CallWS } from "../../types";
+import type { AddonState, HassioAddonsInfo } from "../hassio/addon";
 import type { HassioHassOSInfo, HassioHostInfo } from "../hassio/host";
 import type { NetworkInfo } from "../hassio/network";
 import type { HassioResolution } from "../hassio/resolution";
@@ -111,6 +112,120 @@ const subscribeSupervisorEventUpdates = (
       type: "supervisor/subscribe",
     }
   );
+
+const subscribeSupervisorEvents = (
+  conn: Connection,
+  onEvent: (event: SupervisorEvent) => void
+) =>
+  conn.subscribeMessage<SupervisorEvent>(onEvent, {
+    type: "supervisor/subscribe",
+  });
+
+export type SupervisorAppEvent =
+  // A store reload can change the latest version of any app
+  | { type: "store" }
+  | { type: "state"; slug: string; state: AddonState }
+  | {
+      type: "job";
+      slug: string;
+      // install, uninstall, update, rebuild or restore
+      operation: string;
+      done: boolean;
+      failed: boolean;
+    };
+
+interface SupervisorJob {
+  name: string;
+  reference: string | null;
+  done: boolean;
+  child_jobs: SupervisorJob[];
+}
+
+// Older Supervisors name the app manager jobs addon_manager_*
+const appManagerOperation = (jobName: string | undefined) =>
+  /^(?:addon|app)_manager_(\w+)$/.exec(jobName ?? "")?.[1];
+
+/**
+ * Parse a Supervisor event that changes the info of an app.
+ */
+export const parseSupervisorAppEvent = (
+  event: SupervisorEvent
+): SupervisorAppEvent | undefined => {
+  // Supervisor sends "addon" until Core opts in to its v2 websocket API, then "app"
+  if (event.event === "addon" || event.event === "app") {
+    return { type: "state", slug: event.slug, state: event.state };
+  }
+  if (event.event === "store_reloaded") {
+    return { type: "store" };
+  }
+  const job = event.event === "job" ? event.data : undefined;
+  // Only manager jobs count: their child jobs share the slug, and start, stop
+  // and restart jobs change nothing beyond the state events. A manager job can
+  // itself be a child, for example of a backup restore.
+  // The first event of a job comes before Supervisor sets its reference.
+  if (!job?.reference) {
+    return undefined;
+  }
+  const operation = appManagerOperation(job.name);
+  if (!operation) {
+    return undefined;
+  }
+  return {
+    type: "job",
+    slug: job.reference,
+    operation,
+    done: job.done === true,
+    failed: job.errors?.length > 0,
+  };
+};
+
+/**
+ * Return the app manager operations that run now, keyed by app slug.
+ */
+export const fetchAppOperations = async (
+  callWS: CallWS
+): Promise<Record<string, string>> => {
+  const { jobs } = await callWS<{ jobs: SupervisorJob[] }>({
+    type: "supervisor/api",
+    endpoint: "/jobs/info",
+    method: "get",
+  });
+  const operations: Record<string, string> = {};
+  const addOperations = (list: SupervisorJob[]) => {
+    for (const job of list) {
+      const operation = appManagerOperation(job.name);
+      if (operation && job.reference && !job.done) {
+        operations[job.reference] = operation;
+      }
+      addOperations(job.child_jobs ?? []);
+    }
+  };
+  addOperations(jobs);
+  return operations;
+};
+
+/**
+ * Subscribe to Supervisor events that change app info. Events sent while the
+ * connection is down are lost, so `onReconnect` runs after each reconnect.
+ */
+export const subscribeSupervisorAppEvents = async (
+  conn: Connection,
+  onEvent: (appEvent: SupervisorAppEvent) => void,
+  onReconnect: () => void
+): Promise<UnsubscribeFunc> => {
+  const unsub = await subscribeSupervisorEvents(conn, (event) => {
+    const appEvent = parseSupervisorAppEvent(event);
+    if (appEvent) {
+      onEvent(appEvent);
+    }
+  });
+  const handleReady = () => onReconnect();
+  conn.addEventListener("ready", handleReady);
+  return () => {
+    conn.removeEventListener("ready", handleReady);
+    unsub();
+  };
+};
 
 export const getSupervisorEventCollection = (
   conn: Connection,

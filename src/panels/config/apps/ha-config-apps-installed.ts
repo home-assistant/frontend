@@ -18,11 +18,20 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/input/ha-input-search";
+import { ConnectionSubscriptionController } from "../../../data/connection-subscription-controller";
 import type {
   HassioAddonInfo,
   HassioAddonsInfo,
 } from "../../../data/hassio/addon";
-import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
+import {
+  fetchHassioAddonInfo,
+  fetchHassioAddonsInfo,
+} from "../../../data/hassio/addon";
+import type { SupervisorAppEvent } from "../../../data/supervisor/supervisor";
+import {
+  fetchAppOperations,
+  subscribeSupervisorAppEvents,
+} from "../../../data/supervisor/supervisor";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
@@ -48,6 +57,28 @@ export class HaConfigAppsInstalled extends LitElement {
   @state() private _error?: string;
 
   @state() private _checkingUpdates = false;
+
+  // Installs and uninstalls that run now, keyed by app slug
+  @state() private _operations: Record<string, "install" | "uninstall"> = {};
+
+  private _queuedEvents?: SupervisorAppEvent[];
+
+  private _loads = 0;
+
+  // Events per app slug, to detect ones that arrive while a fetch runs
+  private _appEvents: Record<string, number> = {};
+
+  constructor() {
+    super();
+    new ConnectionSubscriptionController(this, {
+      subscribe: (connection) =>
+        subscribeSupervisorAppEvents(
+          connection,
+          (appEvent) => this._handleAppEvent(appEvent),
+          () => this._loadData()
+        ),
+    });
+  }
 
   protected firstUpdated() {
     this._loadData();
@@ -136,6 +167,7 @@ export class HaConfigAppsInstalled extends LitElement {
                           available
                           .tags=${this._getAppTags(addon)}
                           .state=${addon.state}
+                          .operation=${this._operations[addon.slug]}
                           .icon=${
                             addon.update_available
                               ? mdiArrowUpBoldCircle
@@ -195,23 +227,157 @@ export class HaConfigAppsInstalled extends LitElement {
   }
 
   private async _loadData(): Promise<void> {
+    // A reconnect can start a load while another one runs; the newest wins
+    const load = ++this._loads;
+    // Events can arrive before or after the responses they changed, so hold
+    // them until the list is in and apply them on top of it
+    const queuedEvents: SupervisorAppEvent[] = [];
+    this._queuedEvents = queuedEvents;
+    let addonInfo: HassioAddonsInfo;
+    let operations: Record<string, string>;
     try {
-      this._addonInfo = await fetchHassioAddonsInfo(this.hass);
+      [addonInfo, operations] = await Promise.all([
+        fetchHassioAddonsInfo(this.hass),
+        // Operations only decorate the list, so they must not fail the page
+        fetchAppOperations(this.hass.callWS).catch(() => ({})),
+      ]);
     } catch (err: any) {
-      this._error =
-        err.message || this.hass.localize("ui.panel.config.apps.error_loading");
+      if (load === this._loads) {
+        this._queuedEvents = undefined;
+        this._error =
+          err.message ||
+          this.hass.localize("ui.panel.config.apps.error_loading");
+      }
+      return;
     }
+    if (load !== this._loads) {
+      return;
+    }
+    this._queuedEvents = undefined;
+    this._error = undefined;
+    this._addonInfo = addonInfo;
+    this._operations = {};
+    for (const [slug, operation] of Object.entries(operations)) {
+      this._handleAppEvent({
+        type: "job",
+        slug,
+        operation,
+        done: false,
+        failed: false,
+      });
+    }
+    queuedEvents.forEach((appEvent) => this._handleAppEvent(appEvent));
+  }
+
+  private _handleAppEvent(appEvent: SupervisorAppEvent) {
+    if (this._queuedEvents) {
+      this._queuedEvents.push(appEvent);
+      return;
+    }
+    const addons = this._addonInfo?.addons;
+    if (!addons) {
+      return;
+    }
+    if (appEvent.type === "store") {
+      this._loadData();
+      return;
+    }
+    this._appEvents[appEvent.slug] = (this._appEvents[appEvent.slug] ?? 0) + 1;
+    if (appEvent.type === "state") {
+      this._addonInfo = {
+        addons: addons.map((addon) =>
+          addon.slug === appEvent.slug
+            ? { ...addon, state: appEvent.state }
+            : addon
+        ),
+      };
+      return;
+    }
+    const { slug, operation } = appEvent;
+    if (!appEvent.done) {
+      if (
+        (operation === "install" || operation === "uninstall") &&
+        this._operations[slug] !== operation
+      ) {
+        this._operations = { ...this._operations, [slug]: operation };
+        if (operation === "install") {
+          this._addInstallingApp(slug);
+        }
+      }
+      return;
+    }
+    const { [slug]: _done, ...operations } = this._operations;
+    this._operations = operations;
+    if (operation === "uninstall" && !appEvent.failed) {
+      this._removeApp(slug);
+      return;
+    }
+    this._loadApp(slug);
+  }
+
+  private async _addInstallingApp(slug: string): Promise<void> {
+    if (this._addonInfo!.addons.some((addon) => addon.slug === slug)) {
+      return;
+    }
+    let app: HassioAddonInfo;
+    try {
+      app = await fetchHassioAddonInfo(this.hass.callWS, slug);
+    } catch (_err: any) {
+      return;
+    }
+    // The install can finish while the fetch runs
+    if (
+      this._operations[slug] !== "install" ||
+      this._addonInfo!.addons.some((addon) => addon.slug === slug)
+    ) {
+      return;
+    }
+    this._addonInfo = { addons: [...this._addonInfo!.addons, app] };
+  }
+
+  private async _loadApp(slug: string): Promise<void> {
+    const loads = this._loads;
+    const events = this._appEvents[slug];
+    let app: HassioAddonInfo;
+    try {
+      app = await fetchHassioAddonInfo(this.hass.callWS, slug);
+    } catch (_err: any) {
+      return;
+    }
+    // A full load that started after this fetch has newer data
+    if (loads !== this._loads) {
+      return;
+    }
+    // The response can be older than an event that came in meanwhile
+    if (events !== this._appEvents[slug]) {
+      this._loadApp(slug);
+      return;
+    }
+    // Supervisor answers with the store info when the app is not installed
+    if (!app.version) {
+      this._removeApp(slug);
+      return;
+    }
+    this._addonInfo = {
+      addons: [
+        ...this._addonInfo!.addons.filter((addon) => addon.slug !== slug),
+        app,
+      ],
+    };
+  }
+
+  private _removeApp(slug: string) {
+    this._addonInfo = {
+      addons: this._addonInfo!.addons.filter((addon) => addon.slug !== slug),
+    };
   }
 
   private async _handleCheckUpdates() {
     this._checkingUpdates = true;
     try {
-      const info = await checkForAppUpdates(this, this.hass);
-      if (info) {
-        this._addonInfo = info;
-      } else {
-        this._loadData();
-      }
+      await checkForAppUpdates(this, this.hass);
+      // A full load keeps the cards of apps that are still installing
+      this._loadData();
     } finally {
       this._checkingUpdates = false;
     }
