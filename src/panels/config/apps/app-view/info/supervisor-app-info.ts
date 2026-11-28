@@ -92,10 +92,7 @@ import {
 } from "../../../../../data/hassio/common";
 import type { StoreAddonDetails } from "../../../../../data/supervisor/store";
 import type { SupervisorAppEvent } from "../../../../../data/supervisor/supervisor";
-import {
-  parseSupervisorAppEvent,
-  subscribeSupervisorEvents,
-} from "../../../../../data/supervisor/supervisor";
+import { subscribeSupervisorAppEvents } from "../../../../../data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -172,6 +169,11 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
   })
   private _updateState?: HassEntity;
 
+  // Detect state events that arrive while a refresh runs
+  private _stateEvents = 0;
+
+  private _refreshes = 0;
+
   protected mobileSizeQuery =
     "all and (max-width: 1120px), all and (max-height: 500px)";
 
@@ -182,13 +184,21 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
   constructor() {
     super();
     new ConnectionSubscriptionController(this, {
-      subscribe: (connection) =>
-        subscribeSupervisorEvents(connection, (event) => {
-          const appEvent = parseSupervisorAppEvent(event);
-          if (appEvent?.slug === this._currentAddon.slug) {
-            this._handleAppEvent(appEvent);
-          }
-        }),
+      subscribe: async (connection) => {
+        const unsub = await subscribeSupervisorAppEvents(
+          connection,
+          (appEvent) => {
+            if (appEvent.slug === this._currentAddon.slug) {
+              this._handleAppEvent(appEvent);
+            }
+          },
+          () => this._refreshAddonInfo()
+        );
+        // The parent loaded the app before this page subscribed, for example
+        // before a switch to another tab and back
+        this._refreshAddonInfo();
+        return unsub;
+      },
     });
   }
 
@@ -1046,6 +1056,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
   private _handleAppEvent(appEvent: SupervisorAppEvent) {
     if (appEvent.type === "state") {
+      this._stateEvents++;
       this._addon = {
         ...this._currentAddon,
         state: appEvent.state,
@@ -1062,8 +1073,19 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     if (!addon?.slug) {
       return;
     }
+    const refresh = ++this._refreshes;
+    const stateEvents = this._stateEvents;
     try {
-      this._addon = await fetchHassioAddonInfo(this.api.callWS, addon.slug);
+      const info = await fetchHassioAddonInfo(this.api.callWS, addon.slug);
+      if (refresh !== this._refreshes) {
+        return;
+      }
+      // The response can be older than a state event that came in meanwhile
+      if (stateEvents !== this._stateEvents) {
+        this._refreshAddonInfo();
+        return;
+      }
+      this._addon = info;
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("Failed to fetch addon info", err);

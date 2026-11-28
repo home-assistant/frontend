@@ -56,9 +56,19 @@ describe("parseSupervisorAppEvent", () => {
     ).toBeUndefined();
   });
 
+  it("parses manager jobs nested in other jobs, such as a backup restore", () => {
+    expect(
+      parseSupervisorAppEvent(
+        jobEvent({ name: "app_manager_restore", parent_id: "abc" })
+      )
+    ).toMatchObject({ operation: "restore", done: true });
+  });
+
   it("ignores child, start and unrelated jobs", () => {
     expect(
-      parseSupervisorAppEvent(jobEvent({ parent_id: "abc" }))
+      parseSupervisorAppEvent(
+        jobEvent({ name: "app_install", parent_id: "abc" })
+      )
     ).toBeUndefined();
     expect(
       parseSupervisorAppEvent(jobEvent({ name: "app_start" }))

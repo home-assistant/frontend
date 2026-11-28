@@ -30,8 +30,7 @@ import {
 import type { SupervisorAppEvent } from "../../../data/supervisor/supervisor";
 import {
   fetchAppOperations,
-  parseSupervisorAppEvent,
-  subscribeSupervisorEvents,
+  subscribeSupervisorAppEvents,
 } from "../../../data/supervisor/supervisor";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
@@ -64,16 +63,18 @@ export class HaConfigAppsInstalled extends LitElement {
 
   private _queuedEvents?: SupervisorAppEvent[];
 
+  // Events per app slug, to detect ones that arrive while a fetch runs
+  private _appEvents: Record<string, number> = {};
+
   constructor() {
     super();
     new ConnectionSubscriptionController(this, {
       subscribe: (connection) =>
-        subscribeSupervisorEvents(connection, (event) => {
-          const appEvent = parseSupervisorAppEvent(event);
-          if (appEvent) {
-            this._handleAppEvent(appEvent);
-          }
-        }),
+        subscribeSupervisorAppEvents(
+          connection,
+          (appEvent) => this._handleAppEvent(appEvent),
+          () => this._loadData()
+        ),
     });
   }
 
@@ -268,6 +269,7 @@ export class HaConfigAppsInstalled extends LitElement {
     if (!addons) {
       return;
     }
+    this._appEvents[appEvent.slug] = (this._appEvents[appEvent.slug] ?? 0) + 1;
     if (appEvent.type === "state") {
       this._addonInfo = {
         addons: addons.map((addon) =>
@@ -321,10 +323,16 @@ export class HaConfigAppsInstalled extends LitElement {
   }
 
   private async _loadApp(slug: string): Promise<void> {
+    const events = this._appEvents[slug];
     let app: HassioAddonInfo;
     try {
       app = await fetchHassioAddonInfo(this.hass.callWS, slug);
     } catch (_err: any) {
+      return;
+    }
+    // The response can be older than an event that came in meanwhile
+    if (events !== this._appEvents[slug]) {
+      this._loadApp(slug);
       return;
     }
     // Supervisor answers with the store info when the app is not installed

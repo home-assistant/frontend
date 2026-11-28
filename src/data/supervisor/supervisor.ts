@@ -1,4 +1,4 @@
-import type { Connection } from "home-assistant-js-websocket";
+import type { Connection, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
 import type { CallWS } from "../../types";
@@ -113,7 +113,7 @@ const subscribeSupervisorEventUpdates = (
     }
   );
 
-export const subscribeSupervisorEvents = (
+const subscribeSupervisorEvents = (
   conn: Connection,
   onEvent: (event: SupervisorEvent) => void
 ) =>
@@ -136,6 +136,7 @@ interface SupervisorJob {
   name: string;
   reference: string | null;
   done: boolean;
+  child_jobs: SupervisorJob[];
 }
 
 // Older Supervisors name the app manager jobs addon_manager_*
@@ -153,10 +154,11 @@ export const parseSupervisorAppEvent = (
     return { type: "state", slug: event.slug, state: event.state };
   }
   const job = event.event === "job" ? event.data : undefined;
-  // Child jobs of one action share the slug, so only the root job counts.
-  // Start, stop and restart jobs change nothing beyond the state events.
+  // Only manager jobs count: their child jobs share the slug, and start, stop
+  // and restart jobs change nothing beyond the state events. A manager job can
+  // itself be a child, for example of a backup restore.
   // The first event of a job comes before Supervisor sets its reference.
-  if (!job || job.parent_id || !job.reference) {
+  if (!job?.reference) {
     return undefined;
   }
   const operation = appManagerOperation(job.name);
@@ -178,20 +180,46 @@ export const parseSupervisorAppEvent = (
 export const fetchAppOperations = async (
   callWS: CallWS
 ): Promise<Record<string, string>> => {
-  // Only root jobs are listed at the top level; child jobs are nested
   const { jobs } = await callWS<{ jobs: SupervisorJob[] }>({
     type: "supervisor/api",
     endpoint: "/jobs/info",
     method: "get",
   });
   const operations: Record<string, string> = {};
-  for (const job of jobs) {
-    const operation = appManagerOperation(job.name);
-    if (operation && job.reference && !job.done) {
-      operations[job.reference] = operation;
+  const addOperations = (list: SupervisorJob[]) => {
+    for (const job of list) {
+      const operation = appManagerOperation(job.name);
+      if (operation && job.reference && !job.done) {
+        operations[job.reference] = operation;
+      }
+      addOperations(job.child_jobs ?? []);
     }
-  }
+  };
+  addOperations(jobs);
   return operations;
+};
+
+/**
+ * Subscribe to Supervisor events that change app info. Events sent while the
+ * connection is down are lost, so `onReconnect` runs after each reconnect.
+ */
+export const subscribeSupervisorAppEvents = async (
+  conn: Connection,
+  onEvent: (appEvent: SupervisorAppEvent) => void,
+  onReconnect: () => void
+): Promise<UnsubscribeFunc> => {
+  const unsub = await subscribeSupervisorEvents(conn, (event) => {
+    const appEvent = parseSupervisorAppEvent(event);
+    if (appEvent) {
+      onEvent(appEvent);
+    }
+  });
+  const handleReady = () => onReconnect();
+  conn.addEventListener("ready", handleReady);
+  return () => {
+    conn.removeEventListener("ready", handleReady);
+    unsub();
+  };
 };
 
 export const getSupervisorEventCollection = (
